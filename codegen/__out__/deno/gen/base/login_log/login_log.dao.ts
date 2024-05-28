@@ -85,9 +85,9 @@ const route_path = "/base/login_log";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: LoginLogSearch,
-  options?: {
-  },
+  search?: Readonly<LoginLogSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -104,14 +104,8 @@ async function getWhereQuery(
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
-  }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
-  }
-  if (search?.type != null && !Array.isArray(search?.type)) {
-    search.type = [ search.type ];
   }
   if (search?.type != null) {
     whereQuery += ` and t.type in ${ args.push(search.type) }`;
@@ -121,9 +115,6 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.username_like)) {
     whereQuery += ` and t.username like ${ args.push("%" + sqlLike(search?.username_like) + "%") }`;
-  }
-  if (search?.is_succ != null && !Array.isArray(search?.is_succ)) {
-    search.is_succ = [ search.is_succ ];
   }
   if (search?.is_succ != null) {
     whereQuery += ` and t.is_succ in ${ args.push(search.is_succ) }`;
@@ -142,32 +133,20 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
-  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
-  if (search?.create_usr_id_lbl != null && !Array.isArray(search?.create_usr_id_lbl)) {
-    search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
-  }
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
-  }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
   }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
-  }
-  if (search?.update_usr_id_lbl != null && !Array.isArray(search?.update_usr_id_lbl)) {
-    search.update_usr_id_lbl = [ search.update_usr_id_lbl ];
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
@@ -186,9 +165,9 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: LoginLogSearch,
-  options?: {
-  },
+  search?: Readonly<LoginLogSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   let fromQuery = `base_login_log t`;
   return fromQuery;
@@ -200,10 +179,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: LoginLogSearch,
-  options?: {
+  search?: Readonly<LoginLogSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_login_log";
   const method = "findCount";
@@ -242,13 +221,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: LoginLogSearch,
-  page?: PageInput,
+  search?: Readonly<LoginLogSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<LoginLogModel[]> {
   const table = "base_login_log";
   const method = "findAll";
@@ -475,10 +454,10 @@ export async function getFieldComments(): Promise<LoginLogFieldComment> {
  * @param {LoginLogInput} search0
  */
 export async function findByUnique(
-  search0: LoginLogInput,
-  options?: {
+  search0: Readonly<LoginLogInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<LoginLogModel[]> {
   
   const table = "base_login_log";
@@ -515,8 +494,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: LoginLogModel,
-  input: LoginLogInput,
+  oldModel: Readonly<LoginLogModel>,
+  input: Readonly<LoginLogInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -532,11 +511,11 @@ export function equalsByUnique(
  * @return {Promise<LoginLogId | undefined>}
  */
 export async function checkByUnique(
-  input: LoginLogInput,
-  oldModel: LoginLogModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<LoginLogInput>,
+  oldModel: Readonly<LoginLogModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<LoginLogId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -566,12 +545,13 @@ export async function checkByUnique(
  * @param {LoginLogSearch} search?
  */
 export async function findOne(
-  search?: LoginLogSearch,
+  search?: Readonly<LoginLogSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<LoginLogModel | undefined> {
+  
   const table = "base_login_log";
   const method = "findOne";
   
@@ -587,8 +567,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -609,12 +591,14 @@ export async function findOne(
  */
 export async function findById(
   id?: LoginLogId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<LoginLogModel | undefined> {
+  
   const table = "base_login_log";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -624,8 +608,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -646,12 +632,14 @@ export async function findById(
 /** 根据 ids 查找登录日志 */
 export async function findByIds(
   ids: LoginLogId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<LoginLogModel[]> {
+  
   const table = "base_login_log";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -661,8 +649,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -698,13 +688,15 @@ export async function findByIds(
  * @param {LoginLogSearch} search?
  */
 export async function exist(
-  search?: LoginLogSearch,
-  options?: {
+  search?: Readonly<LoginLogSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "base_login_log";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -714,8 +706,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -727,11 +721,12 @@ export async function exist(
  * @param {LoginLogId} id
  */
 export async function existById(
-  id?: LoginLogId | null,
-  options?: {
+  id?: Readonly<LoginLogId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "base_login_log";
   const method = "existById";
   
@@ -748,7 +743,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from base_login_log t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from base_login_log t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   interface Result {
     e: number,
@@ -764,7 +759,7 @@ export async function existById(
 
 /** 校验登录日志是否存在 */
 export async function validateOption(
-  model?: LoginLogModel,
+  model?: Readonly<LoginLogModel>,
 ) {
   if (!model) {
     throw `${ await ns("登录日志") } ${ await ns("不存在") }`;
@@ -777,7 +772,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: LoginLogInput,
+  input: Readonly<LoginLogInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -823,13 +818,13 @@ export async function validate(
  * @return {Promise<LoginLogId>} 
  */
 export async function create(
-  input: LoginLogInput,
-  options?: {
+  input: Readonly<LoginLogInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<LoginLogId> {
   
   const table = "base_login_log";
@@ -844,8 +839,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -872,12 +869,12 @@ export async function create(
  */
 export async function creates(
   inputs: LoginLogInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<LoginLogId[]> {
   
   const table = "base_login_log";
@@ -892,8 +889,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -903,12 +902,12 @@ export async function creates(
 
 async function _creates(
   inputs: LoginLogInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<LoginLogId[]> {
   
   if (inputs.length === 0) {
@@ -1025,6 +1024,7 @@ async function _creates(
           sql += `,${ args.push(usr_lbl) }`;
         } else if (input.create_usr_id as unknown as string === "-") {
           sql += ",default";
+          sql += ",default";
         } else {
           let usr_id: UsrId | undefined = input.create_usr_id;
           let usr_lbl = "";
@@ -1093,10 +1093,10 @@ async function _creates(
  */
 export async function updateTenantById(
   id: LoginLogId,
-  tenant_id: TenantId,
-  options?: {
+  tenant_id: Readonly<TenantId>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_login_log";
   const method = "updateTenantById";
@@ -1142,11 +1142,11 @@ export async function updateTenantById(
 export async function updateById(
   id: LoginLogId,
   input: LoginLogInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<LoginLogId> {
   
   const table = "base_login_log";
@@ -1275,7 +1275,7 @@ export async function updateById(
         sql += `update_time = ${ args.push(reqDate()) }`;
       }
     }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await execute(sql, args);
   }
@@ -1298,12 +1298,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: LoginLogId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "base_login_log";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1328,7 +1333,11 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update base_login_log set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update base_login_log set is_deleted=1`;
+    if (!silentMode) {
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1343,10 +1352,11 @@ export async function deleteByIds(
  */
 export async function revertByIds(
   ids: LoginLogId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_login_log";
   const method = "revertByIds";
   
@@ -1369,7 +1379,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: LoginLogId = ids[i];
     const args = new QueryArgs();
-    const sql = `update base_login_log set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update base_login_log set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1400,10 +1410,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: LoginLogId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_login_log";
   const method = "forceDeleteByIds";
   
@@ -1427,12 +1438,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from base_login_log where id = ${ args.push(id) }`;
+      const sql = `select * from base_login_log where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from base_login_log where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from base_login_log where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }

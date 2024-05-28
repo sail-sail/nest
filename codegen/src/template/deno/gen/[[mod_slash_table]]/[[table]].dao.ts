@@ -620,6 +620,7 @@ if (
   (
     (hasCreateUsrId && hasCreateUsrIdLbl)
     || (hasUpdateUsrId && hasUpdateUsrIdLbl)
+    || (hasDeleteUsrId && hasDeleteUsrIdLbl)
   )
   && !findByIdTableUps.includes(Table_Up)
 ) {
@@ -653,14 +654,14 @@ if (
 #>
 async function getWhereQuery(
   args: QueryArgs,
-  search?: <#=searchName#>,
-  options?: {<#
+  search?: Readonly<<#=searchName#>>,
+  options?: Readonly<{<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<string> {
   let whereQuery = "";<#
   if (hasIsDeleted) {
@@ -753,9 +754,6 @@ async function getWhereQuery(
     if (foreignKey) {
       if (foreignKey.type !== "many2many") {
   #>
-  if (search?.<#=column_name#> != null && !Array.isArray(search?.<#=column_name#>)) {
-    search.<#=column_name#> = [ search.<#=column_name#> ];
-  }
   if (search?.<#=column_name#> != null) {
     whereQuery += ` and t.<#=column_name#> in ${ args.push(search.<#=column_name#>) }`;
   }
@@ -764,9 +762,6 @@ async function getWhereQuery(
   }<#
     if (modelLabel) {
   #>
-  if (search?.<#=modelLabel#> != null && !Array.isArray(search?.<#=modelLabel#>)) {
-    search.<#=modelLabel#> = [ search.<#=modelLabel#> ];
-  }
   if (search?.<#=modelLabel#> != null) {
     whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;
   }<#
@@ -774,9 +769,6 @@ async function getWhereQuery(
   #><#
       } else if (foreignKey.type === "many2many") {
   #>
-  if (search?.<#=column_name#> != null && !Array.isArray(search?.<#=column_name#>)) {
-    search.<#=column_name#> = [ search.<#=column_name#> ];
-  }
   if (search?.<#=column_name#> != null) {
     whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
   }
@@ -787,9 +779,6 @@ async function getWhereQuery(
   #><#
     } else if (column.dict || column.dictbiz) {
   #>
-  if (search?.<#=column_name#> != null && !Array.isArray(search?.<#=column_name#>)) {
-    search.<#=column_name#> = [ search.<#=column_name#> ];
-  }
   if (search?.<#=column_name#> != null) {
     whereQuery += ` and t.<#=column_name#> in ${ args.push(search.<#=column_name#>) }`;
   }<#
@@ -797,9 +786,6 @@ async function getWhereQuery(
   #>
   if (search?.<#=column_name#> != null) {
     whereQuery += ` and t.<#=column_name#>=${ args.push(search?.<#=column_name#>) }`;
-  }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
   }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
@@ -848,14 +834,14 @@ if (
 #>
 async function getFromQuery(
   args: QueryArgs,
-  search?: <#=searchName#>,
-  options?: {<#
+  search?: Readonly<<#=searchName#>>,
+  options?: Readonly<{<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ) {<#
   if (hasIsDeleted && hasMany2many) {
   #>
@@ -957,15 +943,15 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: <#=searchName#>,
-  options?: {
+  search?: Readonly<<#=searchName#>>,
+  options?: Readonly<{
     debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "findCount";
@@ -1015,10 +1001,10 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: <#=searchName#>,
-  page?: PageInput,
+  search?: Readonly<<#=searchName#>>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -1026,7 +1012,7 @@ export async function findAll(
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<<#=modelName#>[]> {
   const table = "<#=mod#>_<#=table#>";
   const method = "findAll";
@@ -2258,15 +2244,15 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
  * @param {<#=inputName#>} search0
  */
 export async function findByUnique(
-  search0: <#=inputName#>,
-  options?: {
+  search0: Readonly<<#=inputName#>>,
+  options?: Readonly<{
     debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<<#=modelName#>[]> {
   
   const table = "<#=mod#>_<#=table#>";
@@ -2398,8 +2384,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: <#=modelName#>,
-  input: <#=inputName#>,
+  oldModel: Readonly<<#=modelName#>>,
+  input: Readonly<<#=inputName#>>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -2448,11 +2434,11 @@ export function equalsByUnique(
  * @return {Promise<<#=Table_Up#>Id | undefined>}
  */
 export async function checkByUnique(
-  input: <#=inputName#>,
-  oldModel: <#=modelName#>,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<<#=inputName#>>,
+  oldModel: Readonly<<#=modelName#>>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<<#=Table_Up#>Id | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -2485,16 +2471,17 @@ if (hasSummary) {
  * @return {Promise<<#=Table_Up#>Summary>}
  */
 export async function findSummary(
-  search?: <#=searchName#>,
-  options?: {
+  search?: Readonly<<#=searchName#>>,
+  options?: Readonly<{
     debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<<#=Table_Up#>Summary> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "findSummary";
   
@@ -2555,17 +2542,18 @@ export async function findSummary(
  * @param {<#=searchName#>} search?
  */
 export async function findOne(
-  search?: <#=searchName#>,
+  search?: Readonly<<#=searchName#>>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<<#=modelName#> | undefined> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "findOne";
   
@@ -2581,8 +2569,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -2603,17 +2593,19 @@ export async function findOne(
  */
 export async function findById(
   id?: <#=Table_Up#>Id | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<<#=modelName#> | undefined> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -2623,8 +2615,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -2645,17 +2639,19 @@ export async function findById(
 /** 根据 ids 查找<#=table_comment#> */
 export async function findByIds(
   ids: <#=Table_Up#>Id[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<<#=modelName#>[]> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -2665,8 +2661,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -2702,18 +2700,20 @@ export async function findByIds(
  * @param {<#=searchName#>} search?
  */
 export async function exist(
-  search?: <#=searchName#>,
-  options?: {
+  search?: Readonly<<#=searchName#>>,
+  options?: Readonly<{
     debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -2723,8 +2723,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -2736,16 +2738,17 @@ export async function exist(
  * @param {<#=Table_Up#>Id} id
  */
 export async function existById(
-  id?: <#=Table_Up#>Id | null,
-  options?: {
+  id?: Readonly<<#=Table_Up#>Id | null>,
+  options?: Readonly<{
     debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ) {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "existById";
   
@@ -2762,7 +2765,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from <#=mod#>_<#=table#> t where t.id = ${ args.push(id) }<#
+  const sql = `select 1 e from <#=mod#>_<#=table#> t where t.id=${ args.push(id) }<#
       if (hasIsDeleted) {
       #> and t.is_deleted = 0<#
       }
@@ -2795,7 +2798,7 @@ if (hasEnabled) {
 
 /** 校验<#=table_comment#>是否启用 */
 export async function validateIsEnabled(
-  model: <#=modelName#>,
+  model: Readonly<<#=modelName#>>,
 ) {
   if (model.is_enabled == 0) {
     throw `${ await ns("<#=table_comment#>") } ${ await ns("已禁用") }`;
@@ -2806,7 +2809,7 @@ export async function validateIsEnabled(
 
 /** 校验<#=table_comment#>是否存在 */
 export async function validateOption(
-  model?: <#=modelName#>,
+  model?: Readonly<<#=modelName#>>,
 ) {
   if (!model) {
     throw `${ await ns("<#=table_comment#>") } ${ await ns("不存在") }`;
@@ -2819,7 +2822,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: <#=inputName#>,
+  input: Readonly<<#=inputName#>>,
 ) {
   const fieldComments = await getFieldComments();<#
   for (let i = 0; i < columns.length; i++) {
@@ -3000,13 +3003,13 @@ export async function validate(
  * @return {Promise<<#=Table_Up#>Id>} 
  */
 export async function create(
-  input: <#=inputName#>,
-  options?: {
+  input: Readonly<<#=inputName#>>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<<#=Table_Up#>Id> {
   
   const table = "<#=mod#>_<#=table#>";
@@ -3021,8 +3024,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -3049,12 +3054,12 @@ export async function create(
  */
 export async function creates(
   inputs: <#=inputName#>[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<<#=Table_Up#>Id[]> {
   
   const table = "<#=mod#>_<#=table#>";
@@ -3069,8 +3074,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -3080,12 +3087,12 @@ export async function creates(
 
 async function _creates(
   inputs: <#=inputName#>[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<<#=Table_Up#>Id[]> {
   
   if (inputs.length === 0) {
@@ -3338,6 +3345,7 @@ async function _creates(
           }
           sql += `,${ args.push(usr_lbl) }`;
         } else if (input.create_usr_id as unknown as string === "-") {
+          sql += ",default";
           sql += ",default";
         } else {
           let usr_id: UsrId | undefined = input.create_usr_id;
@@ -3655,10 +3663,10 @@ if (hasTenant_id) {
  */
 export async function updateTenantById(
   id: <#=Table_Up#>Id,
-  tenant_id: TenantId,
-  options?: {
+  tenant_id: Readonly<TenantId>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "updateTenantById";
@@ -3716,9 +3724,9 @@ if (hasOrgId) {
  */
 export async function updateOrgById(
   id: <#=Table_Up#>Id,
-  org_id: OrgId,
-  options?: {
-  },
+  org_id: Readonly<OrgId>,
+  options?: Readonly<{
+  }>,
 ): Promise<number> {
   const table = "<#=mod#>_<#=table#>";
   const method = "updateOrgById";
@@ -3866,7 +3874,7 @@ export async function getEditableDataPermitsByIds(
 export async function updateById(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
     silentMode?: boolean;<#
@@ -3875,7 +3883,7 @@ export async function updateById(
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<<#=Table_Up#>Id> {
   
   const table = "<#=mod#>_<#=table#>";
@@ -4421,7 +4429,7 @@ export async function updateById(
     }<#
     }
     #>
-    sql += ` where id = ${ args.push(id) } limit 1`;<#
+    sql += ` where id=${ args.push(id) } limit 1`;<#
     if (cache) {
     #>
     
@@ -4478,17 +4486,22 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
-  options?: {
-    debug?: boolean;<#
+  options?: Readonly<{
+    debug?: boolean;
+    silentMode?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
     }
     #>
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -4567,7 +4580,44 @@ export async function deleteByIds(
     const args = new QueryArgs();<#
     if (hasIsDeleted) {
     #>
-    const sql = `update <#=mod#>_<#=table#> set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;<#
+    let sql = `update <#=mod#>_<#=table#> set is_deleted=1`;
+    if (!silentMode) {<#
+      if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
+      #>
+      const authModel = await getAuthModel();
+      let usr_id: UsrId | undefined = authModel?.id;<#
+      }
+      #><#
+      if (hasDeleteUsrId) {
+      #>
+      if (usr_id != null) {
+        sql += `,delete_usr_id=${ args.push(usr_id) }`;
+      }<#
+      }
+      #><#
+      if (hasDeleteUsrIdLbl) {
+      #>
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_lbl) {
+        sql += `,delete_usr_id_lbl=${ args.push(usr_lbl) }`;
+      }<#
+      }
+      #><#
+      if (hasDeleteTime) {
+      #>
+      sql += `,delete_time=${ args.push(reqDate()) }`;<#
+      }
+      #>
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;<#
     } else {
     #>
     const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) } limit 1`;<#
@@ -4664,9 +4714,10 @@ if (hasDefault) {
  */
 export async function defaultById(
   id: <#=Table_Up#>Id,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<number> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "defaultById";
   
@@ -4712,8 +4763,8 @@ if (hasEnabled) {
  */
 export async function getIsEnabledById(
   id: <#=Table_Up#>Id,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -4731,11 +4782,12 @@ export async function getIsEnabledById(
  */
 export async function enableByIds(
   ids: <#=Table_Up#>Id[],
-  is_enabled: 0 | 1,
-  options?: {
+  is_enabled: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "enableByIds";
   
@@ -4798,8 +4850,8 @@ if (hasLocked) {
  */
 export async function getIsLockedById(
   id: <#=Table_Up#>Id,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -4817,11 +4869,12 @@ export async function getIsLockedById(
  */
 export async function lockByIds(
   ids: <#=Table_Up#>Id[],
-  is_locked: 0 | 1,
-  options?: {
+  is_locked: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "lockByIds";
   
@@ -4874,10 +4927,11 @@ if (hasIsDeleted) {
  */
 export async function revertByIds(
   ids: <#=Table_Up#>Id[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "revertByIds";
   
@@ -4906,7 +4960,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: <#=Table_Up#>Id = ids[i];
     const args = new QueryArgs();
-    const sql = `update <#=mod#>_<#=table#> set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update <#=mod#>_<#=table#> set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -5024,10 +5078,11 @@ if (hasIsDeleted) {
  */
 export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "forceDeleteByIds";
   
@@ -5057,12 +5112,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from <#=mod#>_<#=table#> where id = ${ args.push(id) }`;
+      const sql = `select * from <#=mod#>_<#=table#> where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from <#=mod#>_<#=table#> where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }<#
@@ -5147,10 +5202,11 @@ if (hasOrderBy) {
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "findLastOrderBy";
   

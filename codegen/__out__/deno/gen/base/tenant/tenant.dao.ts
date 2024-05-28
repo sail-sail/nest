@@ -83,17 +83,14 @@ const route_path = "/base/tenant";
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
-  search?: TenantSearch,
-  options?: {
-  },
+  search?: Readonly<TenantSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
-  }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
   }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
@@ -104,17 +101,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.domain_ids != null && !Array.isArray(search?.domain_ids)) {
-    search.domain_ids = [ search.domain_ids ];
-  }
   if (search?.domain_ids != null) {
     whereQuery += ` and base_domain.id in ${ args.push(search.domain_ids) }`;
   }
   if (search?.domain_ids_is_null) {
     whereQuery += ` and base_domain.id is null`;
-  }
-  if (search?.menu_ids != null && !Array.isArray(search?.menu_ids)) {
-    search.menu_ids = [ search.menu_ids ];
   }
   if (search?.menu_ids != null) {
     whereQuery += ` and base_menu.id in ${ args.push(search.menu_ids) }`;
@@ -122,14 +113,8 @@ async function getWhereQuery(
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
-  if (search?.is_locked != null && !Array.isArray(search?.is_locked)) {
-    search.is_locked = [ search.is_locked ];
-  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
-  }
-  if (search?.is_enabled != null && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
   }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
@@ -148,17 +133,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
-  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
-  }
-  if (search?.create_usr_id_lbl != null && !Array.isArray(search?.create_usr_id_lbl)) {
-    search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
   }
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
@@ -171,17 +150,11 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
-  }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
-  }
-  if (search?.update_usr_id_lbl != null && !Array.isArray(search?.update_usr_id_lbl)) {
-    search.update_usr_id_lbl = [ search.update_usr_id_lbl ];
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
@@ -200,9 +173,9 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: TenantSearch,
-  options?: {
-  },
+  search?: Readonly<TenantSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_tenant t
@@ -245,10 +218,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: TenantSearch,
-  options?: {
+  search?: Readonly<TenantSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_tenant";
   const method = "findCount";
@@ -290,13 +263,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: TenantSearch,
-  page?: PageInput,
+  search?: Readonly<TenantSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<TenantModel[]> {
   const table = "base_tenant";
   const method = "findAll";
@@ -688,10 +661,10 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
  * @param {TenantInput} search0
  */
 export async function findByUnique(
-  search0: TenantInput,
-  options?: {
+  search0: Readonly<TenantInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<TenantModel[]> {
   
   const table = "base_tenant";
@@ -738,8 +711,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: TenantModel,
-  input: TenantInput,
+  oldModel: Readonly<TenantModel>,
+  input: Readonly<TenantInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -760,11 +733,11 @@ export function equalsByUnique(
  * @return {Promise<TenantId | undefined>}
  */
 export async function checkByUnique(
-  input: TenantInput,
-  oldModel: TenantModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<TenantInput>,
+  oldModel: Readonly<TenantModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<TenantId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -794,12 +767,13 @@ export async function checkByUnique(
  * @param {TenantSearch} search?
  */
 export async function findOne(
-  search?: TenantSearch,
+  search?: Readonly<TenantSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<TenantModel | undefined> {
+  
   const table = "base_tenant";
   const method = "findOne";
   
@@ -815,8 +789,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -837,12 +813,14 @@ export async function findOne(
  */
 export async function findById(
   id?: TenantId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<TenantModel | undefined> {
+  
   const table = "base_tenant";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -852,8 +830,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -874,12 +854,14 @@ export async function findById(
 /** 根据 ids 查找租户 */
 export async function findByIds(
   ids: TenantId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<TenantModel[]> {
+  
   const table = "base_tenant";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -889,8 +871,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -926,13 +910,15 @@ export async function findByIds(
  * @param {TenantSearch} search?
  */
 export async function exist(
-  search?: TenantSearch,
-  options?: {
+  search?: Readonly<TenantSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "base_tenant";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -942,8 +928,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -955,11 +943,12 @@ export async function exist(
  * @param {TenantId} id
  */
 export async function existById(
-  id?: TenantId | null,
-  options?: {
+  id?: Readonly<TenantId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "base_tenant";
   const method = "existById";
   
@@ -976,7 +965,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from base_tenant t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from base_tenant t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -995,7 +984,7 @@ export async function existById(
 
 /** 校验租户是否启用 */
 export async function validateIsEnabled(
-  model: TenantModel,
+  model: Readonly<TenantModel>,
 ) {
   if (model.is_enabled == 0) {
     throw `${ await ns("租户") } ${ await ns("已禁用") }`;
@@ -1004,7 +993,7 @@ export async function validateIsEnabled(
 
 /** 校验租户是否存在 */
 export async function validateOption(
-  model?: TenantModel,
+  model?: Readonly<TenantModel>,
 ) {
   if (!model) {
     throw `${ await ns("租户") } ${ await ns("不存在") }`;
@@ -1017,7 +1006,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: TenantInput,
+  input: Readonly<TenantInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -1070,13 +1059,13 @@ export async function validate(
  * @return {Promise<TenantId>} 
  */
 export async function create(
-  input: TenantInput,
-  options?: {
+  input: Readonly<TenantInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<TenantId> {
   
   const table = "base_tenant";
@@ -1091,8 +1080,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -1119,12 +1110,12 @@ export async function create(
  */
 export async function creates(
   inputs: TenantInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<TenantId[]> {
   
   const table = "base_tenant";
@@ -1139,8 +1130,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -1150,12 +1143,12 @@ export async function creates(
 
 async function _creates(
   inputs: TenantInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<TenantId[]> {
   
   if (inputs.length === 0) {
@@ -1259,6 +1252,7 @@ async function _creates(
           }
           sql += `,${ args.push(usr_lbl) }`;
         } else if (input.create_usr_id as unknown as string === "-") {
+          sql += ",default";
           sql += ",default";
         } else {
           let usr_id: UsrId | undefined = input.create_usr_id;
@@ -1379,11 +1373,11 @@ export async function delCache() {
 export async function updateById(
   id: TenantId,
   input: TenantInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<TenantId> {
   
   const table = "base_tenant";
@@ -1553,7 +1547,7 @@ export async function updateById(
         sql += `update_time = ${ args.push(reqDate()) }`;
       }
     }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
@@ -1582,12 +1576,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: TenantId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "base_tenant";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1614,7 +1613,11 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update base_tenant set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update base_tenant set is_deleted=1`;
+    if (!silentMode) {
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1632,8 +1635,8 @@ export async function deleteByIds(
  */
 export async function getIsEnabledById(
   id: TenantId,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -1651,11 +1654,12 @@ export async function getIsEnabledById(
  */
 export async function enableByIds(
   ids: TenantId[],
-  is_enabled: 0 | 1,
-  options?: {
+  is_enabled: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_tenant";
   const method = "enableByIds";
   
@@ -1700,8 +1704,8 @@ export async function enableByIds(
  */
 export async function getIsLockedById(
   id: TenantId,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -1719,11 +1723,12 @@ export async function getIsLockedById(
  */
 export async function lockByIds(
   ids: TenantId[],
-  is_locked: 0 | 1,
-  options?: {
+  is_locked: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_tenant";
   const method = "lockByIds";
   
@@ -1764,10 +1769,11 @@ export async function lockByIds(
  */
 export async function revertByIds(
   ids: TenantId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_tenant";
   const method = "revertByIds";
   
@@ -1792,7 +1798,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: TenantId = ids[i];
     const args = new QueryArgs();
-    const sql = `update base_tenant set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update base_tenant set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1825,10 +1831,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: TenantId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_tenant";
   const method = "forceDeleteByIds";
   
@@ -1854,12 +1861,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from base_tenant where id = ${ args.push(id) }`;
+      const sql = `select * from base_tenant where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from base_tenant where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from base_tenant where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1874,10 +1881,11 @@ export async function forceDeleteByIds(
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_tenant";
   const method = "findLastOrderBy";
   

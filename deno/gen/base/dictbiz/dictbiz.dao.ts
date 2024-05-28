@@ -96,9 +96,9 @@ const route_path = "/base/dictbiz";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: DictbizSearch,
-  options?: {
-  },
+  search?: Readonly<DictbizSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -115,9 +115,6 @@ async function getWhereQuery(
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
-  }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
@@ -133,20 +130,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.type != null && !Array.isArray(search?.type)) {
-    search.type = [ search.type ];
-  }
   if (search?.type != null) {
     whereQuery += ` and t.type in ${ args.push(search.type) }`;
   }
-  if (search?.is_locked != null && !Array.isArray(search?.is_locked)) {
-    search.is_locked = [ search.is_locked ];
-  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
-  }
-  if (search?.is_enabled != null && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
   }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
@@ -165,17 +153,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
-  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
-  }
-  if (search?.create_usr_id_lbl != null && !Array.isArray(search?.create_usr_id_lbl)) {
-    search.create_usr_id_lbl = [ search.create_usr_id_lbl ];
   }
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
@@ -188,17 +170,11 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
-  }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
-  }
-  if (search?.update_usr_id_lbl != null && !Array.isArray(search?.update_usr_id_lbl)) {
-    search.update_usr_id_lbl = [ search.update_usr_id_lbl ];
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
@@ -217,9 +193,9 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: DictbizSearch,
-  options?: {
-  },
+  search?: Readonly<DictbizSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   let fromQuery = `base_dictbiz t`;
   return fromQuery;
@@ -231,10 +207,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: DictbizSearch,
-  options?: {
+  search?: Readonly<DictbizSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_dictbiz";
   const method = "findCount";
@@ -276,13 +252,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: DictbizSearch,
-  page?: PageInput,
+  search?: Readonly<DictbizSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<DictbizModel[]> {
   const table = "base_dictbiz";
   const method = "findAll";
@@ -586,10 +562,10 @@ export async function getFieldComments(): Promise<DictbizFieldComment> {
  * @param {DictbizInput} search0
  */
 export async function findByUnique(
-  search0: DictbizInput,
-  options?: {
+  search0: Readonly<DictbizInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<DictbizModel[]> {
   
   const table = "base_dictbiz";
@@ -646,8 +622,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: DictbizModel,
-  input: DictbizInput,
+  oldModel: Readonly<DictbizModel>,
+  input: Readonly<DictbizInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -673,11 +649,11 @@ export function equalsByUnique(
  * @return {Promise<DictbizId | undefined>}
  */
 export async function checkByUnique(
-  input: DictbizInput,
-  oldModel: DictbizModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<DictbizInput>,
+  oldModel: Readonly<DictbizModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<DictbizId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -707,12 +683,13 @@ export async function checkByUnique(
  * @param {DictbizSearch} search?
  */
 export async function findOne(
-  search?: DictbizSearch,
+  search?: Readonly<DictbizSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<DictbizModel | undefined> {
+  
   const table = "base_dictbiz";
   const method = "findOne";
   
@@ -728,8 +705,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -750,12 +729,14 @@ export async function findOne(
  */
 export async function findById(
   id?: DictbizId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<DictbizModel | undefined> {
+  
   const table = "base_dictbiz";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -765,8 +746,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -787,12 +770,14 @@ export async function findById(
 /** 根据 ids 查找业务字典 */
 export async function findByIds(
   ids: DictbizId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<DictbizModel[]> {
+  
   const table = "base_dictbiz";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -802,8 +787,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -839,13 +826,15 @@ export async function findByIds(
  * @param {DictbizSearch} search?
  */
 export async function exist(
-  search?: DictbizSearch,
-  options?: {
+  search?: Readonly<DictbizSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "base_dictbiz";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -855,8 +844,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -868,11 +859,12 @@ export async function exist(
  * @param {DictbizId} id
  */
 export async function existById(
-  id?: DictbizId | null,
-  options?: {
+  id?: Readonly<DictbizId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "base_dictbiz";
   const method = "existById";
   
@@ -889,7 +881,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from base_dictbiz t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from base_dictbiz t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -908,7 +900,7 @@ export async function existById(
 
 /** 校验业务字典是否启用 */
 export async function validateIsEnabled(
-  model: DictbizModel,
+  model: Readonly<DictbizModel>,
 ) {
   if (model.is_enabled == 0) {
     throw `${ await ns("业务字典") } ${ await ns("已禁用") }`;
@@ -917,7 +909,7 @@ export async function validateIsEnabled(
 
 /** 校验业务字典是否存在 */
 export async function validateOption(
-  model?: DictbizModel,
+  model?: Readonly<DictbizModel>,
 ) {
   if (!model) {
     throw `${ await ns("业务字典") } ${ await ns("不存在") }`;
@@ -930,7 +922,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: DictbizInput,
+  input: Readonly<DictbizInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -997,13 +989,13 @@ export async function validate(
  * @return {Promise<DictbizId>} 
  */
 export async function create(
-  input: DictbizInput,
-  options?: {
+  input: Readonly<DictbizInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<DictbizId> {
   
   const table = "base_dictbiz";
@@ -1018,8 +1010,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -1046,12 +1040,12 @@ export async function create(
  */
 export async function creates(
   inputs: DictbizInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<DictbizId[]> {
   
   const table = "base_dictbiz";
@@ -1066,8 +1060,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -1077,12 +1073,12 @@ export async function creates(
 
 async function _creates(
   inputs: DictbizInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<DictbizId[]> {
   
   if (inputs.length === 0) {
@@ -1203,6 +1199,7 @@ async function _creates(
           sql += `,${ args.push(usr_lbl) }`;
         } else if (input.create_usr_id as unknown as string === "-") {
           sql += ",default";
+          sql += ",default";
         } else {
           let usr_id: UsrId | undefined = input.create_usr_id;
           let usr_lbl = "";
@@ -1312,10 +1309,10 @@ export async function delCache() {
  */
 export async function updateTenantById(
   id: DictbizId,
-  tenant_id: TenantId,
-  options?: {
+  tenant_id: Readonly<TenantId>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_dictbiz";
   const method = "updateTenantById";
@@ -1363,11 +1360,11 @@ export async function updateTenantById(
 export async function updateById(
   id: DictbizId,
   input: DictbizInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
     silentMode?: boolean;
-  },
+  }>,
 ): Promise<DictbizId> {
   
   const table = "base_dictbiz";
@@ -1550,7 +1547,7 @@ export async function updateById(
         sql += `update_time = ${ args.push(reqDate()) }`;
       }
     }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
@@ -1579,12 +1576,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: DictbizId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "base_dictbiz";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1611,7 +1613,11 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update base_dictbiz set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update base_dictbiz set is_deleted=1`;
+    if (!silentMode) {
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1635,8 +1641,8 @@ export async function deleteByIds(
  */
 export async function getIsEnabledById(
   id: DictbizId,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -1654,11 +1660,12 @@ export async function getIsEnabledById(
  */
 export async function enableByIds(
   ids: DictbizId[],
-  is_enabled: 0 | 1,
-  options?: {
+  is_enabled: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_dictbiz";
   const method = "enableByIds";
   
@@ -1703,8 +1710,8 @@ export async function enableByIds(
  */
 export async function getIsLockedById(
   id: DictbizId,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -1722,11 +1729,12 @@ export async function getIsLockedById(
  */
 export async function lockByIds(
   ids: DictbizId[],
-  is_locked: 0 | 1,
-  options?: {
+  is_locked: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_dictbiz";
   const method = "lockByIds";
   
@@ -1767,10 +1775,11 @@ export async function lockByIds(
  */
 export async function revertByIds(
   ids: DictbizId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_dictbiz";
   const method = "revertByIds";
   
@@ -1795,7 +1804,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: DictbizId = ids[i];
     const args = new QueryArgs();
-    const sql = `update base_dictbiz set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update base_dictbiz set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1835,10 +1844,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: DictbizId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_dictbiz";
   const method = "forceDeleteByIds";
   
@@ -1864,12 +1874,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from base_dictbiz where id = ${ args.push(id) }`;
+      const sql = `select * from base_dictbiz where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from base_dictbiz where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from base_dictbiz where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1891,10 +1901,11 @@ export async function forceDeleteByIds(
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_dictbiz";
   const method = "findLastOrderBy";
   

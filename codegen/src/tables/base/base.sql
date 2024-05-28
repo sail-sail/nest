@@ -40,6 +40,8 @@ CREATE TABLE if not exists `base_domain` (
   `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `is_deleted`),
   PRIMARY KEY (`id`)

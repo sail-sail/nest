@@ -99,6 +99,10 @@ async function getSchema0(
   const hasUpdateTime = records.some((item: TableCloumn) => [ "update_time" ].includes(item.COLUMN_NAME));
   const hasUpdateUsrId = records.some((item: TableCloumn) => [ "update_usr_id" ].includes(item.COLUMN_NAME));
   const hasUpdateUsrIdLbl = records.some((item: TableCloumn) => [ "update_usr_id_lbl" ].includes(item.COLUMN_NAME));
+  const hasIsDeleted = records.some((item: TableCloumn) => [ "is_deleted" ].includes(item.COLUMN_NAME));
+  const hasDeleteUsrId = records.some((item: TableCloumn) => [ "delete_usr_id" ].includes(item.COLUMN_NAME));
+  const hasDeleteUsrIdLbl = records.some((item: TableCloumn) => [ "delete_usr_id_lbl" ].includes(item.COLUMN_NAME));
+  const hasDeleteTime = records.some((item: TableCloumn) => [ "delete_time" ].includes(item.COLUMN_NAME));
   const hasVersion = records.some((item: TableCloumn) => [ "version" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
@@ -531,9 +535,25 @@ async function getSchema0(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasUpdateUsrId = true;
   }
-  if (hasCreateUsrIdLbl && tables[table_name]?.opts?.hasUpdateUsrIdLbl == null) {
+  if (hasUpdateUsrIdLbl && tables[table_name]?.opts?.hasUpdateUsrIdLbl == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasUpdateUsrIdLbl = true;
+  }
+  if (hasIsDeleted && tables[table_name]?.opts?.hasIsDeleted == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasIsDeleted = true;
+  }
+  if (hasDeleteUsrId && tables[table_name]?.opts?.hasDeleteUsrId == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasDeleteUsrId = true;
+  }
+  if (hasDeleteUsrIdLbl && tables[table_name]?.opts?.hasDeleteUsrIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasDeleteUsrIdLbl = true;
+  }
+  if (hasDeleteTime && tables[table_name]?.opts?.hasDeleteTime == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasDeleteTime = true;
   }
   if (hasVersion && tables[table_name]?.opts?.hasVersion == null) {
     tables[table_name].opts = tables[table_name].opts || { };
