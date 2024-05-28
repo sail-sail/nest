@@ -5,7 +5,7 @@
   un-w="full"
   class="custom_select_div"
   :class="{
-    custom_select_isShowModelLabel: isShowModelLabel && inited,
+    'custom_select_isShowModelLabel': isShowModelLabel && inited,
   }"
 >
   <ElSelectV2
@@ -26,7 +26,6 @@
     class="custom_select"
     :class="{
       'custom_select_space_normal': true,
-      dictbiz_select_isShowModelLabel: isShowModelLabel && inited,
     }"
     @change="onValueChange"
     :multiple="props.multiple"
@@ -80,7 +79,7 @@
     class="custom_select_readonly"
     :class="{
       'custom_select_placeholder': shouldShowPlaceholder,
-      custom_select_isShowModelLabel: isShowModelLabel,
+      'custom_select_isShowModelLabel': isShowModelLabel,
     }"
     v-bind="$attrs"
   >
@@ -88,6 +87,13 @@
       v-if="modelLabels.length === 0"
     >
       <span
+        v-if="isShowModelLabel && props.modelLabel"
+        class="custom_select_readonly"
+      >
+        {{ props.modelLabel || "" }}
+      </span>
+      <span
+        v-else
         class="custom_select_placeholder"
       >
         {{ props.readonlyPlaceholder ?? "" }}
@@ -189,6 +195,13 @@
       v-if="!modelLabels[0]"
     >
       <span
+        v-if="isShowModelLabel && props.modelLabel"
+        class="custom_select_readonly"
+      >
+        {{ props.modelLabel || "" }}
+      </span>
+      <span
+        v-else
         class="custom_select_placeholder"
       >
         {{ props.readonlyPlaceholder ?? "" }}
@@ -426,7 +439,7 @@ const isShowModelLabel = $computed(() => {
   }
   if (!props.multiple) {
     if (modelValue == null || modelValue === "") {
-      return false;
+      return true;
     }
     const item = options4SelectV2.find((item: OptionType) => item.value === modelValue);
     if (!item || item.label !== modelLabel) {
@@ -436,7 +449,7 @@ const isShowModelLabel = $computed(() => {
     return false;
   } else {
     if (modelValue == null || modelValue.length === 0) {
-      return false;
+      return true;
     }
     const labels: string[] = modelLabel.split(",")
       .filter((item: string) => item)
@@ -727,6 +740,14 @@ defineExpose({
 });
 </script>
 
+<style lang="scss">
+.custom_select_isShowModelLabel {
+  .el-select__placeholder,.custom_select_readonly {
+    color: red;
+  }
+}
+</style>
+
 <style scoped lang="scss">
 .custom_select_div,.custom_select_readonly {
   :deep(.el-tag) {
@@ -752,11 +773,6 @@ defineExpose({
     line-height: normal;
     white-space: normal;
     top: calc(50% - 2px);
-  }
-}
-.custom_select_isShowModelLabel {
-  :deep(.el-select__placeholder),.custom_select_readonly {
-    color: red;
   }
 }
 </style>
