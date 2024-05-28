@@ -1034,7 +1034,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "可信域名",
       prop: "domain_id_lbl",
-      sortBy: "domain_id",
+      sortBy: "domain_id_lbl",
       width: 220,
       align: "left",
       headerAlign: "center",
