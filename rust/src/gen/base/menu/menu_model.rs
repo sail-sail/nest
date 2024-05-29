@@ -214,42 +214,67 @@ pub struct MenuSearch {
   pub ids: Option<Vec<MenuId>>,
   pub is_deleted: Option<u8>,
   /// 父菜单
+  #[graphql(name = "parent_id")]
   pub parent_id: Option<Vec<MenuId>>,
   /// 父菜单
+  #[graphql(name = "parent_id_save_null")]
   pub parent_id_is_null: Option<bool>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 路由
+  #[graphql(skip)]
   pub route_path: Option<String>,
   /// 路由
+  #[graphql(skip)]
   pub route_path_like: Option<String>,
   /// 参数
+  #[graphql(skip)]
   pub route_query: Option<String>,
   /// 参数
+  #[graphql(skip)]
   pub route_query_like: Option<String>,
   /// 锁定
+  #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
+  #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
+  #[graphql(skip)]
   pub rem: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
+  #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
+  #[graphql(skip)]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
@@ -470,10 +495,14 @@ impl From<MenuInput> for MenuSearch {
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

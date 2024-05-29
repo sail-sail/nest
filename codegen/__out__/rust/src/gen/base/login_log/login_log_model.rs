@@ -196,18 +196,25 @@ pub struct LoginLogSearch {
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: Option<Vec<LoginLogType>>,
   /// 用户名
+  #[graphql(name = "username")]
   pub username: Option<String>,
   /// 用户名
+  #[graphql(name = "username_like")]
   pub username_like: Option<String>,
   /// 登录成功
+  #[graphql(name = "is_succ")]
   pub is_succ: Option<Vec<u8>>,
   /// IP
+  #[graphql(name = "ip")]
   pub ip: Option<String>,
   /// IP
+  #[graphql(name = "ip_like")]
   pub ip_like: Option<String>,
   /// 登录时间
+  #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 创建人
   #[graphql(skip)]
@@ -215,12 +222,18 @@ pub struct LoginLogSearch {
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -397,8 +410,12 @@ impl From<LoginLogInput> for LoginLogSearch {
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()
