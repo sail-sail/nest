@@ -237,6 +237,9 @@ export class Context {
   /** token */
   authorization: string | null | undefined;
   
+  /** 静默模式 */
+  silentMode = false;
+  
   constructor(oakCtx?: OakContext) {
     this.oakCtx = oakCtx;
     const dateNow = new Date();
