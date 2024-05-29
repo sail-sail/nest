@@ -183,6 +183,7 @@ use crate::common::context::{
   get_page_query,
   del_caches,
   get_is_debug,
+  get_silent_mode,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -205,6 +206,8 @@ use crate::src::base::dictbiz_detail::dictbiz_detail_dao::get_dictbiz;<#
 #>
 
 use super::<#=table#>_model::*;<#
+const findByIdTableUps = [ ];
+const findOneTableUps = [ ];
 const findAllTableUps = [ ];
 const createTableUps = [ ];
 const deleteByIdsTableUps = [ ];
@@ -526,6 +529,22 @@ for (let i = 0; i < columns.length; i++) {
 #>
 use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=modelId#>;<#
 }
+#><#
+if (
+  (
+    (hasCreateUsrId && hasCreateUsrIdLbl)
+    || (hasUpdateUsrId && hasUpdateUsrIdLbl)
+  )
+  && !findByIdTableUps.includes(Table_Up)
+) {
+  const hasFindByIdTableUps = findByIdTableUps.includes(Table_Up);
+  if (!hasFindByIdTableUps) {
+    findByIdTableUps.push(Table_Up);
+  }
+#>
+
+use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;<#
+}
 #>
 
 #[allow(unused_variables)]
@@ -563,7 +582,7 @@ async fn get_where_query(
   let mut where_query = String::with_capacity(80 * <#=columns.length#> * 2);<#
   if (hasIsDeleted) {
   #>
-  where_query.push_str(" t.is_deleted = ?");
+  where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());<#
   }
   #>
@@ -573,7 +592,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(id) = id {
-      where_query.push_str(" and t.id = ?");
+      where_query.push_str(" and t.id=?");
       args.push(id.into());
     }
   }
@@ -604,7 +623,7 @@ async fn get_where_query(
   #>
   if !has_tenant_permit && !has_dept_permit && !has_role_permit && has_create_permit {
     let usr_id = get_auth_id().unwrap_or_default();
-    where_query.push_str(" and t.create_usr_id = ?");
+    where_query.push_str(" and t.create_usr_id=?");
     args.push(usr_id.into());
   } else if !has_tenant_permit && has_dept_parent_permit {
     let dept_ids = get_auth_and_parents_dept_ids().await?;
@@ -662,7 +681,7 @@ async fn get_where_query(
       tenant_id
     };
     if let Some(tenant_id) = tenant_id {
-      where_query.push_str(" and t.tenant_id = ?");
+      where_query.push_str(" and t.tenant_id=?");
       args.push(tenant_id.into());
     }
   }<#
@@ -686,7 +705,7 @@ async fn get_where_query(
       org_id
     };
     if let Some(org_id) = org_id {
-      where_query.push_str(" and t.org_id = ?");
+      where_query.push_str(" and t.org_id=?");
       args.push(org_id.into());
     }
   }<#
@@ -721,6 +740,8 @@ async fn get_where_query(
     const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const modelLabel = column.modelLabel;
+    const modelLabel_rust = rustKeyEscape(modelLabel);
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
     if (foreignKey && foreignKey.multiple) {
@@ -802,7 +823,7 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query.push_str(" and <#=column_name#>_lbl.id in (");
+      where_query.push_str(" and t.<#=column_name#> in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
@@ -813,9 +834,36 @@ async fn get_where_query(
       None => false,
     };
     if <#=column_name#>_is_null {
-      where_query.push_str(" and <#=column_name#>_lbl.id is null");
+      where_query.push_str(" and t.<#=column_name#> is null");
     }
   }<#
+    if (modelLabel) {
+  #>
+  {
+    let <#=modelLabel_rust#>: Option<Vec<String>> = match search {
+      Some(item) => item.<#=modelLabel_rust#>.clone(),
+      None => None,
+    };
+    if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
+      let arg = {
+        if <#=modelLabel_rust#>.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
+          for item in <#=modelLabel_rust#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.<#=modelLabel#> in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }<#
+    }
+  #><#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   // <#=column_comment#>
@@ -848,7 +896,7 @@ async fn get_where_query(
       None => false,
     };
     if <#=column_name#>_is_null {
-      where_query.push_str(" and <#=column_name#>_lbl.id is null");
+      where_query.push_str(" and t.<#=column_name#> is null");
     }
   }<#
     } else if (column.dict || column.dictbiz) {
@@ -902,7 +950,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
-      where_query.push_str(" and t.<#=column_name#> = ?");
+      where_query.push_str(" and t.<#=column_name#>=?");
       args.push(<#=column_name_rust#>.into());
     }
   }<#
@@ -1010,93 +1058,69 @@ async fn get_from_query(
   #> mut<#
   }
   #> from_query = r#"<#=mod#>_<#=table#> t<#
-    let fromQueryIsDeletedNum = 0;
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (column.isVirtual) continue;
-      const column_name = column.COLUMN_NAME;
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      if (!foreignKey) continue;
-      const foreignTable = foreignKey.table;
-      const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-      const many2many = column.many2many;
-      let modelLabel = column.modelLabel;
-      let cascade_fields = [ ];
-      if (foreignKey) {
-        cascade_fields = foreignKey.cascade_fields || [ ];
-        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
-        } else if (modelLabel) {
-          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
-        }
-      }
-      if (foreignKey && foreignKey.lbl && !modelLabel) {
-        modelLabel = column_name + "_" + foreignKey.lbl;
-      } else if (!foreignKey && !modelLabel) {
-        modelLabel = column_name + "_lbl";
-      }
-      let hasModelLabel = !!column.modelLabel;
-      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
-        hasModelLabel = true;
-      } else if (foreignKey && foreignKey.lbl) {
-        hasModelLabel = true;
-      }
-    #><#
-      if (foreignKey.type === "many2many") {
-    #>
-    left join <#=many2many.mod#>_<#=many2many.table#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>=t.id<#
-      if (hasIsDeleted) {
-        fromQueryIsDeletedNum++;
-      #>
-      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted = ?<#
-      }
-      #>
-    left join <#=foreignKey.mod#>_<#=foreignTable#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#> = <#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
-      if (hasIsDeleted) {
-        fromQueryIsDeletedNum++;
-      #>
-      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted=?<#
-      }
-      #>
-    left join (select
-    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
-      if (foreignKey.lbl) {
-    #>
-    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
-      }
-    #><#
-      for (let j = 0; j < cascade_fields.length; j++) {
-        const cascade_field = cascade_fields[j];
-    #>
-    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#>,<#
-      }
-    #>
-    <#=mod#>_<#=table#>.id <#=many2many.column1#>
-    from <#=foreignKey.mod#>_<#=many2many.table#>
-    inner join <#=foreignKey.mod#>_<#=foreignKey.table#>
-      on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
-    inner join <#=mod#>_<#=table#>
-      on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>
-    where<#
+  let fromQueryIsDeletedNum = 0;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    const foreignKey = column.foreignKey;
+    let data_type = column.DATA_TYPE;
+    if (!foreignKey) continue;
+    const foreignTable = foreignKey.table;
+    const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    const modelLabel = column.modelLabel;
+    let cascade_fields = foreignKey.cascade_fields || [ ];
+    if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+      cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+    }
+  #><#
+    if (foreignKey.type === "many2many") {
+  #>
+  left join <#=many2many.mod#>_<#=many2many.table#> on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>=t.id<#
     if (hasIsDeleted) {
       fromQueryIsDeletedNum++;
-    #>
-      <#=many2many.mod#>_<#=many2many.table#>.is_deleted=?<#
+    #> and <#=many2many.mod#>_<#=many2many.table#>.is_deleted=?<#
     }
     #>
-    group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
-      } else if (!foreignKey.multiple) {
+  left join <#=foreignKey.mod#>_<#=foreignTable#> on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>=<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
+    if (hasIsDeleted) {
+      fromQueryIsDeletedNum++;
+    #> and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted=?<#
+    }
     #>
-    left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl
-      on <#=column_name#>_lbl.<#=foreignKey.column#> = t.<#=column_name#><#
+  left join (select json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
+    if (foreignKey.lbl && !modelLabel) {
+  #>
+  json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
+    }
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+  #>
+  json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#>,<#
+    }
+  #>
+  <#=mod#>_<#=table#>.id <#=many2many.column1#> from <#=foreignKey.mod#>_<#=many2many.table#>
+  inner join <#=foreignKey.mod#>_<#=foreignKey.table#> on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
+  inner join <#=mod#>_<#=table#> on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
+  if (hasIsDeleted) {
+    fromQueryIsDeletedNum++;
+  #> where <#=many2many.mod#>_<#=many2many.table#>.is_deleted=?<#
+  }
+  #>
+  group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
+    } else if (foreignKey && !foreignKey.multiple) {
+      if (modelLabel) {
+        continue;
       }
-    #><#
+  #>
+  left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl on <#=column_name#>_lbl.<#=foreignKey.column#>=t.<#=column_name#><#
     }
-    #>"#.to_owned();<#
+  #><#
+  }
+  #>"#.to_owned();<#
   if (hasIsDeleted && hasMany2many) {
     for (let i = 0; i < fromQueryIsDeletedNum; i++) {
   #>
@@ -1107,10 +1131,10 @@ async fn get_from_query(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if !has_tenant_permit && has_dept_permit {
-    from_query += r#" left join base_usr_dept _permit_usr_dept_ on _permit_usr_dept_.usr_id  = t.create_usr_id"#;
+    from_query += r#" left join base_usr_dept _permit_usr_dept_ on _permit_usr_dept_.usr_id=t.create_usr_id"#;
   }
   if !has_tenant_permit && has_role_permit {
-    from_query += r#" left join base_usr_role _permit_usr_role_ on _permit_usr_role_.usr_id  = t.create_usr_id"#;
+    from_query += r#" left join base_usr_role _permit_usr_role_ on _permit_usr_role_.usr_id=t.create_usr_id"#;
   }<#
   }
   #>
@@ -1273,71 +1297,71 @@ pub async fn find_all(
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*<#
-      for (let i = 0; i < columns.length; i++) {
-        const column = columns[i];
-        if (column.ignoreCodegen) continue;
-        if (column.isVirtual) continue;
-        const column_name = column.COLUMN_NAME;
-        const foreignKey = column.foreignKey;
-        let data_type = column.DATA_TYPE;
-        if (!foreignKey) continue;
-        const foreignTable = foreignKey.table;
-        const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-        const many2many = column.many2many;
-        let modelLabel = column.modelLabel;
-        let cascade_fields = [ ];
-        if (foreignKey) {
-          cascade_fields = foreignKey.cascade_fields || [ ];
-          if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-            cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
-          } else if (modelLabel) {
-            cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
-          }
-        }
-        if (foreignKey && foreignKey.lbl && !modelLabel) {
-          modelLabel = column_name + "_" + foreignKey.lbl;
-        } else if (!foreignKey && !modelLabel) {
-          modelLabel = column_name + "_lbl";
-        }
-        let hasModelLabel = !!column.modelLabel;
-        if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
-          hasModelLabel = true;
-        } else if (foreignKey && foreignKey.lbl) {
-          hasModelLabel = true;
-        }
-      #><#
-        if (foreignKey.type === "many2many") {
-      #>
-      ,max(<#=column_name#>) <#=column_name#><#
-        if (!column.modelLabel && modelLabel) {
-      #>
-      ,max(<#=modelLabel#>) <#=modelLabel#><#
-        }
-      #><#
-        for (let j = 0; j < cascade_fields.length; j++) {
-          const cascade_field = cascade_fields[j];
-      #>
-      ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
-        }
-      #><#
-      } else {
-      #><#
-        if (!column.modelLabel && foreignKey.lbl) {
-      #>
-      ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=modelLabel#><#
-        }
-      #><#
-        for (let j = 0; j < cascade_fields.length; j++) {
-          const cascade_field = cascade_fields[j];
-      #>
-      ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
-        }
-      #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    const foreignKey = column.foreignKey;
+    let data_type = column.DATA_TYPE;
+    if (!foreignKey) continue;
+    const foreignTable = foreignKey.table;
+    const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    let modelLabel = column.modelLabel;
+    let cascade_fields = [ ];
+    if (foreignKey) {
+      cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+      } else if (modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
       }
-      #><#
-      }
-      #>
-    from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
+    }
+    if (foreignKey && foreignKey.lbl && !modelLabel) {
+      modelLabel = column_name + "_" + foreignKey.lbl;
+    } else if (!foreignKey && !modelLabel) {
+      modelLabel = column_name + "_lbl";
+    }
+    let hasModelLabel = !!column.modelLabel;
+    if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+      hasModelLabel = true;
+    } else if (foreignKey && foreignKey.lbl) {
+      hasModelLabel = true;
+    }
+  #><#
+    if (foreignKey.type === "many2many") {
+  #>
+  ,max(<#=column_name#>) <#=column_name#><#
+    if (!column.modelLabel && modelLabel) {
+  #>
+  ,max(<#=modelLabel#>) <#=modelLabel#><#
+    }
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+  #>
+  ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
+    }
+  #><#
+  } else {
+  #><#
+    if (!column.modelLabel && foreignKey.lbl) {
+  #>
+  ,<#=column_name#>_lbl.<#=foreignKey.lbl#> <#=modelLabel#><#
+    }
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+  #>
+  ,max(<#=column_name#>_<#=cascade_field#>) <#=column_name#>_<#=cascade_field#><#
+    }
+  #><#
+  }
+  #><#
+  }
+  #>
+  from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
   
@@ -2866,6 +2890,8 @@ async fn _creates(
   
   let table = "<#=mod#>_<#=table#>";
   
+  let silent_mode = get_silent_mode(options.as_ref());
+  
   let unique_type = options.as_ref()
     .and_then(|item|
       item.get_unique_type()
@@ -2943,23 +2969,38 @@ async fn _creates(
   let mut args = QueryArgs::new();
   let mut sql_fields = String::with_capacity(80 * <#=columns.length#> + 20);
   
-  sql_fields += "id<#
+  sql_fields += "id";<#
   if (hasCreateTime) {
-  #>,create_time<#
+  #>
+  if !silent_mode {
+    sql_fields += ",create_time";
+  }<#
   }
   #><#
   if (hasCreateUsrId) {
-  #>,create_usr_id<#
+  #>
+  if !silent_mode {
+    sql_fields += ",create_usr_id";
+  }<#
+  }
+  #><#
+  if (hasCreateUsrIdLbl) {
+  #>
+  if !silent_mode {
+    sql_fields += ",create_usr_id_lbl";
+  }<#
   }
   #><#
   if (hasTenantId) {
-  #>,tenant_id<#
+  #>
+  sql_fields += ",tenant_id";<#
   }
   #><#
   if (hasOrgId) {
-  #>,org_id<#
+  #>
+  sql_fields += ",org_id";<#
   }
-  #>";<#
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3086,7 +3127,7 @@ async fn _creates(
     }<#
     }
     #><#
-    if (hasCreateUsrId) {
+    if (hasCreateUsrId && !hasCreateUsrIdLbl) {
     #>
     
     if let Some(create_usr_id) = input.create_usr_id {
@@ -3104,6 +3145,55 @@ async fn _creates(
       } else {
         sql_values += ",default";
       }
+    }<#
+    } else if (hasCreateUsrId && hasCreateUsrIdLbl) {
+    #>
+    
+    if input.create_usr_id.is_none() {
+      let mut usr_id = get_auth_id();
+      let mut usr_lbl = String::new();
+      if usr_id.is_some() {
+        let usr_model = find_by_id_usr(
+          usr_id.clone().unwrap(),
+          None,
+        ).await?;
+        if let Some(usr_model) = usr_model {
+          usr_lbl = usr_model.lbl;
+        } else {
+          usr_id = None;
+        }
+      }
+      if let Some(usr_id) = usr_id {
+        sql_values += ",?";
+        args.push(usr_id.into());
+      } else {
+        sql_values += ",default";
+      }
+      sql_values += ",?";
+      args.push(usr_lbl.into());
+    } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
+      sql_values += ",default";
+      sql_values += ",default";
+    } else {
+      let mut usr_id = input.create_usr_id.clone();
+      let mut usr_lbl = String::new();
+      let usr_model = find_by_id_usr(
+        usr_id.clone().unwrap(),
+        None,
+      ).await?;
+      if let Some(usr_model) = usr_model {
+        usr_lbl = usr_model.lbl;
+      } else {
+        usr_id = None;
+      }
+      if let Some(usr_id) = usr_id {
+        sql_values += ",?";
+        args.push(usr_id.into());
+      } else {
+        sql_values += ",default";
+      }
+      sql_values += ",?";
+      args.push(usr_lbl.into());
     }<#
     }
     #><#
@@ -3278,7 +3368,7 @@ async fn _creates(
   
   let sql = format!("insert into {table} ({sql_fields}) values {sql_values}");
   
-  let args = args.into();
+  let args: Vec<_> = args.into();
   
   let options = Options::from(options);<#
   if (cache) {
@@ -3535,7 +3625,7 @@ pub async fn update_tenant_by_id(
   
   let sql = format!("update {table} set tenant_id=? where id=?");
   
-  let args = args.into();
+  let args: Vec<_> = args.into();
   
   let options = Options::from(options);
   
@@ -3589,7 +3679,7 @@ pub async fn update_org_by_id(
   
   let sql = format!("update {table} set org_id=? where id=?");
   
-  let args = args.into();
+  let args: Vec<_> = args.into();
   
   let options = Options::from(options);
   
@@ -3750,6 +3840,8 @@ pub async fn update_by_id(
   }<#
   }
   #>
+  
+  let silent_mode = get_silent_mode(options.as_ref());
   
   let old_model = find_by_id(
     id.clone(),
@@ -4317,63 +4409,112 @@ pub async fn update_by_id(
   }
   #>
   
-  if field_num > 0 {<#
-    if (hasVersion) {
-    #>
-    if let Some(version) = input.version {
-      if version > 0 {
-        let version2 = get_version_by_id(id.clone()).await?;
-        if let Some(version2) = version2 {
-          if version2 > version {
-            let table_comment = i18n_dao::ns(
-              "<#=table_comment#>".to_owned(),
-              None,
-            ).await?;
-            let map = HashMap::from([
-              ("0".to_owned(), table_comment),
-            ]);
-            let err_msg = i18n_dao::ns(
-              "此 {0} 已被修改，请刷新后重试".to_owned(),
-              map.into(),
-            ).await?;
-            return Err(anyhow!(err_msg));
+  if field_num > 0 {
+    if !silent_mode {<#
+      if (hasVersion) {
+      #>
+      if let Some(version) = input.version {
+        if version > 0 {
+          let version2 = get_version_by_id(id.clone()).await?;
+          if let Some(version2) = version2 {
+            if version2 > version {
+              let table_comment = i18n_dao::ns(
+                "<#=table_comment#>".to_owned(),
+                None,
+              ).await?;
+              let map = HashMap::from([
+                ("0".to_owned(), table_comment),
+              ]);
+              let err_msg = i18n_dao::ns(
+                "此 {0} 已被修改，请刷新后重试".to_owned(),
+                map.into(),
+              ).await?;
+              return Err(anyhow!(err_msg));
+            }
+          }
+          sql_fields += "version=?,";
+          args.push((version + 1).into());
+        }
+      }<#
+      }
+      #><#
+      if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
+      #>
+      
+      if let Some(update_usr_id) = input.update_usr_id {
+        if update_usr_id.as_str() != "-" {
+          sql_fields += "update_usr_id=?,";
+          args.push(update_usr_id.into());
+        }
+      } else {
+        let usr_id = get_auth_id();
+        if let Some(usr_id) = usr_id {
+          sql_fields += "update_usr_id=?,";
+          args.push(usr_id.into());
+        }
+      }<#
+      } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
+      #>
+      
+      if input.update_usr_id.is_none() {
+        let mut usr_id = get_auth_id();
+        let mut usr_id_lbl = String::new();
+        if usr_id.is_some() {
+          let usr_model = find_by_id_usr(
+            usr_id.clone().unwrap(),
+            None,
+          ).await?;
+          if let Some(usr_model) = usr_model {
+            usr_id_lbl = usr_model.lbl;
+          } else {
+            usr_id = None;
           }
         }
-        sql_fields += "version=?,";
-        args.push((version + 1).into());
+        if let Some(usr_id) = usr_id {
+          sql_fields += "update_usr_id=?,";
+          args.push(usr_id.into());
+        }
+        if !usr_id_lbl.is_empty() {
+          sql_fields += "update_usr_id_lbl=?,";
+          args.push(usr_id_lbl.into());
+        }
+      } else if input.update_usr_id.clone().unwrap().as_str() != "-" {
+        let mut usr_id = input.update_usr_id.clone();
+        let mut usr_id_lbl = String::new();
+        if usr_id.is_some() {
+          let usr_model = find_by_id_usr(
+            usr_id.clone().unwrap(),
+            None,
+          ).await?;
+          if let Some(usr_model) = usr_model {
+            usr_id_lbl = usr_model.lbl;
+          } else {
+            usr_id = None;
+          }
+        }
+        if let Some(usr_id) = usr_id {
+          sql_fields += "update_usr_id=?,";
+          args.push(usr_id.into());
+          sql_fields += "update_usr_id_lbl=?,";
+          args.push(usr_id_lbl.into());
+        }
+      }<#
       }
-    }<#
-    }
-    #><#
-    if (hasUpdateUsrId) {
-    #>
-    
-    if let Some(update_usr_id) = input.update_usr_id {
-      if update_usr_id.as_str() != "-" {
-        sql_fields += "update_usr_id=?,";
-        args.push(update_usr_id.into());
+      #><#
+      if (hasUpdateTime) {
+      #>
+      
+      if let Some(update_time) = input.update_time {
+        sql_fields += "update_time=?,";
+        args.push(update_time.into());
+      } else {
+        sql_fields += "update_time=?,";
+        args.push(get_now().into());
+      }<#
       }
-    } else {
-      let usr_id = get_auth_id();
-      if let Some(usr_id) = usr_id {
-        sql_fields += "update_usr_id=?,";
-        args.push(usr_id.into());
-      }
-    }<#
+      #>
+      
     }
-    #><#
-    if (hasUpdateTime) {
-    #>
-    
-    if let Some(update_time) = input.update_time {
-      sql_fields += "update_time=?,";
-      args.push(update_time.into());
-    } else {
-      sql_fields += "update_time=?,";
-      args.push(get_now().into());
-    }<#
-    }
-    #>
     
     if sql_fields.ends_with(',') {
       sql_fields.pop();
@@ -4389,7 +4530,7 @@ pub async fn update_by_id(
       sql_where,
     );
     
-    let args = args.into();
+    let args: Vec<_> = args.into();
     
     let options = Options::from(options);<#
     if (cache) {
@@ -4550,6 +4691,8 @@ pub async fn delete_by_ids(
   let table = "<#=mod#>_<#=table#>";
   let method = "delete_by_ids";
   
+  let silent_mode = get_silent_mode(options.as_ref());
+  
   let is_debug = get_is_debug(options.as_ref());
   
   if is_debug {
@@ -4669,17 +4812,73 @@ pub async fn delete_by_ids(
     }
     #>
     
-    let mut args = QueryArgs::new();
+    let mut args = QueryArgs::new();<#
+    if (hasIsDeleted) {
+    #>
     
-    let sql = format!(
-      "update {} set is_deleted=1,delete_time=? where id=? limit 1",
-      table,
-    );
+    let mut sql_fields = String::with_capacity(30);
+    sql_fields.push_str("is_deleted=1,");
     
-    args.push(get_now().into());
+    if !silent_mode {<#
+      if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
+      #>
+      
+      let mut usr_id = get_auth_id();
+      let mut usr_lbl = String::new();
+      if usr_id.is_some() {
+        let usr_model = find_by_id_usr(
+          usr_id.clone().unwrap(),
+          None,
+        ).await?;
+        if let Some(usr_model) = usr_model {
+          usr_lbl = usr_model.lbl;
+        } else {
+          usr_id = None;
+        }
+      }<#
+      }
+      #><#
+      if (hasDeleteUsrId) {
+      #>
+      
+      if let Some(usr_id) = usr_id {
+        sql_fields.push_str("delete_usr_id=?,");
+        args.push(usr_id.into());
+      }<#
+      }
+      #><#
+      if (hasDeleteUsrIdLbl) {
+      #>
+      
+      sql_fields.push_str("delete_usr_id_lbl=?,");
+      args.push(usr_lbl.into());<#
+      }
+      #><#
+      if (hasDeleteTime) {
+      #>
+      
+      sql_fields.push_str("delete_time=?,");
+      args.push(get_now().into());<#
+      }
+      #>
+      
+    }
+    
+    if sql_fields.ends_with(',') {
+      sql_fields.pop();
+    }
+    
+    let sql = format!("update {table} set {sql_fields} where id=? limit 1");<#
+    } else {
+    #>
+    
+    let sql = format!("delete from {table} where id=? limit 1");<#
+    }
+    #>
+    
     args.push(id.into());
     
-    let args = args.into();
+    let args: Vec<_> = args.into();
     
     let options = options.clone();<#
     if (cache) {
@@ -4871,14 +5070,11 @@ pub async fn default_by_id(
   {
     let mut args = QueryArgs::new();
     
-    let sql = format!(
-      "update {} set is_default=0 where is_default=1 and id!=?",
-      table,
-    );
+    let sql = format!("update {table} set is_default=0 where is_default=1 and id!=?");
     
     args.push(id.clone().into());
     
-    let args = args.into();
+    let args: Vec<_> = args.into();
     
     let options = options.clone().into();
     
@@ -4893,14 +5089,11 @@ pub async fn default_by_id(
   
   let mut args = QueryArgs::new();
     
-  let sql = format!(
-    "update {} set is_default=1 where id=?",
-    table,
-  );
+  let sql = format!("update {table} set is_default=1 where id=?");
   
   args.push(id.into());
   
-  let args = args.into();
+  let args: Vec<_> = args.into();
   
   let options = options.clone().into();
   
@@ -5003,15 +5196,12 @@ pub async fn enable_by_ids(
   for id in ids {
     let mut args = QueryArgs::new();
     
-    let sql = format!(
-      "update {} set is_enabled=? where id=? limit 1",
-      table,
-    );
+    let sql = format!("update {table} set is_enabled=? where id=? limit 1");
     
     args.push(is_enabled.into());
     args.push(id.into());
     
-    let args = args.into();
+    let args: Vec<_> = args.into();
     
     let options = options.clone().into();
     
@@ -5115,15 +5305,12 @@ pub async fn lock_by_ids(
   for id in ids {
     let mut args = QueryArgs::new();
     
-    let sql = format!(
-      "update {} set is_locked=? where id=? limit 1",
-      table,
-    );
+    let sql = format!("update {table} set is_locked=? where id=? limit 1");
     
     args.push(is_locked.into());
     args.push(id.into());
     
-    let args = args.into();
+    let args: Vec<_> = args.into();
     
     let options = options.clone().into();
     
@@ -5189,14 +5376,11 @@ pub async fn revert_by_ids(
   for id in ids.clone() {
     let mut args = QueryArgs::new();
     
-    let sql = format!(
-      "update {} set is_deleted=0 where id=? limit 1",
-      table,
-    );
+    let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
     args.push(id.clone().into());
     
-    let args = args.into();
+    let args: Vec<_> = args.into();
     
     let options = options.clone();<#
     if (cache) {
@@ -5474,13 +5658,11 @@ pub async fn force_delete_by_ids(
     
     let mut args = QueryArgs::new();
     
-    let sql = format!(
-      "delete from {table} where id=? and is_deleted = 1 limit 1",
-    );
+    let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
     args.push(id.into());
     
-    let args = args.into();
+    let args: Vec<_> = args.into();
     
     let options = options.clone();<#
     if (cache) {
@@ -5657,18 +5839,18 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
-  let mut sql_where = String::with_capacity(53);<#
+  let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);<#
   if (hasIsDeleted) {
   #>
   
-  sql_where += "t.is_deleted = 0";<#
+  sql_wheres.push("t.is_deleted=0");<#
   }
   #><#
   if (hasTenantId) {
   #>
   
   if let Some(tenant_id) = get_auth_tenant_id() {
-    sql_where += " and t.tenant_id = ?";
+    sql_wheres.push("t.tenant_id=?");
     args.push(tenant_id.into());
   }<#
   }
@@ -5677,15 +5859,16 @@ pub async fn find_last_order_by(
   #>
   
   if let Some(org_id) = get_auth_org_id() {
-    sql_where += " and t.org_id = ?";
+    sql_wheres.push("t.org_id=?");
     args.push(org_id.into());
   }<#
   }
   #>
   
+  let sql_where = sql_wheres.join(" and ");
   let sql = format!("select t.order_by order_by from {table} t where {sql_where} order by t.order_by desc limit 1");
   
-  let args = args.into();
+  let args: Vec<_> = args.into();
   
   let options = Options::from(options);
   

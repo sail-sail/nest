@@ -1076,6 +1076,9 @@ pub struct Ctx {
   
   now: NaiveDateTime,
   
+  /// 静默模式
+  silent_mode: bool,
+  
 }
 
 impl Ctx {
@@ -1405,6 +1408,10 @@ pub struct Options {
   #[new(default)]
   ids_limit: Option<usize>,
   
+  /// 静默模式
+  #[new(default)]
+  silent_mode: Option<bool>,
+  
 }
 
 impl Debug for Options {
@@ -1442,6 +1449,14 @@ impl Debug for Options {
     }
     if !self.database_name.is_empty() {
       item = item.field("database_name", &self.database_name);
+    }
+    if let Some(ids_limit) = self.ids_limit {
+      item = item.field("ids_limit", &ids_limit);
+    }
+    if let Some(silent_mode) = self.silent_mode {
+      if silent_mode {
+        item = item.field("silent_mode", &silent_mode);
+      }
     }
     item.finish()
   }
@@ -1565,6 +1580,8 @@ pub struct CtxBuilder<'a> {
   
   now: NaiveDateTime,
   
+  silent_mode: bool,
+  
 }
 
 impl <'a> CtxBuilder<'a> {
@@ -1580,6 +1597,7 @@ impl <'a> CtxBuilder<'a> {
       auth_model: None,
       req_id,
       now,
+      silent_mode: false,
     }
   }
   
@@ -1658,6 +1676,13 @@ impl <'a> CtxBuilder<'a> {
     Ok(self)
   }
   
+  /// 静默模式
+  #[allow(dead_code)]
+  pub fn with_silent_mode(mut self) -> CtxBuilder<'a> {
+    self.silent_mode = true;
+    self
+  }
+  
   pub fn build(self) -> Ctx {
     Ctx {
       is_tran: self.is_tran.unwrap_or_default(),
@@ -1665,6 +1690,7 @@ impl <'a> CtxBuilder<'a> {
       tran: Arc::new(Mutex::new(None)),
       auth_model: self.auth_model,
       now: self.now,
+      silent_mode: self.silent_mode,
     }
   }
   
@@ -1782,6 +1808,19 @@ pub fn get_is_debug(
     is_debug = options.get_is_debug();
   }
   is_debug
+}
+
+#[must_use]
+pub fn get_silent_mode(
+  options: Option<&Options>,
+) -> bool {
+  if let Some(options) = options {
+    if let Some(silent_mode) = options.silent_mode {
+      return silent_mode;
+    }
+  }
+  let ctx = &CTX.with(|ctx| ctx.clone());
+  ctx.silent_mode
 }
 
 #[cfg(test)]

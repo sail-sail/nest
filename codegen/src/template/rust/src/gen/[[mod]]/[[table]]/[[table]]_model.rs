@@ -1584,6 +1584,8 @@ pub struct <#=tableUP#>Search {
     const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const modelLabel = column.modelLabel;
+    const modelLabel_rust = rustKeyEscape(modelLabel);
     const isPassword = column.isPassword;
     const isEncrypt = column.isEncrypt;
     if (isEncrypt) continue;
@@ -1618,36 +1620,63 @@ pub struct <#=tableUP#>Search {
       _data_type = "Decimal";
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
+    const search = column.search;
   #><#
     if (foreignKey && foreignKey.type !== "many2many") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_save_null")]<#
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
+    if (modelLabel) {
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno || !search) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=modelLabel#>")]<#
+  }
+  #>
+  pub <#=modelLabel_rust#>: Option<Vec<String>>,<#
+    }
+  #><#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_save_null")]<#
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
@@ -1670,61 +1699,82 @@ pub struct <#=tableUP#>Search {
       }
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=enumColumnName#>>>,<#
     } else if (foreignKey) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<[Option<<#=_data_type#>>; 2]>,<#
     } else if (data_type === "tinyint") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
     } else if (data_type === "varchar" || data_type === "text") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_like")]<#
   }
   #>
   pub <#=column_name#>_like: Option<<#=_data_type#>>,<#
     } else {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !search) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
@@ -1801,7 +1851,7 @@ impl std::fmt::Debug for <#=tableUP#>Search {
       if (isEncrypt) continue;
       let is_nullable = column.IS_NULLABLE === "YES";
     #><#
-      if (foreignKey) {
+      if (foreignKey && foreignKey.type !== "many2many") {
     #>
     // <#=column_comment#>
     if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
@@ -2469,6 +2519,8 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         const foreignKey = column.foreignKey;
         const foreignTable = foreignKey && foreignKey.table;
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const modelLabel = column.modelLabel;
+        const modelLabel_rust = rustKeyEscape(modelLabel);
         const isPassword = column.isPassword;
         if (column_name === "id") {
           continue;
@@ -2476,14 +2528,20 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         const isEncrypt = column.isEncrypt;
         if (isEncrypt) continue;
       #><#
-      if (foreignKey && foreignKey.multiple) {
+      if (foreignKey && foreignKey.type === "many2many") {
       #>
       // <#=column_comment#>
       <#=column_name#>: input.<#=column_name#>,<#
-      } else if (foreignKey && !foreignKey.multiple) {
+      } else if (foreignKey && foreignKey.type !== "many2many") {
       #>
       // <#=column_comment#>
       <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
+        if (modelLabel) {
+      #>
+      // <#=column_comment#>
+      <#=modelLabel_rust#>: input.<#=modelLabel_rust#>.map(|x| vec![x]),<#
+        }
+      #><#
         } else if (column.dict || column.dictbiz) {
       #>
       // <#=column_comment#>

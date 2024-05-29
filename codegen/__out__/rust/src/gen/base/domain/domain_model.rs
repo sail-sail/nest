@@ -205,36 +205,58 @@ pub struct DomainSearch {
   pub ids: Option<Vec<DomainId>>,
   pub is_deleted: Option<u8>,
   /// 协议
+  #[graphql(skip)]
   pub protocol: Option<String>,
   /// 协议
+  #[graphql(skip)]
   pub protocol_like: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 锁定
+  #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
   /// 默认
+  #[graphql(skip)]
   pub is_default: Option<Vec<u8>>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
+  #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
+  #[graphql(skip)]
   pub rem: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
+  #[graphql(skip)]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
+  #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
+  #[graphql(skip)]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
@@ -438,10 +460,14 @@ impl From<DomainInput> for DomainSearch {
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

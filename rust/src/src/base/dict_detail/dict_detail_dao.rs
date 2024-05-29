@@ -26,26 +26,7 @@ pub async fn get_dict<T: AsRef<str>>(
     .collect::<Vec<_>>()
     .join(",");
   
-  let sql = format!(r#"
-    select
-      t.id,
-      base_dict.code,
-      base_dict.type,
-      t.lbl,
-      t.val
-    from
-      base_dict_detail t
-    inner join base_dict
-      on t.dict_id = base_dict.id
-      and base_dict.is_deleted = 0
-      and base_dict.is_enabled = 1
-    where
-      t.is_deleted = 0
-      and t.is_enabled = 1
-      and base_dict.code in ({code})
-    order by
-      t.order_by asc
-  "#);
+  let sql = format!(r#"select t.id,base_dict.code,base_dict.type,t.lbl,t.val from base_dict_detail t inner join base_dict on t.dict_id=base_dict.id and base_dict.is_deleted=0 and base_dict.is_enabled=1 where t.is_deleted=0 and t.is_enabled=1 and base_dict.code in({code})order by t.order_by asc"#);
   
   let args = args.value;
   
