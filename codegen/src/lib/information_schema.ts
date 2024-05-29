@@ -95,8 +95,14 @@ async function getSchema0(
   const hasIsHidden = records.some((item: TableCloumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
   const hasCreateTime = records.some((item: TableCloumn) => [ "create_time" ].includes(item.COLUMN_NAME));
   const hasCreateUsrId = records.some((item: TableCloumn) => [ "create_usr_id" ].includes(item.COLUMN_NAME));
+  const hasCreateUsrIdLbl = records.some((item: TableCloumn) => [ "create_usr_id_lbl" ].includes(item.COLUMN_NAME));
   const hasUpdateTime = records.some((item: TableCloumn) => [ "update_time" ].includes(item.COLUMN_NAME));
   const hasUpdateUsrId = records.some((item: TableCloumn) => [ "update_usr_id" ].includes(item.COLUMN_NAME));
+  const hasUpdateUsrIdLbl = records.some((item: TableCloumn) => [ "update_usr_id_lbl" ].includes(item.COLUMN_NAME));
+  const hasIsDeleted = records.some((item: TableCloumn) => [ "is_deleted" ].includes(item.COLUMN_NAME));
+  const hasDeleteUsrId = records.some((item: TableCloumn) => [ "delete_usr_id" ].includes(item.COLUMN_NAME));
+  const hasDeleteUsrIdLbl = records.some((item: TableCloumn) => [ "delete_usr_id_lbl" ].includes(item.COLUMN_NAME));
+  const hasDeleteTime = records.some((item: TableCloumn) => [ "delete_time" ].includes(item.COLUMN_NAME));
   const hasVersion = records.some((item: TableCloumn) => [ "version" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
@@ -218,6 +224,11 @@ async function getSchema0(
       }
       if (item.align == null) {
         item.align = "center";
+      }
+      if (hasCreateUsrIdLbl && column_name === "create_usr_id") {
+        item.modelLabel = "create_usr_id_lbl";
+      } else if (hasUpdateUsrIdLbl && column_name === "update_usr_id") {
+        item.modelLabel = "update_usr_id_lbl";
       }
     }
     if ([ "create_time", "update_time" ].includes(column_name)) {
@@ -512,6 +523,10 @@ async function getSchema0(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasCreateUsrId = true;
   }
+  if (hasCreateUsrIdLbl && tables[table_name]?.opts?.hasCreateUsrIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasCreateUsrIdLbl = true;
+  }
   if (hasUpdateTime && tables[table_name]?.opts?.hasUpdateTime == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasUpdateTime = true;
@@ -519,6 +534,26 @@ async function getSchema0(
   if (hasUpdateUsrId && tables[table_name]?.opts?.hasUpdateUsrId == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasUpdateUsrId = true;
+  }
+  if (hasUpdateUsrIdLbl && tables[table_name]?.opts?.hasUpdateUsrIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasUpdateUsrIdLbl = true;
+  }
+  if (hasIsDeleted && tables[table_name]?.opts?.hasIsDeleted == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasIsDeleted = true;
+  }
+  if (hasDeleteUsrId && tables[table_name]?.opts?.hasDeleteUsrId == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasDeleteUsrId = true;
+  }
+  if (hasDeleteUsrIdLbl && tables[table_name]?.opts?.hasDeleteUsrIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasDeleteUsrIdLbl = true;
+  }
+  if (hasDeleteTime && tables[table_name]?.opts?.hasDeleteTime == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasDeleteTime = true;
   }
   if (hasVersion && tables[table_name]?.opts?.hasVersion == null) {
     tables[table_name].opts = tables[table_name].opts || { };

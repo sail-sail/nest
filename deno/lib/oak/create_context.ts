@@ -15,7 +15,15 @@ export function createContext(): Middleware {
     const url = request.url;
     const pathname = url.pathname;
     if (pathname === "/graphql" || pathname === "/api/graphql") {
-      return await next();
+      try {
+        return await next();
+      } catch (err) {
+        error(err);
+        ctx.response.body = {
+          code: 1,
+          msg: err?.message || err?.toString() || "",
+        };
+      }
     }
     const context = newContext(ctx);
     return await runInAsyncHooks(context, async function() {

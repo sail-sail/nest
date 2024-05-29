@@ -649,14 +649,32 @@ export interface TablesConfigItem {
     /** 是否有 create_usr_id 字段 */
     hasCreateUsrId?: boolean;
     
+    /** 是否有 create_usr_id_lbl 字段 */
+    hasCreateUsrIdLbl?: boolean;
+    
     /** 是否有 create_time 字段 */
     hasCreateTime?: boolean;
     
     /** 是否有 update_usr_id 字段 */
     hasUpdateUsrId?: boolean;
     
+    /** 是否有 update_usr_id_lbl 字段 */
+    hasUpdateUsrIdLbl?: boolean;
+    
     /** 是否有 update_time 字段 */
     hasUpdateTime?: boolean;
+    
+    /** 是否有 is_deleted 字段 */
+    hasIsDeleted?: boolean;
+    
+    /** 是否有 delete_usr_id 字段 */
+    hasDeleteUsrId?: boolean;
+    
+    /** 是否有 delete_usr_id_lbl 字段 */
+    hasDeleteUsrIdLbl?: boolean;
+    
+    /** 是否有 delete_time 字段 */
+    hasDeleteTime?: boolean;
     
     /** 是否有 version 字段 */
     hasVersion?: boolean;

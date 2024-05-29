@@ -1,5 +1,9 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
+  useContext,
+} from "/lib/context.ts";
+
+import {
   escapeId,
 } from "sqlstring";
 
@@ -78,13 +82,17 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 const route_path = "/base/role";
 
 async function getWhereQuery(
   args: QueryArgs,
-  search?: RoleSearch,
-  options?: {
-  },
+  search?: Readonly<RoleSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -101,9 +109,6 @@ async function getWhereQuery(
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
-  }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
@@ -119,17 +124,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.home_url_like)) {
     whereQuery += ` and t.home_url like ${ args.push("%" + sqlLike(search?.home_url_like) + "%") }`;
   }
-  if (search?.menu_ids != null && !Array.isArray(search?.menu_ids)) {
-    search.menu_ids = [ search.menu_ids ];
-  }
   if (search?.menu_ids != null) {
     whereQuery += ` and base_menu.id in ${ args.push(search.menu_ids) }`;
   }
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
-  }
-  if (search?.permit_ids != null && !Array.isArray(search?.permit_ids)) {
-    search.permit_ids = [ search.permit_ids ];
   }
   if (search?.permit_ids != null) {
     whereQuery += ` and base_permit.id in ${ args.push(search.permit_ids) }`;
@@ -137,23 +136,14 @@ async function getWhereQuery(
   if (search?.permit_ids_is_null) {
     whereQuery += ` and base_permit.id is null`;
   }
-  if (search?.data_permit_ids != null && !Array.isArray(search?.data_permit_ids)) {
-    search.data_permit_ids = [ search.data_permit_ids ];
-  }
   if (search?.data_permit_ids != null) {
     whereQuery += ` and base_data_permit.id in ${ args.push(search.data_permit_ids) }`;
   }
   if (search?.data_permit_ids_is_null) {
     whereQuery += ` and base_data_permit.id is null`;
   }
-  if (search?.is_locked != null && !Array.isArray(search?.is_locked)) {
-    search.is_locked = [ search.is_locked ];
-  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
-  }
-  if (search?.is_enabled != null && !Array.isArray(search?.is_enabled)) {
-    search.is_enabled = [ search.is_enabled ];
   }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
@@ -172,14 +162,14 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
-  }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
+    whereQuery += ` and t.create_usr_id is null`;
+  }
+  if (search?.create_usr_id_lbl != null) {
+    whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
@@ -189,14 +179,14 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
-  }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
+    whereQuery += ` and t.update_usr_id is null`;
+  }
+  if (search?.update_usr_id_lbl != null) {
+    whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -212,9 +202,9 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: RoleSearch,
-  options?: {
-  },
+  search?: Readonly<RoleSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_role t
@@ -261,9 +251,7 @@ async function getFromQuery(
     inner join base_data_permit on base_data_permit.id=base_role_data_permit.data_permit_id
     inner join base_role on base_role.id=base_role_data_permit.role_id
     where base_role_data_permit.is_deleted=${ args.push(is_deleted) }
-    group by role_id) _data_permit on _data_permit.role_id=t.id
-    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
-    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
+    group by role_id) _data_permit on _data_permit.role_id=t.id`;
   return fromQuery;
 }
 
@@ -273,10 +261,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: RoleSearch,
-  options?: {
+  search?: Readonly<RoleSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_role";
   const method = "findCount";
@@ -318,13 +306,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: RoleSearch,
-  page?: PageInput,
+  search?: Readonly<RoleSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<RoleModel[]> {
   const table = "base_role";
   const method = "findAll";
@@ -437,8 +425,6 @@ export async function findAll(
       ,max(permit_ids) permit_ids
       ,max(permit_ids_lbl) permit_ids_lbl
       ,max(data_permit_ids) data_permit_ids
-      ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -596,9 +582,6 @@ export async function findAll(
     }
     model.is_enabled_lbl = is_enabled_lbl || "";
     
-    // 创建人
-    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
-    
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
@@ -610,9 +593,6 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
-    
-    // 更新人
-    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -752,10 +732,10 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
  * @param {RoleInput} search0
  */
 export async function findByUnique(
-  search0: RoleInput,
-  options?: {
+  search0: Readonly<RoleInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<RoleModel[]> {
   
   const table = "base_role";
@@ -802,8 +782,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: RoleModel,
-  input: RoleInput,
+  oldModel: Readonly<RoleModel>,
+  input: Readonly<RoleInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -824,11 +804,11 @@ export function equalsByUnique(
  * @return {Promise<RoleId | undefined>}
  */
 export async function checkByUnique(
-  input: RoleInput,
-  oldModel: RoleModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<RoleInput>,
+  oldModel: Readonly<RoleModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<RoleId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -858,12 +838,13 @@ export async function checkByUnique(
  * @param {RoleSearch} search?
  */
 export async function findOne(
-  search?: RoleSearch,
+  search?: Readonly<RoleSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<RoleModel | undefined> {
+  
   const table = "base_role";
   const method = "findOne";
   
@@ -879,8 +860,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -901,12 +884,14 @@ export async function findOne(
  */
 export async function findById(
   id?: RoleId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<RoleModel | undefined> {
+  
   const table = "base_role";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -916,8 +901,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -938,12 +925,14 @@ export async function findById(
 /** 根据 ids 查找角色 */
 export async function findByIds(
   ids: RoleId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<RoleModel[]> {
+  
   const table = "base_role";
   const method = "findByIds";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
@@ -953,8 +942,10 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!ids || ids.length === 0) {
@@ -990,13 +981,15 @@ export async function findByIds(
  * @param {RoleSearch} search?
  */
 export async function exist(
-  search?: RoleSearch,
-  options?: {
+  search?: Readonly<RoleSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "base_role";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -1006,8 +999,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -1019,11 +1014,12 @@ export async function exist(
  * @param {RoleId} id
  */
 export async function existById(
-  id?: RoleId | null,
-  options?: {
+  id?: Readonly<RoleId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "base_role";
   const method = "existById";
   
@@ -1040,7 +1036,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from base_role t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from base_role t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -1059,7 +1055,7 @@ export async function existById(
 
 /** 校验角色是否启用 */
 export async function validateIsEnabled(
-  model: RoleModel,
+  model: Readonly<RoleModel>,
 ) {
   if (model.is_enabled == 0) {
     throw `${ await ns("角色") } ${ await ns("已禁用") }`;
@@ -1068,7 +1064,7 @@ export async function validateIsEnabled(
 
 /** 校验角色是否存在 */
 export async function validateOption(
-  model?: RoleModel,
+  model?: Readonly<RoleModel>,
 ) {
   if (!model) {
     throw `${ await ns("角色") } ${ await ns("不存在") }`;
@@ -1081,7 +1077,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: RoleInput,
+  input: Readonly<RoleInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -1141,13 +1137,15 @@ export async function validate(
  * @return {Promise<RoleId>} 
  */
 export async function create(
-  input: RoleInput,
-  options?: {
+  input: Readonly<RoleInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<RoleId> {
+  
   const table = "base_role";
   const method = "create";
   
@@ -1160,8 +1158,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -1188,12 +1188,14 @@ export async function create(
  */
 export async function creates(
   inputs: RoleInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<RoleId[]> {
+  
   const table = "base_role";
   const method = "creates";
   
@@ -1206,8 +1208,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -1217,11 +1221,12 @@ export async function creates(
 
 async function _creates(
   inputs: RoleInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<RoleId[]> {
   
   if (inputs.length === 0) {
@@ -1229,6 +1234,9 @@ async function _creates(
   }
   
   const table = "base_role";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   const ids2: RoleId[] = [ ];
   const inputs2: RoleInput[] = [ ];
@@ -1280,17 +1288,36 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_role(id,create_time,tenant_id,create_usr_id,lbl,home_url,is_locked,is_enabled,order_by,rem)values`;
+  let sql = `insert into base_role(id`;
+  if (!silentMode) {
+    sql += ",create_time";
+  }
+  sql += ",tenant_id";
+  if (!silentMode) {
+    sql += ",create_usr_id";
+  }
+  if (!silentMode) {
+    sql += ",create_usr_id_lbl";
+  }
+  sql += ",lbl";
+  sql += ",home_url";
+  sql += ",is_locked";
+  sql += ",is_enabled";
+  sql += ",order_by";
+  sql += ",rem";
+  sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (input.create_time != null) {
-        sql += `,${ args.push(input.create_time) }`;
-      } else {
-        sql += `,${ args.push(reqDate()) }`;
+      if (!silentMode) {
+        if (input.create_time != null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,${ args.push(reqDate()) }`;
+        }
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -1305,17 +1332,45 @@ async function _creates(
       } else {
         sql += `,${ args.push(input.tenant_id) }`;
       }
-      if (input.create_usr_id == null) {
-        const authModel = await getAuthModel();
-        if (authModel?.id != null) {
-          sql += `,${ args.push(authModel.id) }`;
-        } else {
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          let usr_id: UsrId | undefined = authModel?.id;
+          let usr_lbl = "";
+          if (usr_id) {
+            const usr_model = await findByIdUsr(usr_id);
+            if (!usr_model) {
+              usr_id = undefined;
+            } else {
+              usr_lbl = usr_model.lbl;
+            }
+          }
+          if (usr_id != null) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        } else if (input.create_usr_id as unknown as string === "-") {
           sql += ",default";
+          sql += ",default";
+        } else {
+          let usr_id: UsrId | undefined = input.create_usr_id;
+          let usr_lbl = "";
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+            usr_lbl = "";
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+          if (usr_id) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
         }
-      } else if (input.create_usr_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        sql += `,${ args.push(input.create_usr_id) }`;
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
@@ -1425,10 +1480,10 @@ export async function delCache() {
  */
 export async function updateTenantById(
   id: RoleId,
-  tenant_id: TenantId,
-  options?: {
+  tenant_id: Readonly<TenantId>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_role";
   const method = "updateTenantById";
@@ -1476,14 +1531,18 @@ export async function updateTenantById(
 export async function updateById(
   id: RoleId,
   input: RoleInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<RoleId> {
   
   const table = "base_role";
   const method = "updateById";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1633,20 +1692,50 @@ export async function updateById(
   );
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id == null) {
-      const authModel = await getAuthModel();
-      if (authModel?.id != null) {
-        sql += `update_usr_id=${ args.push(authModel.id) },`;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        }
+        if (usr_lbl) {
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+        let usr_id: UsrId | undefined = input.update_usr_id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
       }
-    } else if (input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
-    if (input.update_time) {
-      sql += `update_time = ${ args.push(input.update_time) }`;
-    } else {
-      sql += `update_time = ${ args.push(reqDate()) }`;
+    if (!silentMode) {
+      if (input.update_time) {
+        sql += `update_time = ${ args.push(input.update_time) }`;
+      } else {
+        sql += `update_time = ${ args.push(reqDate()) }`;
+      }
     }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
@@ -1657,10 +1746,12 @@ export async function updateById(
     await delCache();
   }
   
-  const newModel = await findById(id);
-  
-  if (!deepCompare(oldModel, newModel)) {
-    log(JSON.stringify(oldModel));
+  if (!silentMode) {
+    const newModel = await findById(id);
+    
+    if (!deepCompare(oldModel, newModel)) {
+      log(JSON.stringify(oldModel));
+    }
   }
   
   return id;
@@ -1673,12 +1764,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: RoleId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "base_role";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1705,7 +1801,28 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update base_role set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update base_role set is_deleted=1`;
+    if (!silentMode) {
+      const authModel = await getAuthModel();
+      let usr_id: UsrId | undefined = authModel?.id;
+      if (usr_id != null) {
+        sql += `,delete_usr_id=${ args.push(usr_id) }`;
+      }
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_lbl) {
+        sql += `,delete_usr_id_lbl=${ args.push(usr_lbl) }`;
+      }
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1723,8 +1840,8 @@ export async function deleteByIds(
  */
 export async function getIsEnabledById(
   id: RoleId,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -1742,11 +1859,12 @@ export async function getIsEnabledById(
  */
 export async function enableByIds(
   ids: RoleId[],
-  is_enabled: 0 | 1,
-  options?: {
+  is_enabled: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_role";
   const method = "enableByIds";
   
@@ -1791,8 +1909,8 @@ export async function enableByIds(
  */
 export async function getIsLockedById(
   id: RoleId,
-  options?: {
-  },
+  options?: Readonly<{
+  }>,
 ): Promise<0 | 1 | undefined> {
   const model = await findById(
     id,
@@ -1810,11 +1928,12 @@ export async function getIsLockedById(
  */
 export async function lockByIds(
   ids: RoleId[],
-  is_locked: 0 | 1,
-  options?: {
+  is_locked: Readonly<0 | 1>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_role";
   const method = "lockByIds";
   
@@ -1855,10 +1974,11 @@ export async function lockByIds(
  */
 export async function revertByIds(
   ids: RoleId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_role";
   const method = "revertByIds";
   
@@ -1883,7 +2003,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: RoleId = ids[i];
     const args = new QueryArgs();
-    const sql = `update base_role set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update base_role set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1916,10 +2036,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: RoleId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_role";
   const method = "forceDeleteByIds";
   
@@ -1945,12 +2066,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from base_role where id = ${ args.push(id) }`;
+      const sql = `select * from base_role where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from base_role where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from base_role where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1965,10 +2086,11 @@ export async function forceDeleteByIds(
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_role";
   const method = "findLastOrderBy";
   
