@@ -628,8 +628,6 @@ pub async fn find_all(
       ,parent_id_lbl.lbl parent_id_lbl
       ,max(usr_ids) usr_ids
       ,max(usr_ids_lbl) usr_ids_lbl
-      ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();

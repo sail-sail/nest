@@ -470,8 +470,6 @@ pub async fn find_all(
   let sql = format!(r#"select f.* from (select t.*
       ,lang_id_lbl.lbl lang_id_lbl
       ,menu_id_lbl.lbl menu_id_lbl
-      ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();

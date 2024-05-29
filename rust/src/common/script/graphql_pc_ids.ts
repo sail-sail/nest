@@ -50,12 +50,6 @@ export function getScalars() {
       "output": `import("@/typings/ids.ts").DomainId`,
     },
     
-    // 字段权限
-    "FieldPermitId": {
-      "input": `import("@/typings/ids.ts").FieldPermitId`,
-      "output": `import("@/typings/ids.ts").FieldPermitId`,
-    },
-    
     // 国际化
     "I18nId": {
       "input": `import("@/typings/ids.ts").I18nId`,
