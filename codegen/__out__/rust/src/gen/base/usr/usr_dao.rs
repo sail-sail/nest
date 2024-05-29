@@ -831,8 +831,6 @@ pub async fn find_all(
       ,max(org_ids) org_ids
       ,max(org_ids_lbl) org_ids_lbl
       ,default_org_id_lbl.lbl default_org_id_lbl
-      ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
