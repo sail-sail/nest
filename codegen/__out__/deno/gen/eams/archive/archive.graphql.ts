@@ -6,7 +6,6 @@ import * as resolver from "./archive.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar ArchiveId
 
-
 type ArchiveModel {
   "ID"
   id: ArchiveId!
@@ -102,27 +101,14 @@ input ArchiveSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "关联单位"
-  company_id: [CompanyId!]
-  "关联单位"
-  company_id_is_null: Boolean
-  "排序"
-  order_by: [Int]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找全宗设置总数"

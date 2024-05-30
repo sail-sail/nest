@@ -6,7 +6,6 @@ import * as resolver from "./company.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar CompanyId
 
-
 type CompanyModel {
   "ID"
   id: CompanyId!
@@ -114,27 +113,16 @@ input CompanySearch {
   "名称"
   lbl: String
   lbl_like: String
-  "锁定"
-  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "排序"
-  order_by: [Int]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找单位总数"
