@@ -473,7 +473,7 @@
           </template>
           
           <!-- 耗时(毫秒) -->
-          <template v-else-if="'time' === col.prop && (showBuildIn || builtInSearch?.time == null)">
+          <template v-else-if="'time' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -482,7 +482,7 @@
           </template>
           
           <!-- 操作前数据 -->
-          <template v-else-if="'old_data' === col.prop && (showBuildIn || builtInSearch?.old_data == null)">
+          <template v-else-if="'old_data' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -500,7 +500,7 @@
           </template>
           
           <!-- 操作后数据 -->
-          <template v-else-if="'new_data' === col.prop && (showBuildIn || builtInSearch?.new_data == null)">
+          <template v-else-if="'new_data' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -647,21 +647,12 @@ const props = defineProps<{
   selectedIds?: OperationRecordId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: OperationRecordId; // ID
-  module?: string; // 模块
-  module_like?: string; // 模块
   module_lbl?: string; // 模块名称
   module_lbl_like?: string; // 模块名称
-  method?: string; // 方法
-  method_like?: string; // 方法
   method_lbl?: string; // 方法名称
   method_lbl_like?: string; // 方法名称
   lbl?: string; // 操作
   lbl_like?: string; // 操作
-  time?: string; // 耗时(毫秒)
-  old_data?: string; // 操作前数据
-  old_data_like?: string; // 操作前数据
-  new_data?: string; // 操作后数据
-  new_data_like?: string; // 操作后数据
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -672,7 +663,6 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  time: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
 };
