@@ -12,6 +12,17 @@ declare global {
   type TenantId = Distinct<string, typeof tenantId>;
 
   interface TenantSearch extends TenantSearchType {
+    /** 锁定 */
+    is_locked?: number[];
+    /** 排序 */
+    order_by?: number[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
   }
 
   interface TenantModel extends TenantModelType {

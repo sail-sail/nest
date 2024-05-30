@@ -42,8 +42,7 @@ import type { } from "./<#=table#>.model.ts";
 import * as resolver from "./<#=table#>.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
-scalar <#=Table_Up#>Id
-<#
+scalar <#=Table_Up#>Id<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -78,6 +77,7 @@ for (let i = 0; i < columns.length; i++) {
 #><#
     if (columnDictModels.length > 0) {
 #>
+
 "<#=table_comment#><#=column_comment#>"
 enum <#=enumColumnName#> {<#
     for (let i = 0; i < columnDictModels.length; i++) {
@@ -201,7 +201,7 @@ type <#=modelName#> {<#
       let enumColumnName = data_type;
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -570,7 +570,7 @@ input <#=inputName#> {<#
       let enumColumnName = data_type;
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -715,7 +715,10 @@ input <#=searchName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (
+      column.onlyCodegenDeno
+      || column.canSearch !== true
+    ) continue;
     // if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
@@ -801,7 +804,7 @@ input <#=searchName#> {<#
       let enumColumnName = data_type;
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;

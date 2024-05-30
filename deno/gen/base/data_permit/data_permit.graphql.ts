@@ -19,6 +19,7 @@ enum DataPermitScope {
   "本租户"
   tenant
 }
+
 "数据权限类型"
 enum DataPermitType {
   "可见不可改且不可删"
@@ -128,27 +129,18 @@ input DataPermitSearch {
   menu_id_is_null: Boolean
   "范围"
   scope: [DataPermitScope!]
-  "类型"
-  type: [DataPermitType!]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找数据权限总数"
