@@ -458,7 +458,7 @@
           </template>
           
           <!-- 用户ID -->
-          <template v-else-if="'userid' === col.prop && (showBuildIn || builtInSearch?.userid == null)">
+          <template v-else-if="'userid' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -467,7 +467,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -597,10 +597,6 @@ const props = defineProps<{
   id?: WxwUsrId; // ID
   lbl?: string; // 姓名
   lbl_like?: string; // 姓名
-  userid?: string; // 用户ID
-  userid_like?: string; // 用户ID
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {

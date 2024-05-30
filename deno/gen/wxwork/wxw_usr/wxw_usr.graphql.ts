@@ -6,7 +6,6 @@ import * as resolver from "./wxw_usr.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxwUsrId
 
-
 type WxwUsrModel {
   "ID"
   id: WxwUsrId!
@@ -49,12 +48,6 @@ input WxwUsrSearch {
   "姓名"
   lbl: String
   lbl_like: String
-  "用户ID"
-  userid: String
-  userid_like: String
-  "备注"
-  rem: String
-  rem_like: String
 }
 type Query {
   "根据条件查找企微用户总数"

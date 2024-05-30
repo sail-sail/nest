@@ -6,7 +6,6 @@ import * as resolver from "./wxw_app.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxwAppId
 
-
 type WxwAppModel {
   "ID"
   id: WxwAppId!
@@ -119,15 +118,8 @@ input WxwAppSearch {
   domain_id: [DomainId!]
   "可信域名"
   domain_id_is_null: Boolean
-  "锁定"
-  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "排序"
-  order_by: [Int]
-  "备注"
-  rem: String
-  rem_like: String
 }
 type Query {
   "根据条件查找企微应用总数"

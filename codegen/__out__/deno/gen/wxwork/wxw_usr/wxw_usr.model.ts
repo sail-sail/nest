@@ -12,6 +12,9 @@ declare global {
   type WxwUsrId = Distinct<string, typeof wxwUsrId>;
 
   interface WxwUsrSearch extends WxwUsrSearchType {
+    /** 用户ID */
+    userid?: string;
+    userid_like?: string;
     /** 手机号 */
     mobile?: string;
     mobile_like?: string;
@@ -39,6 +42,9 @@ declare global {
     /** 个人二维码 */
     qr_code?: string;
     qr_code_like?: string;
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
     /** 创建人 */
     create_usr_id?: UsrId[];
     create_usr_id_is_null?: boolean;

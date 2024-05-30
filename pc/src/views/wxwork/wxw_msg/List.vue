@@ -461,7 +461,7 @@
           </template>
           
           <!-- 成员ID -->
-          <template v-else-if="'touser' === col.prop && (showBuildIn || builtInSearch?.touser == null)">
+          <template v-else-if="'touser' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -470,7 +470,7 @@
           </template>
           
           <!-- 标题 -->
-          <template v-else-if="'title' === col.prop && (showBuildIn || builtInSearch?.title == null)">
+          <template v-else-if="'title' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -479,7 +479,7 @@
           </template>
           
           <!-- 描述 -->
-          <template v-else-if="'description' === col.prop && (showBuildIn || builtInSearch?.description == null)">
+          <template v-else-if="'description' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -488,7 +488,7 @@
           </template>
           
           <!-- 按钮文字 -->
-          <template v-else-if="'btntxt' === col.prop && (showBuildIn || builtInSearch?.btntxt == null)">
+          <template v-else-if="'btntxt' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -506,7 +506,7 @@
           </template>
           
           <!-- 错误信息 -->
-          <template v-else-if="'errmsg' === col.prop && (showBuildIn || builtInSearch?.errmsg == null)">
+          <template v-else-if="'errmsg' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -627,16 +627,6 @@ const props = defineProps<{
   wxw_app_id?: string|string[]; // 企微应用
   wxw_app_id_lbl?: string; // 企微应用
   errcode?: string|string[]; // 发送状态
-  touser?: string; // 成员ID
-  touser_like?: string; // 成员ID
-  title?: string; // 标题
-  title_like?: string; // 标题
-  description?: string; // 描述
-  description_like?: string; // 描述
-  btntxt?: string; // 按钮文字
-  btntxt_like?: string; // 按钮文字
-  errmsg?: string; // 错误信息
-  errmsg_like?: string; // 错误信息
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
