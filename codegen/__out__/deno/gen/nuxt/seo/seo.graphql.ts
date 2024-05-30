@@ -6,7 +6,6 @@ import * as resolver from "./seo.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar SeoId
 
-
 type SeoModel {
   "ID"
   id: SeoId!
@@ -132,49 +131,18 @@ input SeoSearch {
   ids: [SeoId!]
   "ID"
   id: SeoId
-  "标题"
-  title: String
-  title_like: String
-  "描述"
-  description: String
-  description_like: String
-  "关键词"
-  keywords: String
-  keywords_like: String
-  "分享图片"
-  og_image: String
-  og_image_like: String
-  "分享标题"
-  og_title: String
-  og_title_like: String
-  "分享描述"
-  og_description: String
-  og_description_like: String
-  "锁定"
-  is_locked: [Int!]
-  "默认"
-  is_default: [Int!]
-  "排序"
-  order_by: [Int]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找SEO优化总数"
