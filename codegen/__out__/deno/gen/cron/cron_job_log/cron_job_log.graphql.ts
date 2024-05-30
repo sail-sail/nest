@@ -115,18 +115,8 @@ input CronJobLogSearch {
   cron_job_id_is_null: Boolean
   "执行状态"
   exec_state: [CronJobLogExecState!]
-  "执行结果"
-  exec_result: String
-  exec_result_like: String
   "开始时间"
   begin_time: [NaiveDateTime]
-  "结束时间"
-  end_time: [NaiveDateTime]
-  "备注"
-  rem: String
-  rem_like: String
-  "创建时间"
-  create_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找任务执行日志总数"

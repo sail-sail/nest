@@ -6,7 +6,6 @@ import * as resolver from "./cron_job_log_detail.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar CronJobLogDetailId
 
-
 type CronJobLogDetailModel {
   "ID"
   id: CronJobLogDetailId!

@@ -559,7 +559,7 @@
           </template>
           
           <!-- Cron表达式 -->
-          <template v-else-if="'cron' === col.prop && (showBuildIn || builtInSearch?.cron == null)">
+          <template v-else-if="'cron' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -568,7 +568,7 @@
           </template>
           
           <!-- 时区 -->
-          <template v-else-if="'timezone_lbl' === col.prop && (showBuildIn || builtInSearch?.timezone == null)">
+          <template v-else-if="'timezone_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -577,7 +577,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -609,7 +609,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -632,7 +632,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -650,7 +650,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -668,7 +668,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -816,14 +816,7 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   job_id?: string|string[]; // 任务
   job_id_lbl?: string; // 任务
-  cron?: string; // Cron表达式
-  cron_like?: string; // Cron表达式
-  timezone?: string|string[]; // 时区
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -836,13 +829,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   job_id: "string[]",
   job_id_lbl: "string[]",
-  timezone: "string[]",
-  timezone_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
