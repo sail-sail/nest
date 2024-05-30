@@ -36,7 +36,43 @@ const org_id_column = columns.find((column) => column.COLUMN_NAME === "org_id");
   <#=inputName#> as <#=inputName#>Type,
   <#=modelName#> as <#=modelName#>Type,
   <#=searchName#> as <#=searchName#>Type,
-  <#=fieldCommentName#> as <#=fieldCommentName#>Type,
+  <#=fieldCommentName#> as <#=fieldCommentName#>Type,<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (
+      !column.onlyCodegenDeno
+      && column.canSearch === true
+    ) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_comment = column.COLUMN_COMMENT || "";
+  #><#
+    if (column.dict || column.dictbiz) {
+      let enumColumnName = "";
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dict;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
+      if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) && columnDictModels.length > 0) {
+        let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+        Column_Up = Column_Up.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        enumColumnName = Table_Up + Column_Up;
+      } else {
+        continue;
+      }
+  #>
+  // <#=column_comment#>
+  <#=enumColumnName#>,<#
+    }
+  #><#
+  }
+  #>
 } from "/gen/types.ts";
 
 declare const <#=table_Up#>Id: unique symbol;
@@ -49,7 +85,10 @@ declare global {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (!column.onlyCodegenDeno) continue;
+      if (
+        !column.onlyCodegenDeno
+        && column.canSearch === true
+      ) continue;
       // if (column.isVirtual) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
@@ -112,16 +151,6 @@ declare global {
       if (column_name.startsWith("is_")) {
         data_type = 'number';
       }
-      if (column_name === 'id') {
-        column_comment = 'ID';
-      }
-      if (column.dict || column.dictbiz) {
-        if (column.DATA_TYPE === 'tinyint' || column.DATA_TYPE === 'int') {
-          data_type = "number[]";
-        } else {
-          data_type = "string[]";
-        }
-      }
     #><#
       if (hasCreateUsrId && column_name === "create_usr_id") {
     #>
@@ -141,9 +170,27 @@ declare global {
     <#=column_name#>?: <#=data_type#>;
     <#=column_name#>_is_null?: boolean;<#
       } else if (column.dict || column.dictbiz) {
+        let enumColumnName = data_type;
+        const columnDictModels = [
+          ...dictModels.filter(function(item) {
+            return item.code === column.dict || item.code === column.dict;
+          }),
+          ...dictbizModels.filter(function(item) {
+            return item.code === column.dict || item.code === column.dictbiz;
+          }),
+        ];
+        if (![ "int", "decimal", "tinyint" ].includes(column.DATA_TYPE) && columnDictModels.length > 0) {
+          let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+          Column_Up = Column_Up.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
+          enumColumnName = Table_Up + Column_Up;
+        } else if (column.DATA_TYPE === 'int') {
+          enumColumnName = 'number';
+        }
     #>
     /** <#=column_comment#> */
-    <#=column_name#>?: <#=data_type#>;<#
+    <#=column_name#>?: <#=enumColumnName#>[];<#
       } else if (column_name === "id") {
     #>
     /** ID */
@@ -404,7 +451,7 @@ declare global {
         let enumColumnName = data_type;
         const columnDictModels = [
           ...dictModels.filter(function(item) {
-            return item.code === column.dict || item.code === column.dictbiz;
+            return item.code === column.dict || item.code === column.dict;
           }),
           ...dictbizModels.filter(function(item) {
             return item.code === column.dict || item.code === column.dictbiz;

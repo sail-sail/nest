@@ -12,6 +12,22 @@ declare global {
   type DomainId = Distinct<string, typeof domainId>;
 
   interface DomainSearch extends DomainSearchType {
+    /** 协议 */
+    protocol?: string;
+    protocol_like?: string;
+    /** 锁定 */
+    is_locked?: number[];
+    /** 默认 */
+    is_default?: number[];
+    /** 排序 */
+    order_by?: number[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
   }
 
   interface DomainModel extends DomainModelType {

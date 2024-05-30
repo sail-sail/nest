@@ -6,7 +6,6 @@ import * as resolver from "./role.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar RoleId
 
-
 type RoleModel {
   "ID"
   id: RoleId!
@@ -143,9 +142,6 @@ input RoleSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "首页"
-  home_url: String
-  home_url_like: String
   "菜单权限"
   menu_ids: [MenuId!]
   "菜单权限"
@@ -158,31 +154,20 @@ input RoleSearch {
   data_permit_ids: [DataPermitId!]
   "数据权限"
   data_permit_ids_is_null: Boolean
-  "锁定"
-  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "排序"
-  order_by: [Int]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找角色总数"

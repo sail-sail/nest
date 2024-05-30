@@ -12,6 +12,17 @@ declare global {
   type DictbizDetailId = Distinct<string, typeof dictbizDetailId>;
 
   interface DictbizDetailSearch extends DictbizDetailSearchType {
+    /** 锁定 */
+    is_locked?: number[];
+    /** 排序 */
+    order_by?: number[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
     tenant_id?: string | null;
   }
 
