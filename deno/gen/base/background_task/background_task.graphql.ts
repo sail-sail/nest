@@ -17,6 +17,7 @@ enum BackgroundTaskState {
   "取消"
   cancel
 }
+
 "后台任务类型"
 enum BackgroundTaskType {
   "文本"
@@ -165,35 +166,20 @@ input BackgroundTaskSearch {
   state: [BackgroundTaskState!]
   "类型"
   type: [BackgroundTaskType!]
-  "执行结果"
-  result: String
-  result_like: String
-  "错误信息"
-  err_msg: String
-  err_msg_like: String
   "开始时间"
   begin_time: [NaiveDateTime]
-  "结束时间"
-  end_time: [NaiveDateTime]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找后台任务总数"

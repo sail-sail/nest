@@ -12,6 +12,20 @@ declare global {
   type DeptId = Distinct<string, typeof deptId>;
 
   interface DeptSearch extends DeptSearchType {
+    /** 部门负责人 */
+    usr_ids?: UsrId[];
+    usr_ids_is_null?: boolean;
+    /** 锁定 */
+    is_locked?: number[];
+    /** 排序 */
+    order_by?: number[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
     tenant_id?: string | null;
     org_id?: string | null;
   }
