@@ -3,6 +3,8 @@ import type {
   DictbizModel as DictbizModelType,
   DictbizSearch as DictbizSearchType,
   DictbizFieldComment as DictbizFieldCommentType,
+  // 数据类型
+  DictbizType,
 } from "/gen/types.ts";
 
 declare const dictbizId: unique symbol;
@@ -12,6 +14,19 @@ declare global {
   type DictbizId = Distinct<string, typeof dictbizId>;
 
   interface DictbizSearch extends DictbizSearchType {
+    /** 数据类型 */
+    type?: DictbizType[];
+    /** 锁定 */
+    is_locked?: number[];
+    /** 排序 */
+    order_by?: number[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
     tenant_id?: string | null;
   }
 

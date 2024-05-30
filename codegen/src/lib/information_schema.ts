@@ -117,6 +117,7 @@ async function getSchema0(
     for (let k = 0; k < records.length; k++) {
       const record = records[k];
       if (record.COLUMN_NAME === "id") {
+        record.canSearch = true;
         continue;
       }
       if (column.COLUMN_NAME === record.COLUMN_NAME) {
@@ -164,6 +165,7 @@ async function getSchema0(
       DATA_TYPE: "varchar",
       COLUMN_COMMENT: "创建人",
       onlyCodegenDeno: true,
+      canSearch: true,
     });
   }
   // 创建时间
@@ -184,6 +186,7 @@ async function getSchema0(
       DATA_TYPE: "varchar",
       COLUMN_COMMENT: "更新人",
       onlyCodegenDeno: true,
+      canSearch: true,
     });
   }
   // 更新时间
@@ -199,6 +202,9 @@ async function getSchema0(
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const item = tables[table_name].columns[i];
     const column_name = item.COLUMN_NAME;
+    if (column_name === "id") {
+      item.canSearch = true;
+    }
     const record = records2.find((item: TableCloumn) => item.COLUMN_NAME === column_name);
     if (column_name === "is_hidden") {
       if (item.onlyCodegenDeno != null) {
@@ -230,6 +236,9 @@ async function getSchema0(
       } else if (hasUpdateUsrIdLbl && column_name === "update_usr_id") {
         item.modelLabel = "update_usr_id_lbl";
       }
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
     }
     if ([ "create_time", "update_time" ].includes(column_name)) {
       if (item.width == null) {
@@ -245,6 +254,9 @@ async function getSchema0(
       }
       if (item.search == null) {
         item.search = true;
+        if (item.canSearch == null) {
+          item.canSearch = true;
+        }
       }
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = true;
@@ -267,6 +279,9 @@ async function getSchema0(
       }
       if (item.search == null) {
         item.search = true;
+        if (item.canSearch == null) {
+          item.canSearch = true;
+        }
       }
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = true;
@@ -315,6 +330,9 @@ async function getSchema0(
       }
       if (item.search == null) {
         item.search = true;
+        if (item.canSearch == null) {
+          item.canSearch = true;
+        }
       }
     }
     if (column_name.startsWith("is_")
@@ -456,6 +474,15 @@ async function getSchema0(
     if (record && record.DATA_TYPE === "datetime") {
       if (item.width == null) {
         item.width = 150;
+      }
+    }
+    if (item.canSearch == null) {
+      if (item.search) {
+        item.canSearch = true;
+      } else {
+        if (item.foreignKey && item.foreignKey.type !== "many2many") {
+          item.canSearch = true;
+        }
       }
     }
   }
@@ -702,6 +729,9 @@ export async function getSchema(
       if (!column) {
         record.require = true;
         record.search = true;
+        if (record.canSearch == null) {
+          record.canSearch = true;
+        }
       }
     }
     if (record.COLUMN_NAME === "img" || record.COLUMN_NAME.endsWith("_img")) {
@@ -729,6 +759,7 @@ export async function getSchema(
     }
     if (record.isEncrypt) {
       record.search = false;
+      record.canSearch = false;
     }
   }
   for (let i = 0; i < tables[table_name].columns.length; i++) {

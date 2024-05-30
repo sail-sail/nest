@@ -368,7 +368,7 @@
           </template>
           
           <!-- 执行结果 -->
-          <template v-else-if="'result' === col.prop && (showBuildIn || builtInSearch?.result == null)">
+          <template v-else-if="'result' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -377,7 +377,7 @@
           </template>
           
           <!-- 错误信息 -->
-          <template v-else-if="'err_msg' === col.prop && (showBuildIn || builtInSearch?.err_msg == null)">
+          <template v-else-if="'err_msg' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -395,7 +395,7 @@
           </template>
           
           <!-- 结束时间 -->
-          <template v-else-if="'end_time_lbl' === col.prop && (showBuildIn || builtInSearch?.end_time == null)">
+          <template v-else-if="'end_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -404,7 +404,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -422,7 +422,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -440,7 +440,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -557,14 +557,7 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   state?: string|string[]; // 状态
   type?: string|string[]; // 类型
-  result?: string; // 执行结果
-  result_like?: string; // 执行结果
-  err_msg?: string; // 错误信息
-  err_msg_like?: string; // 错误信息
   begin_time?: string; // 开始时间
-  end_time?: string; // 结束时间
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
