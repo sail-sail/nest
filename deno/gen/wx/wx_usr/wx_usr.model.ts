@@ -12,6 +12,45 @@ declare global {
   type WxUsrId = Distinct<string, typeof wxUsrId>;
 
   interface WxUsrSearch extends WxUsrSearchType {
+    /** 用户 */
+    usr_id?: UsrId[];
+    usr_id_is_null?: boolean;
+    /** 昵称 */
+    nick_name?: string;
+    nick_name_like?: string;
+    /** 头像 */
+    avatar_url?: string;
+    avatar_url_like?: string;
+    /** 手机 */
+    mobile?: string;
+    mobile_like?: string;
+    /** 小程序用户唯一标识 */
+    openid?: string;
+    openid_like?: string;
+    /** 小程序用户统一标识 */
+    unionid?: string;
+    unionid_like?: string;
+    /** 性别 */
+    gender?: number[];
+    /** 城市 */
+    city?: string;
+    city_like?: string;
+    /** 省份 */
+    province?: string;
+    province_like?: string;
+    /** 国家 */
+    country?: string;
+    country_like?: string;
+    /** 语言 */
+    language?: string;
+    language_like?: string;
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
     tenant_id?: string | null;
     org_id?: string | null;
   }

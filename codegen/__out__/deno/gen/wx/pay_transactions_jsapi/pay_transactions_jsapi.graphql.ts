@@ -23,6 +23,7 @@ enum PayTransactionsJsapiTradeState {
   "支付失败"
   PAYERROR
 }
+
 "微信JSAPI下单货币类型"
 enum PayTransactionsJsapiCurrency {
   "人民币"
@@ -210,68 +211,21 @@ input PayTransactionsJsapiSearch {
   ids: [PayTransactionsJsapiId!]
   "ID"
   id: PayTransactionsJsapiId
-  "开发者ID"
-  appid: String
-  appid_like: String
-  "商户号"
-  mchid: String
-  mchid_like: String
-  "商品描述"
-  description: String
-  description_like: String
-  "商户订单号"
-  out_trade_no: String
-  out_trade_no_like: String
   "微信支付订单号"
   transaction_id: String
   transaction_id_like: String
-  "交易状态"
-  trade_state: [PayTransactionsJsapiTradeState!]
-  "交易状态描述"
-  trade_state_desc: String
-  trade_state_desc_like: String
-  "支付完成时间"
-  success_time: [NaiveDateTime]
-  "交易限制时间"
-  time_expire: String
-  time_expire_like: String
-  "附加数据"
-  attach: String
-  attach_like: String
-  "附加数据2"
-  attach2: String
-  attach2_like: String
-  "通知地址"
-  notify_url: String
-  notify_url_like: String
-  "是否支持发票"
-  support_fapiao: [Int!]
-  "订单金额(分)"
-  total_fee: [Int]
-  "货币类型"
-  currency: [PayTransactionsJsapiCurrency!]
-  "用户标识"
-  openid: String
-  openid_like: String
-  "预支付交易会话标识"
-  prepay_id: String
-  prepay_id_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找微信JSAPI下单总数"

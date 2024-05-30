@@ -12,6 +12,35 @@ declare global {
   type WxPayId = Distinct<string, typeof wxPayId>;
 
   interface WxPaySearch extends WxPaySearchType {
+    /** 商户号 */
+    mchid?: string;
+    mchid_like?: string;
+    /** 公钥 */
+    public_key?: string;
+    public_key_like?: string;
+    /** 私钥 */
+    private_key?: string;
+    private_key_like?: string;
+    /** APIv3密钥 */
+    v3_key?: string;
+    v3_key_like?: string;
+    /** 支付终端IP */
+    payer_client_ip?: string;
+    payer_client_ip_like?: string;
+    /** 通知地址 */
+    notify_url?: string;
+    notify_url_like?: string;
+    /** 锁定 */
+    is_locked?: number[];
+    /** 排序 */
+    order_by?: number[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
     tenant_id?: string | null;
   }
 
