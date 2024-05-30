@@ -970,13 +970,14 @@ const hasAtt = columns.some((item) => item.isAtt);
             const foreignTabs = column.foreignTabs || [ ];
             const isEncrypt = column.isEncrypt;
             const prefix = column.prefix || "";
+            const canSearch = column.canSearch;
           #><#
           if (column.isImg) {
           #>
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -997,7 +998,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1051,7 +1052,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1088,7 +1089,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1135,7 +1136,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1159,7 +1160,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1222,7 +1223,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1258,7 +1259,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1798,6 +1799,8 @@ const props = defineProps<{<#
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
+    const canSearch = column.canSearch;
+    if (!canSearch) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "version") continue;
     if ([
@@ -1916,6 +1919,8 @@ const builtInSearchType: { [key: string]: string } = {<#
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
+    const canSearch = column.canSearch;
+    if (!canSearch) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "version") continue;
     if (column_name === "is_deleted") continue;
@@ -1928,12 +1933,6 @@ const builtInSearchType: { [key: string]: string } = {<#
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     if (foreignKey) {
       data_type = data_type+"[]";
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
   #><#
     if (foreignKey) {

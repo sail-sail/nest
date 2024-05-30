@@ -418,6 +418,14 @@ html:is(.dark) {
 .custom_tree_select_readonly {
   color: var(--readonly_font_color);
 }
+.custom_date_picker_readonly {
+  .el-input__inner {
+    color: var(--readonly_font_color);
+  }
+  .el-input__prefix-inner {
+    display: none;
+  }
+}
 
 .el-form-item:has(
   .dict_select_readonly,

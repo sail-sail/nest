@@ -12,6 +12,20 @@ declare global {
   type OperationRecordId = Distinct<string, typeof operationRecordId>;
 
   interface OperationRecordSearch extends OperationRecordSearchType {
+    /** 模块 */
+    module?: string;
+    module_like?: string;
+    /** 方法 */
+    method?: string;
+    method_like?: string;
+    /** 耗时(毫秒) */
+    time?: number[];
+    /** 操作前数据 */
+    old_data?: string;
+    old_data_like?: string;
+    /** 操作后数据 */
+    new_data?: string;
+    new_data_like?: string;
     /** 更新人 */
     update_usr_id?: UsrId[];
     update_usr_id_is_null?: boolean;

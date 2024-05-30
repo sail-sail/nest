@@ -1979,7 +1979,7 @@ export async function setIdByLbl(
       }).join("");
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -2331,7 +2331,7 @@ export async function findByUnique(
         }
         const columnDictModels = [
           ...dictModels.filter(function(item) {
-            return item.code === column.dict || item.code === column.dictbiz;
+            return item.code === column.dict || item.code === column.dict;
           }),
           ...dictbizModels.filter(function(item) {
             return item.code === column.dict || item.code === column.dictbiz;
@@ -4404,12 +4404,14 @@ export async function updateById(
     #><#
     if (hasVersion) {
     #>
-    if (input.version != null) {
-      const version = await getVersionById(id);
-      if (version && version > input.version) {
-        throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
+    if (!silentMode) {
+      if (input.version != null) {
+        const version = await getVersionById(id);
+        if (version && version > input.version) {
+          throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
+        }
+        sql += `version = ${ args.push(version + 1) },`;
       }
-      sql += `version = ${ args.push(version + 1) },`;
     }<#
     }
     #><#
