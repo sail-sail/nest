@@ -469,7 +469,7 @@
           </template>
           
           <!-- 执行结果 -->
-          <template v-else-if="'exec_result' === col.prop && (showBuildIn || builtInSearch?.exec_result == null)">
+          <template v-else-if="'exec_result' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -487,7 +487,7 @@
           </template>
           
           <!-- 结束时间 -->
-          <template v-else-if="'end_time_lbl' === col.prop && (showBuildIn || builtInSearch?.end_time == null)">
+          <template v-else-if="'end_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -496,7 +496,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -505,7 +505,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -632,12 +632,7 @@ const props = defineProps<{
   cron_job_id?: string|string[]; // 定时任务
   cron_job_id_lbl?: string; // 定时任务
   exec_state?: string|string[]; // 执行状态
-  exec_result?: string; // 执行结果
-  exec_result_like?: string; // 执行结果
   begin_time?: string; // 开始时间
-  end_time?: string; // 结束时间
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {

@@ -12,6 +12,16 @@ declare global {
   type CronJobLogId = Distinct<string, typeof cronJobLogId>;
 
   interface CronJobLogSearch extends CronJobLogSearchType {
+    /** 执行结果 */
+    exec_result?: string;
+    exec_result_like?: string;
+    /** 结束时间 */
+    end_time?: string[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
     /** 创建人 */
     create_usr_id?: UsrId[];
     create_usr_id_is_null?: boolean;
