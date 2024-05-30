@@ -12,6 +12,19 @@ declare global {
   type WxwAppTokenId = Distinct<string, typeof wxwAppTokenId>;
 
   interface WxwAppTokenSearch extends WxwAppTokenSearchType {
+    /** 企微应用 */
+    wxw_app_id?: WxwAppId[];
+    wxw_app_id_is_null?: boolean;
+    /** 类型corp和contact */
+    type?: string;
+    type_like?: string;
+    /** 令牌 */
+    access_token?: string;
+    access_token_like?: string;
+    /** 令牌创建时间 */
+    token_time?: string[];
+    /** 令牌超时时间 */
+    expires_in?: number[];
     /** 创建人 */
     create_usr_id?: UsrId[];
     create_usr_id_is_null?: boolean;

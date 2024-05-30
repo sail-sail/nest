@@ -12,6 +12,13 @@ declare global {
   type WxwAppId = Distinct<string, typeof wxwAppId>;
 
   interface WxwAppSearch extends WxwAppSearchType {
+    /** 锁定 */
+    is_locked?: number[];
+    /** 排序 */
+    order_by?: number[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
     /** 创建人 */
     create_usr_id?: UsrId[];
     create_usr_id_is_null?: boolean;
