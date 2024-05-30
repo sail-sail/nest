@@ -12,6 +12,15 @@ declare global {
   type LangId = Distinct<string, typeof langId>;
 
   interface LangSearch extends LangSearchType {
+    /** 排序 */
+    order_by?: number[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
   }
 
   interface LangModel extends LangModelType {

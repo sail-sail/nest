@@ -12,6 +12,13 @@ declare global {
   type I18nId = Distinct<string, typeof i18nId>;
 
   interface I18nSearch extends I18nSearchType {
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
   }
 
   interface I18nModel extends I18nModelType {
