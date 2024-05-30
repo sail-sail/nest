@@ -1012,7 +1012,7 @@ export async function lockByIds(
 }<#
 }
 #><#
-if (opts.noRevert !== true) {
+if (opts.noRevert !== true && hasIsDeleted) {
 #>
 
 /**
