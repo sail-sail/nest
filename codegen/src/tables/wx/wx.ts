@@ -391,6 +391,8 @@ export default defineConfig({
       noAdd: true,
       noEdit: true,
       noDelete: true,
+      noRevert: true,
+      noForceDelete: true,
       defaultSort: {
         prop: "create_time",
         order: "descending",
@@ -497,6 +499,8 @@ export default defineConfig({
       noAdd: true,
       noEdit: true,
       noDelete: true,
+      noRevert: true,
+      noForceDelete: true,
       defaultSort: {
         prop: "transaction_id",
         order: "descending",
