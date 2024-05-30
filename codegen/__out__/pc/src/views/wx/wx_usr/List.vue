@@ -458,7 +458,7 @@
           </template>
           
           <!-- 用户 -->
-          <template v-else-if="'usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.usr_id == null)">
+          <template v-else-if="'usr_id_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -467,7 +467,7 @@
           </template>
           
           <!-- 昵称 -->
-          <template v-else-if="'nick_name' === col.prop && (showBuildIn || builtInSearch?.nick_name == null)">
+          <template v-else-if="'nick_name' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -476,7 +476,7 @@
           </template>
           
           <!-- 头像 -->
-          <template v-else-if="'avatar_url' === col.prop && (showBuildIn || builtInSearch?.avatar_url == null)">
+          <template v-else-if="'avatar_url' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -485,7 +485,7 @@
           </template>
           
           <!-- 手机 -->
-          <template v-else-if="'mobile' === col.prop && (showBuildIn || builtInSearch?.mobile == null)">
+          <template v-else-if="'mobile' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -494,7 +494,7 @@
           </template>
           
           <!-- 小程序用户唯一标识 -->
-          <template v-else-if="'openid' === col.prop && (showBuildIn || builtInSearch?.openid == null)">
+          <template v-else-if="'openid' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -503,7 +503,7 @@
           </template>
           
           <!-- 小程序用户统一标识 -->
-          <template v-else-if="'unionid' === col.prop && (showBuildIn || builtInSearch?.unionid == null)">
+          <template v-else-if="'unionid' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -512,7 +512,7 @@
           </template>
           
           <!-- 性别 -->
-          <template v-else-if="'gender_lbl' === col.prop && (showBuildIn || builtInSearch?.gender == null)">
+          <template v-else-if="'gender_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -521,7 +521,7 @@
           </template>
           
           <!-- 城市 -->
-          <template v-else-if="'city' === col.prop && (showBuildIn || builtInSearch?.city == null)">
+          <template v-else-if="'city' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -530,7 +530,7 @@
           </template>
           
           <!-- 省份 -->
-          <template v-else-if="'province' === col.prop && (showBuildIn || builtInSearch?.province == null)">
+          <template v-else-if="'province' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -539,7 +539,7 @@
           </template>
           
           <!-- 国家 -->
-          <template v-else-if="'country' === col.prop && (showBuildIn || builtInSearch?.country == null)">
+          <template v-else-if="'country' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -548,7 +548,7 @@
           </template>
           
           <!-- 语言 -->
-          <template v-else-if="'language' === col.prop && (showBuildIn || builtInSearch?.language == null)">
+          <template v-else-if="'language' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -557,7 +557,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -575,7 +575,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -593,7 +593,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -723,29 +723,6 @@ const props = defineProps<{
   id?: WxUsrId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  usr_id?: string|string[]; // 用户
-  usr_id_lbl?: string; // 用户
-  nick_name?: string; // 昵称
-  nick_name_like?: string; // 昵称
-  avatar_url?: string; // 头像
-  avatar_url_like?: string; // 头像
-  mobile?: string; // 手机
-  mobile_like?: string; // 手机
-  openid?: string; // 小程序用户唯一标识
-  openid_like?: string; // 小程序用户唯一标识
-  unionid?: string; // 小程序用户统一标识
-  unionid_like?: string; // 小程序用户统一标识
-  gender?: string|string[]; // 性别
-  city?: string; // 城市
-  city_like?: string; // 城市
-  province?: string; // 省份
-  province_like?: string; // 省份
-  country?: string; // 国家
-  country_like?: string; // 国家
-  language?: string; // 语言
-  language_like?: string; // 语言
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -756,10 +733,6 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  usr_id: "string[]",
-  usr_id_lbl: "string[]",
-  gender: "number[]",
-  gender_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",

@@ -3,6 +3,14 @@ import type {
   WxPayNoticeModel as WxPayNoticeModelType,
   WxPayNoticeSearch as WxPayNoticeSearchType,
   WxPayNoticeFieldComment as WxPayNoticeFieldCommentType,
+  // 交易类型
+  WxPayNoticeTradeType,
+  // 交易状态
+  WxPayNoticeTradeState,
+  // 货币类型
+  WxPayNoticeCurrency,
+  // 用户支付币种
+  WxPayNoticePayerCurrency,
 } from "/gen/types.ts";
 
 declare const wxPayNoticeId: unique symbol;
@@ -12,6 +20,51 @@ declare global {
   type WxPayNoticeId = Distinct<string, typeof wxPayNoticeId>;
 
   interface WxPayNoticeSearch extends WxPayNoticeSearchType {
+    /** 开发者ID */
+    appid?: string;
+    appid_like?: string;
+    /** 商户号 */
+    mchid?: string;
+    mchid_like?: string;
+    /** 商户订单号 */
+    out_trade_no?: string;
+    out_trade_no_like?: string;
+    /** 交易类型 */
+    trade_type?: WxPayNoticeTradeType[];
+    /** 交易状态 */
+    trade_state?: WxPayNoticeTradeState[];
+    /** 交易状态描述 */
+    trade_state_desc?: string;
+    trade_state_desc_like?: string;
+    /** 付款银行 */
+    bank_type?: string;
+    bank_type_like?: string;
+    /** 附加数据 */
+    attach?: string;
+    attach_like?: string;
+    /** 支付完成时间 */
+    success_time?: string[];
+    /** 总金额 */
+    total?: number[];
+    /** 用户支付金额 */
+    payer_total?: number[];
+    /** 货币类型 */
+    currency?: WxPayNoticeCurrency[];
+    /** 用户支付币种 */
+    payer_currency?: WxPayNoticePayerCurrency[];
+    /** 商户端设备号 */
+    device_id?: string;
+    device_id_like?: string;
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 原始数据 */
+    raw?: string;
+    raw_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
     tenant_id?: string | null;
     org_id?: string | null;
   }

@@ -6,7 +6,6 @@ import * as resolver from "./wxo_usr.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxoUsrId
 
-
 type WxoUsrModel {
   "ID"
   id: WxoUsrId!
@@ -99,35 +98,18 @@ input WxoUsrSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "用户"
-  usr_id: [UsrId!]
-  "用户"
-  usr_id_is_null: Boolean
-  "公众号用户唯一标识"
-  openid: String
-  openid_like: String
-  "公众号用户统一标识"
-  unionid: String
-  unionid_like: String
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找公众号用户总数"

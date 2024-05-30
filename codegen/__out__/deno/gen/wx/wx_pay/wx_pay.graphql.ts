@@ -6,7 +6,6 @@ import * as resolver from "./wx_pay.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxPayId
 
-
 type WxPayModel {
   "ID"
   id: WxPayId!
@@ -150,49 +149,20 @@ input WxPaySearch {
   "开发者ID"
   appid: String
   appid_like: String
-  "商户号"
-  mchid: String
-  mchid_like: String
-  "公钥"
-  public_key: String
-  public_key_like: String
-  "私钥"
-  private_key: String
-  private_key_like: String
-  "APIv3密钥"
-  v3_key: String
-  v3_key_like: String
-  "支付终端IP"
-  payer_client_ip: String
-  payer_client_ip_like: String
-  "通知地址"
-  notify_url: String
-  notify_url_like: String
-  "锁定"
-  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "排序"
-  order_by: [Int]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找微信支付设置总数"
