@@ -3,6 +3,8 @@ import type {
   DataPermitModel as DataPermitModelType,
   DataPermitSearch as DataPermitSearchType,
   DataPermitFieldComment as DataPermitFieldCommentType,
+  // 类型
+  DataPermitType,
 } from "/gen/types.ts";
 
 declare const dataPermitId: unique symbol;
@@ -12,6 +14,15 @@ declare global {
   type DataPermitId = Distinct<string, typeof dataPermitId>;
 
   interface DataPermitSearch extends DataPermitSearchType {
+    /** 类型 */
+    type?: DataPermitType[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
   }
 
   interface DataPermitModel extends DataPermitModelType {

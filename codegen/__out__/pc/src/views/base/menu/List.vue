@@ -535,7 +535,7 @@
           </template>
           
           <!-- 路由 -->
-          <template v-else-if="'route_path' === col.prop && (showBuildIn || builtInSearch?.route_path == null)">
+          <template v-else-if="'route_path' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -544,7 +544,7 @@
           </template>
           
           <!-- 参数 -->
-          <template v-else-if="'route_query' === col.prop && (showBuildIn || builtInSearch?.route_query == null)">
+          <template v-else-if="'route_query' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -553,7 +553,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -585,7 +585,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -608,7 +608,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -626,7 +626,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -644,7 +644,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -782,15 +782,7 @@ const props = defineProps<{
   parent_id_lbl?: string; // 父菜单
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  route_path?: string; // 路由
-  route_path_like?: string; // 路由
-  route_query?: string; // 参数
-  route_query_like?: string; // 参数
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -803,11 +795,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   parent_id: "string[]",
   parent_id_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
