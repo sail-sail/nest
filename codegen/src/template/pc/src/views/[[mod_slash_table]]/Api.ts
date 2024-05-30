@@ -100,7 +100,7 @@ for (let i = 0; i < columns.length; i++) {
   }
   const columnDictModels = [
     ...dictModels.filter(function(item) {
-      return item.code === column.dict || item.code === column.dictbiz;
+      return item.code === column.dict || item.code === column.dict;
     }),
     ...dictbizModels.filter(function(item) {
       return item.code === column.dict || item.code === column.dictbiz;
@@ -2080,7 +2080,7 @@ export async function getDefaultInput() {<#
       } else if (column.dict || column.dictbiz) {
         const columnDictModels = [
           ...dictModels.filter(function(item) {
-            return item.code === column.dict || item.code === column.dictbiz;
+            return item.code === column.dict || item.code === column.dict;
           }),
           ...dictbizModels.filter(function(item) {
             return item.code === column.dict || item.code === column.dictbiz;

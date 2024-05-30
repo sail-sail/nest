@@ -572,7 +572,7 @@
         >
           
           <!-- 头像 -->
-          <template v-if="'img' === col.prop && (showBuildIn || builtInSearch?.img == null)">
+          <template v-if="'img' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -656,7 +656,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -688,7 +688,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -711,7 +711,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -729,7 +729,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -747,7 +747,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -886,14 +886,10 @@ const props = defineProps<{
   selectedIds?: UsrId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: UsrId; // ID
-  img?: string; // 头像
-  img_like?: string; // 头像
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   username?: string; // 用户名
   username_like?: string; // 用户名
-  password?: string; // 密码
-  password_like?: string; // 密码
   role_ids?: string|string[]; // 所属角色
   role_ids_lbl?: string[]; // 所属角色
   dept_ids?: string|string[]; // 所属部门
@@ -902,11 +898,7 @@ const props = defineProps<{
   org_ids_lbl?: string[]; // 所属组织
   default_org_id?: string|string[]; // 默认组织
   default_org_id_lbl?: string; // 默认组织
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -925,11 +917,8 @@ const builtInSearchType: { [key: string]: string } = {
   org_ids_lbl: "string[]",
   default_org_id: "string[]",
   default_org_id_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",

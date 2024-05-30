@@ -443,7 +443,6 @@ const isShowModelLabel = $computed(() => {
     }
     const item = options4SelectV2.find((item: OptionType) => item.value === modelValue);
     if (!item || item.label !== modelLabel) {
-      console.log(modelValue);
       return true;
     }
     return false;
