@@ -907,6 +907,8 @@ type Query {
 if (opts.noAdd !== true
   || opts.noEdit !== true
   || opts.noDelete !== true
+  || (opts.noRevert !== true && hasIsDeleted)
+  || (opts.noForceDelete !== true && hasIsDeleted)
 ) {
 #>
 type Mutation {<#
@@ -952,7 +954,7 @@ type Mutation {<#
   revertByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
   #><#
-  if (opts.noDelete !== true && hasIsDeleted) {
+  if (opts.noForceDelete !== true && hasIsDeleted) {
   #>
   "根据 ids 彻底删除<#=table_comment#>"
   forceDeleteByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
