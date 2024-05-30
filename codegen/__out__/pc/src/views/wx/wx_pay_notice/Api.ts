@@ -199,56 +199,6 @@ export async function findById(
 }
 
 /**
- * 根据 ids 还原微信支付通知
- * @param {WxPayNoticeId[]} ids
- * @param {GqlOpt} opt?
- */
-export async function revertByIds(
-  ids: WxPayNoticeId[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    revertByIdsWxPayNotice: Mutation["revertByIdsWxPayNotice"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [WxPayNoticeId!]!) {
-        revertByIdsWxPayNotice(ids: $ids)
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const res = data.revertByIdsWxPayNotice;
-  return res;
-}
-
-/**
- * 根据 ids 彻底删除微信支付通知
- * @param {WxPayNoticeId[]} ids
- * @param {GqlOpt} opt?
- */
-export async function forceDeleteByIds(
-  ids: WxPayNoticeId[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    forceDeleteByIdsWxPayNotice: Mutation["forceDeleteByIdsWxPayNotice"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [WxPayNoticeId!]!) {
-        forceDeleteByIdsWxPayNotice(ids: $ids)
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const res = data.forceDeleteByIdsWxPayNotice;
-  return res;
-}
-
-/**
  * 下载微信支付通知导入模板
  */
 export function useDownloadImportTemplate(routePath: string) {

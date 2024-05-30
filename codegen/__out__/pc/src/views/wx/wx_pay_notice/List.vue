@@ -239,30 +239,6 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
-        plain
-        type="primary"
-        @click="onRevertByIds"
-      >
-        <template #icon>
-          <ElIconCircleCheck />
-        </template>
-        <span>{{ ns('还原') }}</span>
-      </el-button>
-      
-      <el-button
-        v-if="permit('force_delete') && !isLocked"
-        plain
-        type="danger"
-        @click="onForceDeleteByIds"
-      >
-        <template #icon>
-          <ElIconCircleClose />
-        </template>
-        <span>{{ ns('彻底删除') }}</span>
-      </el-button>
-      
-      <el-button
         plain
         @click="openView"
       >
@@ -650,8 +626,6 @@ import Detail from "./Detail.vue";
 import {
   findAll,
   findCount,
-  revertByIds,
-  forceDeleteByIds,
   useExportExcel,
 } from "./Api";
 
@@ -1344,71 +1318,6 @@ async function openView() {
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
-}
-
-/** 点击彻底删除 */
-async function onForceDeleteByIds() {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (!permit("forceDelete")) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("微信支付通知")));
-    return;
-  }
-  try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("微信支付通知")) }?`, {
-      confirmButtonText: await nsAsync("确定"),
-      cancelButtonText: await nsAsync("取消"),
-      type: "warning",
-    });
-  } catch (err) {
-    return;
-  }
-  const num = await forceDeleteByIds(selectedIds);
-  if (num) {
-    selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("微信支付通知")));
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
-/** 点击还原 */
-async function onRevertByIds() {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (permit("delete") === false) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("微信支付通知")));
-    return;
-  }
-  try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("微信支付通知")) }?`, {
-      confirmButtonText: await nsAsync("确定"),
-      cancelButtonText: await nsAsync("取消"),
-      type: "warning",
-    });
-  } catch (err) {
-    return;
-  }
-  const num = await revertByIds(selectedIds);
-  if (num) {
-    search.is_deleted = 0;
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("微信支付通知")));
-    emit("revert", num);
-  }
 }
 
 /** 初始化ts中的国际化信息 */
