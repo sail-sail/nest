@@ -490,7 +490,7 @@
           </template>
           
           <!-- 类型 -->
-          <template v-else-if="'type_lbl' === col.prop && (showBuildIn || builtInSearch?.type == null)">
+          <template v-else-if="'type_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -499,7 +499,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -517,7 +517,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -535,7 +535,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -670,9 +670,6 @@ const props = defineProps<{
   menu_id?: string|string[]; // 菜单
   menu_id_lbl?: string; // 菜单
   scope?: string|string[]; // 范围
-  type?: string|string[]; // 类型
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -687,8 +684,6 @@ const builtInSearchType: { [key: string]: string } = {
   menu_id_lbl: "string[]",
   scope: "string[]",
   scope_lbl: "string[]",
-  type: "string[]",
-  type_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
