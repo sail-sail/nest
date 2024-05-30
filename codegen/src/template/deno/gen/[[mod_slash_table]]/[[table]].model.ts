@@ -100,6 +100,7 @@ declare global {
       const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
+      const modelLabel = column.modelLabel;
       const isPassword = column.isPassword;
       if (isPassword) continue;
       const search = column.search;
@@ -169,6 +170,12 @@ declare global {
     /** <#=column_comment#> */
     <#=column_name#>?: <#=data_type#>;
     <#=column_name#>_is_null?: boolean;<#
+      if (modelLabel) {
+    #>
+    /** <#=column_comment#> */
+    <#=modelLabel#>?: string[];<#
+      }
+    #><#
       } else if (column.dict || column.dictbiz) {
         let enumColumnName = data_type;
         const columnDictModels = [
