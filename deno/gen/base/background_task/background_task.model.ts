@@ -27,7 +27,7 @@ declare global {
     create_time?: string[];
     /** 更新时间 */
     update_time?: string[];
-    tenant_id?: string | null;
+    tenant_id?: TenantId | null;
   }
 
   interface BackgroundTaskModel extends BackgroundTaskModelType {
