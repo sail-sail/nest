@@ -110,14 +110,7 @@ async function getWhereQuery(
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
-  
-  if (search?.org_id == null) {
-    const authModel = await getAuthModel();
-    const org_id = authModel?.org_id;
-    if (org_id) {
-      whereQuery += ` and t.org_id=${ args.push(org_id) }`;
-    }
-  } else if (search?.org_id != null && search?.org_id !== "-") {
+  if (search?.org_id != null) {
     whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
   }
   if (search?.id != null) {

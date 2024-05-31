@@ -2467,6 +2467,7 @@ if (
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") return false;
     if (column_name === "tenant_id") return false;
+    if (column_name === "org_id") return false;
     if (column.ignoreCodegen) return false;
     if (column.onlyCodegenDeno) return false;
     const foreignKey = column.foreignKey;
