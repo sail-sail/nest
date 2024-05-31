@@ -717,14 +717,7 @@ async function getWhereQuery(
   #><#
   if (hasOrgId) {
   #>
-  
-  if (search?.org_id == null) {
-    const authModel = await getAuthModel();
-    const org_id = authModel?.org_id;
-    if (org_id) {
-      whereQuery += ` and t.org_id=${ args.push(org_id) }`;
-    }
-  } else if (search?.org_id != null && search?.org_id !== "-") {
+  if (search?.org_id != null) {
     whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
   }<#
   }
@@ -862,7 +855,8 @@ async function getFromQuery(
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
-      if (column.isVirtual && column_name !== "org_id") continue;
+      if (column.isVirtual) continue;
+      if (column_name === "org_id") continue;
       const foreignKey = column.foreignKey;
       let data_type = column.DATA_TYPE;
       if (!foreignKey) continue;
@@ -1101,7 +1095,8 @@ export async function findAll(
         const column = columns[i];
         if (column.ignoreCodegen) continue;
         const column_name = column.COLUMN_NAME;
-        if (column.isVirtual && column_name !== "org_id") continue;
+        if (column.isVirtual) continue;
+        if (column_name === "org_id") continue;
         const foreignKey = column.foreignKey;
         let data_type = column.DATA_TYPE;
         if (!foreignKey) continue;
@@ -1556,6 +1551,7 @@ export async function findAll(
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
       if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
       const data_type = column.DATA_TYPE;
       const column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
