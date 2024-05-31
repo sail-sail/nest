@@ -4,6 +4,10 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
 import * as pay_transactions_jsapiDao from "./pay_transactions_jsapi.dao.ts";
 
 /**
@@ -15,6 +19,13 @@ export async function findCount(
   search?: PayTransactionsJsapiSearch,
 ): Promise<number> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const org_id = authModel?.org_id;
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }
   const data = await pay_transactions_jsapiDao.findCount(search);
   return data;
 }
@@ -32,6 +43,13 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<PayTransactionsJsapiModel[]> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const org_id = authModel?.org_id;
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }
   const models: PayTransactionsJsapiModel[] = await pay_transactions_jsapiDao.findAll(search, page, sort);
   return models;
 }
@@ -53,6 +71,13 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<PayTransactionsJsapiModel | undefined> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const org_id = authModel?.org_id;
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }
   const model = await pay_transactions_jsapiDao.findOne(search, sort);
   return model;
 }
@@ -76,6 +101,13 @@ export async function exist(
   search?: PayTransactionsJsapiSearch,
 ): Promise<boolean> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const org_id = authModel?.org_id;
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }
   const data = await pay_transactions_jsapiDao.exist(search);
   return data;
 }
