@@ -32,7 +32,7 @@ declare global {
     update_usr_id_lbl?: string[];
     /** 更新时间 */
     update_time?: string[];
-    tenant_id?: string | null;
+    tenant_id?: TenantId | null;
   }
 
   interface OperationRecordModel extends OperationRecordModelType {
