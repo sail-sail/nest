@@ -26,8 +26,8 @@ declare global {
     create_time?: string[];
     /** 更新时间 */
     update_time?: string[];
-    tenant_id?: string | null;
-    org_id?: OrgId | null;
+    tenant_id?: TenantId | null;
+    org_id?: OrgId[] | null;
   }
 
   interface DeptModel extends DeptModelType {

@@ -718,7 +718,7 @@ async function getWhereQuery(
   if (hasOrgId) {
   #>
   if (search?.org_id != null) {
-    whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
   }<#
   }
   #><#
