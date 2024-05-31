@@ -232,7 +232,7 @@ declare global {
     #><#
     if (hasOrgId) {
     #>
-    org_id?: string | null;<#
+    org_id?: OrgId | null;<#
     }
     #><#
     if (hasIsHidden) {
