@@ -5,6 +5,7 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
+const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -40,7 +41,7 @@ import {
 } from "/src/base/i18n/i18n.ts";<#
 }
 #><#
-if (opts.filterDataByCreateUsr) {
+if (opts.filterDataByCreateUsr || hasOrgId) {
 #>
 
 import {
@@ -68,14 +69,35 @@ export async function findCount(
   search?: <#=searchName#>,
 ): Promise<number> {
   search = search || { };<#
-    if (opts.filterDataByCreateUsr) {
+  if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
-  }<#
+  const authModel = await getAuthModel();<#
+    if (opts.filterDataByCreateUsr) {
+  #>
+  const usr_id = authModel?.id;<#
     }
+  #><#
+    if (hasOrgId) {
+  #>
+  const org_id = authModel?.org_id;<#
+    }
+  #><#
+  }
+  #><#
+  if (opts.filterDataByCreateUsr) {
+  #>
+  
+  if (usr_id) {
+    search.create_usr_id = [ usr_id ];
+  }<#
+  } else if (hasOrgId) {
+  #>
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }<#
+  }
   #>
   const data = await <#=table#>Dao.findCount(search<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -104,14 +126,35 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<<#=modelName#>[]> {
   search = search || { };<#
-    if (opts.filterDataByCreateUsr) {
+  if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
-  }<#
+  const authModel = await getAuthModel();<#
+    if (opts.filterDataByCreateUsr) {
+  #>
+  const usr_id = authModel?.id;<#
     }
+  #><#
+    if (hasOrgId) {
+  #>
+  const org_id = authModel?.org_id;<#
+    }
+  #><#
+  }
+  #><#
+  if (opts.filterDataByCreateUsr) {
+  #>
+  
+  if (usr_id) {
+    search.create_usr_id = [ usr_id ];
+  }<#
+  } else if (hasOrgId) {
+  #>
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }<#
+  }
   #>
   const models: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -146,14 +189,35 @@ export async function findSummary(
   search?: <#=searchName#>,
 ): Promise<<#=Table_Up#>Summary> {
   search = search || { };<#
-    if (opts.filterDataByCreateUsr) {
+  if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
-  }<#
+  const authModel = await getAuthModel();<#
+    if (opts.filterDataByCreateUsr) {
+  #>
+  const usr_id = authModel?.id;<#
     }
+  #><#
+    if (hasOrgId) {
+  #>
+  const org_id = authModel?.org_id;<#
+    }
+  #><#
+  }
+  #><#
+  if (opts.filterDataByCreateUsr) {
+  #>
+  
+  if (usr_id) {
+    search.create_usr_id = [ usr_id ];
+  }<#
+  } else if (hasOrgId) {
+  #>
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }<#
+  }
   #>
   const data = await <#=table#>Dao.findSummary(search<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -180,14 +244,35 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<<#=modelName#> | undefined> {
   search = search || { };<#
-    if (opts.filterDataByCreateUsr) {
+  if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
-  }<#
+  const authModel = await getAuthModel();<#
+    if (opts.filterDataByCreateUsr) {
+  #>
+  const usr_id = authModel?.id;<#
     }
+  #><#
+    if (hasOrgId) {
+  #>
+  const org_id = authModel?.org_id;<#
+    }
+  #><#
+  }
+  #><#
+  if (opts.filterDataByCreateUsr) {
+  #>
+  
+  if (usr_id) {
+    search.create_usr_id = [ usr_id ];
+  }<#
+  } else if (hasOrgId) {
+  #>
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }<#
+  }
   #>
   const model = await <#=table#>Dao.findOne(search, sort<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -232,14 +317,35 @@ export async function exist(
   search?: <#=searchName#>,
 ): Promise<boolean> {
   search = search || { };<#
-    if (opts.filterDataByCreateUsr) {
+  if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
-  }<#
+  const authModel = await getAuthModel();<#
+    if (opts.filterDataByCreateUsr) {
+  #>
+  const usr_id = authModel?.id;<#
     }
+  #><#
+    if (hasOrgId) {
+  #>
+  const org_id = authModel?.org_id;<#
+    }
+  #><#
+  }
+  #><#
+  if (opts.filterDataByCreateUsr) {
+  #>
+  
+  if (usr_id) {
+    search.create_usr_id = [ usr_id ];
+  }<#
+  } else if (hasOrgId) {
+  #>
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }<#
+  }
   #>
   const data = await <#=table#>Dao.exist(search<#
     if (hasDataPermit() && hasCreateUsrId) {
