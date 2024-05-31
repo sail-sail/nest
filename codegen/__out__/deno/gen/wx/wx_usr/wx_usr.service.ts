@@ -4,6 +4,10 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
 import * as wx_usrDao from "./wx_usr.dao.ts";
 
 /**
@@ -15,6 +19,13 @@ export async function findCount(
   search?: WxUsrSearch,
 ): Promise<number> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const org_id = authModel?.org_id;
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }
   const data = await wx_usrDao.findCount(search);
   return data;
 }
@@ -32,6 +43,13 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<WxUsrModel[]> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const org_id = authModel?.org_id;
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }
   const models: WxUsrModel[] = await wx_usrDao.findAll(search, page, sort);
   return models;
 }
@@ -53,6 +71,13 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<WxUsrModel | undefined> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const org_id = authModel?.org_id;
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }
   const model = await wx_usrDao.findOne(search, sort);
   return model;
 }
@@ -76,6 +101,13 @@ export async function exist(
   search?: WxUsrSearch,
 ): Promise<boolean> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const org_id = authModel?.org_id;
+  
+  if (org_id) {
+    search.org_id = [ org_id ];
+  }
   const data = await wx_usrDao.exist(search);
   return data;
 }

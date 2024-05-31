@@ -29,7 +29,7 @@ declare global {
     /** 更新时间 */
     update_time?: string[];
     tenant_id?: string | null;
-    org_id?: string | null;
+    org_id?: OrgId | null;
   }
 
   interface WxoUsrModel extends WxoUsrModelType {
