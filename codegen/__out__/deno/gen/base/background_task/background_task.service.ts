@@ -21,8 +21,10 @@ export async function findCount(
   search = search || { };
   
   const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
+  const usr_id = authModel?.id;
+  
+  if (usr_id) {
+    search.create_usr_id = [ usr_id ];
   }
   const data = await background_taskDao.findCount(search);
   return data;
@@ -43,8 +45,10 @@ export async function findAll(
   search = search || { };
   
   const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
+  const usr_id = authModel?.id;
+  
+  if (usr_id) {
+    search.create_usr_id = [ usr_id ];
   }
   const models: BackgroundTaskModel[] = await background_taskDao.findAll(search, page, sort);
   return models;
@@ -69,8 +73,10 @@ export async function findOne(
   search = search || { };
   
   const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
+  const usr_id = authModel?.id;
+  
+  if (usr_id) {
+    search.create_usr_id = [ usr_id ];
   }
   const model = await background_taskDao.findOne(search, sort);
   return model;
@@ -97,8 +103,10 @@ export async function exist(
   search = search || { };
   
   const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
+  const usr_id = authModel?.id;
+  
+  if (usr_id) {
+    search.create_usr_id = [ usr_id ];
   }
   const data = await background_taskDao.exist(search);
   return data;
