@@ -111,7 +111,7 @@ async function getWhereQuery(
     whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
   if (search?.org_id != null) {
-    whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
   }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
