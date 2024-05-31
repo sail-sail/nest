@@ -227,12 +227,12 @@ declare global {
     #><#
     if (hasTenant_id) {
     #>
-    tenant_id?: string | null;<#
+    tenant_id?: TenantId | null;<#
     }
     #><#
     if (hasOrgId) {
     #>
-    org_id?: OrgId | null;<#
+    org_id?: OrgId[] | null;<#
     }
     #><#
     if (hasIsHidden) {
