@@ -4103,7 +4103,8 @@ export async function updateById(
     }
   #><#
   }
-  #><#
+  #>
+  let sqlSetFldNum = updateFldNum;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -4212,12 +4213,9 @@ export async function updateById(
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -4407,6 +4405,7 @@ export async function updateById(
           throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
         }
         sql += `version = ${ args.push(version + 1) },`;
+        sqlSetFldNum++;
       }
     }<#
     }
@@ -4415,18 +4414,16 @@ export async function updateById(
     #>
     if (!silentMode) {
       if (input.update_time) {
-        sql += `update_time = ${ args.push(input.update_time) }`;
+        sql += `update_time=${ args.push(input.update_time) },`;
       } else {
-        sql += `update_time = ${ args.push(reqDate()) }`;
+        sql += `update_time=${ args.push(reqDate()) },`;
       }
-    }<#
-    } else {
-    #>
-    if (sql.endsWith(",")) {
-      sql = sql.substring(0, sql.length - 1);
     }<#
     }
     #>
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
+    }
     sql += ` where id=${ args.push(id) } limit 1`;<#
     if (cache) {
     #>
@@ -4435,7 +4432,9 @@ export async function updateById(
     }
     #>
     
-    await execute(sql, args);
+    if (sqlSetFldNum > 0) {
+      await execute(sql, args);
+    }
   }<#
   if (cache) {
   #>
