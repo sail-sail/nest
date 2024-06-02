@@ -8,6 +8,14 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 import * as deptDao from "./dept.dao.ts";
 
 /**
@@ -19,6 +27,16 @@ export async function findCount(
   search?: DeptSearch,
 ): Promise<number> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const org_id = authModel?.org_id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
+  
+  if (org_id && username !== "admin") {
+    search.org_id = [ org_id ];
+  }
   const data = await deptDao.findCount(search);
   return data;
 }
@@ -36,6 +54,16 @@ export async function findAll(
   sort?: SortInput|SortInput[],
 ): Promise<DeptModel[]> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const org_id = authModel?.org_id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
+  
+  if (org_id && username !== "admin") {
+    search.org_id = [ org_id ];
+  }
   const models: DeptModel[] = await deptDao.findAll(search, page, sort);
   return models;
 }
@@ -57,6 +85,16 @@ export async function findOne(
   sort?: SortInput|SortInput[],
 ): Promise<DeptModel | undefined> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const org_id = authModel?.org_id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
+  
+  if (org_id && username !== "admin") {
+    search.org_id = [ org_id ];
+  }
   const model = await deptDao.findOne(search, sort);
   return model;
 }
@@ -80,6 +118,16 @@ export async function exist(
   search?: DeptSearch,
 ): Promise<boolean> {
   search = search || { };
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const org_id = authModel?.org_id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
+  
+  if (org_id && username !== "admin") {
+    search.org_id = [ org_id ];
+  }
   const data = await deptDao.exist(search);
   return data;
 }

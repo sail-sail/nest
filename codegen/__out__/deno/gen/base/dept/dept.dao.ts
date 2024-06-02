@@ -110,15 +110,8 @@ async function getWhereQuery(
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
-  
-  if (search?.org_id == null) {
-    const authModel = await getAuthModel();
-    const org_id = authModel?.org_id;
-    if (org_id) {
-      whereQuery += ` and t.org_id=${ args.push(org_id) }`;
-    }
-  } else if (search?.org_id != null && search?.org_id !== "-") {
-    whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
+  if (search?.org_id != null) {
+    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
   }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
@@ -1569,6 +1562,7 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  let sqlSetFldNum = updateFldNum;
   
   updateFldNum++;
   
@@ -1626,16 +1620,21 @@ export async function updateById(
     }
     if (!silentMode) {
       if (input.update_time) {
-        sql += `update_time = ${ args.push(input.update_time) }`;
+        sql += `update_time=${ args.push(input.update_time) },`;
       } else {
-        sql += `update_time = ${ args.push(reqDate()) }`;
+        sql += `update_time=${ args.push(reqDate()) },`;
       }
+    }
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
-    await execute(sql, args);
+    if (sqlSetFldNum > 0) {
+      await execute(sql, args);
+    }
   }
   
   if (updateFldNum > 0) {

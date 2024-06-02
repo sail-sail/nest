@@ -526,7 +526,7 @@
           </template>
           
           <!-- 首页 -->
-          <template v-else-if="'home_url' === col.prop && (showBuildIn || builtInSearch?.home_url == null)">
+          <template v-else-if="'home_url' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -589,7 +589,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -621,7 +621,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -644,7 +644,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -662,7 +662,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -680,7 +680,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -862,19 +862,13 @@ const props = defineProps<{
   id?: RoleId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  home_url?: string; // 首页
-  home_url_like?: string; // 首页
   menu_ids?: string|string[]; // 菜单权限
   menu_ids_lbl?: string[]; // 菜单权限
   permit_ids?: string|string[]; // 按钮权限
   permit_ids_lbl?: string[]; // 按钮权限
   data_permit_ids?: string|string[]; // 数据权限
   data_permit_ids_lbl?: string[]; // 数据权限
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -891,11 +885,8 @@ const builtInSearchType: { [key: string]: string } = {
   permit_ids_lbl: "string[]",
   data_permit_ids: "string[]",
   data_permit_ids_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",

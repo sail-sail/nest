@@ -717,15 +717,8 @@ async function getWhereQuery(
   #><#
   if (hasOrgId) {
   #>
-  
-  if (search?.org_id == null) {
-    const authModel = await getAuthModel();
-    const org_id = authModel?.org_id;
-    if (org_id) {
-      whereQuery += ` and t.org_id=${ args.push(org_id) }`;
-    }
-  } else if (search?.org_id != null && search?.org_id !== "-") {
-    whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
+  if (search?.org_id != null) {
+    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
   }<#
   }
   #><#
@@ -862,7 +855,8 @@ async function getFromQuery(
       const column = columns[i];
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
-      if (column.isVirtual && column_name !== "org_id") continue;
+      if (column.isVirtual) continue;
+      if (column_name === "org_id") continue;
       const foreignKey = column.foreignKey;
       let data_type = column.DATA_TYPE;
       if (!foreignKey) continue;
@@ -1101,7 +1095,8 @@ export async function findAll(
         const column = columns[i];
         if (column.ignoreCodegen) continue;
         const column_name = column.COLUMN_NAME;
-        if (column.isVirtual && column_name !== "org_id") continue;
+        if (column.isVirtual) continue;
+        if (column_name === "org_id") continue;
         const foreignKey = column.foreignKey;
         let data_type = column.DATA_TYPE;
         if (!foreignKey) continue;
@@ -1556,6 +1551,7 @@ export async function findAll(
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
       if (column_name === "tenant_id") continue;
+      if (column_name === "org_id") continue;
       const data_type = column.DATA_TYPE;
       const column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
@@ -1979,7 +1975,7 @@ export async function setIdByLbl(
       }).join("");
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -2331,7 +2327,7 @@ export async function findByUnique(
         }
         const columnDictModels = [
           ...dictModels.filter(function(item) {
-            return item.code === column.dict || item.code === column.dictbiz;
+            return item.code === column.dict || item.code === column.dict;
           }),
           ...dictbizModels.filter(function(item) {
             return item.code === column.dict || item.code === column.dictbiz;
@@ -4107,7 +4103,8 @@ export async function updateById(
     }
   #><#
   }
-  #><#
+  #>
+  let sqlSetFldNum = updateFldNum;<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -4216,12 +4213,9 @@ export async function updateById(
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -4404,12 +4398,15 @@ export async function updateById(
     #><#
     if (hasVersion) {
     #>
-    if (input.version != null) {
-      const version = await getVersionById(id);
-      if (version && version > input.version) {
-        throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
+    if (!silentMode) {
+      if (input.version != null) {
+        const version = await getVersionById(id);
+        if (version && version > input.version) {
+          throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
+        }
+        sql += `version = ${ args.push(version + 1) },`;
+        sqlSetFldNum++;
       }
-      sql += `version = ${ args.push(version + 1) },`;
     }<#
     }
     #><#
@@ -4417,18 +4414,16 @@ export async function updateById(
     #>
     if (!silentMode) {
       if (input.update_time) {
-        sql += `update_time = ${ args.push(input.update_time) }`;
+        sql += `update_time=${ args.push(input.update_time) },`;
       } else {
-        sql += `update_time = ${ args.push(reqDate()) }`;
+        sql += `update_time=${ args.push(reqDate()) },`;
       }
-    }<#
-    } else {
-    #>
-    if (sql.endsWith(",")) {
-      sql = sql.substring(0, sql.length - 1);
     }<#
     }
     #>
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
+    }
     sql += ` where id=${ args.push(id) } limit 1`;<#
     if (cache) {
     #>
@@ -4437,7 +4432,9 @@ export async function updateById(
     }
     #>
     
-    await execute(sql, args);
+    if (sqlSetFldNum > 0) {
+      await execute(sql, args);
+    }
   }<#
   if (cache) {
   #>

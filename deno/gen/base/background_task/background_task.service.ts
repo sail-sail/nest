@@ -8,6 +8,10 @@ import {
   getAuthModel,
 } from "/lib/auth/auth.dao.ts";
 
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 import * as background_taskDao from "./background_task.dao.ts";
 
 /**
@@ -21,8 +25,12 @@ export async function findCount(
   search = search || { };
   
   const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
+  
+  if (usr_id && username !== "admin") {
+    search.create_usr_id = [ usr_id ];
   }
   const data = await background_taskDao.findCount(search);
   return data;
@@ -43,8 +51,12 @@ export async function findAll(
   search = search || { };
   
   const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
+  
+  if (usr_id && username !== "admin") {
+    search.create_usr_id = [ usr_id ];
   }
   const models: BackgroundTaskModel[] = await background_taskDao.findAll(search, page, sort);
   return models;
@@ -69,8 +81,12 @@ export async function findOne(
   search = search || { };
   
   const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
+  
+  if (usr_id && username !== "admin") {
+    search.create_usr_id = [ usr_id ];
   }
   const model = await background_taskDao.findOne(search, sort);
   return model;
@@ -97,8 +113,12 @@ export async function exist(
   search = search || { };
   
   const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
+  
+  if (usr_id && username !== "admin") {
+    search.create_usr_id = [ usr_id ];
   }
   const data = await background_taskDao.exist(search);
   return data;

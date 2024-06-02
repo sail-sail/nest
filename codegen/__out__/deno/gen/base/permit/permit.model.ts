@@ -12,6 +12,13 @@ declare global {
   type PermitId = Distinct<string, typeof permitId>;
 
   interface PermitSearch extends PermitSearchType {
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
   }
 
   interface PermitModel extends PermitModelType {
