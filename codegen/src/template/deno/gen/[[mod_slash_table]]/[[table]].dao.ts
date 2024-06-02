@@ -3160,6 +3160,11 @@ async function _creates(
   sql += ",create_time";<#
   }
   #><#
+  if (hasUpdateTime) {
+  #>
+  sql += ",update_time";<#
+  }
+  #><#
   if (hasTenant_id) {
   #>
   sql += ",tenant_id";<#
@@ -3178,6 +3183,16 @@ async function _creates(
   if (hasCreateUsrIdLbl) {
   #>
   sql += ",create_usr_id_lbl";<#
+  }
+  #><#
+  if (hasUpdateUsrId) {
+  #>
+  sql += ",update_usr_id";<#
+  }
+  #><#
+  if (hasUpdateUsrIdLbl) {
+  #>
+  sql += ",update_usr_id_lbl";<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -3266,6 +3281,15 @@ async function _creates(
         } else {
           sql += `,null`;
         }
+      }<#
+      }
+      #><#
+      if (hasUpdateTime) {
+      #>
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }<#
       }
       #><#
@@ -3377,6 +3401,24 @@ async function _creates(
         } else {
           sql += `,${ args.push(input.create_usr_id_lbl) }`;
         }
+      }<#
+      }
+      #><#
+      if (hasUpdateUsrId) {
+      #>
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }<#
+      }
+      #><#
+      if (hasUpdateUsrIdLbl) {
+      #>
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
       }<#
       }
       #><#

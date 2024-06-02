@@ -1061,8 +1061,11 @@ async function _creates(
   const args = new QueryArgs();
   let sql = `insert into base_data_permit(id`;
   sql += ",create_time";
+  sql += ",update_time";
   sql += ",create_usr_id";
   sql += ",create_usr_id_lbl";
+  sql += ",update_usr_id";
+  sql += ",update_usr_id_lbl";
   sql += ",menu_id";
   sql += ",scope";
   sql += ",type";
@@ -1087,6 +1090,11 @@ async function _creates(
         } else {
           sql += `,null`;
         }
+      }
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }
       if (!silentMode) {
         if (input.create_usr_id == null) {
@@ -1138,6 +1146,16 @@ async function _creates(
         } else {
           sql += `,${ args.push(input.create_usr_id_lbl) }`;
         }
+      }
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
       }
       if (input.menu_id != null) {
         sql += `,${ args.push(input.menu_id) }`;

@@ -1410,9 +1410,12 @@ async function _creates(
   const args = new QueryArgs();
   let sql = `insert into base_usr(id`;
   sql += ",create_time";
+  sql += ",update_time";
   sql += ",tenant_id";
   sql += ",create_usr_id";
   sql += ",create_usr_id_lbl";
+  sql += ",update_usr_id";
+  sql += ",update_usr_id_lbl";
   sql += ",img";
   sql += ",lbl";
   sql += ",username";
@@ -1442,6 +1445,11 @@ async function _creates(
         } else {
           sql += `,null`;
         }
+      }
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -1506,6 +1514,16 @@ async function _creates(
         } else {
           sql += `,${ args.push(input.create_usr_id_lbl) }`;
         }
+      }
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
       }
       if (input.img != null) {
         sql += `,${ args.push(input.img) }`;
