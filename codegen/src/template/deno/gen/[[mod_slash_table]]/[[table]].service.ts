@@ -77,7 +77,10 @@ export async function findCount(
   #>
   
   const authModel = await getAuthModel();
-  const usr_id = authModel?.id;<#
+  const usr_id = authModel?.id;
+  if (!usr_id) {
+    throw new Error("usr_id can not be null");
+  }<#
     if (hasOrgId) {
   #>
   const org_id = authModel?.org_id;<#
@@ -90,7 +93,7 @@ export async function findCount(
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (usr_id && username !== "admin") {
+  if (username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
@@ -132,7 +135,10 @@ export async function findAll(
   #>
   
   const authModel = await getAuthModel();
-  const usr_id = authModel?.id;<#
+  const usr_id = authModel?.id;
+  if (!usr_id) {
+    throw new Error("usr_id can not be null");
+  }<#
     if (hasOrgId) {
   #>
   const org_id = authModel?.org_id;<#
@@ -145,7 +151,7 @@ export async function findAll(
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (usr_id && username !== "admin") {
+  if (username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
@@ -193,7 +199,10 @@ export async function findSummary(
   #>
   
   const authModel = await getAuthModel();
-  const usr_id = authModel?.id;<#
+  const usr_id = authModel?.id;
+  if (!usr_id) {
+    throw new Error("usr_id can not be null");
+  }<#
     if (hasOrgId) {
   #>
   const org_id = authModel?.org_id;<#
@@ -206,7 +215,7 @@ export async function findSummary(
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (usr_id && username !== "admin") {
+  if (username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
@@ -246,7 +255,10 @@ export async function findOne(
   #>
   
   const authModel = await getAuthModel();
-  const usr_id = authModel?.id;<#
+  const usr_id = authModel?.id;
+  if (!usr_id) {
+    throw new Error("usr_id can not be null");
+  }<#
     if (hasOrgId) {
   #>
   const org_id = authModel?.org_id;<#
@@ -259,7 +271,7 @@ export async function findOne(
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (usr_id && username !== "admin") {
+  if (username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
@@ -317,7 +329,10 @@ export async function exist(
   #>
   
   const authModel = await getAuthModel();
-  const usr_id = authModel?.id;<#
+  const usr_id = authModel?.id;
+  if (!usr_id) {
+    throw new Error("usr_id can not be null");
+  }<#
     if (hasOrgId) {
   #>
   const org_id = authModel?.org_id;<#
@@ -330,7 +345,7 @@ export async function exist(
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (usr_id && username !== "admin") {
+  if (username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
