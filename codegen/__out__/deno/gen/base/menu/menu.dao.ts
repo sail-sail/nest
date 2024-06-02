@@ -870,7 +870,7 @@ export async function validateIsEnabled(
 
 /** 校验菜单是否存在 */
 export async function validateOption(
-  model?: Readonly<MenuModel>,
+  model?: MenuModel,
 ) {
   if (!model) {
     throw `${ await ns("菜单") } ${ await ns("不存在") }`;

@@ -2805,7 +2805,7 @@ export async function validateIsEnabled(
 
 /** 校验<#=table_comment#>是否存在 */
 export async function validateOption(
-  model?: Readonly<<#=modelName#>>,
+  model?: <#=modelName#>,
 ) {
   if (!model) {
     throw `${ await ns("<#=table_comment#>") } ${ await ns("不存在") }`;

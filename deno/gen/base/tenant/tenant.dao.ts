@@ -993,7 +993,7 @@ export async function validateIsEnabled(
 
 /** 校验租户是否存在 */
 export async function validateOption(
-  model?: Readonly<TenantModel>,
+  model?: TenantModel,
 ) {
   if (!model) {
     throw `${ await ns("租户") } ${ await ns("不存在") }`;
