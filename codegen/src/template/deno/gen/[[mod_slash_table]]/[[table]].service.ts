@@ -46,7 +46,11 @@ if (opts.filterDataByCreateUsr || hasOrgId) {
 
 import {
   getAuthModel,
-} from "/lib/auth/auth.dao.ts";<#
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";<#
 }
 #><#
 if (hasSummary) {
@@ -72,29 +76,27 @@ export async function findCount(
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();<#
-    if (opts.filterDataByCreateUsr) {
-  #>
+  const authModel = await getAuthModel();
   const usr_id = authModel?.id;<#
-    }
-  #><#
     if (hasOrgId) {
   #>
   const org_id = authModel?.org_id;<#
     }
-  #><#
+  #>
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;<#
   }
   #><#
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (usr_id) {
+  if (usr_id && username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
   #>
   
-  if (org_id) {
+  if (org_id && username !== "admin") {
     search.org_id = [ org_id ];
   }<#
   }
@@ -129,29 +131,27 @@ export async function findAll(
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();<#
-    if (opts.filterDataByCreateUsr) {
-  #>
+  const authModel = await getAuthModel();
   const usr_id = authModel?.id;<#
-    }
-  #><#
     if (hasOrgId) {
   #>
   const org_id = authModel?.org_id;<#
     }
-  #><#
+  #>
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;<#
   }
   #><#
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (usr_id) {
+  if (usr_id && username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
   #>
   
-  if (org_id) {
+  if (org_id && username !== "admin") {
     search.org_id = [ org_id ];
   }<#
   }
@@ -192,29 +192,27 @@ export async function findSummary(
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();<#
-    if (opts.filterDataByCreateUsr) {
-  #>
+  const authModel = await getAuthModel();
   const usr_id = authModel?.id;<#
-    }
-  #><#
     if (hasOrgId) {
   #>
   const org_id = authModel?.org_id;<#
     }
-  #><#
+  #>
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;<#
   }
   #><#
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (usr_id) {
+  if (usr_id && username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
   #>
   
-  if (org_id) {
+  if (org_id && username !== "admin") {
     search.org_id = [ org_id ];
   }<#
   }
@@ -247,29 +245,27 @@ export async function findOne(
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();<#
-    if (opts.filterDataByCreateUsr) {
-  #>
+  const authModel = await getAuthModel();
   const usr_id = authModel?.id;<#
-    }
-  #><#
     if (hasOrgId) {
   #>
   const org_id = authModel?.org_id;<#
     }
-  #><#
+  #>
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;<#
   }
   #><#
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (usr_id) {
+  if (usr_id && username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
   #>
   
-  if (org_id) {
+  if (org_id && username !== "admin") {
     search.org_id = [ org_id ];
   }<#
   }
@@ -320,29 +316,27 @@ export async function exist(
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();<#
-    if (opts.filterDataByCreateUsr) {
-  #>
+  const authModel = await getAuthModel();
   const usr_id = authModel?.id;<#
-    }
-  #><#
     if (hasOrgId) {
   #>
   const org_id = authModel?.org_id;<#
     }
-  #><#
+  #>
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;<#
   }
   #><#
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (usr_id) {
+  if (usr_id && username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
   #>
   
-  if (org_id) {
+  if (org_id && username !== "admin") {
     search.org_id = [ org_id ];
   }<#
   }
