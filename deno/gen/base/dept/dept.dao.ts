@@ -974,7 +974,7 @@ export async function validateIsEnabled(
 
 /** 校验部门是否存在 */
 export async function validateOption(
-  model?: Readonly<DeptModel>,
+  model?: DeptModel,
 ) {
   if (!model) {
     throw `${ await ns("部门") } ${ await ns("不存在") }`;

@@ -716,7 +716,7 @@ export async function existById(
 
 /** 校验操作记录是否存在 */
 export async function validateOption(
-  model?: Readonly<OperationRecordModel>,
+  model?: OperationRecordModel,
 ) {
   if (!model) {
     throw `${ await ns("操作记录") } ${ await ns("不存在") }`;

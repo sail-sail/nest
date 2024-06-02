@@ -892,7 +892,7 @@ export async function validateIsEnabled(
 
 /** 校验系统字典是否存在 */
 export async function validateOption(
-  model?: Readonly<DictModel>,
+  model?: DictModel,
 ) {
   if (!model) {
     throw `${ await ns("系统字典") } ${ await ns("不存在") }`;

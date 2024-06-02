@@ -803,7 +803,7 @@ export async function existById(
 
 /** 校验国际化是否存在 */
 export async function validateOption(
-  model?: Readonly<I18nModel>,
+  model?: I18nModel,
 ) {
   if (!model) {
     throw `${ await ns("国际化") } ${ await ns("不存在") }`;

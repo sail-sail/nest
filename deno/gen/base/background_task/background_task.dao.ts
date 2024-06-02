@@ -890,7 +890,7 @@ export async function existById(
 
 /** 校验后台任务是否存在 */
 export async function validateOption(
-  model?: Readonly<BackgroundTaskModel>,
+  model?: BackgroundTaskModel,
 ) {
   if (!model) {
     throw `${ await ns("后台任务") } ${ await ns("不存在") }`;

@@ -829,7 +829,7 @@ export async function validateIsEnabled(
 
 /** 校验组织是否存在 */
 export async function validateOption(
-  model?: Readonly<OrgModel>,
+  model?: OrgModel,
 ) {
   if (!model) {
     throw `${ await ns("组织") } ${ await ns("不存在") }`;

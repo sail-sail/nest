@@ -909,7 +909,7 @@ export async function validateIsEnabled(
 
 /** 校验业务字典是否存在 */
 export async function validateOption(
-  model?: Readonly<DictbizModel>,
+  model?: DictbizModel,
 ) {
   if (!model) {
     throw `${ await ns("业务字典") } ${ await ns("不存在") }`;
