@@ -1064,7 +1064,7 @@ export async function validateIsEnabled(
 
 /** 校验角色是否存在 */
 export async function validateOption(
-  model?: Readonly<RoleModel>,
+  model?: RoleModel,
 ) {
   if (!model) {
     throw `${ await ns("角色") } ${ await ns("不存在") }`;

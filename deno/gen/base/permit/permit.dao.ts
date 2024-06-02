@@ -755,7 +755,7 @@ export async function existById(
 
 /** 校验按钮权限是否存在 */
 export async function validateOption(
-  model?: Readonly<PermitModel>,
+  model?: PermitModel,
 ) {
   if (!model) {
     throw `${ await ns("按钮权限") } ${ await ns("不存在") }`;
