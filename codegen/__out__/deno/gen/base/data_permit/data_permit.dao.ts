@@ -836,7 +836,7 @@ export async function existById(
 
 /** 校验数据权限是否存在 */
 export async function validateOption(
-  model?: Readonly<DataPermitModel>,
+  model?: DataPermitModel,
 ) {
   if (!model) {
     throw `${ await ns("数据权限") } ${ await ns("不存在") }`;

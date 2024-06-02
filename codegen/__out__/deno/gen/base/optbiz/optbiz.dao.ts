@@ -849,7 +849,7 @@ export async function validateIsEnabled(
 
 /** 校验业务选项是否存在 */
 export async function validateOption(
-  model?: Readonly<OptbizModel>,
+  model?: OptbizModel,
 ) {
   if (!model) {
     throw `${ await ns("业务选项") } ${ await ns("不存在") }`;

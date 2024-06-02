@@ -857,7 +857,7 @@ export async function validateIsEnabled(
 
 /** 校验域名是否存在 */
 export async function validateOption(
-  model?: Readonly<DomainModel>,
+  model?: DomainModel,
 ) {
   if (!model) {
     throw `${ await ns("域名") } ${ await ns("不存在") }`;

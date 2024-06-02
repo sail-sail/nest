@@ -884,7 +884,7 @@ export async function validateIsEnabled(
 
 /** 校验业务字典明细是否存在 */
 export async function validateOption(
-  model?: Readonly<DictbizDetailModel>,
+  model?: DictbizDetailModel,
 ) {
   if (!model) {
     throw `${ await ns("业务字典明细") } ${ await ns("不存在") }`;

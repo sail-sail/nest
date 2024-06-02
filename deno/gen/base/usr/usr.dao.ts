@@ -1178,7 +1178,7 @@ export async function validateIsEnabled(
 
 /** 校验用户是否存在 */
 export async function validateOption(
-  model?: Readonly<UsrModel>,
+  model?: UsrModel,
 ) {
   if (!model) {
     throw `${ await ns("用户") } ${ await ns("不存在") }`;
