@@ -8,6 +8,10 @@ import {
   getAuthModel,
 } from "/lib/auth/auth.dao.ts";
 
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 import * as background_taskDao from "./background_task.dao.ts";
 
 /**
@@ -22,8 +26,10 @@ export async function findCount(
   
   const authModel = await getAuthModel();
   const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
   
-  if (usr_id) {
+  if (usr_id && username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }
   const data = await background_taskDao.findCount(search);
@@ -46,8 +52,10 @@ export async function findAll(
   
   const authModel = await getAuthModel();
   const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
   
-  if (usr_id) {
+  if (usr_id && username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }
   const models: BackgroundTaskModel[] = await background_taskDao.findAll(search, page, sort);
@@ -74,8 +82,10 @@ export async function findOne(
   
   const authModel = await getAuthModel();
   const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
   
-  if (usr_id) {
+  if (usr_id && username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }
   const model = await background_taskDao.findOne(search, sort);
@@ -104,8 +114,10 @@ export async function exist(
   
   const authModel = await getAuthModel();
   const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  const username = usr_model?.username;
   
-  if (usr_id) {
+  if (usr_id && username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }
   const data = await background_taskDao.exist(search);
