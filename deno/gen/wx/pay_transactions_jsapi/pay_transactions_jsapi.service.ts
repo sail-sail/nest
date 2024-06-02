@@ -26,6 +26,9 @@ export async function findCount(
   
   const authModel = await getAuthModel();
   const usr_id = authModel?.id;
+  if (!usr_id) {
+    throw new Error("usr_id can not be null");
+  }
   const org_id = authModel?.org_id;
   const usr_model = await findByIdUsr(usr_id);
   const username = usr_model?.username;
@@ -53,6 +56,9 @@ export async function findAll(
   
   const authModel = await getAuthModel();
   const usr_id = authModel?.id;
+  if (!usr_id) {
+    throw new Error("usr_id can not be null");
+  }
   const org_id = authModel?.org_id;
   const usr_model = await findByIdUsr(usr_id);
   const username = usr_model?.username;
@@ -84,6 +90,9 @@ export async function findOne(
   
   const authModel = await getAuthModel();
   const usr_id = authModel?.id;
+  if (!usr_id) {
+    throw new Error("usr_id can not be null");
+  }
   const org_id = authModel?.org_id;
   const usr_model = await findByIdUsr(usr_id);
   const username = usr_model?.username;
@@ -117,6 +126,9 @@ export async function exist(
   
   const authModel = await getAuthModel();
   const usr_id = authModel?.id;
+  if (!usr_id) {
+    throw new Error("usr_id can not be null");
+  }
   const org_id = authModel?.org_id;
   const usr_model = await findByIdUsr(usr_id);
   const username = usr_model?.username;
