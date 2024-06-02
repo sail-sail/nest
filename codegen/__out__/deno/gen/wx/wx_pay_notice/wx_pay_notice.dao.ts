@@ -996,7 +996,7 @@ export async function existById(
 
 /** 校验微信支付通知是否存在 */
 export async function validateOption(
-  model?: Readonly<WxPayNoticeModel>,
+  model?: WxPayNoticeModel,
 ) {
   if (!model) {
     throw `${ await ns("微信支付通知") } ${ await ns("不存在") }`;

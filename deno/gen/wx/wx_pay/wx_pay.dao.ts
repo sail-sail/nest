@@ -893,7 +893,7 @@ export async function validateIsEnabled(
 
 /** 校验微信支付设置是否存在 */
 export async function validateOption(
-  model?: Readonly<WxPayModel>,
+  model?: WxPayModel,
 ) {
   if (!model) {
     throw `${ await ns("微信支付设置") } ${ await ns("不存在") }`;

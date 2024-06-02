@@ -874,7 +874,7 @@ export async function existById(
 
 /** 校验小程序用户是否存在 */
 export async function validateOption(
-  model?: Readonly<WxUsrModel>,
+  model?: WxUsrModel,
 ) {
   if (!model) {
     throw `${ await ns("小程序用户") } ${ await ns("不存在") }`;

@@ -881,7 +881,7 @@ export async function validateIsEnabled(
 
 /** 校验小程序设置是否存在 */
 export async function validateOption(
-  model?: Readonly<WxAppModel>,
+  model?: WxAppModel,
 ) {
   if (!model) {
     throw `${ await ns("小程序设置") } ${ await ns("不存在") }`;
