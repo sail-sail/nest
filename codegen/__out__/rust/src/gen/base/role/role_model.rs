@@ -353,16 +353,16 @@ pub struct RoleSearch {
   #[graphql(name = "menu_ids_save_null")]
   pub menu_ids_is_null: Option<bool>,
   /// 按钮权限
-  #[graphql(skip)]
+  #[graphql(name = "permit_ids")]
   pub permit_ids: Option<Vec<PermitId>>,
   /// 按钮权限
-  #[graphql(skip)]
+  #[graphql(name = "permit_ids_save_null")]
   pub permit_ids_is_null: Option<bool>,
   /// 数据权限
-  #[graphql(skip)]
+  #[graphql(name = "data_permit_ids")]
   pub data_permit_ids: Option<Vec<DataPermitId>>,
   /// 数据权限
-  #[graphql(skip)]
+  #[graphql(name = "data_permit_ids_save_null")]
   pub data_permit_ids_is_null: Option<bool>,
   /// 锁定
   #[graphql(skip)]
@@ -380,25 +380,25 @@ pub struct RoleSearch {
   #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
-  #[graphql(skip)]
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(skip)]
+  #[graphql(name = "update_usr_id_save_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
-  #[graphql(skip)]
+  #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
   #[graphql(skip)]
