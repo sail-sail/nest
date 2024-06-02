@@ -45,9 +45,9 @@ export async function resize(
   const formatBuf = new TextEncoder().encode(format);
   const rawResult = await image.resize(
     content,
-    content.byteLength,
+    BigInt(content.byteLength),
     formatBuf,
-    formatBuf.byteLength,
+    BigInt(formatBuf.byteLength),
     width,
     height,
     quality,

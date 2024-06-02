@@ -337,8 +337,16 @@ export interface TableCloumn {
   
   /**
    * 是否启用表格搜素
+   * 如果 true 则 canSearch 默认为 true
    */
   search?: boolean,
+  
+  /**
+   * 是否可以搜索
+   * 默认为 false, 如果 search == true, 则默认为 true
+   * 如果是外键关联字段, 则默认为 true
+   */
+  canSearch?: boolean,
   
   /**
    * 是否图片

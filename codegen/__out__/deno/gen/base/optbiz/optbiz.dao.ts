@@ -1416,6 +1416,7 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
     if (!silentMode) {
@@ -1454,25 +1455,33 @@ export async function updateById(
         }
       }
     }
-    if (input.version != null) {
-      const version = await getVersionById(id);
-      if (version && version > input.version) {
-        throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
+    if (!silentMode) {
+      if (input.version != null) {
+        const version = await getVersionById(id);
+        if (version && version > input.version) {
+          throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
+        }
+        sql += `version = ${ args.push(version + 1) },`;
+        sqlSetFldNum++;
       }
-      sql += `version = ${ args.push(version + 1) },`;
     }
     if (!silentMode) {
       if (input.update_time) {
-        sql += `update_time = ${ args.push(input.update_time) }`;
+        sql += `update_time=${ args.push(input.update_time) },`;
       } else {
-        sql += `update_time = ${ args.push(reqDate()) }`;
+        sql += `update_time=${ args.push(reqDate()) },`;
       }
+    }
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
-    await execute(sql, args);
+    if (sqlSetFldNum > 0) {
+      await execute(sql, args);
+    }
   }
   
   if (updateFldNum > 0) {

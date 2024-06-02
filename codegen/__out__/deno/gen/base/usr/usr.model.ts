@@ -12,7 +12,21 @@ declare global {
   type UsrId = Distinct<string, typeof usrId>;
 
   interface UsrSearch extends UsrSearchType {
-    tenant_id?: string | null;
+    /** 头像 */
+    img?: string;
+    img_like?: string;
+    /** 锁定 */
+    is_locked?: number[];
+    /** 排序 */
+    order_by?: number[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
+    tenant_id?: TenantId | null;
     is_hidden?: (0|1)[];
   }
 
