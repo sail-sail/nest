@@ -255,13 +255,13 @@ pub struct OperationRecordSearch {
   #[graphql(skip)]
   pub new_data_like: Option<String>,
   /// 操作人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 操作人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 操作人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: Option<Vec<String>>,
   /// 操作时间
   #[graphql(name = "create_time")]

@@ -302,10 +302,10 @@ pub struct TenantSearch {
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 所属域名
-  #[graphql(skip)]
+  #[graphql(name = "domain_ids")]
   pub domain_ids: Option<Vec<DomainId>>,
   /// 所属域名
-  #[graphql(skip)]
+  #[graphql(name = "domain_ids_save_null")]
   pub domain_ids_is_null: Option<bool>,
   /// 菜单权限
   #[graphql(name = "menu_ids")]
@@ -329,25 +329,25 @@ pub struct TenantSearch {
   #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
   /// 创建人
-  #[graphql(skip)]
+  #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
-  #[graphql(skip)]
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
-  #[graphql(skip)]
+  #[graphql(name = "update_usr_id_save_null")]
   pub update_usr_id_is_null: Option<bool>,
   /// 更新人
-  #[graphql(skip)]
+  #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
   #[graphql(skip)]

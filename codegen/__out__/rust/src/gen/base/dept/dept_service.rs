@@ -1,9 +1,15 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
-use anyhow::{Result,anyhow};
+use anyhow::{Result, anyhow};
 
-use crate::common::context::Options;
+#[allow(unused_imports)]
+use crate::common::context::{
+  Options,
+  get_auth_id_err,
+  get_auth_org_id,
+};
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
@@ -12,6 +18,11 @@ use crate::src::base::i18n::i18n_dao::ns;
 use crate::gen::base::tenant::tenant_model::TenantId;
 
 use crate::gen::base::org::org_model::OrgId;
+
+use crate::gen::base::usr::usr_dao::{
+  find_by_id as find_by_id_usr,
+  validate_option as validate_option_usr,
+};
 
 use super::dept_model::*;
 use super::dept_dao;
@@ -23,6 +34,28 @@ pub async fn find_all(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  let usr_id = get_auth_id_err()?;
+  
+  let usr_model = validate_option_usr(
+    find_by_id_usr(
+      usr_id.clone(),
+      None,
+    ).await?,
+  ).await?;
+  
+  let username = usr_model.username;
+  let org_id = get_auth_org_id();
+  
+  if let Some(org_id) = org_id {
+    if username != "admin" {
+      search.org_id = Some(vec![org_id]);
+    }
+  }
+  
+  let search = Some(search);
   
   let res = dept_dao::find_all(
     search,

@@ -123,23 +123,26 @@ async fn get_where_query(
     }
   }
   {
-    let org_id = {
-      let org_id = match search {
-        Some(item) => item.org_id.clone(),
-        None => None,
-      };
-      let org_id = match org_id {
-        None => get_auth_org_id(),
-        Some(item) => match item.as_str() {
-          "-" => None,
-          _ => item.into(),
-        },
-      };
-      org_id
+    let org_id: Option<Vec<OrgId>> = match search {
+      Some(item) => item.org_id.clone(),
+      None => None,
     };
     if let Some(org_id) = org_id {
-      where_query.push_str(" and t.org_id=?");
-      args.push(org_id.into());
+      let arg = {
+        if org_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(org_id.len());
+          for item in org_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.org_id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   // 父部门
@@ -2576,11 +2579,6 @@ pub async fn find_last_order_by(
   if let Some(tenant_id) = get_auth_tenant_id() {
     sql_wheres.push("t.tenant_id=?");
     args.push(tenant_id.into());
-  }
-  
-  if let Some(org_id) = get_auth_org_id() {
-    sql_wheres.push("t.org_id=?");
-    args.push(org_id.into());
   }
   
   let sql_where = sql_wheres.join(" and ");

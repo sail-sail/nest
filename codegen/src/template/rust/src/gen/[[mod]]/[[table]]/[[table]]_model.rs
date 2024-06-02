@@ -511,7 +511,7 @@ pub struct <#=tableUP#>Model {<#
     } else if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -1064,7 +1064,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
         const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -1547,7 +1547,7 @@ pub struct <#=tableUP#>Search {
   if (hasOrgId) {
   #>
   /// 组织ID
-  pub org_id: Option<OrgId>,<#
+  pub org_id: Option<Vec<OrgId>>,<#
   }
   #><#
   if (hasIsHidden) {
@@ -1621,11 +1621,12 @@ pub struct <#=tableUP#>Search {
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
     const search = column.search;
+    const canSearch = column.canSearch;
   #><#
     if (foreignKey && foreignKey.type !== "many2many") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1635,7 +1636,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1647,7 +1648,7 @@ pub struct <#=tableUP#>Search {
     if (modelLabel) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1661,7 +1662,7 @@ pub struct <#=tableUP#>Search {
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1671,7 +1672,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1683,7 +1684,7 @@ pub struct <#=tableUP#>Search {
     } else if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -1699,7 +1700,7 @@ pub struct <#=tableUP#>Search {
       }
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1711,7 +1712,7 @@ pub struct <#=tableUP#>Search {
     } else if (foreignKey) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1723,7 +1724,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1735,7 +1736,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === "tinyint") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1747,7 +1748,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === "varchar" || data_type === "text") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1757,7 +1758,7 @@ pub struct <#=tableUP#>Search {
   #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1769,7 +1770,7 @@ pub struct <#=tableUP#>Search {
     } else {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno || !search) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2003,7 +2004,7 @@ pub struct <#=tableUP#>Input {
     if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -2486,7 +2487,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       if (hasOrgId) {
       #>
       // 组织ID
-      org_id: input.org_id,<#
+      org_id: input.org_id.map(|x| vec![x]),<#
       }
       #><#
       if (hasIsHidden) {
@@ -2794,7 +2795,7 @@ for (let i = 0; i < columns.length; i++) {
   const enumColumnName = Table_Up + Column_Up;
   const columnDictModels = [
     ...dictModels.filter(function(item) {
-      return item.code === column.dict || item.code === column.dictbiz;
+      return item.code === column.dict || item.code === column.dict;
     }),
     ...dictbizModels.filter(function(item) {
       return item.code === column.dict || item.code === column.dictbiz;
