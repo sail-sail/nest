@@ -850,7 +850,7 @@ export async function existById(
 
 /** 校验任务执行日志是否存在 */
 export async function validateOption(
-  model?: Readonly<CronJobLogModel>,
+  model?: CronJobLogModel,
 ) {
   if (!model) {
     throw `${ await ns("任务执行日志") } ${ await ns("不存在") }`;

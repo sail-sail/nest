@@ -851,7 +851,7 @@ export async function validateIsEnabled(
 
 /** 校验任务是否存在 */
 export async function validateOption(
-  model?: Readonly<JobModel>,
+  model?: JobModel,
 ) {
   if (!model) {
     throw `${ await ns("任务") } ${ await ns("不存在") }`;

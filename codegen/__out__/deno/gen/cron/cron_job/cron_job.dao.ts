@@ -931,7 +931,7 @@ export async function validateIsEnabled(
 
 /** 校验定时任务是否存在 */
 export async function validateOption(
-  model?: Readonly<CronJobModel>,
+  model?: CronJobModel,
 ) {
   if (!model) {
     throw `${ await ns("定时任务") } ${ await ns("不存在") }`;
