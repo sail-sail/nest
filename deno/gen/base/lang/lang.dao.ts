@@ -796,7 +796,7 @@ export async function validateIsEnabled(
 
 /** 校验语言是否存在 */
 export async function validateOption(
-  model?: Readonly<LangModel>,
+  model?: LangModel,
 ) {
   if (!model) {
     throw `${ await ns("语言") } ${ await ns("不存在") }`;

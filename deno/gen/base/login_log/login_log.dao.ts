@@ -759,7 +759,7 @@ export async function existById(
 
 /** 校验登录日志是否存在 */
 export async function validateOption(
-  model?: Readonly<LoginLogModel>,
+  model?: LoginLogModel,
 ) {
   if (!model) {
     throw `${ await ns("登录日志") } ${ await ns("不存在") }`;

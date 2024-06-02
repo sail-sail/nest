@@ -832,7 +832,7 @@ export async function validateIsEnabled(
 
 /** 校验系统选项是否存在 */
 export async function validateOption(
-  model?: Readonly<OptionsModel>,
+  model?: OptionsModel,
 ) {
   if (!model) {
     throw `${ await ns("系统选项") } ${ await ns("不存在") }`;
