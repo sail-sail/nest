@@ -948,7 +948,7 @@ export async function existById(
 
 /** 校验微信JSAPI下单是否存在 */
 export async function validateOption(
-  model?: Readonly<PayTransactionsJsapiModel>,
+  model?: PayTransactionsJsapiModel,
 ) {
   if (!model) {
     throw `${ await ns("微信JSAPI下单") } ${ await ns("不存在") }`;

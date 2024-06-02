@@ -775,7 +775,7 @@ export async function existById(
 
 /** 校验公众号用户是否存在 */
 export async function validateOption(
-  model?: Readonly<WxoUsrModel>,
+  model?: WxoUsrModel,
 ) {
   if (!model) {
     throw `${ await ns("公众号用户") } ${ await ns("不存在") }`;

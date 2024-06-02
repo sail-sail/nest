@@ -924,7 +924,7 @@ export async function validateIsEnabled(
 
 /** 校验公众号设置是否存在 */
 export async function validateOption(
-  model?: Readonly<WxoAppModel>,
+  model?: WxoAppModel,
 ) {
   if (!model) {
     throw `${ await ns("公众号设置") } ${ await ns("不存在") }`;

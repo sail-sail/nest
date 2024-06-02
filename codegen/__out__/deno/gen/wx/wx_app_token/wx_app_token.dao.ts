@@ -758,7 +758,7 @@ export async function existById(
 
 /** 校验小程序接口凭据是否存在 */
 export async function validateOption(
-  model?: Readonly<WxAppTokenModel>,
+  model?: WxAppTokenModel,
 ) {
   if (!model) {
     throw `${ await ns("小程序接口凭据") } ${ await ns("不存在") }`;
