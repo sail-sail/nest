@@ -132,6 +132,10 @@ input DeptSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "部门负责人"
+  usr_ids: [UsrId!]
+  "部门负责人"
+  usr_ids_is_null: Boolean
   "启用"
   is_enabled: [Int!]
   "创建人"
