@@ -12,9 +12,6 @@ declare global {
   type WxoUsrId = Distinct<string, typeof wxoUsrId>;
 
   interface WxoUsrSearch extends WxoUsrSearchType {
-    /** 用户 */
-    usr_id?: UsrId[];
-    usr_id_is_null?: boolean;
     /** 公众号用户唯一标识 */
     openid?: string;
     openid_like?: string;

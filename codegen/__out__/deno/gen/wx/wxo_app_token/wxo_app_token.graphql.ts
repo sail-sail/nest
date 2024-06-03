@@ -65,6 +65,10 @@ input WxoAppTokenSearch {
   ids: [WxoAppTokenId!]
   "ID"
   id: WxoAppTokenId
+  "小程序设置"
+  wxo_app_id: [WxoAppId!]
+  "小程序设置"
+  wxo_app_id_is_null: Boolean
 }
 type Query {
   "根据条件查找小程序接口凭据总数"

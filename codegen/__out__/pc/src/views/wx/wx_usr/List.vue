@@ -458,7 +458,7 @@
           </template>
           
           <!-- 用户 -->
-          <template v-else-if="'usr_id_lbl' === col.prop">
+          <template v-else-if="'usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -723,6 +723,8 @@ const props = defineProps<{
   id?: WxUsrId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  usr_id?: string|string[]; // 用户
+  usr_id_lbl?: string; // 用户
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -733,6 +735,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
+  usr_id: "string[]",
+  usr_id_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
