@@ -6,6 +6,11 @@ import type {
 
 import * as i18nDao from "./i18n.dao.ts";
 
+async function setSearchQuery(
+  search: I18nSearch,
+) {
+}
+
 /**
  * 根据条件查找国际化总数
  * @param {I18nSearch} search? 搜索条件
@@ -14,7 +19,11 @@ import * as i18nDao from "./i18n.dao.ts";
 export async function findCount(
   search?: I18nSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await i18nDao.findCount(search);
   return data;
 }
@@ -31,7 +40,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<I18nModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: I18nModel[] = await i18nDao.findAll(search, page, sort);
   return models;
 }
@@ -52,7 +65,11 @@ export async function findOne(
   search?: I18nSearch,
   sort?: SortInput|SortInput[],
 ): Promise<I18nModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await i18nDao.findOne(search, sort);
   return model;
 }
@@ -75,7 +92,11 @@ export async function findById(
 export async function exist(
   search?: I18nSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await i18nDao.exist(search);
   return data;
 }

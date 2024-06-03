@@ -18,6 +18,29 @@ import {
 
 import * as deptDao from "./dept.dao.ts";
 
+async function setSearchQuery(
+  search: DeptSearch,
+) {
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  if (!usr_id || !usr_model) {
+    throw new Error("usr_id can not be null");
+  }
+  const org_ids: OrgId[] = [ ];
+  if (authModel?.org_id) {
+    org_ids.push(authModel.org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+  }
+  const username = usr_model.username;
+  
+  if (username !== "admin") {
+    search.org_id = org_ids;
+  }
+}
+
 /**
  * 根据条件查找部门总数
  * @param {DeptSearch} search? 搜索条件
@@ -26,20 +49,11 @@ import * as deptDao from "./dept.dao.ts";
 export async function findCount(
   search?: DeptSearch,
 ): Promise<number> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const org_id = authModel?.org_id;
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }
   const data = await deptDao.findCount(search);
   return data;
 }
@@ -56,20 +70,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<DeptModel[]> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const org_id = authModel?.org_id;
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }
   const models: DeptModel[] = await deptDao.findAll(search, page, sort);
   return models;
 }
@@ -90,20 +95,11 @@ export async function findOne(
   search?: DeptSearch,
   sort?: SortInput|SortInput[],
 ): Promise<DeptModel | undefined> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const org_id = authModel?.org_id;
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }
   const model = await deptDao.findOne(search, sort);
   return model;
 }
@@ -126,20 +122,11 @@ export async function findById(
 export async function exist(
   search?: DeptSearch,
 ): Promise<boolean> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const org_id = authModel?.org_id;
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }
   const data = await deptDao.exist(search);
   return data;
 }

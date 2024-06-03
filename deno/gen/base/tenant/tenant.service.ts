@@ -10,6 +10,11 @@ import {
 
 import * as tenantDao from "./tenant.dao.ts";
 
+async function setSearchQuery(
+  search: TenantSearch,
+) {
+}
+
 /**
  * 根据条件查找租户总数
  * @param {TenantSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as tenantDao from "./tenant.dao.ts";
 export async function findCount(
   search?: TenantSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await tenantDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<TenantModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: TenantModel[] = await tenantDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: TenantSearch,
   sort?: SortInput|SortInput[],
 ): Promise<TenantModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await tenantDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: TenantSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await tenantDao.exist(search);
   return data;
 }
