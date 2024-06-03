@@ -6,6 +6,11 @@ import type {
 
 import * as cron_job_logDao from "./cron_job_log.dao.ts";
 
+async function setSearchQuery(
+  search: CronJobLogSearch,
+) {
+}
+
 /**
  * 根据条件查找任务执行日志总数
  * @param {CronJobLogSearch} search? 搜索条件
@@ -14,7 +19,11 @@ import * as cron_job_logDao from "./cron_job_log.dao.ts";
 export async function findCount(
   search?: CronJobLogSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await cron_job_logDao.findCount(search);
   return data;
 }
@@ -31,7 +40,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<CronJobLogModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: CronJobLogModel[] = await cron_job_logDao.findAll(search, page, sort);
   return models;
 }
@@ -52,7 +65,11 @@ export async function findOne(
   search?: CronJobLogSearch,
   sort?: SortInput|SortInput[],
 ): Promise<CronJobLogModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await cron_job_logDao.findOne(search, sort);
   return model;
 }
@@ -75,7 +92,11 @@ export async function findById(
 export async function exist(
   search?: CronJobLogSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await cron_job_logDao.exist(search);
   return data;
 }
