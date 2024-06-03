@@ -497,7 +497,8 @@ declare global {
     if (hasCreateTime) {
     #>
     create_time?: string | null;
-    create_time_lbl?: string | null;<#
+    create_time_lbl?: string | null;
+    create_time_save_null?: boolean | null;<#
     }
     #><#
     if (hasUpdateUsrId) {
@@ -509,7 +510,8 @@ declare global {
     if (hasUpdateTime) {
     #>
     update_time?: string | null;
-    update_time_lbl?: string | null;<#
+    update_time_lbl?: string | null;
+    update_time_save_null?: boolean | null;<#
     }
     #><#
     if (hasIsDeleted) {
