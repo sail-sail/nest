@@ -78,7 +78,7 @@ async function setSearchQuery(
   }<#
     if (hasOrgId) {
   #>
-  const org_ids: OrgId[] = [ ];
+  const org_ids: OrgId[] = [ "" as OrgId ];
   if (authModel?.org_id) {
     org_ids.push(authModel.org_id);
   } else {
@@ -103,6 +103,7 @@ async function setSearchQuery(
   }<#
   }
   #>
+  
 }
 
 /**

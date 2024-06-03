@@ -28,7 +28,7 @@ async function setSearchQuery(
   if (!usr_id || !usr_model) {
     throw new Error("usr_id can not be null");
   }
-  const org_ids: OrgId[] = [ ];
+  const org_ids: OrgId[] = [ "" as OrgId ];
   if (authModel?.org_id) {
     org_ids.push(authModel.org_id);
   } else {
@@ -39,6 +39,7 @@ async function setSearchQuery(
   if (username !== "admin") {
     search.org_id = org_ids;
   }
+  
 }
 
 /**
