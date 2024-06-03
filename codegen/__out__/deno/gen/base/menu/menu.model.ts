@@ -47,10 +47,12 @@ declare global {
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
     create_time_lbl?: string | null;
+    create_time_save_null?: boolean | null;
     update_usr_id?: UsrId | null;
     update_usr_id_lbl?: string | null;
     update_time?: string | null;
     update_time_lbl?: string | null;
+    update_time_save_null?: boolean | null;
     is_deleted?: number | null;
   }
 

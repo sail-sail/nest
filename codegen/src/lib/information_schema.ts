@@ -476,15 +476,6 @@ async function getSchema0(
         item.width = 150;
       }
     }
-    if (item.canSearch == null) {
-      if (item.search) {
-        item.canSearch = true;
-      } else {
-        if (item.foreignKey && item.foreignKey.type !== "many2many") {
-          item.canSearch = true;
-        }
-      }
-    }
   }
   // 校验
   for (let i = 0; i < records2.length; i++) {
@@ -936,6 +927,20 @@ export async function getSchema(
         }
         if (column.align == null && foreignColumn.align != null) {
           column.align = foreignColumn.align;
+        }
+      }
+    }
+  }
+  
+  // canSearch
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const column = tables[table_name].columns[i];
+    if (column.canSearch == null) {
+      if (column.search) {
+        column.canSearch = true;
+      } else {
+        if (column.foreignKey) {
+          column.canSearch = true;
         }
       }
     }

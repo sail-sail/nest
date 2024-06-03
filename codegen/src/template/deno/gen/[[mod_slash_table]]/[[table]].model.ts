@@ -227,12 +227,12 @@ declare global {
     #><#
     if (hasTenant_id) {
     #>
-    tenant_id?: string | null;<#
+    tenant_id?: TenantId | null;<#
     }
     #><#
     if (hasOrgId) {
     #>
-    org_id?: OrgId | null;<#
+    org_id?: OrgId[] | null;<#
     }
     #><#
     if (hasIsHidden) {
@@ -497,7 +497,8 @@ declare global {
     if (hasCreateTime) {
     #>
     create_time?: string | null;
-    create_time_lbl?: string | null;<#
+    create_time_lbl?: string | null;
+    create_time_save_null?: boolean | null;<#
     }
     #><#
     if (hasUpdateUsrId) {
@@ -509,7 +510,8 @@ declare global {
     if (hasUpdateTime) {
     #>
     update_time?: string | null;
-    update_time_lbl?: string | null;<#
+    update_time_lbl?: string | null;
+    update_time_save_null?: boolean | null;<#
     }
     #><#
     if (hasIsDeleted) {
