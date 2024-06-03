@@ -514,7 +514,7 @@
           </template>
           
           <!-- 部门负责人 -->
-          <template v-else-if="'usr_ids_lbl' === col.prop">
+          <template v-else-if="'usr_ids_lbl' === col.prop && (showBuildIn || builtInSearch?.usr_ids == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -753,6 +753,8 @@ const props = defineProps<{
   parent_id_lbl?: string; // 父部门
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  usr_ids?: string|string[]; // 部门负责人
+  usr_ids_lbl?: string[]; // 部门负责人
   is_enabled?: string|string[]; // 启用
 }>();
 
@@ -766,6 +768,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   parent_id: "string[]",
   parent_id_lbl: "string[]",
+  usr_ids: "string[]",
+  usr_ids_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
