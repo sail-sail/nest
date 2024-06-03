@@ -870,13 +870,11 @@ async function _creates(
   
   const args = new QueryArgs();
   let sql = `insert into cron_cron_job_log_detail(id`;
-  if (!silentMode) {
-    sql += ",create_time";
-  }
+  sql += ",create_time";
+  sql += ",update_time";
   sql += ",tenant_id";
-  if (!silentMode) {
-    sql += ",create_usr_id";
-  }
+  sql += ",create_usr_id";
+  sql += ",update_usr_id";
   sql += ",cron_job_log_id";
   sql += ",lbl";
   sql += ")values";
@@ -887,11 +885,22 @@ async function _creates(
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
       if (!silentMode) {
-        if (input.create_time != null) {
+        if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
           sql += `,${ args.push(reqDate()) }`;
         }
+      } else {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,null`;
+        }
+      }
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -919,6 +928,17 @@ async function _creates(
         } else {
           sql += `,${ args.push(input.create_usr_id) }`;
         }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+      }
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
       }
       if (input.cron_job_log_id != null) {
         sql += `,${ args.push(input.cron_job_log_id) }`;
@@ -1075,13 +1095,25 @@ export async function updateById(
   let updateFldNum = 0;
   if (input.cron_job_log_id != null) {
     if (input.cron_job_log_id != oldModel.cron_job_log_id) {
-      sql += `cron_job_log_id = ${ args.push(input.cron_job_log_id) },`;
+      sql += `cron_job_log_id=${ args.push(input.cron_job_log_id) },`;
       updateFldNum++;
     }
   }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl=${ args.push(input.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.create_time != null || input.create_time_save_null) {
+    if (input.create_time != oldModel.create_time) {
+      sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.create_usr_id != null) {
+    if (input.create_usr_id != oldModel.create_usr_id) {
+      sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
       updateFldNum++;
     }
   }
@@ -1097,13 +1129,17 @@ export async function updateById(
       } else if (input.update_usr_id as unknown as string !== "-") {
         sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
       }
+    } else if (input.update_usr_id != null) {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (!silentMode) {
-      if (input.update_time) {
+      if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
         sql += `update_time=${ args.push(reqDate()) },`;
       }
+    } else if (input.update_time != null || input.update_time_save_null) {
+      sql += `update_time=${ args.push(input.update_time) },`;
     }
     if (sql.endsWith(",")) {
       sql = sql.substring(0, sql.length - 1);
