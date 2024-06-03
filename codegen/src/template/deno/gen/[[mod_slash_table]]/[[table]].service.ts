@@ -5,7 +5,6 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -64,6 +63,48 @@ import {
 
 import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 
+async function setSearchQuery(
+  search: <#=searchName#>,
+) {<#
+  if (opts.filterDataByCreateUsr || hasOrgId) {
+  #>
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  if (!usr_id || !usr_model) {
+    throw new Error("usr_id can not be null");
+  }<#
+    if (hasOrgId) {
+  #>
+  const org_ids: OrgId[] = [ "" as OrgId ];
+  if (authModel?.org_id) {
+    org_ids.push(authModel.org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+  }<#
+    }
+  #>
+  const username = usr_model.username;<#
+  }
+  #><#
+  if (opts.filterDataByCreateUsr) {
+  #>
+  
+  if (username !== "admin") {
+    search.create_usr_id = [ usr_id ];
+  }<#
+  } else if (hasOrgId) {
+  #>
+  
+  if (username !== "admin") {
+    search.org_id = org_ids;
+  }<#
+  }
+  #>
+  
+}
+
 /**
  * 根据条件查找<#=table_comment#>总数
  * @param {<#=searchName#>} search? 搜索条件
@@ -72,35 +113,11 @@ import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 export async function findCount(
   search?: <#=searchName#>,
 ): Promise<number> {
-  search = search || { };<#
-  if (opts.filterDataByCreateUsr || hasOrgId) {
-  #>
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;<#
-    if (hasOrgId) {
-  #>
-  const org_id = authModel?.org_id;<#
-    }
-  #>
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;<#
-  }
-  #><#
-  if (opts.filterDataByCreateUsr) {
-  #>
+  search = search || { };
   
-  if (usr_id && username !== "admin") {
-    search.create_usr_id = [ usr_id ];
-  }<#
-  } else if (hasOrgId) {
-  #>
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }<#
-  }
-  #>
   const data = await <#=table#>Dao.findCount(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
@@ -127,35 +144,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<<#=modelName#>[]> {
-  search = search || { };<#
-  if (opts.filterDataByCreateUsr || hasOrgId) {
-  #>
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;<#
-    if (hasOrgId) {
-  #>
-  const org_id = authModel?.org_id;<#
-    }
-  #>
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;<#
-  }
-  #><#
-  if (opts.filterDataByCreateUsr) {
-  #>
+  search = search || { };
   
-  if (usr_id && username !== "admin") {
-    search.create_usr_id = [ usr_id ];
-  }<#
-  } else if (hasOrgId) {
-  #>
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }<#
-  }
-  #>
   const models: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
@@ -188,35 +181,11 @@ if (hasSummary) {
 export async function findSummary(
   search?: <#=searchName#>,
 ): Promise<<#=Table_Up#>Summary> {
-  search = search || { };<#
-  if (opts.filterDataByCreateUsr || hasOrgId) {
-  #>
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;<#
-    if (hasOrgId) {
-  #>
-  const org_id = authModel?.org_id;<#
-    }
-  #>
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;<#
-  }
-  #><#
-  if (opts.filterDataByCreateUsr) {
-  #>
+  search = search || { };
   
-  if (usr_id && username !== "admin") {
-    search.create_usr_id = [ usr_id ];
-  }<#
-  } else if (hasOrgId) {
-  #>
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }<#
-  }
-  #>
   const data = await <#=table#>Dao.findSummary(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
@@ -241,35 +210,11 @@ export async function findOne(
   search?: <#=searchName#>,
   sort?: SortInput|SortInput[],
 ): Promise<<#=modelName#> | undefined> {
-  search = search || { };<#
-  if (opts.filterDataByCreateUsr || hasOrgId) {
-  #>
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;<#
-    if (hasOrgId) {
-  #>
-  const org_id = authModel?.org_id;<#
-    }
-  #>
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;<#
-  }
-  #><#
-  if (opts.filterDataByCreateUsr) {
-  #>
+  search = search || { };
   
-  if (usr_id && username !== "admin") {
-    search.create_usr_id = [ usr_id ];
-  }<#
-  } else if (hasOrgId) {
-  #>
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }<#
-  }
-  #>
   const model = await <#=table#>Dao.findOne(search, sort<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
@@ -312,35 +257,11 @@ export async function findById(
 export async function exist(
   search?: <#=searchName#>,
 ): Promise<boolean> {
-  search = search || { };<#
-  if (opts.filterDataByCreateUsr || hasOrgId) {
-  #>
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;<#
-    if (hasOrgId) {
-  #>
-  const org_id = authModel?.org_id;<#
-    }
-  #>
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;<#
-  }
-  #><#
-  if (opts.filterDataByCreateUsr) {
-  #>
+  search = search || { };
   
-  if (usr_id && username !== "admin") {
-    search.create_usr_id = [ usr_id ];
-  }<#
-  } else if (hasOrgId) {
-  #>
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }<#
-  }
-  #>
   const data = await <#=table#>Dao.exist(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
