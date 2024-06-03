@@ -10,6 +10,11 @@ import {
 
 import * as domainDao from "./domain.dao.ts";
 
+async function setSearchQuery(
+  search: DomainSearch,
+) {
+}
+
 /**
  * 根据条件查找域名总数
  * @param {DomainSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as domainDao from "./domain.dao.ts";
 export async function findCount(
   search?: DomainSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await domainDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<DomainModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: DomainModel[] = await domainDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: DomainSearch,
   sort?: SortInput|SortInput[],
 ): Promise<DomainModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await domainDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: DomainSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await domainDao.exist(search);
   return data;
 }

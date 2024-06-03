@@ -10,6 +10,11 @@ import {
 
 import * as menuDao from "./menu.dao.ts";
 
+async function setSearchQuery(
+  search: MenuSearch,
+) {
+}
+
 /**
  * 根据条件查找菜单总数
  * @param {MenuSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as menuDao from "./menu.dao.ts";
 export async function findCount(
   search?: MenuSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await menuDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<MenuModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: MenuModel[] = await menuDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: MenuSearch,
   sort?: SortInput|SortInput[],
 ): Promise<MenuModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await menuDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: MenuSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await menuDao.exist(search);
   return data;
 }

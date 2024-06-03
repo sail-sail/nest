@@ -6,6 +6,11 @@ import type {
 
 import * as login_logDao from "./login_log.dao.ts";
 
+async function setSearchQuery(
+  search: LoginLogSearch,
+) {
+}
+
 /**
  * 根据条件查找登录日志总数
  * @param {LoginLogSearch} search? 搜索条件
@@ -14,7 +19,11 @@ import * as login_logDao from "./login_log.dao.ts";
 export async function findCount(
   search?: LoginLogSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await login_logDao.findCount(search);
   return data;
 }
@@ -31,7 +40,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<LoginLogModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: LoginLogModel[] = await login_logDao.findAll(search, page, sort);
   return models;
 }
@@ -52,7 +65,11 @@ export async function findOne(
   search?: LoginLogSearch,
   sort?: SortInput|SortInput[],
 ): Promise<LoginLogModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await login_logDao.findOne(search, sort);
   return model;
 }
@@ -75,7 +92,11 @@ export async function findById(
 export async function exist(
   search?: LoginLogSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await login_logDao.exist(search);
   return data;
 }

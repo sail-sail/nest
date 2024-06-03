@@ -10,6 +10,11 @@ import {
 
 import * as dictDao from "./dict.dao.ts";
 
+async function setSearchQuery(
+  search: DictSearch,
+) {
+}
+
 /**
  * 根据条件查找系统字典总数
  * @param {DictSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as dictDao from "./dict.dao.ts";
 export async function findCount(
   search?: DictSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await dictDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<DictModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: DictModel[] = await dictDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: DictSearch,
   sort?: SortInput|SortInput[],
 ): Promise<DictModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await dictDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: DictSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await dictDao.exist(search);
   return data;
 }

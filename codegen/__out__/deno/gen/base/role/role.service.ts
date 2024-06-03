@@ -10,6 +10,11 @@ import {
 
 import * as roleDao from "./role.dao.ts";
 
+async function setSearchQuery(
+  search: RoleSearch,
+) {
+}
+
 /**
  * 根据条件查找角色总数
  * @param {RoleSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as roleDao from "./role.dao.ts";
 export async function findCount(
   search?: RoleSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await roleDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<RoleModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: RoleModel[] = await roleDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: RoleSearch,
   sort?: SortInput|SortInput[],
 ): Promise<RoleModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await roleDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: RoleSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await roleDao.exist(search);
   return data;
 }
