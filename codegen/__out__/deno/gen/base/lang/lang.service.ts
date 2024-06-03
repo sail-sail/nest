@@ -10,6 +10,11 @@ import {
 
 import * as langDao from "./lang.dao.ts";
 
+async function setSearchQuery(
+  search: LangSearch,
+) {
+}
+
 /**
  * 根据条件查找语言总数
  * @param {LangSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as langDao from "./lang.dao.ts";
 export async function findCount(
   search?: LangSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await langDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<LangModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: LangModel[] = await langDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: LangSearch,
   sort?: SortInput|SortInput[],
 ): Promise<LangModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await langDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: LangSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await langDao.exist(search);
   return data;
 }
