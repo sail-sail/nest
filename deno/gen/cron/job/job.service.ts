@@ -10,6 +10,11 @@ import {
 
 import * as jobDao from "./job.dao.ts";
 
+async function setSearchQuery(
+  search: JobSearch,
+) {
+}
+
 /**
  * 根据条件查找任务总数
  * @param {JobSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as jobDao from "./job.dao.ts";
 export async function findCount(
   search?: JobSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await jobDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<JobModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: JobModel[] = await jobDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: JobSearch,
   sort?: SortInput|SortInput[],
 ): Promise<JobModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await jobDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: JobSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await jobDao.exist(search);
   return data;
 }
