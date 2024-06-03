@@ -965,6 +965,9 @@ export default defineConfig({
         COLUMN_NAME: "order_by",
       },
       {
+        COLUMN_NAME: "org_id",
+      },
+      {
         COLUMN_NAME: "rem",
       },
       {

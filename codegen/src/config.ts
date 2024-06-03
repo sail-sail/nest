@@ -1,6 +1,5 @@
 export default {
   ignoreCodegen: [
-    "org_id",
     "tenant_id",
     "create_usr_id",
     "create_time",
@@ -653,6 +652,12 @@ export interface TablesConfigItem {
      * 是否有租户ID
      */
     hasTenant_id?: boolean;
+    
+    /** 是否有组织ID */
+    hasOrgId?: boolean;
+    
+    /** 是否有 org_id_lbl 字段 */
+    hasOrgIdLbl?: boolean;
     
     /** 是否有 create_usr_id 字段 */
     hasCreateUsrId?: boolean;

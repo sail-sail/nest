@@ -10,6 +10,12 @@ import {
 
 import * as optbizDao from "./optbiz.dao.ts";
 
+async function setSearchQuery(
+  search: OptbizSearch,
+) {
+  
+}
+
 /**
  * 根据条件查找业务选项总数
  * @param {OptbizSearch} search? 搜索条件
@@ -18,7 +24,11 @@ import * as optbizDao from "./optbiz.dao.ts";
 export async function findCount(
   search?: OptbizSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await optbizDao.findCount(search);
   return data;
 }
@@ -35,7 +45,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<OptbizModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: OptbizModel[] = await optbizDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +70,11 @@ export async function findOne(
   search?: OptbizSearch,
   sort?: SortInput|SortInput[],
 ): Promise<OptbizModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await optbizDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +97,11 @@ export async function findById(
 export async function exist(
   search?: OptbizSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await optbizDao.exist(search);
   return data;
 }

@@ -96,6 +96,7 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     table_comment,
     defaultSort,
     hasTenant_id,
+    hasOrgId,
     hasCreateUsrId,
     hasCreateUsrIdLbl,
     hasCreateTime,
@@ -179,7 +180,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
                 "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                 "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                 "tenant_id", "tenant_id_lbl",
-                "org_id", "org_id_lbl",
               ].includes(column_name)
               || column.readonly
               || column.noAdd
@@ -189,7 +189,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
             [
               "is_deleted", "is_sys",
               "tenant_id", "tenant_id_lbl",
-              "org_id", "org_id_lbl",
             ].includes(column_name)
             || column.noList
             || column.noExport
