@@ -535,6 +535,7 @@ CREATE TABLE if not exists `base_dept` (
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
+  `org_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '操作人',
@@ -546,7 +547,7 @@ CREATE TABLE if not exists `base_dept` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`parent_id`, `lbl`, `tenant_id`, `is_deleted`),
+  INDEX (`parent_id`, `lbl`, `org_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='部门';
 

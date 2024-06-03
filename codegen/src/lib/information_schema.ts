@@ -93,6 +93,8 @@ async function getSchema0(
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   // 是否有隐藏字段
   const hasIsHidden = records.some((item: TableCloumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
+  const hasOrgId = records.some((item: TableCloumn) => [ "org_id" ].includes(item.COLUMN_NAME));
+  const hasOrgIdLbl = records.some((item: TableCloumn) => [ "org_id_lbl" ].includes(item.COLUMN_NAME));
   const hasCreateTime = records.some((item: TableCloumn) => [ "create_time" ].includes(item.COLUMN_NAME));
   const hasCreateUsrId = records.some((item: TableCloumn) => [ "create_usr_id" ].includes(item.COLUMN_NAME));
   const hasCreateUsrIdLbl = records.some((item: TableCloumn) => [ "create_usr_id_lbl" ].includes(item.COLUMN_NAME));
@@ -130,10 +132,6 @@ async function getSchema0(
   if (tenant_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id")) {
     records2.push(tenant_idColumn);
   }
-  const org_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "org_id");
-  if (org_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "org_id")) {
-    records2.push(org_idColumn);
-  }
   const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
   if (is_deletedColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "is_deleted")) {
     records2.push(is_deletedColumn);
@@ -155,6 +153,17 @@ async function getSchema0(
       DATA_TYPE: "tinyint",
       COLUMN_COMMENT: "隐藏记录",
       onlyCodegenDeno: true,
+    });
+  }
+  // 组织
+  if (hasOrgId && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "org_id")) {
+    tables[table_name].columns.push({
+      COLUMN_NAME: "org_id",
+      COLUMN_TYPE: "varchar(22)",
+      DATA_TYPE: "varchar",
+      COLUMN_COMMENT: "组织",
+      onlyCodegenDeno: true,
+      canSearch: true,
     });
   }
   // 创建人
@@ -211,7 +220,15 @@ async function getSchema0(
         item.onlyCodegenDeno = true;
       }
     }
-    if ([ "org_id", "tenant_id", "is_deleted" ].includes(column_name)) {
+    if (column_name === "org_id") {
+      if (!item.COLUMN_DEFAULT) {
+        item.COLUMN_DEFAULT = "CURRENT_ORG_ID";
+      }
+      if (hasOrgIdLbl) {
+        item.modelLabel = "org_id_lbl";
+      }
+    }
+    if ([ "tenant_id", "is_deleted" ].includes(column_name)) {
       item.isVirtual = true;
       item.ignoreCodegen = false;
     } else if ([ "create_usr_id", "create_time", "update_usr_id", "update_time", "is_deleted"  ].includes(column_name)) {
@@ -532,6 +549,14 @@ async function getSchema0(
       prop: "order_by",
       order: "ascending",
     };
+  }
+  if (hasOrgId && tables[table_name]?.opts?.hasOrgId == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasOrgId = true;
+  }
+  if (hasOrgIdLbl && tables[table_name]?.opts?.hasOrgIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasOrgIdLbl = true;
   }
   if (hasCreateTime && tables[table_name]?.opts?.hasCreateTime == null) {
     tables[table_name].opts = tables[table_name].opts || { };
