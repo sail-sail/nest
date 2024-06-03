@@ -12,9 +12,6 @@ declare global {
   type WxoAppTokenId = Distinct<string, typeof wxoAppTokenId>;
 
   interface WxoAppTokenSearch extends WxoAppTokenSearchType {
-    /** 小程序设置 */
-    wxo_app_id?: WxoAppId[];
-    wxo_app_id_is_null?: boolean;
     /** 令牌 */
     access_token?: string;
     access_token_like?: string;
