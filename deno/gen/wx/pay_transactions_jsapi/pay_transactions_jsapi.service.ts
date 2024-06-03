@@ -14,6 +14,29 @@ import {
 
 import * as pay_transactions_jsapiDao from "./pay_transactions_jsapi.dao.ts";
 
+async function setSearchQuery(
+  search: PayTransactionsJsapiSearch,
+) {
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  if (!usr_id || !usr_model) {
+    throw new Error("usr_id can not be null");
+  }
+  const org_ids: OrgId[] = [ ];
+  if (authModel?.org_id) {
+    org_ids.push(authModel.org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+  }
+  const username = usr_model.username;
+  
+  if (username !== "admin") {
+    search.org_id = org_ids;
+  }
+}
+
 /**
  * 根据条件查找微信JSAPI下单总数
  * @param {PayTransactionsJsapiSearch} search? 搜索条件
@@ -22,20 +45,11 @@ import * as pay_transactions_jsapiDao from "./pay_transactions_jsapi.dao.ts";
 export async function findCount(
   search?: PayTransactionsJsapiSearch,
 ): Promise<number> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const org_id = authModel?.org_id;
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }
   const data = await pay_transactions_jsapiDao.findCount(search);
   return data;
 }
@@ -52,20 +66,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<PayTransactionsJsapiModel[]> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const org_id = authModel?.org_id;
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }
   const models: PayTransactionsJsapiModel[] = await pay_transactions_jsapiDao.findAll(search, page, sort);
   return models;
 }
@@ -86,20 +91,11 @@ export async function findOne(
   search?: PayTransactionsJsapiSearch,
   sort?: SortInput|SortInput[],
 ): Promise<PayTransactionsJsapiModel | undefined> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const org_id = authModel?.org_id;
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }
   const model = await pay_transactions_jsapiDao.findOne(search, sort);
   return model;
 }
@@ -122,20 +118,11 @@ export async function findById(
 export async function exist(
   search?: PayTransactionsJsapiSearch,
 ): Promise<boolean> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const org_id = authModel?.org_id;
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (org_id && username !== "admin") {
-    search.org_id = [ org_id ];
-  }
   const data = await pay_transactions_jsapiDao.exist(search);
   return data;
 }

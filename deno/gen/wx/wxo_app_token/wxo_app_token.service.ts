@@ -6,6 +6,11 @@ import type {
 
 import * as wxo_app_tokenDao from "./wxo_app_token.dao.ts";
 
+async function setSearchQuery(
+  search: WxoAppTokenSearch,
+) {
+}
+
 /**
  * 根据条件查找小程序接口凭据总数
  * @param {WxoAppTokenSearch} search? 搜索条件
@@ -14,7 +19,11 @@ import * as wxo_app_tokenDao from "./wxo_app_token.dao.ts";
 export async function findCount(
   search?: WxoAppTokenSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wxo_app_tokenDao.findCount(search);
   return data;
 }
@@ -31,7 +40,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<WxoAppTokenModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: WxoAppTokenModel[] = await wxo_app_tokenDao.findAll(search, page, sort);
   return models;
 }
@@ -52,7 +65,11 @@ export async function findOne(
   search?: WxoAppTokenSearch,
   sort?: SortInput|SortInput[],
 ): Promise<WxoAppTokenModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await wxo_app_tokenDao.findOne(search, sort);
   return model;
 }
@@ -75,7 +92,11 @@ export async function findById(
 export async function exist(
   search?: WxoAppTokenSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wxo_app_tokenDao.exist(search);
   return data;
 }
