@@ -14,6 +14,23 @@ import {
 
 import * as background_taskDao from "./background_task.dao.ts";
 
+async function setSearchQuery(
+  search: BackgroundTaskSearch,
+) {
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  if (!usr_id || !usr_model) {
+    throw new Error("usr_id can not be null");
+  }
+  const username = usr_model.username;
+  
+  if (username !== "admin") {
+    search.create_usr_id = [ usr_id ];
+  }
+}
+
 /**
  * 根据条件查找后台任务总数
  * @param {BackgroundTaskSearch} search? 搜索条件
@@ -22,19 +39,11 @@ import * as background_taskDao from "./background_task.dao.ts";
 export async function findCount(
   search?: BackgroundTaskSearch,
 ): Promise<number> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (username !== "admin") {
-    search.create_usr_id = [ usr_id ];
-  }
   const data = await background_taskDao.findCount(search);
   return data;
 }
@@ -51,19 +60,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<BackgroundTaskModel[]> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (username !== "admin") {
-    search.create_usr_id = [ usr_id ];
-  }
   const models: BackgroundTaskModel[] = await background_taskDao.findAll(search, page, sort);
   return models;
 }
@@ -84,19 +85,11 @@ export async function findOne(
   search?: BackgroundTaskSearch,
   sort?: SortInput|SortInput[],
 ): Promise<BackgroundTaskModel | undefined> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (username !== "admin") {
-    search.create_usr_id = [ usr_id ];
-  }
   const model = await background_taskDao.findOne(search, sort);
   return model;
 }
@@ -119,19 +112,11 @@ export async function findById(
 export async function exist(
   search?: BackgroundTaskSearch,
 ): Promise<boolean> {
+  
   search = search || { };
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
-  if (!usr_id) {
-    throw new Error("usr_id can not be null");
-  }
-  const usr_model = await findByIdUsr(usr_id);
-  const username = usr_model?.username;
+  await setSearchQuery(search);
   
-  if (username !== "admin") {
-    search.create_usr_id = [ usr_id ];
-  }
   const data = await background_taskDao.exist(search);
   return data;
 }

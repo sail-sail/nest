@@ -10,6 +10,11 @@ import {
 
 import * as optionsDao from "./options.dao.ts";
 
+async function setSearchQuery(
+  search: OptionsSearch,
+) {
+}
+
 /**
  * 根据条件查找系统选项总数
  * @param {OptionsSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as optionsDao from "./options.dao.ts";
 export async function findCount(
   search?: OptionsSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await optionsDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<OptionsModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: OptionsModel[] = await optionsDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: OptionsSearch,
   sort?: SortInput|SortInput[],
 ): Promise<OptionsModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await optionsDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: OptionsSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await optionsDao.exist(search);
   return data;
 }

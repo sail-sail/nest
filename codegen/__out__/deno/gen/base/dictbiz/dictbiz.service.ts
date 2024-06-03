@@ -10,6 +10,11 @@ import {
 
 import * as dictbizDao from "./dictbiz.dao.ts";
 
+async function setSearchQuery(
+  search: DictbizSearch,
+) {
+}
+
 /**
  * 根据条件查找业务字典总数
  * @param {DictbizSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as dictbizDao from "./dictbiz.dao.ts";
 export async function findCount(
   search?: DictbizSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await dictbizDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<DictbizModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: DictbizModel[] = await dictbizDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: DictbizSearch,
   sort?: SortInput|SortInput[],
 ): Promise<DictbizModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await dictbizDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: DictbizSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await dictbizDao.exist(search);
   return data;
 }

@@ -6,6 +6,11 @@ import type {
 
 import * as operation_recordDao from "./operation_record.dao.ts";
 
+async function setSearchQuery(
+  search: OperationRecordSearch,
+) {
+}
+
 /**
  * 根据条件查找操作记录总数
  * @param {OperationRecordSearch} search? 搜索条件
@@ -14,7 +19,11 @@ import * as operation_recordDao from "./operation_record.dao.ts";
 export async function findCount(
   search?: OperationRecordSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await operation_recordDao.findCount(search);
   return data;
 }
@@ -31,7 +40,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<OperationRecordModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: OperationRecordModel[] = await operation_recordDao.findAll(search, page, sort);
   return models;
 }
@@ -52,7 +65,11 @@ export async function findOne(
   search?: OperationRecordSearch,
   sort?: SortInput|SortInput[],
 ): Promise<OperationRecordModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await operation_recordDao.findOne(search, sort);
   return model;
 }
@@ -75,7 +92,11 @@ export async function findById(
 export async function exist(
   search?: OperationRecordSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await operation_recordDao.exist(search);
   return data;
 }
