@@ -10,6 +10,11 @@ import {
 
 import * as orgDao from "./org.dao.ts";
 
+async function setSearchQuery(
+  search: OrgSearch,
+) {
+}
+
 /**
  * 根据条件查找组织总数
  * @param {OrgSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as orgDao from "./org.dao.ts";
 export async function findCount(
   search?: OrgSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await orgDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<OrgModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: OrgModel[] = await orgDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: OrgSearch,
   sort?: SortInput|SortInput[],
 ): Promise<OrgModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await orgDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: OrgSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await orgDao.exist(search);
   return data;
 }

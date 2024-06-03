@@ -10,6 +10,11 @@ import {
 
 import * as usrDao from "./usr.dao.ts";
 
+async function setSearchQuery(
+  search: UsrSearch,
+) {
+}
+
 /**
  * 根据条件查找用户总数
  * @param {UsrSearch} search? 搜索条件
@@ -18,7 +23,11 @@ import * as usrDao from "./usr.dao.ts";
 export async function findCount(
   search?: UsrSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await usrDao.findCount(search);
   return data;
 }
@@ -35,7 +44,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<UsrModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: UsrModel[] = await usrDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +69,11 @@ export async function findOne(
   search?: UsrSearch,
   sort?: SortInput|SortInput[],
 ): Promise<UsrModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await usrDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +96,11 @@ export async function findById(
 export async function exist(
   search?: UsrSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await usrDao.exist(search);
   return data;
 }

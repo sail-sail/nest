@@ -117,19 +117,82 @@
               un-cursor-pointer
               un-whitespace-nowrap
             >
-              {{ loginInfo.org_id_models.find(item => item.id === loginInfo?.org_id)?.lbl || '' }}
+              <template
+                v-if="loginInfo?.org_id"
+              >
+                {{ loginInfo.org_id_models.find(item => item.id === loginInfo?.org_id)?.lbl || '' }}
+              </template>
+              <template
+                v-else
+              >
+                ({{ ns('全部') }})
+              </template>
             </span>
             <template #dropdown>
               <el-dropdown-menu
                 un-whitespace-nowrap
               >
                 <el-dropdown-item
+                  @click="deptSelectClk()"
+                >
+                  <div
+                    :style="{
+                      color: !loginInfo?.org_id ? 'var(--el-color-primary)' : ''
+                    }"
+                    un-flex="~"
+                    un-items-center
+                  >
+                    <div
+                      un-w="3.5"
+                      un-h="3.5"
+                      un-m="r-1"
+                    >
+                      <el-icon
+                        v-if="!loginInfo?.org_id"
+                        :size="14"
+                      >
+                        <ElIconCheck />
+                      </el-icon>
+                    </div>
+                    <span>
+                      {{ ns('(全部)') }}
+                    </span>
+                  </div>
+                </el-dropdown-item>
+                
+                <template
                   v-for="item of loginInfo.org_id_models"
                   :key="item.id"
-                  @click="deptSelectClk(item.id)"
                 >
-                  {{ item.lbl }}
-                </el-dropdown-item>
+                  <el-dropdown-item
+                    @click="deptSelectClk(item.id)"
+                  >
+                    <div
+                      :style="{
+                        color: item.id === loginInfo?.org_id ? 'var(--el-color-primary)' : ''
+                      }"
+                      un-flex="~"
+                      un-items-center
+                    >
+                      <div
+                        un-w="3.5"
+                        un-h="3.5"
+                        un-m="r-1"
+                      >
+                        <el-icon
+                          v-if="item.id === loginInfo?.org_id"
+                          :size="14"
+                        >
+                          <ElIconCheck />
+                        </el-icon>
+                      </div>
+                      <span>
+                        {{ item.lbl }}
+                      </span>
+                    </div>
+                  </el-dropdown-item>
+                </template>
+                
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -548,8 +611,11 @@ async function selectLangClk(lang: string) {
   }
 }
 
-async function deptSelectClk(org_id: OrgId) {
+async function deptSelectClk(org_id?: OrgId) {
   if (!loginInfo) {
+    return;
+  }
+  if (org_id === loginInfo.org_id) {
     return;
   }
   loginInfo.org_id = org_id;
