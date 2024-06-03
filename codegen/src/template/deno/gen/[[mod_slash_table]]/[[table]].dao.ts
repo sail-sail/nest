@@ -3157,9 +3157,12 @@ async function _creates(
   let sql = `insert into <#=mod#>_<#=table#>(id`;<#
   if (hasCreateTime) {
   #>
-  if (!silentMode) {
-    sql += ",create_time";
-  }<#
+  sql += ",create_time";<#
+  }
+  #><#
+  if (hasUpdateTime) {
+  #>
+  sql += ",update_time";<#
   }
   #><#
   if (hasTenant_id) {
@@ -3174,16 +3177,22 @@ async function _creates(
   #><#
   if (hasCreateUsrId) {
   #>
-  if (!silentMode) {
-    sql += ",create_usr_id";
-  }<#
+  sql += ",create_usr_id";<#
   }
   #><#
   if (hasCreateUsrIdLbl) {
   #>
-  if (!silentMode) {
-    sql += ",create_usr_id_lbl";
-  }<#
+  sql += ",create_usr_id_lbl";<#
+  }
+  #><#
+  if (hasUpdateUsrId) {
+  #>
+  sql += ",update_usr_id";<#
+  }
+  #><#
+  if (hasUpdateUsrIdLbl) {
+  #>
+  sql += ",update_usr_id_lbl";<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -3261,11 +3270,26 @@ async function _creates(
       if (hasCreateTime) {
       #>
       if (!silentMode) {
-        if (input.create_time != null) {
+        if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
           sql += `,${ args.push(reqDate()) }`;
         }
+      } else {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,null`;
+        }
+      }<#
+      }
+      #><#
+      if (hasUpdateTime) {
+      #>
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }<#
       }
       #><#
@@ -3318,6 +3342,12 @@ async function _creates(
         } else {
           sql += `,${ args.push(input.create_usr_id) }`;
         }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
       }<#
       } else if (hasCreateUsrId && hasCreateUsrIdLbl) {
       #>
@@ -3360,6 +3390,35 @@ async function _creates(
           }
           sql += `,${ args.push(usr_lbl) }`;
         }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+        if (input.create_usr_id_lbl == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id_lbl) }`;
+        }
+      }<#
+      }
+      #><#
+      if (hasUpdateUsrId) {
+      #>
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }<#
+      }
+      #><#
+      if (hasUpdateUsrIdLbl) {
+      #>
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
       }<#
       }
       #><#
@@ -4011,7 +4070,7 @@ export async function updateById(
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
-    if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
+    if ([ "id", "update_usr_id", "update_time" ].includes(column_name)) continue;
     const is_nullable = column.IS_NULLABLE === "YES";
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
@@ -4091,10 +4150,10 @@ export async function updateById(
       sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else if (isEncrypt && [ "int" ].includes(data_type)) {
       #>
-      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      sql += `<#=column_name_mysql#>=${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else {
       #>
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
       }
       #>
       updateFldNum++;
@@ -4355,6 +4414,8 @@ export async function updateById(
       } else if (input.update_usr_id as unknown as string !== "-") {
         sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
       }
+    } else if (input.update_usr_id != null) {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }<#
     } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
     #>
@@ -4393,6 +4454,13 @@ export async function updateById(
           sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
         }
       }
+    } else {
+      if (input.update_usr_id != null) {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
+      }
     }<#
     }
     #><#
@@ -4404,20 +4472,25 @@ export async function updateById(
         if (version && version > input.version) {
           throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
         }
-        sql += `version = ${ args.push(version + 1) },`;
+        sql += `version=${ args.push(version + 1) },`;
         sqlSetFldNum++;
       }
+    } else if (input.version != null) {
+      sql += `version=${ args.push(input.version) },`;
+      sqlSetFldNum++;
     }<#
     }
     #><#
     if (hasUpdateTime) {
     #>
     if (!silentMode) {
-      if (input.update_time) {
+      if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
         sql += `update_time=${ args.push(reqDate()) },`;
       }
+    } else if (input.update_time != null || input.update_time_save_null) {
+      sql += `update_time=${ args.push(input.update_time) },`;
     }<#
     }
     #>
