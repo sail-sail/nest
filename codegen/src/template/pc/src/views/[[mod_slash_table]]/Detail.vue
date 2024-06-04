@@ -4621,8 +4621,7 @@ if (opts.noAdd !== true || opts.noEdit !== true) {
 #>
 
 watch(
-  () => [
-    inited,<#
+  () => [<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;

@@ -660,7 +660,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.menu_ids,
     dialogModel.permit_ids,
     dialogModel.data_permit_ids,
