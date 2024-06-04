@@ -433,6 +433,7 @@ impl std::fmt::Debug for TenantSearch {
 pub struct TenantInput {
   /// ID
   pub id: Option<TenantId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
@@ -483,6 +484,9 @@ pub struct TenantInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -495,6 +499,9 @@ pub struct TenantInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<TenantModel> for TenantInput {
@@ -527,12 +534,14 @@ impl From<TenantModel> for TenantInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }

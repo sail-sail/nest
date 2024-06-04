@@ -5,7 +5,6 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasMany2manyNotInline = columns.some((column) => {
   if (column.ignoreCodegen) {
     return false;
@@ -43,7 +42,6 @@ const hasDict = columns.some((column) => {
   if (column_name === "id") return false;
   if (
     column_name === "tenant_id" ||
-    column_name === "org_id" ||
     column_name === "is_sys" ||
     column_name === "is_deleted" ||
     column_name === "is_hidden"
@@ -58,7 +56,6 @@ const hasDictbiz = columns.some((column) => {
   if (column_name === "id") return false;
   if (
     column_name === "tenant_id" ||
-    column_name === "org_id" ||
     column_name === "is_sys" ||
     column_name === "is_deleted" ||
     column_name === "is_hidden"
@@ -159,10 +156,8 @@ use crate::src::base::role::role_dao::{
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  get_auth_model,
   get_auth_id,
   get_auth_tenant_id,
-  get_auth_org_id,
   execute,
   query,
   query_one,
@@ -482,14 +477,6 @@ modelIds.push("TenantId");
 #><#
 }
 #><#
-if (hasOrgId && !modelIds.includes("OrgId")) {
-#>
-
-use crate::gen::base::org::org_model::OrgId;<#
-modelIds.push("OrgId");
-#><#
-}
-#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -497,7 +484,6 @@ for (let i = 0; i < columns.length; i++) {
   const column_name = column.COLUMN_NAME;
   if (
     column_name === "tenant_id" ||
-    column_name === "org_id" ||
     column_name === "is_sys" ||
     column_name === "is_deleted" ||
     column_name === "is_hidden"
@@ -687,33 +673,6 @@ async fn get_where_query(
   }<#
     }
   #><#
-    if (hasOrgId) {
-  #>
-  {
-    let org_id: Option<Vec<OrgId>> = match search {
-      Some(item) => item.org_id.clone(),
-      None => None,
-    };
-    if let Some(org_id) = org_id {
-      let arg = {
-        if org_id.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(org_id.len());
-          for item in org_id {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and t.org_id in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
-    }
-  }<#
-    }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -722,7 +681,6 @@ async fn get_where_query(
     if (column_name === 'id') continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted"
     ) continue;
@@ -1067,7 +1025,6 @@ async fn get_from_query(
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
-    if (column_name === "org_id") continue;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
     if (!foreignKey) continue;
@@ -1195,7 +1152,6 @@ pub async fn find_all(
     if (column_name === 'id') continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted"
     ) continue;
@@ -1306,7 +1262,6 @@ pub async fn find_all(
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
-    if (column_name === "org_id") continue;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
     if (!foreignKey) continue;
@@ -1396,7 +1351,6 @@ pub async fn find_all(
     if (column_name === "id") continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -1419,7 +1373,6 @@ pub async fn find_all(
       if (column_name === "id") continue;
       if (
         column_name === "tenant_id" ||
-        column_name === "org_id" ||
         column_name === "is_sys" ||
         column_name === "is_deleted" ||
         column_name === "is_hidden"
@@ -1449,7 +1402,6 @@ pub async fn find_all(
     if (column_name === "id") continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -1472,7 +1424,6 @@ pub async fn find_all(
       if (column_name === "id") continue;
       if (
         column_name === "tenant_id" ||
-        column_name === "org_id" ||
         column_name === "is_sys" ||
         column_name === "is_deleted" ||
         column_name === "is_hidden"
@@ -1591,7 +1542,6 @@ pub async fn find_all(
           "is_deleted",
           "is_sys",
           "is_hidden",
-          "org_id",
         ].includes(column_name)
       ) continue;
       const data_type = column.DATA_TYPE;
@@ -1817,7 +1767,6 @@ pub async fn get_field_comments(
       const column_name = column.COLUMN_NAME;
       if (
         column_name === "tenant_id" ||
-        column_name === "org_id" ||
         column_name === "is_sys" ||
         column_name === "is_deleted"
       ) continue;
@@ -1895,7 +1844,6 @@ pub async fn get_field_comments(
       const column_name = column.COLUMN_NAME;
       if (
         column_name === "tenant_id" ||
-        column_name === "org_id" ||
         column_name === "is_sys" ||
         column_name === "is_deleted" ||
         column_name === "is_hidden"
@@ -2529,7 +2477,6 @@ pub async fn set_id_by_lbl(
     if (column_name === "id") continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -2550,7 +2497,6 @@ pub async fn set_id_by_lbl(
     if (column_name === "id") continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -2589,7 +2535,6 @@ pub async fn set_id_by_lbl(
     if (column_name === "id") continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -2610,7 +2555,6 @@ pub async fn set_id_by_lbl(
     if (column_name === "id") continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -2647,7 +2591,6 @@ pub async fn set_id_by_lbl(
     if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -2978,33 +2921,37 @@ async fn _creates(
   sql_fields += "id";<#
   if (hasCreateTime) {
   #>
-  if !silent_mode {
-    sql_fields += ",create_time";
-  }<#
+  sql_fields += ",create_time";<#
+  }
+  #><#
+  if (hasUpdateTime) {
+  #>
+  sql_fields += ",update_time";<#
   }
   #><#
   if (hasCreateUsrId) {
   #>
-  if !silent_mode {
-    sql_fields += ",create_usr_id";
-  }<#
+  sql_fields += ",create_usr_id";<#
   }
   #><#
   if (hasCreateUsrIdLbl) {
   #>
-  if !silent_mode {
-    sql_fields += ",create_usr_id_lbl";
-  }<#
+  sql_fields += ",create_usr_id_lbl";<#
+  }
+  #><#
+  if (hasUpdateUsrId) {
+  #>
+  sql_fields += ",update_usr_id";<#
+  }
+  #><#
+  if (hasUpdateUsrIdLbl) {
+  #>
+  sql_fields += ",update_usr_id_lbl";<#
   }
   #><#
   if (hasTenantId) {
   #>
   sql_fields += ",tenant_id";<#
-  }
-  #><#
-  if (hasOrgId) {
-  #>
-  sql_fields += ",org_id";<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -3100,21 +3047,6 @@ async fn _creates(
   {
     
     let id: <#=Table_Up#>Id = get_short_uuid().into();
-    // loop {
-    //   let is_exist = exists_by_id(
-    //     id.clone(),
-    //     None,
-    //   ).await?;
-    //   if !is_exist {
-    //     break;
-    //   }
-    //   error!(
-    //     "{req_id} ID_COLLIDE: {table} {id}",
-    //     req_id = get_req_id(),
-    //   );
-    //   id = get_short_uuid().into();
-    // }
-    // let id = id;
     ids2.push(id.clone());
     
     inputs2_ids.push(id.clone());
@@ -3124,30 +3056,48 @@ async fn _creates(
     if (hasCreateTime) {
     #>
     
-    if let Some(create_time) = input.create_time {
+    if !silent_mode {
+      if let Some(create_time) = input.create_time {
+        sql_values += ",?";
+        args.push(create_time.into());
+      } else if input.create_time_save_null == Some(true) {
+        sql_values += ",null";
+      } else {
+        sql_values += ",?";
+        args.push(get_now().into());
+      }
+    } else if let Some(create_time) = input.create_time {
       sql_values += ",?";
       args.push(create_time.into());
     } else {
-      sql_values += ",?";
-      args.push(get_now().into());
+      sql_values += ",null";
     }<#
     }
     #><#
     if (hasCreateUsrId && !hasCreateUsrIdLbl) {
     #>
     
-    if let Some(create_usr_id) = input.create_usr_id {
-      if create_usr_id.as_str() != "-" {
-        sql_values += ",?";
-        args.push(create_usr_id.into());
+    if !silent_mode {
+      if let Some(create_usr_id) = input.create_usr_id {
+        if create_usr_id.as_str() != "-" {
+          sql_values += ",?";
+          args.push(create_usr_id.into());
+        } else {
+          sql_values += ",default";
+        }
       } else {
-        sql_values += ",default";
+        let usr_id = get_auth_id();
+        if let Some(usr_id) = usr_id {
+          sql_values += ",?";
+          args.push(usr_id.into());
+        } else {
+          sql_values += ",default";
+        }
       }
     } else {
-      let usr_id = get_auth_id();
-      if let Some(usr_id) = usr_id {
+      if let Some(create_usr_id) = input.create_usr_id {
         sql_values += ",?";
-        args.push(usr_id.into());
+        args.push(create_usr_id.into());
       } else {
         sql_values += ",default";
       }
@@ -3155,10 +3105,35 @@ async fn _creates(
     } else if (hasCreateUsrId && hasCreateUsrIdLbl) {
     #>
     
-    if input.create_usr_id.is_none() {
-      let mut usr_id = get_auth_id();
-      let mut usr_lbl = String::new();
-      if usr_id.is_some() {
+    if !silent_mode {
+      if input.create_usr_id.is_none() {
+        let mut usr_id = get_auth_id();
+        let mut usr_lbl = String::new();
+        if usr_id.is_some() {
+          let usr_model = find_by_id_usr(
+            usr_id.clone().unwrap(),
+            None,
+          ).await?;
+          if let Some(usr_model) = usr_model {
+            usr_lbl = usr_model.lbl;
+          } else {
+            usr_id = None;
+          }
+        }
+        if let Some(usr_id) = usr_id {
+          sql_values += ",?";
+          args.push(usr_id.into());
+        } else {
+          sql_values += ",default";
+        }
+        sql_values += ",?";
+        args.push(usr_lbl.into());
+      } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
+        sql_values += ",default";
+        sql_values += ",default";
+      } else {
+        let mut usr_id = input.create_usr_id.clone();
+        let mut usr_lbl = String::new();
         let usr_model = find_by_id_usr(
           usr_id.clone().unwrap(),
           None,
@@ -3168,38 +3143,50 @@ async fn _creates(
         } else {
           usr_id = None;
         }
-      }
-      if let Some(usr_id) = usr_id {
+        if let Some(usr_id) = usr_id {
+          sql_values += ",?";
+          args.push(usr_id.into());
+        } else {
+          sql_values += ",default";
+        }
         sql_values += ",?";
-        args.push(usr_id.into());
-      } else {
-        sql_values += ",default";
+        args.push(usr_lbl.into());
       }
-      sql_values += ",?";
-      args.push(usr_lbl.into());
-    } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
-      sql_values += ",default";
-      sql_values += ",default";
     } else {
-      let mut usr_id = input.create_usr_id.clone();
-      let mut usr_lbl = String::new();
-      let usr_model = find_by_id_usr(
-        usr_id.clone().unwrap(),
-        None,
-      ).await?;
-      if let Some(usr_model) = usr_model {
-        usr_lbl = usr_model.lbl;
-      } else {
-        usr_id = None;
-      }
-      if let Some(usr_id) = usr_id {
+      if let Some(create_usr_id) = input.create_usr_id {
         sql_values += ",?";
-        args.push(usr_id.into());
+        args.push(create_usr_id.into());
       } else {
         sql_values += ",default";
       }
+      if let Some(create_usr_id_lbl) = input.create_usr_id_lbl {
+        sql_values += ",?";
+        args.push(create_usr_id_lbl.into());
+      } else {
+        sql_values += ",default";
+      }
+    }<#
+    }
+    #><#
+    if (hasUpdateUsrId) {
+    #>
+    
+    if let Some(update_usr_id) = input.update_usr_id {
       sql_values += ",?";
-      args.push(usr_lbl.into());
+      args.push(update_usr_id.into());
+    } else {
+      sql_values += ",default";
+    }<#
+    }
+    #><#
+    if (hasUpdateUsrIdLbl) {
+    #>
+    
+    if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
+      sql_values += ",?";
+      args.push(update_usr_id_lbl.into());
+    } else {
+      sql_values += ",default";
     }<#
     }
     #><#
@@ -3212,20 +3199,6 @@ async fn _creates(
     } else if let Some(tenant_id) = get_auth_tenant_id() {
       sql_values += ",?";
       args.push(tenant_id.into());
-    } else {
-      sql_values += ",default";
-    }<#
-    }
-    #><#
-    if (hasOrgId) {
-    #>
-    
-    if let Some(org_id) = input.org_id {
-      sql_values += ",?";
-      args.push(org_id.into());
-    } else if let Some(org_id) = get_auth_org_id() {
-      sql_values += ",?";
-      args.push(org_id.into());
     } else {
       sql_values += ",default";
     }<#
@@ -3317,7 +3290,7 @@ async fn _creates(
     if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
       sql_values += ",?";
       args.push(<#=column_name_rust#>.into());
-    } else if input.<#=column_name#>_save_null == Some(1) {
+    } else if input.<#=column_name#>_save_null == Some(true) {
       sql_values += ",null";
     } else {
       sql_values += ",default";
@@ -3630,60 +3603,6 @@ pub async fn update_tenant_by_id(
   args.push(id.into());
   
   let sql = format!("update {table} set tenant_id=? where id=?");
-  
-  let args: Vec<_> = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.into();
-  
-  let num = execute(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  Ok(num)
-}<#
-}
-#><#
-if (hasOrgId) {
-#>
-
-/// <#=table_comment#>根据id修改组织id
-pub async fn update_org_by_id(
-  id: <#=Table_Up#>Id,
-  org_id: OrgId,
-  options: Option<Options>,
-) -> Result<u64> {
-  let table = "<#=mod#>_<#=table#>";
-  let method = "update_org_by_id";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    msg += &format!(" org_id: {:?}", &org_id);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = options.into();
-  
-  let mut args = QueryArgs::new();
-  
-  args.push(org_id.into());
-  args.push(id.into());
-  
-  let sql = format!("update {table} set org_id=? where id=?");
   
   let args: Vec<_> = args.into();
   
@@ -4042,9 +3961,6 @@ pub async fn update_by_id(
     if (column_name === "tenant_id") {
       continue;
     }
-    if (column_name === "org_id") {
-      continue;
-    }
     const column_name_mysql = mysqlKeyEscape(column_name);
     const modelLabel = column.modelLabel;
     const isEncrypt = column.isEncrypt;
@@ -4104,7 +4020,7 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "<#=column_name_mysql#>=?,";
     args.push(<#=column_name_rust#>.into());
-  } else if input.<#=column_name#>_save_null == Some(1) {
+  } else if input.<#=column_name#>_save_null == Some(true) {
     field_num += 1;
     sql_fields += "<#=column_name_mysql#>=null,";
   }<#
@@ -4446,7 +4362,6 @@ pub async fn update_by_id(
       #><#
       if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
       #>
-      
       if let Some(update_usr_id) = input.update_usr_id {
         if update_usr_id.as_str() != "-" {
           sql_fields += "update_usr_id=?,";
@@ -4461,7 +4376,6 @@ pub async fn update_by_id(
       }<#
       } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
       #>
-      
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
         let mut usr_id_lbl = String::new();
@@ -4509,7 +4423,6 @@ pub async fn update_by_id(
       #><#
       if (hasUpdateTime) {
       #>
-      
       if let Some(update_time) = input.update_time {
         sql_fields += "update_time=?,";
         args.push(update_time.into());
@@ -4519,7 +4432,46 @@ pub async fn update_by_id(
       }<#
       }
       #>
-      
+    } else {<#
+      if (hasVersion) {
+      #>
+      if let Some(version) = input.version {
+        sql_fields += "version=?,";
+        args.push((version).into());
+      }<#
+      }
+      #><#
+      if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
+      #>
+      if let Some(update_usr_id) = input.update_usr_id {
+        if update_usr_id.as_str() != "-" {
+          sql_fields += "update_usr_id=?,";
+          args.push(update_usr_id.into());
+        }
+      }<#
+      } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
+      #>
+      if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
+        let usr_id = input.update_usr_id.clone();
+        if let Some(usr_id) = usr_id {
+          sql_fields += "update_usr_id=?,";
+          args.push(usr_id.into());
+        }
+      }
+      if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
+        sql_fields += "update_usr_id=?,";
+        args.push(update_usr_id_lbl.into());
+      }<#
+      }
+      #><#
+      if (hasUpdateTime) {
+      #>
+      if let Some(update_time) = input.update_time {
+        sql_fields += "update_time=?,";
+        args.push(update_time.into());
+      }<#
+      }
+      #>
     }
     
     if sql_fields.ends_with(',') {
@@ -4529,12 +4481,7 @@ pub async fn update_by_id(
     let sql_where = "id=?";
     args.push(id.clone().into());
     
-    let sql = format!(
-      "update {} set {} where {} limit 1",
-      table,
-      sql_fields,
-      sql_where,
-    );
+    let sql = format!("update {table} set {sql_fields} where {sql_where} limit 1");
     
     let args: Vec<_> = args.into();
     

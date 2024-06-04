@@ -16,10 +16,8 @@ use crate::common::util::dao::{
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  get_auth_model,
   get_auth_id,
   get_auth_tenant_id,
-  get_auth_org_id,
   execute,
   query,
   query_one,
@@ -51,9 +49,8 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use super::dept_model::*;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
-
-use crate::gen::base::org::org_model::OrgId;
 use crate::gen::base::usr::usr_model::UsrId;
+use crate::gen::base::org::org_model::OrgId;
 
 use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
@@ -120,29 +117,6 @@ async fn get_where_query(
     if let Some(tenant_id) = tenant_id {
       where_query.push_str(" and t.tenant_id=?");
       args.push(tenant_id.into());
-    }
-  }
-  {
-    let org_id: Option<Vec<OrgId>> = match search {
-      Some(item) => item.org_id.clone(),
-      None => None,
-    };
-    if let Some(org_id) = org_id {
-      let arg = {
-        if org_id.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(org_id.len());
-          for item in org_id {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and t.org_id in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
     }
   }
   // 父部门
@@ -293,6 +267,62 @@ async fn get_where_query(
     if let Some(order_by_lt) = order_by_lt {
       where_query.push_str(" and t.order_by <= ?");
       args.push(order_by_lt.into());
+    }
+  }
+  // 组织
+  {
+    let org_id: Option<Vec<OrgId>> = match search {
+      Some(item) => item.org_id.clone(),
+      None => None,
+    };
+    if let Some(org_id) = org_id {
+      let arg = {
+        if org_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(org_id.len());
+          for item in org_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.org_id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let org_id_is_null: bool = match search {
+      Some(item) => item.org_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if org_id_is_null {
+      where_query.push_str(" and t.org_id is null");
+    }
+  }
+  {
+    let org_id_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.org_id_lbl.clone(),
+      None => None,
+    };
+    if let Some(org_id_lbl) = org_id_lbl {
+      let arg = {
+        if org_id_lbl.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(org_id_lbl.len());
+          for item in org_id_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.org_id_lbl in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   // 备注
@@ -594,6 +624,22 @@ pub async fn find_all(
       }
     }
   }
+  // 组织
+  if let Some(search) = &search {
+    if search.org_id.is_some() {
+      let len = search.org_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.org_id.length > {ids_limit}"));
+      }
+    }
+  }
   // 创建人
   if let Some(search) = &search {
     if search.create_usr_id.is_some() {
@@ -815,6 +861,8 @@ pub async fn get_field_comments(
     "启用".into(),
     "启用".into(),
     "排序".into(),
+    "组织".into(),
+    "组织".into(),
     "备注".into(),
     "创建人".into(),
     "创建人".into(),
@@ -850,15 +898,17 @@ pub async fn get_field_comments(
     is_enabled: vec[8].to_owned(),
     is_enabled_lbl: vec[9].to_owned(),
     order_by: vec[10].to_owned(),
-    rem: vec[11].to_owned(),
-    create_usr_id: vec[12].to_owned(),
-    create_usr_id_lbl: vec[13].to_owned(),
-    create_time: vec[14].to_owned(),
-    create_time_lbl: vec[15].to_owned(),
-    update_usr_id: vec[16].to_owned(),
-    update_usr_id_lbl: vec[17].to_owned(),
-    update_time: vec[18].to_owned(),
-    update_time_lbl: vec[19].to_owned(),
+    org_id: vec[11].to_owned(),
+    org_id_lbl: vec[12].to_owned(),
+    rem: vec[13].to_owned(),
+    create_usr_id: vec[14].to_owned(),
+    create_usr_id_lbl: vec[15].to_owned(),
+    create_time: vec[16].to_owned(),
+    create_time_lbl: vec[17].to_owned(),
+    update_usr_id: vec[18].to_owned(),
+    update_usr_id_lbl: vec[19].to_owned(),
+    update_time: vec[20].to_owned(),
+    update_time_lbl: vec[21].to_owned(),
   };
   Ok(field_comments)
 }
@@ -1366,6 +1416,27 @@ pub async fn set_id_by_lbl(
       .into();
   }
   
+  // 组织
+  if input.org_id_lbl.is_some()
+    && !input.org_id_lbl.as_ref().unwrap().is_empty()
+    && input.org_id.is_none()
+  {
+    input.org_id_lbl = input.org_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = crate::gen::base::org::org_dao::find_one(
+      crate::gen::base::org::org_model::OrgSearch {
+        lbl: input.org_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?;
+    if let Some(model) = model {
+      input.org_id = model.id.into();
+    }
+  }
+  
   Ok(input)
 }
 
@@ -1469,17 +1540,13 @@ async fn _creates(
   let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   sql_fields += "id";
-  if !silent_mode {
-    sql_fields += ",create_time";
-  }
-  if !silent_mode {
-    sql_fields += ",create_usr_id";
-  }
-  if !silent_mode {
-    sql_fields += ",create_usr_id_lbl";
-  }
+  sql_fields += ",create_time";
+  sql_fields += ",update_time";
+  sql_fields += ",create_usr_id";
+  sql_fields += ",create_usr_id_lbl";
+  sql_fields += ",update_usr_id";
+  sql_fields += ",update_usr_id_lbl";
   sql_fields += ",tenant_id";
-  sql_fields += ",org_id";
   // 父部门
   sql_fields += ",parent_id";
   // 名称
@@ -1490,6 +1557,10 @@ async fn _creates(
   sql_fields += ",is_enabled";
   // 排序
   sql_fields += ",order_by";
+  // 组织
+  sql_fields += ",org_id_lbl";
+  // 组织
+  sql_fields += ",org_id";
   // 备注
   sql_fields += ",rem";
   
@@ -1504,21 +1575,6 @@ async fn _creates(
   {
     
     let id: DeptId = get_short_uuid().into();
-    // loop {
-    //   let is_exist = exists_by_id(
-    //     id.clone(),
-    //     None,
-    //   ).await?;
-    //   if !is_exist {
-    //     break;
-    //   }
-    //   error!(
-    //     "{req_id} ID_COLLIDE: {table} {id}",
-    //     req_id = get_req_id(),
-    //   );
-    //   id = get_short_uuid().into();
-    // }
-    // let id = id;
     ids2.push(id.clone());
     
     inputs2_ids.push(id.clone());
@@ -1526,18 +1582,52 @@ async fn _creates(
     sql_values += "(?";
     args.push(id.into());
     
-    if let Some(create_time) = input.create_time {
+    if !silent_mode {
+      if let Some(create_time) = input.create_time {
+        sql_values += ",?";
+        args.push(create_time.into());
+      } else if input.create_time_save_null == Some(true) {
+        sql_values += ",null";
+      } else {
+        sql_values += ",?";
+        args.push(get_now().into());
+      }
+    } else if let Some(create_time) = input.create_time {
       sql_values += ",?";
       args.push(create_time.into());
     } else {
-      sql_values += ",?";
-      args.push(get_now().into());
+      sql_values += ",null";
     }
     
-    if input.create_usr_id.is_none() {
-      let mut usr_id = get_auth_id();
-      let mut usr_lbl = String::new();
-      if usr_id.is_some() {
+    if !silent_mode {
+      if input.create_usr_id.is_none() {
+        let mut usr_id = get_auth_id();
+        let mut usr_lbl = String::new();
+        if usr_id.is_some() {
+          let usr_model = find_by_id_usr(
+            usr_id.clone().unwrap(),
+            None,
+          ).await?;
+          if let Some(usr_model) = usr_model {
+            usr_lbl = usr_model.lbl;
+          } else {
+            usr_id = None;
+          }
+        }
+        if let Some(usr_id) = usr_id {
+          sql_values += ",?";
+          args.push(usr_id.into());
+        } else {
+          sql_values += ",default";
+        }
+        sql_values += ",?";
+        args.push(usr_lbl.into());
+      } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
+        sql_values += ",default";
+        sql_values += ",default";
+      } else {
+        let mut usr_id = input.create_usr_id.clone();
+        let mut usr_lbl = String::new();
         let usr_model = find_by_id_usr(
           usr_id.clone().unwrap(),
           None,
@@ -1547,38 +1637,42 @@ async fn _creates(
         } else {
           usr_id = None;
         }
-      }
-      if let Some(usr_id) = usr_id {
+        if let Some(usr_id) = usr_id {
+          sql_values += ",?";
+          args.push(usr_id.into());
+        } else {
+          sql_values += ",default";
+        }
         sql_values += ",?";
-        args.push(usr_id.into());
-      } else {
-        sql_values += ",default";
+        args.push(usr_lbl.into());
       }
-      sql_values += ",?";
-      args.push(usr_lbl.into());
-    } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
-      sql_values += ",default";
-      sql_values += ",default";
     } else {
-      let mut usr_id = input.create_usr_id.clone();
-      let mut usr_lbl = String::new();
-      let usr_model = find_by_id_usr(
-        usr_id.clone().unwrap(),
-        None,
-      ).await?;
-      if let Some(usr_model) = usr_model {
-        usr_lbl = usr_model.lbl;
-      } else {
-        usr_id = None;
-      }
-      if let Some(usr_id) = usr_id {
+      if let Some(create_usr_id) = input.create_usr_id {
         sql_values += ",?";
-        args.push(usr_id.into());
+        args.push(create_usr_id.into());
       } else {
         sql_values += ",default";
       }
+      if let Some(create_usr_id_lbl) = input.create_usr_id_lbl {
+        sql_values += ",?";
+        args.push(create_usr_id_lbl.into());
+      } else {
+        sql_values += ",default";
+      }
+    }
+    
+    if let Some(update_usr_id) = input.update_usr_id {
       sql_values += ",?";
-      args.push(usr_lbl.into());
+      args.push(update_usr_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    
+    if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
+      sql_values += ",?";
+      args.push(update_usr_id_lbl.into());
+    } else {
+      sql_values += ",default";
     }
     
     if let Some(tenant_id) = input.tenant_id {
@@ -1587,16 +1681,6 @@ async fn _creates(
     } else if let Some(tenant_id) = get_auth_tenant_id() {
       sql_values += ",?";
       args.push(tenant_id.into());
-    } else {
-      sql_values += ",default";
-    }
-    
-    if let Some(org_id) = input.org_id {
-      sql_values += ",?";
-      args.push(org_id.into());
-    } else if let Some(org_id) = get_auth_org_id() {
-      sql_values += ",?";
-      args.push(org_id.into());
     } else {
       sql_values += ",default";
     }
@@ -1632,6 +1716,24 @@ async fn _creates(
     if let Some(order_by) = input.order_by {
       sql_values += ",?";
       args.push(order_by.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 组织
+    if let Some(org_id_lbl) = input.org_id_lbl {
+      if !org_id_lbl.is_empty() {
+        sql_values += ",?";
+        args.push(org_id_lbl.into());
+      } else {
+        sql_values += ",default";
+      }
+    } else {
+      sql_values += ",default";
+    }
+    // 组织
+    if let Some(org_id) = input.org_id {
+      sql_values += ",?";
+      args.push(org_id.into());
     } else {
       sql_values += ",default";
     }
@@ -1765,56 +1867,6 @@ pub async fn update_tenant_by_id(
   args.push(id.into());
   
   let sql = format!("update {table} set tenant_id=? where id=?");
-  
-  let args: Vec<_> = args.into();
-  
-  let options = Options::from(options);
-  
-  let options = options.into();
-  
-  let num = execute(
-    sql,
-    args,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
-/// 部门根据id修改组织id
-pub async fn update_org_by_id(
-  id: DeptId,
-  org_id: OrgId,
-  options: Option<Options>,
-) -> Result<u64> {
-  let table = "base_dept";
-  let method = "update_org_by_id";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    msg += &format!(" org_id: {:?}", &org_id);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = options.into();
-  
-  let mut args = QueryArgs::new();
-  
-  args.push(org_id.into());
-  args.push(id.into());
-  
-  let sql = format!("update {table} set org_id=? where id=?");
   
   let args: Vec<_> = args.into();
   
@@ -1968,6 +2020,20 @@ pub async fn update_by_id(
     sql_fields += "order_by=?,";
     args.push(order_by.into());
   }
+  // 组织
+  if let Some(org_id_lbl) = input.org_id_lbl {
+    if !org_id_lbl.is_empty() {
+      field_num += 1;
+      sql_fields += "org_id_lbl=?,";
+      args.push(org_id_lbl.into());
+    }
+  }
+  // 组织
+  if let Some(org_id) = input.org_id {
+    field_num += 1;
+    sql_fields += "org_id=?,";
+    args.push(org_id.into());
+  }
   // 备注
   if let Some(rem) = input.rem {
     field_num += 1;
@@ -1977,7 +2043,6 @@ pub async fn update_by_id(
   
   if field_num > 0 {
     if !silent_mode {
-      
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
         let mut usr_id_lbl = String::new();
@@ -2021,7 +2086,6 @@ pub async fn update_by_id(
           args.push(usr_id_lbl.into());
         }
       }
-      
       if let Some(update_time) = input.update_time {
         sql_fields += "update_time=?,";
         args.push(update_time.into());
@@ -2029,7 +2093,22 @@ pub async fn update_by_id(
         sql_fields += "update_time=?,";
         args.push(get_now().into());
       }
-      
+    } else {
+      if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
+        let usr_id = input.update_usr_id.clone();
+        if let Some(usr_id) = usr_id {
+          sql_fields += "update_usr_id=?,";
+          args.push(usr_id.into());
+        }
+      }
+      if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
+        sql_fields += "update_usr_id=?,";
+        args.push(update_usr_id_lbl.into());
+      }
+      if let Some(update_time) = input.update_time {
+        sql_fields += "update_time=?,";
+        args.push(update_time.into());
+      }
     }
     
     if sql_fields.ends_with(',') {
@@ -2039,12 +2118,7 @@ pub async fn update_by_id(
     let sql_where = "id=?";
     args.push(id.clone().into());
     
-    let sql = format!(
-      "update {} set {} where {} limit 1",
-      table,
-      sql_fields,
-      sql_where,
-    );
+    let sql = format!("update {table} set {sql_fields} where {sql_where} limit 1");
     
     let args: Vec<_> = args.into();
     

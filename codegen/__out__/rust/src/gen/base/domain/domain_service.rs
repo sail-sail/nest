@@ -18,6 +18,13 @@ use crate::src::base::i18n::i18n_dao::ns;
 use super::domain_model::*;
 use super::domain_dao;
 
+#[allow(unused_variables)]
+async fn set_search_query(
+  search: &mut DomainSearch,
+) -> Result<()> {
+  Ok(())
+}
+
 /// 根据搜索条件和分页查找域名列表
 pub async fn find_all(
   search: Option<DomainSearch>,
@@ -26,8 +33,12 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<DomainModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = domain_dao::find_all(
-    search,
+    Some(search),
     page,
     sort,
     options,
@@ -42,8 +53,12 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = domain_dao::find_count(
-    search,
+    Some(search),
     options,
   ).await?;
   
@@ -57,8 +72,12 @@ pub async fn find_one(
   options: Option<Options>,
 ) -> Result<Option<DomainModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let model = domain_dao::find_one(
-    search,
+    Some(search),
     sort,
     options,
   ).await?;

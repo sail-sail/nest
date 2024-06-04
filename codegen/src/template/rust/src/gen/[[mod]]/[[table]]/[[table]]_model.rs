@@ -6,7 +6,6 @@ const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
@@ -146,14 +145,6 @@ modelIds.push("TenantId");
 #><#
 }
 #><#
-if (hasOrgId && !modelIds.includes("OrgId")) {
-#>
-
-use crate::gen::base::org::org_model::OrgId;<#
-modelIds.push("OrgId");
-#><#
-}
-#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -161,7 +152,6 @@ for (let i = 0; i < columns.length; i++) {
   const column_name = column.COLUMN_NAME;
   if (
     column_name === "tenant_id" ||
-    column_name === "org_id" ||
     column_name === "is_sys" ||
     column_name === "is_deleted" ||
     column_name === "is_hidden"
@@ -205,13 +195,6 @@ pub struct <#=tableUP#>Model {<#
   pub tenant_id: TenantId,<#
   }
   #><#
-  if (hasOrgId) {
-  #>
-  /// 组织ID
-  #[graphql(skip)]
-  pub org_id: OrgId,<#
-  }
-  #><#
   if (hasIsSys) {
   #>
   /// 系统字段
@@ -232,7 +215,6 @@ pub struct <#=tableUP#>Model {<#
     const column_name = column.COLUMN_NAME;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden" ||
@@ -736,12 +718,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let tenant_id = row.try_get("tenant_id")?;<#
     }
     #><#
-    if (hasOrgId) {
-    #>
-    // 组织ID
-    let org_id = row.try_get("org_id")?;<#
-    }
-    #><#
     if (hasIsSys) {
     #>
     // 系统记录
@@ -766,7 +742,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     const column_name = column.COLUMN_NAME;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden" ||
@@ -1243,11 +1218,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       tenant_id,<#
       }
       #><#
-      if (hasOrgId) {
-      #>
-      org_id,<#
-      }
-      #><#
       if (hasIsSys) {
       #>
       is_sys,<#
@@ -1274,7 +1244,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         const column_name = column.COLUMN_NAME;
         if (
           column_name === "tenant_id" ||
-          column_name === "org_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted" ||
           column_name === "is_hidden" ||
@@ -1458,7 +1427,6 @@ pub struct <#=tableUP#>FieldComment {<#
     const column_name = column.COLUMN_NAME;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -1544,12 +1512,6 @@ pub struct <#=tableUP#>Search {
   pub tenant_id: Option<TenantId>,<#
   }
   #><#
-  if (hasOrgId) {
-  #>
-  /// 组织ID
-  pub org_id: Option<Vec<OrgId>>,<#
-  }
-  #><#
   if (hasIsHidden) {
   #>
   #[graphql(skip)]
@@ -1570,7 +1532,6 @@ pub struct <#=tableUP#>Search {
     if (column_name === 'id') continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -1801,13 +1762,6 @@ impl std::fmt::Debug for <#=tableUP#>Search {
     }<#
     }
     #><#
-    if (hasOrgId) {
-    #>
-    if let Some(ref org_id) = self.org_id {
-      item = item.field("org_id", org_id);
-    }<#
-    }
-    #><#
     if (hasIsHidden) {
     #>
     if let Some(ref is_hidden) = self.is_hidden {
@@ -1833,7 +1787,6 @@ impl std::fmt::Debug for <#=tableUP#>Search {
       if (column_name === 'id') continue;
       if (
         column_name === "tenant_id" ||
-        column_name === "org_id" ||
         column_name === "is_sys" ||
         column_name === "is_deleted" ||
         column_name === "is_hidden"
@@ -1897,6 +1850,7 @@ pub struct <#=tableUP#>Input {
   pub id: Option<<#=Table_Up#>Id>,<#
   if (hasIsDeleted) {
   #>
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,<#
   }
@@ -1906,13 +1860,6 @@ pub struct <#=tableUP#>Input {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,<#
-  }
-  #><#
-  if (hasOrgId) {
-  #>
-  /// 组织ID
-  #[graphql(skip)]
-  pub org_id: Option<OrgId>,<#
   }
   #><#
   if (hasIsSys) {
@@ -1936,7 +1883,6 @@ pub struct <#=tableUP#>Input {
     const column_name = column.COLUMN_NAME;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden" ||
@@ -2128,7 +2074,7 @@ pub struct <#=tableUP#>Input {
   #[graphql(name = "<#=column_name#>_save_null")]<#
   }
   #>
-  pub <#=column_name#>_save_null: Option<u8>,<#
+  pub <#=column_name#>_save_null: Option<bool>,<#
   }
   #><#
   } else {
@@ -2164,7 +2110,10 @@ pub struct <#=tableUP#>Input {
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,<#
+  pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,<#
   }
   #><#
   if (hasUpdateUsrId) {
@@ -2184,7 +2133,10 @@ pub struct <#=tableUP#>Input {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,<#
+  pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,<#
   }
   #><#
   if (hasVersion) {
@@ -2269,11 +2221,6 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       tenant_id: model.tenant_id.into(),<#
       }
       #><#
-      if (hasOrgId) {
-      #>
-      org_id: model.org_id.into(),<#
-      }
-      #><#
       if (hasIsSys) {
       #>
       is_sys: model.is_sys.into(),<#
@@ -2296,7 +2243,6 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
         const column_name = column.COLUMN_NAME;
         if (
           column_name === "tenant_id" ||
-          column_name === "org_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted" ||
           column_name === "is_hidden" ||
@@ -2356,7 +2302,7 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
         if (is_nullable) {
       #>
-      <#=column_name#>_save_null: Some(1),<#
+      <#=column_name#>_save_null: Some(true),<#
         }
       #><#
         } else {
@@ -2382,7 +2328,8 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       #>
       // 创建时间
       create_time: model.create_time,
-      create_time_lbl: model.create_time_lbl.into(),<#
+      create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),<#
       }
       #><#
       if (hasUpdateUsrId) {
@@ -2396,7 +2343,8 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       #>
       // 更新时间
       update_time: model.update_time,
-      update_time_lbl: model.update_time_lbl.into(),<#
+      update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),<#
       }
       #><#
       for (const inlineForeignTab of inlineForeignTabs) {
@@ -2484,12 +2432,6 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       tenant_id: input.tenant_id,<#
       }
       #><#
-      if (hasOrgId) {
-      #>
-      // 组织ID
-      org_id: input.org_id.map(|x| vec![x]),<#
-      }
-      #><#
       if (hasIsHidden) {
       #>
       // 隐藏字段
@@ -2508,7 +2450,6 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         const column_name = rustKeyEscape(column.COLUMN_NAME);
         if (
           column_name === "tenant_id" ||
-          column_name === "org_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted" ||
           column_name === "is_hidden"
@@ -2583,12 +2524,6 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
       tenant_id: input.tenant_id,<#
       }
       #><#
-      if (hasOrgId) {
-      #>
-      // 组织ID
-      org_id: input.org_id,<#
-      }
-      #><#
       if (hasIsSys) {
       #>
       // 系统记录
@@ -2610,7 +2545,6 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
         }
         if (
           column_name === "tenant_id" ||
-          column_name === "org_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted"
         ) continue;
@@ -2644,7 +2578,7 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
       <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
         if (is_nullable) {
       #>
-      <#=column_name#>_save_null: Some(1),<#
+      <#=column_name#>_save_null: Some(true),<#
         }
       #><#
         } else {
@@ -2776,7 +2710,6 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "id") continue;
   if (
     column_name === "tenant_id" ||
-    column_name === "org_id" ||
     column_name === "is_sys" ||
     column_name === "is_deleted" ||
     column_name === "is_hidden"

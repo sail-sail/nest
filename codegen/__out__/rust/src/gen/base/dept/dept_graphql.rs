@@ -18,8 +18,6 @@ use super::dept_resolver;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 
-use crate::gen::base::org::org_model::OrgId;
-
 #[derive(Default)]
 pub struct DeptGenQuery;
 
@@ -212,26 +210,6 @@ impl DeptGenMutation {
         dept_resolver::update_tenant_by_id(
           id,
           tenant_id,
-          None,
-        )
-      }).await
-  }
-  
-  /// 部门根据id修改组织id
-  async fn update_org_by_id_dept(
-    &self,
-    ctx: &Context<'_>,
-    id: DeptId,
-    org_id: OrgId,
-  ) -> Result<u64> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        dept_resolver::update_org_by_id(
-          id,
-          org_id,
           None,
         )
       }).await

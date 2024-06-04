@@ -4,7 +4,6 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
@@ -79,41 +78,34 @@ use crate::gen::base::usr::usr_dao::{
 use super::<#=table#>_model::*;
 use super::<#=table#>_dao;
 
-/// 根据搜索条件和分页查找<#=table_comment#>列表
-pub async fn find_all(
-  search: Option<<#=tableUP#>Search>,
-  page: Option<PageInput>,
-  sort: Option<Vec<SortInput>>,
-  options: Option<Options>,
-) -> Result<Vec<<#=tableUP#>Model>> {<#
-  if (hasDataPermit() && hasCreateUsrId) {
-  #>
-  
-  let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
-  }
-  #><#
+#[allow(unused_variables)]
+async fn set_search_query(
+  search: &mut <#=tableUP#>Search,
+) -> Result<()> {<#
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  let mut search = search.unwrap_or_default();
-  
   let usr_id = get_auth_id_err()?;
-  
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id.clone(),
       None,
     ).await?,
-  ).await?;
-  
-  let username = usr_model.username;<#
+  ).await?;<#
     if (hasOrgId) {
   #>
-  let org_id = get_auth_org_id();<#
+  
+  let org_id = get_auth_org_id().unwrap_or_default();
+  let mut org_ids: Vec<OrgId> = vec![];
+  if !org_id.is_empty() {
+    org_ids.push(org_id);
+  } else {
+    org_ids.append(&mut usr_model.org_ids.clone());
+    org_ids.push(OrgId::default());
+  }<#
     }
-  #><#
+  #>
+  let username = usr_model.username.clone();<#
   }
   #><#
   if (opts.filterDataByCreateUsr) {
@@ -125,22 +117,28 @@ pub async fn find_all(
   } else if (hasOrgId) {
   #>
   
-  if let Some(org_id) = org_id {
-    if username != "admin" {
-      search.org_id = Some(vec![org_id]);
-    }
+  if username != "admin" {
+    search.org_id = Some(org_ids);
   }<#
   }
-  #><#
-  if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
+  Ok(())
+}
+
+/// 根据搜索条件和分页查找<#=table_comment#>列表
+pub async fn find_all(
+  search: Option<<#=tableUP#>Search>,
+  page: Option<PageInput>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<Vec<<#=tableUP#>Model>> {
   
-  let search = Some(search);<#
-  }
-  #>
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
   
   let res = <#=table#>_dao::find_all(
-    search,
+    Some(search),
     page,
     sort,
     options,
@@ -153,7 +151,11 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
-) -> Result<i64> {<#
+) -> Result<i64> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
@@ -164,7 +166,7 @@ pub async fn find_count(
   #>
   
   let res = <#=table#>_dao::find_count(
-    search,
+    Some(search),
     options,
   ).await?;
   
@@ -176,7 +178,11 @@ pub async fn find_one(
   search: Option<<#=tableUP#>Search>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<<#=tableUP#>Model>> {<#
+) -> Result<Option<<#=tableUP#>Model>> {
+  
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
@@ -187,7 +193,7 @@ pub async fn find_one(
   #>
   
   let model = <#=table#>_dao::find_one(
-    search,
+    Some(search),
     sort,
     options,
   ).await?;
@@ -295,35 +301,6 @@ pub async fn update_tenant_by_id(
   let num = <#=table#>_dao::update_tenant_by_id(
     id,
     tenant_id,
-    options,
-  ).await?;
-  
-  Ok(num)
-}<#
-}
-#><#
-if (hasOrgId) {
-#>
-
-/// <#=table_comment#>根据id修改组织id
-#[allow(dead_code)]
-pub async fn update_org_by_id(
-  id: <#=Table_Up#>Id,
-  org_id: OrgId,
-  options: Option<Options>,
-) -> Result<u64> {<#
-  if (hasDataPermit() && hasCreateUsrId) {
-  #>
-  
-  let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
-  }
-  #>
-  
-  let num = <#=table#>_dao::update_org_by_id(
-    id,
-    org_id,
     options,
   ).await?;
   

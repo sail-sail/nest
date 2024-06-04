@@ -20,6 +20,13 @@ use crate::gen::base::tenant::tenant_model::TenantId;
 use super::role_model::*;
 use super::role_dao;
 
+#[allow(unused_variables)]
+async fn set_search_query(
+  search: &mut RoleSearch,
+) -> Result<()> {
+  Ok(())
+}
+
 /// 根据搜索条件和分页查找角色列表
 pub async fn find_all(
   search: Option<RoleSearch>,
@@ -28,8 +35,12 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = role_dao::find_all(
-    search,
+    Some(search),
     page,
     sort,
     options,
@@ -44,8 +55,12 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = role_dao::find_count(
-    search,
+    Some(search),
     options,
   ).await?;
   
@@ -59,8 +74,12 @@ pub async fn find_one(
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let model = role_dao::find_one(
-    search,
+    Some(search),
     sort,
     options,
   ).await?;
