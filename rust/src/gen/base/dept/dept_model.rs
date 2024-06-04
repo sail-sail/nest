@@ -27,9 +27,8 @@ use async_graphql::{
 use crate::common::context::ArgType;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
-
-use crate::gen::base::org::org_model::OrgId;
 use crate::gen::base::usr::usr_model::UsrId;
+use crate::gen::base::org::org_model::OrgId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DeptModel")]
@@ -37,9 +36,6 @@ pub struct DeptModel {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: TenantId,
-  /// 组织ID
-  #[graphql(skip)]
-  pub org_id: OrgId,
   /// ID
   pub id: DeptId,
   /// 父部门
@@ -72,6 +68,12 @@ pub struct DeptModel {
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: u32,
+  /// 组织
+  #[graphql(name = "org_id")]
+  pub org_id: OrgId,
+  /// 组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: String,
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
@@ -99,8 +101,6 @@ impl FromRow<'_, MySqlRow> for DeptModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     // 租户ID
     let tenant_id = row.try_get("tenant_id")?;
-    // 组织ID
-    let org_id = row.try_get("org_id")?;
     // ID
     let id: DeptId = row.try_get("id")?;
     // 父部门
@@ -158,6 +158,10 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     let is_enabled_lbl: String = is_enabled.to_string();
     // 排序
     let order_by: u32 = row.try_get("order_by")?;
+    // 组织
+    let org_id: OrgId = row.try_get("org_id")?;
+    let org_id_lbl: Option<String> = row.try_get("org_id_lbl")?;
+    let org_id_lbl = org_id_lbl.unwrap_or_default();
     // 备注
     let rem: String = row.try_get("rem")?;
     // 创建人
@@ -185,7 +189,6 @@ impl FromRow<'_, MySqlRow> for DeptModel {
     
     let model = Self {
       tenant_id,
-      org_id,
       is_deleted,
       id,
       parent_id,
@@ -198,6 +201,8 @@ impl FromRow<'_, MySqlRow> for DeptModel {
       is_enabled,
       is_enabled_lbl,
       order_by,
+      org_id,
+      org_id_lbl,
       rem,
       create_usr_id,
       create_usr_id_lbl,
@@ -238,6 +243,10 @@ pub struct DeptFieldComment {
   pub is_enabled_lbl: String,
   /// 排序
   pub order_by: String,
+  /// 组织
+  pub org_id: String,
+  /// 组织
+  pub org_id_lbl: String,
   /// 备注
   pub rem: String,
   /// 创建人
@@ -267,8 +276,6 @@ pub struct DeptSearch {
   pub ids: Option<Vec<DeptId>>,
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
-  /// 组织ID
-  pub org_id: Option<Vec<OrgId>>,
   pub is_deleted: Option<u8>,
   /// 父部门
   #[graphql(name = "parent_id")]
@@ -283,10 +290,10 @@ pub struct DeptSearch {
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 部门负责人
-  #[graphql(skip)]
+  #[graphql(name = "usr_ids")]
   pub usr_ids: Option<Vec<UsrId>>,
   /// 部门负责人
-  #[graphql(skip)]
+  #[graphql(name = "usr_ids_save_null")]
   pub usr_ids_is_null: Option<bool>,
   /// 锁定
   #[graphql(skip)]
@@ -297,6 +304,15 @@ pub struct DeptSearch {
   /// 排序
   #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
+  /// 组织
+  #[graphql(name = "org_id")]
+  pub org_id: Option<Vec<OrgId>>,
+  /// 组织
+  #[graphql(name = "org_id_save_null")]
+  pub org_id_is_null: Option<bool>,
+  /// 组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: Option<Vec<String>>,
   /// 备注
   #[graphql(skip)]
   pub rem: Option<String>,
@@ -341,9 +357,6 @@ impl std::fmt::Debug for DeptSearch {
     if let Some(ref tenant_id) = self.tenant_id {
       item = item.field("tenant_id", tenant_id);
     }
-    if let Some(ref org_id) = self.org_id {
-      item = item.field("org_id", org_id);
-    }
     if let Some(ref is_deleted) = self.is_deleted {
       if *is_deleted == 1 {
         item = item.field("is_deleted", is_deleted);
@@ -378,6 +391,13 @@ impl std::fmt::Debug for DeptSearch {
     // 排序
     if let Some(ref order_by) = self.order_by {
       item = item.field("order_by", order_by);
+    }
+    // 组织
+    if let Some(ref org_id) = self.org_id {
+      item = item.field("org_id", org_id);
+    }
+    if let Some(ref org_id_is_null) = self.org_id_is_null {
+      item = item.field("org_id_is_null", org_id_is_null);
     }
     // 备注
     if let Some(ref rem) = self.rem {
@@ -417,14 +437,12 @@ impl std::fmt::Debug for DeptSearch {
 pub struct DeptInput {
   /// ID
   pub id: Option<DeptId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
-  /// 组织ID
-  #[graphql(skip)]
-  pub org_id: Option<OrgId>,
   /// 父部门
   #[graphql(name = "parent_id")]
   pub parent_id: Option<DeptId>,
@@ -455,6 +473,12 @@ pub struct DeptInput {
   /// 排序
   #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
+  /// 组织
+  #[graphql(name = "org_id")]
+  pub org_id: Option<OrgId>,
+  /// 组织
+  #[graphql(name = "org_id_lbl")]
+  pub org_id_lbl: Option<String>,
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<String>,
@@ -470,6 +494,9 @@ pub struct DeptInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -482,6 +509,9 @@ pub struct DeptInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<DeptModel> for DeptInput {
@@ -490,7 +520,6 @@ impl From<DeptModel> for DeptInput {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
-      org_id: model.org_id.into(),
       // 父部门
       parent_id: model.parent_id.into(),
       parent_id_lbl: model.parent_id_lbl.into(),
@@ -507,6 +536,9 @@ impl From<DeptModel> for DeptInput {
       is_enabled_lbl: model.is_enabled_lbl.into(),
       // 排序
       order_by: model.order_by.into(),
+      // 组织
+      org_id: model.org_id.into(),
+      org_id_lbl: model.org_id_lbl.into(),
       // 备注
       rem: model.rem.into(),
       // 创建人
@@ -515,12 +547,14 @@ impl From<DeptModel> for DeptInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -532,8 +566,6 @@ impl From<DeptInput> for DeptSearch {
       ids: None,
       // 租户ID
       tenant_id: input.tenant_id,
-      // 组织ID
-      org_id: input.org_id.map(|x| vec![x]),
       is_deleted: None,
       // 父部门
       parent_id: input.parent_id.map(|x| vec![x]),
@@ -547,6 +579,10 @@ impl From<DeptInput> for DeptSearch {
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
       order_by: input.order_by.map(|x| [Some(x), Some(x)]),
+      // 组织
+      org_id: input.org_id.map(|x| vec![x]),
+      // 组织
+      org_id_lbl: input.org_id_lbl.map(|x| vec![x]),
       // 备注
       rem: input.rem,
       // 创建人

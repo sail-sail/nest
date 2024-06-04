@@ -11,10 +11,8 @@ use crate::common::util::string::*;
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  get_auth_model,
   get_auth_id,
   get_auth_tenant_id,
-  get_auth_org_id,
   execute,
   query,
   query_one,
@@ -1328,15 +1326,12 @@ async fn _creates(
   let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   sql_fields += "id";
-  if !silent_mode {
-    sql_fields += ",create_time";
-  }
-  if !silent_mode {
-    sql_fields += ",create_usr_id";
-  }
-  if !silent_mode {
-    sql_fields += ",create_usr_id_lbl";
-  }
+  sql_fields += ",create_time";
+  sql_fields += ",update_time";
+  sql_fields += ",create_usr_id";
+  sql_fields += ",create_usr_id_lbl";
+  sql_fields += ",update_usr_id";
+  sql_fields += ",update_usr_id_lbl";
   sql_fields += ",tenant_id";
   // 名称
   sql_fields += ",lbl";
@@ -1366,21 +1361,6 @@ async fn _creates(
   {
     
     let id: BackgroundTaskId = get_short_uuid().into();
-    // loop {
-    //   let is_exist = exists_by_id(
-    //     id.clone(),
-    //     None,
-    //   ).await?;
-    //   if !is_exist {
-    //     break;
-    //   }
-    //   error!(
-    //     "{req_id} ID_COLLIDE: {table} {id}",
-    //     req_id = get_req_id(),
-    //   );
-    //   id = get_short_uuid().into();
-    // }
-    // let id = id;
     ids2.push(id.clone());
     
     inputs2_ids.push(id.clone());
@@ -1388,18 +1368,52 @@ async fn _creates(
     sql_values += "(?";
     args.push(id.into());
     
-    if let Some(create_time) = input.create_time {
+    if !silent_mode {
+      if let Some(create_time) = input.create_time {
+        sql_values += ",?";
+        args.push(create_time.into());
+      } else if input.create_time_save_null == Some(true) {
+        sql_values += ",null";
+      } else {
+        sql_values += ",?";
+        args.push(get_now().into());
+      }
+    } else if let Some(create_time) = input.create_time {
       sql_values += ",?";
       args.push(create_time.into());
     } else {
-      sql_values += ",?";
-      args.push(get_now().into());
+      sql_values += ",null";
     }
     
-    if input.create_usr_id.is_none() {
-      let mut usr_id = get_auth_id();
-      let mut usr_lbl = String::new();
-      if usr_id.is_some() {
+    if !silent_mode {
+      if input.create_usr_id.is_none() {
+        let mut usr_id = get_auth_id();
+        let mut usr_lbl = String::new();
+        if usr_id.is_some() {
+          let usr_model = find_by_id_usr(
+            usr_id.clone().unwrap(),
+            None,
+          ).await?;
+          if let Some(usr_model) = usr_model {
+            usr_lbl = usr_model.lbl;
+          } else {
+            usr_id = None;
+          }
+        }
+        if let Some(usr_id) = usr_id {
+          sql_values += ",?";
+          args.push(usr_id.into());
+        } else {
+          sql_values += ",default";
+        }
+        sql_values += ",?";
+        args.push(usr_lbl.into());
+      } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
+        sql_values += ",default";
+        sql_values += ",default";
+      } else {
+        let mut usr_id = input.create_usr_id.clone();
+        let mut usr_lbl = String::new();
         let usr_model = find_by_id_usr(
           usr_id.clone().unwrap(),
           None,
@@ -1409,38 +1423,42 @@ async fn _creates(
         } else {
           usr_id = None;
         }
-      }
-      if let Some(usr_id) = usr_id {
+        if let Some(usr_id) = usr_id {
+          sql_values += ",?";
+          args.push(usr_id.into());
+        } else {
+          sql_values += ",default";
+        }
         sql_values += ",?";
-        args.push(usr_id.into());
-      } else {
-        sql_values += ",default";
+        args.push(usr_lbl.into());
       }
-      sql_values += ",?";
-      args.push(usr_lbl.into());
-    } else if input.create_usr_id.clone().unwrap().as_str() == "-" {
-      sql_values += ",default";
-      sql_values += ",default";
     } else {
-      let mut usr_id = input.create_usr_id.clone();
-      let mut usr_lbl = String::new();
-      let usr_model = find_by_id_usr(
-        usr_id.clone().unwrap(),
-        None,
-      ).await?;
-      if let Some(usr_model) = usr_model {
-        usr_lbl = usr_model.lbl;
-      } else {
-        usr_id = None;
-      }
-      if let Some(usr_id) = usr_id {
+      if let Some(create_usr_id) = input.create_usr_id {
         sql_values += ",?";
-        args.push(usr_id.into());
+        args.push(create_usr_id.into());
       } else {
         sql_values += ",default";
       }
+      if let Some(create_usr_id_lbl) = input.create_usr_id_lbl {
+        sql_values += ",?";
+        args.push(create_usr_id_lbl.into());
+      } else {
+        sql_values += ",default";
+      }
+    }
+    
+    if let Some(update_usr_id) = input.update_usr_id {
       sql_values += ",?";
-      args.push(usr_lbl.into());
+      args.push(update_usr_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    
+    if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
+      sql_values += ",?";
+      args.push(update_usr_id_lbl.into());
+    } else {
+      sql_values += ",default";
     }
     
     if let Some(tenant_id) = input.tenant_id {
@@ -1491,7 +1509,7 @@ async fn _creates(
     if let Some(begin_time) = input.begin_time {
       sql_values += ",?";
       args.push(begin_time.into());
-    } else if input.begin_time_save_null == Some(1) {
+    } else if input.begin_time_save_null == Some(true) {
       sql_values += ",null";
     } else {
       sql_values += ",default";
@@ -1500,7 +1518,7 @@ async fn _creates(
     if let Some(end_time) = input.end_time {
       sql_values += ",?";
       args.push(end_time.into());
-    } else if input.end_time_save_null == Some(1) {
+    } else if input.end_time_save_null == Some(true) {
       sql_values += ",null";
     } else {
       sql_values += ",default";
@@ -1774,7 +1792,7 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "begin_time=?,";
     args.push(begin_time.into());
-  } else if input.begin_time_save_null == Some(1) {
+  } else if input.begin_time_save_null == Some(true) {
     field_num += 1;
     sql_fields += "begin_time=null,";
   }
@@ -1783,7 +1801,7 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "end_time=?,";
     args.push(end_time.into());
-  } else if input.end_time_save_null == Some(1) {
+  } else if input.end_time_save_null == Some(true) {
     field_num += 1;
     sql_fields += "end_time=null,";
   }
@@ -1796,7 +1814,6 @@ pub async fn update_by_id(
   
   if field_num > 0 {
     if !silent_mode {
-      
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
         let mut usr_id_lbl = String::new();
@@ -1840,7 +1857,6 @@ pub async fn update_by_id(
           args.push(usr_id_lbl.into());
         }
       }
-      
       if let Some(update_time) = input.update_time {
         sql_fields += "update_time=?,";
         args.push(update_time.into());
@@ -1848,7 +1864,22 @@ pub async fn update_by_id(
         sql_fields += "update_time=?,";
         args.push(get_now().into());
       }
-      
+    } else {
+      if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
+        let usr_id = input.update_usr_id.clone();
+        if let Some(usr_id) = usr_id {
+          sql_fields += "update_usr_id=?,";
+          args.push(usr_id.into());
+        }
+      }
+      if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
+        sql_fields += "update_usr_id=?,";
+        args.push(update_usr_id_lbl.into());
+      }
+      if let Some(update_time) = input.update_time {
+        sql_fields += "update_time=?,";
+        args.push(update_time.into());
+      }
     }
     
     if sql_fields.ends_with(',') {
@@ -1858,12 +1889,7 @@ pub async fn update_by_id(
     let sql_where = "id=?";
     args.push(id.clone().into());
     
-    let sql = format!(
-      "update {} set {} where {} limit 1",
-      table,
-      sql_fields,
-      sql_where,
-    );
+    let sql = format!("update {table} set {sql_fields} where {sql_where} limit 1");
     
     let args: Vec<_> = args.into();
     

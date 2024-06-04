@@ -389,6 +389,7 @@ impl std::fmt::Debug for BackgroundTaskSearch {
 pub struct BackgroundTaskInput {
   /// ID
   pub id: Option<BackgroundTaskId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
@@ -423,7 +424,7 @@ pub struct BackgroundTaskInput {
   pub begin_time_lbl: Option<String>,
   /// 开始时间
   #[graphql(name = "begin_time_save_null")]
-  pub begin_time_save_null: Option<u8>,
+  pub begin_time_save_null: Option<bool>,
   /// 结束时间
   #[graphql(name = "end_time")]
   pub end_time: Option<chrono::NaiveDateTime>,
@@ -432,7 +433,7 @@ pub struct BackgroundTaskInput {
   pub end_time_lbl: Option<String>,
   /// 结束时间
   #[graphql(name = "end_time_save_null")]
-  pub end_time_save_null: Option<u8>,
+  pub end_time_save_null: Option<bool>,
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<String>,
@@ -448,6 +449,9 @@ pub struct BackgroundTaskInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -460,6 +464,9 @@ pub struct BackgroundTaskInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<BackgroundTaskModel> for BackgroundTaskInput {
@@ -483,11 +490,11 @@ impl From<BackgroundTaskModel> for BackgroundTaskInput {
       // 开始时间
       begin_time: model.begin_time,
       begin_time_lbl: model.begin_time_lbl.into(),
-      begin_time_save_null: Some(1),
+      begin_time_save_null: Some(true),
       // 结束时间
       end_time: model.end_time,
       end_time_lbl: model.end_time_lbl.into(),
-      end_time_save_null: Some(1),
+      end_time_save_null: Some(true),
       // 备注
       rem: model.rem.into(),
       // 创建人
@@ -496,12 +503,14 @@ impl From<BackgroundTaskModel> for BackgroundTaskInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }

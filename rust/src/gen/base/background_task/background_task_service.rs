@@ -25,6 +25,26 @@ use crate::gen::base::usr::usr_dao::{
 use super::background_task_model::*;
 use super::background_task_dao;
 
+#[allow(unused_variables)]
+async fn set_search_query(
+  search: &mut BackgroundTaskSearch,
+) -> Result<()> {
+  
+  let usr_id = get_auth_id_err()?;
+  let usr_model = validate_option_usr(
+    find_by_id_usr(
+      usr_id.clone(),
+      None,
+    ).await?,
+  ).await?;
+  let username = usr_model.username.clone();
+  
+  if username != "admin" {
+    search.create_usr_id = Some(vec![usr_id]);
+  }
+  Ok(())
+}
+
 /// 根据搜索条件和分页查找后台任务列表
 pub async fn find_all(
   search: Option<BackgroundTaskSearch>,
@@ -35,25 +55,10 @@ pub async fn find_all(
   
   let mut search = search.unwrap_or_default();
   
-  let usr_id = get_auth_id_err()?;
-  
-  let usr_model = validate_option_usr(
-    find_by_id_usr(
-      usr_id.clone(),
-      None,
-    ).await?,
-  ).await?;
-  
-  let username = usr_model.username;
-  
-  if username != "admin" {
-    search.create_usr_id = Some(vec![usr_id]);
-  }
-  
-  let search = Some(search);
+  set_search_query(&mut search).await?;
   
   let res = background_task_dao::find_all(
-    search,
+    Some(search),
     page,
     sort,
     options,
@@ -68,8 +73,12 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = background_task_dao::find_count(
-    search,
+    Some(search),
     options,
   ).await?;
   
@@ -83,8 +92,12 @@ pub async fn find_one(
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let model = background_task_dao::find_one(
-    search,
+    Some(search),
     sort,
     options,
   ).await?;

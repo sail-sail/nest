@@ -4,7 +4,6 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
@@ -84,12 +83,6 @@ if (hasTenant_id) {
 #>
 
 use crate::gen::base::tenant::tenant_model::TenantId;<#
-}
-#><#
-if (hasOrgId) {
-#>
-
-use crate::gen::base::org::org_model::OrgId;<#
 }
 #>
 
@@ -378,27 +371,6 @@ pub async fn update_tenant_by_id(
   let num = <#=table#>_service::update_tenant_by_id(
     id,
     tenant_id,
-    options,
-  ).await?;
-  
-  Ok(num)
-}<#
-}
-#><#
-if (hasOrgId) {
-#>
-
-/// <#=table_comment#>根据id修改组织id
-#[allow(dead_code)]
-pub async fn update_org_by_id(
-  id: <#=Table_Up#>Id,
-  org_id: OrgId,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = <#=table#>_service::update_org_by_id(
-    id,
-    org_id,
     options,
   ).await?;
   
