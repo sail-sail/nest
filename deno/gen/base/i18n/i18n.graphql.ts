@@ -105,10 +105,14 @@ input I18nSearch {
   lang_id: [LangId!]
   "语言"
   lang_id_is_null: Boolean
+  "语言"
+  lang_id_lbl: [String!]
   "菜单"
   menu_id: [MenuId!]
   "菜单"
   menu_id_is_null: Boolean
+  "菜单"
+  menu_id_lbl: [String!]
   "编码"
   code: String
   code_like: String
