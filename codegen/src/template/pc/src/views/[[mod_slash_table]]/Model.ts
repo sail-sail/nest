@@ -2,7 +2,6 @@
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
@@ -151,7 +150,6 @@ export const <#=fieldsName#> = [<#
     const column_name = column.COLUMN_NAME;
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
-    if (column_name === "org_id") continue;
     const column_type = column.COLUMN_TYPE;
     const data_type = column.DATA_TYPE;
     const column_comment = column.COLUMN_COMMENT;

@@ -49,10 +49,10 @@
   "devDependencies": {
     "@plugin-web-update-notification/vite": "1.7.1",
     "@types/file-saver": "2.0.7",
-    "@types/node": "20.14.0",
+    "@types/node": "20.14.1",
     "@types/sortablejs": "1.15.8",
-    "@typescript-eslint/eslint-plugin": "7.11.0",
-    "@typescript-eslint/parser": "7.11.0",
+    "@typescript-eslint/eslint-plugin": "7.12.0",
+    "@typescript-eslint/parser": "7.12.0",
     "@unocss/preset-rem-to-px": "0.60.4",
     "@vitejs/plugin-vue": "5.0.5",
     "@vitejs/plugin-vue-jsx": "4.0.0",

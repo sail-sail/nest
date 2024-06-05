@@ -13,6 +13,7 @@ import * as data_permitDao from "./data_permit.dao.ts";
 async function setSearchQuery(
   search: DataPermitSearch,
 ) {
+  
 }
 
 /**
