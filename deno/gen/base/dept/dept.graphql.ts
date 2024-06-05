@@ -29,6 +29,10 @@ type DeptModel {
   is_enabled_lbl: String!
   "排序"
   order_by: Int!
+  "组织"
+  org_id: OrgId!
+  "组织"
+  org_id_lbl: String!
   "备注"
   rem: String!
   "创建人"
@@ -73,6 +77,10 @@ type DeptFieldComment {
   is_enabled_lbl: String!
   "排序"
   order_by: String!
+  "组织"
+  org_id: String!
+  "组织"
+  org_id_lbl: String!
   "备注"
   rem: String!
   "创建人"
@@ -115,6 +123,10 @@ input DeptInput {
   is_enabled_lbl: String
   "排序"
   order_by: Int
+  "组织"
+  org_id: OrgId
+  "组织"
+  org_id_lbl: String
   "备注"
   rem: String
 }
@@ -129,11 +141,25 @@ input DeptSearch {
   parent_id: [DeptId!]
   "父部门"
   parent_id_is_null: Boolean
+  "父部门"
+  parent_id_lbl: [String!]
   "名称"
   lbl: String
   lbl_like: String
+  "部门负责人"
+  usr_ids: [UsrId!]
+  "部门负责人"
+  usr_ids_is_null: Boolean
+  "部门负责人"
+  usr_ids_lbl: [String!]
   "启用"
   is_enabled: [Int!]
+  "组织"
+  org_id: [OrgId!]
+  "组织"
+  org_id_is_null: Boolean
+  "组织"
+  org_id_lbl: [String!]
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"

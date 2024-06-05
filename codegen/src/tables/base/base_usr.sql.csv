@@ -1,2 +1,2 @@
-id,lbl,username,password,default_org_id,is_enabled,rem,is_locked,tenant_id
-9LmnqhLITzKskFO/lcXRqA,超级管理员,admin,RoZMvtNCRmGuZCdQ2FoRdhfYFQ0GBNu/JDaKdRx5o7A,SR1Lr/VATIGinFzNoin/Vg,1,,0,ZDbZlC1OT8KaDg6soxMCBQ
+id,lbl,username,password,is_enabled,rem,is_locked,tenant_id
+9LmnqhLITzKskFO/lcXRqA,超级管理员,admin,RoZMvtNCRmGuZCdQ2FoRdhfYFQ0GBNu/JDaKdRx5o7A,1,,0,ZDbZlC1OT8KaDg6soxMCBQ
