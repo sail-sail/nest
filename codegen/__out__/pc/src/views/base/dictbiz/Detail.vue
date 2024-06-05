@@ -825,7 +825,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.type,
   ],
   () => {

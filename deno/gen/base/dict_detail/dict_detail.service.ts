@@ -13,6 +13,7 @@ import * as dict_detailDao from "./dict_detail.dao.ts";
 async function setSearchQuery(
   search: DictDetailSearch,
 ) {
+  
 }
 
 /**

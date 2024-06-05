@@ -5,7 +5,6 @@ const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled")
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -83,6 +82,7 @@ async function setSearchQuery(
     org_ids.push(authModel.org_id);
   } else {
     org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
   }<#
     }
   #>
@@ -103,6 +103,7 @@ async function setSearchQuery(
   }<#
   }
   #>
+  
 }
 
 /**
