@@ -113,6 +113,8 @@ input CronJobLogSearch {
   cron_job_id: [CronJobId!]
   "定时任务"
   cron_job_id_is_null: Boolean
+  "定时任务"
+  cron_job_id_lbl: [String!]
   "执行状态"
   exec_state: [CronJobLogExecState!]
   "开始时间"
