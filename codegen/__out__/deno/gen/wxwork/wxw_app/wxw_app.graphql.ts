@@ -118,6 +118,8 @@ input WxwAppSearch {
   domain_id: [DomainId!]
   "可信域名"
   domain_id_is_null: Boolean
+  "可信域名"
+  domain_id_lbl: [String!]
   "启用"
   is_enabled: [Int!]
 }
