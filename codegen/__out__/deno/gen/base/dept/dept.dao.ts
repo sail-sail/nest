@@ -126,6 +126,9 @@ async function getWhereQuery(
   if (search?.parent_id_is_null) {
     whereQuery += ` and t.parent_id is null`;
   }
+  if (search?.parent_id_lbl != null) {
+    whereQuery += ` and parent_id_lbl.lbl in ${ args.push(search.parent_id_lbl) }`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }

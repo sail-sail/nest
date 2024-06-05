@@ -123,6 +123,8 @@ input DictbizDetailSearch {
   dictbiz_id: [DictbizId!]
   "业务字典"
   dictbiz_id_is_null: Boolean
+  "业务字典"
+  dictbiz_id_lbl: [String!]
   "名称"
   lbl: String
   lbl_like: String
