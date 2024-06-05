@@ -246,9 +246,15 @@ declare global {
         "is_hidden",
       ].includes(column_name)) continue;
       let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
       let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
+      const column_comment = column.COLUMN_COMMENT;
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const modelLabel = column.modelLabel;
       if (!column_comment && column_name !== "id") {
         throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
       }
@@ -259,7 +265,7 @@ declare global {
         is_nullable = true;
       }
       else if (foreignKey && !foreignKey.multiple) {
-        data_type = 'string';
+        data_type = `${ foreignTable_Up }Id`;
         _data_type = "string";
       }
       else if (column.DATA_TYPE === 'varchar') {
