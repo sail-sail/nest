@@ -4617,7 +4617,28 @@ async function nextId() {
   );
   return true;
 }<#
-if (opts.noAdd !== true || opts.noEdit !== true) {
+let hasWatchCol = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const data_type = column.DATA_TYPE;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "tenant_id") continue;
+  const isPassword = column.isPassword;
+  if (isPassword) continue;
+  if (column.readonly) continue;
+  if (column.noEdit) continue;
+  const foreignKey = column.foreignKey;
+  if (foreignKey || column.dict || column.dictbiz
+    || data_type === "datetime" || data_type === "date"
+  ) {
+    hasWatchCol = true;
+  }
+}
+#><#
+if (hasWatchCol) {
 #>
 
 watch(
@@ -4629,12 +4650,8 @@ watch(
       const column_name = column.COLUMN_NAME;
       if (column_name === "is_deleted") continue;
       if (column_name === "tenant_id") continue;
-      let column_type = column.COLUMN_TYPE;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const data_type = column.DATA_TYPE;
+      const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
       const isPassword = column.isPassword;
       if (isPassword) continue;
@@ -4726,7 +4743,11 @@ watch(
     }
     #>
   },
-);
+);<#
+}
+#><#
+if (opts.noAdd !== true || opts.noEdit !== true) {
+#>
 
 /** 快捷键ctrl+shift+回车 */
 async function onSaveAndCopyKeydown(e: KeyboardEvent) {
