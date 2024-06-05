@@ -93,6 +93,8 @@ input PermitSearch {
   menu_id: [MenuId!]
   "菜单"
   menu_id_is_null: Boolean
+  "菜单"
+  menu_id_lbl: [String!]
   "编码"
   code: String
   code_like: String
