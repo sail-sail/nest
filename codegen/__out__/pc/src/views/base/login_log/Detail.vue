@@ -574,6 +574,24 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    dialogModel.type,
+    dialogModel.is_succ,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.type) {
+      dialogModel.type_lbl = "";
+    }
+    if (!dialogModel.is_succ) {
+      dialogModel.is_succ_lbl = "";
+    }
+  },
+);
+
 async function onDialogOpen() {
 }
 

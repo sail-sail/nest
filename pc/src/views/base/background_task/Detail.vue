@@ -637,6 +637,34 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    dialogModel.state,
+    dialogModel.type,
+    dialogModel.begin_time,
+    dialogModel.end_time,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.state) {
+      dialogModel.state_lbl = "";
+    }
+    if (!dialogModel.type) {
+      dialogModel.type_lbl = "";
+    }
+    if (!dialogModel.begin_time) {
+      dialogModel.begin_time_lbl = "";
+      dialogModel.begin_time_save_null = 1;
+    }
+    if (!dialogModel.end_time) {
+      dialogModel.end_time_lbl = "";
+      dialogModel.end_time_save_null = 1;
+    }
+  },
+);
+
 async function onDialogOpen() {
 }
 
