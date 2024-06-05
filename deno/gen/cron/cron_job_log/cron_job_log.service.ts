@@ -9,6 +9,7 @@ import * as cron_job_logDao from "./cron_job_log.dao.ts";
 async function setSearchQuery(
   search: CronJobLogSearch,
 ) {
+  
 }
 
 /**

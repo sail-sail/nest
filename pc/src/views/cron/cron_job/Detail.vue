@@ -775,7 +775,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.job_id,
     dialogModel.timezone,
   ],

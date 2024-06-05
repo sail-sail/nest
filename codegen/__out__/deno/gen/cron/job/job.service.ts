@@ -13,6 +13,7 @@ import * as jobDao from "./job.dao.ts";
 async function setSearchQuery(
   search: JobSearch,
 ) {
+  
 }
 
 /**
