@@ -168,6 +168,10 @@ declare global {
     #>
     /** <#=column_comment#> */
     <#=modelLabel#>?: string[];<#
+      } else if (foreignKey.lbl) {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>_<#=foreignKey.lbl#>?: string[];<#
       }
     #><#
       } else if (column.dict || column.dictbiz) {
@@ -441,6 +445,17 @@ declare global {
     #>
     <#=column_name#>_save_null?: number | null;<#
       }
+    #><#
+      } else if (foreignKey) {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>?: <#=data_type#> | null;
+    <#
+        if (hasModelLabel) {
+    #>
+    /** <#=column_comment#> */
+    <#=modelLabel#>?: string | null;<#
+        }
     #><#
       } else if (column.dict || column.dictbiz) {
         let enumColumnName = data_type;
