@@ -137,6 +137,27 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.org_id == null)">
+          <el-form-item
+            :label="n('组织')"
+            prop="org_id"
+          >
+            <CustomSelect
+              v-model="dialogModel.org_id"
+              v-model:model-label="dialogModel.org_id_lbl"
+              :method="getOrgList"
+              :options-map="((item: OrgModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              :placeholder="`${ ns('请选择') } ${ n('组织') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
@@ -270,6 +291,7 @@ import {
 
 import {
   getUsrList,
+  getOrgList,
 } from "./Api";
 
 import {
@@ -346,6 +368,13 @@ watchEffect(async () => {
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("排序") }`,
+      },
+    ],
+    // 组织
+    org_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("组织") }`,
       },
     ],
   };
@@ -689,9 +718,9 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.parent_id,
     dialogModel.usr_ids,
+    dialogModel.org_id,
   ],
   () => {
     if (!inited) {
@@ -702,6 +731,9 @@ watch(
     }
     if (!dialogModel.usr_ids || dialogModel.usr_ids.length === 0) {
       dialogModel.usr_ids_lbl = [ ];
+    }
+    if (!dialogModel.org_id) {
+      dialogModel.org_id_lbl = "";
     }
   },
 );
@@ -875,6 +907,7 @@ async function onInitI18ns() {
     "锁定",
     "启用",
     "排序",
+    "组织",
     "备注",
     "创建人",
     "创建时间",
