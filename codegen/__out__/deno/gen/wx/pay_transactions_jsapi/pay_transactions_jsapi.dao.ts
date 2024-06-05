@@ -253,6 +253,9 @@ async function getWhereQuery(
   if (search?.org_id_is_null) {
     whereQuery += ` and t.org_id is null`;
   }
+  if (search?.org_id_lbl != null) {
+    whereQuery += ` and org_id_lbl.lbl in ${ args.push(search.org_id_lbl) }`;
+  }
   return whereQuery;
 }
 

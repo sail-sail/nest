@@ -156,6 +156,8 @@ input WxoAppSearch {
   domain_id: [DomainId!]
   "网页授权域名"
   domain_id_is_null: Boolean
+  "网页授权域名"
+  domain_id_lbl: [String!]
   "启用"
   is_enabled: [Int!]
   "创建人"

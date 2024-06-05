@@ -97,6 +97,9 @@ async function getWhereQuery(
   if (search?.wx_app_id_is_null) {
     whereQuery += ` and t.wx_app_id is null`;
   }
+  if (search?.wx_app_id_lbl != null) {
+    whereQuery += ` and wx_app_id_lbl.lbl in ${ args.push(search.wx_app_id_lbl) }`;
+  }
   if (search?.access_token != null) {
     whereQuery += ` and t.access_token=${ args.push(search.access_token) }`;
   }

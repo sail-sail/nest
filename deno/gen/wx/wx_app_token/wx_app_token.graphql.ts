@@ -69,6 +69,8 @@ input WxAppTokenSearch {
   wx_app_id: [WxAppId!]
   "小程序设置"
   wx_app_id_is_null: Boolean
+  "小程序设置"
+  wx_app_id_lbl: [String!]
 }
 type Query {
   "根据条件查找小程序接口凭据总数"

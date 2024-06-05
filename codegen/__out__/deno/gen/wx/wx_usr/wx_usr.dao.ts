@@ -132,6 +132,9 @@ async function getWhereQuery(
   if (search?.usr_id_is_null) {
     whereQuery += ` and t.usr_id is null`;
   }
+  if (search?.usr_id_lbl != null) {
+    whereQuery += ` and usr_id_lbl.lbl in ${ args.push(search.usr_id_lbl) }`;
+  }
   if (search?.nick_name != null) {
     whereQuery += ` and t.nick_name=${ args.push(search.nick_name) }`;
   }
@@ -234,6 +237,9 @@ async function getWhereQuery(
   }
   if (search?.org_id_is_null) {
     whereQuery += ` and t.org_id is null`;
+  }
+  if (search?.org_id_lbl != null) {
+    whereQuery += ` and org_id_lbl.lbl in ${ args.push(search.org_id_lbl) }`;
   }
   return whereQuery;
 }
