@@ -370,6 +370,13 @@ watchEffect(async () => {
         message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
+    // 组织
+    org_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("组织") }`,
+      },
+    ],
   };
 });
 

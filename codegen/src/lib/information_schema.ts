@@ -227,6 +227,9 @@ async function getSchema0(
       if (hasOrgIdLbl) {
         item.modelLabel = "org_id_lbl";
       }
+      if (item.require == null) {
+        item.require = true;
+      }
     }
     if ([ "tenant_id", "is_deleted" ].includes(column_name)) {
       item.isVirtual = true;
