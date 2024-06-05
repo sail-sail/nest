@@ -7,7 +7,6 @@ const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default")
 const hasIsMonth = columns.some((column) => column.isMonth);
 const hasDate = columns.some((column) => column.DATA_TYPE === "date");
 const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const hasRedundLbl = columns.some((column) => column.redundLbl && Object.keys(column.redundLbl).length > 0);
@@ -335,7 +334,6 @@ import type {
         "is_default",
         "is_deleted",
         "tenant_id",
-        "org_id",
         "version",
       ].includes(column_name)
     ) {
@@ -715,13 +713,6 @@ async function getWhereQuery(
   }<#
   }
   #><#
-  if (hasOrgId) {
-  #>
-  if (search?.org_id != null) {
-    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
-  }<#
-  }
-  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -757,6 +748,11 @@ async function getWhereQuery(
   #>
   if (search?.<#=modelLabel#> != null) {
     whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;
+  }<#
+    } else if (foreignKey.lbl) {
+  #>
+  if (search?.<#=column_name#>_lbl != null) {
+    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_lbl) }`;
   }<#
     }
   #><#
@@ -856,7 +852,6 @@ async function getFromQuery(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       if (column.isVirtual) continue;
-      if (column_name === "org_id") continue;
       const foreignKey = column.foreignKey;
       let data_type = column.DATA_TYPE;
       if (!foreignKey) continue;
@@ -1042,7 +1037,6 @@ export async function findAll(
     if (column_name === 'id') continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted"
     ) continue;
@@ -1096,7 +1090,6 @@ export async function findAll(
         if (column.ignoreCodegen) continue;
         const column_name = column.COLUMN_NAME;
         if (column.isVirtual) continue;
-        if (column_name === "org_id") continue;
         const foreignKey = column.foreignKey;
         let data_type = column.DATA_TYPE;
         if (!foreignKey) continue;
@@ -1264,7 +1257,7 @@ export async function findAll(
     if (column.ignoreCodegen) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT || "";
-    if (column.isVirtual && column_name !== "org_id") continue;
+    if (column.isVirtual) continue;
     const foreignKey = column.foreignKey;
     let data_type = column.DATA_TYPE;
     if (!foreignKey) continue;
@@ -1286,7 +1279,7 @@ export async function findAll(
       if (column.ignoreCodegen) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT || "";
-      if (column.isVirtual && column_name !== "org_id") continue;
+      if (column.isVirtual) continue;
       const foreignKey = column.foreignKey;
       let data_type = column.DATA_TYPE;
       if (!foreignKey) continue;
@@ -1551,7 +1544,6 @@ export async function findAll(
       if (column_name === "is_deleted") continue;
       if (column_name === "is_hidden") continue;
       if (column_name === "tenant_id") continue;
-      if (column_name === "org_id") continue;
       const data_type = column.DATA_TYPE;
       const column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
@@ -2201,9 +2193,6 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
       if (column_name === "is_deleted") {
         continue;
       }
-      if (column_name === "org_id") {
-        continue;
-      }
       if (column_name === "tenant_id") {
         continue;
       }
@@ -2289,7 +2278,6 @@ export async function findByUnique(
       if (
         [
           "id",
-          "org_id",
           "tenant_id",
           "is_sys",
           "is_deleted",
@@ -2805,7 +2793,7 @@ export async function validateIsEnabled(
 
 /** 校验<#=table_comment#>是否存在 */
 export async function validateOption(
-  model?: Readonly<<#=modelName#>>,
+  model?: <#=modelName#>,
 ) {
   if (!model) {
     throw `${ await ns("<#=table_comment#>") } ${ await ns("不存在") }`;
@@ -2830,9 +2818,6 @@ export async function validate(
       continue;
     }
     if (column_name === "is_deleted") {
-      continue;
-    }
-    if (column_name === "org_id") {
       continue;
     }
     if (column_name === "tenant_id") {
@@ -3157,9 +3142,12 @@ async function _creates(
   let sql = `insert into <#=mod#>_<#=table#>(id`;<#
   if (hasCreateTime) {
   #>
-  if (!silentMode) {
-    sql += ",create_time";
-  }<#
+  sql += ",create_time";<#
+  }
+  #><#
+  if (hasUpdateTime) {
+  #>
+  sql += ",update_time";<#
   }
   #><#
   if (hasTenant_id) {
@@ -3167,23 +3155,24 @@ async function _creates(
   sql += ",tenant_id";<#
   }
   #><#
-  if (hasOrgId) {
-  #>
-  sql += ",org_id";<#
-  }
-  #><#
   if (hasCreateUsrId) {
   #>
-  if (!silentMode) {
-    sql += ",create_usr_id";
-  }<#
+  sql += ",create_usr_id";<#
   }
   #><#
   if (hasCreateUsrIdLbl) {
   #>
-  if (!silentMode) {
-    sql += ",create_usr_id_lbl";
-  }<#
+  sql += ",create_usr_id_lbl";<#
+  }
+  #><#
+  if (hasUpdateUsrId) {
+  #>
+  sql += ",update_usr_id";<#
+  }
+  #><#
+  if (hasUpdateUsrIdLbl) {
+  #>
+  sql += ",update_usr_id_lbl";<#
   }
   #><#
   for (let i = 0; i < columns.length; i++) {
@@ -3261,11 +3250,26 @@ async function _creates(
       if (hasCreateTime) {
       #>
       if (!silentMode) {
-        if (input.create_time != null) {
+        if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
           sql += `,${ args.push(reqDate()) }`;
         }
+      } else {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,null`;
+        }
+      }<#
+      }
+      #><#
+      if (hasUpdateTime) {
+      #>
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }<#
       }
       #><#
@@ -3286,23 +3290,6 @@ async function _creates(
       }<#
       }
       #><#
-      if (hasOrgId) {
-      #>
-      if (input.org_id == null) {
-        const authModel = await getAuthModel();
-        const org_id = authModel?.org_id;
-        if (org_id != null) {
-          sql += `,${ args.push(org_id) }`;
-        } else {
-          sql += ",default";
-        }
-      } else if (input.org_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        sql += `,${ args.push(input.org_id) }`;
-      }<#
-      }
-      #><#
       if (hasCreateUsrId && !hasCreateUsrIdLbl) {
       #>
       if (!silentMode) {
@@ -3314,6 +3301,12 @@ async function _creates(
             sql += ",default";
           }
         } else if (input.create_usr_id as unknown as string === "-") {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+      } else {
+        if (input.create_usr_id == null) {
           sql += ",default";
         } else {
           sql += `,${ args.push(input.create_usr_id) }`;
@@ -3360,6 +3353,35 @@ async function _creates(
           }
           sql += `,${ args.push(usr_lbl) }`;
         }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+        if (input.create_usr_id_lbl == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id_lbl) }`;
+        }
+      }<#
+      }
+      #><#
+      if (hasUpdateUsrId) {
+      #>
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }<#
+      }
+      #><#
+      if (hasUpdateUsrIdLbl) {
+      #>
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
       }<#
       }
       #><#
@@ -3706,59 +3728,6 @@ export async function updateTenantById(
 }<#
 }
 #><#
-if (hasOrgId) {
-#>
-
-/**
- * <#=table_comment#>根据id修改组织id
- * @export
- * @param {<#=Table_Up#>Id} id
- * @param {OrgId} org_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
-export async function updateOrgById(
-  id: <#=Table_Up#>Id,
-  org_id: Readonly<OrgId>,
-  options?: Readonly<{
-  }>,
-): Promise<number> {
-  const table = "<#=mod#>_<#=table#>";
-  const method = "updateOrgById";
-  
-  const orgExist = await existByIdOrg(org_id);
-  if (!orgExist) {
-    return 0;
-  }
-  
-  const args = new QueryArgs();
-  const sql = `update <#=mod#>_<#=table#> set org_id=${ args.push(org_id) } where id=${ args.push(id) }
-  `;<#
-  if (cache) {
-  #>
-  
-  await delCache();<#
-  }
-  #>
-  const result = await execute(sql, args);
-  const num = result.affectedRows;<#
-  if (cache) {
-  #>
-  
-  await delCache();<#
-  }
-  #><#
-  if (mod === "cron" && table === "cron_job") {
-  #>
-  
-  await refreshCronJobs();<#
-  }
-  #>
-  return num;
-}<#
-}
-#><#
 if (hasVersion) {
 #>
 
@@ -3916,15 +3885,6 @@ export async function updateById(
     await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }<#
   }
-  #><#
-  if (hasOrgId) {
-  #>
-  
-  // 修改组织id
-  if (isNotEmpty(input.org_id)) {
-    await updateOrgById(id, input.org_id as unknown as OrgId);
-  }<#
-  }
   #>
   
   {
@@ -4011,7 +3971,7 @@ export async function updateById(
     if (column.ignoreCodegen) continue;
     if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
-    if ([ "id", "create_usr_id", "create_time", "update_usr_id", "update_time" ].includes(column_name)) continue;
+    if ([ "id", "update_usr_id", "update_time" ].includes(column_name)) continue;
     const is_nullable = column.IS_NULLABLE === "YES";
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
@@ -4020,9 +3980,6 @@ export async function updateById(
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     if (column_name === "tenant_id") {
-      continue;
-    }
-    if (column_name === "org_id") {
       continue;
     }
     const column_name_mysql = mysqlKeyEscape(column_name);
@@ -4091,10 +4048,10 @@ export async function updateById(
       sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else if (isEncrypt && [ "int" ].includes(data_type)) {
       #>
-      sql += `<#=column_name_mysql#> = ${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
+      sql += `<#=column_name_mysql#>=${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else {
       #>
-      sql += `<#=column_name_mysql#> = ${ args.push(input.<#=column_name#>) },`;<#
+      sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
       }
       #>
       updateFldNum++;
@@ -4355,6 +4312,8 @@ export async function updateById(
       } else if (input.update_usr_id as unknown as string !== "-") {
         sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
       }
+    } else if (input.update_usr_id != null) {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }<#
     } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
     #>
@@ -4393,6 +4352,13 @@ export async function updateById(
           sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
         }
       }
+    } else {
+      if (input.update_usr_id != null) {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
+      }
     }<#
     }
     #><#
@@ -4404,20 +4370,25 @@ export async function updateById(
         if (version && version > input.version) {
           throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
         }
-        sql += `version = ${ args.push(version + 1) },`;
+        sql += `version=${ args.push(version + 1) },`;
         sqlSetFldNum++;
       }
+    } else if (input.version != null) {
+      sql += `version=${ args.push(input.version) },`;
+      sqlSetFldNum++;
     }<#
     }
     #><#
     if (hasUpdateTime) {
     #>
     if (!silentMode) {
-      if (input.update_time) {
+      if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
         sql += `update_time=${ args.push(reqDate()) },`;
       }
+    } else if (input.update_time != null || input.update_time_save_null) {
+      sql += `update_time=${ args.push(input.update_time) },`;
     }<#
     }
     #>
@@ -5225,17 +5196,6 @@ export async function findLastOrderBy(
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }<#
-  }
-  #><#
-  if (hasOrgId) {
-  #>
-  {
-    const authModel = await getAuthModel();
-    const org_id = authModel?.org_id;
-    if (org_id) {
-      whereQuery.push(` t.org_id=${ args.push(org_id) }`);
-    }
   }<#
   }
   #>
