@@ -164,6 +164,12 @@ async function getSchema0(
       COLUMN_COMMENT: "组织",
       onlyCodegenDeno: true,
       canSearch: true,
+      foreignKey: {
+        mod: "base",
+        table: "org",
+        column: "id",
+        lbl: "lbl",
+      },
     });
   }
   // 创建人
@@ -933,7 +939,6 @@ export async function getSchema(
       };
     }
   }
-  tablesConfigItemMap[table_name] = tables[table_name];
   
   // 外键关联的默认width
   for (let i = 0; i < tables[table_name].columns.length; i++) {
@@ -973,7 +978,8 @@ export async function getSchema(
       }
     }
   }
-  return tables[table_name];
+  tablesConfigItemMap[table_name] = tables[table_name];
+  return tablesConfigItemMap[table_name];
 }
 
 export async function getAllTables(context: Context) {
