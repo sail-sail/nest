@@ -101,11 +101,17 @@ async function getWhereQuery(
   if (search?.lang_id_is_null) {
     whereQuery += ` and t.lang_id is null`;
   }
+  if (search?.lang_id_lbl != null) {
+    whereQuery += ` and lang_id_lbl.lbl in ${ args.push(search.lang_id_lbl) }`;
+  }
   if (search?.menu_id != null) {
     whereQuery += ` and t.menu_id in ${ args.push(search.menu_id) }`;
   }
   if (search?.menu_id_is_null) {
     whereQuery += ` and t.menu_id is null`;
+  }
+  if (search?.menu_id_lbl != null) {
+    whereQuery += ` and menu_id_lbl.lbl in ${ args.push(search.menu_id_lbl) }`;
   }
   if (search?.code != null) {
     whereQuery += ` and t.code=${ args.push(search.code) }`;

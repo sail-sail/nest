@@ -159,6 +159,9 @@ async function getWhereQuery(
   if (search?.default_org_id_is_null) {
     whereQuery += ` and t.default_org_id is null`;
   }
+  if (search?.default_org_id_lbl != null) {
+    whereQuery += ` and default_org_id_lbl.lbl in ${ args.push(search.default_org_id_lbl) }`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }

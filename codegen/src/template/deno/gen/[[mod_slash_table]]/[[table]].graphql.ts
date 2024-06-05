@@ -786,6 +786,10 @@ input <#=searchName#> {<#
   #>
   "<#=column_comment#>"
   <#=modelLabel#>: [String!]<#
+    } else if (foreignKey.lbl) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: [String!]<#
     }
   #><#
     } else if (column.dict || column.dictbiz) {
