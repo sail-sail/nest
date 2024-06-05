@@ -520,6 +520,17 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    dialogModel.cron_job_log_id,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+  },
+);
+
 async function onDialogOpen() {
 }
 
