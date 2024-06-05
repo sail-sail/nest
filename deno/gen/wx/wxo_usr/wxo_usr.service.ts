@@ -29,12 +29,14 @@ async function setSearchQuery(
     org_ids.push(authModel.org_id);
   } else {
     org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
   }
   const username = usr_model.username;
   
   if (username !== "admin") {
     search.org_id = org_ids;
   }
+  
 }
 
 /**
