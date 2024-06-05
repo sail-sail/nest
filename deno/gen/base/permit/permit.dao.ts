@@ -97,6 +97,9 @@ async function getWhereQuery(
   if (search?.menu_id_is_null) {
     whereQuery += ` and t.menu_id is null`;
   }
+  if (search?.menu_id_lbl != null) {
+    whereQuery += ` and menu_id_lbl.lbl in ${ args.push(search.menu_id_lbl) }`;
+  }
   if (search?.code != null) {
     whereQuery += ` and t.code=${ args.push(search.code) }`;
   }
