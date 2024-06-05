@@ -596,6 +596,24 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    dialogModel.wxw_app_id,
+    dialogModel.errcode,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.wxw_app_id) {
+      dialogModel.wxw_app_id_lbl = "";
+    }
+    if (!dialogModel.errcode) {
+      dialogModel.errcode_lbl = "";
+    }
+  },
+);
+
 async function onDialogOpen() {
 }
 

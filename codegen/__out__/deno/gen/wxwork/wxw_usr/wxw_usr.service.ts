@@ -6,6 +6,12 @@ import type {
 
 import * as wxw_usrDao from "./wxw_usr.dao.ts";
 
+async function setSearchQuery(
+  search: WxwUsrSearch,
+) {
+  
+}
+
 /**
  * 根据条件查找企微用户总数
  * @param {WxwUsrSearch} search? 搜索条件
@@ -14,7 +20,11 @@ import * as wxw_usrDao from "./wxw_usr.dao.ts";
 export async function findCount(
   search?: WxwUsrSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wxw_usrDao.findCount(search);
   return data;
 }
@@ -31,7 +41,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<WxwUsrModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: WxwUsrModel[] = await wxw_usrDao.findAll(search, page, sort);
   return models;
 }
@@ -52,7 +66,11 @@ export async function findOne(
   search?: WxwUsrSearch,
   sort?: SortInput|SortInput[],
 ): Promise<WxwUsrModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await wxw_usrDao.findOne(search, sort);
   return model;
 }
@@ -75,7 +93,11 @@ export async function findById(
 export async function exist(
   search?: WxwUsrSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wxw_usrDao.exist(search);
   return data;
 }

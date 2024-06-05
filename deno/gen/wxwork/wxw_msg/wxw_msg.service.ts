@@ -6,6 +6,12 @@ import type {
 
 import * as wxw_msgDao from "./wxw_msg.dao.ts";
 
+async function setSearchQuery(
+  search: WxwMsgSearch,
+) {
+  
+}
+
 /**
  * 根据条件查找企微消息总数
  * @param {WxwMsgSearch} search? 搜索条件
@@ -14,7 +20,11 @@ import * as wxw_msgDao from "./wxw_msg.dao.ts";
 export async function findCount(
   search?: WxwMsgSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wxw_msgDao.findCount(search);
   return data;
 }
@@ -31,7 +41,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<WxwMsgModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: WxwMsgModel[] = await wxw_msgDao.findAll(search, page, sort);
   return models;
 }
@@ -52,7 +66,11 @@ export async function findOne(
   search?: WxwMsgSearch,
   sort?: SortInput|SortInput[],
 ): Promise<WxwMsgModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await wxw_msgDao.findOne(search, sort);
   return model;
 }
@@ -75,7 +93,11 @@ export async function findById(
 export async function exist(
   search?: WxwMsgSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wxw_msgDao.exist(search);
   return data;
 }
