@@ -258,15 +258,34 @@ declare global {
       const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
-      const modelLabel = column.modelLabel;
+      let modelLabel = column.modelLabel;
+      let cascade_fields = [ ];
+      if (foreignKey) {
+        cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+        } else if (modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+        }
+      }
+      if (foreignKey && foreignKey.lbl && !modelLabel) {
+        modelLabel = column_name + "_" + foreignKey.lbl;
+      } else if (!foreignKey && !modelLabel) {
+        modelLabel = column_name + "_lbl";
+      }
+      let hasModelLabel = !!column.modelLabel;
+      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+        hasModelLabel = true;
+      } else if (foreignKey && foreignKey.lbl) {
+        hasModelLabel = true;
+      }
       if (!column_comment && column_name !== "id") {
         throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
       }
       let _data_type = "string";
       if (foreignKey && foreignKey.multiple) {
-        data_type = 'string[]';
+        data_type = `${ foreignTable_Up }Id[]`;
         _data_type = "string[]";
-        is_nullable = true;
       }
       else if (foreignKey && !foreignKey.multiple) {
         data_type = `${ foreignTable_Up }Id`;
@@ -297,14 +316,52 @@ declare global {
         data_type = 'number';
       }
     #><#
-      if (is_nullable) {
+      if (foreignKey) {
     #>
     /** <#=column_comment#> */
-    <#=column_name#>?: <#=data_type#> | null;<#
+    <#=column_name#>: <#=data_type#><#=is_nullable ? " | null" : ""#>;<#
+        if (hasModelLabel) {
+    #>
+    /** <#=column_comment#> */
+    <#=modelLabel#>: string;<#
+        } else if (foreignKey.lbl) {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>_<#=foreignKey.lbl#>: string;<#
+        }
+    #><#
+      } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>: <#=data_type#><#=is_nullable ? " | null" : ""#>;<#
+        if (hasModelLabel) {
+    #>
+    /** <#=column_comment#> */
+    <#=modelLabel#>: string;<#
+        } else if (foreignKey.lbl) {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>_<#=foreignKey.lbl#>: string;<#
+        }
+    #><#
+      } else if (column.dict || column.dictbiz) {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>: <#=data_type#><#=is_nullable ? " | null" : ""#>;<#
+        if (hasModelLabel) {
+    #>
+    /** <#=column_comment#> */
+    <#=modelLabel#>: string;<#
+        } else if (foreignKey.lbl) {
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>_<#=foreignKey.lbl#>: string;<#
+        }
+    #><#
       } else {
     #>
     /** <#=column_comment#> */
-    <#=column_name#>: <#=data_type#>;<#
+    <#=column_name#>: <#=data_type#><#=is_nullable ? " | null" : ""#>;<#
       }
     #><#
     }
@@ -449,8 +506,7 @@ declare global {
       } else if (foreignKey) {
     #>
     /** <#=column_comment#> */
-    <#=column_name#>?: <#=data_type#> | null;
-    <#
+    <#=column_name#>?: <#=data_type#> | null;<#
         if (hasModelLabel) {
     #>
     /** <#=column_comment#> */
