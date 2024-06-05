@@ -749,6 +749,11 @@ async function getWhereQuery(
   if (search?.<#=modelLabel#> != null) {
     whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;
   }<#
+    } else if (foreignKey.lbl) {
+  #>
+  if (search?.<#=column_name#>_lbl != null) {
+    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_lbl) }`;
+  }<#
     }
   #><#
       } else if (foreignKey.type === "many2many") {

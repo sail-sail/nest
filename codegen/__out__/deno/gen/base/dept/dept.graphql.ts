@@ -141,6 +141,8 @@ input DeptSearch {
   parent_id: [DeptId!]
   "父部门"
   parent_id_is_null: Boolean
+  "父部门"
+  parent_id_lbl: [String!]
   "名称"
   lbl: String
   lbl_like: String
@@ -148,6 +150,8 @@ input DeptSearch {
   usr_ids: [UsrId!]
   "部门负责人"
   usr_ids_is_null: Boolean
+  "部门负责人"
+  usr_ids_lbl: [String!]
   "启用"
   is_enabled: [Int!]
   "组织"
