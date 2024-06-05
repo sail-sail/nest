@@ -74,6 +74,8 @@ declare global {
   interface PayTransactionsJsapiModel extends PayTransactionsJsapiModelType {
     /** 组织 */
     org_id: OrgId;
+    /** 组织 */
+    org_id_lbl: string;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -88,7 +90,6 @@ declare global {
   interface PayTransactionsJsapiInput extends PayTransactionsJsapiInputType {
     /** 组织 */
     org_id?: OrgId | null;
-    
     /** 组织 */
     org_id_lbl?: string | null;
     create_usr_id?: UsrId | null;

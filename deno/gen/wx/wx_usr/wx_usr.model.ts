@@ -59,6 +59,8 @@ declare global {
   interface WxUsrModel extends WxUsrModelType {
     /** 组织 */
     org_id: OrgId;
+    /** 组织 */
+    org_id_lbl: string;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -73,7 +75,6 @@ declare global {
   interface WxUsrInput extends WxUsrInputType {
     /** 组织 */
     org_id?: OrgId | null;
-    
     /** 组织 */
     org_id_lbl?: string | null;
     create_usr_id?: UsrId | null;
