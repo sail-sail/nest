@@ -9,6 +9,7 @@ import * as wx_app_tokenDao from "./wx_app_token.dao.ts";
 async function setSearchQuery(
   search: WxAppTokenSearch,
 ) {
+  
 }
 
 /**

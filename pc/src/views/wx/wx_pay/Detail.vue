@@ -721,7 +721,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
   ],
   () => {
     if (!inited) {

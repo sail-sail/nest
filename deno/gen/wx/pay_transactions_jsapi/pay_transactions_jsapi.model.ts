@@ -63,11 +63,15 @@ declare global {
     create_time?: string[];
     /** 更新时间 */
     update_time?: string[];
+    /** 组织 */
+    org_id?: OrgId[];
+    org_id_is_null?: boolean;
     tenant_id?: TenantId | null;
-    org_id?: OrgId[] | null;
   }
 
   interface PayTransactionsJsapiModel extends PayTransactionsJsapiModelType {
+    /** 组织 */
+    org_id: OrgId;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -77,10 +81,11 @@ declare global {
     update_time?: string | null;
     update_time_lbl: string;
     tenant_id: TenantId;
-    org_id: OrgId;
   }
 
   interface PayTransactionsJsapiInput extends PayTransactionsJsapiInputType {
+    /** 组织 */
+    org_id?: OrgId | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
@@ -93,7 +98,6 @@ declare global {
     update_time_save_null?: boolean | null;
     is_deleted?: number | null;
     tenant_id?: TenantId | null;
-    org_id?: OrgId | null;
   }
 
   interface PayTransactionsJsapiFieldComment extends PayTransactionsJsapiFieldCommentType {

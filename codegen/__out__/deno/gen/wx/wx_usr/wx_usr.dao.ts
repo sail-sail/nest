@@ -87,6 +87,10 @@ import {
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
+  findOne as findOneOrg,
+} from "/gen/base/org/org.dao.ts";
+
+import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
@@ -109,9 +113,6 @@ async function getWhereQuery(
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
-  }
-  if (search?.org_id != null) {
-    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
   }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
@@ -228,6 +229,12 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
+  if (search?.org_id != null) {
+    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
+  }
+  if (search?.org_id_is_null) {
+    whereQuery += ` and t.org_id is null`;
+  }
   return whereQuery;
 }
 
@@ -239,7 +246,8 @@ async function getFromQuery(
   }>,
 ) {
   let fromQuery = `wx_wx_usr t
-    left join base_usr usr_id_lbl on usr_id_lbl.id=t.usr_id`;
+    left join base_usr usr_id_lbl on usr_id_lbl.id=t.usr_id
+    left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
   return fromQuery;
 }
 
@@ -372,10 +380,22 @@ export async function findAll(
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
+  // 组织
+  if (search && search.org_id != null) {
+    const len = search.org_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.org_id.length > ${ ids_limit }`);
+    }
+  }
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
       ,usr_id_lbl.lbl usr_id_lbl
+      ,org_id_lbl.lbl org_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -1157,7 +1177,6 @@ async function _creates(
   sql += ",create_time";
   sql += ",update_time";
   sql += ",tenant_id";
-  sql += ",org_id";
   sql += ",create_usr_id";
   sql += ",create_usr_id_lbl";
   sql += ",update_usr_id";
@@ -1175,6 +1194,7 @@ async function _creates(
   sql += ",country";
   sql += ",language";
   sql += ",rem";
+  sql += ",org_id";
   sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
@@ -1212,19 +1232,6 @@ async function _creates(
         sql += ",default";
       } else {
         sql += `,${ args.push(input.tenant_id) }`;
-      }
-      if (input.org_id == null) {
-        const authModel = await getAuthModel();
-        const org_id = authModel?.org_id;
-        if (org_id != null) {
-          sql += `,${ args.push(org_id) }`;
-        } else {
-          sql += ",default";
-        }
-      } else if (input.org_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        sql += `,${ args.push(input.org_id) }`;
       }
       if (!silentMode) {
         if (input.create_usr_id == null) {
@@ -1352,6 +1359,11 @@ async function _creates(
       } else {
         sql += ",default";
       }
+      if (input.org_id != null) {
+        sql += `,${ args.push(input.org_id) }`;
+      } else {
+        sql += ",default";
+      }
       sql += ")";
       if (i !== inputs2.length - 1) {
         sql += ",";
@@ -1430,41 +1442,6 @@ export async function updateTenantById(
 }
 
 /**
- * 小程序用户根据id修改组织id
- * @export
- * @param {WxUsrId} id
- * @param {OrgId} org_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
-export async function updateOrgById(
-  id: WxUsrId,
-  org_id: Readonly<OrgId>,
-  options?: Readonly<{
-  }>,
-): Promise<number> {
-  const table = "wx_wx_usr";
-  const method = "updateOrgById";
-  
-  const orgExist = await existByIdOrg(org_id);
-  if (!orgExist) {
-    return 0;
-  }
-  
-  const args = new QueryArgs();
-  const sql = `update wx_wx_usr set org_id=${ args.push(org_id) } where id=${ args.push(id) }
-  `;
-  
-  await delCache();
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCache();
-  return num;
-}
-
-/**
  * 根据 id 修改小程序用户
  * @param {WxUsrId} id
  * @param {WxUsrInput} input
@@ -1516,11 +1493,6 @@ export async function updateById(
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id as unknown as TenantId);
-  }
-  
-  // 修改组织id
-  if (isNotEmpty(input.org_id)) {
-    await updateOrgById(id, input.org_id as unknown as OrgId);
   }
   
   {
@@ -1640,6 +1612,12 @@ export async function updateById(
   if (input.create_time != null || input.create_time_save_null) {
     if (input.create_time != oldModel.create_time) {
       sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.org_id != null) {
+    if (input.org_id != oldModel.org_id) {
+      sql += `org_id=${ args.push(input.org_id) },`;
       updateFldNum++;
     }
   }
