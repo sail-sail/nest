@@ -103,6 +103,9 @@ async function getWhereQuery(
   if (search?.menu_id_is_null) {
     whereQuery += ` and t.menu_id is null`;
   }
+  if (search?.menu_id_lbl != null) {
+    whereQuery += ` and menu_id_lbl.lbl in ${ args.push(search.menu_id_lbl) }`;
+  }
   if (search?.scope != null) {
     whereQuery += ` and t.scope in ${ args.push(search.scope) }`;
   }
