@@ -583,6 +583,34 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    dialogModel.cron_job_id,
+    dialogModel.exec_state,
+    dialogModel.begin_time,
+    dialogModel.end_time,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.cron_job_id) {
+      dialogModel.cron_job_id_lbl = "";
+    }
+    if (!dialogModel.exec_state) {
+      dialogModel.exec_state_lbl = "";
+    }
+    if (!dialogModel.begin_time) {
+      dialogModel.begin_time_lbl = "";
+      dialogModel.begin_time_save_null = 1;
+    }
+    if (!dialogModel.end_time) {
+      dialogModel.end_time_lbl = "";
+      dialogModel.end_time_save_null = 1;
+    }
+  },
+);
+
 async function onDialogOpen() {
 }
 
