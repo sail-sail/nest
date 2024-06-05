@@ -700,7 +700,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.dict_id,
   ],
   () => {

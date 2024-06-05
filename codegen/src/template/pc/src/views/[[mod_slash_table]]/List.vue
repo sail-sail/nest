@@ -89,7 +89,6 @@ const hasAtt = columns.some((item) => item.isAtt);
         if (column_name === "version") continue;
         if (column_name === "is_deleted") continue;
         if (column_name === "tenant_id") continue;
-        if (column_name === "org_id") continue;
         const isPassword = column.isPassword;
         if (isPassword) continue;
         const isEncrypt = column.isEncrypt;
@@ -960,7 +959,6 @@ const hasAtt = columns.some((item) => item.isAtt);
             if (column_name === "version") continue;
             if (column_name === "is_deleted") continue;
             if (column_name === "tenant_id") continue;
-            if (column_name === "org_id") continue;
             const foreignKey = column.foreignKey;
             const data_type = column.DATA_TYPE;
             const column_type = column.COLUMN_TYPE;
@@ -1809,7 +1807,6 @@ const props = defineProps<{<#
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "org_id",
       "is_hidden",
       "is_deleted",
     ].includes(column_name)) continue;
@@ -1925,7 +1922,6 @@ const builtInSearchType: { [key: string]: string } = {<#
     if (column_name === "version") continue;
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
-    if (column_name === "org_id") continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.DATA_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -2297,7 +2293,6 @@ function getTableColumns(): ColumnType[] {
     if (column_name === "version") continue;
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
-    if (column_name === "org_id") continue;
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
@@ -3603,7 +3598,6 @@ async function initI18nsEfc() {
     if (column_name === "version") continue;
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
-    if (column_name === "org_id") continue;
     const isPassword = column.isPassword;
     if (isPassword) continue;
     const column_comment = column.COLUMN_COMMENT || "";
