@@ -10,6 +10,12 @@ import {
 
 import * as seoDao from "./seo.dao.ts";
 
+async function setSearchQuery(
+  search: SeoSearch,
+) {
+  
+}
+
 /**
  * 根据条件查找SEO优化总数
  * @param {SeoSearch} search? 搜索条件
@@ -18,7 +24,11 @@ import * as seoDao from "./seo.dao.ts";
 export async function findCount(
   search?: SeoSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await seoDao.findCount(search);
   return data;
 }
@@ -35,7 +45,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<SeoModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: SeoModel[] = await seoDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +70,11 @@ export async function findOne(
   search?: SeoSearch,
   sort?: SortInput|SortInput[],
 ): Promise<SeoModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await seoDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +97,11 @@ export async function findById(
 export async function exist(
   search?: SeoSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await seoDao.exist(search);
   return data;
 }
