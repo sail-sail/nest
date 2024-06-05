@@ -24,7 +24,6 @@ declare global {
     /** 更新时间 */
     update_time?: string[];
     tenant_id?: TenantId | null;
-    org_id?: OrgId[] | null;
   }
 
   interface DeptModel extends DeptModelType {
@@ -37,7 +36,6 @@ declare global {
     update_time?: string | null;
     update_time_lbl: string;
     tenant_id: TenantId;
-    org_id: OrgId;
   }
 
   interface DeptInput extends DeptInputType {
@@ -53,7 +51,6 @@ declare global {
     update_time_save_null?: boolean | null;
     is_deleted?: number | null;
     tenant_id?: TenantId | null;
-    org_id?: OrgId | null;
   }
 
   interface DeptFieldComment extends DeptFieldCommentType {

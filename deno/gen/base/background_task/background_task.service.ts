@@ -29,6 +29,7 @@ async function setSearchQuery(
   if (username !== "admin") {
     search.create_usr_id = [ usr_id ];
   }
+  
 }
 
 /**

@@ -40,6 +40,9 @@ export const deptFields = [
   "is_enabled_lbl",
   // 排序
   "order_by",
+  // 组织
+  "org_id",
+  "org_id_lbl",
   // 备注
   "rem",
   // 创建人

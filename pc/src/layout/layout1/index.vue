@@ -106,6 +106,7 @@
           v-if="
             loginInfo &&
             loginInfo.org_id_models &&
+            loginInfo.org_id_models.length > 0 &&
             !(loginInfo.org_id_models.length === 1 && loginInfo.org_id_models[0].lbl === '默认组织')
           "
         >
