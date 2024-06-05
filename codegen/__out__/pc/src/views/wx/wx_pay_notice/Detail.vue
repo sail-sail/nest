@@ -741,6 +741,37 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    dialogModel.trade_type,
+    dialogModel.trade_state,
+    dialogModel.success_time,
+    dialogModel.currency,
+    dialogModel.payer_currency,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.trade_type) {
+      dialogModel.trade_type_lbl = "";
+    }
+    if (!dialogModel.trade_state) {
+      dialogModel.trade_state_lbl = "";
+    }
+    if (!dialogModel.success_time) {
+      dialogModel.success_time_lbl = "";
+      dialogModel.success_time_save_null = 1;
+    }
+    if (!dialogModel.currency) {
+      dialogModel.currency_lbl = "";
+    }
+    if (!dialogModel.payer_currency) {
+      dialogModel.payer_currency_lbl = "";
+    }
+  },
+);
+
 async function onDialogOpen() {
 }
 
