@@ -582,6 +582,15 @@
             </el-table-column>
           </template>
           
+          <!-- 组织 -->
+          <template v-else-if="'org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.org_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
             <el-table-column
@@ -756,6 +765,8 @@ const props = defineProps<{
   usr_ids?: string|string[]; // 部门负责人
   usr_ids_lbl?: string[]; // 部门负责人
   is_enabled?: string|string[]; // 启用
+  org_id?: string|string[]; // 组织
+  org_id_lbl?: string; // 组织
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -772,6 +783,8 @@ const builtInSearchType: { [key: string]: string } = {
   usr_ids_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
+  org_id: "string[]",
+  org_id_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1045,6 +1058,15 @@ function getTableColumns(): ColumnType[] {
       align: "right",
       headerAlign: "center",
       showOverflowTooltip: false,
+    },
+    {
+      label: "组织",
+      prop: "org_id_lbl",
+      sortBy: "org_id_lbl",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "备注",
@@ -1370,6 +1392,7 @@ async function onImportExcel() {
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
+    [ await nAsync("组织") ]: "org_id_lbl",
     [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1398,6 +1421,7 @@ async function onImportExcel() {
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
+          "org_id_lbl": "string",
           "rem": "string",
         },
       },
@@ -1753,6 +1777,7 @@ async function initI18nsEfc() {
     "锁定",
     "启用",
     "排序",
+    "组织",
     "备注",
     "创建人",
     "创建时间",

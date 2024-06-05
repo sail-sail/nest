@@ -39,7 +39,7 @@ export async function getTokenByUsrId(
     usr_model.id,
   );
   if (!org_id) {
-    org_id = usr_model.default_org_id || org_ids[0];
+    org_id = usr_model.default_org_id;
   }
   if (org_id) {
     if (!org_ids.includes(org_id)) {
@@ -103,15 +103,7 @@ export async function getOrgIdsById(
   id: UsrId,
 ) {
   const args = new QueryArgs();
-  const sql = /*sql*/`
-    select
-      t.org_id
-    from
-      base_usr_org t
-    where
-      t.is_deleted = 0
-      and t.usr_id = ${ args.push(id) }
-  `;
+  const sql = `select t.org_id from base_usr_org t where t.is_deleted = 0 and t.usr_id = ${ args.push(id) }`;
   const result = await query<{
     org_id: OrgId,
   }>(sql, args);

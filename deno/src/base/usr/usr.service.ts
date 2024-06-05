@@ -116,13 +116,13 @@ export async function login(
   if (org_id === null) {
     org_id = undefined;
   }
-  const org_ids = await getOrgIdsById(
-    usr_model.id,
-  );
   if (!org_id) {
-    org_id = usr_model.default_org_id || org_ids[0];
+    org_id = usr_model.default_org_id;
   }
   if (org_id) {
+    const org_ids = await getOrgIdsById(
+      usr_model.id,
+    );
     if (!org_ids.includes(org_id)) {
       org_id = undefined;
     }

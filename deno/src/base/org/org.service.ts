@@ -14,17 +14,27 @@ import {
   createToken,
 } from "/lib/auth/auth.dao.ts";
 
+import {
+  ns,
+} from "/src/base/i18n/i18n.ts";
+
 export async function orgLoginSelect(
-  org_id: OrgId,
+  org_id?: OrgId,
 ): Promise<Mutation["orgLoginSelect"]> {
+  
   const authModel = await getAuthModel();
+  if (!org_id && !authModel.org_id) {
+    return "";
+  }
   if (authModel.org_id === org_id) {
     return "";
   }
-  const usrModel = await findByIdOrg(authModel.id);
-  const org_ids = usrModel?.org_ids || [ ];
-  if (!org_ids.includes(org_id)) {
-    throw `org_id: ${ org_id as unknown as string } dose not exit in login usr`;
+  if (org_id) {
+    const usr_model = await findByIdOrg(authModel.id);
+    const org_ids = usr_model?.org_ids || [ ];
+    if (!org_ids.includes(org_id)) {
+      throw await ns("无权限切换到该组织");
+    }
   }
   authModel.org_id = org_id;
   // authModel.exp = undefined;
