@@ -480,7 +480,7 @@
           </template>
           
           <!-- 关联单位 -->
-          <template v-else-if="'company_id_lbl' === col.prop">
+          <template v-else-if="'company_id_lbl' === col.prop && (showBuildIn || builtInSearch?.company_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -680,6 +680,8 @@ const props = defineProps<{
   code_like?: string; // 编号
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  company_id?: string|string[]; // 关联单位
+  company_id_lbl?: string; // 关联单位
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -690,6 +692,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
+  company_id: "string[]",
+  company_id_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",

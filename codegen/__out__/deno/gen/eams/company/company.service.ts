@@ -10,6 +10,12 @@ import {
 
 import * as companyDao from "./company.dao.ts";
 
+async function setSearchQuery(
+  search: CompanySearch,
+) {
+  
+}
+
 /**
  * 根据条件查找单位总数
  * @param {CompanySearch} search? 搜索条件
@@ -18,7 +24,11 @@ import * as companyDao from "./company.dao.ts";
 export async function findCount(
   search?: CompanySearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await companyDao.findCount(search);
   return data;
 }
@@ -35,7 +45,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<CompanyModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: CompanyModel[] = await companyDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +70,11 @@ export async function findOne(
   search?: CompanySearch,
   sort?: SortInput|SortInput[],
 ): Promise<CompanyModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await companyDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +97,11 @@ export async function findById(
 export async function exist(
   search?: CompanySearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await companyDao.exist(search);
   return data;
 }

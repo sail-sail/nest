@@ -12,9 +12,6 @@ declare global {
   type ArchiveId = Distinct<string, typeof archiveId>;
 
   interface ArchiveSearch extends ArchiveSearchType {
-    /** 关联单位 */
-    company_id?: CompanyId[];
-    company_id_is_null?: boolean;
     /** 排序 */
     order_by?: number[];
     /** 备注 */
@@ -44,10 +41,12 @@ declare global {
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
     create_time_lbl?: string | null;
+    create_time_save_null?: boolean | null;
     update_usr_id?: UsrId | null;
     update_usr_id_lbl?: string | null;
     update_time?: string | null;
     update_time_lbl?: string | null;
+    update_time_save_null?: boolean | null;
     is_deleted?: number | null;
     tenant_id?: TenantId | null;
   }

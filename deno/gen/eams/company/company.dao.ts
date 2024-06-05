@@ -142,6 +142,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
+  if (search?.create_usr_id_lbl != null) {
+    whereQuery += ` and create_usr_id_lbl.lbl in ${ args.push(search.create_usr_id_lbl) }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -155,6 +158,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
+  }
+  if (search?.update_usr_id_lbl != null) {
+    whereQuery += ` and update_usr_id_lbl.lbl in ${ args.push(search.update_usr_id_lbl) }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -851,7 +857,7 @@ export async function validateIsEnabled(
 
 /** 校验单位是否存在 */
 export async function validateOption(
-  model?: Readonly<CompanyModel>,
+  model?: CompanyModel,
 ) {
   if (!model) {
     throw `${ await ns("单位") } ${ await ns("不存在") }`;
@@ -1068,13 +1074,11 @@ async function _creates(
   
   const args = new QueryArgs();
   let sql = `insert into eams_company(id`;
-  if (!silentMode) {
-    sql += ",create_time";
-  }
+  sql += ",create_time";
+  sql += ",update_time";
   sql += ",tenant_id";
-  if (!silentMode) {
-    sql += ",create_usr_id";
-  }
+  sql += ",create_usr_id";
+  sql += ",update_usr_id";
   sql += ",code";
   sql += ",lbl";
   sql += ",is_locked";
@@ -1089,11 +1093,22 @@ async function _creates(
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
       if (!silentMode) {
-        if (input.create_time != null) {
+        if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
           sql += `,${ args.push(reqDate()) }`;
         }
+      } else {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,null`;
+        }
+      }
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -1121,6 +1136,17 @@ async function _creates(
         } else {
           sql += `,${ args.push(input.create_usr_id) }`;
         }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+      }
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
       }
       if (input.code != null) {
         sql += `,${ args.push(input.code) }`;
@@ -1344,6 +1370,18 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.create_usr_id != null) {
+    if (input.create_usr_id != oldModel.create_usr_id) {
+      sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.create_time != null || input.create_time_save_null) {
+    if (input.create_time != oldModel.create_time) {
+      sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
   let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
@@ -1356,13 +1394,17 @@ export async function updateById(
       } else if (input.update_usr_id as unknown as string !== "-") {
         sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
       }
+    } else if (input.update_usr_id != null) {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (!silentMode) {
-      if (input.update_time) {
+      if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
         sql += `update_time=${ args.push(reqDate()) },`;
       }
+    } else if (input.update_time != null || input.update_time_save_null) {
+      sql += `update_time=${ args.push(input.update_time) },`;
     }
     if (sql.endsWith(",")) {
       sql = sql.substring(0, sql.length - 1);

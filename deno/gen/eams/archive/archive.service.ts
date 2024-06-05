@@ -6,6 +6,12 @@ import type {
 
 import * as archiveDao from "./archive.dao.ts";
 
+async function setSearchQuery(
+  search: ArchiveSearch,
+) {
+  
+}
+
 /**
  * 根据条件查找全宗设置总数
  * @param {ArchiveSearch} search? 搜索条件
@@ -14,7 +20,11 @@ import * as archiveDao from "./archive.dao.ts";
 export async function findCount(
   search?: ArchiveSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await archiveDao.findCount(search);
   return data;
 }
@@ -31,7 +41,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<ArchiveModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: ArchiveModel[] = await archiveDao.findAll(search, page, sort);
   return models;
 }
@@ -52,7 +66,11 @@ export async function findOne(
   search?: ArchiveSearch,
   sort?: SortInput|SortInput[],
 ): Promise<ArchiveModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await archiveDao.findOne(search, sort);
   return model;
 }
@@ -75,7 +93,11 @@ export async function findById(
 export async function exist(
   search?: ArchiveSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await archiveDao.exist(search);
   return data;
 }
