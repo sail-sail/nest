@@ -639,7 +639,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.menu_id,
     dialogModel.scope,
     dialogModel.type,

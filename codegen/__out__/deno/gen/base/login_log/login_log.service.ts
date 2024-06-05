@@ -9,6 +9,7 @@ import * as login_logDao from "./login_log.dao.ts";
 async function setSearchQuery(
   search: LoginLogSearch,
 ) {
+  
 }
 
 /**

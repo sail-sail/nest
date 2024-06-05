@@ -3,7 +3,6 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
@@ -49,7 +48,6 @@ for (let i = 0; i < columns.length; i++) {
   const column_name = column.COLUMN_NAME;
   if (
     column_name === "tenant_id" ||
-    column_name === "org_id" ||
     column_name === "is_sys" ||
     column_name === "is_deleted" ||
     column_name === "is_hidden"
@@ -123,9 +121,6 @@ type <#=modelName#> {<#
       continue;
     }
     if (column_name === 'is_deleted') {
-      continue;
-    }
-    if (column_name === 'org_id') {
       continue;
     }
     if (column_name === 'tenant_id') {
@@ -407,9 +402,6 @@ type <#=fieldCommentName#> {<#
     if (column_name === "is_deleted") {
       continue;
     }
-    if (column_name === "org_id") {
-      continue;
-    }
     if (column_name === "tenant_id") {
       continue;
     }
@@ -464,7 +456,6 @@ input <#=inputName#> {<#
     if (
       [
         "is_sys",
-        "org_id",
         "tenant_id",
         "is_hidden",
         "create_usr_id",
@@ -736,9 +727,6 @@ input <#=searchName#> {<#
     const isEncrypt = column.isEncrypt;
     if (isEncrypt) continue;
     const search = column.search;
-    if (column_name === 'org_id') {
-      continue;
-    }
     if (column_name === 'tenant_id') {
       continue;
     }
