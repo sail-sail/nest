@@ -66,6 +66,8 @@ declare global {
     /** 组织 */
     org_id?: OrgId[];
     org_id_is_null?: boolean;
+    /** 组织 */
+    org_id_lbl?: string[];
     tenant_id?: TenantId | null;
   }
 
@@ -86,6 +88,9 @@ declare global {
   interface PayTransactionsJsapiInput extends PayTransactionsJsapiInputType {
     /** 组织 */
     org_id?: OrgId | null;
+    
+    /** 组织 */
+    org_id_lbl?: string | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
