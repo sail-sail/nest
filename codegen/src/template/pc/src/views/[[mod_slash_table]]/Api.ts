@@ -62,9 +62,11 @@ for (let i = 0; i < columns.length; i++) {
   }
   hasDecimal = true;
 }
-#><#
+#>import cfg from "@/utils/config";<#
 if (opts.noAdd !== true || opts.noEdit !== true) {
-#>import {
+#>
+
+import {
   UniqueType,
 } from "#/types";<#
 }
@@ -88,7 +90,6 @@ for (let i = 0; i < columns.length; i++) {
       "is_default",
       "is_deleted",
       "tenant_id",
-      "org_id",
       "version",
     ].includes(column_name)
   ) {
@@ -139,7 +140,6 @@ import {<#
         "is_default",
         "is_deleted",
         "tenant_id",
-        "org_id",
         "version",
       ].includes(column_name)
     ) {
@@ -435,7 +435,7 @@ export function intoInput(
       const column_name = column.COLUMN_NAME;
       if (
         [
-          "is_deleted", "tenant_id", "org_id",
+          "is_deleted", "tenant_id",
           "create_time", "create_time_lbl",
           "create_usr_id", "create_usr_id_lbl",
           "update_time", "update_time_lbl",
@@ -1082,7 +1082,6 @@ for (let i = 0; i < columns.length; i++) {
     [
       "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
       "tenant_id", "tenant_id_lbl",
-      "org_id", "org_id_lbl",
     ].includes(column_name)
     || (column.noAdd && column.noEdit && !column.search)
   ) continue;
@@ -1265,7 +1264,6 @@ for (const inlineForeignTab of inlineForeignTabs) {
         "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
         "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
         "tenant_id", "tenant_id_lbl",
-        "org_id", "org_id_lbl",
       ].includes(column_name)
       || column.readonly
       || (column.noAdd && column.noEdit)
@@ -1440,7 +1438,6 @@ export function useDownloadImportTemplate(routePath: string) {
                   "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                   "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
                 || column.readonly
                 || column.noAdd
@@ -1480,7 +1477,6 @@ export function useDownloadImportTemplate(routePath: string) {
                 "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                 "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                 "tenant_id", "tenant_id_lbl",
-                "org_id", "org_id_lbl",
               ].includes(column_name)
               || column.readonly
               || column.noAdd
@@ -1522,7 +1518,6 @@ export function useDownloadImportTemplate(routePath: string) {
                 "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                 "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                 "tenant_id", "tenant_id_lbl",
-                "org_id", "org_id_lbl",
               ].includes(column_name)
               || column.readonly
               || column.noAdd
@@ -1552,7 +1547,6 @@ export function useDownloadImportTemplate(routePath: string) {
                   "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                   "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
                 || column.readonly
                 || column.noAdd
@@ -1593,7 +1587,6 @@ export function useDownloadImportTemplate(routePath: string) {
                 "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                 "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                 "tenant_id", "tenant_id_lbl",
-                "org_id", "org_id_lbl",
               ].includes(column_name)
               || column.readonly
               || column.noAdd
@@ -1623,7 +1616,6 @@ export function useDownloadImportTemplate(routePath: string) {
                   "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                   "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
                 || column.readonly
                 || column.noAdd
@@ -1722,7 +1714,6 @@ export function useExportExcel(routePath: string) {
                   "id",
                   "is_deleted", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
               ) continue;
               let column_type = column.COLUMN_TYPE;
@@ -1758,7 +1749,6 @@ export function useExportExcel(routePath: string) {
                   "id",
                   "is_deleted", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
               ) continue;
               const isPassword = column.isPassword;
@@ -1781,7 +1771,6 @@ export function useExportExcel(routePath: string) {
                   [
                     "is_deleted", "is_sys",
                     "tenant_id", "tenant_id_lbl",
-                    "org_id", "org_id_lbl",
                   ].includes(column_name)
                 ) continue;
                 const column_type = column.COLUMN_TYPE;
@@ -1819,7 +1808,6 @@ export function useExportExcel(routePath: string) {
                   "id",
                   "is_deleted", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
               ) continue;
               const isPassword = column.isPassword;
@@ -1843,7 +1831,6 @@ export function useExportExcel(routePath: string) {
                     "id",
                     "is_deleted", "is_sys",
                     "tenant_id", "tenant_id_lbl",
-                    "org_id", "org_id_lbl",
                   ].includes(column_name)
                 ) continue;
                 let column_type = column.COLUMN_TYPE;
@@ -1997,7 +1984,6 @@ export async function getDefaultInput() {<#
         "is_default",
         "is_deleted",
         "tenant_id",
-        "org_id",
       ].includes(column_name)
     ) {
       continue;
@@ -2019,7 +2005,7 @@ export async function getDefaultInput() {<#
   #><#
   if (hasUsrStore) {
   #>
-  const usrStore = useUsrStore();<#
+  const usrStore = useUsrStore(cfg.pinia);<#
   }
   #>
   const defaultInput: <#=inputName#> = {<#
@@ -2043,7 +2029,6 @@ export async function getDefaultInput() {<#
           "is_default",
           "is_deleted",
           "tenant_id",
-          "org_id",
         ].includes(column_name)
       ) {
         continue;
