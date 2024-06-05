@@ -117,6 +117,9 @@ async function getWhereQuery(
   if (search?.cron_job_id_is_null) {
     whereQuery += ` and t.cron_job_id is null`;
   }
+  if (search?.cron_job_id_lbl != null) {
+    whereQuery += ` and cron_job_id_lbl.lbl in ${ args.push(search.cron_job_id_lbl) }`;
+  }
   if (search?.exec_state != null) {
     whereQuery += ` and t.exec_state in ${ args.push(search.exec_state) }`;
   }
