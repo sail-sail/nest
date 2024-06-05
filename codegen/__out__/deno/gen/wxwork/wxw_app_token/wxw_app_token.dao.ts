@@ -114,6 +114,9 @@ async function getWhereQuery(
   if (search?.wxw_app_id_is_null) {
     whereQuery += ` and t.wxw_app_id is null`;
   }
+  if (search?.wxw_app_id_lbl != null) {
+    whereQuery += ` and wxw_app_id_lbl.lbl in ${ args.push(search.wxw_app_id_lbl) }`;
+  }
   if (search?.type != null) {
     whereQuery += ` and t.type=${ args.push(search.type) }`;
   }

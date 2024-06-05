@@ -141,6 +141,9 @@ async function getWhereQuery(
   if (search?.domain_id_is_null) {
     whereQuery += ` and t.domain_id is null`;
   }
+  if (search?.domain_id_lbl != null) {
+    whereQuery += ` and domain_id_lbl.lbl in ${ args.push(search.domain_id_lbl) }`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
