@@ -101,14 +101,24 @@ input ArchiveSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "关联单位"
+  company_id: [CompanyId!]
+  "关联单位"
+  company_id_is_null: Boolean
+  "关联单位"
+  company_id_lbl: [String!]
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找全宗设置总数"

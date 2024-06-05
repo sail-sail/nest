@@ -119,10 +119,14 @@ input CompanySearch {
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找单位总数"
