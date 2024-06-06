@@ -28,11 +28,12 @@ async function setSearchQuery(
   if (!usr_id || !usr_model) {
     throw new Error("usr_id can not be null");
   }
-  const org_ids: OrgId[] = [ "" as OrgId ];
+  const org_ids: OrgId[] = [ ];
   if (authModel?.org_id) {
     org_ids.push(authModel.org_id);
   } else {
     org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
   }
   const username = usr_model.username;
   
