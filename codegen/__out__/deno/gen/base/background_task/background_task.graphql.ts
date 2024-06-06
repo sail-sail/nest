@@ -142,13 +142,13 @@ input BackgroundTaskInput {
   "开始时间"
   begin_time_lbl: String
   "开始时间"
-  begin_time_save_null: Int
+  begin_time_save_null: Boolean
   "结束时间"
   end_time: NaiveDateTime
   "结束时间"
   end_time_lbl: String
   "结束时间"
-  end_time_save_null: Int
+  end_time_save_null: Boolean
   "备注"
   rem: String
 }
