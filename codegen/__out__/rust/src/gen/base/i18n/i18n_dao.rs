@@ -123,6 +123,29 @@ async fn get_where_query(
       where_query.push_str(" and t.lang_id is null");
     }
   }
+  {
+    let lang_id_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.lang_id_lbl.clone(),
+      None => None,
+    };
+    if let Some(lang_id_lbl) = lang_id_lbl {
+      let arg = {
+        if lang_id_lbl.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(lang_id_lbl.len());
+          for item in lang_id_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and lang_id_lbl.lbl in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   // 菜单
   {
     let menu_id: Option<Vec<MenuId>> = match search {
@@ -154,6 +177,29 @@ async fn get_where_query(
     };
     if menu_id_is_null {
       where_query.push_str(" and t.menu_id is null");
+    }
+  }
+  {
+    let menu_id_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.menu_id_lbl.clone(),
+      None => None,
+    };
+    if let Some(menu_id_lbl) = menu_id_lbl {
+      let arg = {
+        if menu_id_lbl.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(menu_id_lbl.len());
+          for item in menu_id_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and menu_id_lbl.lbl in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   // 编码

@@ -446,6 +446,9 @@ pub struct UsrSearch {
   /// 默认组织
   #[graphql(name = "default_org_id_save_null")]
   pub default_org_id_is_null: Option<bool>,
+  /// 默认组织
+  #[graphql(name = "default_org_id_lbl")]
+  pub default_org_id_lbl: Option<Vec<String>>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,

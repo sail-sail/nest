@@ -194,6 +194,9 @@ pub struct DataPermitSearch {
   /// 菜单
   #[graphql(name = "menu_id_save_null")]
   pub menu_id_is_null: Option<bool>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl")]
+  pub menu_id_lbl: Option<Vec<String>>,
   /// 范围
   #[graphql(name = "scope")]
   pub scope: Option<Vec<DataPermitScope>>,

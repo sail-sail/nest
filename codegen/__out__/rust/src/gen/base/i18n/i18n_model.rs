@@ -191,12 +191,18 @@ pub struct I18nSearch {
   /// 语言
   #[graphql(name = "lang_id_save_null")]
   pub lang_id_is_null: Option<bool>,
+  /// 语言
+  #[graphql(name = "lang_id_lbl")]
+  pub lang_id_lbl: Option<Vec<String>>,
   /// 菜单
   #[graphql(name = "menu_id")]
   pub menu_id: Option<Vec<MenuId>>,
   /// 菜单
   #[graphql(name = "menu_id_save_null")]
   pub menu_id_is_null: Option<bool>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl")]
+  pub menu_id_lbl: Option<Vec<String>>,
   /// 编码
   #[graphql(name = "code")]
   pub code: Option<String>,

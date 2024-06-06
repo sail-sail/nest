@@ -125,6 +125,29 @@ async fn get_where_query(
       where_query.push_str(" and t.dict_id is null");
     }
   }
+  {
+    let dict_id_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.dict_id_lbl.clone(),
+      None => None,
+    };
+    if let Some(dict_id_lbl) = dict_id_lbl {
+      let arg = {
+        if dict_id_lbl.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(dict_id_lbl.len());
+          for item in dict_id_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and dict_id_lbl.lbl in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   // 名称
   {
     let lbl = match search {
