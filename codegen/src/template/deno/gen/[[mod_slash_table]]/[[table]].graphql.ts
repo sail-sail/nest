@@ -554,7 +554,7 @@ input <#=inputName#> {<#
     if (is_nullable) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>_save_null: Int<#
+  <#=column_name#>_save_null: Boolean<#
     }
   #><#
     } else if (column.dict || column.dictbiz) {
