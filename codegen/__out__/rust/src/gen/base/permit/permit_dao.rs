@@ -122,6 +122,29 @@ async fn get_where_query(
       where_query.push_str(" and t.menu_id is null");
     }
   }
+  {
+    let menu_id_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.menu_id_lbl.clone(),
+      None => None,
+    };
+    if let Some(menu_id_lbl) = menu_id_lbl {
+      let arg = {
+        if menu_id_lbl.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(menu_id_lbl.len());
+          for item in menu_id_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and menu_id_lbl.lbl in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   // 编码
   {
     let code = match search {

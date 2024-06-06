@@ -1618,6 +1618,18 @@ pub struct <#=tableUP#>Search {
   }
   #>
   pub <#=modelLabel_rust#>: Option<Vec<String>>,<#
+    } else if (foreignKey.lbl) {
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_lbl")]<#
+  }
+  #>
+  pub <#=column_name#>_lbl: Option<Vec<String>>,<#
     }
   #><#
     } else if (foreignKey && foreignKey.type === "many2many") {

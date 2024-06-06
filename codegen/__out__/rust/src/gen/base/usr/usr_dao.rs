@@ -310,6 +310,29 @@ async fn get_where_query(
       where_query.push_str(" and t.default_org_id is null");
     }
   }
+  {
+    let default_org_id_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.default_org_id_lbl.clone(),
+      None => None,
+    };
+    if let Some(default_org_id_lbl) = default_org_id_lbl {
+      let arg = {
+        if default_org_id_lbl.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(default_org_id_lbl.len());
+          for item in default_org_id_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and default_org_id_lbl.lbl in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   // 锁定
   {
     let is_locked: Option<Vec<u8>> = match search {

@@ -823,6 +823,31 @@ async fn get_where_query(
       where_query.push(')');
     }
   }<#
+    } else if (foreignKey.lbl) {
+  #>
+  {
+    let <#=column_name_rust#>_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.<#=column_name_rust#>_lbl.clone(),
+      None => None,
+    };
+    if let Some(<#=column_name_rust#>_lbl) = <#=column_name_rust#>_lbl {
+      let arg = {
+        if <#=column_name_rust#>_lbl.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(<#=column_name_rust#>_lbl.len());
+          for item in <#=column_name_rust#>_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }<#
     }
   #><#
     } else if (foreignKey && foreignKey.type === "many2many") {

@@ -180,6 +180,9 @@ pub struct PermitSearch {
   /// 菜单
   #[graphql(name = "menu_id_save_null")]
   pub menu_id_is_null: Option<bool>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl")]
+  pub menu_id_lbl: Option<Vec<String>>,
   /// 编码
   #[graphql(name = "code")]
   pub code: Option<String>,

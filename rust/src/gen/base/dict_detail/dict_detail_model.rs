@@ -218,6 +218,9 @@ pub struct DictDetailSearch {
   /// 系统字典
   #[graphql(name = "dict_id_save_null")]
   pub dict_id_is_null: Option<bool>,
+  /// 系统字典
+  #[graphql(name = "dict_id_lbl")]
+  pub dict_id_lbl: Option<Vec<String>>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
