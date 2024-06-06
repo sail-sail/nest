@@ -118,6 +118,9 @@ async function getWhereQuery(
   if (search?.dictbiz_id_is_null) {
     whereQuery += ` and t.dictbiz_id is null`;
   }
+  if (search?.dictbiz_id_lbl != null) {
+    whereQuery += ` and dictbiz_id_lbl.lbl in ${ args.push(search.dictbiz_id_lbl) }`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }

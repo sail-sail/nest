@@ -736,7 +736,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.domain_ids,
     dialogModel.menu_ids,
   ],

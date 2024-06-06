@@ -640,17 +640,6 @@ async function nextId() {
   return true;
 }
 
-watch(
-  () => [
-    inited,
-  ],
-  () => {
-    if (!inited) {
-      return;
-    }
-  },
-);
-
 /** 快捷键ctrl+shift+回车 */
 async function onSaveAndCopyKeydown(e: KeyboardEvent) {
   e.preventDefault();

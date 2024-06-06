@@ -101,6 +101,9 @@ async function getWhereQuery(
   if (search?.dict_id_is_null) {
     whereQuery += ` and t.dict_id is null`;
   }
+  if (search?.dict_id_lbl != null) {
+    whereQuery += ` and dict_id_lbl.lbl in ${ args.push(search.dict_id_lbl) }`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }

@@ -175,18 +175,26 @@ input UsrSearch {
   role_ids: [RoleId!]
   "所属角色"
   role_ids_is_null: Boolean
+  "所属角色"
+  role_ids_lbl: [String!]
   "所属部门"
   dept_ids: [DeptId!]
   "所属部门"
   dept_ids_is_null: Boolean
+  "所属部门"
+  dept_ids_lbl: [String!]
   "所属组织"
   org_ids: [OrgId!]
   "所属组织"
   org_ids_is_null: Boolean
+  "所属组织"
+  org_ids_lbl: [String!]
   "默认组织"
   default_org_id: [OrgId!]
   "默认组织"
   default_org_id_is_null: Boolean
+  "默认组织"
+  default_org_id_lbl: [String!]
   "启用"
   is_enabled: [Int!]
   "创建人"
