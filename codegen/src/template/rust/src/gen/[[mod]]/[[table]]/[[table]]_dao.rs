@@ -3130,13 +3130,11 @@ async fn _creates(
           sql_values += ",default";
         }
       }
+    } else if let Some(create_usr_id) = input.create_usr_id {
+      sql_values += ",?";
+      args.push(create_usr_id.into());
     } else {
-      if let Some(create_usr_id) = input.create_usr_id {
-        sql_values += ",?";
-        args.push(create_usr_id.into());
-      } else {
-        sql_values += ",default";
-      }
+      sql_values += ",default";
     }<#
     } else if (hasCreateUsrId && hasCreateUsrIdLbl) {
     #>
@@ -3800,9 +3798,13 @@ pub async fn update_by_id(
     ).await?.into();
   }<#
   }
+  #><#
+  if (hasVersion || hasUpdateUsrId || hasUpdateTime) {
   #>
   
-  let silent_mode = get_silent_mode(options.as_ref());
+  let silent_mode = get_silent_mode(options.as_ref());<#
+  }
+  #>
   
   let old_model = find_by_id(
     id.clone(),
@@ -4367,7 +4369,9 @@ pub async fn update_by_id(
   }
   #>
   
-  if field_num > 0 {
+  if field_num > 0 {<#
+    if (hasVersion || hasUpdateUsrId || hasUpdateTime) {
+    #>
     if !silent_mode {<#
       if (hasVersion) {
       #>
@@ -4508,7 +4512,9 @@ pub async fn update_by_id(
       }<#
       }
       #>
+    }<#
     }
+    #>
     
     if sql_fields.ends_with(',') {
       sql_fields.pop();
