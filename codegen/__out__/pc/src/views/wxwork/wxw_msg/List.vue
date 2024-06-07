@@ -23,7 +23,8 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="onSearch"
+      @submit.prevent
+      @keydown.enter="onSearch"
     >
       
       <template v-if="showBuildIn || builtInSearch?.wxw_app_id == null">
@@ -460,7 +461,7 @@
           </template>
           
           <!-- 成员ID -->
-          <template v-else-if="'touser' === col.prop && (showBuildIn || builtInSearch?.touser == null)">
+          <template v-else-if="'touser' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -469,7 +470,7 @@
           </template>
           
           <!-- 标题 -->
-          <template v-else-if="'title' === col.prop && (showBuildIn || builtInSearch?.title == null)">
+          <template v-else-if="'title' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -478,7 +479,7 @@
           </template>
           
           <!-- 描述 -->
-          <template v-else-if="'description' === col.prop && (showBuildIn || builtInSearch?.description == null)">
+          <template v-else-if="'description' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -487,7 +488,7 @@
           </template>
           
           <!-- 按钮文字 -->
-          <template v-else-if="'btntxt' === col.prop && (showBuildIn || builtInSearch?.btntxt == null)">
+          <template v-else-if="'btntxt' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -505,7 +506,7 @@
           </template>
           
           <!-- 错误信息 -->
-          <template v-else-if="'errmsg' === col.prop && (showBuildIn || builtInSearch?.errmsg == null)">
+          <template v-else-if="'errmsg' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -626,16 +627,6 @@ const props = defineProps<{
   wxw_app_id?: string|string[]; // 企微应用
   wxw_app_id_lbl?: string; // 企微应用
   errcode?: string|string[]; // 发送状态
-  touser?: string; // 成员ID
-  touser_like?: string; // 成员ID
-  title?: string; // 标题
-  title_like?: string; // 标题
-  description?: string; // 描述
-  description_like?: string; // 描述
-  btntxt?: string; // 按钮文字
-  btntxt_like?: string; // 按钮文字
-  errmsg?: string; // 错误信息
-  errmsg_like?: string; // 错误信息
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -899,7 +890,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "企微应用",
       prop: "wxw_app_id_lbl",
-      sortBy: "wxw_app_id",
+      sortBy: "wxw_app_id_lbl",
       width: 160,
       align: "left",
       headerAlign: "center",
@@ -1213,7 +1204,7 @@ async function onDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("企微消息")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("企微消息")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1227,7 +1218,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("企微消息")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("企微消息")));
     emit("remove", num);
   }
 }
@@ -1247,7 +1238,7 @@ async function onForceDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("企微消息")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("企微消息")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1258,7 +1249,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("企微消息")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("企微消息")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1279,7 +1270,7 @@ async function onRevertByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("企微消息")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("企微消息")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1292,7 +1283,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("企微消息")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("企微消息")));
     emit("revert", num);
   }
 }

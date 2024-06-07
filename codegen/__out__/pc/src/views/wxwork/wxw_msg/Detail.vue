@@ -66,6 +66,8 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
+        
+        @submit.prevent
       >
         
         <template v-if="(showBuildIn || builtInModel?.wxw_app_id == null)">
@@ -514,7 +516,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("企微消息")));
+    ElMessage.warning(await nsAsync("已经是第一项了"));
   }
 }
 
@@ -593,6 +595,24 @@ async function nextId() {
   );
   return true;
 }
+
+watch(
+  () => [
+    dialogModel.wxw_app_id,
+    dialogModel.errcode,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.wxw_app_id) {
+      dialogModel.wxw_app_id_lbl = "";
+    }
+    if (!dialogModel.errcode) {
+      dialogModel.errcode_lbl = "";
+    }
+  },
+);
 
 async function onDialogOpen() {
 }

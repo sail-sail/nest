@@ -6,7 +6,6 @@ import * as resolver from "./wxw_msg.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxwMsgId
 
-
 type WxwMsgModel {
   "ID"
   id: WxwMsgId!
@@ -92,26 +91,14 @@ input WxwMsgSearch {
   id: WxwMsgId
   "企微应用"
   wxw_app_id: [WxwAppId!]
+  "企微应用"
   wxw_app_id_is_null: Boolean
+  "企微应用"
+  wxw_app_id_lbl: [String!]
   "发送状态"
   errcode: [String!]
-  "成员ID"
-  touser: String
-  touser_like: String
-  "标题"
-  title: String
-  title_like: String
-  "描述"
-  description: String
-  description_like: String
-  "按钮文字"
-  btntxt: String
-  btntxt_like: String
   "发送时间"
   create_time: [NaiveDateTime]
-  "错误信息"
-  errmsg: String
-  errmsg_like: String
 }
 type Query {
   "根据条件查找企微消息总数"
