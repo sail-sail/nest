@@ -30,9 +30,9 @@
     "uuid": "9.0.1"
   },
   "devDependencies": {
-    "@swc/wasm": "1.5.24",
+    "@swc/wasm": "1.5.25",
     "@types/fs-extra": "11.0.4",
-    "@types/node": "20.13.0",
+    "@types/node": "20.14.2",
     "@types/shelljs": "0.8.15",
     "@types/uuid": "9.0.8",
     "ts-node": "10.9.2",

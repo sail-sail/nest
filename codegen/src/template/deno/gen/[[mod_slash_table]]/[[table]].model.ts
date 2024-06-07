@@ -500,7 +500,7 @@ declare global {
     <#=column_name#>_lbl?: String | null;<#
       if (is_nullable) {
     #>
-    <#=column_name#>_save_null?: number | null;<#
+    <#=column_name#>_save_null?: boolean | null;<#
       }
     #><#
       } else if (foreignKey) {
