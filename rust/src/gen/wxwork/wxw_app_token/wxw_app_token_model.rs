@@ -31,7 +31,7 @@ use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "WxwAppTokenModel")]
 pub struct WxwAppTokenModel {
   /// 租户ID
   #[graphql(skip)]
@@ -39,18 +39,25 @@ pub struct WxwAppTokenModel {
   /// ID
   pub id: WxwAppTokenId,
   /// 企微应用
+  #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: WxwAppId,
   /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
   pub wxw_app_id_lbl: String,
   /// 类型corp和contact
+  #[graphql(name = "type")]
   pub r#type: String,
   /// 令牌
+  #[graphql(name = "access_token")]
   pub access_token: String,
   /// 令牌创建时间
+  #[graphql(name = "token_time")]
   pub token_time: Option<chrono::NaiveDateTime>,
   /// 令牌创建时间
+  #[graphql(name = "token_time_lbl")]
   pub token_time_lbl: String,
   /// 令牌超时时间
+  #[graphql(name = "expires_in")]
   pub expires_in: u32,
   /// 是否已删除
   pub is_deleted: u8,
@@ -206,20 +213,31 @@ pub struct WxwAppTokenSearch {
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 企微应用
+  #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: Option<Vec<WxwAppId>>,
   /// 企微应用
+  #[graphql(name = "wxw_app_id_save_null")]
   pub wxw_app_id_is_null: Option<bool>,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
+  pub wxw_app_id_lbl: Option<Vec<String>>,
   /// 类型corp和contact
+  #[graphql(skip)]
   pub r#type: Option<String>,
   /// 类型corp和contact
+  #[graphql(skip)]
   pub type_like: Option<String>,
   /// 令牌
+  #[graphql(skip)]
   pub access_token: Option<String>,
   /// 令牌
+  #[graphql(skip)]
   pub access_token_like: Option<String>,
   /// 令牌创建时间
+  #[graphql(skip)]
   pub token_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 令牌超时时间
+  #[graphql(skip)]
   pub expires_in: Option<[Option<u32>; 2]>,
   /// 创建人
   #[graphql(skip)]
@@ -227,6 +245,9 @@ pub struct WxwAppTokenSearch {
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -236,6 +257,9 @@ pub struct WxwAppTokenSearch {
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -314,28 +338,39 @@ impl std::fmt::Debug for WxwAppTokenSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "WxwAppTokenInput")]
 pub struct WxwAppTokenInput {
   /// ID
   pub id: Option<WxwAppTokenId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 企微应用
+  #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: Option<WxwAppId>,
   /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
   pub wxw_app_id_lbl: Option<String>,
   /// 类型corp和contact
+  #[graphql(name = "type")]
   pub r#type: Option<String>,
   /// 令牌
+  #[graphql(name = "access_token")]
   pub access_token: Option<String>,
   /// 令牌创建时间
+  #[graphql(name = "token_time")]
   pub token_time: Option<chrono::NaiveDateTime>,
   /// 令牌创建时间
+  #[graphql(name = "token_time_lbl")]
   pub token_time_lbl: Option<String>,
+  /// 令牌创建时间
+  #[graphql(name = "token_time_save_null")]
+  pub token_time_save_null: Option<bool>,
   /// 令牌超时时间
+  #[graphql(name = "expires_in")]
   pub expires_in: Option<u32>,
   /// 创建人
   #[graphql(skip)]
@@ -349,6 +384,9 @@ pub struct WxwAppTokenInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -361,6 +399,9 @@ pub struct WxwAppTokenInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<WxwAppTokenModel> for WxwAppTokenInput {
@@ -379,6 +420,7 @@ impl From<WxwAppTokenModel> for WxwAppTokenInput {
       // 令牌创建时间
       token_time: model.token_time,
       token_time_lbl: model.token_time_lbl.into(),
+      token_time_save_null: Some(true),
       // 令牌超时时间
       expires_in: model.expires_in.into(),
       // 创建人
@@ -387,12 +429,14 @@ impl From<WxwAppTokenModel> for WxwAppTokenInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -417,10 +461,14 @@ impl From<WxwAppTokenInput> for WxwAppTokenSearch {
       expires_in: input.expires_in.map(|x| [Some(x), Some(x)]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

@@ -32,7 +32,7 @@ use crate::gen::base::domain::domain_model::DomainId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "WxwAppModel")]
 pub struct WxwAppModel {
   /// 租户ID
   #[graphql(skip)]
@@ -40,30 +40,43 @@ pub struct WxwAppModel {
   /// ID
   pub id: WxwAppId,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 企业ID
+  #[graphql(name = "corpid")]
   pub corpid: String,
   /// 应用ID
+  #[graphql(name = "agentid")]
   pub agentid: String,
   /// 可信域名
+  #[graphql(name = "domain_id")]
   pub domain_id: DomainId,
   /// 可信域名
+  #[graphql(name = "domain_id_lbl")]
   pub domain_id_lbl: String,
   /// 应用密钥
+  #[graphql(name = "corpsecret")]
   pub corpsecret: String,
   /// 通讯录密钥
+  #[graphql(name = "contactsecret")]
   pub contactsecret: String,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -247,30 +260,46 @@ pub struct WxwAppSearch {
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 企业ID
+  #[graphql(name = "corpid")]
   pub corpid: Option<String>,
   /// 企业ID
+  #[graphql(name = "corpid_like")]
   pub corpid_like: Option<String>,
   /// 应用ID
+  #[graphql(name = "agentid")]
   pub agentid: Option<String>,
   /// 应用ID
+  #[graphql(name = "agentid_like")]
   pub agentid_like: Option<String>,
   /// 可信域名
+  #[graphql(name = "domain_id")]
   pub domain_id: Option<Vec<DomainId>>,
   /// 可信域名
+  #[graphql(name = "domain_id_save_null")]
   pub domain_id_is_null: Option<bool>,
+  /// 可信域名
+  #[graphql(name = "domain_id_lbl")]
+  pub domain_id_lbl: Option<Vec<String>>,
   /// 锁定
+  #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
+  #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
+  #[graphql(skip)]
   pub rem: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -278,6 +307,9 @@ pub struct WxwAppSearch {
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -287,6 +319,9 @@ pub struct WxwAppSearch {
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -383,40 +418,54 @@ impl std::fmt::Debug for WxwAppSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "WxwAppInput")]
 pub struct WxwAppInput {
   /// ID
   pub id: Option<WxwAppId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 企业ID
+  #[graphql(name = "corpid")]
   pub corpid: Option<String>,
   /// 应用ID
+  #[graphql(name = "agentid")]
   pub agentid: Option<String>,
   /// 可信域名
+  #[graphql(name = "domain_id")]
   pub domain_id: Option<DomainId>,
   /// 可信域名
+  #[graphql(name = "domain_id_lbl")]
   pub domain_id_lbl: Option<String>,
   /// 应用密钥
+  #[graphql(name = "corpsecret")]
   pub corpsecret: Option<String>,
   /// 通讯录密钥
+  #[graphql(name = "contactsecret")]
   pub contactsecret: Option<String>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: Option<String>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: Option<String>,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -430,6 +479,9 @@ pub struct WxwAppInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -442,6 +494,9 @@ pub struct WxwAppInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<WxwAppModel> for WxwAppInput {
@@ -479,12 +534,14 @@ impl From<WxwAppModel> for WxwAppInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -515,10 +572,14 @@ impl From<WxwAppInput> for WxwAppSearch {
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

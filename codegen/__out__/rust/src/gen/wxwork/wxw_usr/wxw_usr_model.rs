@@ -30,7 +30,7 @@ use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "WxwUsrModel")]
 pub struct WxwUsrModel {
   /// 租户ID
   #[graphql(skip)]
@@ -38,28 +38,40 @@ pub struct WxwUsrModel {
   /// ID
   pub id: WxwUsrId,
   /// 姓名
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 用户ID
+  #[graphql(name = "userid")]
   pub userid: String,
   /// 手机号
+  #[graphql(skip)]
   pub mobile: String,
   /// 性别
+  #[graphql(skip)]
   pub gender: String,
   /// 邮箱
+  #[graphql(skip)]
   pub email: String,
   /// 企业邮箱
+  #[graphql(skip)]
   pub biz_email: String,
   /// 直属上级
+  #[graphql(skip)]
   pub direct_leader: String,
   /// 职位
+  #[graphql(skip)]
   pub position: String,
   /// 头像
+  #[graphql(skip)]
   pub avatar: String,
   /// 头像缩略图
+  #[graphql(skip)]
   pub thumb_avatar: String,
   /// 个人二维码
+  #[graphql(skip)]
   pub qr_code: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -247,12 +259,16 @@ pub struct WxwUsrSearch {
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 姓名
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 姓名
+  #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 用户ID
+  #[graphql(skip)]
   pub userid: Option<String>,
   /// 用户ID
+  #[graphql(skip)]
   pub userid_like: Option<String>,
   /// 手机号
   #[graphql(skip)]
@@ -309,8 +325,10 @@ pub struct WxwUsrSearch {
   #[graphql(skip)]
   pub qr_code_like: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -318,6 +336,9 @@ pub struct WxwUsrSearch {
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -327,6 +348,9 @@ pub struct WxwUsrSearch {
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -460,18 +484,21 @@ impl std::fmt::Debug for WxwUsrSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "WxwUsrInput")]
 pub struct WxwUsrInput {
   /// ID
   pub id: Option<WxwUsrId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 姓名
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 用户ID
+  #[graphql(name = "userid")]
   pub userid: Option<String>,
   /// 手机号
   #[graphql(skip)]
@@ -501,6 +528,7 @@ pub struct WxwUsrInput {
   #[graphql(skip)]
   pub qr_code: Option<String>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -514,6 +542,9 @@ pub struct WxwUsrInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -526,6 +557,9 @@ pub struct WxwUsrInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<WxwUsrModel> for WxwUsrInput {
@@ -564,12 +598,14 @@ impl From<WxwUsrModel> for WxwUsrInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -608,10 +644,14 @@ impl From<WxwUsrInput> for WxwUsrSearch {
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

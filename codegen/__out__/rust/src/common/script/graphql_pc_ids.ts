@@ -124,26 +124,26 @@ export function getScalars() {
     
     // 企微应用
     "WxwAppId": {
-      "input": `import("@/typings/ids.ts").WxwAppId`,
-      "output": `import("@/typings/ids.ts").WxwAppId`,
+      "input": "WxwAppId",
+      "output": "WxwAppId",
     },
     
     // 企微应用接口凭据
     "WxwAppTokenId": {
-      "input": `import("@/typings/ids.ts").WxwAppTokenId`,
-      "output": `import("@/typings/ids.ts").WxwAppTokenId`,
+      "input": "WxwAppTokenId",
+      "output": "WxwAppTokenId",
     },
     
     // 企微消息
     "WxwMsgId": {
-      "input": `import("@/typings/ids.ts").WxwMsgId`,
-      "output": `import("@/typings/ids.ts").WxwMsgId`,
+      "input": "WxwMsgId",
+      "output": "WxwMsgId",
     },
     
     // 企微用户
     "WxwUsrId": {
-      "input": `import("@/typings/ids.ts").WxwUsrId`,
-      "output": `import("@/typings/ids.ts").WxwUsrId`,
+      "input": "WxwUsrId",
+      "output": "WxwUsrId",
     },
     
   };
