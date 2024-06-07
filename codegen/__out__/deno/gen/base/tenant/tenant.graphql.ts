@@ -6,7 +6,6 @@ import * as resolver from "./tenant.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar TenantId
 
-
 type TenantModel {
   "ID"
   id: TenantId!
@@ -131,29 +130,30 @@ input TenantSearch {
   lbl_like: String
   "所属域名"
   domain_ids: [DomainId!]
+  "所属域名"
   domain_ids_is_null: Boolean
+  "所属域名"
+  domain_ids_lbl: [String!]
   "菜单权限"
   menu_ids: [MenuId!]
+  "菜单权限"
   menu_ids_is_null: Boolean
-  "锁定"
-  is_locked: [Int!]
+  "菜单权限"
+  menu_ids_lbl: [String!]
   "启用"
   is_enabled: [Int!]
-  "排序"
-  order_by: [Int]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
+  "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
+  "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找租户总数"

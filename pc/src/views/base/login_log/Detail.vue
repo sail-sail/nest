@@ -66,6 +66,8 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
+        
+        @submit.prevent
       >
         
         <template v-if="(showBuildIn || builtInModel?.type == null)">
@@ -503,7 +505,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("登录日志")));
+    ElMessage.warning(await nsAsync("已经是第一项了"));
   }
 }
 
@@ -582,6 +584,24 @@ async function nextId() {
   );
   return true;
 }
+
+watch(
+  () => [
+    dialogModel.type,
+    dialogModel.is_succ,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.type) {
+      dialogModel.type_lbl = "";
+    }
+    if (!dialogModel.is_succ) {
+      dialogModel.is_succ_lbl = "";
+    }
+  },
+);
 
 async function onDialogOpen() {
 }

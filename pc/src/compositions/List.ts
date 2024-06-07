@@ -6,11 +6,8 @@ import type {
   MaybeRefOrGetter,
 } from "vue";
 
-import dayjs from "dayjs";
-
 import {
   subscribe,
-  publish,
   unSubscribe,
 } from "@/compositions/websocket";
 
@@ -1066,63 +1063,71 @@ export function useSelectOne<T>(
 }
 
 export function useTableColumns<T>(
-  _tableColumns: any,
+  _tableColumns: Ref<ColumnType[]>,
   opt?: {
+    routePath?: MaybeRefOrGetter<string>,
     /**
      * 表格列存储的唯一编码, 同一路由下必须唯一
      * @type {string}
      */
-    persistKey?: string,
+    persistKey?: MaybeRefOrGetter<string>,
   },
 ) {
-  const tableColumns: Ref<ColumnType[]> = _tableColumns;
   const route = useRoute();
   
-  const routePath = route.path;
+  let tableColumns: Ref<ColumnType[]> = _tableColumns;
   
+  let routePath = "";
+  let persistKey = "";
+      
   let tableColumn0s = [ ...tableColumns.value ];
+      
+  let tableColumn1s: ColumnType[] | undefined = undefined;
   
-  let tableColumn1s: ColumnType[]|undefined = undefined;
-  
-  const persistKey = `TableColumns-${ routePath }--${ opt?.persistKey }`;
-  
-  if (opt?.persistKey) {
-    try {
-      const str = window.localStorage.getItem(persistKey);
-      if (str) {
-        tableColumn1s = JSON.parse(str);
-      }
-      if (tableColumn1s) {
-        let hasChg = false;
-        for (let i = 0; i < tableColumn0s.length; i++) {
-          const col0 = tableColumn0s[i];
-          if (tableColumn1s.some((col1) => col1.prop === col0.prop)) continue;
-          tableColumn1s.splice(i, 0, col0);
-          hasChg = true;
-        }
-        const rmvIdxs: number[] = [ ];
-        for (let i = 0; i < tableColumn1s.length; i++) {
-          const col1 = tableColumn1s[i];
-          if (tableColumn0s.some((col0) => col1.prop === col0.prop)) continue;
-          rmvIdxs.push(i);
-          hasChg = true;
-        }
-        for (let i = 0; i < rmvIdxs.length; i++) {
-          const rmvIdx = rmvIdxs[i];
-          tableColumn1s.splice(rmvIdx, 1);
-        }
-        if (hasChg) {
-          window.localStorage.setItem(persistKey, JSON.stringify(tableColumn1s));
-        }
-      }
-    } catch (err) {
-      console.error(err);
-      window.localStorage.removeItem(persistKey);
-      tableColumn1s = undefined;
+  function initColumns(
+    columns?: ColumnType[],
+  ) {
+    
+    if (columns) {
+      tableColumn0s = [ ...columns ];
     }
+    
+    routePath = toValue(opt?.routePath) || "";
+    if (!routePath) {
+      routePath = route?.path;
+    }
+    
+    const persistKey0 = toValue(opt?.persistKey) || "";
+    if (persistKey0) {
+      persistKey = `TableColumns-${ routePath }--${ persistKey0 }`;
+      try {
+        const str = window.localStorage.getItem(persistKey);
+        if (str) {
+          tableColumn1s = JSON.parse(str);
+        } else {
+          tableColumn1s = undefined;
+        }
+      } catch (err) {
+        console.error(err);
+        window.localStorage.removeItem(persistKey);
+        tableColumn1s = undefined;
+      }
+    }
+    tableColumns.value = tableColumn1s || [ ...tableColumn0s ];
   }
   
-  tableColumns.value = tableColumn1s || [ ...tableColumn0s ];
+  watch(
+    () => [
+      toValue(opt?.routePath),
+      toValue(opt?.persistKey),
+    ],
+    () => {
+      initColumns();
+    },
+    {
+      immediate: true,
+    },
+  );
   
   async function storeColumns(tableColumns2?: any, force?: boolean) {
     if (tableColumns2) {
@@ -1161,6 +1166,7 @@ export function useTableColumns<T>(
   }
   
   return $$({
+    initColumns,
     headerDragend,
     resetColumns,
     storeColumns,

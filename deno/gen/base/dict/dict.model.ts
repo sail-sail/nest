@@ -3,6 +3,8 @@ import type {
   DictModel as DictModelType,
   DictSearch as DictSearchType,
   DictFieldComment as DictFieldCommentType,
+  // 数据类型
+  DictType,
 } from "/gen/types.ts";
 
 declare const dictId: unique symbol;
@@ -12,6 +14,19 @@ declare global {
   type DictId = Distinct<string, typeof dictId>;
 
   interface DictSearch extends DictSearchType {
+    /** 数据类型 */
+    type?: DictType[];
+    /** 锁定 */
+    is_locked?: number[];
+    /** 排序 */
+    order_by?: number[];
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
   }
 
   interface DictModel extends DictModelType {
@@ -29,15 +44,17 @@ declare global {
 
   interface DictInput extends DictInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
     create_time_lbl?: string | null;
+    create_time_save_null?: boolean | null;
     update_usr_id?: UsrId | null;
     update_usr_id_lbl?: string | null;
     update_time?: string | null;
     update_time_lbl?: string | null;
+    update_time_save_null?: boolean | null;
     is_deleted?: number | null;
   }
 

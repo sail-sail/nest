@@ -1,9 +1,15 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
-use anyhow::{Result,anyhow};
+use anyhow::{Result, anyhow};
 
-use crate::common::context::Options;
+#[allow(unused_imports)]
+use crate::common::context::{
+  Options,
+  get_auth_id_err,
+  get_auth_org_id,
+};
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
@@ -11,8 +17,33 @@ use crate::src::base::i18n::i18n_dao::ns;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 
+use crate::gen::base::usr::usr_dao::{
+  find_by_id as find_by_id_usr,
+  validate_option as validate_option_usr,
+};
+
 use super::background_task_model::*;
 use super::background_task_dao;
+
+#[allow(unused_variables)]
+async fn set_search_query(
+  search: &mut BackgroundTaskSearch,
+) -> Result<()> {
+  
+  let usr_id = get_auth_id_err()?;
+  let usr_model = validate_option_usr(
+    find_by_id_usr(
+      usr_id.clone(),
+      None,
+    ).await?,
+  ).await?;
+  let username = usr_model.username.clone();
+  
+  if username != "admin" {
+    search.create_usr_id = Some(vec![usr_id]);
+  }
+  Ok(())
+}
 
 /// 根据搜索条件和分页查找后台任务列表
 pub async fn find_all(
@@ -22,8 +53,12 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<BackgroundTaskModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = background_task_dao::find_all(
-    search,
+    Some(search),
     page,
     sort,
     options,
@@ -38,8 +73,12 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = background_task_dao::find_count(
-    search,
+    Some(search),
     options,
   ).await?;
   
@@ -53,8 +92,12 @@ pub async fn find_one(
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let model = background_task_dao::find_one(
-    search,
+    Some(search),
     sort,
     options,
   ).await?;

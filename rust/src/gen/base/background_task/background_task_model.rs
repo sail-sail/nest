@@ -30,7 +30,7 @@ use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "BackgroundTaskModel")]
 pub struct BackgroundTaskModel {
   /// 租户ID
   #[graphql(skip)]
@@ -38,28 +38,40 @@ pub struct BackgroundTaskModel {
   /// ID
   pub id: BackgroundTaskId,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 状态
+  #[graphql(name = "state")]
   pub state: BackgroundTaskState,
   /// 状态
+  #[graphql(name = "state_lbl")]
   pub state_lbl: String,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: BackgroundTaskType,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: String,
   /// 执行结果
+  #[graphql(name = "result")]
   pub result: String,
   /// 错误信息
+  #[graphql(name = "err_msg")]
   pub err_msg: String,
   /// 开始时间
+  #[graphql(name = "begin_time")]
   pub begin_time: Option<chrono::NaiveDateTime>,
   /// 开始时间
+  #[graphql(name = "begin_time_lbl")]
   pub begin_time_lbl: String,
   /// 结束时间
+  #[graphql(name = "end_time")]
   pub end_time: Option<chrono::NaiveDateTime>,
   /// 结束时间
+  #[graphql(name = "end_time_lbl")]
   pub end_time_lbl: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -224,40 +236,64 @@ pub struct BackgroundTaskSearch {
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 状态
+  #[graphql(name = "state")]
   pub state: Option<Vec<BackgroundTaskState>>,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: Option<Vec<BackgroundTaskType>>,
   /// 执行结果
+  #[graphql(skip)]
   pub result: Option<String>,
   /// 执行结果
+  #[graphql(skip)]
   pub result_like: Option<String>,
   /// 错误信息
+  #[graphql(skip)]
   pub err_msg: Option<String>,
   /// 错误信息
+  #[graphql(skip)]
   pub err_msg_like: Option<String>,
   /// 开始时间
+  #[graphql(name = "begin_time")]
   pub begin_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 结束时间
+  #[graphql(skip)]
   pub end_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 备注
+  #[graphql(skip)]
   pub rem: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
+  #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
+  #[graphql(name = "update_usr_id_save_null")]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
@@ -349,38 +385,57 @@ impl std::fmt::Debug for BackgroundTaskSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "BackgroundTaskInput")]
 pub struct BackgroundTaskInput {
   /// ID
   pub id: Option<BackgroundTaskId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 状态
+  #[graphql(name = "state")]
   pub state: Option<BackgroundTaskState>,
   /// 状态
+  #[graphql(name = "state_lbl")]
   pub state_lbl: Option<String>,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: Option<BackgroundTaskType>,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: Option<String>,
   /// 执行结果
+  #[graphql(name = "result")]
   pub result: Option<String>,
   /// 错误信息
+  #[graphql(name = "err_msg")]
   pub err_msg: Option<String>,
   /// 开始时间
+  #[graphql(name = "begin_time")]
   pub begin_time: Option<chrono::NaiveDateTime>,
   /// 开始时间
+  #[graphql(name = "begin_time_lbl")]
   pub begin_time_lbl: Option<String>,
+  /// 开始时间
+  #[graphql(name = "begin_time_save_null")]
+  pub begin_time_save_null: Option<bool>,
   /// 结束时间
+  #[graphql(name = "end_time")]
   pub end_time: Option<chrono::NaiveDateTime>,
   /// 结束时间
+  #[graphql(name = "end_time_lbl")]
   pub end_time_lbl: Option<String>,
+  /// 结束时间
+  #[graphql(name = "end_time_save_null")]
+  pub end_time_save_null: Option<bool>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -394,6 +449,9 @@ pub struct BackgroundTaskInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -406,6 +464,9 @@ pub struct BackgroundTaskInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<BackgroundTaskModel> for BackgroundTaskInput {
@@ -429,9 +490,11 @@ impl From<BackgroundTaskModel> for BackgroundTaskInput {
       // 开始时间
       begin_time: model.begin_time,
       begin_time_lbl: model.begin_time_lbl.into(),
+      begin_time_save_null: Some(true),
       // 结束时间
       end_time: model.end_time,
       end_time_lbl: model.end_time_lbl.into(),
+      end_time_save_null: Some(true),
       // 备注
       rem: model.rem.into(),
       // 创建人
@@ -440,12 +503,14 @@ impl From<BackgroundTaskModel> for BackgroundTaskInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -476,10 +541,14 @@ impl From<BackgroundTaskInput> for BackgroundTaskSearch {
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

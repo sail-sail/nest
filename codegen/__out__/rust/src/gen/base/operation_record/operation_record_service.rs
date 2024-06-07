@@ -1,9 +1,15 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
-use anyhow::{Result,anyhow};
+use anyhow::{Result, anyhow};
 
-use crate::common::context::Options;
+#[allow(unused_imports)]
+use crate::common::context::{
+  Options,
+  get_auth_id_err,
+  get_auth_org_id,
+};
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
@@ -14,6 +20,13 @@ use crate::gen::base::tenant::tenant_model::TenantId;
 use super::operation_record_model::*;
 use super::operation_record_dao;
 
+#[allow(unused_variables)]
+async fn set_search_query(
+  search: &mut OperationRecordSearch,
+) -> Result<()> {
+  Ok(())
+}
+
 /// 根据搜索条件和分页查找操作记录列表
 pub async fn find_all(
   search: Option<OperationRecordSearch>,
@@ -22,8 +35,12 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<OperationRecordModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = operation_record_dao::find_all(
-    search,
+    Some(search),
     page,
     sort,
     options,
@@ -38,8 +55,12 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = operation_record_dao::find_count(
-    search,
+    Some(search),
     options,
   ).await?;
   
@@ -53,8 +74,12 @@ pub async fn find_one(
   options: Option<Options>,
 ) -> Result<Option<OperationRecordModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let model = operation_record_dao::find_one(
-    search,
+    Some(search),
     sort,
     options,
   ).await?;

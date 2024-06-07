@@ -23,7 +23,8 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="onSearch"
+      @submit.prevent
+      @keydown.enter="onSearch"
     >
       
       <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
@@ -527,7 +528,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -559,7 +560,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -581,8 +582,17 @@
             </el-table-column>
           </template>
           
+          <!-- 组织 -->
+          <template v-else-if="'org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.org_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -600,7 +610,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -618,7 +628,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -754,11 +764,9 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   usr_ids?: string|string[]; // 部门负责人
   usr_ids_lbl?: string[]; // 部门负责人
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
+  org_id?: string|string[]; // 组织
+  org_id_lbl?: string; // 组织
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -773,11 +781,10 @@ const builtInSearchType: { [key: string]: string } = {
   parent_id_lbl: "string[]",
   usr_ids: "string[]",
   usr_ids_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
+  org_id: "string[]",
+  org_id_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1000,7 +1007,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "父部门",
       prop: "parent_id_lbl",
-      sortBy: "parent_id",
+      sortBy: "parent_id_lbl",
       width: 180,
       align: "left",
       headerAlign: "center",
@@ -1019,7 +1026,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "部门负责人",
       prop: "usr_ids_lbl",
-      sortBy: "usr_ids",
+      sortBy: "usr_ids_lbl",
       width: 200,
       align: "center",
       headerAlign: "center",
@@ -1053,6 +1060,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
+      label: "组织",
+      prop: "org_id_lbl",
+      sortBy: "org_id_lbl",
+      width: 280,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "备注",
       prop: "rem",
       width: 280,
@@ -1063,7 +1079,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1082,7 +1098,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1376,6 +1392,7 @@ async function onImportExcel() {
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
+    [ await nAsync("组织") ]: "org_id_lbl",
     [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1404,6 +1421,7 @@ async function onImportExcel() {
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
+          "org_id_lbl": "string",
           "rem": "string",
         },
       },
@@ -1598,7 +1616,7 @@ async function onDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("部门")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("部门")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1612,7 +1630,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("部门")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("部门")));
     emit("remove", num);
   }
 }
@@ -1632,7 +1650,7 @@ async function onForceDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("部门")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("部门")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1643,7 +1661,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("部门")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("部门")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1673,9 +1691,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} 个 {1} 成功", num, await nsAsync("部门"));
+      msg = await nsAsync("启用 {0} {1} 成功", num, await nsAsync("部门"));
     } else {
-      msg = await nsAsync("禁用 {0} 个 {1} 成功", num, await nsAsync("部门"));
+      msg = await nsAsync("禁用 {0} {1} 成功", num, await nsAsync("部门"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1707,9 +1725,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} 个 {1} 成功", num, await nsAsync("部门"));
+      msg = await nsAsync("锁定 {0} {1} 成功", num, await nsAsync("部门"));
     } else {
-      msg = await nsAsync("解锁 {0} 个 {1} 成功", num, await nsAsync("部门"));
+      msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("部门"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1732,7 +1750,7 @@ async function onRevertByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("部门")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("部门")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1745,7 +1763,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("部门")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("部门")));
     emit("revert", num);
   }
 }
@@ -1759,6 +1777,7 @@ async function initI18nsEfc() {
     "锁定",
     "启用",
     "排序",
+    "组织",
     "备注",
     "创建人",
     "创建时间",

@@ -29,7 +29,7 @@ use crate::gen::base::menu::menu_model::MenuId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DataPermitModel")]
 pub struct DataPermitModel {
   /// 系统字段
   #[graphql(skip)]
@@ -37,18 +37,25 @@ pub struct DataPermitModel {
   /// ID
   pub id: DataPermitId,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: MenuId,
   /// 菜单
+  #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: String,
   /// 范围
+  #[graphql(name = "scope")]
   pub scope: DataPermitScope,
   /// 范围
+  #[graphql(name = "scope_lbl")]
   pub scope_lbl: String,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: DataPermitType,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -182,28 +189,49 @@ pub struct DataPermitSearch {
   pub ids: Option<Vec<DataPermitId>>,
   pub is_deleted: Option<u8>,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: Option<Vec<MenuId>>,
   /// 菜单
+  #[graphql(name = "menu_id_save_null")]
   pub menu_id_is_null: Option<bool>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl")]
+  pub menu_id_lbl: Option<Vec<String>>,
   /// 范围
+  #[graphql(name = "scope")]
   pub scope: Option<Vec<DataPermitScope>>,
   /// 类型
+  #[graphql(skip)]
   pub r#type: Option<Vec<DataPermitType>>,
   /// 备注
+  #[graphql(skip)]
   pub rem: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
+  #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
+  #[graphql(name = "update_usr_id_save_null")]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
@@ -270,28 +298,36 @@ impl std::fmt::Debug for DataPermitSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DataPermitInput")]
 pub struct DataPermitInput {
   /// ID
   pub id: Option<DataPermitId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
   #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: Option<MenuId>,
   /// 菜单
+  #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: Option<String>,
   /// 范围
+  #[graphql(name = "scope")]
   pub scope: Option<DataPermitScope>,
   /// 范围
+  #[graphql(name = "scope_lbl")]
   pub scope_lbl: Option<String>,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: Option<DataPermitType>,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: Option<String>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -305,6 +341,9 @@ pub struct DataPermitInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -317,6 +356,9 @@ pub struct DataPermitInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<DataPermitModel> for DataPermitInput {
@@ -342,12 +384,14 @@ impl From<DataPermitModel> for DataPermitInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -368,10 +412,14 @@ impl From<DataPermitInput> for DataPermitSearch {
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

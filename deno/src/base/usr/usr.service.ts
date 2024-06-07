@@ -89,12 +89,12 @@ export async function login(
     }
   }
   const password2 = await getPassword(password);
-  const model = await findLoginUsr(
+  const usr_model = await findLoginUsr(
     username,
     password2,
     tenant_id,
   );
-  if (!model || !model.id) {
+  if (!usr_model || !usr_model.id) {
     await createLoginLog({
       type: LoginLogType.Account,
       username,
@@ -110,19 +110,19 @@ export async function login(
     ip,
     is_succ: 1,
     tenant_id,
-    create_usr_id: model.id,
+    create_usr_id: usr_model.id,
   });
-  const usr_id = model.id;
+  const usr_id = usr_model.id;
   if (org_id === null) {
     org_id = undefined;
   }
-  const org_ids = await getOrgIdsById(
-    model.id,
-  );
   if (!org_id) {
-    org_id = model.default_org_id || org_ids[0];
+    org_id = usr_model.default_org_id;
   }
   if (org_id) {
+    const org_ids = await getOrgIdsById(
+      usr_model.id,
+    );
     if (!org_ids.includes(org_id)) {
       org_id = undefined;
     }
@@ -130,7 +130,7 @@ export async function login(
   const {
     authorization,
   } = await createToken({
-    id: model.id,
+    id: usr_model.id,
     org_id,
     tenant_id,
     lang,

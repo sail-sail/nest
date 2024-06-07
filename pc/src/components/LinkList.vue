@@ -24,7 +24,6 @@
       <template #reference>
         <el-tag
           type="info"
-          style="margin: 1px;"
           :disable-transitions="true"
           un-cursor-pointer
           @click="() => collapseTags = false"
@@ -42,7 +41,6 @@
           v-for="item in modelValue.slice(maxSize)"
           :key="item"
           type="info"
-          :style="{ margin: '1px' }"
           :disable-transitions="true"
         >
           {{ item }}
@@ -55,7 +53,6 @@
       v-for="item in modelValue"
       :key="item"
       type="info"
-      :style="{ margin: '1px' }"
       :disable-transitions="true"
     >
       {{ item }}

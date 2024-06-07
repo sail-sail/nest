@@ -5,7 +5,65 @@ import {
   QueryArgs,
 } from "/lib/context.ts";
 
-import * as authDao from "/lib/auth/auth.dao.ts";
+import {
+  createToken,
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
+// usr
+import {
+  findById as findUsrById,
+  validateOption as validateOptionUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
+/** 根据 UsrId 获取 token, 用于内部登录 */
+export async function getTokenByUsrId(
+  usr_id: UsrId,
+  tenant_id?: TenantId,
+  lang = "zh_CN",
+  org_id?: OrgId | null,
+) {
+  const usr_model = await validateOptionUsr(
+    await findUsrById(usr_id),
+  );
+  const username = usr_model.username;
+  
+  if (!tenant_id) {
+    tenant_id = usr_model.tenant_id;
+  }
+  
+  if (org_id === null) {
+    org_id = undefined;
+  }
+  const org_ids = await getOrgIdsById(
+    usr_model.id,
+  );
+  if (!org_id) {
+    org_id = usr_model.default_org_id;
+  }
+  if (org_id) {
+    if (!org_ids.includes(org_id)) {
+      org_id = undefined;
+    }
+  }
+  const {
+    authorization,
+  } = await createToken({
+    id: usr_model.id,
+    org_id,
+    tenant_id,
+    lang,
+  });
+  
+  return {
+    usr_id,
+    username,
+    tenant_id,
+    authorization,
+    org_id,
+    lang,
+  };
+}
 
 /**
  * 返回当前登录的用户
@@ -45,15 +103,7 @@ export async function getOrgIdsById(
   id: UsrId,
 ) {
   const args = new QueryArgs();
-  const sql = /*sql*/`
-    select
-      t.org_id
-    from
-      base_usr_org t
-    where
-      t.is_deleted = 0
-      and t.usr_id = ${ args.push(id) }
-  `;
+  const sql = `select t.org_id from base_usr_org t where t.is_deleted = 0 and t.usr_id = ${ args.push(id) }`;
   const result = await query<{
     org_id: OrgId,
   }>(sql, args);
@@ -63,7 +113,7 @@ export async function getOrgIdsById(
 export async function getTenant_idByWx_usr(): Promise<TenantId | undefined> {
   const context = useContext();
   const notVerifyToken = context.notVerifyToken;
-  const authModel = await authDao.getAuthModel(notVerifyToken);
+  const authModel = await getAuthModel(notVerifyToken);
   if (!authModel) {
     return;
   }
@@ -106,7 +156,7 @@ export async function getTenant_id(
 ): Promise<TenantId | undefined> {
   const context = useContext();
   const notVerifyToken = context.notVerifyToken;
-  const authModel = await authDao.getAuthModel(notVerifyToken);
+  const authModel = await getAuthModel(notVerifyToken);
   let tenant_id = authModel?.tenant_id;
   if (!tenant_id && usr_id) {
     const args = new QueryArgs();

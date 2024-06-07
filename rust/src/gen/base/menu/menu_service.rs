@@ -1,9 +1,15 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
-use anyhow::{Result,anyhow};
+use anyhow::{Result, anyhow};
 
-use crate::common::context::Options;
+#[allow(unused_imports)]
+use crate::common::context::{
+  Options,
+  get_auth_id_err,
+  get_auth_org_id,
+};
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
@@ -11,6 +17,13 @@ use crate::src::base::i18n::i18n_dao::ns;
 
 use super::menu_model::*;
 use super::menu_dao;
+
+#[allow(unused_variables)]
+async fn set_search_query(
+  search: &mut MenuSearch,
+) -> Result<()> {
+  Ok(())
+}
 
 /// 根据搜索条件和分页查找菜单列表
 pub async fn find_all(
@@ -20,8 +33,12 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = menu_dao::find_all(
-    search,
+    Some(search),
     page,
     sort,
     options,
@@ -36,8 +53,12 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = menu_dao::find_count(
-    search,
+    Some(search),
     options,
   ).await?;
   
@@ -51,8 +72,12 @@ pub async fn find_one(
   options: Option<Options>,
 ) -> Result<Option<MenuModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let model = menu_dao::find_one(
-    search,
+    Some(search),
     sort,
     options,
   ).await?;

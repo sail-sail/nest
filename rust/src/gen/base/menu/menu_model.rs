@@ -28,31 +28,42 @@ use crate::common::context::ArgType;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "MenuModel")]
 pub struct MenuModel {
   /// ID
   pub id: MenuId,
   /// 父菜单
+  #[graphql(name = "parent_id")]
   pub parent_id: MenuId,
   /// 父菜单
+  #[graphql(name = "parent_id_lbl")]
   pub parent_id_lbl: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 路由
+  #[graphql(name = "route_path")]
   pub route_path: String,
   /// 参数
+  #[graphql(name = "route_query")]
   pub route_query: String,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -203,42 +214,70 @@ pub struct MenuSearch {
   pub ids: Option<Vec<MenuId>>,
   pub is_deleted: Option<u8>,
   /// 父菜单
+  #[graphql(name = "parent_id")]
   pub parent_id: Option<Vec<MenuId>>,
   /// 父菜单
+  #[graphql(name = "parent_id_save_null")]
   pub parent_id_is_null: Option<bool>,
+  /// 父菜单
+  #[graphql(name = "parent_id_lbl")]
+  pub parent_id_lbl: Option<Vec<String>>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 路由
+  #[graphql(skip)]
   pub route_path: Option<String>,
   /// 路由
+  #[graphql(skip)]
   pub route_path_like: Option<String>,
   /// 参数
+  #[graphql(skip)]
   pub route_query: Option<String>,
   /// 参数
+  #[graphql(skip)]
   pub route_query_like: Option<String>,
   /// 锁定
+  #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
+  #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
+  #[graphql(skip)]
   pub rem: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
+  #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
+  #[graphql(name = "update_usr_id_save_null")]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
@@ -330,33 +369,45 @@ impl std::fmt::Debug for MenuSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "MenuInput")]
 pub struct MenuInput {
   /// ID
   pub id: Option<MenuId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 父菜单
+  #[graphql(name = "parent_id")]
   pub parent_id: Option<MenuId>,
   /// 父菜单
+  #[graphql(name = "parent_id_lbl")]
   pub parent_id_lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 路由
+  #[graphql(name = "route_path")]
   pub route_path: Option<String>,
   /// 参数
+  #[graphql(name = "route_query")]
   pub route_query: Option<String>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: Option<String>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: Option<String>,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -370,6 +421,9 @@ pub struct MenuInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -382,6 +436,9 @@ pub struct MenuInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<MenuModel> for MenuInput {
@@ -414,12 +471,14 @@ impl From<MenuModel> for MenuInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -448,10 +507,14 @@ impl From<MenuInput> for MenuSearch {
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

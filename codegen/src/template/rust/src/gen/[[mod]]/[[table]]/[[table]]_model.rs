@@ -6,7 +6,6 @@ const tableUP = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const hasTenantId = columns.some((column) => column.COLUMN_NAME === "tenant_id");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
@@ -100,7 +99,7 @@ for (let i = 0; i < columns.length; i++) {
   if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   const table_comment = column.COLUMN_COMMENT;
-  let is_nullable = column.IS_NULLABLE === "YES";
+  const is_nullable = column.IS_NULLABLE === "YES";
   const foreignKey = column.foreignKey;
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -146,14 +145,6 @@ modelIds.push("TenantId");
 #><#
 }
 #><#
-if (hasOrgId && !modelIds.includes("OrgId")) {
-#>
-
-use crate::gen::base::org::org_model::OrgId;<#
-modelIds.push("OrgId");
-#><#
-}
-#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
@@ -161,7 +152,6 @@ for (let i = 0; i < columns.length; i++) {
   const column_name = column.COLUMN_NAME;
   if (
     column_name === "tenant_id" ||
-    column_name === "org_id" ||
     column_name === "is_sys" ||
     column_name === "is_deleted" ||
     column_name === "is_hidden"
@@ -196,24 +186,13 @@ use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model:
 #>
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case"<#
-if (table === "i18n") {
-#>, name = "<#=tableUP#>Model"<#
-}
-#>)]
+#[graphql(rename_fields = "snake_case", name = "<#=tableUP#>Model")]
 pub struct <#=tableUP#>Model {<#
   if (hasTenantId) {
   #>
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: TenantId,<#
-  }
-  #><#
-  if (hasOrgId) {
-  #>
-  /// 组织ID
-  #[graphql(skip)]
-  pub org_id: OrgId,<#
   }
   #><#
   if (hasIsSys) {
@@ -236,7 +215,6 @@ pub struct <#=tableUP#>Model {<#
     const column_name = column.COLUMN_NAME;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden" ||
@@ -264,13 +242,26 @@ pub struct <#=tableUP#>Model {<#
         process.exit(1);
       }
     }
-    const modelLabel = column.modelLabel;
+    let modelLabel = column.modelLabel;
     let cascade_fields = [ ];
     if (foreignKey) {
       cascade_fields = foreignKey.cascade_fields || [ ];
       if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+        cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+      } else if (modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
       }
+    }
+    if (foreignKey && foreignKey.lbl && !modelLabel) {
+      modelLabel = column_name + "_" + foreignKey.lbl;
+    } else if (!foreignKey && !modelLabel) {
+      modelLabel = column_name + "_lbl";
+    }
+    let hasModelLabel = !!column.modelLabel;
+    if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+      hasModelLabel = true;
+    } else if (foreignKey && foreignKey.lbl) {
+      hasModelLabel = true;
     }
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
@@ -317,18 +308,24 @@ pub struct <#=tableUP#>Model {<#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: <#=_data_type#>,<#
-    if (!modelLabel) {
+    if (hasModelLabel) {
   #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=column_name#>_lbl: Vec<String>,<#
+  pub <#=modelLabel#>: Vec<String>,<#
     }
   #><#
     for (let j = 0; j < cascade_fields.length; j++) {
@@ -378,6 +375,9 @@ pub struct <#=tableUP#>Model {<#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_<#=cascade_field#>")]<#
   }
   #>
   pub <#=column_name#>_<#=cascade_field#>: Vec<<#=_data_type#>>,<#
@@ -389,18 +389,24 @@ pub struct <#=tableUP#>Model {<#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: <#=_data_type#>,<#
-    if (!modelLabel) {
+    if (hasModelLabel) {
   #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=column_name#>_lbl: String,<#
+  pub <#=modelLabel#>: String,<#
     }
   #><#
     for (let j = 0; j < cascade_fields.length; j++) {
@@ -450,6 +456,9 @@ pub struct <#=tableUP#>Model {<#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_<#=cascade_field#>")]<#
   }
   #>
   pub <#=column_name#>_<#=cascade_field#>: <#=_data_type#>,<#
@@ -461,20 +470,30 @@ pub struct <#=tableUP#>Model {<#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
-  pub <#=column_name_rust#>: <#=_data_type#>,
+  pub <#=column_name_rust#>: <#=_data_type#>,<#
+    if (hasModelLabel) {
+  #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=column_name#>_lbl: String,<#
+  pub <#=modelLabel#>: String,<#
+    }
+  #><#
     } else if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -493,19 +512,37 @@ pub struct <#=tableUP#>Model {<#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
-  pub <#=column_name_rust#>: <#=enumColumnName#>,
+  pub <#=column_name_rust#>: <#=enumColumnName#>,<#
+    if (hasModelLabel) {
+  #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=column_name#>_lbl: String,<#
+  pub <#=modelLabel#>: String,<#
+    }
+  #><#
     } else {
   #>
-  /// <#=column_comment#>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
+  }
+  #>
   pub <#=column_name_rust#>: <#=_data_type#>,<#
     }
   #><#
@@ -681,12 +718,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let tenant_id = row.try_get("tenant_id")?;<#
     }
     #><#
-    if (hasOrgId) {
-    #>
-    // 组织ID
-    let org_id = row.try_get("org_id")?;<#
-    }
-    #><#
     if (hasIsSys) {
     #>
     // 系统记录
@@ -711,7 +742,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     const column_name = column.COLUMN_NAME;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden" ||
@@ -739,13 +769,26 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         process.exit(1);
       }
     }
-    const modelLabel = column.modelLabel;
+    let modelLabel = column.modelLabel;
     let cascade_fields = [ ];
     if (foreignKey) {
       cascade_fields = foreignKey.cascade_fields || [ ];
       if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+        cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+      } else if (modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
       }
+    }
+    if (foreignKey && foreignKey.lbl && !modelLabel) {
+      modelLabel = column_name + "_" + foreignKey.lbl;
+    } else if (!foreignKey && !modelLabel) {
+      modelLabel = column_name + "_lbl";
+    }
+    let hasModelLabel = !!column.modelLabel;
+    if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+      hasModelLabel = true;
+    } else if (foreignKey && foreignKey.lbl) {
+      hasModelLabel = true;
     }
     let is_nullable = column.IS_NULLABLE === "YES";
     let _data_type = "String";
@@ -792,7 +835,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       if (data_type === "decimal" && isVirtual) {
     #>
     // <#=column_comment#>
-    let <#=column_name_rust#> = Decimal::try_from(<#=column_default || 0#>)?;<#
+    let <#=column_name_rust#> = Decimal::try_from(<#=column_default || 0#>).unwrap();<#
         continue;
       } else if ((data_type === "varchar" || data_type === "text") && isVirtual) {
     #>
@@ -830,7 +873,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         )
         .collect::<Vec<<#=foreignTable_Up#>Id>>()
     };<#
-      if (!modelLabel) {
+      if (hasModelLabel && !column.modelLabel) {
     #>
     let <#=column_name#>_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("<#=column_name#>_lbl")?;
     let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default().0;
@@ -855,7 +898,15 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         )
         .collect::<Vec<String>>()
     };<#
-      }
+      } else if (hasModelLabel) {
+    #>
+    let <#=modelLabel#>: Option<String> = row.try_get("<#=modelLabel#>")?;
+    let <#=modelLabel#>: String = <#=modelLabel#>.unwrap_or_default();
+    let <#=modelLabel#> = <#=modelLabel#>
+      .split(',')
+      .map(|x| x.to_owned())
+      .collect::<Vec<String>>();<#
+    }
     #><#
       for (let j = 0; j < cascade_fields.length; j++) {
         const cascade_field = cascade_fields[j];
@@ -931,10 +982,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=foreignTable_Up#>Id = row.try_get("<#=column_name#>")?;<#
-      if (!modelLabel) {
+      if (hasModelLabel) {
     #>
-    let <#=column_name#>_lbl: Option<String> = row.try_get("<#=column_name#>_lbl")?;
-    let <#=column_name#>_lbl = <#=column_name#>_lbl.unwrap_or_default();<#
+    let <#=modelLabel#>: Option<String> = row.try_get("<#=modelLabel#>")?;
+    let <#=modelLabel#> = <#=modelLabel#>.unwrap_or_default();<#
       }
     #><#
       for (let j = 0; j < cascade_fields.length; j++) {
@@ -985,15 +1036,10 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let <#=column_name#>_<#=cascade_field#> = <#=column_name#>_<#=cascade_field#>.unwrap_or_default();<#
       }
     #><#
-      } else if (column.DATA_TYPE === 'tinyint') {
-    #>
-    // <#=column_comment#>
-    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
-    let <#=column_name#>_lbl: String = <#=column_name_rust#>.to_string();<#
       } else if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
         const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -1010,34 +1056,58 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     #><#
       if (columnDictModels.length > 0) {
     #>
-    // <#=column_comment#>
-    let <#=column_name#>_lbl: String = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#>: <#=enumColumnName#> = <#=column_name#>_lbl.clone().try_into()?;<#
+    // <#=column_comment#><#
+      if (!column.modelLabel) {
+    #>
+    let <#=modelLabel#>: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=enumColumnName#> = <#=modelLabel#>.clone().try_into()?;<#
       } else {
     #>
-    // <#=column_comment#>
-    let <#=column_name#>_lbl: String = row.try_get("<#=column_name#>")?;
-    let <#=column_name_rust#>: <#=enumColumnName#> = <#=column_name#>_lbl.clone();<#
+    let <#=modelLabel#>: String = row.try_get("<#=modelLabel#>")?;
+    let <#=column_name_rust#>: <#=enumColumnName#> = row.try_get("<#=column_name#>")?.try_into()?;<#
+      }
+    #><#
+      } else {
+    #>
+    // <#=column_comment#><#
+      if (!column.modelLabel) {
+    #>
+    let <#=modelLabel#>: String = row.try_get("<#=column_name#>")?;
+    let <#=column_name_rust#>: <#=enumColumnName#> = <#=modelLabel#>.clone();<#
+      } else {
+    #>
+    let <#=modelLabel#>: String = row.try_get("<#=modelLabel#>")?;
+    let <#=column_name_rust#>: <#=enumColumnName#> = row.try_get("<#=column_name#>")?;<#
+      }
+    #><#
       }
     #><#
       } else if ((column.dict || column.dictbiz) && [ "int", "decimal", "tinyint" ].includes(data_type)) {
     #>
-    // <#=column_comment#>
+    // <#=column_comment#><#
+      if (!column.modelLabel) {
+    #>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
-    let <#=column_name#>_lbl: String = <#=column_name_rust#>.to_string();<#
+    let <#=modelLabel#>: String = <#=column_name_rust#>.to_string();<#
+      } else {
+    #>
+    let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;
+    let <#=modelLabel#>: String = row.try_get("<#=modelLabel#>")?;<#
+      }
+    #><#
       } else if (data_type === "datetime") {
     #>
     // <#=column_comment#>
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
       if (is_nullable) {
     #>
-    let <#=column_name#>_lbl: String = match <#=column_name_rust#> {
+    let <#=modelLabel#>: String = match <#=column_name_rust#> {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => String::new(),
     };<#
       } else {
     #>
-    let <#=column_name#>_lbl: String = <#=column_name_rust#>.format("%Y-%m-%d %H:%M:%S").to_string();<#
+    let <#=modelLabel#>: String = <#=column_name_rust#>.format("%Y-%m-%d %H:%M:%S").to_string();<#
       }
     #><#
       } else if (data_type === "date") {
@@ -1046,7 +1116,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     let <#=column_name_rust#>: <#=_data_type#> = row.try_get("<#=column_name#>")?;<#
       if (is_nullable) {
     #>
-    let <#=column_name#>_lbl: String = match <#=column_name_rust#> {
+    let <#=modelLabel#>: String = match <#=column_name_rust#> {
       Some(item) => item.format(<#
         if (column.isMonth) {
       #>"%Y-%m"<#
@@ -1058,7 +1128,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     };<#
       } else {
     #>
-    let <#=column_name#>_lbl: String = <#=column_name_rust#>.format(<#
+    let <#=modelLabel#>: String = <#=column_name_rust#>.format(<#
         if (column.isMonth) {
       #>"%Y-%m"<#
         } else {
@@ -1148,11 +1218,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       tenant_id,<#
       }
       #><#
-      if (hasOrgId) {
-      #>
-      org_id,<#
-      }
-      #><#
       if (hasIsSys) {
       #>
       is_sys,<#
@@ -1179,7 +1244,6 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         const column_name = column.COLUMN_NAME;
         if (
           column_name === "tenant_id" ||
-          column_name === "org_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted" ||
           column_name === "is_hidden" ||
@@ -1194,22 +1258,35 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         const column_comment = column.COLUMN_COMMENT || "";
         const isPassword = column.isPassword;
         const foreignKey = column.foreignKey;
-        const modelLabel = column.modelLabel;
+        let modelLabel = column.modelLabel;
         let cascade_fields = [ ];
         if (foreignKey) {
           cascade_fields = foreignKey.cascade_fields || [ ];
           if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-            cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+            cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+          } else if (modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
           }
+        }
+        if (foreignKey && foreignKey.lbl && !modelLabel) {
+          modelLabel = column_name + "_" + foreignKey.lbl;
+        } else if (!foreignKey && !modelLabel) {
+          modelLabel = column_name + "_lbl";
+        }
+        let hasModelLabel = !!column.modelLabel;
+        if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+          hasModelLabel = true;
+        } else if (foreignKey && foreignKey.lbl) {
+          hasModelLabel = true;
         }
         let is_nullable = column.IS_NULLABLE === "YES";
       #><#
         if (foreignKey && foreignKey.multiple) {
       #>
       <#=column_name_rust#>,<#
-        if (!modelLabel) {
+        if (hasModelLabel) {
       #>
-      <#=column_name#>_lbl,<#
+      <#=modelLabel#>,<#
         }
       #><#
         for (let j = 0; j < cascade_fields.length; j++) {
@@ -1221,9 +1298,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         } else if (foreignKey && !foreignKey.multiple) {
       #>
       <#=column_name_rust#>,<#
-        if (!modelLabel) {
+        if (foreignKey.lbl && !modelLabel) {
       #>
       <#=column_name#>_lbl,<#
+        } else if (modelLabel) {
+      #>
+      <#=modelLabel#>,<#
         }
       #><#
         for (let j = 0; j < cascade_fields.length; j++) {
@@ -1232,14 +1312,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       <#=column_name#>_<#=cascade_field#>,<#
         }
       #><#
-        } else if (column.dict || column.dictbiz|| data_type === "date" || data_type === "datetime") {
+        } else if (column.dict || column.dictbiz
+          || data_type === "date" || data_type === "datetime" || data_type === "tinyint"
+        ) {
       #>
       <#=column_name_rust#>,
-      <#=column_name#>_lbl,<#
-        } else if (column.DATA_TYPE === 'tinyint') {
-      #>
-      <#=column_name_rust#>,
-      <#=column_name#>_lbl,<#
+      <#=modelLabel#>,<#
         } else {
       #>
       <#=column_name_rust#>,<#
@@ -1349,7 +1427,6 @@ pub struct <#=tableUP#>FieldComment {<#
     const column_name = column.COLUMN_NAME;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -1363,6 +1440,27 @@ pub struct <#=tableUP#>FieldComment {<#
     const foreignKey = column.foreignKey;
     let is_nullable = column.IS_NULLABLE === "YES";
     const onlyCodegenDeno = column.onlyCodegenDeno;
+    let modelLabel = column.modelLabel;
+    let cascade_fields = [ ];
+    if (foreignKey) {
+      cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+      } else if (modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+      }
+    }
+    if (foreignKey && foreignKey.lbl && !modelLabel) {
+      modelLabel = column_name + "_" + foreignKey.lbl;
+    } else if (!foreignKey && !modelLabel) {
+      modelLabel = column_name + "_lbl";
+    }
+    let hasModelLabel = !!column.modelLabel;
+    if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+      hasModelLabel = true;
+    } else if (foreignKey && foreignKey.lbl) {
+      hasModelLabel = true;
+    }
   #><#
     if (foreignKey || column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime"
@@ -1414,12 +1512,6 @@ pub struct <#=tableUP#>Search {
   pub tenant_id: Option<TenantId>,<#
   }
   #><#
-  if (hasOrgId) {
-  #>
-  /// 组织ID
-  pub org_id: Option<OrgId>,<#
-  }
-  #><#
   if (hasIsHidden) {
   #>
   #[graphql(skip)]
@@ -1440,7 +1532,6 @@ pub struct <#=tableUP#>Search {
     if (column_name === 'id') continue;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden"
@@ -1454,6 +1545,8 @@ pub struct <#=tableUP#>Search {
     const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    const modelLabel = column.modelLabel;
+    const modelLabel_rust = rustKeyEscape(modelLabel);
     const isPassword = column.isPassword;
     const isEncrypt = column.isEncrypt;
     if (isEncrypt) continue;
@@ -1488,43 +1581,83 @@ pub struct <#=tableUP#>Search {
       _data_type = "Decimal";
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
+    const search = column.search;
+    const canSearch = column.canSearch;
   #><#
     if (foreignKey && foreignKey.type !== "many2many") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_save_null")]<#
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
+    if (modelLabel) {
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=modelLabel#>")]<#
+  }
+  #>
+  pub <#=modelLabel_rust#>: Option<Vec<String>>,<#
+    } else if (foreignKey.lbl) {
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_lbl")]<#
+  }
+  #>
+  pub <#=column_name#>_lbl: Option<Vec<String>>,<#
+    }
+  #><#
     } else if (foreignKey && foreignKey.type === "many2many") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_save_null")]<#
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
     } else if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -1540,61 +1673,82 @@ pub struct <#=tableUP#>Search {
       }
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=enumColumnName#>>>,<#
     } else if (foreignKey) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
     } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<[Option<<#=_data_type#>>; 2]>,<#
     } else if (data_type === "tinyint") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
     } else if (data_type === "varchar" || data_type === "text") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_like")]<#
   }
   #>
   pub <#=column_name#>_like: Option<<#=_data_type#>>,<#
     } else {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno || !canSearch) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
@@ -1617,13 +1771,6 @@ impl std::fmt::Debug for <#=tableUP#>Search {
     #>
     if let Some(ref tenant_id) = self.tenant_id {
       item = item.field("tenant_id", tenant_id);
-    }<#
-    }
-    #><#
-    if (hasOrgId) {
-    #>
-    if let Some(ref org_id) = self.org_id {
-      item = item.field("org_id", org_id);
     }<#
     }
     #><#
@@ -1652,7 +1799,6 @@ impl std::fmt::Debug for <#=tableUP#>Search {
       if (column_name === 'id') continue;
       if (
         column_name === "tenant_id" ||
-        column_name === "org_id" ||
         column_name === "is_sys" ||
         column_name === "is_deleted" ||
         column_name === "is_hidden"
@@ -1671,7 +1817,7 @@ impl std::fmt::Debug for <#=tableUP#>Search {
       if (isEncrypt) continue;
       let is_nullable = column.IS_NULLABLE === "YES";
     #><#
-      if (foreignKey) {
+      if (foreignKey && foreignKey.type !== "many2many") {
     #>
     // <#=column_comment#>
     if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
@@ -1710,16 +1856,13 @@ impl std::fmt::Debug for <#=tableUP#>Search {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case"<#
-if (table === "i18n") {
-#>, name = "<#=tableUP#>Input"<#
-}
-#>)]
+#[graphql(rename_fields = "snake_case", name = "<#=tableUP#>Input")]
 pub struct <#=tableUP#>Input {
   /// ID
   pub id: Option<<#=Table_Up#>Id>,<#
   if (hasIsDeleted) {
   #>
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,<#
   }
@@ -1729,13 +1872,6 @@ pub struct <#=tableUP#>Input {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,<#
-  }
-  #><#
-  if (hasOrgId) {
-  #>
-  /// 组织ID
-  #[graphql(skip)]
-  pub org_id: Option<OrgId>,<#
   }
   #><#
   if (hasIsSys) {
@@ -1759,7 +1895,6 @@ pub struct <#=tableUP#>Input {
     const column_name = column.COLUMN_NAME;
     if (
       column_name === "tenant_id" ||
-      column_name === "org_id" ||
       column_name === "is_sys" ||
       column_name === "is_deleted" ||
       column_name === "is_hidden" ||
@@ -1770,6 +1905,7 @@ pub struct <#=tableUP#>Input {
     ) continue;
     const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
     if (column_name === 'id') continue;
+    const is_nullable = column.IS_NULLABLE === "YES";
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
     const column_comment = column.COLUMN_COMMENT || "";
@@ -1810,11 +1946,23 @@ pub struct <#=tableUP#>Input {
       _data_type = "String";
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
+    let modelLabel = column.modelLabel;
+    if (foreignKey && foreignKey.lbl && !modelLabel) {
+      modelLabel = column_name + "_" + foreignKey.lbl;
+    } else if (!foreignKey && !modelLabel) {
+      modelLabel = column_name + "_lbl";
+    }
+    let hasModelLabel = !!column.modelLabel;
+    if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+      hasModelLabel = true;
+    } else if (foreignKey && foreignKey.lbl) {
+      hasModelLabel = true;
+    }
   #><#
     if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -1833,54 +1981,87 @@ pub struct <#=tableUP#>Input {
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
-  pub <#=column_name_rust#>: Option<<#=enumColumnName#>>,
+  pub <#=column_name_rust#>: Option<<#=enumColumnName#>>,<#
+    if (hasModelLabel) {
+  #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=column_name#>_lbl: Option<String>,<#
+  pub <#=modelLabel#>: Option<String>,<#
+    }
+  #><#
     } else if (foreignKey && foreignKey?.multiple) {
   #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
-  pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,
+  pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
+    if (hasModelLabel) {
+  #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=column_name#>_lbl: Option<Vec<String>>,<#
+  pub <#=modelLabel#>: Option<Vec<String>>,<#
+    }
+  #><#
   } else if (foreignKey && !foreignKey?.multiple) {
   #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
-  pub <#=column_name_rust#>: Option<<#=_data_type#>>,
+  pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
+    if (hasModelLabel) {
+  #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=column_name#>_lbl: Option<String>,<#
+  pub <#=modelLabel#>: Option<String>,<#
+    }
+  #><#
   } else if (data_type === "date" || data_type === "datetime") {
   #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
@@ -1888,15 +2069,35 @@ pub struct <#=tableUP#>Input {
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_lbl")]<#
   }
   #>
   pub <#=column_name#>_lbl: Option<String>,<#
+  if (is_nullable) {
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_save_null")]<#
+  }
+  #>
+  pub <#=column_name#>_save_null: Option<bool>,<#
+  }
+  #><#
   } else {
   #>
   /// <#=column_comment#><#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
@@ -1921,7 +2122,10 @@ pub struct <#=tableUP#>Input {
   pub create_time: Option<chrono::NaiveDateTime>,
   /// 创建时间
   #[graphql(skip)]
-  pub create_time_lbl: Option<String>,<#
+  pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,<#
   }
   #><#
   if (hasUpdateUsrId) {
@@ -1941,7 +2145,10 @@ pub struct <#=tableUP#>Input {
   pub update_time: Option<chrono::NaiveDateTime>,
   /// 更新时间
   #[graphql(skip)]
-  pub update_time_lbl: Option<String>,<#
+  pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,<#
   }
   #><#
   if (hasVersion) {
@@ -2026,11 +2233,6 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       tenant_id: model.tenant_id.into(),<#
       }
       #><#
-      if (hasOrgId) {
-      #>
-      org_id: model.org_id.into(),<#
-      }
-      #><#
       if (hasIsSys) {
       #>
       is_sys: model.is_sys.into(),<#
@@ -2053,7 +2255,6 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
         const column_name = column.COLUMN_NAME;
         if (
           column_name === "tenant_id" ||
-          column_name === "org_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted" ||
           column_name === "is_hidden" ||
@@ -2074,11 +2275,35 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
         if (foreignKey && foreignKey.multiple) {
           is_nullable = false;
         }
+        let modelLabel = column.modelLabel;
+        if (foreignKey && foreignKey.lbl && !modelLabel) {
+          modelLabel = column_name + "_" + foreignKey.lbl;
+        } else if (!foreignKey && !modelLabel) {
+          modelLabel = column_name + "_lbl";
+        }
+        let hasModelLabel = !!column.modelLabel;
+        if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+          hasModelLabel = true;
+        } else if (foreignKey && foreignKey.lbl) {
+          hasModelLabel = true;
+        }
       #><#
         if (
           (foreignKey || column.dict || column.dictbiz)
-          || (data_type === "date" || data_type === "datetime")
         ) {
+      #>
+      // <#=column_comment#>
+      <#=column_name_rust#>: model.<#=column_name_rust#><#
+        if (!is_nullable) {
+      #>.into()<#
+        }
+      #>,<#
+        if (hasModelLabel) {
+      #>
+      <#=modelLabel#>: model.<#=modelLabel#>.into(),<#
+        }
+      #><#
+        } else if (data_type === "date" || data_type === "datetime") {
       #>
       // <#=column_comment#>
       <#=column_name_rust#>: model.<#=column_name_rust#><#
@@ -2087,6 +2312,11 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
         }
       #>,
       <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
+        if (is_nullable) {
+      #>
+      <#=column_name#>_save_null: Some(true),<#
+        }
+      #><#
         } else {
       #>
       // <#=column_comment#>
@@ -2110,7 +2340,8 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       #>
       // 创建时间
       create_time: model.create_time,
-      create_time_lbl: model.create_time_lbl.into(),<#
+      create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),<#
       }
       #><#
       if (hasUpdateUsrId) {
@@ -2124,7 +2355,8 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       #>
       // 更新时间
       update_time: model.update_time,
-      update_time_lbl: model.update_time_lbl.into(),<#
+      update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),<#
       }
       #><#
       for (const inlineForeignTab of inlineForeignTabs) {
@@ -2212,12 +2444,6 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       tenant_id: input.tenant_id,<#
       }
       #><#
-      if (hasOrgId) {
-      #>
-      // 组织ID
-      org_id: input.org_id,<#
-      }
-      #><#
       if (hasIsHidden) {
       #>
       // 隐藏字段
@@ -2236,7 +2462,6 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         const column_name = rustKeyEscape(column.COLUMN_NAME);
         if (
           column_name === "tenant_id" ||
-          column_name === "org_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted" ||
           column_name === "is_hidden"
@@ -2248,6 +2473,8 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         const foreignKey = column.foreignKey;
         const foreignTable = foreignKey && foreignKey.table;
         const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+        const modelLabel = column.modelLabel;
+        const modelLabel_rust = rustKeyEscape(modelLabel);
         const isPassword = column.isPassword;
         if (column_name === "id") {
           continue;
@@ -2255,14 +2482,20 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
         const isEncrypt = column.isEncrypt;
         if (isEncrypt) continue;
       #><#
-      if (foreignKey && foreignKey.multiple) {
+      if (foreignKey && foreignKey.type === "many2many") {
       #>
       // <#=column_comment#>
       <#=column_name#>: input.<#=column_name#>,<#
-      } else if (foreignKey && !foreignKey.multiple) {
+      } else if (foreignKey && foreignKey.type !== "many2many") {
       #>
       // <#=column_comment#>
       <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
+        if (modelLabel) {
+      #>
+      // <#=column_comment#>
+      <#=modelLabel_rust#>: input.<#=modelLabel_rust#>.map(|x| vec![x]),<#
+        }
+      #><#
         } else if (column.dict || column.dictbiz) {
       #>
       // <#=column_comment#>
@@ -2303,12 +2536,6 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
       tenant_id: input.tenant_id,<#
       }
       #><#
-      if (hasOrgId) {
-      #>
-      // 组织ID
-      org_id: input.org_id,<#
-      }
-      #><#
       if (hasIsSys) {
       #>
       // 系统记录
@@ -2330,10 +2557,10 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
         }
         if (
           column_name === "tenant_id" ||
-          column_name === "org_id" ||
           column_name === "is_sys" ||
           column_name === "is_deleted"
         ) continue;
+        const is_nullable = column.IS_NULLABLE === "YES";
         const column_name_rust = rustKeyEscape(column_name);
         const data_type = column.DATA_TYPE;
         const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
@@ -2354,13 +2581,18 @@ impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=his
       /// <#=column_comment#>
       <#=column_name#>: model.<#=column_name#>.into(),
       <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
-        } else if (column.dict || column.dictbiz
-          || data_type === "date" || data_type === "datetime"
-        ) {
+        } else if (column.dict || column.dictbiz) {
+      #><#
+        } else if (data_type === "date" || data_type === "datetime") {
       #>
       /// <#=column_comment#>
       <#=column_name#>: model.<#=column_name#>.into(),
       <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
+        if (is_nullable) {
+      #>
+      <#=column_name#>_save_null: Some(true),<#
+        }
+      #><#
         } else {
       #>
       /// <#=column_comment#>
@@ -2490,7 +2722,6 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "id") continue;
   if (
     column_name === "tenant_id" ||
-    column_name === "org_id" ||
     column_name === "is_sys" ||
     column_name === "is_deleted" ||
     column_name === "is_hidden"
@@ -2509,7 +2740,7 @@ for (let i = 0; i < columns.length; i++) {
   const enumColumnName = Table_Up + Column_Up;
   const columnDictModels = [
     ...dictModels.filter(function(item) {
-      return item.code === column.dict || item.code === column.dictbiz;
+      return item.code === column.dict || item.code === column.dict;
     }),
     ...dictbizModels.filter(function(item) {
       return item.code === column.dict || item.code === column.dictbiz;

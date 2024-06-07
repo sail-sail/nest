@@ -6,8 +6,13 @@ use crate::common::context::Ctx;
 use super::tenant_resolver;
 use super::tenant_model::GetLoginTenants;
 
+use super::tenant_model::SetTenantAdminPwdInput;
+
 #[derive(Default)]
 pub struct TenantQuery;
+
+#[derive(Default)]
+pub struct TenantMutation;
 
 #[Object(rename_args = "snake_case")]
 impl TenantQuery {
@@ -23,6 +28,27 @@ impl TenantQuery {
       .scope({
         tenant_resolver::get_login_tenants(
           domain,
+        )
+      }).await
+  }
+  
+}
+
+#[Object(rename_args = "snake_case")]
+impl TenantMutation {
+  
+  /// 设置租户管理员密码
+  async fn set_tenant_admin_pwd(
+    &self,
+    ctx: &Context<'_>,
+    input: SetTenantAdminPwdInput,
+  ) -> Result<bool> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        tenant_resolver::set_tenant_admin_pwd(
+          input
         )
       }).await
   }

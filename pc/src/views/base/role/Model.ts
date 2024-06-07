@@ -36,7 +36,6 @@ export const roleFields = [
   "permit_ids_lbl",
   // 数据权限
   "data_permit_ids",
-  "data_permit_ids_lbl",
   // 锁定
   "is_locked",
   "is_locked_lbl",

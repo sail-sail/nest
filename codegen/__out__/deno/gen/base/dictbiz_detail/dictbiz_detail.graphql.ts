@@ -6,7 +6,6 @@ import * as resolver from "./dictbiz_detail.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar DictbizDetailId
 
-
 type DictbizDetailModel {
   "ID"
   id: DictbizDetailId!
@@ -122,32 +121,30 @@ input DictbizDetailSearch {
   id: DictbizDetailId
   "业务字典"
   dictbiz_id: [DictbizId!]
+  "业务字典"
   dictbiz_id_is_null: Boolean
+  "业务字典"
+  dictbiz_id_lbl: [String!]
   "名称"
   lbl: String
   lbl_like: String
   "值"
   val: String
   val_like: String
-  "锁定"
-  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "排序"
-  order_by: [Int]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
+  "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
+  "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找业务字典明细总数"

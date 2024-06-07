@@ -32,7 +32,7 @@ use crate::gen::base::dept::dept_model::DeptId;
 use crate::gen::base::org::org_model::OrgId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "UsrModel")]
 pub struct UsrModel {
   /// 租户ID
   #[graphql(skip)]
@@ -43,40 +43,58 @@ pub struct UsrModel {
   /// ID
   pub id: UsrId,
   /// 头像
+  #[graphql(name = "img")]
   pub img: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 用户名
+  #[graphql(name = "username")]
   pub username: String,
   /// 密码
+  #[graphql(name = "password")]
   pub password: String,
   /// 所属角色
+  #[graphql(name = "role_ids")]
   pub role_ids: Vec<RoleId>,
   /// 所属角色
+  #[graphql(name = "role_ids_lbl")]
   pub role_ids_lbl: Vec<String>,
   /// 所属部门
+  #[graphql(name = "dept_ids")]
   pub dept_ids: Vec<DeptId>,
   /// 所属部门
+  #[graphql(name = "dept_ids_lbl")]
   pub dept_ids_lbl: Vec<String>,
   /// 所属组织
+  #[graphql(name = "org_ids")]
   pub org_ids: Vec<OrgId>,
   /// 所属组织
+  #[graphql(name = "org_ids_lbl")]
   pub org_ids_lbl: Vec<String>,
   /// 默认组织
+  #[graphql(name = "default_org_id")]
   pub default_org_id: OrgId,
   /// 默认组织
+  #[graphql(name = "default_org_id_lbl")]
   pub default_org_id_lbl: String,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -381,58 +399,94 @@ pub struct UsrSearch {
   pub is_hidden: Option<Vec<u8>>,
   pub is_deleted: Option<u8>,
   /// 头像
+  #[graphql(skip)]
   pub img: Option<String>,
   /// 头像
+  #[graphql(skip)]
   pub img_like: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 用户名
+  #[graphql(name = "username")]
   pub username: Option<String>,
   /// 用户名
+  #[graphql(name = "username_like")]
   pub username_like: Option<String>,
   /// 密码
+  #[graphql(skip)]
   pub password: Option<String>,
   /// 密码
+  #[graphql(skip)]
   pub password_like: Option<String>,
   /// 所属角色
+  #[graphql(name = "role_ids")]
   pub role_ids: Option<Vec<RoleId>>,
   /// 所属角色
+  #[graphql(name = "role_ids_save_null")]
   pub role_ids_is_null: Option<bool>,
   /// 所属部门
+  #[graphql(name = "dept_ids")]
   pub dept_ids: Option<Vec<DeptId>>,
   /// 所属部门
+  #[graphql(name = "dept_ids_save_null")]
   pub dept_ids_is_null: Option<bool>,
   /// 所属组织
+  #[graphql(name = "org_ids")]
   pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
+  #[graphql(name = "org_ids_save_null")]
   pub org_ids_is_null: Option<bool>,
   /// 默认组织
+  #[graphql(name = "default_org_id")]
   pub default_org_id: Option<Vec<OrgId>>,
   /// 默认组织
+  #[graphql(name = "default_org_id_save_null")]
   pub default_org_id_is_null: Option<bool>,
+  /// 默认组织
+  #[graphql(name = "default_org_id_lbl")]
+  pub default_org_id_lbl: Option<Vec<String>>,
   /// 锁定
+  #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
+  #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
+  #[graphql(skip)]
   pub rem: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
+  #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
+  #[graphql(name = "update_usr_id_save_null")]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
@@ -488,22 +542,13 @@ impl std::fmt::Debug for UsrSearch {
     if let Some(ref role_ids) = self.role_ids {
       item = item.field("role_ids", role_ids);
     }
-    if let Some(ref role_ids_is_null) = self.role_ids_is_null {
-      item = item.field("role_ids_is_null", role_ids_is_null);
-    }
     // 所属部门
     if let Some(ref dept_ids) = self.dept_ids {
       item = item.field("dept_ids", dept_ids);
     }
-    if let Some(ref dept_ids_is_null) = self.dept_ids_is_null {
-      item = item.field("dept_ids_is_null", dept_ids_is_null);
-    }
     // 所属组织
     if let Some(ref org_ids) = self.org_ids {
       item = item.field("org_ids", org_ids);
-    }
-    if let Some(ref org_ids_is_null) = self.org_ids_is_null {
-      item = item.field("org_ids_is_null", org_ids_is_null);
     }
     // 默认组织
     if let Some(ref default_org_id) = self.default_org_id {
@@ -558,10 +603,11 @@ impl std::fmt::Debug for UsrSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "UsrInput")]
 pub struct UsrInput {
   /// ID
   pub id: Option<UsrId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
@@ -571,40 +617,58 @@ pub struct UsrInput {
   #[graphql(skip)]
   pub is_hidden: Option<u8>,
   /// 头像
+  #[graphql(name = "img")]
   pub img: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 用户名
+  #[graphql(name = "username")]
   pub username: Option<String>,
   /// 密码
+  #[graphql(name = "password")]
   pub password: Option<String>,
   /// 所属角色
+  #[graphql(name = "role_ids")]
   pub role_ids: Option<Vec<RoleId>>,
   /// 所属角色
+  #[graphql(name = "role_ids_lbl")]
   pub role_ids_lbl: Option<Vec<String>>,
   /// 所属部门
+  #[graphql(name = "dept_ids")]
   pub dept_ids: Option<Vec<DeptId>>,
   /// 所属部门
+  #[graphql(name = "dept_ids_lbl")]
   pub dept_ids_lbl: Option<Vec<String>>,
   /// 所属组织
+  #[graphql(name = "org_ids")]
   pub org_ids: Option<Vec<OrgId>>,
   /// 所属组织
+  #[graphql(name = "org_ids_lbl")]
   pub org_ids_lbl: Option<Vec<String>>,
   /// 默认组织
+  #[graphql(name = "default_org_id")]
   pub default_org_id: Option<OrgId>,
   /// 默认组织
+  #[graphql(name = "default_org_id_lbl")]
   pub default_org_id_lbl: Option<String>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: Option<String>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: Option<String>,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -618,6 +682,9 @@ pub struct UsrInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -630,6 +697,9 @@ pub struct UsrInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<UsrModel> for UsrInput {
@@ -675,12 +745,14 @@ impl From<UsrModel> for UsrInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -721,10 +793,14 @@ impl From<UsrInput> for UsrSearch {
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

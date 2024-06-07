@@ -30,7 +30,7 @@ use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "OperationRecordModel")]
 pub struct OperationRecordModel {
   /// 租户ID
   #[graphql(skip)]
@@ -38,20 +38,28 @@ pub struct OperationRecordModel {
   /// ID
   pub id: OperationRecordId,
   /// 模块
+  #[graphql(name = "module")]
   pub module: String,
   /// 模块名称
+  #[graphql(name = "module_lbl")]
   pub module_lbl: String,
   /// 方法
+  #[graphql(name = "method")]
   pub method: String,
   /// 方法名称
+  #[graphql(name = "method_lbl")]
   pub method_lbl: String,
   /// 操作
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 耗时(毫秒)
+  #[graphql(name = "time")]
   pub time: u32,
   /// 操作前数据
+  #[graphql(name = "old_data")]
   pub old_data: Option<String>,
   /// 操作后数据
+  #[graphql(name = "new_data")]
   pub new_data: Option<String>,
   /// 是否已删除
   pub is_deleted: u8,
@@ -202,40 +210,61 @@ pub struct OperationRecordSearch {
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 模块
+  #[graphql(skip)]
   pub module: Option<String>,
   /// 模块
+  #[graphql(skip)]
   pub module_like: Option<String>,
   /// 模块名称
+  #[graphql(name = "module_lbl")]
   pub module_lbl: Option<String>,
   /// 模块名称
+  #[graphql(name = "module_lbl_like")]
   pub module_lbl_like: Option<String>,
   /// 方法
+  #[graphql(skip)]
   pub method: Option<String>,
   /// 方法
+  #[graphql(skip)]
   pub method_like: Option<String>,
   /// 方法名称
+  #[graphql(name = "method_lbl")]
   pub method_lbl: Option<String>,
   /// 方法名称
+  #[graphql(name = "method_lbl_like")]
   pub method_lbl_like: Option<String>,
   /// 操作
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 操作
+  #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 耗时(毫秒)
+  #[graphql(skip)]
   pub time: Option<[Option<u32>; 2]>,
   /// 操作前数据
+  #[graphql(skip)]
   pub old_data: Option<String>,
   /// 操作前数据
+  #[graphql(skip)]
   pub old_data_like: Option<String>,
   /// 操作后数据
+  #[graphql(skip)]
   pub new_data: Option<String>,
   /// 操作后数据
+  #[graphql(skip)]
   pub new_data_like: Option<String>,
   /// 操作人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 操作人
+  #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
+  /// 操作人
+  #[graphql(name = "create_usr_id_lbl")]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 操作时间
+  #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
   #[graphql(skip)]
@@ -243,6 +272,9 @@ pub struct OperationRecordSearch {
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -345,30 +377,39 @@ impl std::fmt::Debug for OperationRecordSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "OperationRecordInput")]
 pub struct OperationRecordInput {
   /// ID
   pub id: Option<OperationRecordId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 模块
+  #[graphql(name = "module")]
   pub module: Option<String>,
   /// 模块名称
+  #[graphql(name = "module_lbl")]
   pub module_lbl: Option<String>,
   /// 方法
+  #[graphql(name = "method")]
   pub method: Option<String>,
   /// 方法名称
+  #[graphql(name = "method_lbl")]
   pub method_lbl: Option<String>,
   /// 操作
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 耗时(毫秒)
+  #[graphql(name = "time")]
   pub time: Option<u32>,
   /// 操作前数据
+  #[graphql(name = "old_data")]
   pub old_data: Option<String>,
   /// 操作后数据
+  #[graphql(name = "new_data")]
   pub new_data: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -382,6 +423,9 @@ pub struct OperationRecordInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -394,6 +438,9 @@ pub struct OperationRecordInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<OperationRecordModel> for OperationRecordInput {
@@ -424,12 +471,14 @@ impl From<OperationRecordModel> for OperationRecordInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -460,10 +509,14 @@ impl From<OperationRecordInput> for OperationRecordSearch {
       new_data: input.new_data,
       // 操作人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 操作人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 操作时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

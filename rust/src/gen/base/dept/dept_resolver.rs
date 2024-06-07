@@ -12,8 +12,6 @@ use super::dept_service;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 
-use crate::gen::base::org::org_model::OrgId;
-
 /// 根据搜索条件和分页查找部门列表
 pub async fn find_all(
   search: Option<DeptSearch>,
@@ -122,23 +120,6 @@ pub async fn update_tenant_by_id(
   let num = dept_service::update_tenant_by_id(
     id,
     tenant_id,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
-/// 部门根据id修改组织id
-#[allow(dead_code)]
-pub async fn update_org_by_id(
-  id: DeptId,
-  org_id: OrgId,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = dept_service::update_org_by_id(
-    id,
-    org_id,
     options,
   ).await?;
   

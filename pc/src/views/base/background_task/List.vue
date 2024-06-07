@@ -23,7 +23,8 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="onSearch"
+      @submit.prevent
+      @keydown.enter="onSearch"
     >
       
       <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
@@ -367,7 +368,7 @@
           </template>
           
           <!-- 执行结果 -->
-          <template v-else-if="'result' === col.prop && (showBuildIn || builtInSearch?.result == null)">
+          <template v-else-if="'result' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -376,7 +377,7 @@
           </template>
           
           <!-- 错误信息 -->
-          <template v-else-if="'err_msg' === col.prop && (showBuildIn || builtInSearch?.err_msg == null)">
+          <template v-else-if="'err_msg' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -394,7 +395,7 @@
           </template>
           
           <!-- 结束时间 -->
-          <template v-else-if="'end_time_lbl' === col.prop && (showBuildIn || builtInSearch?.end_time == null)">
+          <template v-else-if="'end_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -403,7 +404,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -421,7 +422,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -439,7 +440,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -556,14 +557,7 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   state?: string|string[]; // 状态
   type?: string|string[]; // 类型
-  result?: string; // 执行结果
-  result_like?: string; // 执行结果
-  err_msg?: string; // 错误信息
-  err_msg_like?: string; // 错误信息
   begin_time?: string; // 开始时间
-  end_time?: string; // 结束时间
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -902,7 +896,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -921,7 +915,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1169,7 +1163,7 @@ async function onDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("后台任务")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("后台任务")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1183,7 +1177,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("后台任务")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("后台任务")));
     emit("remove", num);
   }
 }
@@ -1203,7 +1197,7 @@ async function onForceDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("后台任务")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("后台任务")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1214,7 +1208,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("后台任务")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("后台任务")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1235,7 +1229,7 @@ async function onRevertByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("后台任务")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("后台任务")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1248,7 +1242,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("后台任务")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("后台任务")));
     emit("revert", num);
   }
 }

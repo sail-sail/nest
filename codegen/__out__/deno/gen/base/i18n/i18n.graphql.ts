@@ -6,7 +6,6 @@ import * as resolver from "./i18n.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar I18nId
 
-
 type I18nModel {
   "ID"
   id: I18nId!
@@ -104,29 +103,34 @@ input I18nSearch {
   id: I18nId
   "语言"
   lang_id: [LangId!]
+  "语言"
   lang_id_is_null: Boolean
+  "语言"
+  lang_id_lbl: [String!]
   "菜单"
   menu_id: [MenuId!]
+  "菜单"
   menu_id_is_null: Boolean
+  "菜单"
+  menu_id_lbl: [String!]
   "编码"
   code: String
   code_like: String
   "名称"
   lbl: String
   lbl_like: String
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
+  "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
+  "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找国际化总数"

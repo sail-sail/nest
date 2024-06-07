@@ -40,12 +40,16 @@ import {
 } from "/src/base/i18n/i18n.ts";<#
 }
 #><#
-if (opts.filterDataByCreateUsr) {
+if (opts.filterDataByCreateUsr || hasOrgId) {
 #>
 
 import {
   getAuthModel,
-} from "/lib/auth/auth.dao.ts";<#
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";<#
 }
 #><#
 if (hasSummary) {
@@ -59,6 +63,49 @@ import {
 
 import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 
+async function setSearchQuery(
+  search: <#=searchName#>,
+) {<#
+  if (opts.filterDataByCreateUsr || hasOrgId) {
+  #>
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  if (!usr_id || !usr_model) {
+    throw new Error("usr_id can not be null");
+  }<#
+    if (hasOrgId) {
+  #>
+  const org_ids: OrgId[] = [ ];
+  if (authModel?.org_id) {
+    org_ids.push(authModel.org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
+  }<#
+    }
+  #>
+  const username = usr_model.username;<#
+  }
+  #><#
+  if (opts.filterDataByCreateUsr) {
+  #>
+  
+  if (username !== "admin") {
+    search.create_usr_id = [ usr_id ];
+  }<#
+  } else if (hasOrgId) {
+  #>
+  
+  if (username !== "admin") {
+    search.org_id = org_ids;
+  }<#
+  }
+  #>
+  
+}
+
 /**
  * 根据条件查找<#=table_comment#>总数
  * @param {<#=searchName#>} search? 搜索条件
@@ -67,16 +114,11 @@ import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 export async function findCount(
   search?: <#=searchName#>,
 ): Promise<number> {
-  search = search || { };<#
-    if (opts.filterDataByCreateUsr) {
-  #>
   
-  const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
-  }<#
-    }
-  #>
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await <#=table#>Dao.findCount(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
@@ -103,16 +145,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<<#=modelName#>[]> {
-  search = search || { };<#
-    if (opts.filterDataByCreateUsr) {
-  #>
   
-  const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
-  }<#
-    }
-  #>
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
@@ -145,16 +182,11 @@ if (hasSummary) {
 export async function findSummary(
   search?: <#=searchName#>,
 ): Promise<<#=Table_Up#>Summary> {
-  search = search || { };<#
-    if (opts.filterDataByCreateUsr) {
-  #>
   
-  const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
-  }<#
-    }
-  #>
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await <#=table#>Dao.findSummary(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
@@ -179,16 +211,11 @@ export async function findOne(
   search?: <#=searchName#>,
   sort?: SortInput|SortInput[],
 ): Promise<<#=modelName#> | undefined> {
-  search = search || { };<#
-    if (opts.filterDataByCreateUsr) {
-  #>
   
-  const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
-  }<#
-    }
-  #>
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await <#=table#>Dao.findOne(search, sort<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
@@ -231,16 +258,11 @@ export async function findById(
 export async function exist(
   search?: <#=searchName#>,
 ): Promise<boolean> {
-  search = search || { };<#
-    if (opts.filterDataByCreateUsr) {
-  #>
   
-  const authModel = await getAuthModel();
-  if (authModel?.id) {
-    search.create_usr_id = [ authModel.id ];
-  }<#
-    }
-  #>
+  search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await <#=table#>Dao.exist(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#

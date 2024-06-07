@@ -33,7 +33,7 @@ use crate::gen::base::data_permit::data_permit_model::DataPermitId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "RoleModel")]
 pub struct RoleModel {
   /// 租户ID
   #[graphql(skip)]
@@ -41,32 +41,43 @@ pub struct RoleModel {
   /// ID
   pub id: RoleId,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 首页
+  #[graphql(name = "home_url")]
   pub home_url: String,
   /// 菜单权限
+  #[graphql(name = "menu_ids")]
   pub menu_ids: Vec<MenuId>,
   /// 菜单权限
+  #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: Vec<String>,
   /// 按钮权限
+  #[graphql(name = "permit_ids")]
   pub permit_ids: Vec<PermitId>,
   /// 按钮权限
+  #[graphql(name = "permit_ids_lbl")]
   pub permit_ids_lbl: Vec<String>,
   /// 数据权限
+  #[graphql(name = "data_permit_ids")]
   pub data_permit_ids: Vec<DataPermitId>,
-  /// 数据权限
-  pub data_permit_ids_lbl: Vec<String>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: u8,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: u32,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -198,29 +209,6 @@ impl FromRow<'_, MySqlRow> for RoleModel {
         )
         .collect::<Vec<DataPermitId>>()
     };
-    let data_permit_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("data_permit_ids_lbl")?;
-    let data_permit_ids_lbl = data_permit_ids_lbl.unwrap_or_default().0;
-    let data_permit_ids_lbl = {
-      let mut keys: Vec<u32> = data_permit_ids_lbl.keys()
-        .map(|x| 
-          x.parse::<u32>()
-            .map_err(|_| sqlx::Error::Decode(
-              Box::new(sqlx::error::Error::Protocol(
-                "data_permit_ids_lbl order_by Invalid u32".to_string()
-              ))
-            ))
-        )
-        .collect::<Result<_, _>>()?;
-      keys.sort();
-      keys
-        .into_iter()
-        .map(|x| 
-          data_permit_ids_lbl.get(&x.to_string())
-            .map(|x| x.to_owned())
-            .unwrap_or_default()
-        )
-        .collect::<Vec<String>>()
-    };
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -265,7 +253,6 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       permit_ids,
       permit_ids_lbl,
       data_permit_ids,
-      data_permit_ids_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -348,46 +335,73 @@ pub struct RoleSearch {
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 首页
+  #[graphql(skip)]
   pub home_url: Option<String>,
   /// 首页
+  #[graphql(skip)]
   pub home_url_like: Option<String>,
   /// 菜单权限
+  #[graphql(name = "menu_ids")]
   pub menu_ids: Option<Vec<MenuId>>,
   /// 菜单权限
+  #[graphql(name = "menu_ids_save_null")]
   pub menu_ids_is_null: Option<bool>,
   /// 按钮权限
+  #[graphql(name = "permit_ids")]
   pub permit_ids: Option<Vec<PermitId>>,
   /// 按钮权限
+  #[graphql(name = "permit_ids_save_null")]
   pub permit_ids_is_null: Option<bool>,
   /// 数据权限
+  #[graphql(name = "data_permit_ids")]
   pub data_permit_ids: Option<Vec<DataPermitId>>,
   /// 数据权限
+  #[graphql(name = "data_permit_ids_save_null")]
   pub data_permit_ids_is_null: Option<bool>,
   /// 锁定
+  #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
   /// 排序
+  #[graphql(skip)]
   pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
+  #[graphql(skip)]
   pub rem: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
+  #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
+  #[graphql(name = "update_usr_id_save_null")]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
@@ -426,22 +440,13 @@ impl std::fmt::Debug for RoleSearch {
     if let Some(ref menu_ids) = self.menu_ids {
       item = item.field("menu_ids", menu_ids);
     }
-    if let Some(ref menu_ids_is_null) = self.menu_ids_is_null {
-      item = item.field("menu_ids_is_null", menu_ids_is_null);
-    }
     // 按钮权限
     if let Some(ref permit_ids) = self.permit_ids {
       item = item.field("permit_ids", permit_ids);
     }
-    if let Some(ref permit_ids_is_null) = self.permit_ids_is_null {
-      item = item.field("permit_ids_is_null", permit_ids_is_null);
-    }
     // 数据权限
     if let Some(ref data_permit_ids) = self.data_permit_ids {
       item = item.field("data_permit_ids", data_permit_ids);
-    }
-    if let Some(ref data_permit_ids_is_null) = self.data_permit_ids_is_null {
-      item = item.field("data_permit_ids_is_null", data_permit_ids_is_null);
     }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
@@ -489,42 +494,54 @@ impl std::fmt::Debug for RoleSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "RoleInput")]
 pub struct RoleInput {
   /// ID
   pub id: Option<RoleId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 首页
+  #[graphql(name = "home_url")]
   pub home_url: Option<String>,
   /// 菜单权限
+  #[graphql(name = "menu_ids")]
   pub menu_ids: Option<Vec<MenuId>>,
   /// 菜单权限
+  #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: Option<Vec<String>>,
   /// 按钮权限
+  #[graphql(name = "permit_ids")]
   pub permit_ids: Option<Vec<PermitId>>,
   /// 按钮权限
+  #[graphql(name = "permit_ids_lbl")]
   pub permit_ids_lbl: Option<Vec<String>>,
   /// 数据权限
+  #[graphql(name = "data_permit_ids")]
   pub data_permit_ids: Option<Vec<DataPermitId>>,
-  /// 数据权限
-  pub data_permit_ids_lbl: Option<Vec<String>>,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: Option<String>,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: Option<String>,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: Option<u32>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -538,6 +555,9 @@ pub struct RoleInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -550,6 +570,9 @@ pub struct RoleInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<RoleModel> for RoleInput {
@@ -570,7 +593,6 @@ impl From<RoleModel> for RoleInput {
       permit_ids_lbl: model.permit_ids_lbl.into(),
       // 数据权限
       data_permit_ids: model.data_permit_ids.into(),
-      data_permit_ids_lbl: model.data_permit_ids_lbl.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -587,12 +609,14 @@ impl From<RoleModel> for RoleInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -625,10 +649,14 @@ impl From<RoleInput> for RoleSearch {
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()

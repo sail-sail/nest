@@ -70,7 +70,7 @@ let _redisClient: Redis | undefined = undefined;
 let cache_ECONNREFUSED = false;
 
 /** 获取redis缓存连接 */
-async function redisClient() {
+export async function redisClient() {
   if (cache_ECONNREFUSED) {
     return;
   }
@@ -236,6 +236,9 @@ export class Context {
   
   /** token */
   authorization: string | null | undefined;
+  
+  /** 静默模式 */
+  silentMode = false;
   
   constructor(oakCtx?: OakContext) {
     this.oakCtx = oakCtx;
