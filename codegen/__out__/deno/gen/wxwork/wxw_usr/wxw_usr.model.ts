@@ -12,6 +12,9 @@ declare global {
   type WxwUsrId = Distinct<string, typeof wxwUsrId>;
 
   interface WxwUsrSearch extends WxwUsrSearchType {
+    /** 用户ID */
+    userid?: string;
+    userid_like?: string;
     /** 手机号 */
     mobile?: string;
     mobile_like?: string;
@@ -39,17 +42,22 @@ declare global {
     /** 个人二维码 */
     qr_code?: string;
     qr_code_like?: string;
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
     /** 创建人 */
     create_usr_id?: UsrId[];
     create_usr_id_is_null?: boolean;
+    create_usr_id_lbl?: string[];
     /** 创建时间 */
     create_time?: string[];
     /** 更新人 */
     update_usr_id?: UsrId[];
     update_usr_id_is_null?: boolean;
+    update_usr_id_lbl?: string[];
     /** 更新时间 */
     update_time?: string[];
-    tenant_id?: string | null;
+    tenant_id?: TenantId | null;
   }
 
   interface WxwUsrModel extends WxwUsrModelType {
@@ -84,31 +92,33 @@ declare global {
 
   interface WxwUsrInput extends WxwUsrInputType {
     /** 手机号 */
-    mobile?: string;
+    mobile?: string | null;
     /** 性别 */
-    gender?: string;
+    gender?: string | null;
     /** 邮箱 */
-    email?: string;
+    email?: string | null;
     /** 企业邮箱 */
-    biz_email?: string;
+    biz_email?: string | null;
     /** 直属上级 */
-    direct_leader?: string;
+    direct_leader?: string | null;
     /** 职位 */
-    position?: string;
+    position?: string | null;
     /** 头像 */
-    avatar?: string;
+    avatar?: string | null;
     /** 头像缩略图 */
-    thumb_avatar?: string;
+    thumb_avatar?: string | null;
     /** 个人二维码 */
-    qr_code?: string;
+    qr_code?: string | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
     create_time_lbl?: string | null;
+    create_time_save_null?: boolean | null;
     update_usr_id?: UsrId | null;
     update_usr_id_lbl?: string | null;
     update_time?: string | null;
     update_time_lbl?: string | null;
+    update_time_save_null?: boolean | null;
     is_deleted?: number | null;
     tenant_id?: TenantId | null;
   }

@@ -6,7 +6,6 @@ import * as resolver from "./wxw_app_token.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxwAppTokenId
 
-
 type WxwAppTokenModel {
   "ID"
   id: WxwAppTokenId!
@@ -60,6 +59,8 @@ input WxwAppTokenInput {
   token_time: NaiveDateTime
   "令牌创建时间"
   token_time_lbl: String
+  "令牌创建时间"
+  token_time_save_null: Boolean
   "令牌超时时间"
   expires_in: Int
 }
@@ -72,17 +73,10 @@ input WxwAppTokenSearch {
   id: WxwAppTokenId
   "企微应用"
   wxw_app_id: [WxwAppId!]
+  "企微应用"
   wxw_app_id_is_null: Boolean
-  "类型corp和contact"
-  type: String
-  type_like: String
-  "令牌"
-  access_token: String
-  access_token_like: String
-  "令牌创建时间"
-  token_time: [NaiveDateTime]
-  "令牌超时时间"
-  expires_in: [Int]
+  "企微应用"
+  wxw_app_id_lbl: [String!]
 }
 type Query {
   "根据条件查找企微应用接口凭据总数"

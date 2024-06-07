@@ -23,7 +23,8 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="onSearch"
+      @submit.prevent
+      @keydown.enter="onSearch"
     >
       
       <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
@@ -575,7 +576,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -607,7 +608,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -630,7 +631,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -768,11 +769,7 @@ const props = defineProps<{
   agentid_like?: string; // 应用ID
   domain_id?: string|string[]; // 可信域名
   domain_id_lbl?: string; // 可信域名
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -785,11 +782,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   domain_id: "string[]",
   domain_id_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
 };
 
 const propsNotInSearch: string[] = [
@@ -1033,7 +1027,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "可信域名",
       prop: "domain_id_lbl",
-      sortBy: "domain_id",
+      sortBy: "domain_id_lbl",
       width: 220,
       align: "left",
       headerAlign: "center",
@@ -1596,7 +1590,7 @@ async function onDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("企微应用")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("企微应用")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1610,7 +1604,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("企微应用")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("企微应用")));
     emit("remove", num);
   }
 }
@@ -1630,7 +1624,7 @@ async function onForceDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("企微应用")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("企微应用")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1641,7 +1635,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("企微应用")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("企微应用")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1671,9 +1665,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} 个 {1} 成功", num, await nsAsync("企微应用"));
+      msg = await nsAsync("启用 {0} {1} 成功", num, await nsAsync("企微应用"));
     } else {
-      msg = await nsAsync("禁用 {0} 个 {1} 成功", num, await nsAsync("企微应用"));
+      msg = await nsAsync("禁用 {0} {1} 成功", num, await nsAsync("企微应用"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1705,9 +1699,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} 个 {1} 成功", num, await nsAsync("企微应用"));
+      msg = await nsAsync("锁定 {0} {1} 成功", num, await nsAsync("企微应用"));
     } else {
-      msg = await nsAsync("解锁 {0} 个 {1} 成功", num, await nsAsync("企微应用"));
+      msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("企微应用"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1730,7 +1724,7 @@ async function onRevertByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("企微应用")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("企微应用")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1743,7 +1737,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("企微应用")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("企微应用")));
     emit("revert", num);
   }
 }
