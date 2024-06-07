@@ -1064,7 +1064,7 @@ export async function validateIsEnabled(
 
 /** 校验角色是否存在 */
 export async function validateOption(
-  model?: Readonly<RoleModel>,
+  model?: RoleModel,
 ) {
   if (!model) {
     throw `${ await ns("角色") } ${ await ns("不存在") }`;
@@ -1289,16 +1289,13 @@ async function _creates(
   
   const args = new QueryArgs();
   let sql = `insert into base_role(id`;
-  if (!silentMode) {
-    sql += ",create_time";
-  }
+  sql += ",create_time";
+  sql += ",update_time";
   sql += ",tenant_id";
-  if (!silentMode) {
-    sql += ",create_usr_id";
-  }
-  if (!silentMode) {
-    sql += ",create_usr_id_lbl";
-  }
+  sql += ",create_usr_id";
+  sql += ",create_usr_id_lbl";
+  sql += ",update_usr_id";
+  sql += ",update_usr_id_lbl";
   sql += ",lbl";
   sql += ",home_url";
   sql += ",is_locked";
@@ -1313,11 +1310,22 @@ async function _creates(
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
       if (!silentMode) {
-        if (input.create_time != null) {
+        if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
           sql += `,${ args.push(reqDate()) }`;
         }
+      } else {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,null`;
+        }
+      }
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -1371,6 +1379,27 @@ async function _creates(
           }
           sql += `,${ args.push(usr_lbl) }`;
         }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+        if (input.create_usr_id_lbl == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id_lbl) }`;
+        }
+      }
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
@@ -1639,6 +1668,24 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (isNotEmpty(input.create_usr_id_lbl)) {
+    sql += `create_usr_id_lbl=?,`;
+    args.push(input.create_usr_id_lbl);
+    updateFldNum++;
+  }
+  if (input.create_usr_id != null) {
+    if (input.create_usr_id != oldModel.create_usr_id) {
+      sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.create_time != null || input.create_time_save_null) {
+    if (input.create_time != oldModel.create_time) {
+      sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
+  let sqlSetFldNum = updateFldNum;
   
   updateFldNum++;
   
@@ -1727,19 +1774,33 @@ export async function updateById(
           sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
         }
       }
+    } else {
+      if (input.update_usr_id != null) {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
+      }
     }
     if (!silentMode) {
-      if (input.update_time) {
-        sql += `update_time = ${ args.push(input.update_time) }`;
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `update_time=${ args.push(input.update_time) },`;
       } else {
-        sql += `update_time = ${ args.push(reqDate()) }`;
+        sql += `update_time=${ args.push(reqDate()) },`;
       }
+    } else if (input.update_time != null || input.update_time_save_null) {
+      sql += `update_time=${ args.push(input.update_time) },`;
+    }
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
-    await execute(sql, args);
+    if (sqlSetFldNum > 0) {
+      await execute(sql, args);
+    }
   }
   
   if (updateFldNum > 0) {

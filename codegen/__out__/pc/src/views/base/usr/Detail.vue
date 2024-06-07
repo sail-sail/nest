@@ -810,7 +810,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.role_ids,
     dialogModel.dept_ids,
     dialogModel.org_ids,

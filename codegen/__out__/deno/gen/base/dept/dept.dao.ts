@@ -87,6 +87,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  findOne as findOneOrg,
+} from "/gen/base/org/org.dao.ts";
+
+import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
@@ -110,16 +114,6 @@ async function getWhereQuery(
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
   }
-  
-  if (search?.org_id == null) {
-    const authModel = await getAuthModel();
-    const org_id = authModel?.org_id;
-    if (org_id) {
-      whereQuery += ` and t.org_id=${ args.push(org_id) }`;
-    }
-  } else if (search?.org_id != null && search?.org_id !== "-") {
-    whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
-  }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
@@ -131,6 +125,9 @@ async function getWhereQuery(
   }
   if (search?.parent_id_is_null) {
     whereQuery += ` and t.parent_id is null`;
+  }
+  if (search?.parent_id_lbl != null) {
+    whereQuery += ` and parent_id_lbl.lbl in ${ args.push(search.parent_id_lbl) }`;
   }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
@@ -157,6 +154,15 @@ async function getWhereQuery(
     if (search.order_by[1] != null) {
       whereQuery += ` and t.order_by<=${ args.push(search.order_by[1]) }`;
     }
+  }
+  if (search?.org_id != null) {
+    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
+  }
+  if (search?.org_id_is_null) {
+    whereQuery += ` and t.org_id is null`;
+  }
+  if (search?.org_id_lbl != null) {
+    whereQuery += ` and t.org_id_lbl in ${ args.push(search.org_id_lbl) }`;
   }
   if (search?.rem != null) {
     whereQuery += ` and t.rem=${ args.push(search.rem) }`;
@@ -356,6 +362,17 @@ export async function findAll(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.is_enabled.length > ${ ids_limit }`);
+    }
+  }
+  // 组织
+  if (search && search.org_id != null) {
+    const len = search.org_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.org_id.length > ${ ids_limit }`);
     }
   }
   // 创建人
@@ -601,6 +618,15 @@ export async function setIdByLbl(
       input.is_enabled = Number(val);
     }
   }
+  
+  // 组织
+  if (isNotEmpty(input.org_id_lbl) && input.org_id == null) {
+    input.org_id_lbl = String(input.org_id_lbl).trim();
+    const orgModel = await findOneOrg({ lbl: input.org_id_lbl });
+    if (orgModel) {
+      input.org_id = orgModel.id;
+    }
+  }
 }
 
 /**
@@ -620,6 +646,8 @@ export async function getFieldComments(): Promise<DeptFieldComment> {
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
     order_by: await n("排序"),
+    org_id: await n("组织"),
+    org_id_lbl: await n("组织"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
@@ -981,7 +1009,7 @@ export async function validateIsEnabled(
 
 /** 校验部门是否存在 */
 export async function validateOption(
-  model?: Readonly<DeptModel>,
+  model?: DeptModel,
 ) {
   if (!model) {
     throw `${ await ns("部门") } ${ await ns("不存在") }`;
@@ -1017,6 +1045,13 @@ export async function validate(
     input.lbl,
     22,
     fieldComments.lbl,
+  );
+  
+  // 组织
+  await validators.chars_max_length(
+    input.org_id,
+    22,
+    fieldComments.org_id,
   );
   
   // 备注
@@ -1198,22 +1233,20 @@ async function _creates(
   
   const args = new QueryArgs();
   let sql = `insert into base_dept(id`;
-  if (!silentMode) {
-    sql += ",create_time";
-  }
+  sql += ",create_time";
+  sql += ",update_time";
   sql += ",tenant_id";
-  sql += ",org_id";
-  if (!silentMode) {
-    sql += ",create_usr_id";
-  }
-  if (!silentMode) {
-    sql += ",create_usr_id_lbl";
-  }
+  sql += ",create_usr_id";
+  sql += ",create_usr_id_lbl";
+  sql += ",update_usr_id";
+  sql += ",update_usr_id_lbl";
   sql += ",parent_id";
   sql += ",lbl";
   sql += ",is_locked";
   sql += ",is_enabled";
   sql += ",order_by";
+  sql += ",org_id_lbl"
+  sql += ",org_id";
   sql += ",rem";
   sql += ")values";
   
@@ -1223,11 +1256,22 @@ async function _creates(
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
       if (!silentMode) {
-        if (input.create_time != null) {
+        if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
           sql += `,${ args.push(reqDate()) }`;
         }
+      } else {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,null`;
+        }
+      }
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -1241,19 +1285,6 @@ async function _creates(
         sql += ",default";
       } else {
         sql += `,${ args.push(input.tenant_id) }`;
-      }
-      if (input.org_id == null) {
-        const authModel = await getAuthModel();
-        const org_id = authModel?.org_id;
-        if (org_id != null) {
-          sql += `,${ args.push(org_id) }`;
-        } else {
-          sql += ",default";
-        }
-      } else if (input.org_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        sql += `,${ args.push(input.org_id) }`;
       }
       if (!silentMode) {
         if (input.create_usr_id == null) {
@@ -1294,6 +1325,27 @@ async function _creates(
           }
           sql += `,${ args.push(usr_lbl) }`;
         }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+        if (input.create_usr_id_lbl == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id_lbl) }`;
+        }
+      }
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
       }
       if (input.parent_id != null) {
         sql += `,${ args.push(input.parent_id) }`;
@@ -1317,6 +1369,16 @@ async function _creates(
       }
       if (input.order_by != null) {
         sql += `,${ args.push(input.order_by) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.org_id_lbl != null) {
+        sql += `,${ args.push(input.org_id_lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.org_id != null) {
+        sql += `,${ args.push(input.org_id) }`;
       } else {
         sql += ",default";
       }
@@ -1415,41 +1477,6 @@ export async function updateTenantById(
 }
 
 /**
- * 部门根据id修改组织id
- * @export
- * @param {DeptId} id
- * @param {OrgId} org_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
-export async function updateOrgById(
-  id: DeptId,
-  org_id: Readonly<OrgId>,
-  options?: Readonly<{
-  }>,
-): Promise<number> {
-  const table = "base_dept";
-  const method = "updateOrgById";
-  
-  const orgExist = await existByIdOrg(org_id);
-  if (!orgExist) {
-    return 0;
-  }
-  
-  const args = new QueryArgs();
-  const sql = `update base_dept set org_id=${ args.push(org_id) } where id=${ args.push(id) }
-  `;
-  
-  await delCache();
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCache();
-  return num;
-}
-
-/**
  * 根据 id 修改部门
  * @param {DeptId} id
  * @param {DeptInput} input
@@ -1503,11 +1530,6 @@ export async function updateById(
     await updateTenantById(id, input.tenant_id as unknown as TenantId);
   }
   
-  // 修改组织id
-  if (isNotEmpty(input.org_id)) {
-    await updateOrgById(id, input.org_id as unknown as OrgId);
-  }
-  
   {
     const input2 = {
       ...input,
@@ -1535,7 +1557,7 @@ export async function updateById(
   let updateFldNum = 0;
   if (input.parent_id != null) {
     if (input.parent_id != oldModel.parent_id) {
-      sql += `parent_id = ${ args.push(input.parent_id) },`;
+      sql += `parent_id=${ args.push(input.parent_id) },`;
       updateFldNum++;
     }
   }
@@ -1563,12 +1585,41 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (isNotEmpty(input.org_id_lbl)) {
+    sql += `org_id_lbl=?,`;
+    args.push(input.org_id_lbl);
+    updateFldNum++;
+  }
+  if (input.org_id != null) {
+    if (input.org_id != oldModel.org_id) {
+      sql += `org_id=${ args.push(input.org_id) },`;
+      updateFldNum++;
+    }
+  }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
+  if (isNotEmpty(input.create_usr_id_lbl)) {
+    sql += `create_usr_id_lbl=?,`;
+    args.push(input.create_usr_id_lbl);
+    updateFldNum++;
+  }
+  if (input.create_usr_id != null) {
+    if (input.create_usr_id != oldModel.create_usr_id) {
+      sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.create_time != null || input.create_time_save_null) {
+    if (input.create_time != oldModel.create_time) {
+      sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
+  let sqlSetFldNum = updateFldNum;
   
   updateFldNum++;
   
@@ -1623,19 +1674,33 @@ export async function updateById(
           sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
         }
       }
+    } else {
+      if (input.update_usr_id != null) {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
+      }
     }
     if (!silentMode) {
-      if (input.update_time) {
-        sql += `update_time = ${ args.push(input.update_time) }`;
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `update_time=${ args.push(input.update_time) },`;
       } else {
-        sql += `update_time = ${ args.push(reqDate()) }`;
+        sql += `update_time=${ args.push(reqDate()) },`;
       }
+    } else if (input.update_time != null || input.update_time_save_null) {
+      sql += `update_time=${ args.push(input.update_time) },`;
+    }
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
-    await execute(sql, args);
+    if (sqlSetFldNum > 0) {
+      await execute(sql, args);
+    }
   }
   
   if (updateFldNum > 0) {
@@ -2006,13 +2071,6 @@ export async function findLastOrderBy(
     const authModel = await getAuthModel();
     const tenant_id = await getTenant_id(authModel?.id);
     whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
-  }
-  {
-    const authModel = await getAuthModel();
-    const org_id = authModel?.org_id;
-    if (org_id) {
-      whereQuery.push(` t.org_id=${ args.push(org_id) }`);
-    }
   }
   if (whereQuery.length > 0) {
     sql += " where " + whereQuery.join(" and ");

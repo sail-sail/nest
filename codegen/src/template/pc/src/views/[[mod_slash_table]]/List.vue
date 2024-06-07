@@ -89,7 +89,6 @@ const hasAtt = columns.some((item) => item.isAtt);
         if (column_name === "version") continue;
         if (column_name === "is_deleted") continue;
         if (column_name === "tenant_id") continue;
-        if (column_name === "org_id") continue;
         const isPassword = column.isPassword;
         if (isPassword) continue;
         const isEncrypt = column.isEncrypt;
@@ -960,7 +959,6 @@ const hasAtt = columns.some((item) => item.isAtt);
             if (column_name === "version") continue;
             if (column_name === "is_deleted") continue;
             if (column_name === "tenant_id") continue;
-            if (column_name === "org_id") continue;
             const foreignKey = column.foreignKey;
             const data_type = column.DATA_TYPE;
             const column_type = column.COLUMN_TYPE;
@@ -970,13 +968,14 @@ const hasAtt = columns.some((item) => item.isAtt);
             const foreignTabs = column.foreignTabs || [ ];
             const isEncrypt = column.isEncrypt;
             const prefix = column.prefix || "";
+            const canSearch = column.canSearch;
           #><#
           if (column.isImg) {
           #>
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -997,7 +996,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1051,7 +1050,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1088,7 +1087,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1135,7 +1134,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1159,7 +1158,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1222,7 +1221,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1258,7 +1257,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1286,7 +1285,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   un-min="w-7.5"
                   @click="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row)"
                 >
-                  {{ row[column.sortBy]?.length || 0 }}
+                  {{ row.<#=column_name#>?.length || 0 }}
                 </el-link>
               </template><#
               } else if (column.inlineMany2manyTab) {
@@ -1297,7 +1296,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   un-min="w-7.5"
                   @click="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row)"
                 >
-                  {{ row[column.sortBy]?.length || 0 }}
+                  {{ row.<#=column_name#>?.length || 0 }}
                 </el-link>
               </template><#
               } else if (foreignKey.isLinkForeignTabs) {
@@ -1798,6 +1797,8 @@ const props = defineProps<{<#
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
+    const canSearch = column.canSearch;
+    if (!canSearch) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "version") continue;
     if ([
@@ -1806,7 +1807,6 @@ const props = defineProps<{<#
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "org_id",
       "is_hidden",
       "is_deleted",
     ].includes(column_name)) continue;
@@ -1916,6 +1916,8 @@ const builtInSearchType: { [key: string]: string } = {<#
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
+    const canSearch = column.canSearch;
+    if (!canSearch) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "version") continue;
     if (column_name === "is_deleted") continue;
@@ -1928,12 +1930,6 @@ const builtInSearchType: { [key: string]: string } = {<#
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     if (foreignKey) {
       data_type = data_type+"[]";
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
   #><#
     if (foreignKey) {
@@ -2399,7 +2395,49 @@ function getTableColumns(): ColumnType[] {
       }
       #>
     },<#
-    } else if (foreignKey || column.dict || column.dictbiz
+    } else if (foreignKey) {
+    #>
+    {
+      label: "<#=column_comment#>",
+      prop: "<#=column_name#>_lbl",
+      sortBy: "<#=column_name#>_lbl",<#
+      if (column.width) {
+      #>
+      width: <#=column.width#>,<#
+      }
+      #><#
+      if (column.minWidth) {
+      #>
+      minWidth: <#=column.minWidth#>,<#
+      }
+      #><#
+      if (column.sortable) {
+      #>
+      sortable: "custom",<#
+      }
+      #><#
+      if (column.align) {
+      #>
+      align: "<#=column.align#>",<#
+      }
+      #><#
+      if (column.headerAlign) {
+      #>
+      headerAlign: "<#=column.headerAlign#>",<#
+      }
+      #><#
+      if (column.showOverflowTooltip != null) {
+      #>
+      showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
+      }
+      #><#
+      if (fixed) {
+      #>
+      fixed: "<#=fixed#>",<#
+      }
+      #>
+    },<#
+    } else if (column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
     ) {
     #>

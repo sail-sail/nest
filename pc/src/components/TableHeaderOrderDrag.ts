@@ -119,11 +119,11 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
           if (item.hide === true) {
             continue;
           }
-          if (ii === oldIndex) {
+          if (ii === oldIndex && !hasSetOldIndex) {
             oldIndex = i;
             hasSetOldIndex = true;
           }
-          if (ii === newIndex) {
+          if (ii === newIndex && !hasSetNewIndex) {
             newIndex = i;
             hasSetNewIndex = true;
           }

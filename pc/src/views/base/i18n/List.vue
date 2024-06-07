@@ -540,7 +540,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -558,7 +558,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -576,7 +576,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -720,8 +720,6 @@ const props = defineProps<{
   code_like?: string; // 编码
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -972,7 +970,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "语言",
       prop: "lang_id_lbl",
-      sortBy: "lang_id",
+      sortBy: "lang_id_lbl",
       width: 140,
       align: "left",
       headerAlign: "center",
@@ -981,7 +979,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "菜单",
       prop: "menu_id_lbl",
-      sortBy: "menu_id",
+      sortBy: "menu_id_lbl",
       width: 180,
       align: "left",
       headerAlign: "center",
@@ -1016,7 +1014,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1035,7 +1033,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",

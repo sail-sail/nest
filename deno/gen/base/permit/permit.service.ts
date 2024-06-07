@@ -10,6 +10,12 @@ import {
 
 import * as permitDao from "./permit.dao.ts";
 
+async function setSearchQuery(
+  search: PermitSearch,
+) {
+  
+}
+
 /**
  * 根据条件查找按钮权限总数
  * @param {PermitSearch} search? 搜索条件
@@ -18,7 +24,11 @@ import * as permitDao from "./permit.dao.ts";
 export async function findCount(
   search?: PermitSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await permitDao.findCount(search);
   return data;
 }
@@ -35,7 +45,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<PermitModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: PermitModel[] = await permitDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +70,11 @@ export async function findOne(
   search?: PermitSearch,
   sort?: SortInput|SortInput[],
 ): Promise<PermitModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await permitDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +97,11 @@ export async function findById(
 export async function exist(
   search?: PermitSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await permitDao.exist(search);
   return data;
 }
