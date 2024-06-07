@@ -4678,9 +4678,13 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "delete_by_ids";
+  let method = "delete_by_ids";<#
+  if (hasIsDeleted) {
+  #>
   
-  let silent_mode = get_silent_mode(options.as_ref());
+  let silent_mode = get_silent_mode(options.as_ref());<#
+  }
+  #>
   
   let is_debug = get_is_debug(options.as_ref());
   
