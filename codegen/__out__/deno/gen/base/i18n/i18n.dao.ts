@@ -1,5 +1,9 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
+  useContext,
+} from "/lib/context.ts";
+
+import {
   escapeId,
 } from "sqlstring";
 
@@ -13,6 +17,7 @@ import {
 
 import {
   log,
+  error,
   escapeDec,
   reqDate,
   delCache as delCacheCtx,
@@ -69,43 +74,44 @@ import {
   findOne as findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
 
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 const route_path = "/base/i18n";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
-  search?: I18nSearch,
-  options?: {
-  },
+  search?: Readonly<I18nSearch>,
+  options?: Readonly<{
+  }>,
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
-  if (search?.ids != null && !Array.isArray(search?.ids)) {
-    search.ids = [ search.ids ];
-  }
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
-  if (search?.lang_id != null && !Array.isArray(search?.lang_id)) {
-    search.lang_id = [ search.lang_id ];
-  }
   if (search?.lang_id != null) {
-    whereQuery += ` and lang_id_lbl.id in ${ args.push(search.lang_id) }`;
+    whereQuery += ` and t.lang_id in ${ args.push(search.lang_id) }`;
   }
   if (search?.lang_id_is_null) {
-    whereQuery += ` and lang_id_lbl.id is null`;
+    whereQuery += ` and t.lang_id is null`;
   }
-  if (search?.menu_id != null && !Array.isArray(search?.menu_id)) {
-    search.menu_id = [ search.menu_id ];
+  if (search?.lang_id_lbl != null) {
+    whereQuery += ` and lang_id_lbl.lbl in ${ args.push(search.lang_id_lbl) }`;
   }
   if (search?.menu_id != null) {
-    whereQuery += ` and menu_id_lbl.id in ${ args.push(search.menu_id) }`;
+    whereQuery += ` and t.menu_id in ${ args.push(search.menu_id) }`;
   }
   if (search?.menu_id_is_null) {
-    whereQuery += ` and menu_id_lbl.id is null`;
+    whereQuery += ` and t.menu_id is null`;
+  }
+  if (search?.menu_id_lbl != null) {
+    whereQuery += ` and menu_id_lbl.lbl in ${ args.push(search.menu_id_lbl) }`;
   }
   if (search?.code != null) {
     whereQuery += ` and t.code=${ args.push(search.code) }`;
@@ -125,14 +131,14 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.create_usr_id != null && !Array.isArray(search?.create_usr_id)) {
-    search.create_usr_id = [ search.create_usr_id ];
-  }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and create_usr_id_lbl.id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
   if (search?.create_usr_id_is_null) {
-    whereQuery += ` and create_usr_id_lbl.id is null`;
+    whereQuery += ` and t.create_usr_id is null`;
+  }
+  if (search?.create_usr_id_lbl != null) {
+    whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
@@ -142,14 +148,14 @@ async function getWhereQuery(
       whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
     }
   }
-  if (search?.update_usr_id != null && !Array.isArray(search?.update_usr_id)) {
-    search.update_usr_id = [ search.update_usr_id ];
-  }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and update_usr_id_lbl.id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
   if (search?.update_usr_id_is_null) {
-    whereQuery += ` and update_usr_id_lbl.id is null`;
+    whereQuery += ` and t.update_usr_id is null`;
+  }
+  if (search?.update_usr_id_lbl != null) {
+    whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -165,15 +171,13 @@ async function getWhereQuery(
 // deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
-  search?: I18nSearch,
-  options?: {
-  },
+  search?: Readonly<I18nSearch>,
+  options?: Readonly<{
+  }>,
 ) {
   let fromQuery = `base_i18n t
     left join base_lang lang_id_lbl on lang_id_lbl.id=t.lang_id
-    left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id
-    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
-    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
+    left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
   return fromQuery;
 }
 
@@ -183,10 +187,10 @@ async function getFromQuery(
  * @return {Promise<number>}
  */
 export async function findCount(
-  search?: I18nSearch,
-  options?: {
+  search?: Readonly<I18nSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
   const table = "base_i18n";
   const method = "findCount";
@@ -228,13 +232,13 @@ export async function findCount(
  * @param {SortInput|SortInput[]} sort? 排序
  */
 export async function findAll(
-  search?: I18nSearch,
-  page?: PageInput,
+  search?: Readonly<I18nSearch>,
+  page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     ids_limit?: number;
-  },
+  }>,
 ): Promise<I18nModel[]> {
   const table = "base_i18n";
   const method = "findAll";
@@ -311,8 +315,6 @@ export async function findAll(
   let sql = `select f.* from (select t.*
       ,lang_id_lbl.lbl lang_id_lbl
       ,menu_id_lbl.lbl menu_id_lbl
-      ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -379,9 +381,6 @@ export async function findAll(
     // 菜单
     model.menu_id_lbl = model.menu_id_lbl || "";
     
-    // 创建人
-    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
-    
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
@@ -393,9 +392,6 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
-    
-    // 更新人
-    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -468,10 +464,10 @@ export async function getFieldComments(): Promise<I18nFieldComment> {
  * @param {I18nInput} search0
  */
 export async function findByUnique(
-  search0: I18nInput,
-  options?: {
+  search0: Readonly<I18nInput>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<I18nModel[]> {
   
   const table = "base_i18n";
@@ -538,8 +534,8 @@ export async function findByUnique(
  * @return {boolean}
  */
 export function equalsByUnique(
-  oldModel: I18nModel,
-  input: I18nInput,
+  oldModel: Readonly<I18nModel>,
+  input: Readonly<I18nInput>,
 ): boolean {
   if (!oldModel || !input) {
     return false;
@@ -562,11 +558,11 @@ export function equalsByUnique(
  * @return {Promise<I18nId | undefined>}
  */
 export async function checkByUnique(
-  input: I18nInput,
-  oldModel: I18nModel,
-  uniqueType: UniqueType = UniqueType.Throw,
-  options?: {
-  },
+  input: Readonly<I18nInput>,
+  oldModel: Readonly<I18nModel>,
+  uniqueType: Readonly<UniqueType> = UniqueType.Throw,
+  options?: Readonly<{
+  }>,
 ): Promise<I18nId | undefined> {
   const isEquals = equalsByUnique(oldModel, input);
   if (isEquals) {
@@ -596,12 +592,13 @@ export async function checkByUnique(
  * @param {I18nSearch} search?
  */
 export async function findOne(
-  search?: I18nSearch,
+  search?: Readonly<I18nSearch>,
   sort?: SortInput | SortInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<I18nModel | undefined> {
+  
   const table = "base_i18n";
   const method = "findOne";
   
@@ -617,8 +614,10 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -639,12 +638,14 @@ export async function findOne(
  */
 export async function findById(
   id?: I18nId | null,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<I18nModel | undefined> {
+  
   const table = "base_i18n";
   const method = "findById";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
@@ -654,8 +655,10 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!id) {
@@ -673,18 +676,74 @@ export async function findById(
   return model;
 }
 
+/** 根据 ids 查找国际化 */
+export async function findByIds(
+  ids: I18nId[],
+  options?: Readonly<{
+    debug?: boolean;
+  }>,
+): Promise<I18nModel[]> {
+  
+  const table = "base_i18n";
+  const method = "findByIds";
+  
+  if (options?.debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (ids) {
+      msg += ` ids:${ ids }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = {
+      ...options,
+      debug: false,
+    };
+  }
+  
+  if (!ids || ids.length === 0) {
+    return [ ];
+  }
+  
+  const models = await findAll(
+    {
+      ids,
+    },
+    undefined,
+    undefined,
+    options,
+  );
+  
+  if (models.length !== ids.length) {
+    throw new Error("findByIds: models.length !== ids.length");
+  }
+  
+  const models2 = ids.map((id) => {
+    const model = models.find((item) => item.id === id);
+    if (!model) {
+      throw new Error(`findByIds: id: ${ id } not found`);
+    }
+    return model;
+  });
+  
+  return models2;
+}
+
 /**
  * 根据搜索条件判断国际化是否存在
  * @param {I18nSearch} search?
  */
 export async function exist(
-  search?: I18nSearch,
-  options?: {
+  search?: Readonly<I18nSearch>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<boolean> {
+  
   const table = "base_i18n";
   const method = "exist";
+  
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
@@ -694,8 +753,10 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
@@ -707,11 +768,12 @@ export async function exist(
  * @param {I18nId} id
  */
 export async function existById(
-  id?: I18nId | null,
-  options?: {
+  id?: Readonly<I18nId | null>,
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ) {
+  
   const table = "base_i18n";
   const method = "existById";
   
@@ -728,7 +790,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from base_i18n t where t.id = ${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from base_i18n t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -760,7 +822,7 @@ export async function validateOption(
  * @param input 
  */
 export async function validate(
-  input: I18nInput,
+  input: Readonly<I18nInput>,
 ) {
   const fieldComments = await getFieldComments();
   
@@ -834,13 +896,15 @@ export async function validate(
  * @return {Promise<I18nId>} 
  */
 export async function create(
-  input: I18nInput,
-  options?: {
+  input: Readonly<I18nInput>,
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<I18nId> {
+  
   const table = "base_i18n";
   const method = "create";
   
@@ -853,8 +917,10 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   if (!input) {
@@ -881,12 +947,14 @@ export async function create(
  */
 export async function creates(
   inputs: I18nInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<I18nId[]> {
+  
   const table = "base_i18n";
   const method = "creates";
   
@@ -899,8 +967,10 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = options || { };
-    options.debug = false;
+    options = {
+      ...options,
+      debug: false,
+    };
   }
   
   const ids = await _creates(inputs, options);
@@ -910,11 +980,12 @@ export async function creates(
 
 async function _creates(
   inputs: I18nInput[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<I18nId[]> {
   
   if (inputs.length === 0) {
@@ -922,6 +993,9 @@ async function _creates(
   }
   
   const table = "base_i18n";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   const ids2: I18nId[] = [ ];
   const inputs2: I18nInput[] = [ ];
@@ -965,27 +1039,103 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_i18n(id,create_time,create_usr_id,lang_id,menu_id,code,lbl,rem)values`;
+  let sql = `insert into base_i18n(id`;
+  sql += ",create_time";
+  sql += ",update_time";
+  sql += ",create_usr_id";
+  sql += ",create_usr_id_lbl";
+  sql += ",update_usr_id";
+  sql += ",update_usr_id_lbl";
+  sql += ",lang_id";
+  sql += ",menu_id";
+  sql += ",code";
+  sql += ",lbl";
+  sql += ",rem";
+  sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (input.create_time != null) {
-        sql += `,${ args.push(input.create_time) }`;
-      } else {
-        sql += `,${ args.push(reqDate()) }`;
-      }
-      if (input.create_usr_id != null && input.create_usr_id as unknown as string !== "-") {
-        sql += `,${ args.push(input.create_usr_id) }`;
-      } else {
-        const authModel = await getAuthModel();
-        if (authModel?.id != null) {
-          sql += `,${ args.push(authModel.id) }`;
+      if (!silentMode) {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
         } else {
-          sql += ",default";
+          sql += `,${ args.push(reqDate()) }`;
         }
+      } else {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,null`;
+        }
+      }
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
+      }
+      if (!silentMode) {
+        if (input.create_usr_id == null) {
+          const authModel = await getAuthModel();
+          let usr_id: UsrId | undefined = authModel?.id;
+          let usr_lbl = "";
+          if (usr_id) {
+            const usr_model = await findByIdUsr(usr_id);
+            if (!usr_model) {
+              usr_id = undefined;
+            } else {
+              usr_lbl = usr_model.lbl;
+            }
+          }
+          if (usr_id != null) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        } else if (input.create_usr_id as unknown as string === "-") {
+          sql += ",default";
+          sql += ",default";
+        } else {
+          let usr_id: UsrId | undefined = input.create_usr_id;
+          let usr_lbl = "";
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+            usr_lbl = "";
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+          if (usr_id) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
+        }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+        if (input.create_usr_id_lbl == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id_lbl) }`;
+        }
+      }
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
       }
       if (input.lang_id != null) {
         sql += `,${ args.push(input.lang_id) }`;
@@ -1058,14 +1208,18 @@ export async function delCache() {
 export async function updateById(
   id: I18nId,
   input: I18nInput,
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
     uniqueType?: "ignore" | "throw";
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<I18nId> {
   
   const table = "base_i18n";
   const method = "updateById";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1111,70 +1265,132 @@ export async function updateById(
   }
   
   const args = new QueryArgs();
-  let sql = `
-    update base_i18n set
-  `;
+  let sql = `update base_i18n set `;
   let updateFldNum = 0;
   if (input.lang_id != null) {
     if (input.lang_id != oldModel.lang_id) {
-      sql += `lang_id = ${ args.push(input.lang_id) },`;
+      sql += `lang_id=${ args.push(input.lang_id) },`;
       updateFldNum++;
     }
   }
   if (input.menu_id != null) {
     if (input.menu_id != oldModel.menu_id) {
-      sql += `menu_id = ${ args.push(input.menu_id) },`;
+      sql += `menu_id=${ args.push(input.menu_id) },`;
       updateFldNum++;
     }
   }
   if (input.code != null) {
     if (input.code != oldModel.code) {
-      sql += `code = ${ args.push(input.code) },`;
+      sql += `code=${ args.push(input.code) },`;
       updateFldNum++;
     }
   }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      sql += `lbl = ${ args.push(input.lbl) },`;
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      sql += `rem = ${ args.push(input.rem) },`;
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
+  if (isNotEmpty(input.create_usr_id_lbl)) {
+    sql += `create_usr_id_lbl=?,`;
+    args.push(input.create_usr_id_lbl);
+    updateFldNum++;
+  }
+  if (input.create_usr_id != null) {
+    if (input.create_usr_id != oldModel.create_usr_id) {
+      sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.create_time != null || input.create_time_save_null) {
+    if (input.create_time != oldModel.create_time) {
+      sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
+  let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
-    if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-      sql += `update_usr_id = ${ args.push(input.update_usr_id) },`;
+    if (!silentMode) {
+      if (input.update_usr_id == null) {
+        const authModel = await getAuthModel();
+        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id != null) {
+          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        }
+        if (usr_lbl) {
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+        let usr_id: UsrId | undefined = input.update_usr_id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      }
     } else {
-      const authModel = await getAuthModel();
-      if (authModel?.id != null) {
-        sql += `update_usr_id = ${ args.push(authModel.id) },`;
+      if (input.update_usr_id != null) {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
       }
     }
-    if (input.update_time) {
-      sql += `update_time = ${ args.push(input.update_time) }`;
-    } else {
-      sql += `update_time = ${ args.push(reqDate()) }`;
+    if (!silentMode) {
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `update_time=${ args.push(input.update_time) },`;
+      } else {
+        sql += `update_time=${ args.push(reqDate()) },`;
+      }
+    } else if (input.update_time != null || input.update_time_save_null) {
+      sql += `update_time=${ args.push(input.update_time) },`;
     }
-    sql += ` where id = ${ args.push(id) } limit 1`;
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
-    await execute(sql, args);
+    if (sqlSetFldNum > 0) {
+      await execute(sql, args);
+    }
   }
   
   if (updateFldNum > 0) {
     await delCache();
   }
   
-  const newModel = await findById(id);
-  
-  if (!deepCompare(oldModel, newModel)) {
-    log(JSON.stringify(oldModel));
+  if (!silentMode) {
+    const newModel = await findById(id);
+    
+    if (!deepCompare(oldModel, newModel)) {
+      log(JSON.stringify(oldModel));
+    }
   }
   
   return id;
@@ -1187,12 +1403,17 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: I18nId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+    silentMode?: boolean;
+  }>,
 ): Promise<number> {
+  
   const table = "base_i18n";
   const method = "deleteByIds";
+  
+  const context = useContext();
+  const silentMode = options?.silentMode ?? context.silentMode;
   
   if (options?.debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1219,7 +1440,28 @@ export async function deleteByIds(
       continue;
     }
     const args = new QueryArgs();
-    const sql = `update base_i18n set is_deleted=1,delete_time=${ args.push(reqDate()) } where id=${ args.push(id) } limit 1`;
+    let sql = `update base_i18n set is_deleted=1`;
+    if (!silentMode) {
+      const authModel = await getAuthModel();
+      let usr_id: UsrId | undefined = authModel?.id;
+      if (usr_id != null) {
+        sql += `,delete_usr_id=${ args.push(usr_id) }`;
+      }
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_lbl) {
+        sql += `,delete_usr_id_lbl=${ args.push(usr_lbl) }`;
+      }
+      sql += `,delete_time=${ args.push(reqDate()) }`;
+    }
+    sql += ` where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }
@@ -1236,10 +1478,11 @@ export async function deleteByIds(
  */
 export async function revertByIds(
   ids: I18nId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_i18n";
   const method = "revertByIds";
   
@@ -1264,7 +1507,7 @@ export async function revertByIds(
   for (let i = 0; i < ids.length; i++) {
     const id: I18nId = ids[i];
     const args = new QueryArgs();
-    const sql = `update base_i18n set is_deleted = 0 where id = ${ args.push(id) } limit 1`;
+    const sql = `update base_i18n set is_deleted = 0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     // 检查数据的唯一索引
@@ -1297,10 +1540,11 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: I18nId[],
-  options?: {
+  options?: Readonly<{
     debug?: boolean;
-  },
+  }>,
 ): Promise<number> {
+  
   const table = "base_i18n";
   const method = "forceDeleteByIds";
   
@@ -1326,12 +1570,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     {
       const args = new QueryArgs();
-      const sql = `select * from base_i18n where id = ${ args.push(id) }`;
+      const sql = `select * from base_i18n where id=${ args.push(id) }`;
       const model = await queryOne(sql, args);
       log("forceDeleteByIds:", model);
     }
     const args = new QueryArgs();
-    const sql = `delete from base_i18n where id = ${ args.push(id) } and is_deleted = 1 limit 1`;
+    const sql = `delete from base_i18n where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
   }

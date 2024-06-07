@@ -71,6 +71,8 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
+        
+        @submit.prevent
       >
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
@@ -576,7 +578,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("角色")));
+    ElMessage.warning(await nsAsync("已经是第一项了"));
   }
 }
 
@@ -658,7 +660,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.menu_ids,
     dialogModel.permit_ids,
     dialogModel.data_permit_ids,
@@ -672,9 +673,6 @@ watch(
     }
     if (!dialogModel.permit_ids || dialogModel.permit_ids.length === 0) {
       dialogModel.permit_ids_lbl = [ ];
-    }
-    if (!dialogModel.data_permit_ids || dialogModel.data_permit_ids.length === 0) {
-      dialogModel.data_permit_ids_lbl = [ ];
     }
   },
 );

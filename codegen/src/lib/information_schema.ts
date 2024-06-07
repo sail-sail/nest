@@ -93,10 +93,18 @@ async function getSchema0(
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   // 是否有隐藏字段
   const hasIsHidden = records.some((item: TableCloumn) => [ "is_hidden" ].includes(item.COLUMN_NAME));
+  const hasOrgId = records.some((item: TableCloumn) => [ "org_id" ].includes(item.COLUMN_NAME));
+  const hasOrgIdLbl = records.some((item: TableCloumn) => [ "org_id_lbl" ].includes(item.COLUMN_NAME));
   const hasCreateTime = records.some((item: TableCloumn) => [ "create_time" ].includes(item.COLUMN_NAME));
   const hasCreateUsrId = records.some((item: TableCloumn) => [ "create_usr_id" ].includes(item.COLUMN_NAME));
+  const hasCreateUsrIdLbl = records.some((item: TableCloumn) => [ "create_usr_id_lbl" ].includes(item.COLUMN_NAME));
   const hasUpdateTime = records.some((item: TableCloumn) => [ "update_time" ].includes(item.COLUMN_NAME));
   const hasUpdateUsrId = records.some((item: TableCloumn) => [ "update_usr_id" ].includes(item.COLUMN_NAME));
+  const hasUpdateUsrIdLbl = records.some((item: TableCloumn) => [ "update_usr_id_lbl" ].includes(item.COLUMN_NAME));
+  const hasIsDeleted = records.some((item: TableCloumn) => [ "is_deleted" ].includes(item.COLUMN_NAME));
+  const hasDeleteUsrId = records.some((item: TableCloumn) => [ "delete_usr_id" ].includes(item.COLUMN_NAME));
+  const hasDeleteUsrIdLbl = records.some((item: TableCloumn) => [ "delete_usr_id_lbl" ].includes(item.COLUMN_NAME));
+  const hasDeleteTime = records.some((item: TableCloumn) => [ "delete_time" ].includes(item.COLUMN_NAME));
   const hasVersion = records.some((item: TableCloumn) => [ "version" ].includes(item.COLUMN_NAME));
   const records2: TableCloumn[] = [ ];
   if (!tables[table_name]?.columns) {
@@ -111,6 +119,7 @@ async function getSchema0(
     for (let k = 0; k < records.length; k++) {
       const record = records[k];
       if (record.COLUMN_NAME === "id") {
+        record.canSearch = true;
         continue;
       }
       if (column.COLUMN_NAME === record.COLUMN_NAME) {
@@ -122,10 +131,6 @@ async function getSchema0(
   const tenant_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "tenant_id");
   if (tenant_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "tenant_id")) {
     records2.push(tenant_idColumn);
-  }
-  const org_idColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "org_id");
-  if (org_idColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "org_id")) {
-    records2.push(org_idColumn);
   }
   const is_deletedColumn = records.find((item: TableCloumn) => item.COLUMN_NAME === "is_deleted");
   if (is_deletedColumn && !records2.some((item: TableCloumn) => item.COLUMN_NAME === "is_deleted")) {
@@ -150,6 +155,23 @@ async function getSchema0(
       onlyCodegenDeno: true,
     });
   }
+  // 组织
+  if (hasOrgId && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "org_id")) {
+    tables[table_name].columns.push({
+      COLUMN_NAME: "org_id",
+      COLUMN_TYPE: "varchar(22)",
+      DATA_TYPE: "varchar",
+      COLUMN_COMMENT: "组织",
+      onlyCodegenDeno: true,
+      canSearch: true,
+      foreignKey: {
+        mod: "base",
+        table: "org",
+        column: "id",
+        lbl: "lbl",
+      },
+    });
+  }
   // 创建人
   if (hasCreateUsrId && !tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "create_usr_id")) {
     tables[table_name].columns.push({
@@ -158,6 +180,7 @@ async function getSchema0(
       DATA_TYPE: "varchar",
       COLUMN_COMMENT: "创建人",
       onlyCodegenDeno: true,
+      canSearch: true,
     });
   }
   // 创建时间
@@ -178,6 +201,7 @@ async function getSchema0(
       DATA_TYPE: "varchar",
       COLUMN_COMMENT: "更新人",
       onlyCodegenDeno: true,
+      canSearch: true,
     });
   }
   // 更新时间
@@ -193,13 +217,27 @@ async function getSchema0(
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const item = tables[table_name].columns[i];
     const column_name = item.COLUMN_NAME;
+    if (column_name === "id") {
+      item.canSearch = true;
+    }
     const record = records2.find((item: TableCloumn) => item.COLUMN_NAME === column_name);
     if (column_name === "is_hidden") {
       if (item.onlyCodegenDeno != null) {
         item.onlyCodegenDeno = true;
       }
     }
-    if ([ "org_id", "tenant_id", "is_deleted" ].includes(column_name)) {
+    if (column_name === "org_id") {
+      if (!item.COLUMN_DEFAULT) {
+        item.COLUMN_DEFAULT = "CURRENT_ORG_ID";
+      }
+      if (hasOrgIdLbl) {
+        item.modelLabel = "org_id_lbl";
+      }
+      if (item.require == null) {
+        item.require = true;
+      }
+    }
+    if ([ "tenant_id", "is_deleted" ].includes(column_name)) {
       item.isVirtual = true;
       item.ignoreCodegen = false;
     } else if ([ "create_usr_id", "create_time", "update_usr_id", "update_time", "is_deleted"  ].includes(column_name)) {
@@ -219,6 +257,14 @@ async function getSchema0(
       if (item.align == null) {
         item.align = "center";
       }
+      if (hasCreateUsrIdLbl && column_name === "create_usr_id") {
+        item.modelLabel = "create_usr_id_lbl";
+      } else if (hasUpdateUsrIdLbl && column_name === "update_usr_id") {
+        item.modelLabel = "update_usr_id_lbl";
+      }
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
     }
     if ([ "create_time", "update_time" ].includes(column_name)) {
       if (item.width == null) {
@@ -234,6 +280,9 @@ async function getSchema0(
       }
       if (item.search == null) {
         item.search = true;
+        if (item.canSearch == null) {
+          item.canSearch = true;
+        }
       }
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = true;
@@ -256,6 +305,9 @@ async function getSchema0(
       }
       if (item.search == null) {
         item.search = true;
+        if (item.canSearch == null) {
+          item.canSearch = true;
+        }
       }
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = true;
@@ -304,6 +356,9 @@ async function getSchema0(
       }
       if (item.search == null) {
         item.search = true;
+        if (item.canSearch == null) {
+          item.canSearch = true;
+        }
       }
     }
     if (column_name.startsWith("is_")
@@ -504,6 +559,14 @@ async function getSchema0(
       order: "ascending",
     };
   }
+  if (hasOrgId && tables[table_name]?.opts?.hasOrgId == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasOrgId = true;
+  }
+  if (hasOrgIdLbl && tables[table_name]?.opts?.hasOrgIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasOrgIdLbl = true;
+  }
   if (hasCreateTime && tables[table_name]?.opts?.hasCreateTime == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasCreateTime = true;
@@ -512,6 +575,10 @@ async function getSchema0(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasCreateUsrId = true;
   }
+  if (hasCreateUsrIdLbl && tables[table_name]?.opts?.hasCreateUsrIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasCreateUsrIdLbl = true;
+  }
   if (hasUpdateTime && tables[table_name]?.opts?.hasUpdateTime == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasUpdateTime = true;
@@ -519,6 +586,26 @@ async function getSchema0(
   if (hasUpdateUsrId && tables[table_name]?.opts?.hasUpdateUsrId == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.hasUpdateUsrId = true;
+  }
+  if (hasUpdateUsrIdLbl && tables[table_name]?.opts?.hasUpdateUsrIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasUpdateUsrIdLbl = true;
+  }
+  if (hasIsDeleted && tables[table_name]?.opts?.hasIsDeleted == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasIsDeleted = true;
+  }
+  if (hasDeleteUsrId && tables[table_name]?.opts?.hasDeleteUsrId == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasDeleteUsrId = true;
+  }
+  if (hasDeleteUsrIdLbl && tables[table_name]?.opts?.hasDeleteUsrIdLbl == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasDeleteUsrIdLbl = true;
+  }
+  if (hasDeleteTime && tables[table_name]?.opts?.hasDeleteTime == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.hasDeleteTime = true;
   }
   if (hasVersion && tables[table_name]?.opts?.hasVersion == null) {
     tables[table_name].opts = tables[table_name].opts || { };
@@ -667,6 +754,9 @@ export async function getSchema(
       if (!column) {
         record.require = true;
         record.search = true;
+        if (record.canSearch == null) {
+          record.canSearch = true;
+        }
       }
     }
     if (record.COLUMN_NAME === "img" || record.COLUMN_NAME.endsWith("_img")) {
@@ -694,6 +784,7 @@ export async function getSchema(
     }
     if (record.isEncrypt) {
       record.search = false;
+      record.canSearch = false;
     }
   }
   for (let i = 0; i < tables[table_name].columns.length; i++) {
@@ -774,8 +865,11 @@ export async function getSchema(
     if (column.foreignKey && !column.foreignKey.column) {
       column.foreignKey.column = "id";
     }
-    if (column.foreignKey && !column.foreignKey.lbl) {
-      column.foreignKey.lbl = "lbl";
+    if (column.foreignKey && column.foreignKey.lbl === undefined) {
+      const columnsTmp = tables[column.foreignKey.mod + "_" + column.foreignKey.table]?.columns || [ ];
+      if (columnsTmp.some((item) => item.COLUMN_NAME === "lbl")) {
+        column.foreignKey.lbl = "lbl";
+      }
     }
     if (column.foreignKey && column.foreignKey.multiple == null) {
       if (column.COLUMN_NAME.endsWith("_ids")) {
@@ -786,7 +880,7 @@ export async function getSchema(
     }
     // 主表删除数据时是否级联删除, 默认为 false
     if (column.foreignKey && !column.foreignKey.defaultSort) {
-      column.foreignKey.defaultSort = tables[column.foreignKey.table]?.opts?.defaultSort;
+      column.foreignKey.defaultSort = tables[column.foreignKey.mod + "_" + column.foreignKey.table]?.opts?.defaultSort;
     }
     if (column.foreignTabs) {
       for (let i = 0; i < column.foreignTabs.length; i++) {
@@ -845,7 +939,6 @@ export async function getSchema(
       };
     }
   }
-  tablesConfigItemMap[table_name] = tables[table_name];
   
   // 外键关联的默认width
   for (let i = 0; i < tables[table_name].columns.length; i++) {
@@ -871,7 +964,22 @@ export async function getSchema(
       }
     }
   }
-  return tables[table_name];
+  
+  // canSearch
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const column = tables[table_name].columns[i];
+    if (column.canSearch == null) {
+      if (column.search) {
+        column.canSearch = true;
+      } else {
+        if (column.foreignKey) {
+          column.canSearch = true;
+        }
+      }
+    }
+  }
+  tablesConfigItemMap[table_name] = tables[table_name];
+  return tablesConfigItemMap[table_name];
 }
 
 export async function getAllTables(context: Context) {

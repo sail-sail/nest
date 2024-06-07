@@ -19,6 +19,25 @@ use crate::gen::base::domain::domain_model::{
   DomainId,
 };
 
+// 租户
+use crate::gen::base::tenant::tenant_dao::{
+  find_by_id as find_by_id_tenant,
+  validate_option as validate_option_tenant,
+};
+
+// 用户
+use crate::gen::base::usr::usr_dao::{
+  find_one as find_one_usr,
+  update_by_id as update_by_id_usr,
+  create as create_usr,
+};
+use crate::gen::base::usr::usr_model::{
+  UsrInput,
+  UsrSearch,
+};
+
+use super::tenant_model::SetTenantAdminPwdInput;
+
 // 获取当前租户绑定的网址
 // pub async fn get_host_tenant() -> Result<String> {
   
@@ -123,4 +142,52 @@ pub async fn get_login_tenants(
     .collect();
   
   Ok(res)
+}
+
+/// 设置租户管理员密码
+pub async fn set_tenant_admin_pwd(
+  input: SetTenantAdminPwdInput,
+) -> Result<bool> {
+  
+  let tenant_id = input.tenant_id;
+  let pwd = input.pwd;
+  
+  let tenant_model = find_by_id_tenant(
+    tenant_id.clone(),
+    None,
+  ).await?;
+  validate_option_tenant(tenant_model).await?;
+  
+  let usr_model = find_one_usr(
+    UsrSearch {
+      username: "admin".to_owned().into(),
+      tenant_id: tenant_id.clone().into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+  ).await?;
+  
+  if let Some(usr_model) = usr_model {
+    update_by_id_usr(
+      usr_model.id,
+      UsrInput {
+        password: Some(pwd),
+        ..Default::default()
+      },
+      None,
+    ).await?;
+  } else {
+    create_usr(
+      UsrInput {
+        username: "admin".to_owned().into(),
+        password: pwd.to_owned().into(),
+        tenant_id: tenant_id.into(),
+        ..Default::default()
+      },
+      None,
+    ).await?;
+  }
+  
+  Ok(true)
 }

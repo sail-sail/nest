@@ -23,7 +23,8 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="onSearch"
+      @submit.prevent
+      @keydown.enter="onSearch"
     >
       
       <template v-if="showBuildIn || builtInSearch?.dict_id == null">
@@ -556,7 +557,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -588,7 +589,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -611,7 +612,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -629,7 +630,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -647,7 +648,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -787,11 +788,7 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   val?: string; // 值
   val_like?: string; // 值
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -804,11 +801,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   dict_id: "string[]",
   dict_id_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1045,7 +1039,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "系统字典",
       prop: "dict_id_lbl",
-      sortBy: "dict_id",
+      sortBy: "dict_id_lbl",
       width: 240,
       align: "left",
       headerAlign: "center",
@@ -1107,7 +1101,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1126,7 +1120,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1642,7 +1636,7 @@ async function onDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("系统字典明细")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("系统字典明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1656,7 +1650,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("系统字典明细")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("系统字典明细")));
     emit("remove", num);
   }
 }
@@ -1676,7 +1670,7 @@ async function onForceDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("系统字典明细")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("系统字典明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1687,7 +1681,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("系统字典明细")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("系统字典明细")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1717,9 +1711,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} 个 {1} 成功", num, await nsAsync("系统字典明细"));
+      msg = await nsAsync("启用 {0} {1} 成功", num, await nsAsync("系统字典明细"));
     } else {
-      msg = await nsAsync("禁用 {0} 个 {1} 成功", num, await nsAsync("系统字典明细"));
+      msg = await nsAsync("禁用 {0} {1} 成功", num, await nsAsync("系统字典明细"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1751,9 +1745,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} 个 {1} 成功", num, await nsAsync("系统字典明细"));
+      msg = await nsAsync("锁定 {0} {1} 成功", num, await nsAsync("系统字典明细"));
     } else {
-      msg = await nsAsync("解锁 {0} 个 {1} 成功", num, await nsAsync("系统字典明细"));
+      msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("系统字典明细"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -1776,7 +1770,7 @@ async function onRevertByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("系统字典明细")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("系统字典明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1789,7 +1783,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("系统字典明细")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("系统字典明细")));
     emit("revert", num);
   }
 }

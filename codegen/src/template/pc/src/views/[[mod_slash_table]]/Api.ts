@@ -62,9 +62,11 @@ for (let i = 0; i < columns.length; i++) {
   }
   hasDecimal = true;
 }
-#><#
+#>import cfg from "@/utils/config";<#
 if (opts.noAdd !== true || opts.noEdit !== true) {
-#>import {
+#>
+
+import {
   UniqueType,
 } from "#/types";<#
 }
@@ -88,7 +90,6 @@ for (let i = 0; i < columns.length; i++) {
       "is_default",
       "is_deleted",
       "tenant_id",
-      "org_id",
       "version",
     ].includes(column_name)
   ) {
@@ -100,7 +101,7 @@ for (let i = 0; i < columns.length; i++) {
   }
   const columnDictModels = [
     ...dictModels.filter(function(item) {
-      return item.code === column.dict || item.code === column.dictbiz;
+      return item.code === column.dict || item.code === column.dict;
     }),
     ...dictbizModels.filter(function(item) {
       return item.code === column.dict || item.code === column.dictbiz;
@@ -139,7 +140,6 @@ import {<#
         "is_default",
         "is_deleted",
         "tenant_id",
-        "org_id",
         "version",
       ].includes(column_name)
     ) {
@@ -151,7 +151,7 @@ import {<#
     }
     const columnDictModels = [
       ...dictModels.filter(function(item) {
-        return item.code === column.dict || item.code === column.dictbiz;
+        return item.code === column.dict || item.code === column.dict;
       }),
       ...dictbizModels.filter(function(item) {
         return item.code === column.dict || item.code === column.dictbiz;
@@ -435,7 +435,7 @@ export function intoInput(
       const column_name = column.COLUMN_NAME;
       if (
         [
-          "is_deleted", "tenant_id", "org_id",
+          "is_deleted", "tenant_id",
           "create_time", "create_time_lbl",
           "create_usr_id", "create_usr_id_lbl",
           "update_time", "update_time_lbl",
@@ -444,18 +444,52 @@ export function intoInput(
       ) {
         continue;
       }
+      const is_nullable = column.IS_NULLABLE === "YES";
       const column_type = column.COLUMN_TYPE;
       const data_type = column.DATA_TYPE;
       const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
+      let modelLabel = column.modelLabel;
+      let cascade_fields = [ ];
+      if (foreignKey) {
+        cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+        } else if (modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+        }
+      }
+      if (foreignKey && foreignKey.lbl && !modelLabel) {
+        modelLabel = column_name + "_" + foreignKey.lbl;
+      } else if (!foreignKey && !modelLabel) {
+        modelLabel = column_name + "_lbl";
+      }
+      let hasModelLabel = !!column.modelLabel;
+      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+        hasModelLabel = true;
+      } else if (foreignKey && foreignKey.lbl) {
+        hasModelLabel = true;
+      }
     #><#
-      if (foreignKey || column.dict || column.dictbiz
-        || data_type === "datetime" || data_type === "date"
-      ) {
+      if (foreignKey || column.dict || column.dictbiz) {
+    #>
+    // <#=column_comment#>
+    <#=column_name#>: model?.<#=column_name#>,<#
+      if (hasModelLabel) {
+    #>
+    <#=modelLabel#>: model?.<#=modelLabel#>,<#
+      }
+    #><#
+      } else if (data_type === "datetime" || data_type === "date") {
     #>
     // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#>,
     <#=column_name#>_lbl: model?.<#=column_name#>_lbl,<#
+      if (is_nullable) {
+    #>
+    <#=column_name#>_save_null: model?.<#=column_name#>_save_null,<#
+      }
+    #><#
       } else {
     #>
     // <#=column_comment#>
@@ -978,7 +1012,7 @@ export async function lockByIds(
 }<#
 }
 #><#
-if (opts.noDelete !== true && opts.noRevert !== true) {
+if (opts.noRevert !== true && hasIsDeleted) {
 #>
 
 /**
@@ -1004,7 +1038,11 @@ export async function revertByIds(
   }, opt);
   const res = data.revertByIds<#=Table_Up2#>;
   return res;
+}<#
 }
+#><#
+if (opts.noForceDelete !== true && hasIsDeleted) {
+#>
 
 /**
  * 根据 ids 彻底删除<#=table_comment#>
@@ -1044,7 +1082,6 @@ for (let i = 0; i < columns.length; i++) {
     [
       "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
       "tenant_id", "tenant_id_lbl",
-      "org_id", "org_id_lbl",
     ].includes(column_name)
     || (column.noAdd && column.noEdit && !column.search)
   ) continue;
@@ -1227,7 +1264,6 @@ for (const inlineForeignTab of inlineForeignTabs) {
         "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
         "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
         "tenant_id", "tenant_id_lbl",
-        "org_id", "org_id_lbl",
       ].includes(column_name)
       || column.readonly
       || (column.noAdd && column.noEdit)
@@ -1402,7 +1438,6 @@ export function useDownloadImportTemplate(routePath: string) {
                   "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                   "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
                 || column.readonly
                 || column.noAdd
@@ -1442,7 +1477,6 @@ export function useDownloadImportTemplate(routePath: string) {
                 "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                 "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                 "tenant_id", "tenant_id_lbl",
-                "org_id", "org_id_lbl",
               ].includes(column_name)
               || column.readonly
               || column.noAdd
@@ -1484,7 +1518,6 @@ export function useDownloadImportTemplate(routePath: string) {
                 "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                 "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                 "tenant_id", "tenant_id_lbl",
-                "org_id", "org_id_lbl",
               ].includes(column_name)
               || column.readonly
               || column.noAdd
@@ -1514,7 +1547,6 @@ export function useDownloadImportTemplate(routePath: string) {
                   "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                   "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
                 || column.readonly
                 || column.noAdd
@@ -1555,7 +1587,6 @@ export function useDownloadImportTemplate(routePath: string) {
                 "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                 "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                 "tenant_id", "tenant_id_lbl",
-                "org_id", "org_id_lbl",
               ].includes(column_name)
               || column.readonly
               || column.noAdd
@@ -1585,7 +1616,6 @@ export function useDownloadImportTemplate(routePath: string) {
                   "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
                   "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
                 || column.readonly
                 || column.noAdd
@@ -1684,7 +1714,6 @@ export function useExportExcel(routePath: string) {
                   "id",
                   "is_deleted", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
               ) continue;
               let column_type = column.COLUMN_TYPE;
@@ -1720,7 +1749,6 @@ export function useExportExcel(routePath: string) {
                   "id",
                   "is_deleted", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
               ) continue;
               const isPassword = column.isPassword;
@@ -1743,7 +1771,6 @@ export function useExportExcel(routePath: string) {
                   [
                     "is_deleted", "is_sys",
                     "tenant_id", "tenant_id_lbl",
-                    "org_id", "org_id_lbl",
                   ].includes(column_name)
                 ) continue;
                 const column_type = column.COLUMN_TYPE;
@@ -1781,7 +1808,6 @@ export function useExportExcel(routePath: string) {
                   "id",
                   "is_deleted", "is_sys",
                   "tenant_id", "tenant_id_lbl",
-                  "org_id", "org_id_lbl",
                 ].includes(column_name)
               ) continue;
               const isPassword = column.isPassword;
@@ -1805,7 +1831,6 @@ export function useExportExcel(routePath: string) {
                     "id",
                     "is_deleted", "is_sys",
                     "tenant_id", "tenant_id_lbl",
-                    "org_id", "org_id_lbl",
                   ].includes(column_name)
                 ) continue;
                 let column_type = column.COLUMN_TYPE;
@@ -1959,7 +1984,6 @@ export async function getDefaultInput() {<#
         "is_default",
         "is_deleted",
         "tenant_id",
-        "org_id",
       ].includes(column_name)
     ) {
       continue;
@@ -1981,7 +2005,7 @@ export async function getDefaultInput() {<#
   #><#
   if (hasUsrStore) {
   #>
-  const usrStore = useUsrStore();<#
+  const usrStore = useUsrStore(cfg.pinia);<#
   }
   #>
   const defaultInput: <#=inputName#> = {<#
@@ -2005,7 +2029,6 @@ export async function getDefaultInput() {<#
           "is_default",
           "is_deleted",
           "tenant_id",
-          "org_id",
         ].includes(column_name)
       ) {
         continue;
@@ -2042,7 +2065,7 @@ export async function getDefaultInput() {<#
       } else if (column.dict || column.dictbiz) {
         const columnDictModels = [
           ...dictModels.filter(function(item) {
-            return item.code === column.dict || item.code === column.dictbiz;
+            return item.code === column.dict || item.code === column.dict;
           }),
           ...dictbizModels.filter(function(item) {
             return item.code === column.dict || item.code === column.dictbiz;

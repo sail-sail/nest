@@ -4,7 +4,6 @@ const hasPassword = columns.some((column) => column.isPassword);
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasVersion = columns.some((column) => column.COLUMN_NAME === "version");
 const Table_Up = tableUp.split("_").map(function(item) {
@@ -54,12 +53,6 @@ if (hasTenant_id) {
 #>
 
 use crate::gen::base::tenant::tenant_model::TenantId;<#
-}
-#><#
-if (hasOrgId) {
-#>
-
-use crate::gen::base::org::org_model::OrgId;<#
 }
 #>
 
@@ -358,35 +351,6 @@ impl <#=tableUP#>GenMutation {<#
         <#=table#>_resolver::update_tenant_by_id(
           id,
           tenant_id,
-          None,
-        )
-      }).await
-  }<#
-  }
-  #><#
-  if (hasOrgId) {
-  #>
-  
-  /// <#=table_comment#>根据id修改组织id<#
-  if (table === "i18n") {
-  #>
-  #[graphql(name = "updateOrgByIdI18n")]<#
-  }
-  #>
-  async fn update_org_by_id_<#=table#>(
-    &self,
-    ctx: &Context<'_>,
-    id: <#=Table_Up#>Id,
-    org_id: OrgId,
-  ) -> Result<u64> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        <#=table#>_resolver::update_org_by_id(
-          id,
-          org_id,
           None,
         )
       }).await

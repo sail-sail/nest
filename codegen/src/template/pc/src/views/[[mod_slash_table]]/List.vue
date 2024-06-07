@@ -75,7 +75,8 @@ const hasAtt = columns.some((item) => item.isAtt);
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="onSearch"
+      @submit.prevent
+      @keydown.enter="onSearch"
     ><#
       let hasSearchExpand = false;
       const searchIntColumns = [ ];
@@ -88,7 +89,6 @@ const hasAtt = columns.some((item) => item.isAtt);
         if (column_name === "version") continue;
         if (column_name === "is_deleted") continue;
         if (column_name === "tenant_id") continue;
-        if (column_name === "org_id") continue;
         const isPassword = column.isPassword;
         if (isPassword) continue;
         const isEncrypt = column.isEncrypt;
@@ -391,7 +391,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               <ElIconRemove />
             </el-icon>
           </div><#
-          if ((opts.noDelete !== true && opts.noRevert !== true) && hasIsDeleted) {
+          if (hasIsDeleted) {
           #>
           
           <el-checkbox
@@ -746,7 +746,7 @@ const hasAtt = columns.some((item) => item.isAtt);
     </template>
     
     <template v-else><#
-      if (opts.noDelete !== true && opts.noRevert !== true) {
+      if (opts.noRevert !== true) {
       #>
       
       <el-button
@@ -762,7 +762,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-button><#
       }
       #><#
-      if (opts.noDelete !== true) {
+      if (opts.noForceDelete !== true && hasIsDeleted) {
       #>
       
       <el-button
@@ -959,7 +959,6 @@ const hasAtt = columns.some((item) => item.isAtt);
             if (column_name === "version") continue;
             if (column_name === "is_deleted") continue;
             if (column_name === "tenant_id") continue;
-            if (column_name === "org_id") continue;
             const foreignKey = column.foreignKey;
             const data_type = column.DATA_TYPE;
             const column_type = column.COLUMN_TYPE;
@@ -969,13 +968,14 @@ const hasAtt = columns.some((item) => item.isAtt);
             const foreignTabs = column.foreignTabs || [ ];
             const isEncrypt = column.isEncrypt;
             const prefix = column.prefix || "";
+            const canSearch = column.canSearch;
           #><#
           if (column.isImg) {
           #>
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -996,7 +996,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1050,7 +1050,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1087,7 +1087,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1134,7 +1134,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1158,7 +1158,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1221,7 +1221,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1257,7 +1257,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           
           <!-- <#=column_comment#> -->
           <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
-          if (!isEncrypt) {
+          if (canSearch) {
           #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
           }
           #>">
@@ -1285,7 +1285,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   un-min="w-7.5"
                   @click="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row)"
                 >
-                  {{ row[column.property]?.length || 0 }}
+                  {{ row.<#=column_name#>?.length || 0 }}
                 </el-link>
               </template><#
               } else if (column.inlineMany2manyTab) {
@@ -1296,7 +1296,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                   un-min="w-7.5"
                   @click="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row)"
                 >
-                  {{ row[column.property]?.length || 0 }}
+                  {{ row.<#=column_name#>?.length || 0 }}
                 </el-link>
               </template><#
               } else if (foreignKey.isLinkForeignTabs) {
@@ -1555,14 +1555,18 @@ import <#=Foreign_Table_Up#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.v
 import {
   findAll,
   findCount,<#
-    if (opts.noDelete !== true && opts.noRevert !== true) {
+    if (opts.noRevert !== true) {
   #>
   revertByIds,<#
     }
   #><#
     if (opts.noDelete !== true) {
   #>
-  deleteByIds,
+  deleteByIds,<#
+    }
+  #><#
+    if (opts.noForceDelete !== true && hasIsDeleted) {
+  #>
   forceDeleteByIds,<#
     }
   #><#
@@ -1793,6 +1797,8 @@ const props = defineProps<{<#
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
+    const canSearch = column.canSearch;
+    if (!canSearch) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "version") continue;
     if ([
@@ -1801,7 +1807,6 @@ const props = defineProps<{<#
       "update_usr_id",
       "update_time",
       "tenant_id",
-      "org_id",
       "is_hidden",
       "is_deleted",
     ].includes(column_name)) continue;
@@ -1911,6 +1916,8 @@ const builtInSearchType: { [key: string]: string } = {<#
     const column = columns[i];
     if (column.ignoreCodegen) continue;
     if (column.onlyCodegenDeno) continue;
+    const canSearch = column.canSearch;
+    if (!canSearch) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "version") continue;
     if (column_name === "is_deleted") continue;
@@ -1923,12 +1930,6 @@ const builtInSearchType: { [key: string]: string } = {<#
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     if (foreignKey) {
       data_type = data_type+"[]";
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    if (column_comment.includes("[")) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
     }
   #><#
     if (foreignKey) {
@@ -2394,7 +2395,49 @@ function getTableColumns(): ColumnType[] {
       }
       #>
     },<#
-    } else if (foreignKey || column.dict || column.dictbiz
+    } else if (foreignKey) {
+    #>
+    {
+      label: "<#=column_comment#>",
+      prop: "<#=column_name#>_lbl",
+      sortBy: "<#=column_name#>_lbl",<#
+      if (column.width) {
+      #>
+      width: <#=column.width#>,<#
+      }
+      #><#
+      if (column.minWidth) {
+      #>
+      minWidth: <#=column.minWidth#>,<#
+      }
+      #><#
+      if (column.sortable) {
+      #>
+      sortable: "custom",<#
+      }
+      #><#
+      if (column.align) {
+      #>
+      align: "<#=column.align#>",<#
+      }
+      #><#
+      if (column.headerAlign) {
+      #>
+      headerAlign: "<#=column.headerAlign#>",<#
+      }
+      #><#
+      if (column.showOverflowTooltip != null) {
+      #>
+      showOverflowTooltip: <#=column.showOverflowTooltip.toString()#>,<#
+      }
+      #><#
+      if (fixed) {
+      #>
+      fixed: "<#=fixed#>",<#
+      }
+      #>
+    },<#
+    } else if (column.dict || column.dictbiz
       || data_type === "date" || data_type === "datetime" || data_type === "timestamp"
     ) {
     #>
@@ -3267,7 +3310,7 @@ async function onDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -3292,10 +3335,14 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));
     emit("remove", num);
   }
+}<#
 }
+#><#
+if (opts.noForceDelete !== true && hasIsDeleted) {
+#>
 
 /** 点击彻底删除 */
 async function onForceDeleteByIds() {
@@ -3312,7 +3359,7 @@ async function onForceDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -3334,7 +3381,7 @@ async function onForceDeleteByIds() {
     }
     #>
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -3368,9 +3415,9 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
+      msg = await nsAsync("启用 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));
     } else {
-      msg = await nsAsync("禁用 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
+      msg = await nsAsync("禁用 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -3406,9 +3453,9 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
+      msg = await nsAsync("锁定 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));
     } else {
-      msg = await nsAsync("解锁 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>"));
+      msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -3417,7 +3464,7 @@ async function onLockByIds(is_locked: 0 | 1) {
 }<#
 }
 #><#
-if (opts.noDelete !== true && opts.noRevert !== true) {
+if (opts.noRevert !== true) {
 #>
 
 /** 点击还原 */
@@ -3435,7 +3482,7 @@ async function onRevertByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -3463,7 +3510,7 @@ async function onRevertByIds() {
     #>
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("<#=table_comment#>")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));
     emit("revert", num);
   }
 }<#
@@ -3508,7 +3555,7 @@ async function onOpenForeignTabs() {
     return;
   }
   if (selectedIds.length > 1) {
-    ElMessage.warning(await nsAsync("只能选择一个 {0}", await nsAsync("<#=table_comment#>")));
+    ElMessage.warning(await nsAsync("只能选择一{0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const id = selectedIds[0];

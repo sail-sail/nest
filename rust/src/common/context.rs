@@ -46,7 +46,7 @@ lazy_static! {
     .unwrap_or(3600);
   static ref DB_POOL: Pool<MySql> = init_db_pool("").unwrap();
   static ref DB_POOL_DW: Pool<MySql> = init_db_pool("_dw").unwrap();
-  pub static ref IS_DEBUG: bool = init_debug();
+  static ref IS_DEBUG: bool = init_debug();
   static ref MULTIPLE_SPACE_REGEX: regex::Regex = regex::Regex::new(r"\s+").unwrap();
 }
 
@@ -157,7 +157,7 @@ pub fn get_auth_model_err() -> Result<AuthModel> {
       "{req_id} Not login! - validate_auth_model is none",
       req_id = ctx.req_id,
     );
-    Err(anyhow::anyhow!("Not login!"))
+    Err(anyhow!("Not login!"))
   })
 }
 
@@ -1076,6 +1076,9 @@ pub struct Ctx {
   
   now: NaiveDateTime,
   
+  /// 静默模式
+  silent_mode: bool,
+  
 }
 
 impl Ctx {
@@ -1405,6 +1408,10 @@ pub struct Options {
   #[new(default)]
   ids_limit: Option<usize>,
   
+  /// 静默模式
+  #[new(default)]
+  silent_mode: Option<bool>,
+  
 }
 
 impl Debug for Options {
@@ -1442,6 +1449,14 @@ impl Debug for Options {
     }
     if !self.database_name.is_empty() {
       item = item.field("database_name", &self.database_name);
+    }
+    if let Some(ids_limit) = self.ids_limit {
+      item = item.field("ids_limit", &ids_limit);
+    }
+    if let Some(silent_mode) = self.silent_mode {
+      if silent_mode {
+        item = item.field("silent_mode", &silent_mode);
+      }
     }
     item.finish()
   }
@@ -1565,6 +1580,8 @@ pub struct CtxBuilder<'a> {
   
   now: NaiveDateTime,
   
+  silent_mode: bool,
+  
 }
 
 impl <'a> CtxBuilder<'a> {
@@ -1580,6 +1597,7 @@ impl <'a> CtxBuilder<'a> {
       auth_model: None,
       req_id,
       now,
+      silent_mode: false,
     }
   }
   
@@ -1658,6 +1676,13 @@ impl <'a> CtxBuilder<'a> {
     Ok(self)
   }
   
+  /// 静默模式
+  #[allow(dead_code)]
+  pub fn with_silent_mode(mut self) -> CtxBuilder<'a> {
+    self.silent_mode = true;
+    self
+  }
+  
   pub fn build(self) -> Ctx {
     Ctx {
       is_tran: self.is_tran.unwrap_or_default(),
@@ -1665,6 +1690,7 @@ impl <'a> CtxBuilder<'a> {
       tran: Arc::new(Mutex::new(None)),
       auth_model: self.auth_model,
       now: self.now,
+      silent_mode: self.silent_mode,
     }
   }
   
@@ -1714,7 +1740,10 @@ pub fn get_page_query(page: Option<PageInput>) -> String {
     let pg_size = page.pg_size;
     if let Some(pg_size) = pg_size {
       let pg_offset = page.pg_offset.unwrap_or(0);
-      page_query = format!(" limit {}, {} ", pg_offset, pg_size);
+      page_query.push_str(" limit ");
+      page_query.push_str(&pg_offset.to_string());
+      page_query.push(',');
+      page_query.push_str(&pg_size.to_string());
     }
   }
   page_query
@@ -1728,7 +1757,7 @@ pub fn get_order_by_query(
   sort: Option<Vec<SortInput>>,
 ) -> String {
   if sort.is_none() {
-    return "".to_owned();
+    return String::new();
   }
   let sort = sort.unwrap().into_iter()
     .filter(|item| 
@@ -1768,6 +1797,30 @@ pub fn get_short_uuid() -> SmolStr {
   // 切割字符串22位
   let uuid = utf8_slice::from(&uuid, 22);
   uuid.into()
+}
+
+#[must_use]
+pub fn get_is_debug(
+  options: Option<&Options>,
+) -> bool {
+  let mut is_debug: bool = *IS_DEBUG;
+  if let Some(options) = options {
+    is_debug = options.get_is_debug();
+  }
+  is_debug
+}
+
+#[must_use]
+pub fn get_silent_mode(
+  options: Option<&Options>,
+) -> bool {
+  if let Some(options) = options {
+    if let Some(silent_mode) = options.silent_mode {
+      return silent_mode;
+    }
+  }
+  let ctx = &CTX.with(|ctx| ctx.clone());
+  ctx.silent_mode
 }
 
 #[cfg(test)]

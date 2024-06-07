@@ -1,3 +1,5 @@
+import cfg from "@/utils/config";
+
 import {
   UniqueType,
 } from "#/types";
@@ -43,7 +45,6 @@ export function intoInput(
     permit_ids_lbl: model?.permit_ids_lbl,
     // 数据权限
     data_permit_ids: model?.data_permit_ids,
-    data_permit_ids_lbl: model?.data_permit_ids_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -491,7 +492,7 @@ export async function findAllDataPermit(
       query($search: DataPermitSearch, $page: PageInput, $sort: [SortInput!]) {
         findAllDataPermit(search: $search, page: $page, sort: $sort) {
           id
-          scope
+          
         }
       }
     `,
@@ -573,7 +574,7 @@ export function useDownloadImportTemplate(routePath: string) {
           }
           findAllDataPermit {
             id
-            scope
+            
           }
         }
       `,
@@ -639,9 +640,6 @@ export function useExportExcel(routePath: string) {
             }
             findAllPermit {
               lbl
-            }
-            findAllDataPermit {
-              scope
             }
             getDict(codes: [
               "is_locked",

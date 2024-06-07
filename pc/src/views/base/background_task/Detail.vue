@@ -66,6 +66,8 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
+        
+        @submit.prevent
       >
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
@@ -555,7 +557,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("后台任务")));
+    ElMessage.warning(await nsAsync("已经是第一项了"));
   }
 }
 
@@ -634,6 +636,34 @@ async function nextId() {
   );
   return true;
 }
+
+watch(
+  () => [
+    dialogModel.state,
+    dialogModel.type,
+    dialogModel.begin_time,
+    dialogModel.end_time,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.state) {
+      dialogModel.state_lbl = "";
+    }
+    if (!dialogModel.type) {
+      dialogModel.type_lbl = "";
+    }
+    if (!dialogModel.begin_time) {
+      dialogModel.begin_time_lbl = "";
+      dialogModel.begin_time_save_null = true;
+    }
+    if (!dialogModel.end_time) {
+      dialogModel.end_time_lbl = "";
+      dialogModel.end_time_save_null = true;
+    }
+  },
+);
 
 async function onDialogOpen() {
 }

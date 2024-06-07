@@ -71,6 +71,8 @@
         :model="dialogModel"
         :rules="form_rules"
         :validate-on-rule-change="false"
+        
+        @submit.prevent
       >
         
         <template v-if="(showBuildIn || builtInModel?.code == null)">
@@ -558,7 +560,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一个 {0} 了", await nsAsync("语言")));
+    ElMessage.warning(await nsAsync("已经是第一项了"));
   }
 }
 
@@ -637,17 +639,6 @@ async function nextId() {
   );
   return true;
 }
-
-watch(
-  () => [
-    inited,
-  ],
-  () => {
-    if (!inited) {
-      return;
-    }
-  },
-);
 
 /** 快捷键ctrl+shift+回车 */
 async function onSaveAndCopyKeydown(e: KeyboardEvent) {

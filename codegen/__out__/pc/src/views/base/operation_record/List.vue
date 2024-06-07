@@ -23,7 +23,8 @@
       un-justify-items-end
       un-items-center
       
-      @keyup.enter="onSearch"
+      @submit.prevent
+      @keydown.enter="onSearch"
     >
       
       <template v-if="builtInSearch?.module_lbl == null && (showBuildIn || builtInSearch?.module_lbl_like == null)">
@@ -472,7 +473,7 @@
           </template>
           
           <!-- 耗时(毫秒) -->
-          <template v-else-if="'time' === col.prop && (showBuildIn || builtInSearch?.time == null)">
+          <template v-else-if="'time' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -481,7 +482,7 @@
           </template>
           
           <!-- 操作前数据 -->
-          <template v-else-if="'old_data' === col.prop && (showBuildIn || builtInSearch?.old_data == null)">
+          <template v-else-if="'old_data' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -490,7 +491,7 @@
           </template>
           
           <!-- 操作后数据 -->
-          <template v-else-if="'new_data' === col.prop && (showBuildIn || builtInSearch?.new_data == null)">
+          <template v-else-if="'new_data' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -622,21 +623,12 @@ const props = defineProps<{
   selectedIds?: OperationRecordId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: OperationRecordId; // ID
-  module?: string; // 模块
-  module_like?: string; // 模块
   module_lbl?: string; // 模块名称
   module_lbl_like?: string; // 模块名称
-  method?: string; // 方法
-  method_like?: string; // 方法
   method_lbl?: string; // 方法名称
   method_lbl_like?: string; // 方法名称
   lbl?: string; // 操作
   lbl_like?: string; // 操作
-  time?: string; // 耗时(毫秒)
-  old_data?: string; // 操作前数据
-  old_data_like?: string; // 操作前数据
-  new_data?: string; // 操作后数据
-  new_data_like?: string; // 操作后数据
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -647,7 +639,6 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  time: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
 };
@@ -919,7 +910,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "操作人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1184,7 +1175,7 @@ async function onDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("操作记录")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("操作记录")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1198,7 +1189,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} 个 {1} 成功", num, await nsAsync("操作记录")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("操作记录")));
     emit("remove", num);
   }
 }
@@ -1218,7 +1209,7 @@ async function onForceDeleteByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("操作记录")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("操作记录")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1229,7 +1220,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} 个 {1} 成功", num, await nsAsync("操作记录")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("操作记录")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1250,7 +1241,7 @@ async function onRevertByIds() {
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} 个 {1}", selectedIds.length, await nsAsync("操作记录")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("操作记录")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1263,7 +1254,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} 个 {1} 成功", num, await nsAsync("操作记录")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("操作记录")));
     emit("revert", num);
   }
 }

@@ -1,9 +1,15 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
-use anyhow::{Result,anyhow};
+use anyhow::{Result, anyhow};
 
-use crate::common::context::Options;
+#[allow(unused_imports)]
+use crate::common::context::{
+  Options,
+  get_auth_id_err,
+  get_auth_org_id,
+};
+
 use crate::common::gql::model::{PageInput, SortInput};
 
 #[allow(unused_imports)]
@@ -13,8 +19,42 @@ use crate::gen::base::tenant::tenant_model::TenantId;
 
 use crate::gen::base::org::org_model::OrgId;
 
+use crate::gen::base::usr::usr_dao::{
+  find_by_id as find_by_id_usr,
+  validate_option as validate_option_usr,
+};
+
 use super::dept_model::*;
 use super::dept_dao;
+
+#[allow(unused_variables)]
+async fn set_search_query(
+  search: &mut DeptSearch,
+) -> Result<()> {
+  
+  let usr_id = get_auth_id_err()?;
+  let usr_model = validate_option_usr(
+    find_by_id_usr(
+      usr_id.clone(),
+      None,
+    ).await?,
+  ).await?;
+  
+  let org_id = get_auth_org_id().unwrap_or_default();
+  let mut org_ids: Vec<OrgId> = vec![];
+  if !org_id.is_empty() {
+    org_ids.push(org_id);
+  } else {
+    org_ids.append(&mut usr_model.org_ids.clone());
+    org_ids.push(OrgId::default());
+  }
+  let username = usr_model.username.clone();
+  
+  if username != "admin" {
+    search.org_id = Some(org_ids);
+  }
+  Ok(())
+}
 
 /// 根据搜索条件和分页查找部门列表
 pub async fn find_all(
@@ -24,8 +64,12 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = dept_dao::find_all(
-    search,
+    Some(search),
     page,
     sort,
     options,
@@ -40,8 +84,12 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<i64> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let res = dept_dao::find_count(
-    search,
+    Some(search),
     options,
   ).await?;
   
@@ -55,8 +103,12 @@ pub async fn find_one(
   options: Option<Options>,
 ) -> Result<Option<DeptModel>> {
   
+  let mut search = search.unwrap_or_default();
+  
+  set_search_query(&mut search).await?;
+  
   let model = dept_dao::find_one(
-    search,
+    Some(search),
     sort,
     options,
   ).await?;
@@ -116,23 +168,6 @@ pub async fn update_tenant_by_id(
   let num = dept_dao::update_tenant_by_id(
     id,
     tenant_id,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
-/// 部门根据id修改组织id
-#[allow(dead_code)]
-pub async fn update_org_by_id(
-  id: DeptId,
-  org_id: OrgId,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = dept_dao::update_org_by_id(
-    id,
-    org_id,
     options,
   ).await?;
   

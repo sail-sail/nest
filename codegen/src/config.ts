@@ -1,6 +1,5 @@
 export default {
   ignoreCodegen: [
-    "org_id",
     "tenant_id",
     "create_usr_id",
     "create_time",
@@ -100,7 +99,7 @@ export interface TableCloumn {
   /**
    * 列的为空性。如果列允许 NULL，那么该列返回 YES。否则，返回 NO
    */
-  IS_NULLABLE?: "NO"|"YEW",
+  IS_NULLABLE?: "NO"|"YES",
   
   /**
    * 系统提供的数据类型
@@ -337,8 +336,16 @@ export interface TableCloumn {
   
   /**
    * 是否启用表格搜素
+   * 如果 true 则 canSearch 默认为 true
    */
   search?: boolean,
+  
+  /**
+   * 是否可以搜索
+   * 默认为 false, 如果 search == true, 则默认为 true
+   * 如果是外键关联字段, 则默认为 true
+   */
+  canSearch?: boolean,
   
   /**
    * 是否图片
@@ -646,8 +653,17 @@ export interface TablesConfigItem {
      */
     hasTenant_id?: boolean;
     
+    /** 是否有组织ID */
+    hasOrgId?: boolean;
+    
+    /** 是否有 org_id_lbl 字段 */
+    hasOrgIdLbl?: boolean;
+    
     /** 是否有 create_usr_id 字段 */
     hasCreateUsrId?: boolean;
+    
+    /** 是否有 create_usr_id_lbl 字段 */
+    hasCreateUsrIdLbl?: boolean;
     
     /** 是否有 create_time 字段 */
     hasCreateTime?: boolean;
@@ -655,8 +671,23 @@ export interface TablesConfigItem {
     /** 是否有 update_usr_id 字段 */
     hasUpdateUsrId?: boolean;
     
+    /** 是否有 update_usr_id_lbl 字段 */
+    hasUpdateUsrIdLbl?: boolean;
+    
     /** 是否有 update_time 字段 */
     hasUpdateTime?: boolean;
+    
+    /** 是否有 is_deleted 字段 */
+    hasIsDeleted?: boolean;
+    
+    /** 是否有 delete_usr_id 字段 */
+    hasDeleteUsrId?: boolean;
+    
+    /** 是否有 delete_usr_id_lbl 字段 */
+    hasDeleteUsrIdLbl?: boolean;
+    
+    /** 是否有 delete_time 字段 */
+    hasDeleteTime?: boolean;
     
     /** 是否有 version 字段 */
     hasVersion?: boolean;
@@ -675,6 +706,9 @@ export interface TablesConfigItem {
      * 不允许还原
      */
     noRevert?: boolean;
+    
+    /** 不允许彻底删除 */
+    noForceDelete?: boolean;
     
     /**
      * 不允许修改

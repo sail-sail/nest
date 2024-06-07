@@ -35,18 +35,25 @@ pub struct I18nModel {
   /// ID
   pub id: I18nId,
   /// 语言
+  #[graphql(name = "lang_id")]
   pub lang_id: LangId,
   /// 语言
+  #[graphql(name = "lang_id_lbl")]
   pub lang_id_lbl: String,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: MenuId,
   /// 菜单
+  #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: String,
   /// 编码
+  #[graphql(name = "code")]
   pub code: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -179,36 +186,64 @@ pub struct I18nSearch {
   pub ids: Option<Vec<I18nId>>,
   pub is_deleted: Option<u8>,
   /// 语言
+  #[graphql(name = "lang_id")]
   pub lang_id: Option<Vec<LangId>>,
   /// 语言
+  #[graphql(name = "lang_id_save_null")]
   pub lang_id_is_null: Option<bool>,
+  /// 语言
+  #[graphql(name = "lang_id_lbl")]
+  pub lang_id_lbl: Option<Vec<String>>,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: Option<Vec<MenuId>>,
   /// 菜单
+  #[graphql(name = "menu_id_save_null")]
   pub menu_id_is_null: Option<bool>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl")]
+  pub menu_id_lbl: Option<Vec<String>>,
   /// 编码
+  #[graphql(name = "code")]
   pub code: Option<String>,
   /// 编码
+  #[graphql(name = "code_like")]
   pub code_like: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 名称
+  #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem: Option<String>,
   /// 备注
+  #[graphql(skip)]
   pub rem_like: Option<String>,
   /// 创建人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
   /// 创建人
+  #[graphql(name = "create_usr_id_save_null")]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 创建时间
+  #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 更新人
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
+  #[graphql(name = "update_usr_id_save_null")]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
+  #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
@@ -292,21 +327,29 @@ impl std::fmt::Debug for I18nSearch {
 pub struct I18nInput {
   /// ID
   pub id: Option<I18nId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 语言
+  #[graphql(name = "lang_id")]
   pub lang_id: Option<LangId>,
   /// 语言
+  #[graphql(name = "lang_id_lbl")]
   pub lang_id_lbl: Option<String>,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: Option<MenuId>,
   /// 菜单
+  #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: Option<String>,
   /// 编码
+  #[graphql(name = "code")]
   pub code: Option<String>,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: Option<String>,
   /// 创建人
   #[graphql(skip)]
@@ -320,6 +363,9 @@ pub struct I18nInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -332,6 +378,9 @@ pub struct I18nInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<I18nModel> for I18nInput {
@@ -357,12 +406,14 @@ impl From<I18nModel> for I18nInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -385,10 +436,14 @@ impl From<I18nInput> for I18nSearch {
       rem: input.rem,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 创建时间
       create_time: input.create_time.map(|x| [Some(x), Some(x)]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()
