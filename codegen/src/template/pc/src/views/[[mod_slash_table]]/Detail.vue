@@ -38,7 +38,6 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "is_deleted") continue;
   if (column_name === "version") continue;
   if (column_name === "tenant_id") continue;
-  if (column_name === "org_id") continue;
   const foreignKey = column.foreignKey;
   if (foreignKey && foreignKey.showType === "dialog") {
     continue;
@@ -192,7 +191,6 @@ const old_table = table;
           if (column_name === "is_deleted") continue;
           if (column_name === "version") continue;
           if (column_name === "tenant_id") continue;
-          if (column_name === "org_id") continue;
           const data_type = column.DATA_TYPE;
           const column_type = column.COLUMN_TYPE || "";
           const column_comment = column.COLUMN_COMMENT || "";
@@ -757,7 +755,6 @@ const old_table = table;
                 if (column_name === "version") continue;
                 if (column_name === "order_by") continue;
                 if (column_name === "tenant_id") continue;
-                if (column_name === "org_id") continue;
                 const data_type = column.DATA_TYPE;
                 const column_type = column.COLUMN_TYPE;
                 const column_comment = column.COLUMN_COMMENT || "";
@@ -1181,7 +1178,6 @@ const old_table = table;
               if (column_name === "is_deleted") continue;
               if (column_name === "version") continue;
               if (column_name === "tenant_id") continue;
-              if (column_name === "org_id") continue;
               const foreignKey = column.foreignKey;
               if (foreignKey && foreignKey.showType === "dialog") {
                 continue;
@@ -1236,7 +1232,6 @@ const old_table = table;
                   if (column_name === "is_deleted") continue;
                   if (column_name === "version") continue;
                   if (column_name === "tenant_id") continue;
-                  if (column_name === "org_id") continue;
                   const data_type = column.DATA_TYPE;
                   const column_type = column.COLUMN_TYPE || "";
                   const column_comment = column.COLUMN_COMMENT || "";
@@ -1819,7 +1814,6 @@ const old_table = table;
                 if (column_name === "version") continue;
                 if (column_name === "order_by") continue;
                 if (column_name === "tenant_id") continue;
-                if (column_name === "org_id") continue;
                 const data_type = column.DATA_TYPE;
                 const column_type = column.COLUMN_TYPE || "";
                 const column_comment = column.COLUMN_COMMENT || "";
@@ -2352,7 +2346,6 @@ const old_table = table;
     if (column_name === "is_deleted") continue;
     if (column_name === "version") continue;
     if (column_name === "tenant_id") continue;
-    if (column_name === "org_id") continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -2505,7 +2498,6 @@ import {<#
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "tenant_id") continue;
-    if (column_name === "org_id") continue;
     let data_type = column.DATA_TYPE;
     let column_type = column.COLUMN_TYPE;
     let column_comment = column.COLUMN_COMMENT || "";
@@ -2777,7 +2769,6 @@ import {<#
       if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "tenant_id") continue;
-      if (column_name === "org_id") continue;
       const foreignKey = column.foreignKey;
       const data_type = column.DATA_TYPE;
       if (!foreignKey) continue;
@@ -2826,7 +2817,6 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "tenant_id") continue;
-    if (column_name === "org_id") continue;
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
     if (!foreignKey) continue;
@@ -2873,7 +2863,6 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "tenant_id") continue;
-    if (column_name === "org_id") continue;
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
     if (!foreignKey) continue;
@@ -2935,7 +2924,6 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "is_deleted") continue;
   if (column_name === "version") continue;
   if (column_name === "tenant_id") continue;
-  if (column_name === "org_id") continue;
   let data_type = column.DATA_TYPE;
   let column_type = column.COLUMN_TYPE;
   let column_comment = column.COLUMN_COMMENT || "";
@@ -3016,7 +3004,6 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "is_deleted") continue;
   if (column_name === "version") continue;
   if (column_name === "tenant_id") continue;
-  if (column_name === "org_id") continue;
   let data_type = column.DATA_TYPE;
   let column_type = column.COLUMN_TYPE;
   let column_comment = column.COLUMN_COMMENT || "";
@@ -3112,7 +3099,6 @@ watchEffect(async () => {
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "tenant_id") continue;
-      if (column_name === "org_id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -3288,7 +3274,6 @@ watchEffect(async () => {
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;
       if (column_name === "tenant_id") continue;
-      if (column_name === "org_id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -3458,7 +3443,6 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "is_deleted") continue;
   if (column_name === "version") continue;
   if (column_name === "tenant_id") continue;
-  if (column_name === "org_id") continue;
   let data_type = column.DATA_TYPE;
   let column_type = column.COLUMN_TYPE;
   let column_comment = column.COLUMN_COMMENT || "";
@@ -3992,7 +3976,6 @@ async function showDialog(
           if (column_name === "is_deleted") continue;
           if (column_name === "version") continue;
           if (column_name === "tenant_id") continue;
-          if (column_name === "org_id") continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
           let column_comment = column.COLUMN_COMMENT || "";
@@ -4634,12 +4617,32 @@ async function nextId() {
   );
   return true;
 }<#
-if (opts.noAdd !== true || opts.noEdit !== true) {
+let hasWatchCol = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const data_type = column.DATA_TYPE;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "tenant_id") continue;
+  const isPassword = column.isPassword;
+  if (isPassword) continue;
+  if (column.readonly) continue;
+  if (column.noEdit) continue;
+  const foreignKey = column.foreignKey;
+  if (foreignKey || column.dict || column.dictbiz
+    || data_type === "datetime" || data_type === "date"
+  ) {
+    hasWatchCol = true;
+  }
+}
+#><#
+if (hasWatchCol) {
 #>
 
 watch(
-  () => [
-    inited,<#
+  () => [<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -4647,13 +4650,8 @@ watch(
       const column_name = column.COLUMN_NAME;
       if (column_name === "is_deleted") continue;
       if (column_name === "tenant_id") continue;
-      if (column_name === "org_id") continue;
-      let column_type = column.COLUMN_TYPE;
-      let data_type = column.DATA_TYPE;
-      let column_comment = column.COLUMN_COMMENT;
-      if (column_comment.includes("[")) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
+      const data_type = column.DATA_TYPE;
+      const column_comment = column.COLUMN_COMMENT;
       const foreignKey = column.foreignKey;
       const isPassword = column.isPassword;
       if (isPassword) continue;
@@ -4681,7 +4679,6 @@ watch(
       const column_name = column.COLUMN_NAME;
       if (column_name === "is_deleted") continue;
       if (column_name === "tenant_id") continue;
-      if (column_name === "org_id") continue;
       const is_nullable = column.IS_NULLABLE === "YES";
       const column_type = column.COLUMN_TYPE;
       const data_type = column.DATA_TYPE;
@@ -4728,7 +4725,7 @@ watch(
       dialogModel.<#=modelLabel#> = "";<#
         if (is_nullable) {
       #>
-      dialogModel.<#=column_name#>_save_null = 1;<#
+      dialogModel.<#=column_name#>_save_null = true;<#
         }
       #>
     }<#
@@ -4746,7 +4743,11 @@ watch(
     }
     #>
   },
-);
+);<#
+}
+#><#
+if (opts.noAdd !== true || opts.noEdit !== true) {
+#>
 
 /** 快捷键ctrl+shift+回车 */
 async function onSaveAndCopyKeydown(e: KeyboardEvent) {
@@ -4978,7 +4979,6 @@ async function onSaveAndCopy() {
       if (column_name === "is_deleted") continue;
       if (column_name === "version") continue;
       if (column_name === "tenant_id") continue;
-      if (column_name === "org_id") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
@@ -5489,7 +5489,6 @@ async function onInitI18ns() {
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "is_deleted") continue;
-    if (column_name === "org_id") continue;
     if (column_name === "tenant_id") continue;
     const isPassword = column.isPassword;
     if (isPassword) continue;

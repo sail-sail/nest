@@ -3,7 +3,6 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasEnabled = columns.some((column) => column.COLUMN_NAME === "is_enabled");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
-const hasOrgId = columns.some((column) => column.COLUMN_NAME === "org_id");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
@@ -42,15 +41,13 @@ import type { } from "./<#=table#>.model.ts";
 import * as resolver from "./<#=table#>.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */ `
-scalar <#=Table_Up#>Id
-<#
+scalar <#=Table_Up#>Id<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
   const column_name = column.COLUMN_NAME;
   if (
     column_name === "tenant_id" ||
-    column_name === "org_id" ||
     column_name === "is_sys" ||
     column_name === "is_deleted" ||
     column_name === "is_hidden"
@@ -78,6 +75,7 @@ for (let i = 0; i < columns.length; i++) {
 #><#
     if (columnDictModels.length > 0) {
 #>
+
 "<#=table_comment#><#=column_comment#>"
 enum <#=enumColumnName#> {<#
     for (let i = 0; i < columnDictModels.length; i++) {
@@ -123,9 +121,6 @@ type <#=modelName#> {<#
       continue;
     }
     if (column_name === 'is_deleted') {
-      continue;
-    }
-    if (column_name === 'org_id') {
       continue;
     }
     if (column_name === 'tenant_id') {
@@ -201,7 +196,7 @@ type <#=modelName#> {<#
       let enumColumnName = data_type;
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -407,9 +402,6 @@ type <#=fieldCommentName#> {<#
     if (column_name === "is_deleted") {
       continue;
     }
-    if (column_name === "org_id") {
-      continue;
-    }
     if (column_name === "tenant_id") {
       continue;
     }
@@ -464,7 +456,6 @@ input <#=inputName#> {<#
     if (
       [
         "is_sys",
-        "org_id",
         "tenant_id",
         "is_hidden",
         "create_usr_id",
@@ -563,14 +554,14 @@ input <#=inputName#> {<#
     if (is_nullable) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>_save_null: Int<#
+  <#=column_name#>_save_null: Boolean<#
     }
   #><#
     } else if (column.dict || column.dictbiz) {
       let enumColumnName = data_type;
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -715,7 +706,10 @@ input <#=searchName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (
+      column.onlyCodegenDeno
+      || column.canSearch !== true
+    ) continue;
     // if (column.isVirtual) continue;
     const column_name = column.COLUMN_NAME;
     let data_type = column.DATA_TYPE;
@@ -733,9 +727,6 @@ input <#=searchName#> {<#
     const isEncrypt = column.isEncrypt;
     if (isEncrypt) continue;
     const search = column.search;
-    if (column_name === 'org_id') {
-      continue;
-    }
     if (column_name === 'tenant_id') {
       continue;
     }
@@ -795,13 +786,17 @@ input <#=searchName#> {<#
   #>
   "<#=column_comment#>"
   <#=modelLabel#>: [String!]<#
+    } else if (foreignKey.lbl) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: [String!]<#
     }
   #><#
     } else if (column.dict || column.dictbiz) {
       let enumColumnName = data_type;
       const columnDictModels = [
         ...dictModels.filter(function(item) {
-          return item.code === column.dict || item.code === column.dictbiz;
+          return item.code === column.dict || item.code === column.dict;
         }),
         ...dictbizModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dictbiz;
@@ -904,6 +899,8 @@ type Query {
 if (opts.noAdd !== true
   || opts.noEdit !== true
   || opts.noDelete !== true
+  || (opts.noRevert !== true && hasIsDeleted)
+  || (opts.noForceDelete !== true && hasIsDeleted)
 ) {
 #>
 type Mutation {<#
@@ -949,7 +946,7 @@ type Mutation {<#
   revertByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
   #><#
-  if (opts.noDelete !== true && hasIsDeleted) {
+  if (opts.noForceDelete !== true && hasIsDeleted) {
   #>
   "根据 ids 彻底删除<#=table_comment#>"
   forceDeleteByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#

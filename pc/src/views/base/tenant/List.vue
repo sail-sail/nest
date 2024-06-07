@@ -563,14 +563,14 @@
                   un-min="w-7.5"
                   @click="onMenu_ids(row)"
                 >
-                  {{ row[column.sortBy]?.length || 0 }}
+                  {{ row.menu_ids?.length || 0 }}
                 </el-link>
               </template>
             </el-table-column>
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -602,7 +602,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -625,7 +625,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -643,7 +643,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -661,7 +661,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -824,11 +824,7 @@ const props = defineProps<{
   domain_ids_lbl?: string[]; // 所属域名
   menu_ids?: string|string[]; // 菜单权限
   menu_ids_lbl?: string[]; // 菜单权限
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -843,11 +839,8 @@ const builtInSearchType: { [key: string]: string } = {
   domain_ids_lbl: "string[]",
   menu_ids: "string[]",
   menu_ids_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1093,7 +1086,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "所属域名",
       prop: "domain_ids_lbl",
-      sortBy: "domain_ids",
+      sortBy: "domain_ids_lbl",
       width: 280,
       align: "left",
       headerAlign: "center",
@@ -1102,7 +1095,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "菜单权限",
       prop: "menu_ids_lbl",
-      sortBy: "menu_ids",
+      sortBy: "menu_ids_lbl",
       width: 80,
       align: "center",
       headerAlign: "center",
@@ -1146,7 +1139,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1165,7 +1158,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",

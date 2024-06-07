@@ -101,11 +101,17 @@ async function getWhereQuery(
   if (search?.lang_id_is_null) {
     whereQuery += ` and t.lang_id is null`;
   }
+  if (search?.lang_id_lbl != null) {
+    whereQuery += ` and lang_id_lbl.lbl in ${ args.push(search.lang_id_lbl) }`;
+  }
   if (search?.menu_id != null) {
     whereQuery += ` and t.menu_id in ${ args.push(search.menu_id) }`;
   }
   if (search?.menu_id_is_null) {
     whereQuery += ` and t.menu_id is null`;
+  }
+  if (search?.menu_id_lbl != null) {
+    whereQuery += ` and menu_id_lbl.lbl in ${ args.push(search.menu_id_lbl) }`;
   }
   if (search?.code != null) {
     whereQuery += ` and t.code=${ args.push(search.code) }`;
@@ -803,7 +809,7 @@ export async function existById(
 
 /** 校验国际化是否存在 */
 export async function validateOption(
-  model?: Readonly<I18nModel>,
+  model?: I18nModel,
 ) {
   if (!model) {
     throw `${ await ns("国际化") } ${ await ns("不存在") }`;
@@ -1034,15 +1040,12 @@ async function _creates(
   
   const args = new QueryArgs();
   let sql = `insert into base_i18n(id`;
-  if (!silentMode) {
-    sql += ",create_time";
-  }
-  if (!silentMode) {
-    sql += ",create_usr_id";
-  }
-  if (!silentMode) {
-    sql += ",create_usr_id_lbl";
-  }
+  sql += ",create_time";
+  sql += ",update_time";
+  sql += ",create_usr_id";
+  sql += ",create_usr_id_lbl";
+  sql += ",update_usr_id";
+  sql += ",update_usr_id_lbl";
   sql += ",lang_id";
   sql += ",menu_id";
   sql += ",code";
@@ -1056,11 +1059,22 @@ async function _creates(
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
       if (!silentMode) {
-        if (input.create_time != null) {
+        if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
           sql += `,${ args.push(reqDate()) }`;
         }
+      } else {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,null`;
+        }
+      }
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }
       if (!silentMode) {
         if (input.create_usr_id == null) {
@@ -1101,6 +1115,27 @@ async function _creates(
           }
           sql += `,${ args.push(usr_lbl) }`;
         }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+        if (input.create_usr_id_lbl == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id_lbl) }`;
+        }
+      }
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
       }
       if (input.lang_id != null) {
         sql += `,${ args.push(input.lang_id) }`;
@@ -1234,13 +1269,13 @@ export async function updateById(
   let updateFldNum = 0;
   if (input.lang_id != null) {
     if (input.lang_id != oldModel.lang_id) {
-      sql += `lang_id = ${ args.push(input.lang_id) },`;
+      sql += `lang_id=${ args.push(input.lang_id) },`;
       updateFldNum++;
     }
   }
   if (input.menu_id != null) {
     if (input.menu_id != oldModel.menu_id) {
-      sql += `menu_id = ${ args.push(input.menu_id) },`;
+      sql += `menu_id=${ args.push(input.menu_id) },`;
       updateFldNum++;
     }
   }
@@ -1262,6 +1297,24 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (isNotEmpty(input.create_usr_id_lbl)) {
+    sql += `create_usr_id_lbl=?,`;
+    args.push(input.create_usr_id_lbl);
+    updateFldNum++;
+  }
+  if (input.create_usr_id != null) {
+    if (input.create_usr_id != oldModel.create_usr_id) {
+      sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.create_time != null || input.create_time_save_null) {
+    if (input.create_time != oldModel.create_time) {
+      sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
+  let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
     if (!silentMode) {
@@ -1299,19 +1352,33 @@ export async function updateById(
           sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
         }
       }
+    } else {
+      if (input.update_usr_id != null) {
+        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
+      }
     }
     if (!silentMode) {
-      if (input.update_time) {
-        sql += `update_time = ${ args.push(input.update_time) }`;
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `update_time=${ args.push(input.update_time) },`;
       } else {
-        sql += `update_time = ${ args.push(reqDate()) }`;
+        sql += `update_time=${ args.push(reqDate()) },`;
       }
+    } else if (input.update_time != null || input.update_time_save_null) {
+      sql += `update_time=${ args.push(input.update_time) },`;
+    }
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
     await delCache();
     
-    await execute(sql, args);
+    if (sqlSetFldNum > 0) {
+      await execute(sql, args);
+    }
   }
   
   if (updateFldNum > 0) {

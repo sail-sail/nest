@@ -1,3 +1,5 @@
+import cfg from "@/utils/config";
+
 import {
   UniqueType,
 } from "#/types";
@@ -47,6 +49,9 @@ export function intoInput(
     is_enabled_lbl: model?.is_enabled_lbl,
     // 排序
     order_by: model?.order_by,
+    // 组织
+    org_id: model?.org_id,
+    org_id_lbl: model?.org_id_lbl,
     // 备注
     rem: model?.rem,
   };
@@ -498,6 +503,52 @@ export async function getUsrList() {
   return data;
 }
 
+export async function findAllOrg(
+  search?: OrgSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllOrg: OrgModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: OrgSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllOrg(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllOrg;
+  return res;
+}
+
+export async function getOrgList() {
+  const data = await findAllOrg(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function getDeptTree() {
   const data = await findDeptTree(
     undefined,
@@ -535,6 +586,7 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             usr_ids_lbl
             order_by
+            org_id_lbl
             rem
           }
           findAllDept {
@@ -542,6 +594,10 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           findAllUsr {
+            id
+            lbl
+          }
+          findAllOrg {
             id
             lbl
           }
@@ -605,6 +661,9 @@ export function useExportExcel(routePath: string) {
               ${ deptQueryField }
             }
             findAllUsr {
+              lbl
+            }
+            findAllOrg {
               lbl
             }
             getDict(codes: [
@@ -725,10 +784,12 @@ export async function findLastOrderBy(
 
 /** 新增时的默认值 */
 export async function getDefaultInput() {
+  const usrStore = useUsrStore(cfg.pinia);
   const defaultInput: DeptInput = {
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
+    org_id: usrStore.loginInfo?.org_id,
   };
   return defaultInput;
 }
