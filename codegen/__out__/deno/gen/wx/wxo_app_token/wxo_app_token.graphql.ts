@@ -54,7 +54,7 @@ input WxoAppTokenInput {
   "令牌创建时间"
   token_time_lbl: String
   "令牌创建时间"
-  token_time_save_null: Int
+  token_time_save_null: Boolean
   "令牌超时时间"
   expires_in: Int
 }
