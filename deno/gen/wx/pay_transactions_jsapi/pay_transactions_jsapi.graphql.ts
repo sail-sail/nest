@@ -180,7 +180,7 @@ input PayTransactionsJsapiInput {
   "支付完成时间"
   success_time_lbl: String
   "支付完成时间"
-  success_time_save_null: Int
+  success_time_save_null: Boolean
   "交易限制时间"
   time_expire: String
   "附加数据"

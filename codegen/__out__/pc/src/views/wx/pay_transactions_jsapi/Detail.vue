@@ -745,7 +745,7 @@ watch(
     }
     if (!dialogModel.success_time) {
       dialogModel.success_time_lbl = "";
-      dialogModel.success_time_save_null = 1;
+      dialogModel.success_time_save_null = true;
     }
     if (!dialogModel.support_fapiao) {
       dialogModel.support_fapiao_lbl = "";
