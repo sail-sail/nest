@@ -1438,6 +1438,13 @@ async fn _creates(
       sql_values += ",null";
     }
     
+    if let Some(update_time) = input.update_time {
+      sql_values += ",?";
+      args.push(update_time.into());
+    } else {
+      sql_values += ",null";
+    }
+    
     if !silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
