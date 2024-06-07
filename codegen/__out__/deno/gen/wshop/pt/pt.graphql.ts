@@ -6,7 +6,6 @@ import * as resolver from "./pt.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar PtId
 
-
 type PtModel {
   "ID"
   id: PtId!
@@ -174,9 +173,6 @@ input PtSearch {
   ids: [PtId!]
   "ID"
   id: PtId
-  "图标"
-  img: String
-  img_like: String
   "名称"
   lbl: String
   lbl_like: String
@@ -184,48 +180,22 @@ input PtSearch {
   pt_type_ids: [PtTypeId!]
   "产品类别"
   pt_type_ids_is_null: Boolean
-  "价格"
-  price: [Decimal]
-  "原价"
-  original_price: [Decimal]
-  "单位"
-  unit: String
-  unit_like: String
-  "新品"
-  is_new: [Int!]
-  "简介"
-  introduct: String
-  introduct_like: String
-  "锁定"
-  is_locked: [Int!]
+  "产品类别"
+  pt_type_ids_lbl: [String!]
   "启用"
   is_enabled: [Int!]
-  "排序"
-  order_by: [Int]
-  "详情"
-  detail: String
-  detail_like: String
-  "详情顶部图片"
-  detail_top_img: String
-  detail_top_img_like: String
-  "详情底部图片"
-  detail_bottom_img: String
-  detail_bottom_img_like: String
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找产品总数"

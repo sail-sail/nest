@@ -788,7 +788,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.usr_id,
     dialogModel.grade,
     dialogModel.is_default_card,

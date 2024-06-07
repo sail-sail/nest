@@ -6,7 +6,6 @@ import * as resolver from "./card_recharge.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar CardRechargeId
 
-
 type CardRechargeModel {
   "ID"
   id: CardRechargeId!
@@ -124,35 +123,26 @@ input CardRechargeSearch {
   card_id: [CardId!]
   "会员卡"
   card_id_is_null: Boolean
+  "会员卡"
+  card_id_lbl: [String!]
   "用户"
   usr_id: [UsrId!]
   "用户"
   usr_id_is_null: Boolean
-  "充值金额"
-  amt: [Decimal]
-  "赠送金额"
-  give_amt: [Decimal]
-  "充值后充值余额"
-  balance: [Decimal]
-  "充值后赠送余额"
-  give_balance: [Decimal]
-  "充值后积分"
-  integral: [Int]
-  "备注"
-  rem: String
-  rem_like: String
+  "用户"
+  usr_id_lbl: [String!]
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找会员卡充值记录总数"

@@ -820,7 +820,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.pt_type_ids,
     dialogModel.is_new,
   ],

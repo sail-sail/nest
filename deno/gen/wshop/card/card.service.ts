@@ -8,11 +8,44 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 import * as cardDao from "./card.dao.ts";
 
 import {
   updateSeqLbl,
 } from "/src/wshop/card/card.dao.ts";
+
+async function setSearchQuery(
+  search: CardSearch,
+) {
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  if (!usr_id || !usr_model) {
+    throw new Error("usr_id can not be null");
+  }
+  const org_ids: OrgId[] = [ ];
+  if (authModel?.org_id) {
+    org_ids.push(authModel.org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
+  }
+  const username = usr_model.username;
+  
+  if (username !== "admin") {
+    search.org_id = org_ids;
+  }
+  
+}
 
 /**
  * 根据条件查找会员卡总数
@@ -22,7 +55,11 @@ import {
 export async function findCount(
   search?: CardSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await cardDao.findCount(search);
   return data;
 }
@@ -39,7 +76,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<CardModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: CardModel[] = await cardDao.findAll(search, page, sort);
   return models;
 }
@@ -60,7 +101,11 @@ export async function findOne(
   search?: CardSearch,
   sort?: SortInput|SortInput[],
 ): Promise<CardModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await cardDao.findOne(search, sort);
   return model;
 }
@@ -83,7 +128,11 @@ export async function findById(
 export async function exist(
   search?: CardSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await cardDao.exist(search);
   return data;
 }
@@ -158,18 +207,14 @@ export async function deleteByIds(
 ): Promise<number> {
   
   {
-    const ids2: CardId[] = [ ];
-    for (let i = 0; i < ids.length; i++) {
-      const id: CardId = ids[i];
-      const is_locked = await cardDao.getIsLockedById(id);
-      if (!is_locked) {
-        ids2.push(id);
+    const models = await cardDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_locked === 1) {
+        throw await ns("不能删除已经锁定的 {0}", "会员卡");
       }
     }
-    if (ids2.length === 0 && ids.length > 0) {
-      throw await ns("不能删除已经锁定的数据");
-    }
-    ids = ids2;
   }
   
   const data = await cardDao.deleteByIds(ids);

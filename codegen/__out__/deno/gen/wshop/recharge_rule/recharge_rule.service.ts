@@ -8,7 +8,40 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 import * as recharge_ruleDao from "./recharge_rule.dao.ts";
+
+async function setSearchQuery(
+  search: RechargeRuleSearch,
+) {
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  if (!usr_id || !usr_model) {
+    throw new Error("usr_id can not be null");
+  }
+  const org_ids: OrgId[] = [ ];
+  if (authModel?.org_id) {
+    org_ids.push(authModel.org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
+  }
+  const username = usr_model.username;
+  
+  if (username !== "admin") {
+    search.org_id = org_ids;
+  }
+  
+}
 
 /**
  * 根据条件查找充值赠送规则总数
@@ -18,7 +51,11 @@ import * as recharge_ruleDao from "./recharge_rule.dao.ts";
 export async function findCount(
   search?: RechargeRuleSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await recharge_ruleDao.findCount(search);
   return data;
 }
@@ -35,7 +72,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<RechargeRuleModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: RechargeRuleModel[] = await recharge_ruleDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +97,11 @@ export async function findOne(
   search?: RechargeRuleSearch,
   sort?: SortInput|SortInput[],
 ): Promise<RechargeRuleModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await recharge_ruleDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +124,11 @@ export async function findById(
 export async function exist(
   search?: RechargeRuleSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await recharge_ruleDao.exist(search);
   return data;
 }

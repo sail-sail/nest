@@ -6,7 +6,6 @@ import * as resolver from "./card_consume.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar CardConsumeId
 
-
 type CardConsumeModel {
   "ID"
   id: CardConsumeId!
@@ -124,35 +123,26 @@ input CardConsumeSearch {
   card_id: [CardId!]
   "卡号"
   card_id_is_null: Boolean
+  "卡号"
+  card_id_lbl: [String!]
   "用户"
   usr_id: [UsrId!]
   "用户"
   usr_id_is_null: Boolean
-  "消费充值金额"
-  amt: [Decimal]
-  "消费赠送金额"
-  give_amt: [Decimal]
-  "获得积分"
-  integral: [Int]
-  "消费后余额"
-  balance: [Decimal]
-  "消费后赠送余额"
-  give_balance: [Decimal]
-  "备注"
-  rem: String
-  rem_like: String
+  "用户"
+  usr_id_lbl: [String!]
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找会员卡消费记录总数"

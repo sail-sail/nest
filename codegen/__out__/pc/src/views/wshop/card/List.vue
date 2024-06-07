@@ -540,7 +540,7 @@
           </template>
           
           <!-- 会员等级 -->
-          <template v-else-if="'grade_lbl' === col.prop && (showBuildIn || builtInSearch?.grade == null)">
+          <template v-else-if="'grade_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -567,7 +567,7 @@
           </template>
           
           <!-- 充值余额 -->
-          <template v-else-if="'balance' === col.prop && (showBuildIn || builtInSearch?.balance == null)">
+          <template v-else-if="'balance' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -576,7 +576,7 @@
           </template>
           
           <!-- 赠送余额 -->
-          <template v-else-if="'give_balance' === col.prop && (showBuildIn || builtInSearch?.give_balance == null)">
+          <template v-else-if="'give_balance' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -585,7 +585,7 @@
           </template>
           
           <!-- 积分 -->
-          <template v-else-if="'integral' === col.prop && (showBuildIn || builtInSearch?.integral == null)">
+          <template v-else-if="'integral' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -594,7 +594,7 @@
           </template>
           
           <!-- 累计消费 -->
-          <template v-else-if="'growth_amt' === col.prop && (showBuildIn || builtInSearch?.growth_amt == null)">
+          <template v-else-if="'growth_amt' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -603,7 +603,7 @@
           </template>
           
           <!-- 默认 -->
-          <template v-else-if="'is_default_card_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default_card == null)">
+          <template v-else-if="'is_default_card_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -619,7 +619,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -651,7 +651,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -669,7 +669,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -687,7 +687,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -821,20 +821,11 @@ const props = defineProps<{
   lbl_like?: string; // 卡号
   usr_id?: string|string[]; // 绑定用户
   usr_id_lbl?: string; // 绑定用户
-  grade?: string|string[]; // 会员等级
   name?: string; // 姓名
   name_like?: string; // 姓名
   mobile?: string; // 电话
   mobile_like?: string; // 电话
-  balance?: string; // 充值余额
-  give_balance?: string; // 赠送余额
-  integral?: string; // 积分
-  growth_amt?: string; // 累计消费
-  is_default_card?: string|string[]; // 默认
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -847,22 +838,10 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   usr_id: "string[]",
   usr_id_lbl: "string[]",
-  grade: "string[]",
-  grade_lbl: "string[]",
-  balance: "number",
-  give_balance: "number",
-  integral: "number",
-  growth_amt: "number",
-  is_default_card: "number[]",
-  is_default_card_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
-  org_id: "string[]",
-  org_id_lbl: "string[]",
   update_usr_id: "string[]",
   update_usr_id_lbl: "string[]",
 };
@@ -1092,7 +1071,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "绑定用户",
       prop: "usr_id_lbl",
-      sortBy: "usr_id",
+      sortBy: "usr_id_lbl",
       width: 180,
       align: "center",
       headerAlign: "center",
@@ -1195,7 +1174,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1212,18 +1191,9 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "组织",
-      prop: "org_id_lbl",
-      sortBy: "org_id",
-      width: 280,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1522,7 +1492,6 @@ async function onImportExcel() {
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("备注") ]: "rem",
-    [ await nAsync("组织") ]: "org_id_lbl",
   };
   const file = await uploadFileDialogRef.showDialog({
     title: await nsAsync("批量导入"),
@@ -1555,7 +1524,6 @@ async function onImportExcel() {
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "rem": "string",
-          "org_id_lbl": "string",
         },
       },
     );
@@ -1943,7 +1911,6 @@ async function initI18nsEfc() {
     "备注",
     "创建人",
     "创建时间",
-    "组织",
     "更新人",
     "更新时间",
   ];
