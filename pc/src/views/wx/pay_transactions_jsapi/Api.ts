@@ -1,4 +1,4 @@
-
+import cfg from "@/utils/config";
 
 import {
   PayTransactionsJsapiTradeState,
@@ -191,56 +191,6 @@ export async function findById(
   const model = data.findByIdPayTransactionsJsapi;
   await setLblById(model);
   return model;
-}
-
-/**
- * 根据 ids 还原微信JSAPI下单
- * @param {PayTransactionsJsapiId[]} ids
- * @param {GqlOpt} opt?
- */
-export async function revertByIds(
-  ids: PayTransactionsJsapiId[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    revertByIdsPayTransactionsJsapi: Mutation["revertByIdsPayTransactionsJsapi"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [PayTransactionsJsapiId!]!) {
-        revertByIdsPayTransactionsJsapi(ids: $ids)
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const res = data.revertByIdsPayTransactionsJsapi;
-  return res;
-}
-
-/**
- * 根据 ids 彻底删除微信JSAPI下单
- * @param {PayTransactionsJsapiId[]} ids
- * @param {GqlOpt} opt?
- */
-export async function forceDeleteByIds(
-  ids: PayTransactionsJsapiId[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    forceDeleteByIdsPayTransactionsJsapi: Mutation["forceDeleteByIdsPayTransactionsJsapi"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [PayTransactionsJsapiId!]!) {
-        forceDeleteByIdsPayTransactionsJsapi(ids: $ids)
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const res = data.forceDeleteByIdsPayTransactionsJsapi;
-  return res;
 }
 
 /**

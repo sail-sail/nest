@@ -6,7 +6,6 @@ import * as resolver from "./wx_usr.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxUsrId
 
-
 type WxUsrModel {
   "ID"
   id: WxUsrId!
@@ -157,54 +156,20 @@ input WxUsrSearch {
   usr_id: [UsrId!]
   "用户"
   usr_id_is_null: Boolean
-  "昵称"
-  nick_name: String
-  nick_name_like: String
-  "头像"
-  avatar_url: String
-  avatar_url_like: String
-  "手机"
-  mobile: String
-  mobile_like: String
-  "小程序用户唯一标识"
-  openid: String
-  openid_like: String
-  "小程序用户统一标识"
-  unionid: String
-  unionid_like: String
-  "性别"
-  gender: [Int!]
-  "城市"
-  city: String
-  city_like: String
-  "省份"
-  province: String
-  province_like: String
-  "国家"
-  country: String
-  country_like: String
-  "语言"
-  language: String
-  language_like: String
-  "备注"
-  rem: String
-  rem_like: String
+  "用户"
+  usr_id_lbl: [String!]
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找小程序用户总数"

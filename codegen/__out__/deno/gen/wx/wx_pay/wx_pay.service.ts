@@ -10,6 +10,12 @@ import {
 
 import * as wx_payDao from "./wx_pay.dao.ts";
 
+async function setSearchQuery(
+  search: WxPaySearch,
+) {
+  
+}
+
 /**
  * 根据条件查找微信支付设置总数
  * @param {WxPaySearch} search? 搜索条件
@@ -18,7 +24,11 @@ import * as wx_payDao from "./wx_pay.dao.ts";
 export async function findCount(
   search?: WxPaySearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wx_payDao.findCount(search);
   return data;
 }
@@ -35,7 +45,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<WxPayModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: WxPayModel[] = await wx_payDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +70,11 @@ export async function findOne(
   search?: WxPaySearch,
   sort?: SortInput|SortInput[],
 ): Promise<WxPayModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await wx_payDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +97,11 @@ export async function findById(
 export async function exist(
   search?: WxPaySearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wx_payDao.exist(search);
   return data;
 }

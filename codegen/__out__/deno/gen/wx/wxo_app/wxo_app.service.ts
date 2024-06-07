@@ -10,6 +10,12 @@ import {
 
 import * as wxo_appDao from "./wxo_app.dao.ts";
 
+async function setSearchQuery(
+  search: WxoAppSearch,
+) {
+  
+}
+
 /**
  * 根据条件查找公众号设置总数
  * @param {WxoAppSearch} search? 搜索条件
@@ -18,7 +24,11 @@ import * as wxo_appDao from "./wxo_app.dao.ts";
 export async function findCount(
   search?: WxoAppSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wxo_appDao.findCount(search);
   return data;
 }
@@ -35,7 +45,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<WxoAppModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: WxoAppModel[] = await wxo_appDao.findAll(search, page, sort);
   return models;
 }
@@ -56,7 +70,11 @@ export async function findOne(
   search?: WxoAppSearch,
   sort?: SortInput|SortInput[],
 ): Promise<WxoAppModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await wxo_appDao.findOne(search, sort);
   return model;
 }
@@ -79,7 +97,11 @@ export async function findById(
 export async function exist(
   search?: WxoAppSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wxo_appDao.exist(search);
   return data;
 }

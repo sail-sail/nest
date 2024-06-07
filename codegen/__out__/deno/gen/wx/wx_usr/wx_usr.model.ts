@@ -12,11 +12,55 @@ declare global {
   type WxUsrId = Distinct<string, typeof wxUsrId>;
 
   interface WxUsrSearch extends WxUsrSearchType {
-    tenant_id?: string | null;
-    org_id?: string | null;
+    /** 昵称 */
+    nick_name?: string;
+    nick_name_like?: string;
+    /** 头像 */
+    avatar_url?: string;
+    avatar_url_like?: string;
+    /** 手机 */
+    mobile?: string;
+    mobile_like?: string;
+    /** 小程序用户唯一标识 */
+    openid?: string;
+    openid_like?: string;
+    /** 小程序用户统一标识 */
+    unionid?: string;
+    unionid_like?: string;
+    /** 性别 */
+    gender?: number[];
+    /** 城市 */
+    city?: string;
+    city_like?: string;
+    /** 省份 */
+    province?: string;
+    province_like?: string;
+    /** 国家 */
+    country?: string;
+    country_like?: string;
+    /** 语言 */
+    language?: string;
+    language_like?: string;
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
+    /** 组织 */
+    org_id?: OrgId[];
+    org_id_is_null?: boolean;
+    /** 组织 */
+    org_id_lbl?: string[];
+    tenant_id?: TenantId | null;
   }
 
   interface WxUsrModel extends WxUsrModelType {
+    /** 组织 */
+    org_id: OrgId;
+    /** 组织 */
+    org_id_lbl: string;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -26,21 +70,25 @@ declare global {
     update_time?: string | null;
     update_time_lbl: string;
     tenant_id: TenantId;
-    org_id: OrgId;
   }
 
   interface WxUsrInput extends WxUsrInputType {
+    /** 组织 */
+    org_id?: OrgId | null;
+    /** 组织 */
+    org_id_lbl?: string | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
     create_time_lbl?: string | null;
+    create_time_save_null?: boolean | null;
     update_usr_id?: UsrId | null;
     update_usr_id_lbl?: string | null;
     update_time?: string | null;
     update_time_lbl?: string | null;
+    update_time_save_null?: boolean | null;
     is_deleted?: number | null;
     tenant_id?: TenantId | null;
-    org_id?: OrgId | null;
   }
 
   interface WxUsrFieldComment extends WxUsrFieldCommentType {

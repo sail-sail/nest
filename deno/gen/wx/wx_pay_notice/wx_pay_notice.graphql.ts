@@ -17,6 +17,7 @@ enum WxPayNoticeTradeType {
   "H5支付"
   MWEB
 }
+
 "微信支付通知交易状态"
 enum WxPayNoticeTradeState {
   "支付成功"
@@ -34,11 +35,13 @@ enum WxPayNoticeTradeState {
   "支付失败"
   PAYERROR
 }
+
 "微信支付通知货币类型"
 enum WxPayNoticeCurrency {
   "人民币"
   CNY
 }
+
 "微信支付通知用户支付币种"
 enum WxPayNoticePayerCurrency {
   "人民币"
@@ -211,7 +214,7 @@ input WxPayNoticeInput {
   "支付完成时间"
   success_time_lbl: String
   "支付完成时间"
-  success_time_save_null: Int
+  success_time_save_null: Boolean
   "总金额"
   total: Int
   "用户支付金额"
@@ -238,69 +241,24 @@ input WxPayNoticeSearch {
   ids: [WxPayNoticeId!]
   "ID"
   id: WxPayNoticeId
-  "开发者ID"
-  appid: String
-  appid_like: String
-  "商户号"
-  mchid: String
-  mchid_like: String
   "用户标识"
   openid: String
   openid_like: String
-  "商户订单号"
-  out_trade_no: String
-  out_trade_no_like: String
   "微信支付订单号"
   transaction_id: String
   transaction_id_like: String
-  "交易类型"
-  trade_type: [WxPayNoticeTradeType!]
-  "交易状态"
-  trade_state: [WxPayNoticeTradeState!]
-  "交易状态描述"
-  trade_state_desc: String
-  trade_state_desc_like: String
-  "付款银行"
-  bank_type: String
-  bank_type_like: String
-  "附加数据"
-  attach: String
-  attach_like: String
-  "支付完成时间"
-  success_time: [NaiveDateTime]
-  "总金额"
-  total: [Int]
-  "用户支付金额"
-  payer_total: [Int]
-  "货币类型"
-  currency: [WxPayNoticeCurrency!]
-  "用户支付币种"
-  payer_currency: [WxPayNoticePayerCurrency!]
-  "商户端设备号"
-  device_id: String
-  device_id_like: String
-  "备注"
-  rem: String
-  rem_like: String
-  "原始数据"
-  raw: String
-  raw_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找微信支付通知总数"

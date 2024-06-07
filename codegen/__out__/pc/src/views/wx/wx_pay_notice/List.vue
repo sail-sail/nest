@@ -239,30 +239,6 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
-        plain
-        type="primary"
-        @click="onRevertByIds"
-      >
-        <template #icon>
-          <ElIconCircleCheck />
-        </template>
-        <span>{{ ns('还原') }}</span>
-      </el-button>
-      
-      <el-button
-        v-if="permit('force_delete') && !isLocked"
-        plain
-        type="danger"
-        @click="onForceDeleteByIds"
-      >
-        <template #icon>
-          <ElIconCircleClose />
-        </template>
-        <span>{{ ns('彻底删除') }}</span>
-      </el-button>
-      
-      <el-button
         plain
         @click="openView"
       >
@@ -404,7 +380,7 @@
         >
           
           <!-- 开发者ID -->
-          <template v-if="'appid' === col.prop && (showBuildIn || builtInSearch?.appid == null)">
+          <template v-if="'appid' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -413,7 +389,7 @@
           </template>
           
           <!-- 商户号 -->
-          <template v-else-if="'mchid' === col.prop && (showBuildIn || builtInSearch?.mchid == null)">
+          <template v-else-if="'mchid' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -431,7 +407,7 @@
           </template>
           
           <!-- 商户订单号 -->
-          <template v-else-if="'out_trade_no' === col.prop && (showBuildIn || builtInSearch?.out_trade_no == null)">
+          <template v-else-if="'out_trade_no' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -449,7 +425,7 @@
           </template>
           
           <!-- 交易类型 -->
-          <template v-else-if="'trade_type_lbl' === col.prop && (showBuildIn || builtInSearch?.trade_type == null)">
+          <template v-else-if="'trade_type_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -458,7 +434,7 @@
           </template>
           
           <!-- 交易状态 -->
-          <template v-else-if="'trade_state_lbl' === col.prop && (showBuildIn || builtInSearch?.trade_state == null)">
+          <template v-else-if="'trade_state_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -467,7 +443,7 @@
           </template>
           
           <!-- 交易状态描述 -->
-          <template v-else-if="'trade_state_desc' === col.prop && (showBuildIn || builtInSearch?.trade_state_desc == null)">
+          <template v-else-if="'trade_state_desc' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -476,7 +452,7 @@
           </template>
           
           <!-- 付款银行 -->
-          <template v-else-if="'bank_type' === col.prop && (showBuildIn || builtInSearch?.bank_type == null)">
+          <template v-else-if="'bank_type' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -485,7 +461,7 @@
           </template>
           
           <!-- 附加数据 -->
-          <template v-else-if="'attach' === col.prop && (showBuildIn || builtInSearch?.attach == null)">
+          <template v-else-if="'attach' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -494,7 +470,7 @@
           </template>
           
           <!-- 支付完成时间 -->
-          <template v-else-if="'success_time_lbl' === col.prop && (showBuildIn || builtInSearch?.success_time == null)">
+          <template v-else-if="'success_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -503,7 +479,7 @@
           </template>
           
           <!-- 总金额 -->
-          <template v-else-if="'total' === col.prop && (showBuildIn || builtInSearch?.total == null)">
+          <template v-else-if="'total' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -512,7 +488,7 @@
           </template>
           
           <!-- 用户支付金额 -->
-          <template v-else-if="'payer_total' === col.prop && (showBuildIn || builtInSearch?.payer_total == null)">
+          <template v-else-if="'payer_total' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -521,7 +497,7 @@
           </template>
           
           <!-- 货币类型 -->
-          <template v-else-if="'currency_lbl' === col.prop && (showBuildIn || builtInSearch?.currency == null)">
+          <template v-else-if="'currency_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -530,7 +506,7 @@
           </template>
           
           <!-- 用户支付币种 -->
-          <template v-else-if="'payer_currency_lbl' === col.prop && (showBuildIn || builtInSearch?.payer_currency == null)">
+          <template v-else-if="'payer_currency_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -539,7 +515,7 @@
           </template>
           
           <!-- 商户端设备号 -->
-          <template v-else-if="'device_id' === col.prop && (showBuildIn || builtInSearch?.device_id == null)">
+          <template v-else-if="'device_id' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -548,7 +524,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -557,7 +533,7 @@
           </template>
           
           <!-- 原始数据 -->
-          <template v-else-if="'raw' === col.prop && (showBuildIn || builtInSearch?.raw == null)">
+          <template v-else-if="'raw' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -575,7 +551,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -593,7 +569,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -650,8 +626,6 @@ import Detail from "./Detail.vue";
 import {
   findAll,
   findCount,
-  revertByIds,
-  forceDeleteByIds,
   useExportExcel,
 } from "./Api";
 
@@ -706,35 +680,10 @@ const props = defineProps<{
   selectedIds?: WxPayNoticeId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: WxPayNoticeId; // ID
-  appid?: string; // 开发者ID
-  appid_like?: string; // 开发者ID
-  mchid?: string; // 商户号
-  mchid_like?: string; // 商户号
   openid?: string; // 用户标识
   openid_like?: string; // 用户标识
-  out_trade_no?: string; // 商户订单号
-  out_trade_no_like?: string; // 商户订单号
   transaction_id?: string; // 微信支付订单号
   transaction_id_like?: string; // 微信支付订单号
-  trade_type?: string|string[]; // 交易类型
-  trade_state?: string|string[]; // 交易状态
-  trade_state_desc?: string; // 交易状态描述
-  trade_state_desc_like?: string; // 交易状态描述
-  bank_type?: string; // 付款银行
-  bank_type_like?: string; // 付款银行
-  attach?: string; // 附加数据
-  attach_like?: string; // 附加数据
-  success_time?: string; // 支付完成时间
-  total?: string; // 总金额
-  payer_total?: string; // 用户支付金额
-  currency?: string|string[]; // 货币类型
-  payer_currency?: string|string[]; // 用户支付币种
-  device_id?: string; // 商户端设备号
-  device_id_like?: string; // 商户端设备号
-  rem?: string; // 备注
-  rem_like?: string; // 备注
-  raw?: string; // 原始数据
-  raw_like?: string; // 原始数据
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -745,16 +694,6 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  trade_type: "string[]",
-  trade_type_lbl: "string[]",
-  trade_state: "string[]",
-  trade_state_lbl: "string[]",
-  total: "number",
-  payer_total: "number",
-  currency: "string[]",
-  currency_lbl: "string[]",
-  payer_currency: "string[]",
-  payer_currency_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1112,7 +1051,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1131,7 +1070,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1379,71 +1318,6 @@ async function openView() {
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
-}
-
-/** 点击彻底删除 */
-async function onForceDeleteByIds() {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (!permit("forceDelete")) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("微信支付通知")));
-    return;
-  }
-  try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("微信支付通知")) }?`, {
-      confirmButtonText: await nsAsync("确定"),
-      cancelButtonText: await nsAsync("取消"),
-      type: "warning",
-    });
-  } catch (err) {
-    return;
-  }
-  const num = await forceDeleteByIds(selectedIds);
-  if (num) {
-    selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("微信支付通知")));
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
-/** 点击还原 */
-async function onRevertByIds() {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (permit("delete") === false) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("微信支付通知")));
-    return;
-  }
-  try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("微信支付通知")) }?`, {
-      confirmButtonText: await nsAsync("确定"),
-      cancelButtonText: await nsAsync("取消"),
-      type: "warning",
-    });
-  } catch (err) {
-    return;
-  }
-  const num = await revertByIds(selectedIds);
-  if (num) {
-    search.is_deleted = 0;
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("微信支付通知")));
-    emit("revert", num);
-  }
 }
 
 /** 初始化ts中的国际化信息 */

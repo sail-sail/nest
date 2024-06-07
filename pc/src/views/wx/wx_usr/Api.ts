@@ -1,3 +1,5 @@
+import cfg from "@/utils/config";
+
 import {
   UniqueType,
 } from "#/types";

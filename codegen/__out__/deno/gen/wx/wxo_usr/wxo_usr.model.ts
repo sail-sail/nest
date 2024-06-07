@@ -12,11 +12,32 @@ declare global {
   type WxoUsrId = Distinct<string, typeof wxoUsrId>;
 
   interface WxoUsrSearch extends WxoUsrSearchType {
-    tenant_id?: string | null;
-    org_id?: string | null;
+    /** 公众号用户唯一标识 */
+    openid?: string;
+    openid_like?: string;
+    /** 公众号用户统一标识 */
+    unionid?: string;
+    unionid_like?: string;
+    /** 备注 */
+    rem?: string;
+    rem_like?: string;
+    /** 创建时间 */
+    create_time?: string[];
+    /** 更新时间 */
+    update_time?: string[];
+    /** 组织 */
+    org_id?: OrgId[];
+    org_id_is_null?: boolean;
+    /** 组织 */
+    org_id_lbl?: string[];
+    tenant_id?: TenantId | null;
   }
 
   interface WxoUsrModel extends WxoUsrModelType {
+    /** 组织 */
+    org_id: OrgId;
+    /** 组织 */
+    org_id_lbl: string;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -26,21 +47,25 @@ declare global {
     update_time?: string | null;
     update_time_lbl: string;
     tenant_id: TenantId;
-    org_id: OrgId;
   }
 
   interface WxoUsrInput extends WxoUsrInputType {
+    /** 组织 */
+    org_id?: OrgId | null;
+    /** 组织 */
+    org_id_lbl?: string | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
     create_time_lbl?: string | null;
+    create_time_save_null?: boolean | null;
     update_usr_id?: UsrId | null;
     update_usr_id_lbl?: string | null;
     update_time?: string | null;
     update_time_lbl?: string | null;
+    update_time_save_null?: boolean | null;
     is_deleted?: number | null;
     tenant_id?: TenantId | null;
-    org_id?: OrgId | null;
   }
 
   interface WxoUsrFieldComment extends WxoUsrFieldCommentType {

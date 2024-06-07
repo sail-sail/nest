@@ -83,26 +83,3 @@ export async function findByIdPayTransactionsJsapi(
   
   return res;
 }
-
-/**
- * 根据 ids 还原微信JSAPI下单
- */
-export async function revertByIdsPayTransactionsJsapi(
-  ids: PayTransactionsJsapiId[],
-): Promise<number> {
-  
-  const {
-    revertByIds,
-  } = await import("./pay_transactions_jsapi.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/wx/pay_transactions_jsapi",
-    "delete",
-  );
-  const res = await revertByIds(ids);
-  return res;
-}

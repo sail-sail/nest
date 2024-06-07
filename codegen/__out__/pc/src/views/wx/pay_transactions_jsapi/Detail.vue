@@ -729,6 +729,33 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    dialogModel.trade_state,
+    dialogModel.success_time,
+    dialogModel.support_fapiao,
+    dialogModel.currency,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.trade_state) {
+      dialogModel.trade_state_lbl = "";
+    }
+    if (!dialogModel.success_time) {
+      dialogModel.success_time_lbl = "";
+      dialogModel.success_time_save_null = true;
+    }
+    if (!dialogModel.support_fapiao) {
+      dialogModel.support_fapiao_lbl = "";
+    }
+    if (!dialogModel.currency) {
+      dialogModel.currency_lbl = "";
+    }
+  },
+);
+
 async function onDialogOpen() {
 }
 

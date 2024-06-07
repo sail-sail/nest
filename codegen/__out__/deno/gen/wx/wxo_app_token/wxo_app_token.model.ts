@@ -12,6 +12,13 @@ declare global {
   type WxoAppTokenId = Distinct<string, typeof wxoAppTokenId>;
 
   interface WxoAppTokenSearch extends WxoAppTokenSearchType {
+    /** 令牌 */
+    access_token?: string;
+    access_token_like?: string;
+    /** 令牌创建时间 */
+    token_time?: string[];
+    /** 令牌超时时间 */
+    expires_in?: number[];
     /** 创建人 */
     create_usr_id?: UsrId[];
     create_usr_id_is_null?: boolean;
@@ -42,10 +49,12 @@ declare global {
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
     create_time_lbl?: string | null;
+    create_time_save_null?: boolean | null;
     update_usr_id?: UsrId | null;
     update_usr_id_lbl?: string | null;
     update_time?: string | null;
     update_time_lbl?: string | null;
+    update_time_save_null?: boolean | null;
     is_deleted?: number | null;
   }
 

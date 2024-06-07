@@ -4,7 +4,40 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 import * as wx_pay_noticeDao from "./wx_pay_notice.dao.ts";
+
+async function setSearchQuery(
+  search: WxPayNoticeSearch,
+) {
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  if (!usr_id || !usr_model) {
+    throw new Error("usr_id can not be null");
+  }
+  const org_ids: OrgId[] = [ ];
+  if (authModel?.org_id) {
+    org_ids.push(authModel.org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
+  }
+  const username = usr_model.username;
+  
+  if (username !== "admin") {
+    search.org_id = org_ids;
+  }
+  
+}
 
 /**
  * 根据条件查找微信支付通知总数
@@ -14,7 +47,11 @@ import * as wx_pay_noticeDao from "./wx_pay_notice.dao.ts";
 export async function findCount(
   search?: WxPayNoticeSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wx_pay_noticeDao.findCount(search);
   return data;
 }
@@ -31,7 +68,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<WxPayNoticeModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: WxPayNoticeModel[] = await wx_pay_noticeDao.findAll(search, page, sort);
   return models;
 }
@@ -52,7 +93,11 @@ export async function findOne(
   search?: WxPayNoticeSearch,
   sort?: SortInput|SortInput[],
 ): Promise<WxPayNoticeModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await wx_pay_noticeDao.findOne(search, sort);
   return model;
 }
@@ -75,7 +120,11 @@ export async function findById(
 export async function exist(
   search?: WxPayNoticeSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await wx_pay_noticeDao.exist(search);
   return data;
 }

@@ -4,7 +4,40 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 import * as pay_transactions_jsapiDao from "./pay_transactions_jsapi.dao.ts";
+
+async function setSearchQuery(
+  search: PayTransactionsJsapiSearch,
+) {
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  if (!usr_id || !usr_model) {
+    throw new Error("usr_id can not be null");
+  }
+  const org_ids: OrgId[] = [ ];
+  if (authModel?.org_id) {
+    org_ids.push(authModel.org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
+  }
+  const username = usr_model.username;
+  
+  if (username !== "admin") {
+    search.org_id = org_ids;
+  }
+  
+}
 
 /**
  * 根据条件查找微信JSAPI下单总数
@@ -14,7 +47,11 @@ import * as pay_transactions_jsapiDao from "./pay_transactions_jsapi.dao.ts";
 export async function findCount(
   search?: PayTransactionsJsapiSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await pay_transactions_jsapiDao.findCount(search);
   return data;
 }
@@ -31,7 +68,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<PayTransactionsJsapiModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: PayTransactionsJsapiModel[] = await pay_transactions_jsapiDao.findAll(search, page, sort);
   return models;
 }
@@ -52,7 +93,11 @@ export async function findOne(
   search?: PayTransactionsJsapiSearch,
   sort?: SortInput|SortInput[],
 ): Promise<PayTransactionsJsapiModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await pay_transactions_jsapiDao.findOne(search, sort);
   return model;
 }
@@ -75,7 +120,11 @@ export async function findById(
 export async function exist(
   search?: PayTransactionsJsapiSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await pay_transactions_jsapiDao.exist(search);
   return data;
 }
