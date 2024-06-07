@@ -3099,6 +3099,17 @@ async fn _creates(
     }<#
     }
     #><#
+    if (hasUpdateTime) {
+    #>
+    
+    if let Some(update_time) = input.update_time {
+      sql_values += ",?";
+      args.push(update_time.into());
+    } else {
+      sql_values += ",null";
+    }<#
+    }
+    #><#
     if (hasCreateUsrId && !hasCreateUsrIdLbl) {
     #>
     
