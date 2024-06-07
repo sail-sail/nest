@@ -527,7 +527,7 @@
           </template>
           
           <!-- 商户号 -->
-          <template v-else-if="'mchid' === col.prop && (showBuildIn || builtInSearch?.mchid == null)">
+          <template v-else-if="'mchid' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -536,7 +536,7 @@
           </template>
           
           <!-- 公钥 -->
-          <template v-else-if="'public_key' === col.prop && (showBuildIn || builtInSearch?.public_key == null)">
+          <template v-else-if="'public_key' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -552,7 +552,7 @@
           </template>
           
           <!-- 私钥 -->
-          <template v-else-if="'private_key' === col.prop && (showBuildIn || builtInSearch?.private_key == null)">
+          <template v-else-if="'private_key' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -568,7 +568,7 @@
           </template>
           
           <!-- APIv3密钥 -->
-          <template v-else-if="'v3_key' === col.prop && (showBuildIn || builtInSearch?.v3_key == null)">
+          <template v-else-if="'v3_key' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -577,7 +577,7 @@
           </template>
           
           <!-- 支付终端IP -->
-          <template v-else-if="'payer_client_ip' === col.prop && (showBuildIn || builtInSearch?.payer_client_ip == null)">
+          <template v-else-if="'payer_client_ip' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -586,7 +586,7 @@
           </template>
           
           <!-- 通知地址 -->
-          <template v-else-if="'notify_url' === col.prop && (showBuildIn || builtInSearch?.notify_url == null)">
+          <template v-else-if="'notify_url' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -595,7 +595,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -627,7 +627,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -650,7 +650,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -668,7 +668,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -686,7 +686,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -820,23 +820,7 @@ const props = defineProps<{
   lbl_like?: string; // 名称
   appid?: string; // 开发者ID
   appid_like?: string; // 开发者ID
-  mchid?: string; // 商户号
-  mchid_like?: string; // 商户号
-  public_key?: string; // 公钥
-  public_key_like?: string; // 公钥
-  private_key?: string; // 私钥
-  private_key_like?: string; // 私钥
-  v3_key?: string; // APIv3密钥
-  v3_key_like?: string; // APIv3密钥
-  payer_client_ip?: string; // 支付终端IP
-  payer_client_ip_like?: string; // 支付终端IP
-  notify_url?: string; // 通知地址
-  notify_url_like?: string; // 通知地址
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -847,11 +831,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1172,7 +1153,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1191,7 +1172,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",

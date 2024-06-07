@@ -6,7 +6,6 @@ import * as resolver from "./wxo_app_token.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxoAppTokenId
 
-
 type WxoAppTokenModel {
   "ID"
   id: WxoAppTokenId!
@@ -55,7 +54,7 @@ input WxoAppTokenInput {
   "令牌创建时间"
   token_time_lbl: String
   "令牌创建时间"
-  token_time_save_null: Int
+  token_time_save_null: Boolean
   "令牌超时时间"
   expires_in: Int
 }
@@ -70,13 +69,8 @@ input WxoAppTokenSearch {
   wxo_app_id: [WxoAppId!]
   "小程序设置"
   wxo_app_id_is_null: Boolean
-  "令牌"
-  access_token: String
-  access_token_like: String
-  "令牌创建时间"
-  token_time: [NaiveDateTime]
-  "令牌超时时间"
-  expires_in: [Int]
+  "小程序设置"
+  wxo_app_id_lbl: [String!]
 }
 type Query {
   "根据条件查找小程序接口凭据总数"

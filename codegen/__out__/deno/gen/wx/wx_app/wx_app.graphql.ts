@@ -6,7 +6,6 @@ import * as resolver from "./wx_app.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxAppId
 
-
 type WxAppModel {
   "ID"
   id: WxAppId!
@@ -129,31 +128,20 @@ input WxAppSearch {
   "开发者ID"
   appid: String
   appid_like: String
-  "锁定"
-  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "排序"
-  order_by: [Int]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
-  "创建时间"
-  create_time: [NaiveDateTime]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
-  "更新时间"
-  update_time: [NaiveDateTime]
 }
 type Query {
   "根据条件查找小程序设置总数"

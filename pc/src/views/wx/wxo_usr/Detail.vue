@@ -637,7 +637,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.usr_id,
   ],
   () => {
