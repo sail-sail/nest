@@ -6,7 +6,6 @@ import * as resolver from "./pt_type.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar PtTypeId
 
-
 type PtTypeModel {
   "ID"
   id: PtTypeId!
@@ -132,37 +131,23 @@ input PtTypeSearch {
   ids: [PtTypeId!]
   "ID"
   id: PtTypeId
-  "图标"
-  img: String
-  img_like: String
   "名称"
   lbl: String
   lbl_like: String
-  "首页显示"
-  is_home: [Int!]
-  "推荐"
-  is_recommend: [Int!]
-  "锁定"
-  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "排序"
-  order_by: [Int]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找产品类别总数"

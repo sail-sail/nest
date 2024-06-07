@@ -17,6 +17,7 @@ enum OrderStatus {
   "已完成"
   completed
 }
+
 "订单订单类别"
 enum OrderType {
   "消费"
@@ -223,49 +224,32 @@ input OrderSearch {
   "联系电话"
   phone: String
   phone_like: String
-  "订单状态"
-  status: [OrderStatus!]
   "用户"
   usr_id: [UsrId!]
   "用户"
   usr_id_is_null: Boolean
+  "用户"
+  usr_id_lbl: [String!]
   "会员卡"
   card_id: [CardId!]
   "会员卡"
   card_id_is_null: Boolean
-  "订单金额"
-  price: [Decimal]
-  "订单类别"
-  type: [OrderType!]
-  "消费充值金额"
-  amt: [Decimal]
-  "消费赠送金额"
-  give_amt: [Decimal]
-  "获得积分"
-  integral: [Int]
-  "消费后充值余额"
-  balance: [Decimal]
-  "消费后赠送余额"
-  give_balance: [Decimal]
-  "锁定"
-  is_locked: [Int!]
+  "会员卡"
+  card_id_lbl: [String!]
   "启用"
   is_enabled: [Int!]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找订单总数"

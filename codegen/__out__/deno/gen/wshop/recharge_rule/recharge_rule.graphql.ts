@@ -6,7 +6,6 @@ import * as resolver from "./recharge_rule.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar RechargeRuleId
 
-
 type RechargeRuleModel {
   "ID"
   id: RechargeRuleId!
@@ -111,29 +110,20 @@ input RechargeRuleSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "充值金额"
-  amt: [Decimal]
-  "赠送金额"
-  give_amt: [Decimal]
-  "锁定"
-  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找充值赠送规则总数"

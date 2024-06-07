@@ -409,7 +409,7 @@
           </template>
           
           <!-- 充值金额 -->
-          <template v-else-if="'amt' === col.prop && (showBuildIn || builtInSearch?.amt == null)">
+          <template v-else-if="'amt' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -418,7 +418,7 @@
           </template>
           
           <!-- 赠送金额 -->
-          <template v-else-if="'give_amt' === col.prop && (showBuildIn || builtInSearch?.give_amt == null)">
+          <template v-else-if="'give_amt' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -427,7 +427,7 @@
           </template>
           
           <!-- 充值后充值余额 -->
-          <template v-else-if="'balance' === col.prop && (showBuildIn || builtInSearch?.balance == null)">
+          <template v-else-if="'balance' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -436,7 +436,7 @@
           </template>
           
           <!-- 充值后赠送余额 -->
-          <template v-else-if="'give_balance' === col.prop && (showBuildIn || builtInSearch?.give_balance == null)">
+          <template v-else-if="'give_balance' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -445,7 +445,7 @@
           </template>
           
           <!-- 充值后积分 -->
-          <template v-else-if="'integral' === col.prop && (showBuildIn || builtInSearch?.integral == null)">
+          <template v-else-if="'integral' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -454,7 +454,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -472,7 +472,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -490,7 +490,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -608,13 +608,6 @@ const props = defineProps<{
   card_id_lbl?: string; // 会员卡
   usr_id?: string|string[]; // 用户
   usr_id_lbl?: string; // 用户
-  amt?: string; // 充值金额
-  give_amt?: string; // 赠送金额
-  balance?: string; // 充值后充值余额
-  give_balance?: string; // 充值后赠送余额
-  integral?: string; // 充值后积分
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -629,11 +622,6 @@ const builtInSearchType: { [key: string]: string } = {
   card_id_lbl: "string[]",
   usr_id: "string[]",
   usr_id_lbl: "string[]",
-  amt: "number",
-  give_amt: "number",
-  balance: "number",
-  give_balance: "number",
-  integral: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -842,7 +830,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "会员卡",
       prop: "card_id_lbl",
-      sortBy: "card_id",
+      sortBy: "card_id_lbl",
       width: 180,
       align: "center",
       headerAlign: "center",
@@ -852,7 +840,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "用户",
       prop: "usr_id_lbl",
-      sortBy: "usr_id",
+      sortBy: "usr_id_lbl",
       width: 180,
       align: "center",
       headerAlign: "center",
@@ -910,7 +898,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -929,7 +917,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",

@@ -704,7 +704,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.is_home,
     dialogModel.is_recommend,
   ],

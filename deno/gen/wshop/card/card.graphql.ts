@@ -186,43 +186,28 @@ input CardSearch {
   usr_id: [UsrId!]
   "绑定用户"
   usr_id_is_null: Boolean
-  "会员等级"
-  grade: [CardGrade!]
+  "绑定用户"
+  usr_id_lbl: [String!]
   "姓名"
   name: String
   name_like: String
   "电话"
   mobile: String
   mobile_like: String
-  "充值余额"
-  balance: [Decimal]
-  "赠送余额"
-  give_balance: [Decimal]
-  "积分"
-  integral: [Int]
-  "累计消费"
-  growth_amt: [Decimal]
-  "默认"
-  is_default_card: [Int!]
-  "锁定"
-  is_locked: [Int!]
   "启用"
   is_enabled: [Int!]
-  "备注"
-  rem: String
-  rem_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
   create_usr_id_is_null: Boolean
-  "创建时间"
-  create_time: [NaiveDateTime]
+  "创建人"
+  create_usr_id_lbl: [String!]
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
-  "更新时间"
-  update_time: [NaiveDateTime]
+  "更新人"
+  update_usr_id_lbl: [String!]
 }
 type Query {
   "根据条件查找会员卡总数"

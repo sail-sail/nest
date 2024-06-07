@@ -773,7 +773,6 @@ async function nextId() {
 
 watch(
   () => [
-    inited,
     dialogModel.status,
     dialogModel.usr_id,
     dialogModel.card_id,

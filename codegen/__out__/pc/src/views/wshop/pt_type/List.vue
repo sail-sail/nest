@@ -496,7 +496,7 @@
         >
           
           <!-- 图标 -->
-          <template v-if="'img' === col.prop && (showBuildIn || builtInSearch?.img == null)">
+          <template v-if="'img' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -520,7 +520,7 @@
           </template>
           
           <!-- 首页显示 -->
-          <template v-else-if="'is_home_lbl' === col.prop && (showBuildIn || builtInSearch?.is_home == null)">
+          <template v-else-if="'is_home_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -536,7 +536,7 @@
           </template>
           
           <!-- 推荐 -->
-          <template v-else-if="'is_recommend_lbl' === col.prop && (showBuildIn || builtInSearch?.is_recommend == null)">
+          <template v-else-if="'is_recommend_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -552,7 +552,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -584,7 +584,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -607,7 +607,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -625,7 +625,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -643,7 +643,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -773,17 +773,9 @@ const props = defineProps<{
   selectedIds?: PtTypeId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: PtTypeId; // ID
-  img?: string; // 图标
-  img_like?: string; // 图标
   lbl?: string; // 名称
   lbl_like?: string; // 名称
-  is_home?: string|string[]; // 首页显示
-  is_recommend?: string|string[]; // 推荐
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -794,15 +786,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  is_home: "number[]",
-  is_home_lbl: "string[]",
-  is_recommend: "number[]",
-  is_recommend_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1095,7 +1080,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1114,7 +1099,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",

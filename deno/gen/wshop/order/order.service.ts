@@ -8,11 +8,44 @@ import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
+import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
 import * as orderDao from "./order.dao.ts";
 
 import {
   updateSeqLbl,
 } from "/src/wshop/order/order.dao.ts";
+
+async function setSearchQuery(
+  search: OrderSearch,
+) {
+  
+  const authModel = await getAuthModel();
+  const usr_id = authModel?.id;
+  const usr_model = await findByIdUsr(usr_id);
+  if (!usr_id || !usr_model) {
+    throw new Error("usr_id can not be null");
+  }
+  const org_ids: OrgId[] = [ ];
+  if (authModel?.org_id) {
+    org_ids.push(authModel.org_id);
+  } else {
+    org_ids.push(...usr_model.org_ids);
+    org_ids.push("" as OrgId);
+  }
+  const username = usr_model.username;
+  
+  if (username !== "admin") {
+    search.org_id = org_ids;
+  }
+  
+}
 
 /**
  * 根据条件查找订单总数
@@ -22,7 +55,11 @@ import {
 export async function findCount(
   search?: OrderSearch,
 ): Promise<number> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await orderDao.findCount(search);
   return data;
 }
@@ -39,7 +76,11 @@ export async function findAll(
   page?: PageInput,
   sort?: SortInput|SortInput[],
 ): Promise<OrderModel[]> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const models: OrderModel[] = await orderDao.findAll(search, page, sort);
   return models;
 }
@@ -60,7 +101,11 @@ export async function findOne(
   search?: OrderSearch,
   sort?: SortInput|SortInput[],
 ): Promise<OrderModel | undefined> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const model = await orderDao.findOne(search, sort);
   return model;
 }
@@ -83,7 +128,11 @@ export async function findById(
 export async function exist(
   search?: OrderSearch,
 ): Promise<boolean> {
+  
   search = search || { };
+  
+  await setSearchQuery(search);
+  
   const data = await orderDao.exist(search);
   return data;
 }

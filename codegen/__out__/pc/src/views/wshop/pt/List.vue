@@ -496,7 +496,7 @@
         >
           
           <!-- 图标 -->
-          <template v-if="'img' === col.prop && (showBuildIn || builtInSearch?.img == null)">
+          <template v-if="'img' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -534,7 +534,7 @@
           </template>
           
           <!-- 价格 -->
-          <template v-else-if="'price' === col.prop && (showBuildIn || builtInSearch?.price == null)">
+          <template v-else-if="'price' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -543,7 +543,7 @@
           </template>
           
           <!-- 原价 -->
-          <template v-else-if="'original_price' === col.prop && (showBuildIn || builtInSearch?.original_price == null)">
+          <template v-else-if="'original_price' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -552,7 +552,7 @@
           </template>
           
           <!-- 单位 -->
-          <template v-else-if="'unit' === col.prop && (showBuildIn || builtInSearch?.unit == null)">
+          <template v-else-if="'unit' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -561,7 +561,7 @@
           </template>
           
           <!-- 新品 -->
-          <template v-else-if="'is_new_lbl' === col.prop && (showBuildIn || builtInSearch?.is_new == null)">
+          <template v-else-if="'is_new_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -577,7 +577,7 @@
           </template>
           
           <!-- 简介 -->
-          <template v-else-if="'introduct' === col.prop && (showBuildIn || builtInSearch?.introduct == null)">
+          <template v-else-if="'introduct' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -586,7 +586,7 @@
           </template>
           
           <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop && (showBuildIn || builtInSearch?.is_locked == null)">
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -618,7 +618,7 @@
           </template>
           
           <!-- 排序 -->
-          <template v-else-if="'order_by' === col.prop && (showBuildIn || builtInSearch?.order_by == null)">
+          <template v-else-if="'order_by' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -641,7 +641,7 @@
           </template>
           
           <!-- 详情 -->
-          <template v-else-if="'detail' === col.prop && (showBuildIn || builtInSearch?.detail == null)">
+          <template v-else-if="'detail' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -650,7 +650,7 @@
           </template>
           
           <!-- 详情顶部图片 -->
-          <template v-else-if="'detail_top_img' === col.prop && (showBuildIn || builtInSearch?.detail_top_img == null)">
+          <template v-else-if="'detail_top_img' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -665,7 +665,7 @@
           </template>
           
           <!-- 详情底部图片 -->
-          <template v-else-if="'detail_bottom_img' === col.prop && (showBuildIn || builtInSearch?.detail_bottom_img == null)">
+          <template v-else-if="'detail_bottom_img' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -680,7 +680,7 @@
           </template>
           
           <!-- 备注 -->
-          <template v-else-if="'rem' === col.prop && (showBuildIn || builtInSearch?.rem == null)">
+          <template v-else-if="'rem' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -698,7 +698,7 @@
           </template>
           
           <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop && (showBuildIn || builtInSearch?.create_time == null)">
+          <template v-else-if="'create_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -716,7 +716,7 @@
           </template>
           
           <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop && (showBuildIn || builtInSearch?.update_time == null)">
+          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -846,30 +846,11 @@ const props = defineProps<{
   selectedIds?: PtId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: PtId; // ID
-  img?: string; // 图标
-  img_like?: string; // 图标
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   pt_type_ids?: string|string[]; // 产品类别
   pt_type_ids_lbl?: string[]; // 产品类别
-  price?: string; // 价格
-  original_price?: string; // 原价
-  unit?: string; // 单位
-  unit_like?: string; // 单位
-  is_new?: string|string[]; // 新品
-  introduct?: string; // 简介
-  introduct_like?: string; // 简介
-  is_locked?: string|string[]; // 锁定
   is_enabled?: string|string[]; // 启用
-  order_by?: string; // 排序
-  detail?: string; // 详情
-  detail_like?: string; // 详情
-  detail_top_img?: string; // 详情顶部图片
-  detail_top_img_like?: string; // 详情顶部图片
-  detail_bottom_img?: string; // 详情底部图片
-  detail_bottom_img_like?: string; // 详情底部图片
-  rem?: string; // 备注
-  rem_like?: string; // 备注
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -882,15 +863,8 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   pt_type_ids: "string[]",
   pt_type_ids_lbl: "string[]",
-  price: "number",
-  original_price: "number",
-  is_new: "number[]",
-  is_new_lbl: "string[]",
-  is_locked: "number[]",
-  is_locked_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
-  order_by: "number",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -1130,7 +1104,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "产品类别",
       prop: "pt_type_ids_lbl",
-      sortBy: "pt_type_ids",
+      sortBy: "pt_type_ids_lbl",
       width: 160,
       align: "center",
       headerAlign: "center",
@@ -1236,7 +1210,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "创建人",
       prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id",
+      sortBy: "create_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",
@@ -1255,7 +1229,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "更新人",
       prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id",
+      sortBy: "update_usr_id_lbl",
       width: 120,
       align: "center",
       headerAlign: "center",

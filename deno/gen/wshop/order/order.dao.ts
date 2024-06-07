@@ -96,6 +96,10 @@ import {
   findOne as findOneCard,
 } from "/gen/wshop/card/card.dao.ts";
 
+import {
+  findOne as findOneOrg,
+} from "/gen/base/org/org.dao.ts";
+
 const route_path = "/wshop/order";
 
 async function getWhereQuery(
@@ -115,16 +119,6 @@ async function getWhereQuery(
     }
   } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
     whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
-  }
-  
-  if (search?.org_id == null) {
-    const authModel = await getAuthModel();
-    const org_id = authModel?.org_id;
-    if (org_id) {
-      whereQuery += ` and t.org_id=${ args.push(org_id) }`;
-    }
-  } else if (search?.org_id != null && search?.org_id !== "-") {
-    whereQuery += ` and t.org_id=${ args.push(search.org_id) }`;
   }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
@@ -175,11 +169,17 @@ async function getWhereQuery(
   if (search?.usr_id_is_null) {
     whereQuery += ` and t.usr_id is null`;
   }
+  if (search?.usr_id_lbl != null) {
+    whereQuery += ` and usr_id_lbl.lbl in ${ args.push(search.usr_id_lbl) }`;
+  }
   if (search?.card_id != null) {
     whereQuery += ` and t.card_id in ${ args.push(search.card_id) }`;
   }
   if (search?.card_id_is_null) {
     whereQuery += ` and t.card_id is null`;
+  }
+  if (search?.card_id_lbl != null) {
+    whereQuery += ` and card_id_lbl.lbl in ${ args.push(search.card_id_lbl) }`;
   }
   if (search?.price != null) {
     if (search.price[0] != null) {
@@ -250,6 +250,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
+  if (search?.create_usr_id_lbl != null) {
+    whereQuery += ` and create_usr_id_lbl.lbl in ${ args.push(search.create_usr_id_lbl) }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -264,6 +267,9 @@ async function getWhereQuery(
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
   }
+  if (search?.update_usr_id_lbl != null) {
+    whereQuery += ` and update_usr_id_lbl.lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
       whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
@@ -271,6 +277,15 @@ async function getWhereQuery(
     if (search.update_time[1] != null) {
       whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
+  }
+  if (search?.org_id != null) {
+    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
+  }
+  if (search?.org_id_is_null) {
+    whereQuery += ` and t.org_id is null`;
+  }
+  if (search?.org_id_lbl != null) {
+    whereQuery += ` and org_id_lbl.lbl in ${ args.push(search.org_id_lbl) }`;
   }
   return whereQuery;
 }
@@ -286,7 +301,8 @@ async function getFromQuery(
     left join base_usr usr_id_lbl on usr_id_lbl.id=t.usr_id
     left join wshop_card card_id_lbl on card_id_lbl.id=t.card_id
     left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
-    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
+    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id
+    left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
   return fromQuery;
 }
 
@@ -460,6 +476,17 @@ export async function findAll(
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
+  // 组织
+  if (search && search.org_id != null) {
+    const len = search.org_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.org_id.length > ${ ids_limit }`);
+    }
+  }
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
@@ -467,6 +494,7 @@ export async function findAll(
       ,card_id_lbl.lbl card_id_lbl
       ,create_usr_id_lbl.lbl create_usr_id_lbl
       ,update_usr_id_lbl.lbl update_usr_id_lbl
+      ,org_id_lbl.lbl org_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -1064,7 +1092,7 @@ export async function validateIsEnabled(
 
 /** 校验订单是否存在 */
 export async function validateOption(
-  model?: Readonly<OrderModel>,
+  model?: OrderModel,
 ) {
   if (!model) {
     throw `${ await ns("订单") } ${ await ns("不存在") }`;
@@ -1316,14 +1344,11 @@ async function _creates(
   
   const args = new QueryArgs();
   let sql = `insert into wshop_order(id`;
-  if (!silentMode) {
-    sql += ",create_time";
-  }
+  sql += ",create_time";
+  sql += ",update_time";
   sql += ",tenant_id";
-  sql += ",org_id";
-  if (!silentMode) {
-    sql += ",create_usr_id";
-  }
+  sql += ",create_usr_id";
+  sql += ",update_usr_id";
   sql += ",lbl_seq";
   sql += ",lbl_date_seq";
   sql += ",lbl";
@@ -1342,6 +1367,7 @@ async function _creates(
   sql += ",is_locked";
   sql += ",is_enabled";
   sql += ",rem";
+  sql += ",org_id";
   sql += ")values";
   
   const inputs2Arr = splitCreateArr(inputs2);
@@ -1350,11 +1376,22 @@ async function _creates(
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
       if (!silentMode) {
-        if (input.create_time != null) {
+        if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
           sql += `,${ args.push(reqDate()) }`;
         }
+      } else {
+        if (input.create_time != null || input.create_time_save_null) {
+          sql += `,${ args.push(input.create_time) }`;
+        } else {
+          sql += `,null`;
+        }
+      }
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `,${ args.push(input.update_time) }`;
+      } else {
+        sql += `,null`;
       }
       if (input.tenant_id == null) {
         const authModel = await getAuthModel();
@@ -1369,19 +1406,6 @@ async function _creates(
       } else {
         sql += `,${ args.push(input.tenant_id) }`;
       }
-      if (input.org_id == null) {
-        const authModel = await getAuthModel();
-        const org_id = authModel?.org_id;
-        if (org_id != null) {
-          sql += `,${ args.push(org_id) }`;
-        } else {
-          sql += ",default";
-        }
-      } else if (input.org_id as unknown as string === "-") {
-        sql += ",default";
-      } else {
-        sql += `,${ args.push(input.org_id) }`;
-      }
       if (!silentMode) {
         if (input.create_usr_id == null) {
           const authModel = await getAuthModel();
@@ -1395,6 +1419,17 @@ async function _creates(
         } else {
           sql += `,${ args.push(input.create_usr_id) }`;
         }
+      } else {
+        if (input.create_usr_id == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id) }`;
+        }
+      }
+      if (input.update_usr_id != null) {
+        sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
       }
       if (input.lbl_seq != null) {
         sql += `,${ args.push(input.lbl_seq) }`;
@@ -1486,6 +1521,11 @@ async function _creates(
       } else {
         sql += ",default";
       }
+      if (input.org_id != null) {
+        sql += `,${ args.push(input.org_id) }`;
+      } else {
+        sql += ",default";
+      }
       sql += ")";
       if (i !== inputs2.length - 1) {
         sql += ",";
@@ -1551,37 +1591,6 @@ export async function updateTenantById(
 }
 
 /**
- * 订单根据id修改组织id
- * @export
- * @param {OrderId} id
- * @param {OrgId} org_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
-export async function updateOrgById(
-  id: OrderId,
-  org_id: Readonly<OrgId>,
-  options?: Readonly<{
-  }>,
-): Promise<number> {
-  const table = "wshop_order";
-  const method = "updateOrgById";
-  
-  const orgExist = await existByIdOrg(org_id);
-  if (!orgExist) {
-    return 0;
-  }
-  
-  const args = new QueryArgs();
-  const sql = `update wshop_order set org_id=${ args.push(org_id) } where id=${ args.push(id) }
-  `;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  return num;
-}
-
-/**
  * 根据 id 修改订单
  * @param {OrderId} id
  * @param {OrderInput} input
@@ -1633,11 +1642,6 @@ export async function updateById(
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
     await updateTenantById(id, input.tenant_id as unknown as TenantId);
-  }
-  
-  // 修改组织id
-  if (isNotEmpty(input.org_id)) {
-    await updateOrgById(id, input.org_id as unknown as OrgId);
   }
   
   {
@@ -1703,13 +1707,13 @@ export async function updateById(
   }
   if (input.usr_id != null) {
     if (input.usr_id != oldModel.usr_id) {
-      sql += `usr_id = ${ args.push(input.usr_id) },`;
+      sql += `usr_id=${ args.push(input.usr_id) },`;
       updateFldNum++;
     }
   }
   if (input.card_id != null) {
     if (input.card_id != oldModel.card_id) {
-      sql += `card_id = ${ args.push(input.card_id) },`;
+      sql += `card_id=${ args.push(input.card_id) },`;
       updateFldNum++;
     }
   }
@@ -1773,6 +1777,25 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.create_usr_id != null) {
+    if (input.create_usr_id != oldModel.create_usr_id) {
+      sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.create_time != null || input.create_time_save_null) {
+    if (input.create_time != oldModel.create_time) {
+      sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.org_id != null) {
+    if (input.org_id != oldModel.org_id) {
+      sql += `org_id=${ args.push(input.org_id) },`;
+      updateFldNum++;
+    }
+  }
+  let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
     if (!silentMode) {
@@ -1784,17 +1807,26 @@ export async function updateById(
       } else if (input.update_usr_id as unknown as string !== "-") {
         sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
       }
+    } else if (input.update_usr_id != null) {
+      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
     if (!silentMode) {
-      if (input.update_time) {
-        sql += `update_time = ${ args.push(input.update_time) }`;
+      if (input.update_time != null || input.update_time_save_null) {
+        sql += `update_time=${ args.push(input.update_time) },`;
       } else {
-        sql += `update_time = ${ args.push(reqDate()) }`;
+        sql += `update_time=${ args.push(reqDate()) },`;
       }
+    } else if (input.update_time != null || input.update_time_save_null) {
+      sql += `update_time=${ args.push(input.update_time) },`;
+    }
+    if (sql.endsWith(",")) {
+      sql = sql.substring(0, sql.length - 1);
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await execute(sql, args);
+    if (sqlSetFldNum > 0) {
+      await execute(sql, args);
+    }
   }
   
   if (!silentMode) {
