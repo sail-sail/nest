@@ -656,11 +656,11 @@ watch(
     }
     if (!dialogModel.begin_time) {
       dialogModel.begin_time_lbl = "";
-      dialogModel.begin_time_save_null = 1;
+      dialogModel.begin_time_save_null = true;
     }
     if (!dialogModel.end_time) {
       dialogModel.end_time_lbl = "";
-      dialogModel.end_time_save_null = 1;
+      dialogModel.end_time_save_null = true;
     }
   },
 );
