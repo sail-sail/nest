@@ -4725,7 +4725,7 @@ watch(
       dialogModel.<#=modelLabel#> = "";<#
         if (is_nullable) {
       #>
-      dialogModel.<#=column_name#>_save_null = 1;<#
+      dialogModel.<#=column_name#>_save_null = true;<#
         }
       #>
     }<#
