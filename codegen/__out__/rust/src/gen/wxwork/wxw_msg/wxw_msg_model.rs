@@ -31,7 +31,7 @@ use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "WxwMsgModel")]
 pub struct WxwMsgModel {
   /// 租户ID
   #[graphql(skip)]
@@ -39,26 +39,37 @@ pub struct WxwMsgModel {
   /// ID
   pub id: WxwMsgId,
   /// 企微应用
+  #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: WxwAppId,
   /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
   pub wxw_app_id_lbl: String,
   /// 发送状态
+  #[graphql(name = "errcode")]
   pub errcode: String,
   /// 发送状态
+  #[graphql(name = "errcode_lbl")]
   pub errcode_lbl: String,
   /// 成员ID
+  #[graphql(name = "touser")]
   pub touser: String,
   /// 标题
+  #[graphql(name = "title")]
   pub title: String,
   /// 描述
+  #[graphql(name = "description")]
   pub description: String,
   /// 链接
+  #[graphql(skip)]
   pub url: String,
   /// 按钮文字
+  #[graphql(name = "btntxt")]
   pub btntxt: String,
   /// 错误信息
+  #[graphql(name = "errmsg")]
   pub errmsg: String,
   /// 消息ID
+  #[graphql(skip)]
   pub msgid: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -229,22 +240,34 @@ pub struct WxwMsgSearch {
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 企微应用
+  #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: Option<Vec<WxwAppId>>,
   /// 企微应用
+  #[graphql(name = "wxw_app_id_save_null")]
   pub wxw_app_id_is_null: Option<bool>,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
+  pub wxw_app_id_lbl: Option<Vec<String>>,
   /// 发送状态
+  #[graphql(name = "errcode")]
   pub errcode: Option<Vec<String>>,
   /// 成员ID
+  #[graphql(skip)]
   pub touser: Option<String>,
   /// 成员ID
+  #[graphql(skip)]
   pub touser_like: Option<String>,
   /// 标题
+  #[graphql(skip)]
   pub title: Option<String>,
   /// 标题
+  #[graphql(skip)]
   pub title_like: Option<String>,
   /// 描述
+  #[graphql(skip)]
   pub description: Option<String>,
   /// 描述
+  #[graphql(skip)]
   pub description_like: Option<String>,
   /// 链接
   #[graphql(skip)]
@@ -253,14 +276,19 @@ pub struct WxwMsgSearch {
   #[graphql(skip)]
   pub url_like: Option<String>,
   /// 按钮文字
+  #[graphql(skip)]
   pub btntxt: Option<String>,
   /// 按钮文字
+  #[graphql(skip)]
   pub btntxt_like: Option<String>,
   /// 发送时间
+  #[graphql(name = "create_time")]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 错误信息
+  #[graphql(skip)]
   pub errmsg: Option<String>,
   /// 错误信息
+  #[graphql(skip)]
   pub errmsg_like: Option<String>,
   /// 消息ID
   #[graphql(skip)]
@@ -274,12 +302,18 @@ pub struct WxwMsgSearch {
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id_is_null: Option<bool>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl: Option<Vec<String>>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id_is_null: Option<bool>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl: Option<Vec<String>>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -389,35 +423,45 @@ impl std::fmt::Debug for WxwMsgSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "WxwMsgInput")]
 pub struct WxwMsgInput {
   /// ID
   pub id: Option<WxwMsgId>,
+  /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 企微应用
+  #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: Option<WxwAppId>,
   /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
   pub wxw_app_id_lbl: Option<String>,
   /// 发送状态
+  #[graphql(name = "errcode")]
   pub errcode: Option<String>,
   /// 发送状态
+  #[graphql(name = "errcode_lbl")]
   pub errcode_lbl: Option<String>,
   /// 成员ID
+  #[graphql(name = "touser")]
   pub touser: Option<String>,
   /// 标题
+  #[graphql(name = "title")]
   pub title: Option<String>,
   /// 描述
+  #[graphql(name = "description")]
   pub description: Option<String>,
   /// 链接
   #[graphql(skip)]
   pub url: Option<String>,
   /// 按钮文字
+  #[graphql(name = "btntxt")]
   pub btntxt: Option<String>,
   /// 错误信息
+  #[graphql(name = "errmsg")]
   pub errmsg: Option<String>,
   /// 消息ID
   #[graphql(skip)]
@@ -434,6 +478,9 @@ pub struct WxwMsgInput {
   /// 创建时间
   #[graphql(skip)]
   pub create_time_lbl: Option<String>,
+  /// 创建时间
+  #[graphql(skip)]
+  pub create_time_save_null: Option<bool>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<UsrId>,
@@ -446,6 +493,9 @@ pub struct WxwMsgInput {
   /// 更新时间
   #[graphql(skip)]
   pub update_time_lbl: Option<String>,
+  /// 更新时间
+  #[graphql(skip)]
+  pub update_time_save_null: Option<bool>,
 }
 
 impl From<WxwMsgModel> for WxwMsgInput {
@@ -480,12 +530,14 @@ impl From<WxwMsgModel> for WxwMsgInput {
       // 创建时间
       create_time: model.create_time,
       create_time_lbl: model.create_time_lbl.into(),
+      create_time_save_null: Some(true),
       // 更新人
       update_usr_id: model.update_usr_id.into(),
       update_usr_id_lbl: model.update_usr_id_lbl.into(),
       // 更新时间
       update_time: model.update_time,
       update_time_lbl: model.update_time_lbl.into(),
+      update_time_save_null: Some(true),
     }
   }
 }
@@ -520,8 +572,12 @@ impl From<WxwMsgInput> for WxwMsgSearch {
       msgid: input.msgid,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
+      // 创建人
+      create_usr_id_lbl: input.create_usr_id_lbl.map(|x| vec![x]),
       // 更新人
       update_usr_id: input.update_usr_id.map(|x| vec![x]),
+      // 更新人
+      update_usr_id_lbl: input.update_usr_id_lbl.map(|x| vec![x]),
       // 更新时间
       update_time: input.update_time.map(|x| [Some(x), Some(x)]),
       ..Default::default()
