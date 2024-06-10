@@ -178,7 +178,7 @@ pub async fn n_lang(
   
   let options = Options::new();
   
-  let options = options.set_is_debug(false);
+  let options = options.set_is_debug(Some(false));
   
   let options: Option<Options> = options.into();
   

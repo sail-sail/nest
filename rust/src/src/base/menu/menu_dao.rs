@@ -78,7 +78,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let options = Options::new();
   
-  let options = options.set_is_debug(false);
+  let options = options.set_is_debug(Some(false));
   
   let options = options.set_cache_key(table, &sql, &args);
   
