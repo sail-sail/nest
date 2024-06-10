@@ -88,8 +88,8 @@ const route_path = "/base/org";
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<OrgSearch>,
-  options?: Readonly<{
-  }>,
+  options?: {
+  },
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -176,8 +176,8 @@ async function getWhereQuery(
 async function getFromQuery(
   args: QueryArgs,
   search?: Readonly<OrgSearch>,
-  options?: Readonly<{
-  }>,
+  options?: {
+  },
 ) {
   let fromQuery = `base_org t`;
   return fromQuery;
@@ -190,9 +190,9 @@ async function getFromQuery(
  */
 export async function findCount(
   search?: Readonly<OrgSearch>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_org";
@@ -209,6 +209,8 @@ export async function findCount(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   const args = new QueryArgs();
@@ -240,10 +242,10 @@ export async function findAll(
   search?: Readonly<OrgSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     ids_limit?: number;
-  }>,
+  },
 ): Promise<OrgModel[]> {
   
   const table = "base_org";
@@ -266,6 +268,8 @@ export async function findAll(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search?.id === "") {
@@ -448,6 +452,10 @@ export async function setIdByLbl(
   input: OrgInput,
 ) {
   
+  const options = {
+    is_debug: false,
+  };
+  
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
@@ -505,9 +513,9 @@ export async function getFieldComments(): Promise<OrgFieldComment> {
  */
 export async function findByUnique(
   search0: Readonly<OrgInput>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<OrgModel[]> {
   
   const table = "base_org";
@@ -524,12 +532,18 @@ export async function findByUnique(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search0.id) {
-    const model = await findOne({
-      id: search0.id,
-    }, undefined, options);
+    const model = await findOne(
+      {
+        id: search0.id,
+      },
+      undefined,
+      options,
+    );
     if (!model) {
       return [ ];
     }
@@ -541,11 +555,17 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll({
-      lbl,
-    }, undefined, undefined, options);
+    const modelTmps = await findAll(
+      {
+        lbl,
+      },
+      undefined,
+      undefined,
+      options,
+    );
     models.push(...modelTmps);
   }
+  
   return models;
 }
 
@@ -559,6 +579,7 @@ export function equalsByUnique(
   oldModel: Readonly<OrgModel>,
   input: Readonly<OrgInput>,
 ): boolean {
+  
   if (!oldModel || !input) {
     return false;
   }
@@ -581,10 +602,16 @@ export async function checkByUnique(
   input: Readonly<OrgInput>,
   oldModel: Readonly<OrgModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<OrgId | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const isEquals = equalsByUnique(oldModel, input);
+  
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("此 {0} 已经存在", await ns("组织")));
@@ -614,9 +641,9 @@ export async function checkByUnique(
 export async function findOne(
   search?: Readonly<OrgSearch>,
   sort?: SortInput | SortInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<OrgModel | undefined> {
   
   const table = "base_org";
@@ -636,10 +663,8 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -649,7 +674,12 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort, options);
+  const models = await findAll(
+    search,
+    page,
+    sort,
+    options,
+  );
   const model = models[0];
   return model;
 }
@@ -660,9 +690,9 @@ export async function findOne(
  */
 export async function findById(
   id?: OrgId | null,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<OrgModel | undefined> {
   
   const table = "base_org";
@@ -679,10 +709,8 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!id) {
@@ -703,9 +731,9 @@ export async function findById(
 /** 根据 ids 查找组织 */
 export async function findByIds(
   ids: OrgId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<OrgModel[]> {
   
   const table = "base_org";
@@ -722,10 +750,8 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || ids.length === 0) {
@@ -762,9 +788,9 @@ export async function findByIds(
  */
 export async function exist(
   search?: Readonly<OrgSearch>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<boolean> {
   
   const table = "base_org";
@@ -781,13 +807,12 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
+  
   return exist;
 }
 
@@ -797,9 +822,9 @@ export async function exist(
  */
 export async function existById(
   id?: Readonly<OrgId | null>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ) {
   
   const table = "base_org";
@@ -813,6 +838,8 @@ export async function existById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (id == null) {
@@ -825,12 +852,18 @@ export async function existById(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const queryOptions = {
+    cacheKey1,
+    cacheKey2,
+  };
+  
   interface Result {
     e: number,
   }
   const model = await queryOne<Result>(
     sql,
-    args,{ cacheKey1, cacheKey2 },
+    args,
+    queryOptions,
   );
   const result = !!model?.e;
   
@@ -915,12 +948,12 @@ export async function validate(
  */
 export async function create(
   input: Readonly<OrgInput>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<OrgId> {
   
   const table = "base_org";
@@ -937,10 +970,8 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!input) {
@@ -967,12 +998,12 @@ export async function create(
  */
 export async function creates(
   inputs: OrgInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<OrgId[]> {
   
   const table = "base_org";
@@ -989,10 +1020,8 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   const ids = await _creates(inputs, options);
@@ -1002,12 +1031,12 @@ export async function creates(
 
 async function _creates(
   inputs: OrgInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<OrgId[]> {
   
   if (inputs.length === 0) {
@@ -1117,7 +1146,7 @@ async function _creates(
           let usr_id: UsrId | undefined = authModel?.id;
           let usr_lbl = "";
           if (usr_id) {
-            const usr_model = await findByIdUsr(usr_id);
+            const usr_model = await findByIdUsr(usr_id, options);
             if (!usr_model) {
               usr_id = undefined;
             } else {
@@ -1136,7 +1165,7 @@ async function _creates(
         } else {
           let usr_id: UsrId | undefined = input.create_usr_id;
           let usr_lbl = "";
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
             usr_lbl = "";
@@ -1239,9 +1268,9 @@ export async function delCache() {
 export async function updateTenantById(
   id: OrgId,
   tenant_id: Readonly<TenantId>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_org";
@@ -1261,9 +1290,11 @@ export async function updateTenantById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
-  const tenantExist = await existByIdTenant(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id, options);
   if (!tenantExist) {
     return 0;
   }
@@ -1282,8 +1313,8 @@ export async function updateTenantById(
  * @param {OrgId} id
  * @param {OrgInput} input
  * @param {({
- *   uniqueType?: "ignore" | "throw" | "update",
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
+ * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
@@ -1292,11 +1323,11 @@ export async function updateTenantById(
 export async function updateById(
   id: OrgId,
   input: OrgInput,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-    uniqueType?: "ignore" | "throw";
+    uniqueType?: Exclude<UniqueType, UniqueType.Update>;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<OrgId> {
   
   const table = "base_org";
@@ -1317,6 +1348,8 @@ export async function updateById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!id) {
@@ -1328,7 +1361,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id as unknown as TenantId);
+    await updateTenantById(id, input.tenant_id, options);
   }
   
   {
@@ -1336,7 +1369,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2);
+    let models = await findByUnique(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || options.uniqueType === UniqueType.Throw) {
@@ -1347,7 +1380,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id);
+  const oldModel = await findById(id, options);
   
   if (!oldModel) {
     throw await ns("编辑失败, 此 {0} 已被删除", await ns("组织"));
@@ -1412,7 +1445,7 @@ export async function updateById(
         let usr_id: UsrId | undefined = authModel?.id;
         let usr_lbl = "";
         if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
           } else {
@@ -1429,7 +1462,7 @@ export async function updateById(
         let usr_id: UsrId | undefined = input.update_usr_id;
         let usr_lbl = "";
         if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
           } else {
@@ -1475,7 +1508,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    const newModel = await findById(id);
+    const newModel = await findById(id, options);
     
     if (!deepCompare(oldModel, newModel)) {
       log(JSON.stringify(oldModel));
@@ -1492,10 +1525,10 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: OrgId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_org";
@@ -1513,6 +1546,8 @@ export async function deleteByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1524,7 +1559,7 @@ export async function deleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id);
+    const oldModel = await findById(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1568,14 +1603,20 @@ export async function deleteByIds(
  */
 export async function getIsEnabledById(
   id: OrgId,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<0 | 1 | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const model = await findById(
     id,
     options,
   );
   const is_enabled = model?.is_enabled as (0 | 1 | undefined);
+  
   return is_enabled;
 }
 
@@ -1588,9 +1629,9 @@ export async function getIsEnabledById(
 export async function enableByIds(
   ids: OrgId[],
   is_enabled: Readonly<0 | 1>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_org";
@@ -1610,6 +1651,8 @@ export async function enableByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1639,14 +1682,20 @@ export async function enableByIds(
  */
 export async function getIsLockedById(
   id: OrgId,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<0 | 1 | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const model = await findById(
     id,
     options,
   );
   const is_locked = model?.is_locked as (0 | 1 | undefined);
+  
   return is_locked;
 }
 
@@ -1659,9 +1708,9 @@ export async function getIsLockedById(
 export async function lockByIds(
   ids: OrgId[],
   is_locked: Readonly<0 | 1>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_org";
@@ -1681,6 +1730,8 @@ export async function lockByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1706,9 +1757,9 @@ export async function lockByIds(
  */
 export async function revertByIds(
   ids: OrgId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_org";
@@ -1725,6 +1776,8 @@ export async function revertByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1742,7 +1795,10 @@ export async function revertByIds(
     num += result.affectedRows;
     // 检查数据的唯一索引
     {
-      const old_model = await findById(id);
+      const old_model = await findById(
+        id,
+        options,
+      );
       if (!old_model) {
         continue;
       }
@@ -1750,7 +1806,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as OrgInput;
-      let models = await findByUnique(input);
+      let models = await findByUnique(input, options);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
         throw await ns("此 {0} 已经存在", await ns("组织"));
@@ -1770,9 +1826,9 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: OrgId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_org";
@@ -1789,6 +1845,8 @@ export async function forceDeleteByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1822,9 +1880,9 @@ export async function forceDeleteByIds(
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_org";
@@ -1838,6 +1896,8 @@ export async function findLastOrderBy(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   let sql = `select t.order_by order_by from base_org t`;

@@ -87,8 +87,8 @@ const route_path = "/base/data_permit";
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<DataPermitSearch>,
-  options?: Readonly<{
-  }>,
+  options?: {
+  },
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -160,8 +160,8 @@ async function getWhereQuery(
 async function getFromQuery(
   args: QueryArgs,
   search?: Readonly<DataPermitSearch>,
-  options?: Readonly<{
-  }>,
+  options?: {
+  },
 ) {
   let fromQuery = `base_data_permit t
     left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
@@ -175,9 +175,9 @@ async function getFromQuery(
  */
 export async function findCount(
   search?: Readonly<DataPermitSearch>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_data_permit";
@@ -194,6 +194,8 @@ export async function findCount(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   const args = new QueryArgs();
@@ -225,10 +227,10 @@ export async function findAll(
   search?: Readonly<DataPermitSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     ids_limit?: number;
-  }>,
+  },
 ): Promise<DataPermitModel[]> {
   
   const table = "base_data_permit";
@@ -251,6 +253,8 @@ export async function findAll(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search?.id === "") {
@@ -442,6 +446,10 @@ export async function setIdByLbl(
   input: DataPermitInput,
 ) {
   
+  const options = {
+    is_debug: false,
+  };
+  
   const [
     scopeDict, // 范围
     typeDict, // 类型
@@ -453,7 +461,13 @@ export async function setIdByLbl(
   // 菜单
   if (isNotEmpty(input.menu_id_lbl) && input.menu_id == null) {
     input.menu_id_lbl = String(input.menu_id_lbl).trim();
-    const menuModel = await findOneMenu({ lbl: input.menu_id_lbl });
+    const menuModel = await findOneMenu(
+      {
+        lbl: input.menu_id_lbl,
+      },
+      undefined,
+      options,
+    );
     if (menuModel) {
       input.menu_id = menuModel.id;
     }
@@ -508,9 +522,9 @@ export async function getFieldComments(): Promise<DataPermitFieldComment> {
  */
 export async function findByUnique(
   search0: Readonly<DataPermitInput>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<DataPermitModel[]> {
   
   const table = "base_data_permit";
@@ -527,12 +541,18 @@ export async function findByUnique(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search0.id) {
-    const model = await findOne({
-      id: search0.id,
-    }, undefined, options);
+    const model = await findOne(
+      {
+        id: search0.id,
+      },
+      undefined,
+      options,
+    );
     if (!model) {
       return [ ];
     }
@@ -558,12 +578,18 @@ export async function findByUnique(
     } else {
       scope = search0.scope || [ ];
     }
-    const modelTmps = await findAll({
-      menu_id,
-      scope,
-    }, undefined, undefined, options);
+    const modelTmps = await findAll(
+      {
+        menu_id,
+        scope,
+      },
+      undefined,
+      undefined,
+      options,
+    );
     models.push(...modelTmps);
   }
+  
   return models;
 }
 
@@ -577,6 +603,7 @@ export function equalsByUnique(
   oldModel: Readonly<DataPermitModel>,
   input: Readonly<DataPermitInput>,
 ): boolean {
+  
   if (!oldModel || !input) {
     return false;
   }
@@ -600,10 +627,16 @@ export async function checkByUnique(
   input: Readonly<DataPermitInput>,
   oldModel: Readonly<DataPermitModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<DataPermitId | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const isEquals = equalsByUnique(oldModel, input);
+  
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("此 {0} 已经存在", await ns("数据权限")));
@@ -633,9 +666,9 @@ export async function checkByUnique(
 export async function findOne(
   search?: Readonly<DataPermitSearch>,
   sort?: SortInput | SortInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<DataPermitModel | undefined> {
   
   const table = "base_data_permit";
@@ -655,10 +688,8 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -668,7 +699,12 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort, options);
+  const models = await findAll(
+    search,
+    page,
+    sort,
+    options,
+  );
   const model = models[0];
   return model;
 }
@@ -679,9 +715,9 @@ export async function findOne(
  */
 export async function findById(
   id?: DataPermitId | null,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<DataPermitModel | undefined> {
   
   const table = "base_data_permit";
@@ -698,10 +734,8 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!id) {
@@ -722,9 +756,9 @@ export async function findById(
 /** 根据 ids 查找数据权限 */
 export async function findByIds(
   ids: DataPermitId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<DataPermitModel[]> {
   
   const table = "base_data_permit";
@@ -741,10 +775,8 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || ids.length === 0) {
@@ -781,9 +813,9 @@ export async function findByIds(
  */
 export async function exist(
   search?: Readonly<DataPermitSearch>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<boolean> {
   
   const table = "base_data_permit";
@@ -800,13 +832,12 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
+  
   return exist;
 }
 
@@ -816,9 +847,9 @@ export async function exist(
  */
 export async function existById(
   id?: Readonly<DataPermitId | null>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ) {
   
   const table = "base_data_permit";
@@ -832,6 +863,8 @@ export async function existById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (id == null) {
@@ -844,12 +877,18 @@ export async function existById(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const queryOptions = {
+    cacheKey1,
+    cacheKey2,
+  };
+  
   interface Result {
     e: number,
   }
   const model = await queryOne<Result>(
     sql,
-    args,{ cacheKey1, cacheKey2 },
+    args,
+    queryOptions,
   );
   const result = !!model?.e;
   
@@ -939,12 +978,12 @@ export async function validate(
  */
 export async function create(
   input: Readonly<DataPermitInput>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<DataPermitId> {
   
   const table = "base_data_permit";
@@ -961,10 +1000,8 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!input) {
@@ -991,12 +1028,12 @@ export async function create(
  */
 export async function creates(
   inputs: DataPermitInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<DataPermitId[]> {
   
   const table = "base_data_permit";
@@ -1013,10 +1050,8 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   const ids = await _creates(inputs, options);
@@ -1026,12 +1061,12 @@ export async function creates(
 
 async function _creates(
   inputs: DataPermitInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<DataPermitId[]> {
   
   if (inputs.length === 0) {
@@ -1127,7 +1162,7 @@ async function _creates(
           let usr_id: UsrId | undefined = authModel?.id;
           let usr_lbl = "";
           if (usr_id) {
-            const usr_model = await findByIdUsr(usr_id);
+            const usr_model = await findByIdUsr(usr_id, options);
             if (!usr_model) {
               usr_id = undefined;
             } else {
@@ -1146,7 +1181,7 @@ async function _creates(
         } else {
           let usr_id: UsrId | undefined = input.create_usr_id;
           let usr_lbl = "";
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
             usr_lbl = "";
@@ -1243,8 +1278,8 @@ export async function delCache() {
  * @param {DataPermitId} id
  * @param {DataPermitInput} input
  * @param {({
- *   uniqueType?: "ignore" | "throw" | "update",
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
+ * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
@@ -1253,11 +1288,11 @@ export async function delCache() {
 export async function updateById(
   id: DataPermitId,
   input: DataPermitInput,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-    uniqueType?: "ignore" | "throw";
+    uniqueType?: Exclude<UniqueType, UniqueType.Update>;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<DataPermitId> {
   
   const table = "base_data_permit";
@@ -1278,6 +1313,8 @@ export async function updateById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!id) {
@@ -1292,7 +1329,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2);
+    let models = await findByUnique(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || options.uniqueType === UniqueType.Throw) {
@@ -1303,7 +1340,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id);
+  const oldModel = await findById(id, options);
   
   if (!oldModel) {
     throw await ns("编辑失败, 此 {0} 已被删除", await ns("数据权限"));
@@ -1368,7 +1405,7 @@ export async function updateById(
         let usr_id: UsrId | undefined = authModel?.id;
         let usr_lbl = "";
         if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
           } else {
@@ -1385,7 +1422,7 @@ export async function updateById(
         let usr_id: UsrId | undefined = input.update_usr_id;
         let usr_lbl = "";
         if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
           } else {
@@ -1431,7 +1468,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    const newModel = await findById(id);
+    const newModel = await findById(id, options);
     
     if (!deepCompare(oldModel, newModel)) {
       log(JSON.stringify(oldModel));
@@ -1448,10 +1485,10 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: DataPermitId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_data_permit";
@@ -1469,6 +1506,8 @@ export async function deleteByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1480,7 +1519,7 @@ export async function deleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id);
+    const oldModel = await findById(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1523,9 +1562,9 @@ export async function deleteByIds(
  */
 export async function revertByIds(
   ids: DataPermitId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_data_permit";
@@ -1542,6 +1581,8 @@ export async function revertByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1559,7 +1600,10 @@ export async function revertByIds(
     num += result.affectedRows;
     // 检查数据的唯一索引
     {
-      const old_model = await findById(id);
+      const old_model = await findById(
+        id,
+        options,
+      );
       if (!old_model) {
         continue;
       }
@@ -1567,7 +1611,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as DataPermitInput;
-      let models = await findByUnique(input);
+      let models = await findByUnique(input, options);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
         throw await ns("此 {0} 已经存在", await ns("数据权限"));
@@ -1587,9 +1631,9 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: DataPermitId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_data_permit";
@@ -1606,6 +1650,8 @@ export async function forceDeleteByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {

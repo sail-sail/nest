@@ -88,8 +88,8 @@ const route_path = "/base/background_task";
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<BackgroundTaskSearch>,
-  options?: Readonly<{
-  }>,
+  options?: {
+  },
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -196,8 +196,8 @@ async function getWhereQuery(
 async function getFromQuery(
   args: QueryArgs,
   search?: Readonly<BackgroundTaskSearch>,
-  options?: Readonly<{
-  }>,
+  options?: {
+  },
 ) {
   let fromQuery = `base_background_task t`;
   return fromQuery;
@@ -210,9 +210,9 @@ async function getFromQuery(
  */
 export async function findCount(
   search?: Readonly<BackgroundTaskSearch>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_background_task";
@@ -229,6 +229,8 @@ export async function findCount(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   const args = new QueryArgs();
@@ -257,10 +259,10 @@ export async function findAll(
   search?: Readonly<BackgroundTaskSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     ids_limit?: number;
-  }>,
+  },
 ): Promise<BackgroundTaskModel[]> {
   
   const table = "base_background_task";
@@ -283,6 +285,8 @@ export async function findAll(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search?.id === "") {
@@ -482,6 +486,10 @@ export async function findAll(
 export async function setIdByLbl(
   input: BackgroundTaskInput,
 ) {
+  
+  const options = {
+    is_debug: false,
+  };
   // 开始时间
   if (!input.begin_time && input.begin_time_lbl) {
     const begin_time_lbl = dayjs(input.begin_time_lbl);
@@ -593,9 +601,9 @@ export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
  */
 export async function findByUnique(
   search0: Readonly<BackgroundTaskInput>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<BackgroundTaskModel[]> {
   
   const table = "base_background_task";
@@ -612,18 +620,25 @@ export async function findByUnique(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search0.id) {
-    const model = await findOne({
-      id: search0.id,
-    }, undefined, options);
+    const model = await findOne(
+      {
+        id: search0.id,
+      },
+      undefined,
+      options,
+    );
     if (!model) {
       return [ ];
     }
     return [ model ];
   }
   const models: BackgroundTaskModel[] = [ ];
+  
   return models;
 }
 
@@ -637,6 +652,7 @@ export function equalsByUnique(
   oldModel: Readonly<BackgroundTaskModel>,
   input: Readonly<BackgroundTaskInput>,
 ): boolean {
+  
   if (!oldModel || !input) {
     return false;
   }
@@ -654,10 +670,16 @@ export async function checkByUnique(
   input: Readonly<BackgroundTaskInput>,
   oldModel: Readonly<BackgroundTaskModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<BackgroundTaskId | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const isEquals = equalsByUnique(oldModel, input);
+  
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("此 {0} 已经存在", await ns("后台任务")));
@@ -687,9 +709,9 @@ export async function checkByUnique(
 export async function findOne(
   search?: Readonly<BackgroundTaskSearch>,
   sort?: SortInput | SortInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<BackgroundTaskModel | undefined> {
   
   const table = "base_background_task";
@@ -709,10 +731,8 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -722,7 +742,12 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort, options);
+  const models = await findAll(
+    search,
+    page,
+    sort,
+    options,
+  );
   const model = models[0];
   return model;
 }
@@ -733,9 +758,9 @@ export async function findOne(
  */
 export async function findById(
   id?: BackgroundTaskId | null,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<BackgroundTaskModel | undefined> {
   
   const table = "base_background_task";
@@ -752,10 +777,8 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!id) {
@@ -776,9 +799,9 @@ export async function findById(
 /** 根据 ids 查找后台任务 */
 export async function findByIds(
   ids: BackgroundTaskId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<BackgroundTaskModel[]> {
   
   const table = "base_background_task";
@@ -795,10 +818,8 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || ids.length === 0) {
@@ -835,9 +856,9 @@ export async function findByIds(
  */
 export async function exist(
   search?: Readonly<BackgroundTaskSearch>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<boolean> {
   
   const table = "base_background_task";
@@ -854,13 +875,12 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
+  
   return exist;
 }
 
@@ -870,9 +890,9 @@ export async function exist(
  */
 export async function existById(
   id?: Readonly<BackgroundTaskId | null>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ) {
   
   const table = "base_background_task";
@@ -886,6 +906,8 @@ export async function existById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (id == null) {
@@ -1004,12 +1026,12 @@ export async function validate(
  */
 export async function create(
   input: Readonly<BackgroundTaskInput>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<BackgroundTaskId> {
   
   const table = "base_background_task";
@@ -1026,10 +1048,8 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!input) {
@@ -1056,12 +1076,12 @@ export async function create(
  */
 export async function creates(
   inputs: BackgroundTaskInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<BackgroundTaskId[]> {
   
   const table = "base_background_task";
@@ -1078,10 +1098,8 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      is_debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   const ids = await _creates(inputs, options);
@@ -1091,12 +1109,12 @@ export async function creates(
 
 async function _creates(
   inputs: BackgroundTaskInput[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<BackgroundTaskId[]> {
   
   if (inputs.length === 0) {
@@ -1209,7 +1227,7 @@ async function _creates(
           let usr_id: UsrId | undefined = authModel?.id;
           let usr_lbl = "";
           if (usr_id) {
-            const usr_model = await findByIdUsr(usr_id);
+            const usr_model = await findByIdUsr(usr_id, options);
             if (!usr_model) {
               usr_id = undefined;
             } else {
@@ -1228,7 +1246,7 @@ async function _creates(
         } else {
           let usr_id: UsrId | undefined = input.create_usr_id;
           let usr_lbl = "";
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
             usr_lbl = "";
@@ -1335,9 +1353,9 @@ async function _creates(
 export async function updateTenantById(
   id: BackgroundTaskId,
   tenant_id: Readonly<TenantId>,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_background_task";
@@ -1357,9 +1375,11 @@ export async function updateTenantById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
-  const tenantExist = await existByIdTenant(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id, options);
   if (!tenantExist) {
     return 0;
   }
@@ -1376,8 +1396,8 @@ export async function updateTenantById(
  * @param {BackgroundTaskId} id
  * @param {BackgroundTaskInput} input
  * @param {({
- *   uniqueType?: "ignore" | "throw" | "update",
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
+ * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
@@ -1386,11 +1406,11 @@ export async function updateTenantById(
 export async function updateById(
   id: BackgroundTaskId,
   input: BackgroundTaskInput,
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-    uniqueType?: "ignore" | "throw";
+    uniqueType?: Exclude<UniqueType, UniqueType.Update>;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<BackgroundTaskId> {
   
   const table = "base_background_task";
@@ -1411,6 +1431,8 @@ export async function updateById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!id) {
@@ -1422,7 +1444,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id as unknown as TenantId);
+    await updateTenantById(id, input.tenant_id, options);
   }
   
   {
@@ -1430,7 +1452,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2);
+    let models = await findByUnique(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || options.uniqueType === UniqueType.Throw) {
@@ -1441,7 +1463,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id);
+  const oldModel = await findById(id, options);
   
   if (!oldModel) {
     throw await ns("编辑失败, 此 {0} 已被删除", await ns("后台任务"));
@@ -1524,7 +1546,7 @@ export async function updateById(
         let usr_id: UsrId | undefined = authModel?.id;
         let usr_lbl = "";
         if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
           } else {
@@ -1541,7 +1563,7 @@ export async function updateById(
         let usr_id: UsrId | undefined = input.update_usr_id;
         let usr_lbl = "";
         if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
           } else {
@@ -1581,7 +1603,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    const newModel = await findById(id);
+    const newModel = await findById(id, options);
     
     if (!deepCompare(oldModel, newModel)) {
       log(JSON.stringify(oldModel));
@@ -1598,10 +1620,10 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: BackgroundTaskId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
     is_silent_mode?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_background_task";
@@ -1619,6 +1641,8 @@ export async function deleteByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1628,7 +1652,7 @@ export async function deleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id);
+    const oldModel = await findById(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1669,9 +1693,9 @@ export async function deleteByIds(
  */
 export async function revertByIds(
   ids: BackgroundTaskId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_background_task";
@@ -1688,6 +1712,8 @@ export async function revertByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1703,7 +1729,10 @@ export async function revertByIds(
     num += result.affectedRows;
     // 检查数据的唯一索引
     {
-      const old_model = await findById(id);
+      const old_model = await findById(
+        id,
+        options,
+      );
       if (!old_model) {
         continue;
       }
@@ -1711,7 +1740,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as BackgroundTaskInput;
-      let models = await findByUnique(input);
+      let models = await findByUnique(input, options);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
         throw await ns("此 {0} 已经存在", await ns("后台任务"));
@@ -1729,9 +1758,9 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: BackgroundTaskId[],
-  options?: Readonly<{
+  options?: {
     is_debug?: boolean;
-  }>,
+  },
 ): Promise<number> {
   
   const table = "base_background_task";
@@ -1748,6 +1777,8 @@ export async function forceDeleteByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
