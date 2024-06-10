@@ -1,6 +1,7 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
-  useContext,
+  get_is_debug,
+  get_is_silent_mode,
 } from "/lib/context.ts";
 
 import {
@@ -176,13 +177,16 @@ async function getFromQuery(
 export async function findCount(
   search?: Readonly<LangSearch>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
+  
   const table = "base_lang";
   const method = "findCount";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -223,14 +227,17 @@ export async function findAll(
   page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
     ids_limit?: number;
   }>,
 ): Promise<LangModel[]> {
+  
   const table = "base_lang";
   const method = "findAll";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -340,7 +347,7 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
-  const debug = getParsedEnv("database_debug_sql") === "true";
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const result = await query<LangModel>(
     sql,
@@ -348,7 +355,7 @@ export async function findAll(
     {
       cacheKey1,
       cacheKey2,
-      debug,
+      debug: is_debug_sql,
     },
   );
   
@@ -451,14 +458,16 @@ export async function getFieldComments(): Promise<LangFieldComment> {
 export async function findByUnique(
   search0: Readonly<LangInput>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<LangModel[]> {
   
   const table = "base_lang";
   const method = "findByUnique";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search0) {
       msg += ` search0:${ getDebugSearch(search0) }`;
@@ -573,14 +582,16 @@ export async function findOne(
   search?: Readonly<LangSearch>,
   sort?: SortInput | SortInput[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<LangModel | undefined> {
   
   const table = "base_lang";
   const method = "findOne";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -594,7 +605,7 @@ export async function findOne(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   
@@ -617,14 +628,16 @@ export async function findOne(
 export async function findById(
   id?: LangId | null,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<LangModel | undefined> {
   
   const table = "base_lang";
   const method = "findById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id }`;
@@ -635,7 +648,7 @@ export async function findById(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   
@@ -658,14 +671,16 @@ export async function findById(
 export async function findByIds(
   ids: LangId[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<LangModel[]> {
   
   const table = "base_lang";
   const method = "findByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ ids }`;
@@ -676,7 +691,7 @@ export async function findByIds(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   
@@ -715,14 +730,16 @@ export async function findByIds(
 export async function exist(
   search?: Readonly<LangSearch>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<boolean> {
   
   const table = "base_lang";
   const method = "exist";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -733,7 +750,7 @@ export async function exist(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   const model = await findOne(search, undefined, options);
@@ -748,14 +765,16 @@ export async function exist(
 export async function existById(
   id?: Readonly<LangId | null>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ) {
   
   const table = "base_lang";
   const method = "existById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -871,17 +890,19 @@ export async function validate(
 export async function create(
   input: Readonly<LangInput>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
+    is_silent_mode?: boolean;
   }>,
 ): Promise<LangId> {
   
   const table = "base_lang";
   const method = "create";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (input) {
       msg += ` input:${ JSON.stringify(input) }`;
@@ -892,7 +913,7 @@ export async function create(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   
@@ -921,17 +942,19 @@ export async function create(
 export async function creates(
   inputs: LangInput[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
+    is_silent_mode?: boolean;
   }>,
 ): Promise<LangId[]> {
   
   const table = "base_lang";
   const method = "creates";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (inputs) {
       msg += ` inputs:${ JSON.stringify(inputs) }`;
@@ -942,7 +965,7 @@ export async function creates(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   
@@ -954,10 +977,10 @@ export async function creates(
 async function _creates(
   inputs: LangInput[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
+    is_silent_mode?: boolean;
   }>,
 ): Promise<LangId[]> {
   
@@ -967,8 +990,7 @@ async function _creates(
   
   const table = "base_lang";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
   const ids2: LangId[] = [ ];
   const inputs2: LangInput[] = [ ];
@@ -1032,7 +1054,7 @@ async function _creates(
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (!silentMode) {
+      if (!is_silent_mode) {
         if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
@@ -1050,7 +1072,7 @@ async function _creates(
       } else {
         sql += `,null`;
       }
-      if (!silentMode) {
+      if (!is_silent_mode) {
         if (input.create_usr_id == null) {
           const authModel = await getAuthModel();
           let usr_id: UsrId | undefined = authModel?.id;
@@ -1150,10 +1172,10 @@ async function _creates(
   
   await delCache();
   
-  const debug = getParsedEnv("database_debug_sql") === "true";
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await execute(sql, args, {
-    debug,
+    debug: is_debug_sql,
   });
   
   for (let i = 0; i < inputs2.length; i++) {
@@ -1188,19 +1210,19 @@ export async function updateById(
   id: LangId,
   input: LangInput,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
     uniqueType?: "ignore" | "throw";
-    silentMode?: boolean;
+    is_silent_mode?: boolean;
   }>,
 ): Promise<LangId> {
   
   const table = "base_lang";
   const method = "updateById";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_debug = get_is_debug(options?.is_debug);
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
-  if (options?.debug !== false) {
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id }`;
@@ -1302,7 +1324,7 @@ export async function updateById(
   let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
-    if (!silentMode) {
+    if (!is_silent_mode) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         let usr_id: UsrId | undefined = authModel?.id;
@@ -1345,7 +1367,7 @@ export async function updateById(
         sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
       }
     }
-    if (!silentMode) {
+    if (!is_silent_mode) {
       if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
@@ -1370,7 +1392,7 @@ export async function updateById(
     await delCache();
   }
   
-  if (!silentMode) {
+  if (!is_silent_mode) {
     const newModel = await findById(id);
     
     if (!deepCompare(oldModel, newModel)) {
@@ -1389,18 +1411,18 @@ export async function updateById(
 export async function deleteByIds(
   ids: LangId[],
   options?: Readonly<{
-    debug?: boolean;
-    silentMode?: boolean;
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
   }>,
 ): Promise<number> {
   
   const table = "base_lang";
   const method = "deleteByIds";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_debug = get_is_debug(options?.is_debug);
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
-  if (options?.debug !== false) {
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1426,7 +1448,7 @@ export async function deleteByIds(
     }
     const args = new QueryArgs();
     let sql = `update base_lang set is_deleted=1`;
-    if (!silentMode) {
+    if (!is_silent_mode) {
       const authModel = await getAuthModel();
       let usr_id: UsrId | undefined = authModel?.id;
       if (usr_id != null) {
@@ -1485,14 +1507,16 @@ export async function enableByIds(
   ids: LangId[],
   is_enabled: Readonly<0 | 1>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
   
   const table = "base_lang";
   const method = "enableByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1532,14 +1556,16 @@ export async function enableByIds(
 export async function revertByIds(
   ids: LangId[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
   
   const table = "base_lang";
   const method = "revertByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1594,14 +1620,16 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: LangId[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
   
   const table = "base_lang";
   const method = "forceDeleteByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1644,14 +1672,16 @@ export async function forceDeleteByIds(
  */
 export async function findLastOrderBy(
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
   
   const table = "base_lang";
   const method = "findLastOrderBy";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;

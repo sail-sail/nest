@@ -131,7 +131,8 @@ const inputTableUps = [ ];
 const hasSummary = columns.some((column) => column.showSummary);
 #>// deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
-  useContext,
+  get_is_debug,
+  get_is_silent_mode,
 } from "/lib/context.ts";
 
 import {
@@ -934,7 +935,7 @@ async function getFromQuery(
 export async function findCount(
   search?: Readonly<<#=searchName#>>,
   options?: Readonly<{
-    debug?: boolean;<#
+    is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -942,10 +943,13 @@ export async function findCount(
     #>
   }>,
 ): Promise<number> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "findCount";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -994,7 +998,7 @@ export async function findAll(
   page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
     ids_limit?: number;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
@@ -1003,10 +1007,13 @@ export async function findAll(
     #>
   }>,
 ): Promise<<#=modelName#>[]> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "findAll";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -1231,7 +1238,7 @@ export async function findAll(
   }
   #>
   
-  const debug = getParsedEnv("database_debug_sql") === "true";
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const result = await query<<#=modelName#>>(
     sql,
@@ -1241,12 +1248,12 @@ export async function findAll(
     {
       cacheKey1,
       cacheKey2,
-      debug,
+      debug: is_debug_sql,
     },<#
     } else {
     #>
     {
-      debug,
+      debug: is_debug_sql,
     },<#
     }
     #>
@@ -2035,7 +2042,7 @@ export async function setIdByLbl(
     if (input.<#=column_name#>_lbl.length === 0) {
       input.<#=column_name#> = [ ];
     } else {
-      const debug = getParsedEnv("database_debug_sql") === "true";
+      const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
       const sql = `select
           t.id
@@ -2047,7 +2054,7 @@ export async function setIdByLbl(
         id: <#=foreignTable_Up#>Id;
       }
       const models = await query<Result>(sql, args, {
-        debug,
+        debug: is_debug_sql,
       });
       input.<#=column_name#> = models.map((item: { id: <#=foreignTable_Up#>Id }) => item.id);
     }
@@ -2231,7 +2238,7 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
 export async function findByUnique(
   search0: Readonly<<#=inputName#>>,
   options?: Readonly<{
-    debug?: boolean;<#
+    is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2243,7 +2250,9 @@ export async function findByUnique(
   const table = "<#=mod#>_<#=table#>";
   const method = "findByUnique";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search0) {
       msg += ` search0:${ getDebugSearch(search0) }`;
@@ -2457,7 +2466,7 @@ if (hasSummary) {
 export async function findSummary(
   search?: Readonly<<#=searchName#>>,
   options?: Readonly<{
-    debug?: boolean;<#
+    is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2469,7 +2478,9 @@ export async function findSummary(
   const table = "<#=mod#>_<#=table#>";
   const method = "findSummary";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -2529,7 +2540,7 @@ export async function findOne(
   search?: Readonly<<#=searchName#>>,
   sort?: SortInput | SortInput[],
   options?: Readonly<{
-    debug?: boolean;<#
+    is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2541,7 +2552,9 @@ export async function findOne(
   const table = "<#=mod#>_<#=table#>";
   const method = "findOne";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -2555,7 +2568,7 @@ export async function findOne(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   
@@ -2578,7 +2591,7 @@ export async function findOne(
 export async function findById(
   id?: <#=Table_Up#>Id | null,
   options?: Readonly<{
-    debug?: boolean;<#
+    is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2590,7 +2603,9 @@ export async function findById(
   const table = "<#=mod#>_<#=table#>";
   const method = "findById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id }`;
@@ -2601,7 +2616,7 @@ export async function findById(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   
@@ -2624,7 +2639,7 @@ export async function findById(
 export async function findByIds(
   ids: <#=Table_Up#>Id[],
   options?: Readonly<{
-    debug?: boolean;<#
+    is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2636,7 +2651,9 @@ export async function findByIds(
   const table = "<#=mod#>_<#=table#>";
   const method = "findByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ ids }`;
@@ -2647,7 +2664,7 @@ export async function findByIds(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   
@@ -2686,7 +2703,7 @@ export async function findByIds(
 export async function exist(
   search?: Readonly<<#=searchName#>>,
   options?: Readonly<{
-    debug?: boolean;<#
+    is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2698,7 +2715,9 @@ export async function exist(
   const table = "<#=mod#>_<#=table#>";
   const method = "exist";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -2709,7 +2728,7 @@ export async function exist(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   const model = await findOne(search, undefined, options);
@@ -2724,7 +2743,7 @@ export async function exist(
 export async function existById(
   id?: Readonly<<#=Table_Up#>Id | null>,
   options?: Readonly<{
-    debug?: boolean;<#
+    is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -2736,7 +2755,9 @@ export async function existById(
   const table = "<#=mod#>_<#=table#>";
   const method = "existById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
@@ -2986,17 +3007,19 @@ export async function validate(
 export async function create(
   input: Readonly<<#=inputName#>>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
+    is_silent_mode?: boolean;
   }>,
 ): Promise<<#=Table_Up#>Id> {
   
   const table = "<#=mod#>_<#=table#>";
   const method = "create";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (input) {
       msg += ` input:${ JSON.stringify(input) }`;
@@ -3007,7 +3030,7 @@ export async function create(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   
@@ -3036,17 +3059,19 @@ export async function create(
 export async function creates(
   inputs: <#=inputName#>[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
+    is_silent_mode?: boolean;
   }>,
 ): Promise<<#=Table_Up#>Id[]> {
   
   const table = "<#=mod#>_<#=table#>";
   const method = "creates";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (inputs) {
       msg += ` inputs:${ JSON.stringify(inputs) }`;
@@ -3057,7 +3082,7 @@ export async function creates(
     log(msg);
     options = {
       ...options,
-      debug: false,
+      is_debug: false,
     };
   }
   
@@ -3069,10 +3094,10 @@ export async function creates(
 async function _creates(
   inputs: <#=inputName#>[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
+    is_silent_mode?: boolean;
   }>,
 ): Promise<<#=Table_Up#>Id[]> {
   
@@ -3082,8 +3107,7 @@ async function _creates(
   
   const table = "<#=mod#>_<#=table#>";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
   const ids2: <#=Table_Up#>Id[] = [ ];
   const inputs2: <#=inputName#>[] = [ ];
@@ -3249,7 +3273,7 @@ async function _creates(
       sql += `(${ args.push(input.id) }`;<#
       if (hasCreateTime) {
       #>
-      if (!silentMode) {
+      if (!is_silent_mode) {
         if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
@@ -3292,7 +3316,7 @@ async function _creates(
       #><#
       if (hasCreateUsrId && !hasCreateUsrIdLbl) {
       #>
-      if (!silentMode) {
+      if (!is_silent_mode) {
         if (input.create_usr_id == null) {
           const authModel = await getAuthModel();
           if (authModel?.id != null) {
@@ -3314,7 +3338,7 @@ async function _creates(
       }<#
       } else if (hasCreateUsrId && hasCreateUsrIdLbl) {
       #>
-      if (!silentMode) {
+      if (!is_silent_mode) {
         if (input.create_usr_id == null) {
           const authModel = await getAuthModel();
           let usr_id: UsrId | undefined = authModel?.id;
@@ -3512,10 +3536,10 @@ async function _creates(
   }
   #>
   
-  const debug = getParsedEnv("database_debug_sql") === "true";
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await execute(sql, args, {
-    debug,
+    debug: is_debug_sql,
   });
   
   for (let i = 0; i < inputs2.length; i++) {
@@ -3683,13 +3707,16 @@ export async function updateTenantById(
   id: <#=Table_Up#>Id,
   tenant_id: Readonly<TenantId>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
+  
   const table = "<#=mod#>_<#=table#>";
   const method = "updateTenantById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id } `;
@@ -3840,9 +3867,9 @@ export async function updateById(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
     uniqueType?: "ignore" | "throw";
-    silentMode?: boolean;<#
+    is_silent_mode?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -3854,10 +3881,10 @@ export async function updateById(
   const table = "<#=mod#>_<#=table#>";
   const method = "updateById";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_debug = get_is_debug(options?.is_debug);
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
-  if (options?.debug !== false) {
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id }`;
@@ -4303,7 +4330,7 @@ export async function updateById(
   if (updateFldNum > 0) {<#
     if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
     #>
-    if (!silentMode) {
+    if (!is_silent_mode) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
@@ -4317,7 +4344,7 @@ export async function updateById(
     }<#
     } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
     #>
-    if (!silentMode) {
+    if (!is_silent_mode) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         let usr_id: UsrId | undefined = authModel?.id;
@@ -4364,7 +4391,7 @@ export async function updateById(
     #><#
     if (hasVersion) {
     #>
-    if (!silentMode) {
+    if (!is_silent_mode) {
       if (input.version != null) {
         const version = await getVersionById(id);
         if (version && version > input.version) {
@@ -4381,7 +4408,7 @@ export async function updateById(
     #><#
     if (hasUpdateTime) {
     #>
-    if (!silentMode) {
+    if (!is_silent_mode) {
       if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
@@ -4416,7 +4443,7 @@ export async function updateById(
   }
   #>
   
-  if (!silentMode) {
+  if (!is_silent_mode) {
     const newModel = await findById(id);
     
     if (!deepCompare(oldModel, newModel)) {
@@ -4455,8 +4482,8 @@ export async function updateById(
 export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
   options?: Readonly<{
-    debug?: boolean;
-    silentMode?: boolean;<#
+    is_debug?: boolean;
+    is_silent_mode?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -4468,10 +4495,10 @@ export async function deleteByIds(
   const table = "<#=mod#>_<#=table#>";
   const method = "deleteByIds";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_debug = get_is_debug(options?.is_debug);
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
-  if (options?.debug !== false) {
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -4549,7 +4576,7 @@ export async function deleteByIds(
     if (hasIsDeleted) {
     #>
     let sql = `update <#=mod#>_<#=table#> set is_deleted=1`;
-    if (!silentMode) {<#
+    if (!is_silent_mode) {<#
       if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
       #>
       const authModel = await getAuthModel();
@@ -4752,14 +4779,16 @@ export async function enableByIds(
   ids: <#=Table_Up#>Id[],
   is_enabled: Readonly<0 | 1>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
   const method = "enableByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -4839,14 +4868,16 @@ export async function lockByIds(
   ids: <#=Table_Up#>Id[],
   is_locked: Readonly<0 | 1>,
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
   const method = "lockByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -4896,14 +4927,16 @@ if (hasIsDeleted) {
 export async function revertByIds(
   ids: <#=Table_Up#>Id[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
   const method = "revertByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -5047,14 +5080,16 @@ if (hasIsDeleted) {
 export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
   const method = "forceDeleteByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -5171,14 +5206,16 @@ if (hasOrderBy) {
  */
 export async function findLastOrderBy(
   options?: Readonly<{
-    debug?: boolean;
+    is_debug?: boolean;
   }>,
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
   const method = "findLastOrderBy";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
