@@ -29,7 +29,7 @@ use crate::common::context::{
   get_page_query,
   del_caches,
   get_is_debug,
-  get_silent_mode,
+  get_is_silent_mode,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -554,7 +554,7 @@ pub async fn find_all(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   #[allow(unused_variables)]
@@ -597,12 +597,10 @@ pub async fn find_all(
   
   let options = options.set_cache_key(table, &sql, &args);
   
-  let options = options.into();
-  
   let mut res: Vec<DictDetailModel> = query(
     sql,
     args,
-    options,
+    Some(options),
   ).await?;
   
   let dict_vec = get_dict(&[
@@ -677,7 +675,7 @@ pub async fn find_count(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let mut args = QueryArgs::new();
@@ -693,7 +691,7 @@ pub async fn find_count(
   
   let options = options.set_cache_key(table, &sql, &args);
   
-  let options = options.into();
+  let options = Some(options);
   
   let res: Option<CountModel> = query_one(
     sql,
@@ -821,7 +819,7 @@ pub async fn find_one(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let page = PageInput {
@@ -869,7 +867,7 @@ pub async fn find_by_id(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let search = DictDetailSearch {
@@ -915,7 +913,7 @@ pub async fn find_by_ids(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let len = ids.len();
@@ -979,7 +977,7 @@ pub async fn exists(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let total = find_count(
@@ -1015,7 +1013,7 @@ pub async fn exists_by_id(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let search = DictDetailSearch {
@@ -1060,13 +1058,13 @@ pub async fn find_by_unique(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   if let Some(id) = search.id {
     let model = find_by_id(
       id,
-      None,
+      options.clone(),
     ).await?;
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
@@ -1145,7 +1143,7 @@ pub async fn check_by_unique(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   let is_equals = equals_by_unique(
@@ -1247,7 +1245,7 @@ pub async fn set_id_by_lbl(
         ..Default::default()
       }.into(),
       None,
-      None,
+      Some(Options::new().set_is_debug(Some(false))),
     ).await?;
     if let Some(model) = model {
       input.dict_id = model.id.into();
@@ -1297,7 +1295,7 @@ async fn _creates(
   
   let table = "base_dict_detail";
   
-  let silent_mode = get_silent_mode(options.as_ref());
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
   
   let unique_type = options.as_ref()
     .and_then(|item|
@@ -1317,7 +1315,7 @@ async fn _creates(
     let old_models = find_by_unique(
       input.clone().into(),
       None,
-      None,
+      options.clone(),
     ).await?;
     
     if !old_models.is_empty() {
@@ -1326,12 +1324,11 @@ async fn _creates(
       for old_model in old_models {
         let options = Options::from(options.clone())
           .set_unique_type(unique_type);
-        let options = Some(options);
         
         id = check_by_unique(
           input.clone(),
           old_model,
-          options,
+          Some(options),
         ).await?;
         
         if id.is_some() {
@@ -1398,7 +1395,7 @@ async fn _creates(
     sql_values += "(?";
     args.push(id.into());
     
-    if !silent_mode {
+    if !is_silent_mode {
       if let Some(create_time) = input.create_time {
         sql_values += ",?";
         args.push(create_time.into());
@@ -1422,14 +1419,14 @@ async fn _creates(
       sql_values += ",null";
     }
     
-    if !silent_mode {
+    if !is_silent_mode {
       if input.create_usr_id.is_none() {
         let mut usr_id = get_auth_id();
         let mut usr_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.clone().unwrap(),
-            None,
+            options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_lbl = usr_model.lbl;
@@ -1453,7 +1450,7 @@ async fn _creates(
         let mut usr_lbl = String::new();
         let usr_model = find_by_id_usr(
           usr_id.clone().unwrap(),
-          None,
+          options.clone(),
         ).await?;
         if let Some(usr_model) = usr_model {
           usr_lbl = usr_model.lbl;
@@ -1569,12 +1566,10 @@ async fn _creates(
   
   let options = options.set_del_cache_key1s(get_cache_tables());
   
-  let options = options.into();
-  
   execute(
     sql,
     args,
-    options,
+    Some(options.clone()),
   ).await?;
   
   for (i, input) in inputs2
@@ -1633,11 +1628,33 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<DictDetailId> {
   
-  let silent_mode = get_silent_mode(options.as_ref());
+  let table = "base_dict_detail";
+  let method = "update_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" input: {:?}", &input);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let old_model = find_by_id(
     id.clone(),
-    None,
+    options.clone(),
   ).await?;
   
   if old_model.is_none() {
@@ -1662,7 +1679,7 @@ pub async fn update_by_id(
     let models = find_by_unique(
       input.into(),
       None,
-      None,
+      options.clone(),
     ).await?;
     
     let models = models.into_iter()
@@ -1698,28 +1715,6 @@ pub async fn update_by_id(
       }
     }
   }
-  
-  let table = "base_dict_detail";
-  let method = "update_by_id";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    msg += &format!(" input: {:?}", &input);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  let options = Options::from(options)
-    .set_is_debug(false);
-  let options = Some(options);
   
   let mut args = QueryArgs::new();
   
@@ -1776,14 +1771,14 @@ pub async fn update_by_id(
   }
   
   if field_num > 0 {
-    if !silent_mode {
+    if !is_silent_mode {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
         let mut usr_id_lbl = String::new();
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.clone().unwrap(),
-            None,
+            options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -1805,7 +1800,7 @@ pub async fn update_by_id(
         if usr_id.is_some() {
           let usr_model = find_by_id_usr(
             usr_id.clone().unwrap(),
-            None,
+            options.clone(),
           ).await?;
           if let Some(usr_model) = usr_model {
             usr_id_lbl = usr_model.lbl;
@@ -1856,22 +1851,22 @@ pub async fn update_by_id(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options);
+    let options = Options::from(options.clone());
     
     let options = options.set_del_cache_key1s(get_cache_tables());
     
-    let options = options.into();
+    let options = Some(options);
     
     execute(
       sql,
       args,
-      options,
+      options.clone(),
     ).await?;
     
   }
   
   if field_num > 0 {
-    let options = Options::from(None);
+    let options = Options::from(options);
     let options = options.set_del_cache_key1s(get_cache_tables());
     if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
       del_caches(
@@ -1915,9 +1910,9 @@ pub async fn delete_by_ids(
   let table = "base_dict_detail";
   let method = "delete_by_ids";
   
-  let silent_mode = get_silent_mode(options.as_ref());
-  
   let is_debug = get_is_debug(options.as_ref());
+  
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -1936,14 +1931,15 @@ pub async fn delete_by_ids(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut num = 0;
   for id in ids.clone() {
     
     let old_model = find_by_id(
       id.clone(),
-      None,
+      options.clone(),
     ).await?;
     if old_model.is_none() {
       continue;
@@ -1954,14 +1950,14 @@ pub async fn delete_by_ids(
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
     
-    if !silent_mode {
+    if !is_silent_mode {
       
       let mut usr_id = get_auth_id();
       let mut usr_lbl = String::new();
       if usr_id.is_some() {
         let usr_model = find_by_id_usr(
           usr_id.clone().unwrap(),
-          None,
+          options.clone(),
         ).await?;
         if let Some(usr_model) = usr_model {
           usr_lbl = usr_model.lbl;
@@ -1993,16 +1989,16 @@ pub async fn delete_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let options = options.clone();
+    let options = Options::from(options.clone());
     
     let options = options.set_del_cache_key1s(get_cache_tables());
     
-    let options = options.into();
+    let options = Some(options);
     
     num += execute(
       sql,
       args,
-      options,
+      options.clone(),
     ).await?;
   }
   
@@ -2016,7 +2012,14 @@ pub async fn get_is_enabled_by_id(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let model = find_by_id(id, options).await?;
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let model = find_by_id(
+    id,
+    options,
+  ).await?;
   
   let is_enabled = {
     if let Some(model) = model {
@@ -2059,7 +2062,7 @@ pub async fn enable_by_ids(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   
   let options = options.set_del_cache_key1s(get_cache_tables());
   
@@ -2094,7 +2097,14 @@ pub async fn get_is_locked_by_id(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let model = find_by_id(id, options).await?;
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let model = find_by_id(
+    id,
+    options,
+  ).await?;
   
   let is_locked = {
     if let Some(model) = model {
@@ -2191,7 +2201,8 @@ pub async fn revert_by_ids(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut num = 0;
   for id in ids.clone() {
@@ -2203,23 +2214,23 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let options = options.clone();
+    let options = Options::from(options.clone());
     
     let options = options.set_del_cache_key1s(get_cache_tables());
     
-    let options = options.into();
+    let options = Some(options);
     
     num += execute(
       sql,
       args,
-      options,
+      options.clone(),
     ).await?;
     
     // 检查数据的唯一索引
     {
       let old_model = find_by_id(
         id.clone(),
-        None,
+        options.clone(),
       ).await?;
       
       if old_model.is_none() {
@@ -2233,7 +2244,7 @@ pub async fn revert_by_ids(
       let models = find_by_unique(
         input.into(),
         None,
-        None,
+        options.clone(),
       ).await?;
       
       let models: Vec<DictDetailModel> = models.into_iter()
@@ -2291,7 +2302,8 @@ pub async fn force_delete_by_ids(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
+  let options = Some(options);
   
   let mut num = 0;
   for id in ids.clone() {
@@ -2304,7 +2316,7 @@ pub async fn force_delete_by_ids(
       }.into(),
       None,
       None, 
-      options.clone().into(),
+      options.clone(),
     ).await?.into_iter().next();
     
     if model.is_none() {
@@ -2321,16 +2333,16 @@ pub async fn force_delete_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let options = options.clone();
+    let options = Options::from(options.clone());
     
     let options = options.set_del_cache_key1s(get_cache_tables());
     
-    let options = options.into();
+    let options = Some(options);
     
     num += execute(
       sql,
       args,
-      options,
+      options.clone(),
     ).await?;
   }
   
@@ -2356,7 +2368,7 @@ pub async fn find_last_order_by(
   }
   
   let options = Options::from(options)
-    .set_is_debug(false);
+    .set_is_debug(Some(false));
   let options = Some(options);
   
   #[allow(unused_mut)]
@@ -2374,12 +2386,12 @@ pub async fn find_last_order_by(
   
   let options = options.set_cache_key(table, &sql, &args);
   
-  let options = options.into();
+  let options = Some(options);
   
   let model = query_one::<OrderByModel>(
     sql,
     args,
-    options,
+    options.clone(),
   ).await?;
   
   let order_by = {
