@@ -17,6 +17,10 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.3.1",
+    "@jsquash/jpeg": "1.4.0",
+    "@jsquash/png": "3.0.1",
+    "@jsquash/resize": "2.0.0",
+    "@jsquash/webp": "1.4.0",
     "@vue-office/docx": "1.6.2",
     "@vue-office/excel": "1.7.8",
     "@vue/reactivity": "3.4.27",
@@ -27,13 +31,11 @@
     "dayjs": "1.11.11",
     "decimal.js-light": "2.5.1",
     "ejsexcel-browserify": "4.4.3",
-    "element-plus": "2.7.4",
-    "events": "3.3.0",
+    "element-plus": "2.7.5",
     "file-saver": "2.0.5",
     "filesize": "10.1.2",
     "graphql": "17.0.0-alpha.3",
     "graphql-combine-query": "1.2.4",
-    "image-size": "1.1.1",
     "jszip": "3.10.1",
     "pinia": "2.1.7",
     "pinia-plugin-persistedstate": "3.2.1",
@@ -74,13 +76,13 @@
     "unplugin-icons": "0.19.0",
     "unplugin-vue-components": "0.27.0",
     "unplugin-vue-define-options": "1.4.5",
-    "vite": "5.2.12",
+    "vite": "5.2.13",
     "vite-plugin-inspect": "0.8.4",
     "vite-plugin-pwa": "0.20.0",
     "vite-plugin-vue-devtools": "7.2.1",
     "vite-plugin-vue-inspector": "5.1.2",
     "vite-plugin-wasm": "3.3.0",
     "vitest": "1.6.0",
-    "vue-tsc": "2.0.19"
+    "vue-tsc": "2.0.21"
   }
 }
