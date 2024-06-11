@@ -28,6 +28,14 @@ import wasm from "vite-plugin-wasm";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  optimizeDeps: {
+    exclude: [
+      "@jsquash/webp",
+      "@jsquash/jpeg",
+      "@jsquash/png",
+      "@jsquash/resize",
+    ],
+  },
   plugins: [
     Inspector({
       toggleButtonPos: "top-left",
