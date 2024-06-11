@@ -18,7 +18,6 @@
     </el-tag>
     <el-popover
       width="auto"
-      :teleported="false"
       :persistent="false"
     >
       <template #reference>
@@ -32,7 +31,7 @@
         </el-tag>
       </template>
       <div
-        un-flex="~ wrap gap-1"
+        un-flex="~ gap-1 col"
         un-w="full"
         un-p="y-1"
         un-box-border
@@ -42,6 +41,8 @@
           :key="item"
           type="info"
           :disable-transitions="true"
+          un-justify-start
+          un-self-start
         >
           {{ item }}
         </el-tag>
