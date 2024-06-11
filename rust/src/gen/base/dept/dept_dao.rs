@@ -1787,11 +1787,17 @@ async fn _creates(
   
   let options = options.set_del_cache_key1s(get_cache_tables());
   
-  execute(
+  let options = Some(options);
+  
+  let affected_rows = execute(
     sql,
     args,
-    Some(options.clone()),
+    options.clone(),
   ).await?;
+  
+  if affected_rows != inputs2_len as u64 {
+    return Err(anyhow!("affectedRows: {affected_rows} != {inputs2_len}"));
+  }
   
   for (i, input) in inputs2
     .into_iter()
