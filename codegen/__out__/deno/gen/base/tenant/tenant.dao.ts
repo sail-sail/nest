@@ -1384,9 +1384,14 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await execute(sql, args, {
+  const res = await execute(sql, args, {
     debug: is_debug_sql,
   });
+  const affectedRows = res.affectedRows;
+  
+  if (affectedRows !== inputs2.length) {
+    throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
+  }
   
   for (let i = 0; i < inputs2.length; i++) {
     const input = inputs2[i];
@@ -1488,7 +1493,7 @@ export async function updateById(
     let models = await findByUnique(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      if (!options || options.uniqueType === UniqueType.Throw) {
+      if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
         throw await ns("此 {0} 已经存在", await ns("租户"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
