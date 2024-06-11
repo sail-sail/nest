@@ -1689,14 +1689,10 @@ pub async fn update_by_id(
       .collect::<Vec<DictDetailModel>>();
     
     if !models.is_empty() {
-      let unique_type = {
-        if let Some(options) = options.as_ref() {
-          options.get_unique_type()
-            .unwrap_or(UniqueType::Throw)
-        } else {
-          UniqueType::Throw
-        }
-      };
+      let unique_type = options
+        .as_ref()
+        .and_then(|item| item.get_unique_type())
+        .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
         let table_comment = i18n_dao::ns(
           "系统字典明细".to_owned(),
