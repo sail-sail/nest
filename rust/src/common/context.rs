@@ -1076,8 +1076,10 @@ pub struct Ctx {
   
   now: NaiveDateTime,
   
+  is_debug: Option<bool>,
+  
   /// 静默模式
-  silent_mode: bool,
+  is_silent_mode: bool,
   
 }
 
@@ -1373,8 +1375,8 @@ impl From<&SmolStr> for ArgType {
 pub struct Options {
   
   /// 是否打印sql调试语句
-  #[new(value = "true")]
-  is_debug: bool,
+  #[new(default)]
+  is_debug: Option<bool>,
   
   /// 指定当前函数的sql是否开启事务
   #[new(default)]
@@ -1410,15 +1412,15 @@ pub struct Options {
   
   /// 静默模式
   #[new(default)]
-  silent_mode: Option<bool>,
+  is_silent_mode: Option<bool>,
   
 }
 
 impl Debug for Options {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     let mut item = &mut f.debug_struct("Options");
-    if self.is_debug {
-      item = item.field("is_debug", &self.is_debug);
+    if let Some(is_debug) = self.is_debug {
+      item = item.field("is_debug", &is_debug);
     }
     if let Some(is_tran) = self.is_tran {
       if is_tran {
@@ -1453,9 +1455,9 @@ impl Debug for Options {
     if let Some(ids_limit) = self.ids_limit {
       item = item.field("ids_limit", &ids_limit);
     }
-    if let Some(silent_mode) = self.silent_mode {
-      if silent_mode {
-        item = item.field("silent_mode", &silent_mode);
+    if let Some(is_silent_mode) = self.is_silent_mode {
+      if is_silent_mode {
+        item = item.field("is_silent_mode", &is_silent_mode);
       }
     }
     item.finish()
@@ -1473,12 +1475,12 @@ impl Options {
   
   #[inline]
   #[allow(dead_code)]
-  pub fn get_is_debug(&self) -> bool {
+  pub fn get_is_debug(&self) -> Option<bool> {
     self.is_debug
   }
   
   #[inline]
-  pub fn set_is_debug(self, is_debug: bool) -> Self {
+  pub fn set_is_debug(self, is_debug: Option<bool>) -> Self {
     let mut self_ = self;
     self_.is_debug = is_debug;
     self_
@@ -1580,7 +1582,9 @@ pub struct CtxBuilder<'a> {
   
   now: NaiveDateTime,
   
-  silent_mode: bool,
+  is_debug: Option<bool>,
+  
+  is_silent_mode: bool,
   
 }
 
@@ -1597,7 +1601,8 @@ impl <'a> CtxBuilder<'a> {
       auth_model: None,
       req_id,
       now,
-      silent_mode: false,
+      is_debug: None,
+      is_silent_mode: false,
     }
   }
   
@@ -1679,7 +1684,16 @@ impl <'a> CtxBuilder<'a> {
   /// 静默模式
   #[allow(dead_code)]
   pub fn with_silent_mode(mut self) -> CtxBuilder<'a> {
-    self.silent_mode = true;
+    self.is_silent_mode = true;
+    self
+  }
+  
+  #[allow(dead_code)]
+  pub fn with_debug(
+    mut self,
+    is_debug: Option<bool>,
+  ) -> CtxBuilder<'a> {
+    self.is_debug = is_debug;
     self
   }
   
@@ -1690,7 +1704,8 @@ impl <'a> CtxBuilder<'a> {
       tran: Arc::new(Mutex::new(None)),
       auth_model: self.auth_model,
       now: self.now,
-      silent_mode: self.silent_mode,
+      is_debug: self.is_debug,
+      is_silent_mode: self.is_silent_mode,
     }
   }
   
@@ -1803,24 +1818,31 @@ pub fn get_short_uuid() -> SmolStr {
 pub fn get_is_debug(
   options: Option<&Options>,
 ) -> bool {
-  let mut is_debug: bool = *IS_DEBUG;
-  if let Some(options) = options {
-    is_debug = options.get_is_debug();
+  if let Some(Some(is_debug)) = options.map(|options| options.get_is_debug()) {
+    return is_debug;
   }
-  is_debug
+  let ctx = CTX.try_with(|ctx| ctx.clone());
+  let ctx = match ctx {
+    Ok(context) => context,
+    Err(_) => return *IS_DEBUG,
+  };
+  if let Some(is_debug) = ctx.is_debug {
+    return is_debug;
+  }
+  *IS_DEBUG
 }
 
 #[must_use]
-pub fn get_silent_mode(
+pub fn get_is_silent_mode(
   options: Option<&Options>,
 ) -> bool {
   if let Some(options) = options {
-    if let Some(silent_mode) = options.silent_mode {
-      return silent_mode;
+    if let Some(is_silent_mode) = options.is_silent_mode {
+      return is_silent_mode;
     }
   }
   let ctx = &CTX.with(|ctx| ctx.clone());
-  ctx.silent_mode
+  ctx.is_silent_mode
 }
 
 #[cfg(test)]

@@ -238,7 +238,9 @@ export class Context {
   authorization: string | null | undefined;
   
   /** 静默模式 */
-  silentMode = false;
+  is_silent_mode = false;
+  
+  is_debug = true;
   
   constructor(oakCtx?: OakContext) {
     this.oakCtx = oakCtx;
@@ -300,6 +302,26 @@ export class Context {
   
   cacheEnabled = true;
   
+}
+
+export function get_is_debug(
+  is_debug?: boolean,
+) {
+  if (is_debug != null) {
+    return is_debug;
+  }
+  const context = useMaybeContext();
+  return context?.is_debug ?? true;
+}
+
+export function get_is_silent_mode(
+  is_silent_mode?: boolean,
+) {
+  if (is_silent_mode != null) {
+    return is_silent_mode;
+  }
+  const context = useMaybeContext();
+  return context?.is_silent_mode ?? false;
 }
 
 export class QueryArgs {

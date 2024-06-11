@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 
-use crate::common::context::get_auth_model;
+use crate::common::context::{
+  get_auth_model,
+  Options,
+};
 
 use crate::src::base::i18n::i18n_dao::ns;
 
@@ -160,6 +163,10 @@ pub async fn use_permit(
   code: String,
 ) -> Result<()> {
   
+  let options = Options::new()
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let menu_model = find_one_menu(
     MenuSearch {
       route_path: route_path.clone().into(),
@@ -167,7 +174,7 @@ pub async fn use_permit(
       ..Default::default()
     }.into(),
     None,
-    None,
+    options.clone(),
   ).await?;
   if menu_model.is_none() {
     return Ok(());
@@ -190,7 +197,7 @@ pub async fn use_permit(
   
   let usr_model = usr_dao::find_by_id(
     usr_id,
-    None,
+    options.clone(),
   ).await?;
   
   if usr_model.is_none() {
@@ -225,7 +232,7 @@ pub async fn use_permit(
     }.into(),
     None,
     None,
-    None,
+    options.clone(),
   ).await?;
   
   // 过滤掉重复的 permit_ids
@@ -260,7 +267,7 @@ pub async fn use_permit(
         ..Default::default()
       }.into(),
       None,
-      None,
+      options.clone(),
     ).await?;
     if permit_model.is_some() {
       return Ok(());
