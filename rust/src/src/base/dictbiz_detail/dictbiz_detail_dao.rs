@@ -51,7 +51,7 @@ pub async fn get_dictbiz<T: AsRef<str>>(
   
   let options = Options::new();
   
-  let options = options.set_is_debug(false);
+  let options = options.set_is_debug(Some(false));
   
   let options = options.set_cache_key(table, &sql, &args);
   
