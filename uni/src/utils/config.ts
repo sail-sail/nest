@@ -18,7 +18,8 @@ if(import.meta.env.MODE === "development") {
   // #ifndef H5
   host = "localhost";
   port = "4001";
-  domain = `${ host }${ port ? `:${ port }` : "" }`;
+  // domain = `${ host }${ port ? `:${ port }` : "" }`;
+  domain = "localhost:4000";
   protocol = "http:";
   wsProt = "ws:";
   // #endif

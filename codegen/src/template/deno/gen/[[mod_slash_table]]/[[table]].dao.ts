@@ -3574,9 +3574,48 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await execute(sql, args, {
+  const res = await execute(sql, args, {
     debug: is_debug_sql,
   });
+  const affectedRows = res.affectedRows;
+  
+  if (affectedRows !== inputs2.length) {
+    throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
+  }<#
+  let hasMany2manyInputs2 = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    if (foreignKey && foreignKey.type === "many2many") {
+      if (column.inlineMany2manyTab) continue;
+      hasMany2manyInputs2 = true;
+      break;
+    }
+    if (inlineForeignTabs.length > 0) {
+      hasMany2manyInputs2 = true;
+      break;
+    }
+    if (column.inlineMany2manyTab) {
+      hasMany2manyInputs2 = true;
+      break;
+    }
+  }
+  #><#
+  if (hasMany2manyInputs2) {
+  #>
   
   for (let i = 0; i < inputs2.length; i++) {
     const input = inputs2[i];<#
@@ -3692,6 +3731,8 @@ async function _creates(
     }
     #>
   }<#
+  }
+  #><#
   if (cache) {
   #>
   
@@ -3775,8 +3816,8 @@ export async function updateTenantById(
   
   const args = new QueryArgs();
   const sql = `update <#=mod#>_<#=table#> set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;<#
+  const res = await execute(sql, args);
+  const affectedRows = res.affectedRows;<#
   if (cache) {
   #>
   
@@ -3789,7 +3830,7 @@ export async function updateTenantById(
   await refreshCronJobs();<#
   }
   #>
-  return num;
+  return affectedRows;
 }<#
 }
 #><#
