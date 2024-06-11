@@ -1312,12 +1312,13 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await execute(sql, args, {
+  const res = await execute(sql, args, {
     debug: is_debug_sql,
   });
+  const affectedRows = res.affectedRows;
   
-  for (let i = 0; i < inputs2.length; i++) {
-    const input = inputs2[i];
+  if (affectedRows !== inputs2.length) {
+    throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
   await delCache();
