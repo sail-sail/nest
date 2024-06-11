@@ -1,6 +1,7 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
-  useContext,
+  get_is_debug,
+  get_is_silent_mode,
 } from "/lib/context.ts";
 
 import {
@@ -87,8 +88,8 @@ const route_path = "/wx/wx_pay";
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<WxPaySearch>,
-  options?: Readonly<{
-  }>,
+  options?: {
+  },
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -217,8 +218,8 @@ async function getWhereQuery(
 async function getFromQuery(
   args: QueryArgs,
   search?: Readonly<WxPaySearch>,
-  options?: Readonly<{
-  }>,
+  options?: {
+  },
 ) {
   let fromQuery = `wx_wx_pay t`;
   return fromQuery;
@@ -231,14 +232,17 @@ async function getFromQuery(
  */
 export async function findCount(
   search?: Readonly<WxPaySearch>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
+  
   const table = "wx_wx_pay";
   const method = "findCount";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -247,6 +251,8 @@ export async function findCount(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   const args = new QueryArgs();
@@ -278,15 +284,18 @@ export async function findAll(
   search?: Readonly<WxPaySearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: Readonly<{
-    debug?: boolean;
+  options?: {
+    is_debug?: boolean;
     ids_limit?: number;
-  }>,
+  },
 ): Promise<WxPayModel[]> {
+  
   const table = "wx_wx_pay";
   const method = "findAll";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -301,6 +310,8 @@ export async function findAll(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search?.id === "") {
@@ -407,7 +418,7 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
-  const debug = getParsedEnv("database_debug_sql") === "true";
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const result = await query<WxPayModel>(
     sql,
@@ -415,7 +426,7 @@ export async function findAll(
     {
       cacheKey1,
       cacheKey2,
-      debug,
+      debug: is_debug_sql,
     },
   );
   
@@ -483,6 +494,10 @@ export async function setIdByLbl(
   input: WxPayInput,
 ) {
   
+  const options = {
+    is_debug: false,
+  };
+  
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
@@ -547,15 +562,17 @@ export async function getFieldComments(): Promise<WxPayFieldComment> {
  */
 export async function findByUnique(
   search0: Readonly<WxPayInput>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<WxPayModel[]> {
   
   const table = "wx_wx_pay";
   const method = "findByUnique";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search0) {
       msg += ` search0:${ getDebugSearch(search0) }`;
@@ -564,12 +581,18 @@ export async function findByUnique(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search0.id) {
-    const model = await findOne({
-      id: search0.id,
-    }, undefined, options);
+    const model = await findOne(
+      {
+        id: search0.id,
+      },
+      undefined,
+      options,
+    );
     if (!model) {
       return [ ];
     }
@@ -581,9 +604,14 @@ export async function findByUnique(
       return [ ];
     }
     const appid = search0.appid;
-    const modelTmps = await findAll({
-      appid,
-    }, undefined, undefined, options);
+    const modelTmps = await findAll(
+      {
+        appid,
+      },
+      undefined,
+      undefined,
+      options,
+    );
     models.push(...modelTmps);
   }
   {
@@ -591,11 +619,17 @@ export async function findByUnique(
       return [ ];
     }
     const notify_url = search0.notify_url;
-    const modelTmps = await findAll({
-      notify_url,
-    }, undefined, undefined, options);
+    const modelTmps = await findAll(
+      {
+        notify_url,
+      },
+      undefined,
+      undefined,
+      options,
+    );
     models.push(...modelTmps);
   }
+  
   return models;
 }
 
@@ -609,6 +643,7 @@ export function equalsByUnique(
   oldModel: Readonly<WxPayModel>,
   input: Readonly<WxPayInput>,
 ): boolean {
+  
   if (!oldModel || !input) {
     return false;
   }
@@ -636,10 +671,16 @@ export async function checkByUnique(
   input: Readonly<WxPayInput>,
   oldModel: Readonly<WxPayModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<WxPayId | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const isEquals = equalsByUnique(oldModel, input);
+  
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("此 {0} 已经存在", await ns("微信支付设置")));
@@ -669,15 +710,17 @@ export async function checkByUnique(
 export async function findOne(
   search?: Readonly<WxPaySearch>,
   sort?: SortInput | SortInput[],
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<WxPayModel | undefined> {
   
   const table = "wx_wx_pay";
   const method = "findOne";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -689,10 +732,8 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -702,7 +743,12 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort, options);
+  const models = await findAll(
+    search,
+    page,
+    sort,
+    options,
+  );
   const model = models[0];
   return model;
 }
@@ -713,15 +759,17 @@ export async function findOne(
  */
 export async function findById(
   id?: WxPayId | null,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<WxPayModel | undefined> {
   
   const table = "wx_wx_pay";
   const method = "findById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id }`;
@@ -730,10 +778,8 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!id) {
@@ -754,15 +800,17 @@ export async function findById(
 /** 根据 ids 查找微信支付设置 */
 export async function findByIds(
   ids: WxPayId[],
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<WxPayModel[]> {
   
   const table = "wx_wx_pay";
   const method = "findByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ ids }`;
@@ -771,10 +819,8 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || ids.length === 0) {
@@ -811,15 +857,17 @@ export async function findByIds(
  */
 export async function exist(
   search?: Readonly<WxPaySearch>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<boolean> {
   
   const table = "wx_wx_pay";
   const method = "exist";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -828,13 +876,12 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
+  
   return exist;
 }
 
@@ -844,20 +891,24 @@ export async function exist(
  */
 export async function existById(
   id?: Readonly<WxPayId | null>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
   
   const table = "wx_wx_pay";
   const method = "existById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (id == null) {
@@ -870,12 +921,18 @@ export async function existById(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const queryOptions = {
+    cacheKey1,
+    cacheKey2,
+  };
+  
   interface Result {
     e: number,
   }
   const model = await queryOne<Result>(
     sql,
-    args,{ cacheKey1, cacheKey2 },
+    args,
+    queryOptions,
   );
   const result = !!model?.e;
   
@@ -1009,18 +1066,20 @@ export async function validate(
  */
 export async function create(
   input: Readonly<WxPayInput>,
-  options?: Readonly<{
-    debug?: boolean;
+  options?: {
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
-  }>,
+    is_silent_mode?: boolean;
+  },
 ): Promise<WxPayId> {
   
   const table = "wx_wx_pay";
   const method = "create";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (input) {
       msg += ` input:${ JSON.stringify(input) }`;
@@ -1029,10 +1088,8 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!input) {
@@ -1059,18 +1116,20 @@ export async function create(
  */
 export async function creates(
   inputs: WxPayInput[],
-  options?: Readonly<{
-    debug?: boolean;
+  options?: {
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
-  }>,
+    is_silent_mode?: boolean;
+  },
 ): Promise<WxPayId[]> {
   
   const table = "wx_wx_pay";
   const method = "creates";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (inputs) {
       msg += ` inputs:${ JSON.stringify(inputs) }`;
@@ -1079,10 +1138,8 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   const ids = await _creates(inputs, options);
@@ -1092,12 +1149,12 @@ export async function creates(
 
 async function _creates(
   inputs: WxPayInput[],
-  options?: Readonly<{
-    debug?: boolean;
+  options?: {
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
-  }>,
+    is_silent_mode?: boolean;
+  },
 ): Promise<WxPayId[]> {
   
   if (inputs.length === 0) {
@@ -1106,8 +1163,7 @@ async function _creates(
   
   const table = "wx_wx_pay";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
   const ids2: WxPayId[] = [ ];
   const inputs2: WxPayInput[] = [ ];
@@ -1178,7 +1234,7 @@ async function _creates(
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (!silentMode) {
+      if (!is_silent_mode) {
         if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
@@ -1209,13 +1265,13 @@ async function _creates(
       } else {
         sql += `,${ args.push(input.tenant_id) }`;
       }
-      if (!silentMode) {
+      if (!is_silent_mode) {
         if (input.create_usr_id == null) {
           const authModel = await getAuthModel();
           let usr_id: UsrId | undefined = authModel?.id;
           let usr_lbl = "";
           if (usr_id) {
-            const usr_model = await findByIdUsr(usr_id);
+            const usr_model = await findByIdUsr(usr_id, options);
             if (!usr_model) {
               usr_id = undefined;
             } else {
@@ -1234,7 +1290,7 @@ async function _creates(
         } else {
           let usr_id: UsrId | undefined = input.create_usr_id;
           let usr_lbl = "";
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
             usr_lbl = "";
@@ -1339,10 +1395,10 @@ async function _creates(
   
   await delCache();
   
-  const debug = getParsedEnv("database_debug_sql") === "true";
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   await execute(sql, args, {
-    debug,
+    debug: is_debug_sql,
   });
   
   for (let i = 0; i < inputs2.length; i++) {
@@ -1372,14 +1428,17 @@ export async function delCache() {
 export async function updateTenantById(
   id: WxPayId,
   tenant_id: Readonly<TenantId>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
+  
   const table = "wx_wx_pay";
   const method = "updateTenantById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id } `;
@@ -1391,9 +1450,11 @@ export async function updateTenantById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
-  const tenantExist = await existByIdTenant(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id, options);
   if (!tenantExist) {
     return 0;
   }
@@ -1412,8 +1473,8 @@ export async function updateTenantById(
  * @param {WxPayId} id
  * @param {WxPayInput} input
  * @param {({
- *   uniqueType?: "ignore" | "throw" | "update",
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
+ * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
@@ -1422,20 +1483,20 @@ export async function updateTenantById(
 export async function updateById(
   id: WxPayId,
   input: WxPayInput,
-  options?: Readonly<{
-    debug?: boolean;
-    uniqueType?: "ignore" | "throw";
-    silentMode?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+    uniqueType?: Exclude<UniqueType, UniqueType.Update>;
+    is_silent_mode?: boolean;
+  },
 ): Promise<WxPayId> {
   
   const table = "wx_wx_pay";
   const method = "updateById";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_debug = get_is_debug(options?.is_debug);
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
-  if (options?.debug !== false) {
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id }`;
@@ -1447,6 +1508,8 @@ export async function updateById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!id) {
@@ -1458,7 +1521,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id as unknown as TenantId);
+    await updateTenantById(id, input.tenant_id, options);
   }
   
   {
@@ -1466,7 +1529,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2);
+    let models = await findByUnique(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || options.uniqueType === UniqueType.Throw) {
@@ -1477,7 +1540,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id);
+  const oldModel = await findById(id, options);
   
   if (!oldModel) {
     throw await ns("编辑失败, 此 {0} 已被删除", await ns("微信支付设置"));
@@ -1578,13 +1641,13 @@ export async function updateById(
   let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
-    if (!silentMode) {
+    if (!is_silent_mode) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         let usr_id: UsrId | undefined = authModel?.id;
         let usr_lbl = "";
         if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
           } else {
@@ -1601,7 +1664,7 @@ export async function updateById(
         let usr_id: UsrId | undefined = input.update_usr_id;
         let usr_lbl = "";
         if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id);
+          const usr_model = await findByIdUsr(usr_id, options);
           if (!usr_model) {
             usr_id = undefined;
           } else {
@@ -1621,7 +1684,7 @@ export async function updateById(
         sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
       }
     }
-    if (!silentMode) {
+    if (!is_silent_mode) {
       if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
@@ -1646,8 +1709,8 @@ export async function updateById(
     await delCache();
   }
   
-  if (!silentMode) {
-    const newModel = await findById(id);
+  if (!is_silent_mode) {
+    const newModel = await findById(id, options);
     
     if (!deepCompare(oldModel, newModel)) {
       log(JSON.stringify(oldModel));
@@ -1664,19 +1727,19 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: WxPayId[],
-  options?: Readonly<{
-    debug?: boolean;
-    silentMode?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wx_wx_pay";
   const method = "deleteByIds";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_debug = get_is_debug(options?.is_debug);
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
-  if (options?.debug !== false) {
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1685,6 +1748,8 @@ export async function deleteByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1696,13 +1761,13 @@ export async function deleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id);
+    const oldModel = await findById(id, options);
     if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();
     let sql = `update wx_wx_pay set is_deleted=1`;
-    if (!silentMode) {
+    if (!is_silent_mode) {
       const authModel = await getAuthModel();
       let usr_id: UsrId | undefined = authModel?.id;
       if (usr_id != null) {
@@ -1740,14 +1805,20 @@ export async function deleteByIds(
  */
 export async function getIsEnabledById(
   id: WxPayId,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<0 | 1 | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const model = await findById(
     id,
     options,
   );
   const is_enabled = model?.is_enabled as (0 | 1 | undefined);
+  
   return is_enabled;
 }
 
@@ -1760,15 +1831,17 @@ export async function getIsEnabledById(
 export async function enableByIds(
   ids: WxPayId[],
   is_enabled: Readonly<0 | 1>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wx_wx_pay";
   const method = "enableByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1780,6 +1853,8 @@ export async function enableByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1809,14 +1884,20 @@ export async function enableByIds(
  */
 export async function getIsLockedById(
   id: WxPayId,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<0 | 1 | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const model = await findById(
     id,
     options,
   );
   const is_locked = model?.is_locked as (0 | 1 | undefined);
+  
   return is_locked;
 }
 
@@ -1829,15 +1910,17 @@ export async function getIsLockedById(
 export async function lockByIds(
   ids: WxPayId[],
   is_locked: Readonly<0 | 1>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wx_wx_pay";
   const method = "lockByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1849,6 +1932,8 @@ export async function lockByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1874,15 +1959,17 @@ export async function lockByIds(
  */
 export async function revertByIds(
   ids: WxPayId[],
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wx_wx_pay";
   const method = "revertByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1891,6 +1978,8 @@ export async function revertByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1908,7 +1997,10 @@ export async function revertByIds(
     num += result.affectedRows;
     // 检查数据的唯一索引
     {
-      const old_model = await findById(id);
+      const old_model = await findById(
+        id,
+        options,
+      );
       if (!old_model) {
         continue;
       }
@@ -1916,7 +2008,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as WxPayInput;
-      let models = await findByUnique(input);
+      let models = await findByUnique(input, options);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
         throw await ns("此 {0} 已经存在", await ns("微信支付设置"));
@@ -1936,15 +2028,17 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: WxPayId[],
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wx_wx_pay";
   const method = "forceDeleteByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1953,6 +2047,8 @@ export async function forceDeleteByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1986,20 +2082,24 @@ export async function forceDeleteByIds(
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wx_wx_pay";
   const method = "findLastOrderBy";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   let sql = `select t.order_by order_by from wx_wx_pay t`;
