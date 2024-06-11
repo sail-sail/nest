@@ -25,6 +25,7 @@
       <CustomSelect
         v-model="model.tenant_id"
         :method="getLoginTenantsEfc"
+        @data="(e) => tenants = e"
         placeholder="请选择 租户"
         :multiple="false"
       >
@@ -114,6 +115,7 @@ import {
 } from "./Api";
 
 import type {
+  GetLoginTenants,
   LoginInput,
 } from "@/typings/types";
 
@@ -123,7 +125,9 @@ import {
 
 const usrStore = useUsrStore(cfg.pinia);
 
-let formRef = $ref<InstanceType<typeof CustomForm>>();
+let formRef = $ref<InstanceType<typeof TmForm>>();
+
+let tenants: GetLoginTenants[] = [ ];
 
 let model: LoginInput = $ref<LoginInput>({
   username: "admin",
@@ -193,6 +197,9 @@ async function setOldLoginModel() {
       }
       model = res.data;
       model.lang = model.lang || lang;
+      if (!tenants.some((item) => item.id === model.tenant_id)) {
+        model.tenant_id = tenants[0]?.id;
+      }
     }
   } catch (err) {
   }
