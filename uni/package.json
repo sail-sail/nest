@@ -71,8 +71,8 @@
     "@dcloudio/uni-stacktracey": "3.0.0-4010520240507001",
     "@dcloudio/vite-plugin-uni": "3.0.0-4010520240507001",
     "@types/node": "20.14.2",
-    "@typescript-eslint/eslint-plugin": "7.12.0",
-    "@typescript-eslint/parser": "7.12.0",
+    "@typescript-eslint/eslint-plugin": "7.13.0",
+    "@typescript-eslint/parser": "7.13.0",
     "@uni-helper/uni-app-types": "0.5.13",
     "@unocss/preset-attributify": "0.60.4",
     "@vue-macros/reactivity-transform": "0.4.6",
@@ -98,7 +98,7 @@
     "vite-plugin-inspect": "0.8.4",
     "vite-plugin-vue-inspector": "5.1.2",
     "vitest": "1.6.0",
-    "vue-router": "4.3.2",
+    "vue-router": "4.3.3",
     "vue-tsc": "2.0.21"
   }
 }
