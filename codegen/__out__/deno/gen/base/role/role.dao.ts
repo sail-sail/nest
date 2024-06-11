@@ -1484,9 +1484,14 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await execute(sql, args, {
+  const res = await execute(sql, args, {
     debug: is_debug_sql,
   });
+  const affectedRows = res.affectedRows;
+  
+  if (affectedRows !== inputs2.length) {
+    throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
+  }
   
   for (let i = 0; i < inputs2.length; i++) {
     const input = inputs2[i];
@@ -1585,11 +1590,11 @@ export async function updateTenantById(
   
   const args = new QueryArgs();
   const sql = `update base_role set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
+  const res = await execute(sql, args);
+  const affectedRows = res.affectedRows;
   
   await delCache();
-  return num;
+  return affectedRows;
 }
 
 /**
