@@ -16,5 +16,8 @@ src/typings/types.ts
 **/vite.config.mts.timestamp-*.mjs
 
 public/ejsexcel.min.js
+public/@jsquash/**/*.*
+public/@jsquash/**/LICENSE
+public/wasm-feature-detect.js
 public/excel_template/**/*.xlsx
 public/import_template/**/*.xlsx
