@@ -3386,7 +3386,9 @@ async fn _creates(
   
   let options = options.set_del_cache_key1s(get_cache_tables());<#
   }
-  #><#
+  #>
+  
+  let options = Some(options);<#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -3402,10 +3404,10 @@ async fn _creates(
   }
   #>
   
-  execute(
+  let affected_rows = execute(
     sql,
     args,
-    Some(options.clone()),
+    options.clone(),
   ).await?;<#
   if (
     cache &&
@@ -3420,6 +3422,44 @@ async fn _creates(
     vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
   ).await?;<#
   }
+  #>
+  
+  if affected_rows != inputs2_len as u64 {
+    return Err(anyhow!("affectedRows: {affected_rows} != {inputs2_len}"));
+  }<#
+  let hasMany2manyInputs2 = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    if (foreignKey && foreignKey.type === "many2many") {
+      if (column.inlineMany2manyTab) continue;
+      hasMany2manyInputs2 = true;
+      break;
+    }
+    if (inlineForeignTabs.length > 0) {
+      hasMany2manyInputs2 = true;
+      break;
+    }
+    if (column.inlineMany2manyTab) {
+      hasMany2manyInputs2 = true;
+      break;
+    }
+  }
+  #><#
+  if (hasMany2manyInputs2) {
   #>
   
   for (i, input) in inputs2
@@ -3491,7 +3531,7 @@ async fn _creates(
         model.<#=inlineForeignTab.column#> = id.clone().into();
         create_<#=table#>(
           model,
-          None,
+          options.clone(),
         ).await?;
       }
     }<#
@@ -3503,7 +3543,7 @@ async fn _creates(
       <#=inline_column_name#>.<#=inlineForeignTab.column#> = id.clone().into();
       create_<#=table#>(
         <#=inline_column_name#>,
-        None,
+        options.clone(),
       ).await?;
     }<#
       }
@@ -3547,13 +3587,15 @@ async fn _creates(
         input.<#=many2many.column1#> = id.clone().into();
         create_<#=table#>(
           input,
-          None,
+          options.clone(),
         ).await?;
       }
     }<#
     }
     #>
+  }<#
   }
+  #>
   
   Ok(ids2)
 }
