@@ -14,7 +14,7 @@ async function workerFn(
   
   const compress = opts?.compress ?? true;
   
-  if (compress) {
+  if (!compress) {
     return file;
   }
     
