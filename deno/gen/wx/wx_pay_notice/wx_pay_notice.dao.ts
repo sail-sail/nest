@@ -1582,12 +1582,13 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await execute(sql, args, {
+  const res = await execute(sql, args, {
     debug: is_debug_sql,
   });
+  const affectedRows = res.affectedRows;
   
-  for (let i = 0; i < inputs2.length; i++) {
-    const input = inputs2[i];
+  if (affectedRows !== inputs2.length) {
+    throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
   return ids2;
@@ -1637,9 +1638,9 @@ export async function updateTenantById(
   
   const args = new QueryArgs();
   const sql = `update wx_wx_pay_notice set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  return num;
+  const res = await execute(sql, args);
+  const affectedRows = res.affectedRows;
+  return affectedRows;
 }
 
 /**
@@ -1706,7 +1707,7 @@ export async function updateById(
     let models = await findByUnique(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      if (!options || options.uniqueType === UniqueType.Throw) {
+      if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
         throw await ns("此 {0} 已经存在", await ns("微信支付通知"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
