@@ -173,7 +173,9 @@
 </template>
 
 <script lang="ts" setup>
-import { checkImageMaxSize } from "@/utils/image_util";
+import {
+  checkImageMaxSize,
+} from "@/utils/image_util";
 
 const {
   ns,
@@ -195,6 +197,9 @@ const props = withDefaults(
     maxSize?: number;
     accept?: string;
     readonly?: boolean;
+    compress?: boolean;
+    maxImageWidth?: number;
+    maxImageHeight?: number;
   }>(),
   {
     modelValue: undefined,
@@ -202,6 +207,9 @@ const props = withDefaults(
     maxSize: 1,
     accept: "image/webp,image/png,image/jpeg,image/svg+xml",
     readonly: false,
+    compress: true,
+    maxImageWidth: 1920,
+    maxImageHeight: 1080,
   },
 );
 
@@ -259,7 +267,14 @@ async function onInput() {
     return;
   }
   
-  file = await checkImageMaxSize(file);
+  file = await checkImageMaxSize(
+    file,
+    {
+      compress: props.compress,
+      maxImageWidth: props.maxImageWidth,
+      maxImageHeight: props.maxImageHeight,
+    },
+  );
   
   let id = undefined;
   loading = true;
