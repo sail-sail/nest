@@ -36,6 +36,7 @@ use crate::common::context::{
   del_caches,
   get_is_debug,
   get_is_silent_mode,
+  get_is_creating,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -2195,6 +2196,7 @@ pub async fn update_by_id(
   let is_debug = get_is_debug(options.as_ref());
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
+  let is_creating = get_is_creating(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -2347,8 +2349,23 @@ pub async fn update_by_id(
     args.push(is_hidden.into());
   }
   
+  // 所属角色
+  if input.role_ids.is_some() {
+    field_num += 1;
+  }
+  
+  // 所属部门
+  if input.dept_ids.is_some() {
+    field_num += 1;
+  }
+  
+  // 所属组织
+  if input.org_ids.is_some() {
+    field_num += 1;
+  }
+  
   if field_num > 0 {
-    if !is_silent_mode {
+    if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
         let mut usr_id_lbl = String::new();
@@ -2392,13 +2409,6 @@ pub async fn update_by_id(
           args.push(usr_id_lbl.into());
         }
       }
-      if let Some(update_time) = input.update_time {
-        sql_fields += "update_time=?,";
-        args.push(update_time.into());
-      } else {
-        sql_fields += "update_time=?,";
-        args.push(get_now().into());
-      }
     } else {
       if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
         let usr_id = input.update_usr_id.clone();
@@ -2411,10 +2421,18 @@ pub async fn update_by_id(
         sql_fields += "update_usr_id=?,";
         args.push(update_usr_id_lbl.into());
       }
+    }
+    if !is_silent_mode && !is_creating {
       if let Some(update_time) = input.update_time {
         sql_fields += "update_time=?,";
         args.push(update_time.into());
+      } else {
+        sql_fields += "update_time=?,";
+        args.push(get_now().into());
       }
+    } else if let Some(update_time) = input.update_time {
+      sql_fields += "update_time=?,";
+      args.push(update_time.into());
     }
     
     if sql_fields.ends_with(',') {
@@ -2465,8 +2483,6 @@ pub async fn update_by_id(
         column2: "role_id",
       },
     ).await?;
-    
-    field_num += 1;
   }
   
   // 所属部门
@@ -2484,8 +2500,6 @@ pub async fn update_by_id(
         column2: "dept_id",
       },
     ).await?;
-    
-    field_num += 1;
   }
   
   // 所属组织
@@ -2503,8 +2517,6 @@ pub async fn update_by_id(
         column2: "org_id",
       },
     ).await?;
-    
-    field_num += 1;
   }
   
   if field_num > 0 {
@@ -2555,6 +2567,7 @@ pub async fn delete_by_ids(
   let is_debug = get_is_debug(options.as_ref());
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
+  let is_creating = get_is_creating(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -2595,34 +2608,35 @@ pub async fn delete_by_ids(
     
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
-    
-    if !is_silent_mode {
-      
-      let mut usr_id = get_auth_id();
-      let mut usr_lbl = String::new();
-      if usr_id.is_some() {
-        let usr_model = find_by_id_usr(
-          usr_id.clone().unwrap(),
-          options.clone(),
-        ).await?;
-        if let Some(usr_model) = usr_model {
-          usr_lbl = usr_model.lbl;
-        } else {
-          usr_id = None;
-        }
+    let mut usr_id = get_auth_id();
+    let mut usr_lbl = String::new();
+    if usr_id.is_some() {
+      let usr_model = find_by_id_usr(
+        usr_id.clone().unwrap(),
+        options.clone(),
+      ).await?;
+      if let Some(usr_model) = usr_model {
+        usr_lbl = usr_model.lbl;
+      } else {
+        usr_id = None;
       }
-      
+    }
+    
+    if !is_silent_mode && !is_creating {
       if let Some(usr_id) = usr_id {
         sql_fields.push_str("delete_usr_id=?,");
         args.push(usr_id.into());
       }
-      
+    }
+    
+    if !is_silent_mode && !is_creating {
       sql_fields.push_str("delete_usr_id_lbl=?,");
       args.push(usr_lbl.into());
-      
+    }
+    
+    if !is_silent_mode && !is_creating {
       sql_fields.push_str("delete_time=?,");
       args.push(get_now().into());
-      
     }
     
     if sql_fields.ends_with(',') {

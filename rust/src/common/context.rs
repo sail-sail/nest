@@ -1081,6 +1081,11 @@ pub struct Ctx {
   /// 静默模式
   is_silent_mode: bool,
   
+  /// 是否处于创建模式, 默认为 false
+  /// 创建模式 update_by_id 时不自动修改 update_usr_id, update_usr_id_lbl 跟 update_time
+  /// 创建模式 delete_by_ids 时不自动修改 delete_usr_id, delete_usr_id_lbl 跟 delete_time
+  is_creating: Option<bool>,
+  
 }
 
 impl Ctx {
@@ -1414,6 +1419,10 @@ pub struct Options {
   #[new(default)]
   is_silent_mode: Option<bool>,
   
+  /// 创建状态
+  #[new(default)]
+  is_creating: Option<bool>,
+  
 }
 
 impl Debug for Options {
@@ -1586,6 +1595,8 @@ pub struct CtxBuilder<'a> {
   
   is_silent_mode: bool,
   
+  is_creating: Option<bool>,
+  
 }
 
 impl <'a> CtxBuilder<'a> {
@@ -1603,6 +1614,7 @@ impl <'a> CtxBuilder<'a> {
       now,
       is_debug: None,
       is_silent_mode: false,
+      is_creating: None,
     }
   }
   
@@ -1697,6 +1709,15 @@ impl <'a> CtxBuilder<'a> {
     self
   }
   
+  #[allow(dead_code)]
+  pub fn with_creating(
+    mut self,
+    is_creating: Option<bool>,
+  ) -> CtxBuilder<'a> {
+    self.is_creating = is_creating;
+    self
+  }
+  
   pub fn build(self) -> Ctx {
     Ctx {
       is_tran: self.is_tran.unwrap_or_default(),
@@ -1706,6 +1727,7 @@ impl <'a> CtxBuilder<'a> {
       now: self.now,
       is_debug: self.is_debug,
       is_silent_mode: self.is_silent_mode,
+      is_creating: self.is_creating,
     }
   }
   
@@ -1841,8 +1863,21 @@ pub fn get_is_silent_mode(
       return is_silent_mode;
     }
   }
-  let ctx = &CTX.with(|ctx| ctx.clone());
+  let ctx = CTX.with(|ctx| ctx.clone());
   ctx.is_silent_mode
+}
+
+#[must_use]
+pub fn get_is_creating(
+  options: Option<&Options>,
+) -> bool {
+  if let Some(options) = options {
+    if let Some(is_creating) = options.is_creating {
+      return is_creating;
+    }
+  }
+  let ctx = CTX.with(|ctx| ctx.clone());
+  ctx.is_creating.unwrap_or_default()
 }
 
 #[cfg(test)]
