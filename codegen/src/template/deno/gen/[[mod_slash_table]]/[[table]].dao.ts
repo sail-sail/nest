@@ -133,6 +133,7 @@ const hasSummary = columns.some((column) => column.showSummary);
 import {
   get_is_debug,
   get_is_silent_mode,
+  get_is_creating,
 } from "/lib/context.ts";
 
 import {
@@ -3574,9 +3575,48 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await execute(sql, args, {
+  const res = await execute(sql, args, {
     debug: is_debug_sql,
   });
+  const affectedRows = res.affectedRows;
+  
+  if (affectedRows !== inputs2.length) {
+    throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
+  }<#
+  let hasMany2manyInputs2 = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    if (foreignKey && foreignKey.type === "many2many") {
+      if (column.inlineMany2manyTab) continue;
+      hasMany2manyInputs2 = true;
+      break;
+    }
+    if (inlineForeignTabs.length > 0) {
+      hasMany2manyInputs2 = true;
+      break;
+    }
+    if (column.inlineMany2manyTab) {
+      hasMany2manyInputs2 = true;
+      break;
+    }
+  }
+  #><#
+  if (hasMany2manyInputs2) {
+  #>
   
   for (let i = 0; i < inputs2.length; i++) {
     const input = inputs2[i];<#
@@ -3692,6 +3732,8 @@ async function _creates(
     }
     #>
   }<#
+  }
+  #><#
   if (cache) {
   #>
   
@@ -3775,8 +3817,8 @@ export async function updateTenantById(
   
   const args = new QueryArgs();
   const sql = `update <#=mod#>_<#=table#> set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;<#
+  const res = await execute(sql, args);
+  const affectedRows = res.affectedRows;<#
   if (cache) {
   #>
   
@@ -3789,7 +3831,7 @@ export async function updateTenantById(
   await refreshCronJobs();<#
   }
   #>
-  return num;
+  return affectedRows;
 }<#
 }
 #><#
@@ -3921,7 +3963,8 @@ export async function updateById(
   options?: {
     is_debug?: boolean;
     uniqueType?: Exclude<UniqueType, UniqueType.Update>;
-    is_silent_mode?: boolean;<#
+    is_silent_mode?: boolean;
+    is_creating?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -3935,6 +3978,7 @@ export async function updateById(
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
+  const is_creating = get_is_creating(options?.is_creating);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -3976,7 +4020,7 @@ export async function updateById(
     let models = await findByUnique(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      if (!options || options.uniqueType === UniqueType.Throw) {
+      if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
         throw await ns("此 {0} 已经存在", await ns("<#=table_comment#>"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
@@ -4414,11 +4458,18 @@ export async function updateById(
     }
     
     for (const input of <#=table#>_create_models) {
-      await create<#=Table_Up#>(input);
+      await create<#=Table_Up#>(input, options);
     }
     for (let i = 0; i < <#=table#>_update_models.length; i++) {
       const { id, input } = <#=table#>_update_models[i];
-      await updateById<#=Table_Up#>(id, { ...input, id: undefined });
+      await updateById<#=Table_Up#>(
+        id,
+        {
+          ...input,
+          id: undefined,
+        },
+        options,
+      );
     }
     await deleteByIds<#=Table_Up#>(
       <#=table#>_delete_ids,
@@ -4437,7 +4488,7 @@ export async function updateById(
   if (updateFldNum > 0) {<#
     if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
     #>
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
@@ -4451,7 +4502,7 @@ export async function updateById(
     }<#
     } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
     #>
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         let usr_id: UsrId | undefined = authModel?.id;
@@ -4515,7 +4566,7 @@ export async function updateById(
     #><#
     if (hasUpdateTime) {
     #>
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
@@ -4593,7 +4644,8 @@ export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
   options?: {
     is_debug?: boolean;
-    is_silent_mode?: boolean;<#
+    is_silent_mode?: boolean;
+    is_creating?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -4607,6 +4659,7 @@ export async function deleteByIds(
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
+  const is_creating = get_is_creating(options?.is_creating);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -4642,7 +4695,7 @@ export async function deleteByIds(
   }
   #>
   
-  let num = 0;
+  let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const oldModel = await findById(id, options);
@@ -4688,7 +4741,7 @@ export async function deleteByIds(
     if (hasIsDeleted) {
     #>
     let sql = `update <#=mod#>_<#=table#> set is_deleted=1`;
-    if (!is_silent_mode) {<#
+    if (!is_silent_mode && !is_creating) {<#
       if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
       #>
       const authModel = await getAuthModel();
@@ -4706,7 +4759,7 @@ export async function deleteByIds(
       #>
       let usr_lbl = "";
       if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
+        const usr_model = await findByIdUsr(usr_id, options);
         if (!usr_model) {
           usr_id = undefined;
         } else {
@@ -4730,8 +4783,8 @@ export async function deleteByIds(
     const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) } limit 1`;<#
     }
     #>
-    const result = await execute(sql, args);
-    num += result.affectedRows;
+    const res = await execute(sql, args);
+    affectedRows += res.affectedRows;
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;
@@ -4791,10 +4844,15 @@ export async function deleteByIds(
   // <#=column_comment#>
   if (ids && ids.length > 0) {
     {
-      const <#=table#>_models = await findAll<#=Table_Up#>({
-        <#=many2many.column1#>: ids,
-        is_deleted: 1,
-      });
+      const <#=table#>_models = await findAll<#=Table_Up#>(
+        {
+          <#=many2many.column1#>: ids,
+          is_deleted: 1,
+        },
+        undefined,
+        undefined,
+        options,
+      );
       await forceDeleteByIds<#=Table_Up#>(
         <#=table#>_models.map((item) => item.id),
         options,
@@ -4828,7 +4886,7 @@ export async function deleteByIds(
   }
   #>
   
-  return num;
+  return affectedRows;
 }<#
 if (hasDefault) {
 #>
