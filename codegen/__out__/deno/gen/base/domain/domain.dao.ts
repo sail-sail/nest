@@ -178,7 +178,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找域名总数
- * @param { DomainSearch } search?
+ * @param {DomainSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

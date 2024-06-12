@@ -188,7 +188,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找系统字典总数
- * @param { DictSearch } search?
+ * @param {DictSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
