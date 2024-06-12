@@ -4,6 +4,7 @@
   un-h="full"
   un-pos-relative
   :class="{ 'border_wrap': urlList.length === 0 }"
+  class="upload_image"
   un-rounded
   @mouseenter="imgMouseenter"
   @mouseleave="imgMouseleave"
@@ -58,101 +59,113 @@
       </div>
     </template>
   </el-image>
-  <transition name="fade">
-    <div
-      v-if="showUpload"
-      class="upload_div"
-      un-rounded
-    >
-      
-      <div class="upload_toolbar">
-        
-        <ElIcon
-          v-if="!readonly"
-          size="22"
-          un-cursor-pointer
-          un-rounded
-          @click="uploadClk"
-          :title="ns('上传')"
-        >
-          <ElIconUpload
-            un-text="white"
-          />
-        </ElIcon>
-        
-        <ElIcon
-          v-if="urlList.length > 0"
-          size="22"
-          un-cursor-pointer
-          un-rounded
-          @click="onView"
-          :title="ns('预览')"
-        >
-          <ElIconView
-            un-text="white"
-          />
-        </ElIcon>
-        
-        <ElIcon
-          v-if="!readonly && urlList.length > 0"
-          size="22"
-          un-cursor-pointer
-          un-rounded
-          @click="onDelete"
-          :title="ns('删除')"
-        >
-          <ElIconDelete
-            un-text="red-300"
-          />
-        </ElIcon>
-        
-      </div>
-      
+  <template
+    v-if="!readonly"
+  >
+    <transition name="fade">
       <div
-        class="upload_padding"
-        v-if="urlList.length > 1"
-        un-h="7"
-        un-flex="~"
-        un-justify-center
-        un-items-center
-        un-bg="[rgba(0,0,0,.3)]"
-        un-pos-absolute
-        un-bottom="0"
+        v-if="showUpload"
+        class="upload_div"
+        un-rounded
       >
         
-        <ElIcon
-          v-if="!(nowIndex <= 0)"
-          size="14"
-          un-bg="hover:[var(--el-color-primary)]"
-          un-cursor-pointer
-          un-rounded-full
-          @click="onPrevious"
-        >
-          <ElIconArrowLeft />
-        </ElIcon>
-        
-        <div
-          un-text="[yellowgreen]"
-          un-m="l-1 r-1"
-        >
-          {{ nowIndex + 1 }} / {{ urlList.length }}
+        <div class="upload_toolbar">
+          
+          <ElIcon
+            size="22"
+            un-cursor-pointer
+            un-rounded
+            @click="uploadClk"
+            :title="ns('上传')"
+          >
+            <ElIconUpload
+              un-text="white"
+            />
+          </ElIcon>
+          
+          <ElIcon
+            v-if="urlList.length > 0"
+            size="22"
+            un-cursor-pointer
+            un-rounded
+            @click="onView"
+            :title="ns('预览')"
+          >
+            <ElIconView
+              un-text="white"
+            />
+          </ElIcon>
+          
+          <ElIcon
+            v-if="urlList.length > 0"
+            size="22"
+            un-cursor-pointer
+            un-rounded
+            @click="onDelete"
+            :title="ns('删除')"
+          >
+            <ElIconDelete
+              un-text="red-300"
+            />
+          </ElIcon>
+          
         </div>
         
-        <ElIcon
-          v-if="!(nowIndex >= urlList.length - 1)"
-          size="14"
-          un-bg="hover:[var(--el-color-primary)]"
-          un-cursor-pointer
-          un-rounded-full
-          @click="onNext"
+        <div
+          class="upload_padding"
+          v-if="urlList.length > 1"
+          un-h="7"
+          un-flex="~"
+          un-justify-center
+          un-items-center
+          un-bg="[rgba(0,0,0,.3)]"
+          un-pos-absolute
+          un-bottom="0"
         >
-          <ElIconArrowRight />
-        </ElIcon>
+          
+          <ElIcon
+            v-if="!(nowIndex <= 0)"
+            size="14"
+            un-bg="hover:[var(--el-color-primary)]"
+            un-cursor-pointer
+            un-rounded-full
+            @click="onPrevious"
+          >
+            <ElIconArrowLeft />
+          </ElIcon>
+          
+          <div
+            un-text="[yellowgreen]"
+            un-m="l-1 r-1"
+          >
+            {{ nowIndex + 1 }} / {{ urlList.length }}
+          </div>
+          
+          <ElIcon
+            v-if="!(nowIndex >= urlList.length - 1)"
+            size="14"
+            un-bg="hover:[var(--el-color-primary)]"
+            un-cursor-pointer
+            un-rounded-full
+            @click="onNext"
+          >
+            <ElIconArrowRight />
+          </ElIcon>
+          
+        </div>
         
       </div>
-      
+    </transition>
+  </template>
+  <template
+    v-else
+  >
+    <div
+      class="upload_div_readonly"
+      @click="onView"
+    >
     </div>
-  </transition>
+  </template>
   <input
     type="file"
     :accept="accept"
@@ -389,6 +402,16 @@ function onView() {
   align-items: center;
   flex-direction: column;
   background-color: rgba($color: #000, $alpha: .5);
+}
+.upload_div_readonly {
+  position: absolute;
+  bottom: 0px;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+}
+.upload_div_readonly:hover {
+  background-color: rgba($color: #000, $alpha: .2);
 }
 .upload_toolbar {
   overflow: hidden;

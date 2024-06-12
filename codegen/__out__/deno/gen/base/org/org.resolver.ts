@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -99,9 +100,8 @@ export async function createsOrg(
     creates,
   } = await import("./org.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/base/org",
@@ -135,9 +135,7 @@ export async function updateByIdOrg(
     updateById,
   } = await import("./org.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +158,7 @@ export async function deleteByIdsOrg(
     deleteByIds,
   } = await import("./org.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/org",
@@ -184,12 +180,11 @@ export async function enableByIdsOrg(
     enableByIds,
   } = await import("./org.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsOrg.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/org",
@@ -211,12 +206,11 @@ export async function lockByIdsOrg(
     lockByIds,
   } = await import("./org.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsOrg.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/org",
@@ -237,9 +231,7 @@ export async function revertByIdsOrg(
     revertByIds,
   } = await import("./org.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/org",
@@ -255,18 +247,17 @@ export async function revertByIdsOrg(
 export async function forceDeleteByIdsOrg(
   ids: OrgId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./org.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/org",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./org.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
