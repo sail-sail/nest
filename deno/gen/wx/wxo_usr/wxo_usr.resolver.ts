@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -132,9 +133,8 @@ export async function createsWxoUsr(
     creates,
   } = await import("./wxo_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wx/wxo_usr",
@@ -168,9 +168,7 @@ export async function updateByIdWxoUsr(
     updateById,
   } = await import("./wxo_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -193,9 +191,7 @@ export async function deleteByIdsWxoUsr(
     deleteByIds,
   } = await import("./wxo_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wxo_usr",
@@ -216,9 +212,7 @@ export async function revertByIdsWxoUsr(
     revertByIds,
   } = await import("./wxo_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wxo_usr",
@@ -234,18 +228,17 @@ export async function revertByIdsWxoUsr(
 export async function forceDeleteByIdsWxoUsr(
   ids: WxoUsrId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./wxo_usr.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wxo_usr",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./wxo_usr.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

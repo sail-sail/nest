@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -132,9 +133,8 @@ export async function createsWxAppToken(
     creates,
   } = await import("./wx_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wx/wx_app_token",
@@ -168,9 +168,7 @@ export async function updateByIdWxAppToken(
     updateById,
   } = await import("./wx_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -193,9 +191,7 @@ export async function deleteByIdsWxAppToken(
     deleteByIds,
   } = await import("./wx_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_app_token",
@@ -216,9 +212,7 @@ export async function revertByIdsWxAppToken(
     revertByIds,
   } = await import("./wx_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_app_token",
@@ -234,18 +228,17 @@ export async function revertByIdsWxAppToken(
 export async function forceDeleteByIdsWxAppToken(
   ids: WxAppTokenId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./wx_app_token.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_app_token",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./wx_app_token.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
