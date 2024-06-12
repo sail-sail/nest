@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -95,9 +96,7 @@ export async function deleteByIdsLoginLog(
     deleteByIds,
   } = await import("./login_log.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/login_log",
@@ -118,9 +117,7 @@ export async function revertByIdsLoginLog(
     revertByIds,
   } = await import("./login_log.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/login_log",
@@ -136,18 +133,17 @@ export async function revertByIdsLoginLog(
 export async function forceDeleteByIdsLoginLog(
   ids: LoginLogId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./login_log.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/login_log",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./login_log.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

@@ -1,5 +1,5 @@
 <template>
-	<tm-sheet :transprent="props.transprent" :padding="props.padding"
+	<tm-sheet :transprent="props.transprent" :round="3" _class="flex flex-col overflow" :padding="props.padding"
 		:margin="props.margin">
 		<slot></slot>
 	</tm-sheet>
