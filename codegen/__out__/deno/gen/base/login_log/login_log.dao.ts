@@ -177,7 +177,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找登录日志总数
- * @param { LoginLogSearch } search?
+ * @param {LoginLogSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

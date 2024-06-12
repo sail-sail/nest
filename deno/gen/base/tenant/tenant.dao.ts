@@ -182,42 +182,42 @@ async function getFromQuery(
   
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_tenant t
-    left join base_tenant_domain
-      on base_tenant_domain.tenant_id=t.id
-      and base_tenant_domain.is_deleted=${ args.push(is_deleted) }
-    left join base_domain
-      on base_tenant_domain.domain_id=base_domain.id
-      and base_domain.is_deleted=${ args.push(is_deleted) }
-    left join(select
-    json_objectagg(base_tenant_domain.order_by,base_domain.id) domain_ids,
-    json_objectagg(base_tenant_domain.order_by,base_domain.lbl) domain_ids_lbl,
-    base_tenant.id tenant_id
-    from base_tenant_domain
-    inner join base_domain on base_domain.id=base_tenant_domain.domain_id
-    inner join base_tenant on base_tenant.id=base_tenant_domain.tenant_id
-    where base_tenant_domain.is_deleted=${ args.push(is_deleted) }
-    group by tenant_id) _domain on _domain.tenant_id=t.id
-    left join base_tenant_menu
-      on base_tenant_menu.tenant_id=t.id
-      and base_tenant_menu.is_deleted=${ args.push(is_deleted) }
-    left join base_menu
-      on base_tenant_menu.menu_id=base_menu.id
-      and base_menu.is_deleted=${ args.push(is_deleted) }
-    left join(select
-    json_objectagg(base_tenant_menu.order_by,base_menu.id) menu_ids,
-    json_objectagg(base_tenant_menu.order_by,base_menu.lbl) menu_ids_lbl,
-    base_tenant.id tenant_id
-    from base_tenant_menu
-    inner join base_menu on base_menu.id=base_tenant_menu.menu_id
-    inner join base_tenant on base_tenant.id=base_tenant_menu.tenant_id
-    where base_tenant_menu.is_deleted=${ args.push(is_deleted) }
-    group by tenant_id) _menu on _menu.tenant_id=t.id`;
+  left join base_tenant_domain
+    on base_tenant_domain.tenant_id=t.id
+    and base_tenant_domain.is_deleted=${ args.push(is_deleted) }
+  left join base_domain
+    on base_tenant_domain.domain_id=base_domain.id
+    and base_domain.is_deleted=${ args.push(is_deleted) }
+  left join(select
+  json_objectagg(base_tenant_domain.order_by,base_domain.id) domain_ids,
+  json_objectagg(base_tenant_domain.order_by,base_domain.lbl) domain_ids_lbl,
+  base_tenant.id tenant_id
+  from base_tenant_domain
+  inner join base_domain on base_domain.id=base_tenant_domain.domain_id
+  inner join base_tenant on base_tenant.id=base_tenant_domain.tenant_id
+  where base_tenant_domain.is_deleted=${ args.push(is_deleted) }
+  group by tenant_id) _domain on _domain.tenant_id=t.id
+  left join base_tenant_menu
+    on base_tenant_menu.tenant_id=t.id
+    and base_tenant_menu.is_deleted=${ args.push(is_deleted) }
+  left join base_menu
+    on base_tenant_menu.menu_id=base_menu.id
+    and base_menu.is_deleted=${ args.push(is_deleted) }
+  left join(select
+  json_objectagg(base_tenant_menu.order_by,base_menu.id) menu_ids,
+  json_objectagg(base_tenant_menu.order_by,base_menu.lbl) menu_ids_lbl,
+  base_tenant.id tenant_id
+  from base_tenant_menu
+  inner join base_menu on base_menu.id=base_tenant_menu.menu_id
+  inner join base_tenant on base_tenant.id=base_tenant_menu.tenant_id
+  where base_tenant_menu.is_deleted=${ args.push(is_deleted) }
+  group by tenant_id) _menu on _menu.tenant_id=t.id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找租户总数
- * @param { TenantSearch } search?
+ * @param {TenantSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
