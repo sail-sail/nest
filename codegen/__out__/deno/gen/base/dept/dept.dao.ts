@@ -71,10 +71,6 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  existById as existByIdOrg,
-} from "/gen/base/org/org.dao.ts";
-
-import {
   many2manyUpdate,
 } from "/lib/util/dao_util.ts";
 
@@ -87,10 +83,6 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
-
-import {
-  findOne as findOneOrg,
-} from "/gen/base/org/org.dao.ts";
 
 import {
   findById as findByIdUsr,
@@ -219,28 +211,28 @@ async function getFromQuery(
   
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_dept t
-    left join base_dept parent_id_lbl on parent_id_lbl.id=t.parent_id
-    left join base_dept_usr
-      on base_dept_usr.dept_id=t.id
-      and base_dept_usr.is_deleted=${ args.push(is_deleted) }
-    left join base_usr
-      on base_dept_usr.usr_id=base_usr.id
-      and base_usr.is_deleted=${ args.push(is_deleted) }
-    left join(select
-    json_objectagg(base_dept_usr.order_by,base_usr.id) usr_ids,
-    json_objectagg(base_dept_usr.order_by,base_usr.lbl) usr_ids_lbl,
-    base_dept.id dept_id
-    from base_dept_usr
-    inner join base_usr on base_usr.id=base_dept_usr.usr_id
-    inner join base_dept on base_dept.id=base_dept_usr.dept_id
-    where base_dept_usr.is_deleted=${ args.push(is_deleted) }
-    group by dept_id) _usr on _usr.dept_id=t.id`;
+  left join base_dept parent_id_lbl on parent_id_lbl.id=t.parent_id
+  left join base_dept_usr
+    on base_dept_usr.dept_id=t.id
+    and base_dept_usr.is_deleted=${ args.push(is_deleted) }
+  left join base_usr
+    on base_dept_usr.usr_id=base_usr.id
+    and base_usr.is_deleted=${ args.push(is_deleted) }
+  left join(select
+  json_objectagg(base_dept_usr.order_by,base_usr.id) usr_ids,
+  json_objectagg(base_dept_usr.order_by,base_usr.lbl) usr_ids_lbl,
+  base_dept.id dept_id
+  from base_dept_usr
+  inner join base_usr on base_usr.id=base_dept_usr.usr_id
+  inner join base_dept on base_dept.id=base_dept_usr.dept_id
+  where base_dept_usr.is_deleted=${ args.push(is_deleted) }
+  group by dept_id) _usr on _usr.dept_id=t.id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找部门总数
- * @param { DeptSearch } search?
+ * @param {DeptSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
