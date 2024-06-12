@@ -71,10 +71,6 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  existById as existByIdOrg,
-} from "/gen/base/org/org.dao.ts";
-
-import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -87,10 +83,6 @@ import type {
 import {
   findOne as findOneUsr,
 } from "/gen/base/usr/usr.dao.ts";
-
-import {
-  findOne as findOneOrg,
-} from "/gen/base/org/org.dao.ts";
 
 import {
   findById as findByIdUsr,
@@ -254,14 +246,14 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `wx_wx_usr t
-    left join base_usr usr_id_lbl on usr_id_lbl.id=t.usr_id
-    left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
+  left join base_usr usr_id_lbl on usr_id_lbl.id=t.usr_id
+  left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找小程序用户总数
- * @param { WxUsrSearch } search?
+ * @param {WxUsrSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

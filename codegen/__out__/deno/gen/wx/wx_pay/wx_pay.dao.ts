@@ -228,7 +228,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找微信支付设置总数
- * @param { WxPaySearch } search?
+ * @param {WxPaySearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

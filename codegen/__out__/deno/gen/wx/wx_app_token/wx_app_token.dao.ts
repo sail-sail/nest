@@ -169,13 +169,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `wx_wx_app_token t
-    left join wx_wx_app wx_app_id_lbl on wx_app_id_lbl.id=t.wx_app_id`;
+  left join wx_wx_app wx_app_id_lbl on wx_app_id_lbl.id=t.wx_app_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找小程序接口凭据总数
- * @param { WxAppTokenSearch } search?
+ * @param {WxAppTokenSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

@@ -203,7 +203,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找小程序设置总数
- * @param { WxAppSearch } search?
+ * @param {WxAppSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

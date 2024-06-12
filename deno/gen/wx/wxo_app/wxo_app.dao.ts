@@ -211,13 +211,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `wx_wxo_app t
-    left join base_domain domain_id_lbl on domain_id_lbl.id=t.domain_id`;
+  left join base_domain domain_id_lbl on domain_id_lbl.id=t.domain_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找公众号设置总数
- * @param { WxoAppSearch } search?
+ * @param {WxoAppSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
