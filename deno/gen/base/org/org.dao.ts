@@ -2,6 +2,7 @@
 import {
   get_is_debug,
   get_is_silent_mode,
+  get_is_creating,
 } from "/lib/context.ts";
 
 import {
@@ -1328,6 +1329,7 @@ export async function updateById(
     is_debug?: boolean;
     uniqueType?: Exclude<UniqueType, UniqueType.Update>;
     is_silent_mode?: boolean;
+    is_creating?: boolean;
   },
 ): Promise<OrgId> {
   
@@ -1336,6 +1338,7 @@ export async function updateById(
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
+  const is_creating = get_is_creating(options?.is_creating);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1440,7 +1443,7 @@ export async function updateById(
   let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         let usr_id: UsrId | undefined = authModel?.id;
@@ -1483,7 +1486,7 @@ export async function updateById(
         sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
       }
     }
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
@@ -1529,6 +1532,7 @@ export async function deleteByIds(
   options?: {
     is_debug?: boolean;
     is_silent_mode?: boolean;
+    is_creating?: boolean;
   },
 ): Promise<number> {
   
@@ -1537,6 +1541,7 @@ export async function deleteByIds(
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
+  const is_creating = get_is_creating(options?.is_creating);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1557,7 +1562,7 @@ export async function deleteByIds(
   
   await delCache();
   
-  let num = 0;
+  let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const oldModel = await findById(id, options);
@@ -1566,7 +1571,7 @@ export async function deleteByIds(
     }
     const args = new QueryArgs();
     let sql = `update base_org set is_deleted=1`;
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       const authModel = await getAuthModel();
       let usr_id: UsrId | undefined = authModel?.id;
       if (usr_id != null) {
@@ -1574,7 +1579,7 @@ export async function deleteByIds(
       }
       let usr_lbl = "";
       if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
+        const usr_model = await findByIdUsr(usr_id, options);
         if (!usr_model) {
           usr_id = undefined;
         } else {
@@ -1587,13 +1592,13 @@ export async function deleteByIds(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
+    const res = await execute(sql, args);
+    affectedRows += res.affectedRows;
   }
   
   await delCache();
   
-  return num;
+  return affectedRows;
 }
 
 /**

@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -99,9 +100,8 @@ export async function createsRole(
     creates,
   } = await import("./role.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/base/role",
@@ -135,9 +135,7 @@ export async function updateByIdRole(
     updateById,
   } = await import("./role.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +158,7 @@ export async function deleteByIdsRole(
     deleteByIds,
   } = await import("./role.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/role",
@@ -184,12 +180,11 @@ export async function enableByIdsRole(
     enableByIds,
   } = await import("./role.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsRole.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/role",
@@ -211,12 +206,11 @@ export async function lockByIdsRole(
     lockByIds,
   } = await import("./role.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsRole.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/role",
@@ -237,9 +231,7 @@ export async function revertByIdsRole(
     revertByIds,
   } = await import("./role.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/role",
@@ -255,18 +247,17 @@ export async function revertByIdsRole(
 export async function forceDeleteByIdsRole(
   ids: RoleId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./role.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/role",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./role.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
