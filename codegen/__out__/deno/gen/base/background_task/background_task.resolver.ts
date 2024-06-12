@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -95,9 +96,7 @@ export async function deleteByIdsBackgroundTask(
     deleteByIds,
   } = await import("./background_task.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/background_task",
@@ -118,9 +117,7 @@ export async function revertByIdsBackgroundTask(
     revertByIds,
   } = await import("./background_task.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/background_task",
@@ -136,18 +133,17 @@ export async function revertByIdsBackgroundTask(
 export async function forceDeleteByIdsBackgroundTask(
   ids: BackgroundTaskId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./background_task.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/background_task",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./background_task.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

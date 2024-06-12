@@ -242,6 +242,13 @@ export class Context {
   
   is_debug = true;
   
+  /**
+   * 是否处于创建模式, 默认为 false
+   * 创建模式 updateById 时不自动修改 update_usr_id, update_usr_id_lbl 跟 update_time
+   * 创建模式 deleteByIds 时不自动修改 delete_usr_id, delete_usr_id_lbl 跟 delete_time
+   */
+  is_creating: boolean | undefined;
+  
   constructor(oakCtx?: OakContext) {
     this.oakCtx = oakCtx;
     const dateNow = new Date();
@@ -322,6 +329,30 @@ export function get_is_silent_mode(
   }
   const context = useMaybeContext();
   return context?.is_silent_mode ?? false;
+}
+
+export function get_is_creating(
+  is_creating?: boolean,
+) {
+  if (is_creating != null) {
+    return is_creating;
+  }
+  const context = useMaybeContext();
+  return context?.is_creating ?? false;
+}
+
+export function set_is_creating(
+  is_creating?: boolean,
+) {
+  const context = useContext();
+  context.is_creating = is_creating;
+}
+
+export function set_is_tran(
+  is_tran: boolean,
+) {
+  const context = useContext();
+  context.is_tran = is_tran;
 }
 
 export class QueryArgs {
