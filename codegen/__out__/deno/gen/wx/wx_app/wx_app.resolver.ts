@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -99,9 +100,8 @@ export async function createsWxApp(
     creates,
   } = await import("./wx_app.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wx/wx_app",
@@ -135,9 +135,7 @@ export async function updateByIdWxApp(
     updateById,
   } = await import("./wx_app.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +158,7 @@ export async function deleteByIdsWxApp(
     deleteByIds,
   } = await import("./wx_app.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_app",
@@ -184,12 +180,11 @@ export async function enableByIdsWxApp(
     enableByIds,
   } = await import("./wx_app.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsWxApp.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_app",
@@ -211,12 +206,11 @@ export async function lockByIdsWxApp(
     lockByIds,
   } = await import("./wx_app.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsWxApp.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_app",
@@ -237,9 +231,7 @@ export async function revertByIdsWxApp(
     revertByIds,
   } = await import("./wx_app.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_app",
@@ -255,18 +247,17 @@ export async function revertByIdsWxApp(
 export async function forceDeleteByIdsWxApp(
   ids: WxAppId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./wx_app.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_app",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./wx_app.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

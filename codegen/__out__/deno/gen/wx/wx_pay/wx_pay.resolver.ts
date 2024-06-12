@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -99,9 +100,8 @@ export async function createsWxPay(
     creates,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wx/wx_pay",
@@ -135,9 +135,7 @@ export async function updateByIdWxPay(
     updateById,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +158,7 @@ export async function deleteByIdsWxPay(
     deleteByIds,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_pay",
@@ -184,12 +180,11 @@ export async function enableByIdsWxPay(
     enableByIds,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsWxPay.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_pay",
@@ -211,12 +206,11 @@ export async function lockByIdsWxPay(
     lockByIds,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsWxPay.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_pay",
@@ -237,9 +231,7 @@ export async function revertByIdsWxPay(
     revertByIds,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_pay",
@@ -255,18 +247,17 @@ export async function revertByIdsWxPay(
 export async function forceDeleteByIdsWxPay(
   ids: WxPayId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./wx_pay.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_pay",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./wx_pay.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
