@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -99,9 +100,8 @@ export async function createsLang(
     creates,
   } = await import("./lang.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/base/lang",
@@ -135,9 +135,7 @@ export async function updateByIdLang(
     updateById,
   } = await import("./lang.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +158,7 @@ export async function deleteByIdsLang(
     deleteByIds,
   } = await import("./lang.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/lang",
@@ -184,12 +180,11 @@ export async function enableByIdsLang(
     enableByIds,
   } = await import("./lang.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsLang.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/lang",
@@ -210,9 +205,7 @@ export async function revertByIdsLang(
     revertByIds,
   } = await import("./lang.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/lang",
@@ -228,18 +221,17 @@ export async function revertByIdsLang(
 export async function forceDeleteByIdsLang(
   ids: LangId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./lang.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/lang",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./lang.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
