@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -95,9 +96,7 @@ export async function deleteByIdsCronJobLogDetail(
     deleteByIds,
   } = await import("./cron_job_log_detail.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/cron/cron_job_log_detail",
@@ -118,9 +117,7 @@ export async function revertByIdsCronJobLogDetail(
     revertByIds,
   } = await import("./cron_job_log_detail.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/cron/cron_job_log_detail",
@@ -136,18 +133,17 @@ export async function revertByIdsCronJobLogDetail(
 export async function forceDeleteByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./cron_job_log_detail.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/cron/cron_job_log_detail",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./cron_job_log_detail.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

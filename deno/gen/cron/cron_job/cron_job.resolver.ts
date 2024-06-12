@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -101,9 +102,8 @@ export async function createsCronJob(
     creates,
   } = await import("./cron_job.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/cron/cron_job",
@@ -137,9 +137,7 @@ export async function updateByIdCronJob(
     updateById,
   } = await import("./cron_job.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -162,9 +160,7 @@ export async function deleteByIdsCronJob(
     deleteByIds,
   } = await import("./cron_job.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/cron/cron_job",
@@ -186,12 +182,11 @@ export async function enableByIdsCronJob(
     enableByIds,
   } = await import("./cron_job.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsCronJob.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/cron/cron_job",
@@ -213,12 +208,11 @@ export async function lockByIdsCronJob(
     lockByIds,
   } = await import("./cron_job.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsCronJob.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/cron/cron_job",
@@ -239,9 +233,7 @@ export async function revertByIdsCronJob(
     revertByIds,
   } = await import("./cron_job.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/cron/cron_job",
@@ -257,18 +249,17 @@ export async function revertByIdsCronJob(
 export async function forceDeleteByIdsCronJob(
   ids: CronJobId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./cron_job.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/cron/cron_job",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./cron_job.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
