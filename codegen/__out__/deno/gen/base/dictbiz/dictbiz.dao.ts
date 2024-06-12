@@ -205,7 +205,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找业务字典总数
- * @param { DictbizSearch } search?
+ * @param {DictbizSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

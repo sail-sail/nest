@@ -204,7 +204,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找操作记录总数
- * @param { OperationRecordSearch } search?
+ * @param {OperationRecordSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

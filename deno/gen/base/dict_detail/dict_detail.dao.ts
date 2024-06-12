@@ -183,13 +183,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_dict_detail t
-    left join base_dict dict_id_lbl on dict_id_lbl.id=t.dict_id`;
+  left join base_dict dict_id_lbl on dict_id_lbl.id=t.dict_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找系统字典明细总数
- * @param { DictDetailSearch } search?
+ * @param {DictDetailSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

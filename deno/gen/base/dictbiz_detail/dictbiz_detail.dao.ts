@@ -200,13 +200,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_dictbiz_detail t
-    left join base_dictbiz dictbiz_id_lbl on dictbiz_id_lbl.id=t.dictbiz_id`;
+  left join base_dictbiz dictbiz_id_lbl on dictbiz_id_lbl.id=t.dictbiz_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找业务字典明细总数
- * @param { DictbizDetailSearch } search?
+ * @param {DictbizDetailSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
