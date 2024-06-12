@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -95,9 +96,7 @@ export async function deleteByIdsWxwMsg(
     deleteByIds,
   } = await import("./wxw_msg.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wxwork/wxw_msg",
@@ -118,9 +117,7 @@ export async function revertByIdsWxwMsg(
     revertByIds,
   } = await import("./wxw_msg.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wxwork/wxw_msg",
@@ -136,18 +133,17 @@ export async function revertByIdsWxwMsg(
 export async function forceDeleteByIdsWxwMsg(
   ids: WxwMsgId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./wxw_msg.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wxwork/wxw_msg",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./wxw_msg.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

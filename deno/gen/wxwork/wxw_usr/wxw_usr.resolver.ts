@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -99,9 +100,8 @@ export async function createsWxwUsr(
     creates,
   } = await import("./wxw_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wxwork/wxw_usr",
@@ -135,9 +135,7 @@ export async function updateByIdWxwUsr(
     updateById,
   } = await import("./wxw_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +158,7 @@ export async function deleteByIdsWxwUsr(
     deleteByIds,
   } = await import("./wxw_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wxwork/wxw_usr",
@@ -183,9 +179,7 @@ export async function revertByIdsWxwUsr(
     revertByIds,
   } = await import("./wxw_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wxwork/wxw_usr",
@@ -201,18 +195,17 @@ export async function revertByIdsWxwUsr(
 export async function forceDeleteByIdsWxwUsr(
   ids: WxwUsrId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./wxw_usr.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wxwork/wxw_usr",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./wxw_usr.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
