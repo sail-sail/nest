@@ -179,6 +179,7 @@ use crate::common::context::{
   del_caches,
   get_is_debug,
   get_is_silent_mode,
+  get_is_creating,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -3832,6 +3833,7 @@ pub async fn update_by_id(
   let is_silent_mode = get_is_silent_mode(options.as_ref());<#
   }
   #>
+  let is_creating = get_is_creating(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -4395,14 +4397,39 @@ pub async fn update_by_id(
     field_num += 1;
   }<#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+  #><#
+  if (foreignKey && foreignKey.type === "many2many") {
+    if (column.inlineMany2manyTab) continue;
+  #>
+  
+  // <#=column_comment#>
+  if input.<#=column_name_rust#>.is_some() {
+    field_num += 1;
+  }<#
+  }
+  #><#
+  }
   #>
   
   if field_num > 0 {<#
-    if (hasVersion || hasUpdateUsrId || hasUpdateTime) {
+    if (hasVersion) {
     #>
-    if !is_silent_mode {<#
-      if (hasVersion) {
-      #>
+    if !is_silent_mode {
       if let Some(version) = input.version {
         if version > 0 {
           let version2 = get_version_by_id(id.clone()).await?;
@@ -4425,11 +4452,16 @@ pub async fn update_by_id(
           sql_fields += "version=?,";
           args.push((version + 1).into());
         }
-      }<#
       }
-      #><#
-      if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
-      #>
+    } else if let Some(version) = input.version {
+      sql_fields += "version=?,";
+      args.push((version).into());
+    }<#
+    }
+    #><#
+    if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
+    #>
+    if !is_silent_mode && !is_creating {
       if let Some(update_usr_id) = input.update_usr_id {
         if update_usr_id.as_str() != "-" {
           sql_fields += "update_usr_id=?,";
@@ -4441,9 +4473,16 @@ pub async fn update_by_id(
           sql_fields += "update_usr_id=?,";
           args.push(usr_id.into());
         }
-      }<#
-      } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
-      #>
+      }
+    } else if let Some(update_usr_id) = input.update_usr_id {
+      if update_usr_id.as_str() != "-" {
+        sql_fields += "update_usr_id=?,";
+        args.push(update_usr_id.into());
+      }
+    }<#
+    } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
+    #>
+    if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
         let mut usr_id_lbl = String::new();
@@ -4486,39 +4525,8 @@ pub async fn update_by_id(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      }<#
       }
-      #><#
-      if (hasUpdateTime) {
-      #>
-      if let Some(update_time) = input.update_time {
-        sql_fields += "update_time=?,";
-        args.push(update_time.into());
-      } else {
-        sql_fields += "update_time=?,";
-        args.push(get_now().into());
-      }<#
-      }
-      #>
-    } else {<#
-      if (hasVersion) {
-      #>
-      if let Some(version) = input.version {
-        sql_fields += "version=?,";
-        args.push((version).into());
-      }<#
-      }
-      #><#
-      if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
-      #>
-      if let Some(update_usr_id) = input.update_usr_id {
-        if update_usr_id.as_str() != "-" {
-          sql_fields += "update_usr_id=?,";
-          args.push(update_usr_id.into());
-        }
-      }<#
-      } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
-      #>
+    } else {
       if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
         let usr_id = input.update_usr_id.clone();
         if let Some(usr_id) = usr_id {
@@ -4529,17 +4537,23 @@ pub async fn update_by_id(
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
         sql_fields += "update_usr_id=?,";
         args.push(update_usr_id_lbl.into());
-      }<#
       }
-      #><#
-      if (hasUpdateTime) {
-      #>
+    }<#
+    }
+    #><#
+    if (hasUpdateTime) {
+    #>
+    if !is_silent_mode && !is_creating {
       if let Some(update_time) = input.update_time {
         sql_fields += "update_time=?,";
         args.push(update_time.into());
-      }<#
+      } else {
+        sql_fields += "update_time=?,";
+        args.push(get_now().into());
       }
-      #>
+    } else if let Some(update_time) = input.update_time {
+      sql_fields += "update_time=?,";
+      args.push(update_time.into());
     }<#
     }
     #>
@@ -4609,12 +4623,7 @@ pub async fn update_by_id(
     if (column_name === "id") continue;
     if (column_name === "create_usr_id") continue;
     if (column_name === "create_time") continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -4639,8 +4648,6 @@ pub async fn update_by_id(
         column2: "<#=many2many.column2#>",
       },
     ).await?;
-    
-    field_num += 1;
   }<#
   }
   #><#
@@ -4725,6 +4732,7 @@ pub async fn delete_by_ids(
   let is_silent_mode = get_is_silent_mode(options.as_ref());<#
   }
   #>
+  let is_creating = get_is_creating(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -4849,52 +4857,53 @@ pub async fn delete_by_ids(
     #>
     
     let mut sql_fields = String::with_capacity(30);
-    sql_fields.push_str("is_deleted=1,");
-    
-    if !is_silent_mode {<#
-      if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
-      #>
-      
-      let mut usr_id = get_auth_id();
-      let mut usr_lbl = String::new();
-      if usr_id.is_some() {
-        let usr_model = find_by_id_usr(
-          usr_id.clone().unwrap(),
-          options.clone(),
-        ).await?;
-        if let Some(usr_model) = usr_model {
-          usr_lbl = usr_model.lbl;
-        } else {
-          usr_id = None;
-        }
-      }<#
+    sql_fields.push_str("is_deleted=1,");<#
+    if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
+    #>
+    let mut usr_id = get_auth_id();
+    let mut usr_lbl = String::new();
+    if usr_id.is_some() {
+      let usr_model = find_by_id_usr(
+        usr_id.clone().unwrap(),
+        options.clone(),
+      ).await?;
+      if let Some(usr_model) = usr_model {
+        usr_lbl = usr_model.lbl;
+      } else {
+        usr_id = None;
       }
-      #><#
-      if (hasDeleteUsrId) {
-      #>
-      
+    }<#
+    }
+    #><#
+    if (hasDeleteUsrId) {
+    #>
+    
+    if !is_silent_mode && !is_creating {
       if let Some(usr_id) = usr_id {
         sql_fields.push_str("delete_usr_id=?,");
         args.push(usr_id.into());
-      }<#
       }
-      #><#
-      if (hasDeleteUsrIdLbl) {
-      #>
-      
-      sql_fields.push_str("delete_usr_id_lbl=?,");
-      args.push(usr_lbl.into());<#
-      }
-      #><#
-      if (hasDeleteTime) {
-      #>
-      
-      sql_fields.push_str("delete_time=?,");
-      args.push(get_now().into());<#
-      }
-      #>
-      
+    }<#
     }
+    #><#
+    if (hasDeleteUsrIdLbl) {
+    #>
+    
+    if !is_silent_mode && !is_creating {
+      sql_fields.push_str("delete_usr_id_lbl=?,");
+      args.push(usr_lbl.into());
+    }<#
+    }
+    #><#
+    if (hasDeleteTime) {
+    #>
+    
+    if !is_silent_mode && !is_creating {
+      sql_fields.push_str("delete_time=?,");
+      args.push(get_now().into());
+    }<#
+    }
+    #>
     
     if sql_fields.ends_with(',') {
       sql_fields.pop();
