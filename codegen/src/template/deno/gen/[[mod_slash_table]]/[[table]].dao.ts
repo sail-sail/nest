@@ -129,7 +129,11 @@ const modelTableUps = [ ];
 const inputTableUps = [ ];
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>// deno-lint-ignore-file prefer-const no-unused-vars ban-types
+#>// deno-lint-ignore-file prefer-const no-unused-vars<#
+if (!(hasDataPermit() && hasCreateUsrId)) {
+#> ban-types<#
+}
+#>
 import {
   get_is_debug,
   get_is_silent_mode,
