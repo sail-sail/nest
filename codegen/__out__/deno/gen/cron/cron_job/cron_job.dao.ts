@@ -212,13 +212,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `cron_cron_job t
-    left join cron_job job_id_lbl on job_id_lbl.id=t.job_id`;
+  left join cron_job job_id_lbl on job_id_lbl.id=t.job_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找定时任务总数
- * @param { CronJobSearch } search?
+ * @param {CronJobSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

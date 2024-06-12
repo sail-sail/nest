@@ -161,15 +161,15 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `cron_cron_job_log_detail t
-    left join cron_cron_job_log cron_job_log_id_lbl on cron_job_log_id_lbl.id=t.cron_job_log_id
-    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
-    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
+  left join cron_cron_job_log cron_job_log_id_lbl on cron_job_log_id_lbl.id=t.cron_job_log_id
+  left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+  left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找任务执行日志明细总数
- * @param { CronJobLogDetailSearch } search?
+ * @param {CronJobLogDetailSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
