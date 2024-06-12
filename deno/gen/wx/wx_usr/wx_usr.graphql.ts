@@ -184,8 +184,6 @@ type Query {
   findByIdWxUsr(id: WxUsrId!): WxUsrModel
 }
 type Mutation {
-  "创建小程序用户"
-  createWxUsr(input: WxUsrInput!, unique_type: UniqueType): WxUsrId!
   "批量创建小程序用户"
   createsWxUsr(inputs: [WxUsrInput!]!, unique_type: UniqueType): [WxUsrId!]!
   "根据 id 修改小程序用户"

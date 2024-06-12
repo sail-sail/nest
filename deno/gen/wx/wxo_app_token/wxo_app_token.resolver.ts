@@ -87,39 +87,6 @@ export async function findByIdWxoAppToken(
 }
 
 /**
- * 创建小程序接口凭据
- */
-export async function createWxoAppToken(
-  input: WxoAppTokenInput,
-  unique_type?: UniqueType,
-): Promise<WxoAppTokenId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./wxo_app_token.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wx/wxo_app_token",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建小程序接口凭据
  */
 export async function createsWxoAppToken(

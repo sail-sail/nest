@@ -129,21 +129,6 @@ export async function validate(
 }
 
 /**
- * 创建公众号设置
- * @param {WxoAppInput} input
- * @return {Promise<WxoAppId>} id
- */
-export async function create(
-  input: WxoAppInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<WxoAppId> {
-  const id = await wxo_appDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建公众号设置
  * @param {WxoAppInput[]} inputs
  * @return {Promise<WxoAppId[]>} ids
