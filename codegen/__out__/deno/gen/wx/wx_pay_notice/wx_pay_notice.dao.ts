@@ -69,10 +69,6 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  existById as existByIdOrg,
-} from "/gen/base/org/org.dao.ts";
-
-import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -85,10 +81,6 @@ import type {
   WxPayNoticeCurrency,
   WxPayNoticePayerCurrency,
 } from "/gen/types.ts";
-
-import {
-  findOne as findOneOrg,
-} from "/gen/base/org/org.dao.ts";
 
 import {
   findById as findByIdUsr,
@@ -276,13 +268,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `wx_wx_pay_notice t
-    left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
+  left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找微信支付通知总数
- * @param { WxPayNoticeSearch } search?
+ * @param {WxPayNoticeSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

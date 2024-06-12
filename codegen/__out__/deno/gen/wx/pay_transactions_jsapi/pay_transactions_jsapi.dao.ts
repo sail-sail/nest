@@ -69,10 +69,6 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  existById as existByIdOrg,
-} from "/gen/base/org/org.dao.ts";
-
-import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -83,10 +79,6 @@ import type {
   PayTransactionsJsapiTradeState,
   PayTransactionsJsapiCurrency,
 } from "/gen/types.ts";
-
-import {
-  findOne as findOneOrg,
-} from "/gen/base/org/org.dao.ts";
 
 import {
   findById as findByIdUsr,
@@ -269,13 +261,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `wx_pay_transactions_jsapi t
-    left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
+  left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找微信JSAPI下单总数
- * @param { PayTransactionsJsapiSearch } search?
+ * @param {PayTransactionsJsapiSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
