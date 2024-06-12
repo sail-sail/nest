@@ -87,39 +87,6 @@ export async function findByIdWxoApp(
 }
 
 /**
- * 创建公众号设置
- */
-export async function createWxoApp(
-  input: WxoAppInput,
-  unique_type?: UniqueType,
-): Promise<WxoAppId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./wxo_app.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wx/wxo_app",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建公众号设置
  */
 export async function createsWxoApp(

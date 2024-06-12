@@ -129,21 +129,6 @@ export async function validate(
 }
 
 /**
- * 创建微信支付设置
- * @param {WxPayInput} input
- * @return {Promise<WxPayId>} id
- */
-export async function create(
-  input: WxPayInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<WxPayId> {
-  const id = await wx_payDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建微信支付设置
  * @param {WxPayInput[]} inputs
  * @return {Promise<WxPayId[]>} ids
