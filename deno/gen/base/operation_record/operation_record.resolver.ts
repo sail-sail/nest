@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -95,9 +96,7 @@ export async function deleteByIdsOperationRecord(
     deleteByIds,
   } = await import("./operation_record.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/operation_record",
@@ -118,9 +117,7 @@ export async function revertByIdsOperationRecord(
     revertByIds,
   } = await import("./operation_record.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/operation_record",
@@ -136,18 +133,17 @@ export async function revertByIdsOperationRecord(
 export async function forceDeleteByIdsOperationRecord(
   ids: OperationRecordId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./operation_record.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/operation_record",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./operation_record.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
