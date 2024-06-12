@@ -127,6 +127,7 @@ type OptionsMap = (item: any) => OptionType;
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: string | string[] | null): void,
+  (e: "data", data: any[]): void,
   (e: "change", value?: any | any[] | null): void,
   (e: "clear"): void,
 }>();
@@ -305,6 +306,7 @@ function onClear() {
   } else {
     modelValue = [ ];
   }
+  emit("update:modelValue", modelValue);
   emit("clear");
 }
 
@@ -329,6 +331,7 @@ async function refreshEfc() {
     inited = true;
   }
   data = await method();
+  emit("data", data);
   options4SelectV2 = data.map(props.optionsMap);
   inited = true;
 }
