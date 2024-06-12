@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -99,9 +100,8 @@ export async function createsTenant(
     creates,
   } = await import("./tenant.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/base/tenant",
@@ -135,9 +135,7 @@ export async function updateByIdTenant(
     updateById,
   } = await import("./tenant.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +158,7 @@ export async function deleteByIdsTenant(
     deleteByIds,
   } = await import("./tenant.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/tenant",
@@ -184,12 +180,11 @@ export async function enableByIdsTenant(
     enableByIds,
   } = await import("./tenant.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsTenant.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/tenant",
@@ -211,12 +206,11 @@ export async function lockByIdsTenant(
     lockByIds,
   } = await import("./tenant.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsTenant.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/tenant",
@@ -237,9 +231,7 @@ export async function revertByIdsTenant(
     revertByIds,
   } = await import("./tenant.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/tenant",
@@ -255,18 +247,17 @@ export async function revertByIdsTenant(
 export async function forceDeleteByIdsTenant(
   ids: TenantId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./tenant.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/tenant",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./tenant.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
