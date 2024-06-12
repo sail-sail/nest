@@ -270,14 +270,6 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";<#
 }
 #><#
-if (hasOrgId) {
-#>
-
-import {
-  existById as existByIdOrg,
-} from "/gen/base/org/org.dao.ts";<#
-}
-#><#
 if (hasMany2manyNotInline) {
 #>
 
@@ -377,8 +369,10 @@ for (let i = 0; i < columns.length; i++) {
   if (column.ignoreCodegen) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
-  if (column_name === "create_usr_id"
+  if (
+    column_name === "create_usr_id"
     || column_name === "update_usr_id"
+    || column_name === "org_id"
   ) {
     continue;
   }
@@ -851,72 +845,72 @@ async function getFromQuery(
   }
   #>
   let fromQuery = `<#=mod#>_<#=table#> t<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column.isVirtual) continue;
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      if (!foreignKey) continue;
-      const foreignTable = foreignKey.table;
-      const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-      const many2many = column.many2many;
-      const modelLabel = column.modelLabel;
-      let cascade_fields = foreignKey.cascade_fields || [ ];
-      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
-      }
-    #><#
-      if (foreignKey.type === "many2many") {
-    #>
-    left join <#=many2many.mod#>_<#=many2many.table#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>=t.id<#
-      if (hasIsDeleted) {
-      #>
-      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted=${ args.push(is_deleted) }<#
-      }
-      #>
-    left join <#=foreignKey.mod#>_<#=foreignTable#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>=<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
-      if (hasIsDeleted) {
-      #>
-      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted=${ args.push(is_deleted) }<#
-      }
-      #>
-    left join(select
-    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
-      if (foreignKey.lbl && !modelLabel) {
-    #>
-    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
-      }
-    #><#
-      for (let j = 0; j < cascade_fields.length; j++) {
-        const cascade_field = cascade_fields[j];
-    #>
-    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#>,<#
-      }
-    #>
-    <#=mod#>_<#=table#>.id <#=many2many.column1#>
-    from <#=foreignKey.mod#>_<#=many2many.table#>
-    inner join <#=foreignKey.mod#>_<#=foreignKey.table#> on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
-    inner join <#=mod#>_<#=table#> on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column.isVirtual) continue;
+    const foreignKey = column.foreignKey;
+    let data_type = column.DATA_TYPE;
+    if (!foreignKey) continue;
+    const foreignTable = foreignKey.table;
+    const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    const modelLabel = column.modelLabel;
+    let cascade_fields = foreignKey.cascade_fields || [ ];
+    if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+      cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+    }
+  #><#
+    if (foreignKey.type === "many2many") {
+  #>
+  left join <#=many2many.mod#>_<#=many2many.table#>
+    on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>=t.id<#
     if (hasIsDeleted) {
     #>
-    where <#=many2many.mod#>_<#=many2many.table#>.is_deleted=${ args.push(is_deleted) }<#
+    and <#=many2many.mod#>_<#=many2many.table#>.is_deleted=${ args.push(is_deleted) }<#
     }
     #>
-    group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
-      } else if (foreignKey && !foreignKey.multiple) {
-        if (modelLabel) {
-          continue;
-        }
+  left join <#=foreignKey.mod#>_<#=foreignTable#>
+    on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>=<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
+    if (hasIsDeleted) {
     #>
-    left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl on <#=column_name#>_lbl.<#=foreignKey.column#>=t.<#=column_name#><#
+    and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted=${ args.push(is_deleted) }<#
+    }
+    #>
+  left join(select
+  json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
+    if (foreignKey.lbl && !modelLabel) {
+  #>
+  json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
+    }
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+  #>
+  json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#>,<#
+    }
+  #>
+  <#=mod#>_<#=table#>.id <#=many2many.column1#>
+  from <#=foreignKey.mod#>_<#=many2many.table#>
+  inner join <#=foreignKey.mod#>_<#=foreignKey.table#> on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
+  inner join <#=mod#>_<#=table#> on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
+  if (hasIsDeleted) {
+  #>
+  where <#=many2many.mod#>_<#=many2many.table#>.is_deleted=${ args.push(is_deleted) }<#
+  }
+  #>
+  group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
+    } else if (foreignKey && !foreignKey.multiple) {
+      if (modelLabel) {
+        continue;
       }
-    #><#
+  #>
+  left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl on <#=column_name#>_lbl.<#=foreignKey.column#>=t.<#=column_name#><#
     }
-    #>`;<#
+  #><#
+  }
+  #>`;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if (!hasTenantPermit && hasDeptPermit) {
@@ -932,7 +926,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找<#=table_comment#>总数
- * @param { <#=searchName#> } search?
+ * @param {<#=searchName#>} search?
  * @return {Promise<number>}
  */
 export async function findCount(

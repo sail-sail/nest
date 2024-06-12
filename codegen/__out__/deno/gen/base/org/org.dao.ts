@@ -186,7 +186,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找组织总数
- * @param { OrgSearch } search?
+ * @param {OrgSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

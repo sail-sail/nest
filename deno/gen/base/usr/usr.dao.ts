@@ -234,58 +234,58 @@ async function getFromQuery(
   
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `base_usr t
-    left join base_usr_role
-      on base_usr_role.usr_id=t.id
-      and base_usr_role.is_deleted=${ args.push(is_deleted) }
-    left join base_role
-      on base_usr_role.role_id=base_role.id
-      and base_role.is_deleted=${ args.push(is_deleted) }
-    left join(select
-    json_objectagg(base_usr_role.order_by,base_role.id) role_ids,
-    json_objectagg(base_usr_role.order_by,base_role.lbl) role_ids_lbl,
-    base_usr.id usr_id
-    from base_usr_role
-    inner join base_role on base_role.id=base_usr_role.role_id
-    inner join base_usr on base_usr.id=base_usr_role.usr_id
-    where base_usr_role.is_deleted=${ args.push(is_deleted) }
-    group by usr_id) _role on _role.usr_id=t.id
-    left join base_usr_dept
-      on base_usr_dept.usr_id=t.id
-      and base_usr_dept.is_deleted=${ args.push(is_deleted) }
-    left join base_dept
-      on base_usr_dept.dept_id=base_dept.id
-      and base_dept.is_deleted=${ args.push(is_deleted) }
-    left join(select
-    json_objectagg(base_usr_dept.order_by,base_dept.id) dept_ids,
-    json_objectagg(base_usr_dept.order_by,base_dept.lbl) dept_ids_lbl,
-    base_usr.id usr_id
-    from base_usr_dept
-    inner join base_dept on base_dept.id=base_usr_dept.dept_id
-    inner join base_usr on base_usr.id=base_usr_dept.usr_id
-    where base_usr_dept.is_deleted=${ args.push(is_deleted) }
-    group by usr_id) _dept on _dept.usr_id=t.id
-    left join base_usr_org
-      on base_usr_org.usr_id=t.id
-      and base_usr_org.is_deleted=${ args.push(is_deleted) }
-    left join base_org
-      on base_usr_org.org_id=base_org.id
-      and base_org.is_deleted=${ args.push(is_deleted) }
-    left join(select
-    json_objectagg(base_usr_org.order_by,base_org.id) org_ids,
-    json_objectagg(base_usr_org.order_by,base_org.lbl) org_ids_lbl,
-    base_usr.id usr_id
-    from base_usr_org
-    inner join base_org on base_org.id=base_usr_org.org_id
-    inner join base_usr on base_usr.id=base_usr_org.usr_id
-    where base_usr_org.is_deleted=${ args.push(is_deleted) }
-    group by usr_id) _org on _org.usr_id=t.id
-    left join base_org default_org_id_lbl on default_org_id_lbl.id=t.default_org_id`;
+  left join base_usr_role
+    on base_usr_role.usr_id=t.id
+    and base_usr_role.is_deleted=${ args.push(is_deleted) }
+  left join base_role
+    on base_usr_role.role_id=base_role.id
+    and base_role.is_deleted=${ args.push(is_deleted) }
+  left join(select
+  json_objectagg(base_usr_role.order_by,base_role.id) role_ids,
+  json_objectagg(base_usr_role.order_by,base_role.lbl) role_ids_lbl,
+  base_usr.id usr_id
+  from base_usr_role
+  inner join base_role on base_role.id=base_usr_role.role_id
+  inner join base_usr on base_usr.id=base_usr_role.usr_id
+  where base_usr_role.is_deleted=${ args.push(is_deleted) }
+  group by usr_id) _role on _role.usr_id=t.id
+  left join base_usr_dept
+    on base_usr_dept.usr_id=t.id
+    and base_usr_dept.is_deleted=${ args.push(is_deleted) }
+  left join base_dept
+    on base_usr_dept.dept_id=base_dept.id
+    and base_dept.is_deleted=${ args.push(is_deleted) }
+  left join(select
+  json_objectagg(base_usr_dept.order_by,base_dept.id) dept_ids,
+  json_objectagg(base_usr_dept.order_by,base_dept.lbl) dept_ids_lbl,
+  base_usr.id usr_id
+  from base_usr_dept
+  inner join base_dept on base_dept.id=base_usr_dept.dept_id
+  inner join base_usr on base_usr.id=base_usr_dept.usr_id
+  where base_usr_dept.is_deleted=${ args.push(is_deleted) }
+  group by usr_id) _dept on _dept.usr_id=t.id
+  left join base_usr_org
+    on base_usr_org.usr_id=t.id
+    and base_usr_org.is_deleted=${ args.push(is_deleted) }
+  left join base_org
+    on base_usr_org.org_id=base_org.id
+    and base_org.is_deleted=${ args.push(is_deleted) }
+  left join(select
+  json_objectagg(base_usr_org.order_by,base_org.id) org_ids,
+  json_objectagg(base_usr_org.order_by,base_org.lbl) org_ids_lbl,
+  base_usr.id usr_id
+  from base_usr_org
+  inner join base_org on base_org.id=base_usr_org.org_id
+  inner join base_usr on base_usr.id=base_usr_org.usr_id
+  where base_usr_org.is_deleted=${ args.push(is_deleted) }
+  group by usr_id) _org on _org.usr_id=t.id
+  left join base_org default_org_id_lbl on default_org_id_lbl.id=t.default_org_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找用户总数
- * @param { UsrSearch } search?
+ * @param {UsrSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
