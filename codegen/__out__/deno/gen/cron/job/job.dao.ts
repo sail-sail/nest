@@ -192,7 +192,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找任务总数
- * @param { JobSearch } search?
+ * @param {JobSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

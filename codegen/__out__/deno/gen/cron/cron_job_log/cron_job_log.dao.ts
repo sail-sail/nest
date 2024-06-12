@@ -198,13 +198,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `cron_cron_job_log t
-    left join cron_cron_job cron_job_id_lbl on cron_job_id_lbl.id=t.cron_job_id`;
+  left join cron_cron_job cron_job_id_lbl on cron_job_id_lbl.id=t.cron_job_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找任务执行日志总数
- * @param { CronJobLogSearch } search?
+ * @param {CronJobLogSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
