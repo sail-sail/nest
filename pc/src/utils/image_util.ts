@@ -1,7 +1,26 @@
-import * as webp from "@jsquash/webp";
-import * as jpeg from "@jsquash/jpeg";
-import * as png from "@jsquash/png";
+import { encode } from "@jsquash/webp";
 import resize from "@jsquash/resize";
+
+async function getImageDataByCanvas(buf: ArrayBuffer, type: string) {
+  const img = new Image();
+  const blob = new Blob([ buf ], { type });
+  const url = URL.createObjectURL(blob);
+  img.src = url;
+  await new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+  });
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return;
+  }
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0);
+  const imgData = ctx.getImageData(0, 0, img.width, img.height);
+  return imgData;
+}
 
 async function workerFn(
   file: File,
@@ -22,17 +41,8 @@ async function workerFn(
   const maxImageHeight = opts?.maxImageHeight ?? 1080;
   
   let buffer = await file.arrayBuffer();
-  let imgData: ImageData;
-  
-  const contentType = file.type;
-  
-  if (contentType === "image/jpeg") {
-    imgData = await jpeg.decode(buffer);
-  } else if (contentType === "image/png") {
-    imgData = await png.decode(buffer);
-  } else if (contentType === "image/webp") {
-    imgData = await webp.decode(buffer);
-  } else {
+  let imgData = await getImageDataByCanvas(buffer, file.type);
+  if (!imgData) {
     return file;
   }
   
@@ -50,7 +60,7 @@ async function workerFn(
   
   imgData = await resize(imgData, { width, height });
   
-  buffer = await webp.encode(imgData);
+  buffer = await encode(imgData);
   
   const fileName = file.name.replace(/\.\w+$/, ".webp");
   const file2 = new File([ buffer ], fileName, { type: "image/webp" });

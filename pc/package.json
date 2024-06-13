@@ -17,8 +17,6 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.3.1",
-    "@jsquash/jpeg": "1.4.0",
-    "@jsquash/png": "3.0.1",
     "@jsquash/resize": "2.0.0",
     "@jsquash/webp": "1.4.0",
     "@vue-office/docx": "1.6.2",
