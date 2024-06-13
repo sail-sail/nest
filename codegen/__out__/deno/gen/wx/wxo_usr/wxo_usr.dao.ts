@@ -81,6 +81,10 @@ import {
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
+  findOne as findOneOrg,
+} from "/gen/base/org/org.dao.ts";
+
+import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
