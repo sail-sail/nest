@@ -62,7 +62,7 @@ async function workerFn(
   
   buffer = await encode(imgData);
   
-  const fileName = file.name.replace(/\.\w+$/, ".webp");
+  const fileName = file.name.substring(0, file.name.lastIndexOf(".")) + ".webp";
   const file2 = new File([ buffer ], fileName, { type: "image/webp" });
   return file2;
 }
