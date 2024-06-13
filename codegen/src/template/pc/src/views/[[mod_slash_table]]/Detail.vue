@@ -230,31 +230,19 @@ const old_table = table;
           form_item_index++;
         #>
         
-        <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>"><#
-          if (column.isImg) {
-          #><#
-            if (columnNum > 4 && form_item_index % 2 === 0) {
-          #>
-          
-          <div></div>
-          <#
-            }
-          #><#
-          }
-          #>
+        <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
-            if (column.isImg) {
-            #>
-            class="img_form_item"<#
-            }
-            #><#
             if (column.isTextarea && columnNum <= 4) {
             #>
             un-grid="col-span-1"<#
             } else if (column.isTextarea && columnNum > 4) {
             #>
+            un-grid="col-span-2"<#
+            } else if (column.isImg) {
+            #>
+            un-w="full"
             un-grid="col-span-2"<#
             }
             #>
@@ -291,6 +279,7 @@ const old_table = table;
               readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #>
+              :inited
             ></UploadImage><#
             } else if (
               foreignKey
@@ -673,18 +662,7 @@ const old_table = table;
             ></CustomInput><#
             }
             #>
-          </el-form-item><#
-          if (column.isImg) {
-          #><#
-            if (columnNum > 4) {
-          #>
-          
-          <div></div>
-          <#
-            }
-          #><#
-          }
-          #>
+          </el-form-item>
         </template><#
         }
         #>
@@ -1273,16 +1251,15 @@ const old_table = table;
                 <el-form-item
                   :label="n('<#=column_comment#>')"
                   prop="<#=inline_column_name#>.<#=column_name#>"<#
-                  if (column.isImg) {
-                  #>
-                  class="img_form_item"<#
-                  }
-                  #><#
                   if (column.isTextarea && columnNum <= 4) {
                   #>
                   un-grid="col-span-1"<#
                   } else if (column.isTextarea && columnNum > 4) {
                   #>
+                  un-grid="col-span-2"<#
+                  } else if (column.isImg) {
+                  #>
+                  un-w="full"
                   un-grid="col-span-2"<#
                   }
                   #>
@@ -1319,6 +1296,7 @@ const old_table = table;
                     readonly-placeholder="<#=readonlyPlaceholder#>"<#
                     }
                     #>
+                    :inited
                   ></UploadImage><#
                   } else if (
                     foreignKey
@@ -1702,17 +1680,6 @@ const old_table = table;
                   }
                   #>
                 </el-form-item><#
-                if (column.isImg) {
-                #><#
-                  if (columnNum > 4) {
-                #>
-                
-                <div></div>
-                <#
-                  }
-                #><#
-                }
-                #><#
                 }
                 #>
                 

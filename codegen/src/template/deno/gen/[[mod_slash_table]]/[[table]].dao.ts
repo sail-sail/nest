@@ -376,7 +376,6 @@ for (let i = 0; i < columns.length; i++) {
   if (
     column_name === "create_usr_id"
     || column_name === "update_usr_id"
-    || column_name === "org_id"
   ) {
     continue;
   }
