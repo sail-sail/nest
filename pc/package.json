@@ -26,7 +26,7 @@
     "@vue/reactivity": "3.4.27",
     "@vue/runtime-dom": "3.4.27",
     "@vue/shared": "3.4.27",
-    "@vueuse/core": "10.10.1",
+    "@vueuse/core": "10.11.0",
     "cronstrue": "2.50.0",
     "dayjs": "1.11.11",
     "decimal.js-light": "2.5.1",
