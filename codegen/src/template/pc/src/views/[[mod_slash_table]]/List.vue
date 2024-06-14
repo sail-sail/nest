@@ -2399,8 +2399,12 @@ function getTableColumns(): ColumnType[] {
     #>
     {
       label: "<#=column_comment#>",
-      prop: "<#=column_name#>_lbl",
+      prop: "<#=column_name#>_lbl",<#
+      if (foreignKey.type !== "multiple") {
+      #>
       sortBy: "<#=column_name#>_lbl",<#
+      }
+      #><#
       if (column.width) {
       #>
       width: <#=column.width#>,<#

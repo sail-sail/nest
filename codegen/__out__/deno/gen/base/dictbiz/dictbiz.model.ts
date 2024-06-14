@@ -5,6 +5,7 @@ import type {
   DictbizFieldComment as DictbizFieldCommentType,
   // 数据类型
   DictbizType,
+  SortInput,
 } from "/gen/types.ts";
 
 declare const dictbizId: unique symbol;
@@ -64,4 +65,32 @@ declare global {
   interface DictbizFieldComment extends DictbizFieldCommentType {
   }
   
+}
+
+/** 业务字典 前端允许排序的字段 */
+export const canSortInApiDictbiz = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 业务字典 检测字段是否允许前端排序 */
+export function checkSortDictbiz(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== "asc" && order !== "desc" &&
+      order !== "ascending" && order !== "descending"
+    ) {
+      throw new Error(`checkSortDictbiz: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiDictbiz;
+    if (!canSortInApiDictbiz[prop]) {
+      throw new Error(`checkSortDictbiz: ${ JSON.stringify(item) }`);
+    }
+  }
 }

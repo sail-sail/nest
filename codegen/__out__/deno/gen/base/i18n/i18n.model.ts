@@ -3,6 +3,7 @@ import type {
   I18nModel as I18nModelType,
   I18nSearch as I18nSearchType,
   I18nFieldComment as I18nFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
 
 declare const i18nId: unique symbol;
@@ -49,4 +50,30 @@ declare global {
   interface I18nFieldComment extends I18nFieldCommentType {
   }
   
+}
+
+/** 国际化 前端允许排序的字段 */
+export const canSortInApiI18n = {
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 国际化 检测字段是否允许前端排序 */
+export function checkSortI18n(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== "asc" && order !== "desc" &&
+      order !== "ascending" && order !== "descending"
+    ) {
+      throw new Error(`checkSortI18n: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiI18n;
+    if (!canSortInApiI18n[prop]) {
+      throw new Error(`checkSortI18n: ${ JSON.stringify(item) }`);
+    }
+  }
 }

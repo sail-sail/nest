@@ -3,6 +3,7 @@ import type {
   DeptModel as DeptModelType,
   DeptSearch as DeptSearchType,
   DeptFieldComment as DeptFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
 
 declare const deptId: unique symbol;
@@ -56,4 +57,32 @@ declare global {
   interface DeptFieldComment extends DeptFieldCommentType {
   }
   
+}
+
+/** 部门 前端允许排序的字段 */
+export const canSortInApiDept = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 部门 检测字段是否允许前端排序 */
+export function checkSortDept(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== "asc" && order !== "desc" &&
+      order !== "ascending" && order !== "descending"
+    ) {
+      throw new Error(`checkSortDept: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiDept;
+    if (!canSortInApiDept[prop]) {
+      throw new Error(`checkSortDept: ${ JSON.stringify(item) }`);
+    }
+  }
 }

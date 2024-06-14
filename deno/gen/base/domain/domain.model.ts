@@ -3,6 +3,7 @@ import type {
   DomainModel as DomainModelType,
   DomainSearch as DomainSearchType,
   DomainFieldComment as DomainFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
 
 declare const domainId: unique symbol;
@@ -58,4 +59,32 @@ declare global {
   interface DomainFieldComment extends DomainFieldCommentType {
   }
   
+}
+
+/** 域名 前端允许排序的字段 */
+export const canSortInApiDomain = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 域名 检测字段是否允许前端排序 */
+export function checkSortDomain(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== "asc" && order !== "desc" &&
+      order !== "ascending" && order !== "descending"
+    ) {
+      throw new Error(`checkSortDomain: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiDomain;
+    if (!canSortInApiDomain[prop]) {
+      throw new Error(`checkSortDomain: ${ JSON.stringify(item) }`);
+    }
+  }
 }

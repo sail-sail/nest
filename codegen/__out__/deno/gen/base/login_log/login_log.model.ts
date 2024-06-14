@@ -3,6 +3,7 @@ import type {
   LoginLogModel as LoginLogModelType,
   LoginLogSearch as LoginLogSearchType,
   LoginLogFieldComment as LoginLogFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
 
 declare const loginLogId: unique symbol;
@@ -55,4 +56,30 @@ declare global {
   interface LoginLogFieldComment extends LoginLogFieldCommentType {
   }
   
+}
+
+/** 登录日志 前端允许排序的字段 */
+export const canSortInApiLoginLog = {
+  // 登录时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 登录日志 检测字段是否允许前端排序 */
+export function checkSortLoginLog(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== "asc" && order !== "desc" &&
+      order !== "ascending" && order !== "descending"
+    ) {
+      throw new Error(`checkSortLoginLog: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiLoginLog;
+    if (!canSortInApiLoginLog[prop]) {
+      throw new Error(`checkSortLoginLog: ${ JSON.stringify(item) }`);
+    }
+  }
 }

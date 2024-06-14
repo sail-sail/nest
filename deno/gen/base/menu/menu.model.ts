@@ -3,6 +3,7 @@ import type {
   MenuModel as MenuModelType,
   MenuSearch as MenuSearchType,
   MenuFieldComment as MenuFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
 
 declare const menuId: unique symbol;
@@ -59,4 +60,34 @@ declare global {
   interface MenuFieldComment extends MenuFieldCommentType {
   }
   
+}
+
+/** 菜单 前端允许排序的字段 */
+export const canSortInApiMenu = {
+  // 父菜单
+  "parent_id_lbl": true,
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 菜单 检测字段是否允许前端排序 */
+export function checkSortMenu(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== "asc" && order !== "desc" &&
+      order !== "ascending" && order !== "descending"
+    ) {
+      throw new Error(`checkSortMenu: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiMenu;
+    if (!canSortInApiMenu[prop]) {
+      throw new Error(`checkSortMenu: ${ JSON.stringify(item) }`);
+    }
+  }
 }

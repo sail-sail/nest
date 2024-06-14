@@ -3,6 +3,7 @@ import type {
   DictDetailModel as DictDetailModelType,
   DictDetailSearch as DictDetailSearchType,
   DictDetailFieldComment as DictDetailFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
 
 declare const dictDetailId: unique symbol;
@@ -57,4 +58,32 @@ declare global {
   interface DictDetailFieldComment extends DictDetailFieldCommentType {
   }
   
+}
+
+/** 系统字典明细 前端允许排序的字段 */
+export const canSortInApiDictDetail = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 系统字典明细 检测字段是否允许前端排序 */
+export function checkSortDictDetail(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== "asc" && order !== "desc" &&
+      order !== "ascending" && order !== "descending"
+    ) {
+      throw new Error(`checkSortDictDetail: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiDictDetail;
+    if (!canSortInApiDictDetail[prop]) {
+      throw new Error(`checkSortDictDetail: ${ JSON.stringify(item) }`);
+    }
+  }
 }

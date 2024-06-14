@@ -3,6 +3,7 @@ import type {
   OrgModel as OrgModelType,
   OrgSearch as OrgSearchType,
   OrgFieldComment as OrgFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
 
 declare const orgId: unique symbol;
@@ -56,4 +57,32 @@ declare global {
   interface OrgFieldComment extends OrgFieldCommentType {
   }
   
+}
+
+/** 组织 前端允许排序的字段 */
+export const canSortInApiOrg = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 组织 检测字段是否允许前端排序 */
+export function checkSortOrg(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== "asc" && order !== "desc" &&
+      order !== "ascending" && order !== "descending"
+    ) {
+      throw new Error(`checkSortOrg: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiOrg;
+    if (!canSortInApiOrg[prop]) {
+      throw new Error(`checkSortOrg: ${ JSON.stringify(item) }`);
+    }
+  }
 }
