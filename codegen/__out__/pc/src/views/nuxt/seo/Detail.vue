@@ -115,22 +115,18 @@
         </template>
         
         <template v-if="(showBuildIn || builtInModel?.og_image == null)">
-          
-          <div></div>
-          
           <el-form-item
             :label="n('分享图片')"
             prop="og_image"
-            class="img_form_item"
+            un-w="full"
+            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.og_image"
               :readonly="isLocked || isReadonly"
+              :inited
             ></UploadImage>
           </el-form-item>
-          
-          <div></div>
-          
         </template>
         
         <template v-if="(showBuildIn || builtInModel?.og_title == null)">
