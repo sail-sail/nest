@@ -185,13 +185,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_menu t
-    left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id`;
+  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找菜单总数
- * @param { MenuSearch } search?
+ * @param {MenuSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
