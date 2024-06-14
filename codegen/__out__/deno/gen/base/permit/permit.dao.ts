@@ -165,13 +165,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_permit t
-    left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
+  left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找按钮权限总数
- * @param { PermitSearch } search?
+ * @param {PermitSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
