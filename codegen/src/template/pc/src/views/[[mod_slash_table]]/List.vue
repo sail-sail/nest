@@ -170,7 +170,43 @@ const hasAtt = columns.some((item) => item.isAtt);
           ></CustomTreeSelect>
         </el-form-item>
       </template><#
-      } else if (foreignKey) {
+      } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.isSearchByLbl) {
+      #>
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>"
+        >
+          <CustomSelect
+            v-model="<#=column_name#>_search"
+            :method="get<#=Foreign_Table_Up#>List"
+            :options-map="((item: <#=Foreign_Table_Up#>Model) => {
+              return {
+                label: item.<#=foreignKey.lbl#>,
+                value: item.<#=foreignKey.column#>,
+              };
+            })"
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            multiple
+            @change="onSearch"
+          ></CustomSelect>
+        </el-form-item>
+      </template><#
+      } else if (foreignKey && foreignKey.type !== "many2many" && foreignKey.isSearchByLbl) {
+      #>
+      <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
+        <el-form-item
+          label="<#=column_comment#>"
+          prop="<#=column_name#>"
+        >
+          <CustomInput
+            v-model="search.<#=column_name#>_<#=foreignKey.lbl#>_like"
+            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+            @change="onSearch"
+          ></CustomInput>
+        </el-form-item>
+      </template><#
+      } else if (foreignKey && foreignKey.type === "many2many") {
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item

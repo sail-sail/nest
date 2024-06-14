@@ -174,7 +174,9 @@ declare global {
     /** <#=column_comment#> */
     <#=column_name#>_<#=foreignKey.lbl#>?: string[];<#
       }
-    #><#
+    #>
+    /** <#=column_comment#> */
+    <#=column_name#>_<#=foreignKey.lbl#>_like?: string;<#
       } else if (column.dict || column.dictbiz) {
         let enumColumnName = data_type;
         const columnDictModels = [
