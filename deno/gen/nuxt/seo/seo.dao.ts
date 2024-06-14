@@ -216,7 +216,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找SEO优化总数
- * @param { SeoSearch } search?
+ * @param {SeoSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
