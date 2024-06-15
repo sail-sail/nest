@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,13 +27,24 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::dictbiz::dictbiz_model::DictbizId;
 use crate::gen::base::usr::usr_model::UsrId;
 
+lazy_static! {
+  /// 业务字典明细 前端允许排序的字段
+  static ref CAN_SORT_IN_API_DICTBIZ_DETAIL: [&'static str; 3] = [
+    "order_by",
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictbizDetailModel")]
+#[allow(dead_code)]
 pub struct DictbizDetailModel {
   /// 租户ID
   #[graphql(skip)]
@@ -171,6 +184,7 @@ impl FromRow<'_, MySqlRow> for DictbizDetailModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct DictbizDetailFieldComment {
   /// ID
   pub id: String,
@@ -214,6 +228,7 @@ pub struct DictbizDetailFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct DictbizDetailSearch {
   /// ID
   pub id: Option<DictbizDetailId>,
@@ -231,6 +246,9 @@ pub struct DictbizDetailSearch {
   /// 业务字典
   #[graphql(name = "dictbiz_id_lbl")]
   pub dictbiz_id_lbl: Option<Vec<String>>,
+  /// 业务字典
+  #[graphql(name = "dictbiz_id_lbl_like")]
+  pub dictbiz_id_lbl_like: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -369,6 +387,7 @@ impl std::fmt::Debug for DictbizDetailSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictbizDetailInput")]
+#[allow(dead_code)]
 pub struct DictbizDetailInput {
   /// ID
   pub id: Option<DictbizDetailId>,
@@ -629,4 +648,24 @@ impl PartialEq<str> for DictbizDetailId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
   }
+}
+
+/// 业务字典明细 检测字段是否允许前端排序
+pub fn check_sort_dictbiz_detail(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_DICTBIZ_DETAIL.contains(&prop) {
+      return Err(anyhow!("check_sort_dictbiz_detail: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
 }

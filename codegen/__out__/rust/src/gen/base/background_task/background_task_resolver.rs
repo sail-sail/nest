@@ -20,6 +20,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<BackgroundTaskModel>> {
   
+  check_sort_background_task(sort.as_deref())?;
+  
   let res = background_task_service::find_all(
     search,
     page,
@@ -50,6 +52,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
+  
+  check_sort_background_task(sort.as_deref())?;
   
   let model = background_task_service::find_one(
     search,

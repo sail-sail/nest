@@ -18,6 +18,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
   
+  check_sort_tenant(sort.as_deref())?;
+  
   let res = tenant_service::find_all(
     search,
     page,
@@ -48,6 +50,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<TenantModel>> {
+  
+  check_sort_tenant(sort.as_deref())?;
   
   let model = tenant_service::find_one(
     search,

@@ -104,6 +104,8 @@ pub async fn find_all(
   }
   #>
   
+  check_sort_<#=table#>(sort.as_deref())?;
+  
   let res = <#=table#>_service::find_all(
     search,
     page,
@@ -180,6 +182,8 @@ pub async fn find_one(
   });<#
   }
   #>
+  
+  check_sort_<#=table#>(sort.as_deref())?;
   
   let model = <#=table#>_service::find_one(
     search,

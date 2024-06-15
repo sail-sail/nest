@@ -20,6 +20,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
+  check_sort_dept(sort.as_deref())?;
+  
   let res = dept_service::find_all(
     search,
     page,
@@ -50,6 +52,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<DeptModel>> {
+  
+  check_sort_dept(sort.as_deref())?;
   
   let model = dept_service::find_one(
     search,

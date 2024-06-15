@@ -132,6 +132,7 @@ impl PermitGenMutation {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
+      .with_creating(Some(true))
       .build()
       .scope({
         permit_resolver::creates(

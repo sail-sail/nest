@@ -18,6 +18,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<LangModel>> {
   
+  check_sort_lang(sort.as_deref())?;
+  
   let res = lang_service::find_all(
     search,
     page,
@@ -48,6 +50,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<LangModel>> {
+  
+  check_sort_lang(sort.as_deref())?;
   
   let model = lang_service::find_one(
     search,

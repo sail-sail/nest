@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,10 +27,21 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 use crate::gen::base::usr::usr_model::UsrId;
+
+lazy_static! {
+  /// 系统选项 前端允许排序的字段
+  static ref CAN_SORT_IN_API_OPTIONS: [&'static str; 3] = [
+    "order_by",
+    "create_time",
+    "update_time",
+  ];
+}
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OptionsModel")]
+#[allow(dead_code)]
 pub struct OptionsModel {
   /// 系统字段
   #[graphql(skip)]
@@ -161,6 +174,7 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct OptionsFieldComment {
   /// ID
   pub id: String,
@@ -202,6 +216,7 @@ pub struct OptionsFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct OptionsSearch {
   /// ID
   pub id: Option<OptionsId>,
@@ -349,6 +364,7 @@ impl std::fmt::Debug for OptionsSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "OptionsInput")]
+#[allow(dead_code)]
 pub struct OptionsInput {
   /// ID
   pub id: Option<OptionsId>,
@@ -602,4 +618,24 @@ impl PartialEq<str> for OptionsId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
   }
+}
+
+/// 系统选项 检测字段是否允许前端排序
+pub fn check_sort_options(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_OPTIONS.contains(&prop) {
+      return Err(anyhow!("check_sort_options: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
 }

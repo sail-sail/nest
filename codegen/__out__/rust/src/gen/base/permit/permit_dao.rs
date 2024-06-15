@@ -7,7 +7,9 @@ use anyhow::{Result,anyhow};
 #[allow(unused_imports)]
 use tracing::{info, error};
 #[allow(unused_imports)]
-use crate::common::util::string::*;
+use crate::common::util::string::sql_like;
+#[allow(unused_imports)]
+use crate::common::gql::model::SortOrderEnum;
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -144,6 +146,16 @@ async fn get_where_query(
       where_query.push_str(" and menu_id_lbl.lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+  }
+  {
+    let menu_id_lbl_like = match search {
+      Some(item) => item.menu_id_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(menu_id_lbl_like) = menu_id_lbl_like {
+      where_query.push_str(" and menu_id_lbl.lbl like ?");
+      args.push(format!("%{}%", sql_like(&menu_id_lbl_like)).into());
     }
   }
   // 编码
@@ -472,7 +484,7 @@ pub async fn find_all(
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
-      order: "desc".into(),
+      order: SortOrderEnum::Desc,
     });
   }
   

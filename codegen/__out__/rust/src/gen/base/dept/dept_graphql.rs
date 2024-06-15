@@ -186,6 +186,7 @@ impl DeptGenMutation {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
+      .with_creating(Some(true))
       .build()
       .scope({
         dept_resolver::creates(

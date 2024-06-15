@@ -7,7 +7,9 @@ use anyhow::{Result,anyhow};
 #[allow(unused_imports)]
 use tracing::{info, error};
 #[allow(unused_imports)]
-use crate::common::util::string::*;
+use crate::common::util::string::sql_like;
+#[allow(unused_imports)]
+use crate::common::gql::model::SortOrderEnum;
 
 use crate::common::util::dao::{
   many2many_update,
@@ -609,14 +611,14 @@ pub async fn find_all(
   if !sort.iter().any(|item| item.prop == "order_by") {
     sort.push(SortInput {
       prop: "order_by".into(),
-      order: "asc".into(),
+      order: SortOrderEnum::Asc,
     });
   }
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
-      order: "asc".into(),
+      order: SortOrderEnum::Asc,
     });
   }
   
