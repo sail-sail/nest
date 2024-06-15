@@ -8,7 +8,9 @@ use anyhow::{Result,anyhow};
 use tracing::{info, error};
 use crate::common::auth::auth_dao::get_password;
 #[allow(unused_imports)]
-use crate::common::util::string::*;
+use crate::common::util::string::sql_like;
+#[allow(unused_imports)]
+use crate::common::gql::model::SortOrderEnum;
 
 use crate::common::util::dao::{
   many2many_update,
@@ -332,6 +334,16 @@ async fn get_where_query(
       where_query.push_str(" and default_org_id_lbl.lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+  }
+  {
+    let default_org_id_lbl_like = match search {
+      Some(item) => item.default_org_id_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(default_org_id_lbl_like) = default_org_id_lbl_like {
+      where_query.push_str(" and default_org_id_lbl.lbl like ?");
+      args.push(format!("%{}%", sql_like(&default_org_id_lbl_like)).into());
     }
   }
   // 锁定
@@ -843,14 +855,14 @@ pub async fn find_all(
   if !sort.iter().any(|item| item.prop == "order_by") {
     sort.push(SortInput {
       prop: "order_by".into(),
-      order: "asc".into(),
+      order: SortOrderEnum::Asc,
     });
   }
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
-      order: "asc".into(),
+      order: SortOrderEnum::Asc,
     });
   }
   

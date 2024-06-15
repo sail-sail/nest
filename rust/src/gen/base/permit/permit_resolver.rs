@@ -18,6 +18,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<PermitModel>> {
   
+  check_sort_permit(sort.as_deref())?;
+  
   let res = permit_service::find_all(
     search,
     page,
@@ -48,6 +50,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<PermitModel>> {
+  
+  check_sort_permit(sort.as_deref())?;
   
   let model = permit_service::find_one(
     search,

@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,11 +27,21 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 use crate::gen::base::menu::menu_model::MenuId;
 use crate::gen::base::usr::usr_model::UsrId;
 
+lazy_static! {
+  /// 按钮权限 前端允许排序的字段
+  static ref CAN_SORT_IN_API_PERMIT: [&'static str; 2] = [
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "PermitModel")]
+#[allow(dead_code)]
 pub struct PermitModel {
   /// 系统字段
   #[graphql(skip)]
@@ -135,6 +147,7 @@ impl FromRow<'_, MySqlRow> for PermitModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct PermitFieldComment {
   /// ID
   pub id: String,
@@ -168,6 +181,7 @@ pub struct PermitFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct PermitSearch {
   /// ID
   pub id: Option<PermitId>,
@@ -183,6 +197,9 @@ pub struct PermitSearch {
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: Option<Vec<String>>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl_like")]
+  pub menu_id_lbl_like: Option<String>,
   /// 编码
   #[graphql(name = "code")]
   pub code: Option<String>,
@@ -297,6 +314,7 @@ impl std::fmt::Debug for PermitSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "PermitInput")]
+#[allow(dead_code)]
 pub struct PermitInput {
   /// ID
   pub id: Option<PermitId>,
@@ -522,4 +540,24 @@ impl PartialEq<str> for PermitId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
   }
+}
+
+/// 按钮权限 检测字段是否允许前端排序
+pub fn check_sort_permit(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_PERMIT.contains(&prop) {
+      return Err(anyhow!("check_sort_permit: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
 }

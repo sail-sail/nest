@@ -17,6 +17,7 @@ use tokio::sync::Mutex;
 
 use chrono::{Local, NaiveDate, NaiveTime, NaiveDateTime};
 use base64::{engine::general_purpose, Engine};
+use regex::Regex;
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
 use sqlx::{Pool, MySql, Executor, FromRow, Row};
@@ -28,7 +29,7 @@ use super::cache::cache_dao::{get_cache, set_cache, del_cache};
 
 pub use super::cache::cache_dao::del_caches;
 
-use super::gql::model::{SortInput, PageInput};
+use super::gql::model::{PageInput, SortInput};
 
 pub use super::gql::model::UniqueType;
 pub use super::util::string::hash;
@@ -47,7 +48,7 @@ lazy_static! {
   static ref DB_POOL: Pool<MySql> = init_db_pool("").unwrap();
   static ref DB_POOL_DW: Pool<MySql> = init_db_pool("_dw").unwrap();
   static ref IS_DEBUG: bool = init_debug();
-  static ref MULTIPLE_SPACE_REGEX: regex::Regex = regex::Regex::new(r"\s+").unwrap();
+  static ref MULTIPLE_SPACE_REGEX: Regex = Regex::new(r"\s+").unwrap();
 }
 
 tokio::task_local! {
@@ -1754,6 +1755,7 @@ pub fn escape_id(val: impl AsRef<str>) -> String {
  * 转义sql语句中的值
  */
 #[must_use]
+#[allow(dead_code)]
 pub fn escape(val: impl AsRef<str>) -> String {
   let mut val = val.as_ref().to_owned();
   val = val.replace('`', "``");
@@ -1804,19 +1806,10 @@ pub fn get_order_by_query(
   let mut order_by_query = String::with_capacity(128);
   for item in sort {
     let prop = item.prop;
-    let mut order = item.order;
     if !order_by_query.is_empty() {
       order_by_query += ",";
     }
-    if order == "ascending" {
-      "asc".clone_into(&mut order)
-    } else if order == "descending" {
-      "desc".clone_into(&mut order)
-    }
-    if order != "asc" && order != "desc" {
-      continue;
-    }
-    order_by_query += &format!(" {} {}", escape_id(prop), escape(order));
+    order_by_query += &format!(" {} {}", escape_id(prop), item.order);
   }
   if !order_by_query.is_empty() {
     order_by_query = " order by".to_owned() + order_by_query.as_ref();

@@ -18,6 +18,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<DomainModel>> {
   
+  check_sort_domain(sort.as_deref())?;
+  
   let res = domain_service::find_all(
     search,
     page,
@@ -48,6 +50,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<DomainModel>> {
+  
+  check_sort_domain(sort.as_deref())?;
   
   let model = domain_service::find_one(
     search,

@@ -18,6 +18,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<I18nModel>> {
   
+  check_sort_i18n(sort.as_deref())?;
+  
   let res = i18n_service::find_all(
     search,
     page,
@@ -48,6 +50,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<I18nModel>> {
+  
+  check_sort_i18n(sort.as_deref())?;
   
   let model = i18n_service::find_one(
     search,

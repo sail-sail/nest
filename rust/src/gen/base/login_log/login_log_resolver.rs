@@ -20,6 +20,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogModel>> {
   
+  check_sort_login_log(sort.as_deref())?;
+  
   let res = login_log_service::find_all(
     search,
     page,
@@ -50,6 +52,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<LoginLogModel>> {
+  
+  check_sort_login_log(sort.as_deref())?;
   
   let model = login_log_service::find_one(
     search,

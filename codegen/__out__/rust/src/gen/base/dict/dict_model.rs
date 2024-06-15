@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,6 +27,7 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 
 use crate::gen::base::dict_detail::dict_detail_model::{
   DictDetailModel,
@@ -32,8 +35,18 @@ use crate::gen::base::dict_detail::dict_detail_model::{
 };
 use crate::gen::base::usr::usr_model::UsrId;
 
+lazy_static! {
+  /// 系统字典 前端允许排序的字段
+  static ref CAN_SORT_IN_API_DICT: [&'static str; 3] = [
+    "order_by",
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictModel")]
+#[allow(dead_code)]
 pub struct DictModel {
   /// 系统字段
   #[graphql(skip)]
@@ -170,6 +183,7 @@ impl FromRow<'_, MySqlRow> for DictModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct DictFieldComment {
   /// ID
   pub id: String,
@@ -213,6 +227,7 @@ pub struct DictFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct DictSearch {
   /// ID
   pub id: Option<DictId>,
@@ -354,6 +369,7 @@ impl std::fmt::Debug for DictSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DictInput")]
+#[allow(dead_code)]
 pub struct DictInput {
   /// ID
   pub id: Option<DictId>,
@@ -737,4 +753,24 @@ impl TryFrom<String> for DictType {
       )),
     }
   }
+}
+
+/// 系统字典 检测字段是否允许前端排序
+pub fn check_sort_dict(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_DICT.contains(&prop) {
+      return Err(anyhow!("check_sort_dict: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
 }

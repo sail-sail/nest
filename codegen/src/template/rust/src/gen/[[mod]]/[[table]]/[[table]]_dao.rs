@@ -115,7 +115,9 @@ use chrono::Datelike;<#
 }
 #>
 #[allow(unused_imports)]
-use crate::common::util::string::*;<#
+use crate::common::util::string::sql_like;
+#[allow(unused_imports)]
+use crate::common::gql::model::SortOrderEnum;<#
 if (hasMany2manyNotInline) {
 #>
 
@@ -827,17 +829,17 @@ async fn get_where_query(
     } else if (foreignKey.lbl) {
   #>
   {
-    let <#=column_name_rust#>_lbl: Option<Vec<String>> = match search {
-      Some(item) => item.<#=column_name_rust#>_lbl.clone(),
+    let <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<String>> = match search {
+      Some(item) => item.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
       None => None,
     };
-    if let Some(<#=column_name_rust#>_lbl) = <#=column_name_rust#>_lbl {
+    if let Some(<#=column_name#>_<#=foreignKey.lbl#>) = <#=column_name#>_<#=foreignKey.lbl#> {
       let arg = {
-        if <#=column_name_rust#>_lbl.is_empty() {
+        if <#=column_name#>_<#=foreignKey.lbl#>.is_empty() {
           "null".to_string()
         } else {
-          let mut items = Vec::with_capacity(<#=column_name_rust#>_lbl.len());
-          for item in <#=column_name_rust#>_lbl {
+          let mut items = Vec::with_capacity(<#=column_name#>_<#=foreignKey.lbl#>.len());
+          for item in <#=column_name#>_<#=foreignKey.lbl#> {
             args.push(item.into());
             items.push("?");
           }
@@ -847,6 +849,16 @@ async fn get_where_query(
       where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+  }
+  {
+    let <#=column_name#>_<#=foreignKey.lbl#>_like = match search {
+      Some(item) => item.<#=column_name#>_<#=foreignKey.lbl#>_like.clone(),
+      None => None,
+    };
+    if let Some(<#=column_name#>_<#=foreignKey.lbl#>_like) = <#=column_name#>_<#=foreignKey.lbl#>_like {
+      where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
+      args.push(format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like)).into());
     }
   }<#
     }
@@ -1255,12 +1267,17 @@ pub async fn find_all(
     } else if (opts?.defaultSort.order === "descending") {
       order = "desc";
     }
+    if (order === "asc") {
+      order = "SortOrderEnum::Asc";
+    } else if (order === "desc") {
+      order = "SortOrderEnum::Desc";
+    }
   #>
   
   if !sort.iter().any(|item| item.prop == "<#=prop#>") {
     sort.push(SortInput {
       prop: "<#=prop#>".into(),
-      order: "<#=order#>".into(),
+      order: <#=order#>,
     });
   }<#
   }
@@ -1271,7 +1288,7 @@ pub async fn find_all(
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
-      order: "asc".into(),
+      order: SortOrderEnum::Asc,
     });
   }<#
   }

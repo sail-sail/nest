@@ -20,6 +20,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<OperationRecordModel>> {
   
+  check_sort_operation_record(sort.as_deref())?;
+  
   let res = operation_record_service::find_all(
     search,
     page,
@@ -50,6 +52,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<OperationRecordModel>> {
+  
+  check_sort_operation_record(sort.as_deref())?;
   
   let model = operation_record_service::find_one(
     search,

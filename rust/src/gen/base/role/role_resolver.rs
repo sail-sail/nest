@@ -20,6 +20,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
+  check_sort_role(sort.as_deref())?;
+  
   let res = role_service::find_all(
     search,
     page,
@@ -50,6 +52,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
+  
+  check_sort_role(sort.as_deref())?;
   
   let model = role_service::find_one(
     search,

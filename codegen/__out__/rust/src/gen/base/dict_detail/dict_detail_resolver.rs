@@ -18,6 +18,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<DictDetailModel>> {
   
+  check_sort_dict_detail(sort.as_deref())?;
+  
   let res = dict_detail_service::find_all(
     search,
     page,
@@ -48,6 +50,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<DictDetailModel>> {
+  
+  check_sort_dict_detail(sort.as_deref())?;
   
   let model = dict_detail_service::find_one(
     search,

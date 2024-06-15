@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,12 +27,22 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::usr::usr_model::UsrId;
 
+lazy_static! {
+  /// 登录日志 前端允许排序的字段
+  static ref CAN_SORT_IN_API_LOGIN_LOG: [&'static str; 2] = [
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "LoginLogModel")]
+#[allow(dead_code)]
 pub struct LoginLogModel {
   /// 租户ID
   #[graphql(skip)]
@@ -146,6 +158,7 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct LoginLogFieldComment {
   /// ID
   pub id: String,
@@ -187,6 +200,7 @@ pub struct LoginLogFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct LoginLogSearch {
   /// ID
   pub id: Option<LoginLogId>,
@@ -306,6 +320,7 @@ impl std::fmt::Debug for LoginLogSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "LoginLogInput")]
+#[allow(dead_code)]
 pub struct LoginLogInput {
   /// ID
   pub id: Option<LoginLogId>,
@@ -613,4 +628,24 @@ impl TryFrom<String> for LoginLogType {
       )),
     }
   }
+}
+
+/// 登录日志 检测字段是否允许前端排序
+pub fn check_sort_login_log(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_LOGIN_LOG.contains(&prop) {
+      return Err(anyhow!("check_sort_login_log: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
 }

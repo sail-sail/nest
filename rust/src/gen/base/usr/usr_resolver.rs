@@ -26,6 +26,8 @@ pub async fn find_all(
     search
   });
   
+  check_sort_usr(sort.as_deref())?;
+  
   let res = usr_service::find_all(
     search,
     page,
@@ -75,6 +77,8 @@ pub async fn find_one(
     search.is_hidden = Some(vec![0]);
     search
   });
+  
+  check_sort_usr(sort.as_deref())?;
   
   let model = usr_service::find_one(
     search,

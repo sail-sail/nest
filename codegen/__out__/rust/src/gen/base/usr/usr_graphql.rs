@@ -186,6 +186,7 @@ impl UsrGenMutation {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
+      .with_creating(Some(true))
       .build()
       .scope({
         usr_resolver::creates(

@@ -318,6 +318,7 @@ impl <#=tableUP#>GenMutation {<#
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
+      .with_creating(Some(true))
       .build()
       .scope({
         <#=table#>_resolver::creates(
