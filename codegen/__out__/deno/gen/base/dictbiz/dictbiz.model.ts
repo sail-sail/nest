@@ -8,6 +8,10 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  SortOrderEnum,
+} from "/gen/types.ts";
+
 declare const dictbizId: unique symbol;
 
 declare global {
@@ -83,8 +87,8 @@ export function checkSortDictbiz(sort?: SortInput[]) {
   for (const item of sort) {
     const order = item.order;
     if (
-      order !== "asc" && order !== "desc" &&
-      order !== "ascending" && order !== "descending"
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
     ) {
       throw new Error(`checkSortDictbiz: ${ JSON.stringify(item) }`);
     }

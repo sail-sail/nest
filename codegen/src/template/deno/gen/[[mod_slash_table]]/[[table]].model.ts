@@ -73,6 +73,10 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  SortOrderEnum,
+} from "/gen/types.ts";
+
 declare const <#=table_Up#>Id: unique symbol;
 
 declare global {
@@ -634,8 +638,8 @@ export function checkSort<#=Table_Up#>(sort?: SortInput[]) {
   for (const item of sort) {
     const order = item.order;
     if (
-      order !== "asc" && order !== "desc" &&
-      order !== "ascending" && order !== "descending"
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
     ) {
       throw new Error(`checkSort<#=Table_Up#>: ${ JSON.stringify(item) }`);
     }

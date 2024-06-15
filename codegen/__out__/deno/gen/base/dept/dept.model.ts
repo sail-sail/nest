@@ -6,6 +6,10 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
+import {
+  SortOrderEnum,
+} from "/gen/types.ts";
+
 declare const deptId: unique symbol;
 
 declare global {
@@ -75,8 +79,8 @@ export function checkSortDept(sort?: SortInput[]) {
   for (const item of sort) {
     const order = item.order;
     if (
-      order !== "asc" && order !== "desc" &&
-      order !== "ascending" && order !== "descending"
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
     ) {
       throw new Error(`checkSortDept: ${ JSON.stringify(item) }`);
     }
