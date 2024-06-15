@@ -198,7 +198,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找业务选项总数
- * @param { OptbizSearch } search?
+ * @param {OptbizSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

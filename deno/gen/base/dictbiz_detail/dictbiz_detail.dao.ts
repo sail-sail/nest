@@ -123,6 +123,9 @@ async function getWhereQuery(
   if (search?.dictbiz_id_lbl != null) {
     whereQuery += ` and dictbiz_id_lbl.lbl in ${ args.push(search.dictbiz_id_lbl) }`;
   }
+  if (isNotEmpty(search?.dictbiz_id_lbl_like)) {
+    whereQuery += ` and dictbiz_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.dictbiz_id_lbl_like) + "%") }`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
@@ -200,13 +203,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_dictbiz_detail t
-    left join base_dictbiz dictbiz_id_lbl on dictbiz_id_lbl.id=t.dictbiz_id`;
+  left join base_dictbiz dictbiz_id_lbl on dictbiz_id_lbl.id=t.dictbiz_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找业务字典明细总数
- * @param { DictbizDetailSearch } search?
+ * @param {DictbizDetailSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

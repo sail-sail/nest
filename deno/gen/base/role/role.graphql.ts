@@ -148,12 +148,16 @@ input RoleSearch {
   menu_ids_is_null: Boolean
   "菜单权限"
   menu_ids_lbl: [String!]
+  "菜单权限"
+  menu_ids_lbl_like: String
   "按钮权限"
   permit_ids: [PermitId!]
   "按钮权限"
   permit_ids_is_null: Boolean
   "按钮权限"
   permit_ids_lbl: [String!]
+  "按钮权限"
+  permit_ids_lbl_like: String
   "数据权限"
   data_permit_ids: [DataPermitId!]
   "数据权限"

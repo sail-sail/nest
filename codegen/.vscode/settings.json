@@ -17,7 +17,8 @@
     "**/pnpm-lock.yaml": true,
     "**/node_modules/**": true,
     "**/__unconfig_vite.config.ts": true,
-    "**/.npmrc": true
+    "**/.npmrc": true,
+    "cache": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -37,7 +38,8 @@
     "**/pnpm-lock.yaml": true,
     "**/node_modules/**": true,
     "**/__unconfig_vite.config.ts": true,
-    "**/.npmrc": true
+    "**/.npmrc": true,
+    "cache": true
   },
   "deno.enable": false,
   "css.validate": false,

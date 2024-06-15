@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortTenant,
+} from "./tenant.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -41,6 +45,8 @@ export async function findAllTenant(
     findAll,
   } = await import("./tenant.service.ts");
   
+  checkSortTenant(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneTenant(
   const {
     findOne,
   } = await import("./tenant.service.ts");
+  
+  checkSortTenant(sort);
   
   const res = await findOne(search, sort);
   return res;
