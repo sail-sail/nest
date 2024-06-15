@@ -102,6 +102,9 @@ async function getWhereQuery(
   if (search?.parent_id_lbl != null) {
     whereQuery += ` and parent_id_lbl.lbl in ${ args.push(search.parent_id_lbl) }`;
   }
+  if (isNotEmpty(search?.parent_id_lbl_like)) {
+    whereQuery += ` and parent_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.parent_id_lbl_like) + "%") }`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
@@ -185,13 +188,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_menu t
-    left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id`;
+  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找菜单总数
- * @param { MenuSearch } search?
+ * @param {MenuSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

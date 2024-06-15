@@ -102,6 +102,9 @@ async function getWhereQuery(
   if (search?.menu_id_lbl != null) {
     whereQuery += ` and menu_id_lbl.lbl in ${ args.push(search.menu_id_lbl) }`;
   }
+  if (isNotEmpty(search?.menu_id_lbl_like)) {
+    whereQuery += ` and menu_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.menu_id_lbl_like) + "%") }`;
+  }
   if (search?.code != null) {
     whereQuery += ` and t.code=${ args.push(search.code) }`;
   }
@@ -165,13 +168,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_permit t
-    left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
+  left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找按钮权限总数
- * @param { PermitSearch } search?
+ * @param {PermitSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

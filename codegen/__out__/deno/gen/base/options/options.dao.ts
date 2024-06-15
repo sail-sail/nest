@@ -181,7 +181,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找系统选项总数
- * @param { OptionsSearch } search?
+ * @param {OptionsSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
