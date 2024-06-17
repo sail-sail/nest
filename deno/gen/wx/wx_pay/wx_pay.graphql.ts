@@ -179,8 +179,6 @@ type Query {
   findLastOrderByWxPay: Int!
 }
 type Mutation {
-  "创建微信支付设置"
-  createWxPay(input: WxPayInput!, unique_type: UniqueType): WxPayId!
   "批量创建微信支付设置"
   createsWxPay(inputs: [WxPayInput!]!, unique_type: UniqueType): [WxPayId!]!
   "根据 id 修改微信支付设置"

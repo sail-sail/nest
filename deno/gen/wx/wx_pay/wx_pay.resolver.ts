@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -7,6 +8,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortWxPay,
+} from "./wx_pay.model.ts";
 
 import {
   usePermit,
@@ -40,6 +45,8 @@ export async function findAllWxPay(
     findAll,
   } = await import("./wx_pay.service.ts");
   
+  checkSortWxPay(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +72,8 @@ export async function findOneWxPay(
     findOne,
   } = await import("./wx_pay.service.ts");
   
+  checkSortWxPay(sort);
+  
   const res = await findOne(search, sort);
   return res;
 }
@@ -86,39 +95,6 @@ export async function findByIdWxPay(
 }
 
 /**
- * 创建微信支付设置
- */
-export async function createWxPay(
-  input: WxPayInput,
-  unique_type?: UniqueType,
-): Promise<WxPayId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./wx_pay.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wx/wx_pay",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建微信支付设置
  */
 export async function createsWxPay(
@@ -132,9 +108,8 @@ export async function createsWxPay(
     creates,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wx/wx_pay",
@@ -168,9 +143,7 @@ export async function updateByIdWxPay(
     updateById,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -193,9 +166,7 @@ export async function deleteByIdsWxPay(
     deleteByIds,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_pay",
@@ -217,12 +188,11 @@ export async function enableByIdsWxPay(
     enableByIds,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsWxPay.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_pay",
@@ -244,12 +214,11 @@ export async function lockByIdsWxPay(
     lockByIds,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsWxPay.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_pay",
@@ -270,9 +239,7 @@ export async function revertByIdsWxPay(
     revertByIds,
   } = await import("./wx_pay.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_pay",
@@ -288,18 +255,17 @@ export async function revertByIdsWxPay(
 export async function forceDeleteByIdsWxPay(
   ids: WxPayId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./wx_pay.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wx_pay",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./wx_pay.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

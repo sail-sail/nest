@@ -71,6 +71,8 @@ input WxoAppTokenSearch {
   wxo_app_id_is_null: Boolean
   "小程序设置"
   wxo_app_id_lbl: [String!]
+  "小程序设置"
+  wxo_app_id_lbl_like: String
 }
 type Query {
   "根据条件查找小程序接口凭据总数"
@@ -85,8 +87,6 @@ type Query {
   findByIdWxoAppToken(id: WxoAppTokenId!): WxoAppTokenModel
 }
 type Mutation {
-  "创建小程序接口凭据"
-  createWxoAppToken(input: WxoAppTokenInput!, unique_type: UniqueType): WxoAppTokenId!
   "批量创建小程序接口凭据"
   createsWxoAppToken(inputs: [WxoAppTokenInput!]!, unique_type: UniqueType): [WxoAppTokenId!]!
   "根据 id 修改小程序接口凭据"
