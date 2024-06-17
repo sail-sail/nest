@@ -125,6 +125,8 @@ input DictDetailSearch {
   dict_id_is_null: Boolean
   "系统字典"
   dict_id_lbl: [String!]
+  "系统字典"
+  dict_id_lbl_like: String
   "名称"
   lbl: String
   lbl_like: String
