@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -7,6 +8,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortArchive,
+} from "./archive.model.ts";
 
 import {
   usePermit,
@@ -40,6 +45,8 @@ export async function findAllArchive(
     findAll,
   } = await import("./archive.service.ts");
   
+  checkSortArchive(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +71,8 @@ export async function findOneArchive(
   const {
     findOne,
   } = await import("./archive.service.ts");
+  
+  checkSortArchive(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,9 +108,8 @@ export async function createsArchive(
     creates,
   } = await import("./archive.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/eams/archive",
@@ -135,9 +143,7 @@ export async function updateByIdArchive(
     updateById,
   } = await import("./archive.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +166,7 @@ export async function deleteByIdsArchive(
     deleteByIds,
   } = await import("./archive.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/eams/archive",
@@ -183,9 +187,7 @@ export async function revertByIdsArchive(
     revertByIds,
   } = await import("./archive.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/eams/archive",
@@ -201,18 +203,17 @@ export async function revertByIdsArchive(
 export async function forceDeleteByIdsArchive(
   ids: ArchiveId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./archive.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/eams/archive",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./archive.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
