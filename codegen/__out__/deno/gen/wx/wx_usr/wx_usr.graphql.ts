@@ -158,6 +158,8 @@ input WxUsrSearch {
   usr_id_is_null: Boolean
   "用户"
   usr_id_lbl: [String!]
+  "用户"
+  usr_id_lbl_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"

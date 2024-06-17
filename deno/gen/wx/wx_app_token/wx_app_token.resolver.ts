@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortWxAppToken,
+} from "./wx_app_token.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -41,6 +45,8 @@ export async function findAllWxAppToken(
     findAll,
   } = await import("./wx_app_token.service.ts");
   
+  checkSortWxAppToken(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneWxAppToken(
   const {
     findOne,
   } = await import("./wx_app_token.service.ts");
+  
+  checkSortWxAppToken(sort);
   
   const res = await findOne(search, sort);
   return res;
