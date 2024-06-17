@@ -978,6 +978,15 @@ export async function getSchema(
       }
     }
   }
+  
+  // canSortInApi
+  for (let i = 0; i < tables[table_name].columns.length; i++) {
+    const column = tables[table_name].columns[i];
+    if (column.canSortInApi == null && column.sortable) {
+      column.canSortInApi = true;
+    }
+  }
+  
   tablesConfigItemMap[table_name] = tables[table_name];
   return tablesConfigItemMap[table_name];
 }

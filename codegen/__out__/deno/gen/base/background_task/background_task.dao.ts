@@ -206,7 +206,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找后台任务总数
- * @param { BackgroundTaskSearch } search?
+ * @param {BackgroundTaskSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

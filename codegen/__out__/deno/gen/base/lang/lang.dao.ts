@@ -172,7 +172,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找语言总数
- * @param { LangSearch } search?
+ * @param {LangSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
