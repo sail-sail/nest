@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import Decimal from "decimal.js";
@@ -9,6 +10,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortCard,
+} from "./card.model.ts";
 
 import {
   usePermit,
@@ -42,6 +47,8 @@ export async function findAllCard(
     findAll,
   } = await import("./card.service.ts");
   
+  checkSortCard(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -66,6 +73,8 @@ export async function findOneCard(
   const {
     findOne,
   } = await import("./card.service.ts");
+  
+  checkSortCard(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -101,9 +110,8 @@ export async function createsCard(
     creates,
   } = await import("./card.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wshop/card",
@@ -167,9 +175,7 @@ export async function updateByIdCard(
     updateById,
   } = await import("./card.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -192,9 +198,7 @@ export async function deleteByIdsCard(
     deleteByIds,
   } = await import("./card.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/card",
@@ -216,12 +220,11 @@ export async function enableByIdsCard(
     enableByIds,
   } = await import("./card.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsCard.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/card",
@@ -243,12 +246,11 @@ export async function lockByIdsCard(
     lockByIds,
   } = await import("./card.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsCard.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/card",
@@ -269,9 +271,7 @@ export async function revertByIdsCard(
     revertByIds,
   } = await import("./card.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/card",
@@ -287,18 +287,17 @@ export async function revertByIdsCard(
 export async function forceDeleteByIdsCard(
   ids: CardId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./card.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/card",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./card.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

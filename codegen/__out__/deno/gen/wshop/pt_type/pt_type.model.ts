@@ -3,6 +3,11 @@ import type {
   PtTypeModel as PtTypeModelType,
   PtTypeSearch as PtTypeSearchType,
   PtTypeFieldComment as PtTypeFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const ptTypeId: unique symbol;
@@ -32,9 +37,12 @@ declare global {
     update_time?: string[];
     /** 组织 */
     org_id?: OrgId[];
+    /** 组织 */
     org_id_is_null?: boolean;
     /** 组织 */
     org_id_lbl?: string[];
+    /** 组织 */
+    org_id_lbl_like?: string;
     tenant_id?: TenantId | null;
   }
 
@@ -76,4 +84,32 @@ declare global {
   interface PtTypeFieldComment extends PtTypeFieldCommentType {
   }
   
+}
+
+/** 产品类别 前端允许排序的字段 */
+export const canSortInApiPtType = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 产品类别 检测字段是否允许前端排序 */
+export function checkSortPtType(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortPtType: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiPtType;
+    if (!canSortInApiPtType[prop]) {
+      throw new Error(`checkSortPtType: ${ JSON.stringify(item) }`);
+    }
+  }
 }

@@ -3,6 +3,11 @@ import type {
   CardConsumeModel as CardConsumeModelType,
   CardConsumeSearch as CardConsumeSearchType,
   CardConsumeFieldComment as CardConsumeFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const cardConsumeId: unique symbol;
@@ -34,9 +39,12 @@ declare global {
     update_time?: string[];
     /** 组织 */
     org_id?: OrgId[];
+    /** 组织 */
     org_id_is_null?: boolean;
     /** 组织 */
     org_id_lbl?: string[];
+    /** 组织 */
+    org_id_lbl_like?: string;
     tenant_id?: TenantId | null;
   }
 
@@ -82,4 +90,30 @@ declare global {
   interface CardConsumeFieldComment extends CardConsumeFieldCommentType {
   }
   
+}
+
+/** 会员卡消费记录 前端允许排序的字段 */
+export const canSortInApiCardConsume = {
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 会员卡消费记录 检测字段是否允许前端排序 */
+export function checkSortCardConsume(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortCardConsume: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiCardConsume;
+    if (!canSortInApiCardConsume[prop]) {
+      throw new Error(`checkSortCardConsume: ${ JSON.stringify(item) }`);
+    }
+  }
 }

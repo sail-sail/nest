@@ -3,6 +3,11 @@ import type {
   WxappConfigModel as WxappConfigModelType,
   WxappConfigSearch as WxappConfigSearchType,
   WxappConfigFieldComment as WxappConfigFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const wxappConfigId: unique symbol;
@@ -29,9 +34,12 @@ declare global {
     update_time?: string[];
     /** 组织 */
     org_id?: OrgId[];
+    /** 组织 */
     org_id_is_null?: boolean;
     /** 组织 */
     org_id_lbl?: string[];
+    /** 组织 */
+    org_id_lbl_like?: string;
     tenant_id?: TenantId | null;
   }
 
@@ -77,4 +85,30 @@ declare global {
   interface WxappConfigFieldComment extends WxappConfigFieldCommentType {
   }
   
+}
+
+/** 小程序配置 前端允许排序的字段 */
+export const canSortInApiWxappConfig = {
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 小程序配置 检测字段是否允许前端排序 */
+export function checkSortWxappConfig(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortWxappConfig: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiWxappConfig;
+    if (!canSortInApiWxappConfig[prop]) {
+      throw new Error(`checkSortWxappConfig: ${ JSON.stringify(item) }`);
+    }
+  }
 }

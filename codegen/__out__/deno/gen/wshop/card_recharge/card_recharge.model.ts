@@ -3,6 +3,11 @@ import type {
   CardRechargeModel as CardRechargeModelType,
   CardRechargeSearch as CardRechargeSearchType,
   CardRechargeFieldComment as CardRechargeFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const cardRechargeId: unique symbol;
@@ -34,9 +39,12 @@ declare global {
     update_time?: string[];
     /** 组织 */
     org_id?: OrgId[];
+    /** 组织 */
     org_id_is_null?: boolean;
     /** 组织 */
     org_id_lbl?: string[];
+    /** 组织 */
+    org_id_lbl_like?: string;
     tenant_id?: TenantId | null;
   }
 
@@ -82,4 +90,30 @@ declare global {
   interface CardRechargeFieldComment extends CardRechargeFieldCommentType {
   }
   
+}
+
+/** 会员卡充值记录 前端允许排序的字段 */
+export const canSortInApiCardRecharge = {
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 会员卡充值记录 检测字段是否允许前端排序 */
+export function checkSortCardRecharge(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortCardRecharge: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiCardRecharge;
+    if (!canSortInApiCardRecharge[prop]) {
+      throw new Error(`checkSortCardRecharge: ${ JSON.stringify(item) }`);
+    }
+  }
 }

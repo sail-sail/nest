@@ -79,12 +79,14 @@
           <el-form-item
             :label="n('图片')"
             prop="img"
-            class="img_form_item"
+            un-w="full"
+            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.img"
               :max-size="4"
               :readonly="isLocked || isReadonly"
+              :inited
             ></UploadImage>
           </el-form-item>
         </template>

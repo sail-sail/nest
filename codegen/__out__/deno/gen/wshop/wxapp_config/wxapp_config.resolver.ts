@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -7,6 +8,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortWxappConfig,
+} from "./wxapp_config.model.ts";
 
 import {
   usePermit,
@@ -40,6 +45,8 @@ export async function findAllWxappConfig(
     findAll,
   } = await import("./wxapp_config.service.ts");
   
+  checkSortWxappConfig(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +71,8 @@ export async function findOneWxappConfig(
   const {
     findOne,
   } = await import("./wxapp_config.service.ts");
+  
+  checkSortWxappConfig(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,9 +108,8 @@ export async function createsWxappConfig(
     creates,
   } = await import("./wxapp_config.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wshop/wxapp_config",
@@ -135,9 +143,7 @@ export async function updateByIdWxappConfig(
     updateById,
   } = await import("./wxapp_config.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +166,7 @@ export async function deleteByIdsWxappConfig(
     deleteByIds,
   } = await import("./wxapp_config.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/wxapp_config",
@@ -184,12 +188,11 @@ export async function enableByIdsWxappConfig(
     enableByIds,
   } = await import("./wxapp_config.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsWxappConfig.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/wxapp_config",
@@ -211,12 +214,11 @@ export async function lockByIdsWxappConfig(
     lockByIds,
   } = await import("./wxapp_config.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsWxappConfig.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/wxapp_config",
@@ -237,9 +239,7 @@ export async function revertByIdsWxappConfig(
     revertByIds,
   } = await import("./wxapp_config.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/wxapp_config",
@@ -255,18 +255,17 @@ export async function revertByIdsWxappConfig(
 export async function forceDeleteByIdsWxappConfig(
   ids: WxappConfigId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./wxapp_config.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/wxapp_config",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./wxapp_config.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

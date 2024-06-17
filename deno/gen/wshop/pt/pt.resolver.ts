@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import Decimal from "decimal.js";
@@ -9,6 +10,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortPt,
+} from "./pt.model.ts";
 
 import {
   usePermit,
@@ -42,6 +47,8 @@ export async function findAllPt(
     findAll,
   } = await import("./pt.service.ts");
   
+  checkSortPt(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -66,6 +73,8 @@ export async function findOnePt(
   const {
     findOne,
   } = await import("./pt.service.ts");
+  
+  checkSortPt(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -101,9 +110,8 @@ export async function createsPt(
     creates,
   } = await import("./pt.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wshop/pt",
@@ -157,9 +165,7 @@ export async function updateByIdPt(
     updateById,
   } = await import("./pt.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -182,9 +188,7 @@ export async function deleteByIdsPt(
     deleteByIds,
   } = await import("./pt.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/pt",
@@ -206,12 +210,11 @@ export async function enableByIdsPt(
     enableByIds,
   } = await import("./pt.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsPt.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/pt",
@@ -233,12 +236,11 @@ export async function lockByIdsPt(
     lockByIds,
   } = await import("./pt.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsPt.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/pt",
@@ -259,9 +261,7 @@ export async function revertByIdsPt(
     revertByIds,
   } = await import("./pt.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/pt",
@@ -277,18 +277,17 @@ export async function revertByIdsPt(
 export async function forceDeleteByIdsPt(
   ids: PtId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./pt.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/pt",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./pt.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
