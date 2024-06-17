@@ -750,8 +750,11 @@ async function getWhereQuery(
   }<#
     } else if (foreignKey.lbl) {
   #>
-  if (search?.<#=column_name#>_lbl != null) {
-    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_lbl) }`;
+  if (search?.<#=column_name#>_<#=foreignKey.lbl#> != null) {
+    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }`;
+  }
+  if (isNotEmpty(search?.<#=column_name#>_<#=foreignKey.lbl#>_like)) {
+    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") }`;
   }<#
     }
   #><#

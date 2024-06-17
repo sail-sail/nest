@@ -129,6 +129,8 @@ input DataPermitSearch {
   menu_id_is_null: Boolean
   "菜单"
   menu_id_lbl: [String!]
+  "菜单"
+  menu_id_lbl_like: String
   "范围"
   scope: [DataPermitScope!]
   "创建人"

@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortUsr,
+} from "./usr.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -47,6 +51,8 @@ export async function findAllUsr(
   search = search || { };
   search.is_hidden = [ 0 ];
   
+  checkSortUsr(sort);
+  
   const res = await findAll(search, page, sort);
   
   for (const model of res) {
@@ -79,6 +85,8 @@ export async function findOneUsr(
   
   search = search || { };
   search.is_hidden = [ 0 ];
+  
+  checkSortUsr(sort);
   
   const res = await findOne(search, sort);
   

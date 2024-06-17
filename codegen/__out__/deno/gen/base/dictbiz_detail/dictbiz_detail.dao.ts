@@ -123,6 +123,9 @@ async function getWhereQuery(
   if (search?.dictbiz_id_lbl != null) {
     whereQuery += ` and dictbiz_id_lbl.lbl in ${ args.push(search.dictbiz_id_lbl) }`;
   }
+  if (isNotEmpty(search?.dictbiz_id_lbl_like)) {
+    whereQuery += ` and dictbiz_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.dictbiz_id_lbl_like) + "%") }`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }

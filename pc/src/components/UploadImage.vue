@@ -11,7 +11,7 @@
   ref="uploadImageRef"
 >
   <div
-    v-for="(item, i) in urlList"
+    v-for="(item, i) in thumbList"
     :key="item"
     un-relative
     class="upload_image_item"
@@ -106,7 +106,7 @@
     </div>
   </div>
   <div
-    v-if="inited && !props.readonly && urlList.length < props.maxSize"
+    v-if="inited && !props.readonly && thumbList.length < props.maxSize"
     :style="{
       height: `${ props.itemHeight }px`,
       width: `${ props.itemHeight }px`,
@@ -223,6 +223,21 @@ let urlList = $computed(() => {
       id,
       inline: "1",
     }, "oss");
+    return url;
+  });
+});
+
+
+let thumbList = $computed(() => {
+  if (!modelValue) {
+    return [ ];
+  }
+  const ids = modelValue.split(",").filter((x) => x);
+  return ids.map((id) => {
+    const url = getImgUrl({
+      id,
+      height: props.itemHeight,
+    });
     return url;
   });
 });
