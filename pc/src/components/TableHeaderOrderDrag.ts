@@ -1,9 +1,9 @@
-import {
-  type DirectiveBinding,
+import type {
+  DirectiveBinding,
 } from "vue";
 
-import {
-  type SortableEvent,
+import type {
+  SortableEvent,
 } from "sortablejs";
 
 import Sortable from "sortablejs";

@@ -1,182 +1,169 @@
 <template>
 <div
+  v-bind="$attrs"
   un-w="full"
-  un-h="full"
-  un-pos-relative
-  :class="{ 'border_wrap': urlList.length === 0 }"
-  un-rounded
-  @mouseenter="imgMouseenter"
-  @mouseleave="imgMouseleave"
+  un-flex="~ [1_0_0] row wrap"
+  un-gap="2"
+  un-m="l-1px"
+  :style="{
+    'min-height': `${ (props.itemHeight + 4) }px`,
+  }"
+  ref="uploadImageRef"
 >
-  <el-image
-    v-bind="$attrs"
-    :src="urlList[nowIndex]"
-    un-object-contain
-    un-rounded
+  <div
+    v-for="(item, i) in thumbList"
+    :key="item"
+    un-relative
+    class="upload_image_item"
   >
-    <template #placeholder>
-      <div
-        un-w="full"
-        un-h="full"
-        un-flex="~ [1_0_0] col"
-        un-overflow-hidden
-        un-justify-center
-        un-items-center
-      >
-        <el-icon
-          color="gray"
-        >
-          <ElIconLoading />
-        </el-icon>
-      </div>
-    </template>
-    <template #error>
-      <div
-        un-w="full"
-        un-h="full"
-        un-flex="~ [1_0_0] col"
-        un-overflow-hidden
-        un-justify-center
-        un-items-center
-      >
-        
-        <el-icon
-          v-if="loading"
-          color="gray"
-        >
-          <ElIconLoading />
-        </el-icon>
-        
-        <el-icon
-          v-else
-          color="gray"
-          :size="28"
-        >
-          <ElIconPicture />
-        </el-icon>
-        
-      </div>
-    </template>
-  </el-image>
-  <transition name="fade">
     <div
-      v-if="showUpload"
-      class="upload_div"
+      @click="onView(i)"
+      un-cursor-pointer
       un-rounded
+      un-b="1 solid transparent hover:gray-700 hover:dark:gray-300"
+      un-p="0.25"
+      un-box-border
+      un-text="0"
     >
-      
-      <div class="upload_toolbar">
-        
-        <ElIcon
-          v-if="!readonly"
-          size="22"
-          un-cursor-pointer
-          un-rounded
-          @click="uploadClk"
-          :title="ns('上传')"
-        >
-          <ElIconUpload
-            un-text="white"
-          />
-        </ElIcon>
-        
-        <ElIcon
-          v-if="urlList.length > 0"
-          size="22"
-          un-cursor-pointer
-          un-rounded
-          @click="onView"
-          :title="ns('预览')"
-        >
-          <ElIconView
-            un-text="white"
-          />
-        </ElIcon>
-        
-        <ElIcon
-          v-if="!readonly && urlList.length > 0"
-          size="22"
-          un-cursor-pointer
-          un-rounded
-          @click="onDelete"
-          :title="ns('删除')"
-        >
-          <ElIconDelete
-            un-text="red-300"
-          />
-        </ElIcon>
-        
-      </div>
-      
-      <div
-        class="upload_padding"
-        v-if="urlList.length > 1"
-        un-h="7"
-        un-flex="~"
-        un-justify-center
-        un-items-center
-        un-bg="[rgba(0,0,0,.3)]"
-        un-pos-absolute
-        un-bottom="0"
+      <el-image
+        :src="item"
+        un-rounded
+        :style="{
+          height: `${ props.itemHeight }px`,
+        }"
+        un-min="w-10"
+        un-max="w-50"
+        un-object-cover
+        un-pointer-events-none
+        un-select-none
       >
-        
-        <ElIcon
-          v-if="!(nowIndex <= 0)"
-          size="14"
-          un-bg="hover:[var(--el-color-primary)]"
-          un-cursor-pointer
-          un-rounded-full
-          @click="onPrevious"
-        >
-          <ElIconArrowLeft />
-        </ElIcon>
-        
-        <div
-          un-text="[yellowgreen]"
-          un-m="l-1 r-1"
-        >
-          {{ nowIndex + 1 }} / {{ urlList.length }}
-        </div>
-        
-        <ElIcon
-          v-if="!(nowIndex >= urlList.length - 1)"
-          size="14"
-          un-bg="hover:[var(--el-color-primary)]"
-          un-cursor-pointer
-          un-rounded-full
-          @click="onNext"
-        >
-          <ElIconArrowRight />
-        </ElIcon>
-        
-      </div>
-      
+        <template #placeholder>
+          <div
+            un-w="full"
+            un-h="full"
+            un-flex="~ [1_0_0] col"
+            un-overflow-hidden
+            un-justify-center
+            un-items-center
+          >
+            <el-icon
+              color="gray"
+            >
+              <ElIconLoading />
+            </el-icon>
+          </div>
+        </template>
+        <template #error>
+          <div
+            un-w="full"
+            un-h="full"
+            un-flex="~ [1_0_0] col"
+            un-overflow-hidden
+            un-justify-center
+            un-items-center
+          >
+            
+            <el-icon
+              v-if="loading"
+              color="gray"
+            >
+              <ElIconLoading />
+            </el-icon>
+            
+            <el-icon
+              v-else
+              color="gray"
+              :size="28"
+            >
+              <ElIconPicture />
+            </el-icon>
+            
+          </div>
+        </template>
+      </el-image>
     </div>
-  </transition>
-  <input
-    type="file"
-    :accept="accept"
-    @change="onInput"
-    style="display: none;"
-    ref="fileRef"
-  />
-  <Teleport to="body">
-    <el-image-viewer
-      v-if="urlList.length > 0 && showImageViewer"
-      hide-on-click-modal
-      :url-list="urlList"
-      :initial-index="nowIndex"
-      @close="showImageViewer = false"
-    ></el-image-viewer>
-  </Teleport>
+    <div
+      v-if="!props.readonly"
+      un-absolute
+      un-right="-2"
+      un-top="-2"
+      un-flex="~"
+      un-justify-center
+      un-items-center
+      un-bg="transparent hover:red"
+      un-text="red hover:white"
+      un-rounded="full"
+      un-p="0.5"
+      un-box-border
+      un-cursor-pointer
+      @click.stop="onDelete(i)"
+    >
+      <el-icon
+        :size="16"
+      >
+        <ElIconClose />
+      </el-icon>
+    </div>
+  </div>
+  <div
+    v-if="inited && !props.readonly && thumbList.length < props.maxSize"
+    :style="{
+      height: `${ props.itemHeight }px`,
+      width: `${ props.itemHeight }px`,
+    }"
+    un-p="0.75"
+    un-box-border
+  >
+    <div
+      un-b="1 dotted gray-300 hover:[var(--el-color-primary)]"
+      un-flex="~"
+      un-justify-center
+      un-items-center
+      un-cursor-pointer
+      un-rounded
+      un-h="full"
+      un-w="full"
+      @click="uploadClk"
+    >
+      <el-icon
+        color="gray"
+        :size="28"
+      >
+        <ElIconPlus />
+      </el-icon>
+    </div>
+  </div>
 </div>
+<input
+  type="file"
+  :accept="accept"
+  @change="onInput"
+  style="display: none;"
+  ref="fileRef"
+/>
+<Teleport to="body">
+  <el-image-viewer
+    v-if="urlList.length > 0 && showImageViewer"
+    hide-on-click-modal
+    :url-list="urlList"
+    :initial-index="nowIndex"
+    @close="showImageViewer = false"
+  ></el-image-viewer>
+</Teleport>
 </template>
 
 <script lang="ts" setup>
-import { checkImageMaxSize } from "@/utils/image_util";
+import Sortable from "sortablejs";
+
+import type {
+  SortableEvent,
+} from "sortablejs";
+
+import {
+  checkImageMaxSize,
+} from "@/utils/image_util";
 
 const {
-  ns,
   nsAsync,
 } = useI18n();
 
@@ -195,6 +182,11 @@ const props = withDefaults(
     maxSize?: number;
     accept?: string;
     readonly?: boolean;
+    compress?: boolean;
+    maxImageWidth?: number;
+    maxImageHeight?: number;
+    itemHeight?: number;
+    inited?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -202,6 +194,11 @@ const props = withDefaults(
     maxSize: 1,
     accept: "image/webp,image/png,image/jpeg,image/svg+xml",
     readonly: false,
+    compress: true,
+    maxImageWidth: 1920,
+    maxImageHeight: 1080,
+    itemHeight: 100,
+    inited: false,
   },
 );
 
@@ -226,6 +223,21 @@ let urlList = $computed(() => {
       id,
       inline: "1",
     }, "oss");
+    return url;
+  });
+});
+
+
+let thumbList = $computed(() => {
+  if (!modelValue) {
+    return [ ];
+  }
+  const ids = modelValue.split(",").filter((x) => x);
+  return ids.map((id) => {
+    const url = getImgUrl({
+      id,
+      height: props.itemHeight,
+    });
     return url;
   });
 });
@@ -259,7 +271,14 @@ async function onInput() {
     return;
   }
   
-  file = await checkImageMaxSize(file);
+  file = await checkImageMaxSize(
+    file,
+    {
+      compress: props.compress,
+      maxImageWidth: props.maxImageWidth,
+      maxImageHeight: props.maxImageHeight,
+    },
+  );
   
   let id = undefined;
   loading = true;
@@ -303,7 +322,9 @@ async function uploadClk() {
 }
 
 // 删除图片
-async function onDelete() {
+async function onDelete(
+  nowIndex: number,
+) {
   try {
     await ElMessageBox.confirm(await nsAsync("确定删除当前图片吗？"));
   } catch (err) {
@@ -323,82 +344,56 @@ async function onDelete() {
   emit("update:modelValue", modelValue);
 }
 
-let showUpload = $ref(false);
-
-function imgMouseenter() {
-  if (props.readonly) {
-    showUpload = false;
-    return;
-  }
-  showUpload = true;
-}
-
-function imgMouseleave() {
-  showUpload = false;
-}
-
-function onPrevious() {
-  if (nowIndex > 0) {
-    nowIndex--;
-  }
-}
-
-function onNext() {
-  if (nowIndex < urlList.length - 1) {
-    nowIndex++;
-  }
-}
-
 let showImageViewer = $ref(false);
 
-function onView() {
+function onView(i?: number) {
+  if (i !== undefined) {
+    nowIndex = i;
+  }
   showImageViewer = !showImageViewer;
 }
+
+let uploadImageRef = $ref<HTMLDivElement>();
+
+watch(
+  () => props.inited,
+  async () => {
+    if (!props.inited) {
+      return;
+    }
+    if (!uploadImageRef) {
+      return;
+    }
+    Sortable.create(
+      uploadImageRef,
+      {
+        animation: 150,
+        draggable: ".upload_image_item",
+        onEnd: function (event: SortableEvent) {
+          let { oldIndex, newIndex } = event;
+          if (oldIndex == null || newIndex == null) {
+            return;
+          }
+          modelValue = modelValue || "";
+          const ids = modelValue.split(",").filter((x) => x);
+          const id = ids.splice(oldIndex, 1)[0];
+          ids.splice(newIndex, 0, id);
+          modelValue = ids.join(",");
+          emit("update:modelValue", modelValue);
+        },
+        filter: function(_, el) {
+          if (!el) {
+            return true;
+          }
+          return !el.classList.contains("upload_image_item");
+        },
+        preventOnFilter: false,
+      },
+    );
+  },
+  {
+    immediate: true,
+    deep: true,
+  },
+);
 </script>
-
-<style lang="scss" scoped>
-.el-image {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.upload_div {
-  position: absolute;
-  bottom: 0px;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  background-color: rgba($color: #000, $alpha: .5);
-}
-.upload_toolbar {
-  overflow: hidden;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-.upload_padding {
-  // margin-bottom: 5px;
-  display: flex;
-  width: 100%;
-  justify-content: center;
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-.border_wrap {
-  @apply b-1 b-solid b-gray-200 dark:b-gray-500;
-}
-</style>

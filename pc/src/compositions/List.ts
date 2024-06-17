@@ -1113,6 +1113,20 @@ export function useTableColumns<T>(
         tableColumn1s = undefined;
       }
     }
+    if (tableColumn1s) {
+      const map = new Map();
+      for (const tableColumn1 of tableColumn1s) {
+        map.set(tableColumn1.prop, true);
+      }
+      for (const tableColumn0 of tableColumn0s) {
+        const prop = tableColumn0.prop;
+        if (!map.has(prop)) {
+          window.localStorage.removeItem(persistKey);
+          tableColumn1s = undefined;
+          break;
+        }
+      }
+    }
     tableColumns.value = tableColumn1s || [ ...tableColumn0s ];
   }
   

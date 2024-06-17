@@ -31,8 +31,13 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
   if (!authModel) {
     return [ ];
   }
-  const usr_id: UsrId = authModel.id;
-  const usrModel = await findByIdUsr(usr_id);
+  
+  const options = {
+    is_debug: false,
+  };
+  
+  const usr_id = authModel.id;
+  const usrModel = await findByIdUsr(usr_id, options);
   if (!usrModel) {
     return [ ];
   }
@@ -40,9 +45,14 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
   if (!role_ids || role_ids.length === 0) {
     return [ ];
   }
-  const roleModels = await findAllRole({
-    ids: role_ids,
-  });
+  const roleModels = await findAllRole(
+    {
+      ids: role_ids,
+    },
+    undefined,
+    undefined,
+    options,
+  );
   const permit_ids: PermitId[] = [ ];
   for (const roleModel of roleModels) {
     const permit_ids2 = roleModel.permit_ids;
@@ -65,9 +75,14 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
   }
   const permitModels: PermitModel[] = [ ];
   for (const permit_ids of permit_idsArr) {
-    const permitModels0 = await findAllPermit({
-      ids: permit_ids,
-    });
+    const permitModels0 = await findAllPermit(
+      {
+        ids: permit_ids,
+      },
+      undefined,
+      undefined,
+      options,
+    );
     permitModels.push(...permitModels0);
   }
   const menu_idMap = new Map<MenuId, string>();
@@ -80,7 +95,7 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
       menu_idMap.set(menu_id, "");
       continue;
     }
-    const menuModel = await findByIdMenu(menu_id);
+    const menuModel = await findByIdMenu(menu_id, options);
     if (!menuModel) {
       menu_idMap.set(menu_id, "");
       continue;
@@ -133,10 +148,18 @@ export async function usePermit(
     findOne: findOneMenu,
   } = await import("/gen/base/menu/menu.dao.ts");
   
-  const menuModel = await findOneMenu({
-    route_path,
-    is_enabled: [ 1 ],
-  });
+  const options = {
+    is_debug: false,
+  };
+  
+  const menuModel = await findOneMenu(
+    {
+      route_path,
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    options,
+  );
   if (!menuModel) {
     return;
   }
@@ -147,7 +170,7 @@ export async function usePermit(
     throw await ns("无权限");
   }
   const usr_id: UsrId = authModel.id;
-  const usrModel = await findByIdUsr(usr_id);
+  const usrModel = await findByIdUsr(usr_id, options);
   if (!usrModel) {
     throw await ns("无权限");
   }
@@ -158,9 +181,14 @@ export async function usePermit(
   if (!role_ids || role_ids.length === 0) {
     throw await ns("无权限");
   }
-  const roleModels = await findAllRole({
-    ids: role_ids,
-  });
+  const roleModels = await findAllRole(
+    {
+      ids: role_ids,
+    },
+    undefined,
+    undefined,
+    options,
+  );
   const permit_ids: PermitId[] = [ ];
   for (const roleModel of roleModels) {
     const permit_ids2 = roleModel.permit_ids;
@@ -168,10 +196,10 @@ export async function usePermit(
       continue;
     }
     for (const permit_id of permit_ids2) {
-      if (permit_ids.includes(permit_id as PermitId)) {
+      if (permit_ids.includes(permit_id)) {
         continue;
       }
-      permit_ids.push(permit_id as PermitId);
+      permit_ids.push(permit_id);
     }
   }
   // 切分成多个批次查询
@@ -182,11 +210,15 @@ export async function usePermit(
     permit_idsArr.push(permit_ids.slice(i * batch_size, (i + 1) * batch_size));
   }
   for (const permit_ids of permit_idsArr) {
-    const permitModel = await findOnePermit({
-      ids: permit_ids,
-      menu_id: [ menuModel.id ],
-      code,
-    });
+    const permitModel = await findOnePermit(
+      {
+        ids: permit_ids,
+        menu_id: [ menuModel.id ],
+        code,
+      },
+      undefined,
+      options,
+    );
     if (permitModel) {
       return;
     }

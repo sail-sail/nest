@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -7,6 +8,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortDictDetail,
+} from "./dict_detail.model.ts";
 
 import {
   usePermit,
@@ -40,6 +45,8 @@ export async function findAllDictDetail(
     findAll,
   } = await import("./dict_detail.service.ts");
   
+  checkSortDictDetail(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +71,8 @@ export async function findOneDictDetail(
   const {
     findOne,
   } = await import("./dict_detail.service.ts");
+  
+  checkSortDictDetail(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,9 +108,8 @@ export async function createsDictDetail(
     creates,
   } = await import("./dict_detail.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/base/dict_detail",
@@ -135,9 +143,7 @@ export async function updateByIdDictDetail(
     updateById,
   } = await import("./dict_detail.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +166,7 @@ export async function deleteByIdsDictDetail(
     deleteByIds,
   } = await import("./dict_detail.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/dict_detail",
@@ -184,12 +188,11 @@ export async function enableByIdsDictDetail(
     enableByIds,
   } = await import("./dict_detail.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsDictDetail.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/dict_detail",
@@ -211,12 +214,11 @@ export async function lockByIdsDictDetail(
     lockByIds,
   } = await import("./dict_detail.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDictDetail.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/dict_detail",
@@ -237,9 +239,7 @@ export async function revertByIdsDictDetail(
     revertByIds,
   } = await import("./dict_detail.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/dict_detail",
@@ -255,18 +255,17 @@ export async function revertByIdsDictDetail(
 export async function forceDeleteByIdsDictDetail(
   ids: DictDetailId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./dict_detail.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/dict_detail",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./dict_detail.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

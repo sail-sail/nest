@@ -1,11 +1,15 @@
 import {
-  useContext,
+  set_is_tran,
 } from "/lib/context.ts";
 
 import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortBackgroundTask,
+} from "./background_task.model.ts";
 
 import {
   usePermit,
@@ -39,6 +43,8 @@ export async function findAllBackgroundTask(
     findAll,
   } = await import("./background_task.service.ts");
   
+  checkSortBackgroundTask(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,6 +69,8 @@ export async function findOneBackgroundTask(
   const {
     findOne,
   } = await import("./background_task.service.ts");
+  
+  checkSortBackgroundTask(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -95,9 +103,7 @@ export async function deleteByIdsBackgroundTask(
     deleteByIds,
   } = await import("./background_task.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/background_task",
@@ -118,9 +124,7 @@ export async function revertByIdsBackgroundTask(
     revertByIds,
   } = await import("./background_task.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/background_task",
@@ -136,18 +140,17 @@ export async function revertByIdsBackgroundTask(
 export async function forceDeleteByIdsBackgroundTask(
   ids: BackgroundTaskId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./background_task.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/background_task",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./background_task.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
