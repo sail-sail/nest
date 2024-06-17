@@ -16,7 +16,7 @@
     "file-saver": "2.0.5",
     "graphql": "17.0.0-alpha.3",
     "graphql-combine-query": "1.2.4",
-    "vue": "3.4.27",
+    "vue": "3.4.29",
     "vue-router": "4.3.3"
   },
   "devDependencies": {
@@ -26,7 +26,7 @@
     "@unocss/preset-rem-to-px": "0.61.0",
     "@vue-macros/nuxt": "1.9.36",
     "@vue-macros/reactivity-transform": "0.4.6",
-    "nuxt": "3.12.1",
+    "nuxt": "3.12.2",
     "sass": "1.77.5",
     "unocss": "0.61.0"
   }
