@@ -134,12 +134,16 @@ input TenantSearch {
   domain_ids_is_null: Boolean
   "所属域名"
   domain_ids_lbl: [String!]
+  "所属域名"
+  domain_ids_lbl_like: String
   "菜单权限"
   menu_ids: [MenuId!]
   "菜单权限"
   menu_ids_is_null: Boolean
   "菜单权限"
   menu_ids_lbl: [String!]
+  "菜单权限"
+  menu_ids_lbl_like: String
   "启用"
   is_enabled: [Int!]
   "创建人"

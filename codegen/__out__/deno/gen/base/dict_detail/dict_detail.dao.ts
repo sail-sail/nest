@@ -106,6 +106,9 @@ async function getWhereQuery(
   if (search?.dict_id_lbl != null) {
     whereQuery += ` and dict_id_lbl.lbl in ${ args.push(search.dict_id_lbl) }`;
   }
+  if (isNotEmpty(search?.dict_id_lbl_like)) {
+    whereQuery += ` and dict_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.dict_id_lbl_like) + "%") }`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }

@@ -102,6 +102,9 @@ async function getWhereQuery(
   if (search?.menu_id_lbl != null) {
     whereQuery += ` and menu_id_lbl.lbl in ${ args.push(search.menu_id_lbl) }`;
   }
+  if (isNotEmpty(search?.menu_id_lbl_like)) {
+    whereQuery += ` and menu_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.menu_id_lbl_like) + "%") }`;
+  }
   if (search?.code != null) {
     whereQuery += ` and t.code=${ args.push(search.code) }`;
   }
