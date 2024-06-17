@@ -3,6 +3,11 @@ import type {
   WxAppTokenModel as WxAppTokenModelType,
   WxAppTokenSearch as WxAppTokenSearchType,
   WxAppTokenFieldComment as WxAppTokenFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const wxAppTokenId: unique symbol;
@@ -61,4 +66,30 @@ declare global {
   interface WxAppTokenFieldComment extends WxAppTokenFieldCommentType {
   }
   
+}
+
+/** 小程序接口凭据 前端允许排序的字段 */
+export const canSortInApiWxAppToken = {
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 小程序接口凭据 检测字段是否允许前端排序 */
+export function checkSortWxAppToken(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortWxAppToken: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiWxAppToken;
+    if (!canSortInApiWxAppToken[prop]) {
+      throw new Error(`checkSortWxAppToken: ${ JSON.stringify(item) }`);
+    }
+  }
 }

@@ -158,6 +158,8 @@ input WxUsrSearch {
   usr_id_is_null: Boolean
   "用户"
   usr_id_lbl: [String!]
+  "用户"
+  usr_id_lbl_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
@@ -184,8 +186,6 @@ type Query {
   findByIdWxUsr(id: WxUsrId!): WxUsrModel
 }
 type Mutation {
-  "创建小程序用户"
-  createWxUsr(input: WxUsrInput!, unique_type: UniqueType): WxUsrId!
   "批量创建小程序用户"
   createsWxUsr(inputs: [WxUsrInput!]!, unique_type: UniqueType): [WxUsrId!]!
   "根据 id 修改小程序用户"

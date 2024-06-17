@@ -1,11 +1,15 @@
 import {
-  useContext,
+  set_is_tran,
 } from "/lib/context.ts";
 
 import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortWxPayNotice,
+} from "./wx_pay_notice.model.ts";
 
 import {
   usePermit,
@@ -39,6 +43,8 @@ export async function findAllWxPayNotice(
     findAll,
   } = await import("./wx_pay_notice.service.ts");
   
+  checkSortWxPayNotice(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,6 +69,8 @@ export async function findOneWxPayNotice(
   const {
     findOne,
   } = await import("./wx_pay_notice.service.ts");
+  
+  checkSortWxPayNotice(sort);
   
   const res = await findOne(search, sort);
   return res;

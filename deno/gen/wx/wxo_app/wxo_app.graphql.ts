@@ -158,6 +158,8 @@ input WxoAppSearch {
   domain_id_is_null: Boolean
   "网页授权域名"
   domain_id_lbl: [String!]
+  "网页授权域名"
+  domain_id_lbl_like: String
   "启用"
   is_enabled: [Int!]
   "创建人"
@@ -188,8 +190,6 @@ type Query {
   findLastOrderByWxoApp: Int!
 }
 type Mutation {
-  "创建公众号设置"
-  createWxoApp(input: WxoAppInput!, unique_type: UniqueType): WxoAppId!
   "批量创建公众号设置"
   createsWxoApp(inputs: [WxoAppInput!]!, unique_type: UniqueType): [WxoAppId!]!
   "根据 id 修改公众号设置"

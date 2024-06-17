@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -7,6 +8,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortWxoAppToken,
+} from "./wxo_app_token.model.ts";
 
 import {
   usePermit,
@@ -40,6 +45,8 @@ export async function findAllWxoAppToken(
     findAll,
   } = await import("./wxo_app_token.service.ts");
   
+  checkSortWxoAppToken(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +72,8 @@ export async function findOneWxoAppToken(
     findOne,
   } = await import("./wxo_app_token.service.ts");
   
+  checkSortWxoAppToken(sort);
+  
   const res = await findOne(search, sort);
   return res;
 }
@@ -86,39 +95,6 @@ export async function findByIdWxoAppToken(
 }
 
 /**
- * 创建小程序接口凭据
- */
-export async function createWxoAppToken(
-  input: WxoAppTokenInput,
-  unique_type?: UniqueType,
-): Promise<WxoAppTokenId> {
-  
-  input.id = undefined;
-  
-  const {
-    validate,
-    setIdByLbl,
-    create,
-  } = await import("./wxo_app_token.service.ts");
-  
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await setIdByLbl(input);
-  
-  await validate(input);
-  
-  await usePermit(
-    "/wx/wxo_app_token",
-    "add",
-  );
-  const uniqueType = unique_type;
-  const id = await create(input, { uniqueType });
-  return id;
-}
-
-/**
  * 批量创建小程序接口凭据
  */
 export async function createsWxoAppToken(
@@ -132,9 +108,8 @@ export async function createsWxoAppToken(
     creates,
   } = await import("./wxo_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wx/wxo_app_token",
@@ -168,9 +143,7 @@ export async function updateByIdWxoAppToken(
     updateById,
   } = await import("./wxo_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -193,9 +166,7 @@ export async function deleteByIdsWxoAppToken(
     deleteByIds,
   } = await import("./wxo_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wxo_app_token",
@@ -216,9 +187,7 @@ export async function revertByIdsWxoAppToken(
     revertByIds,
   } = await import("./wxo_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wxo_app_token",
@@ -234,18 +203,17 @@ export async function revertByIdsWxoAppToken(
 export async function forceDeleteByIdsWxoAppToken(
   ids: WxoAppTokenId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./wxo_app_token.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wxo_app_token",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./wxo_app_token.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

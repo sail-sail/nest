@@ -104,6 +104,8 @@ input WxoUsrSearch {
   usr_id_is_null: Boolean
   "用户"
   usr_id_lbl: [String!]
+  "用户"
+  usr_id_lbl_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
@@ -130,8 +132,6 @@ type Query {
   findByIdWxoUsr(id: WxoUsrId!): WxoUsrModel
 }
 type Mutation {
-  "创建公众号用户"
-  createWxoUsr(input: WxoUsrInput!, unique_type: UniqueType): WxoUsrId!
   "批量创建公众号用户"
   createsWxoUsr(inputs: [WxoUsrInput!]!, unique_type: UniqueType): [WxoUsrId!]!
   "根据 id 修改公众号用户"

@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -7,6 +8,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortWxoUsr,
+} from "./wxo_usr.model.ts";
 
 import {
   usePermit,
@@ -40,6 +45,8 @@ export async function findAllWxoUsr(
     findAll,
   } = await import("./wxo_usr.service.ts");
   
+  checkSortWxoUsr(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +71,8 @@ export async function findOneWxoUsr(
   const {
     findOne,
   } = await import("./wxo_usr.service.ts");
+  
+  checkSortWxoUsr(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,9 +108,8 @@ export async function createsWxoUsr(
     creates,
   } = await import("./wxo_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wx/wxo_usr",
@@ -135,9 +143,7 @@ export async function updateByIdWxoUsr(
     updateById,
   } = await import("./wxo_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +166,7 @@ export async function deleteByIdsWxoUsr(
     deleteByIds,
   } = await import("./wxo_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wxo_usr",
@@ -183,9 +187,7 @@ export async function revertByIdsWxoUsr(
     revertByIds,
   } = await import("./wxo_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wxo_usr",
@@ -201,18 +203,17 @@ export async function revertByIdsWxoUsr(
 export async function forceDeleteByIdsWxoUsr(
   ids: WxoUsrId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./wxo_usr.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wx/wxo_usr",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./wxo_usr.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

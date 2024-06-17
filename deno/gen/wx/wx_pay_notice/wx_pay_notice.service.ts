@@ -152,21 +152,6 @@ export async function validate(
 }
 
 /**
- * 创建微信支付通知
- * @param {WxPayNoticeInput} input
- * @return {Promise<WxPayNoticeId>} id
- */
-export async function create(
-  input: WxPayNoticeInput,
-  options?: {
-    uniqueType?: UniqueType;
-  },
-): Promise<WxPayNoticeId> {
-  const id = await wx_pay_noticeDao.create(input, options);
-  return id;
-}
-
-/**
  * 批量创建微信支付通知
  * @param {WxPayNoticeInput[]} inputs
  * @return {Promise<WxPayNoticeId[]>} ids
