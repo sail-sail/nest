@@ -3,6 +3,11 @@ import type {
   JobModel as JobModelType,
   JobSearch as JobSearchType,
   JobFieldComment as JobFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const jobId: unique symbol;
@@ -60,4 +65,32 @@ declare global {
   interface JobFieldComment extends JobFieldCommentType {
   }
   
+}
+
+/** 任务 前端允许排序的字段 */
+export const canSortInApiJob = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 任务 检测字段是否允许前端排序 */
+export function checkSortJob(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortJob: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiJob;
+    if (!canSortInApiJob[prop]) {
+      throw new Error(`checkSortJob: ${ JSON.stringify(item) }`);
+    }
+  }
 }

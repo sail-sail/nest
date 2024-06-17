@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortCronJob,
+} from "./cron_job.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -43,6 +47,8 @@ export async function findAllCronJob(
     findAll,
   } = await import("./cron_job.service.ts");
   
+  checkSortCronJob(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -67,6 +73,8 @@ export async function findOneCronJob(
   const {
     findOne,
   } = await import("./cron_job.service.ts");
+  
+  checkSortCronJob(sort);
   
   const res = await findOne(search, sort);
   return res;

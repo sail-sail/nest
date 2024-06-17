@@ -140,6 +140,8 @@ input CronJobSearch {
   job_id_is_null: Boolean
   "任务"
   job_id_lbl: [String!]
+  "任务"
+  job_id_lbl_like: String
   "启用"
   is_enabled: [Int!]
   "创建人"

@@ -122,6 +122,9 @@ async function getWhereQuery(
   if (search?.cron_job_id_lbl != null) {
     whereQuery += ` and cron_job_id_lbl.lbl in ${ args.push(search.cron_job_id_lbl) }`;
   }
+  if (isNotEmpty(search?.cron_job_id_lbl_like)) {
+    whereQuery += ` and cron_job_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.cron_job_id_lbl_like) + "%") }`;
+  }
   if (search?.exec_state != null) {
     whereQuery += ` and t.exec_state in ${ args.push(search.exec_state) }`;
   }

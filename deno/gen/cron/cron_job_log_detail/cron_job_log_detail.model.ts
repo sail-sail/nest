@@ -3,6 +3,11 @@ import type {
   CronJobLogDetailModel as CronJobLogDetailModelType,
   CronJobLogDetailSearch as CronJobLogDetailSearchType,
   CronJobLogDetailFieldComment as CronJobLogDetailFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const cronJobLogDetailId: unique symbol;
@@ -55,4 +60,30 @@ declare global {
   interface CronJobLogDetailFieldComment extends CronJobLogDetailFieldCommentType {
   }
   
+}
+
+/** 任务执行日志明细 前端允许排序的字段 */
+export const canSortInApiCronJobLogDetail = {
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 任务执行日志明细 检测字段是否允许前端排序 */
+export function checkSortCronJobLogDetail(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortCronJobLogDetail: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiCronJobLogDetail;
+    if (!canSortInApiCronJobLogDetail[prop]) {
+      throw new Error(`checkSortCronJobLogDetail: ${ JSON.stringify(item) }`);
+    }
+  }
 }
