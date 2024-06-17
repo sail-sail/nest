@@ -77,6 +77,8 @@ input WxwAppTokenSearch {
   wxw_app_id_is_null: Boolean
   "企微应用"
   wxw_app_id_lbl: [String!]
+  "企微应用"
+  wxw_app_id_lbl_like: String
 }
 type Query {
   "根据条件查找企微应用接口凭据总数"
