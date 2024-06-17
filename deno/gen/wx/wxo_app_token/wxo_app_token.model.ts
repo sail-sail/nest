@@ -26,13 +26,17 @@ declare global {
     expires_in?: number[];
     /** 创建人 */
     create_usr_id?: UsrId[];
+    /** 创建人 */
     create_usr_id_is_null?: boolean;
+    /** 创建人 */
     create_usr_id_lbl?: string[];
     /** 创建时间 */
     create_time?: string[];
     /** 更新人 */
     update_usr_id?: UsrId[];
+    /** 更新人 */
     update_usr_id_is_null?: boolean;
+    /** 更新人 */
     update_usr_id_lbl?: string[];
     /** 更新时间 */
     update_time?: string[];
