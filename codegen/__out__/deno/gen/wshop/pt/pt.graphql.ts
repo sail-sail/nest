@@ -182,6 +182,8 @@ input PtSearch {
   pt_type_ids_is_null: Boolean
   "产品类别"
   pt_type_ids_lbl: [String!]
+  "产品类别"
+  pt_type_ids_lbl_like: String
   "启用"
   is_enabled: [Int!]
   "创建人"
@@ -190,12 +192,16 @@ input PtSearch {
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
+  "创建人"
+  create_usr_id_lbl_like: String
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
+  "更新人"
+  update_usr_id_lbl_like: String
 }
 type Query {
   "根据条件查找产品总数"

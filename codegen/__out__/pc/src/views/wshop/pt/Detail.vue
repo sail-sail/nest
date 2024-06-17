@@ -79,17 +79,16 @@
           <el-form-item
             :label="n('图标')"
             prop="img"
-            class="img_form_item"
+            un-w="full"
+            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.img"
               :max-size="4"
               :readonly="isLocked || isReadonly"
+              :inited
             ></UploadImage>
           </el-form-item>
-          
-          <div></div>
-          
         </template>
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
@@ -232,37 +231,32 @@
           <el-form-item
             :label="n('详情顶部图片')"
             prop="detail_top_img"
-            class="img_form_item"
+            un-w="full"
+            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.detail_top_img"
               :max-size="8"
               :readonly="isLocked || isReadonly"
+              :inited
             ></UploadImage>
           </el-form-item>
-          
-          <div></div>
-          
         </template>
         
         <template v-if="(showBuildIn || builtInModel?.detail_bottom_img == null)">
-          
-          <div></div>
-          
           <el-form-item
             :label="n('详情底部图片')"
             prop="detail_bottom_img"
-            class="img_form_item"
+            un-w="full"
+            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.detail_bottom_img"
               :max-size="8"
               :readonly="isLocked || isReadonly"
+              :inited
             ></UploadImage>
           </el-form-item>
-          
-          <div></div>
-          
         </template>
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">

@@ -70,6 +70,7 @@ declare global {
     update_time?: string[];
     /** 组织 */
     org_id?: OrgId[];
+    /** 组织 */
     org_id_is_null?: boolean;
     /** 组织 */
     org_id_lbl?: string[];

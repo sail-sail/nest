@@ -1,6 +1,8 @@
 // deno-lint-ignore-file prefer-const no-unused-vars ban-types
 import {
-  useContext,
+  get_is_debug,
+  get_is_silent_mode,
+  get_is_creating,
 } from "/lib/context.ts";
 
 import {
@@ -71,10 +73,6 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  existById as existByIdOrg,
-} from "/gen/base/org/org.dao.ts";
-
-import {
   many2manyUpdate,
 } from "/lib/util/dao_util.ts";
 
@@ -97,8 +95,8 @@ const route_path = "/wshop/pt";
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<PtSearch>,
-  options?: Readonly<{
-  }>,
+  options?: {
+  },
 ): Promise<string> {
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
@@ -214,6 +212,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and create_usr_id_lbl.lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and create_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.create_usr_id_lbl_like) + "%") }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -230,6 +231,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and update_usr_id_lbl.lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and update_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.update_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -248,6 +252,9 @@ async function getWhereQuery(
   if (search?.org_id_lbl != null) {
     whereQuery += ` and org_id_lbl.lbl in ${ args.push(search.org_id_lbl) }`;
   }
+  if (isNotEmpty(search?.org_id_lbl_like)) {
+    whereQuery += ` and org_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.org_id_lbl_like) + "%") }`;
+  }
   return whereQuery;
 }
 
@@ -255,47 +262,51 @@ async function getWhereQuery(
 async function getFromQuery(
   args: QueryArgs,
   search?: Readonly<PtSearch>,
-  options?: Readonly<{
-  }>,
+  options?: {
+  },
 ) {
+  
   const is_deleted = search?.is_deleted ?? 0;
   let fromQuery = `wshop_pt t
-    left join wshop_pt_pt_type
-      on wshop_pt_pt_type.pt_id=t.id
-      and wshop_pt_pt_type.is_deleted=${ args.push(is_deleted) }
-    left join wshop_pt_type
-      on wshop_pt_pt_type.pt_type_id=wshop_pt_type.id
-      and wshop_pt_type.is_deleted=${ args.push(is_deleted) }
-    left join(select
-    json_objectagg(wshop_pt_pt_type.order_by,wshop_pt_type.id) pt_type_ids,
-    json_objectagg(wshop_pt_pt_type.order_by,wshop_pt_type.lbl) pt_type_ids_lbl,
-    wshop_pt.id pt_id
-    from wshop_pt_pt_type
-    inner join wshop_pt_type on wshop_pt_type.id=wshop_pt_pt_type.pt_type_id
-    inner join wshop_pt on wshop_pt.id=wshop_pt_pt_type.pt_id
-    where wshop_pt_pt_type.is_deleted=${ args.push(is_deleted) }
-    group by pt_id) _pt_type on _pt_type.pt_id=t.id
-    left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
-    left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id
-    left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
+  left join wshop_pt_pt_type
+    on wshop_pt_pt_type.pt_id=t.id
+    and wshop_pt_pt_type.is_deleted=${ args.push(is_deleted) }
+  left join wshop_pt_type
+    on wshop_pt_pt_type.pt_type_id=wshop_pt_type.id
+    and wshop_pt_type.is_deleted=${ args.push(is_deleted) }
+  left join(select
+  json_objectagg(wshop_pt_pt_type.order_by,wshop_pt_type.id) pt_type_ids,
+  json_objectagg(wshop_pt_pt_type.order_by,wshop_pt_type.lbl) pt_type_ids_lbl,
+  wshop_pt.id pt_id
+  from wshop_pt_pt_type
+  inner join wshop_pt_type on wshop_pt_type.id=wshop_pt_pt_type.pt_type_id
+  inner join wshop_pt on wshop_pt.id=wshop_pt_pt_type.pt_id
+  where wshop_pt_pt_type.is_deleted=${ args.push(is_deleted) }
+  group by pt_id) _pt_type on _pt_type.pt_id=t.id
+  left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
+  left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id
+  left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找产品总数
- * @param { PtSearch } search?
+ * @param {PtSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
   search?: Readonly<PtSearch>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
+  
   const table = "wshop_pt";
   const method = "findCount";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -304,6 +315,8 @@ export async function findCount(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   const args = new QueryArgs();
@@ -335,15 +348,18 @@ export async function findAll(
   search?: Readonly<PtSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput | SortInput[],
-  options?: Readonly<{
-    debug?: boolean;
+  options?: {
+    is_debug?: boolean;
     ids_limit?: number;
-  }>,
+  },
 ): Promise<PtModel[]> {
+  
   const table = "wshop_pt";
   const method = "findAll";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -358,6 +374,8 @@ export async function findAll(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search?.id === "") {
@@ -502,7 +520,7 @@ export async function findAll(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
-  const debug = getParsedEnv("database_debug_sql") === "true";
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const result = await query<PtModel>(
     sql,
@@ -510,7 +528,7 @@ export async function findAll(
     {
       cacheKey1,
       cacheKey2,
-      debug,
+      debug: is_debug_sql,
     },
   );
   for (const item of result) {
@@ -622,6 +640,10 @@ export async function setIdByLbl(
   input: PtInput,
 ) {
   
+  const options = {
+    is_debug: false,
+  };
+  
   const [
     is_newDict, // 新品
     is_lockedDict, // 锁定
@@ -641,19 +663,14 @@ export async function setIdByLbl(
     if (input.pt_type_ids_lbl.length === 0) {
       input.pt_type_ids = [ ];
     } else {
-      const debug = getParsedEnv("database_debug_sql") === "true";
+      const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `select
-          t.id
-        from
-          wshop_pt_type t
-        where
-          t.lbl in ${ args.push(input.pt_type_ids_lbl) }`;
+      const sql = `select t.id from wshop_pt_type t where t.lbl in ${ args.push(input.pt_type_ids_lbl) }`;
       interface Result {
         id: PtTypeId;
       }
       const models = await query<Result>(sql, args, {
-        debug,
+        debug: is_debug_sql,
       });
       input.pt_type_ids = models.map((item: { id: PtTypeId }) => item.id);
     }
@@ -728,15 +745,17 @@ export async function getFieldComments(): Promise<PtFieldComment> {
  */
 export async function findByUnique(
   search0: Readonly<PtInput>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<PtModel[]> {
   
   const table = "wshop_pt";
   const method = "findByUnique";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search0) {
       msg += ` search0:${ getDebugSearch(search0) }`;
@@ -745,12 +764,18 @@ export async function findByUnique(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search0.id) {
-    const model = await findOne({
-      id: search0.id,
-    }, undefined, options);
+    const model = await findOne(
+      {
+        id: search0.id,
+      },
+      undefined,
+      options,
+    );
     if (!model) {
       return [ ];
     }
@@ -762,11 +787,17 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll({
-      lbl,
-    }, undefined, undefined, options);
+    const modelTmps = await findAll(
+      {
+        lbl,
+      },
+      undefined,
+      undefined,
+      options,
+    );
     models.push(...modelTmps);
   }
+  
   return models;
 }
 
@@ -780,6 +811,7 @@ export function equalsByUnique(
   oldModel: Readonly<PtModel>,
   input: Readonly<PtInput>,
 ): boolean {
+  
   if (!oldModel || !input) {
     return false;
   }
@@ -802,10 +834,16 @@ export async function checkByUnique(
   input: Readonly<PtInput>,
   oldModel: Readonly<PtModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<PtId | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const isEquals = equalsByUnique(oldModel, input);
+  
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException(await ns("此 {0} 已经存在", await ns("产品")));
@@ -835,15 +873,17 @@ export async function checkByUnique(
 export async function findOne(
   search?: Readonly<PtSearch>,
   sort?: SortInput | SortInput[],
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<PtModel | undefined> {
   
   const table = "wshop_pt";
   const method = "findOne";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -855,10 +895,8 @@ export async function findOne(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (search && search.ids && search.ids.length === 0) {
@@ -868,7 +906,12 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(search, page, sort, options);
+  const models = await findAll(
+    search,
+    page,
+    sort,
+    options,
+  );
   const model = models[0];
   return model;
 }
@@ -879,15 +922,17 @@ export async function findOne(
  */
 export async function findById(
   id?: PtId | null,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<PtModel | undefined> {
   
   const table = "wshop_pt";
   const method = "findById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id }`;
@@ -896,10 +941,8 @@ export async function findById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!id) {
@@ -920,15 +963,17 @@ export async function findById(
 /** 根据 ids 查找产品 */
 export async function findByIds(
   ids: PtId[],
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<PtModel[]> {
   
   const table = "wshop_pt";
   const method = "findByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ ids }`;
@@ -937,10 +982,8 @@ export async function findByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || ids.length === 0) {
@@ -977,15 +1020,17 @@ export async function findByIds(
  */
 export async function exist(
   search?: Readonly<PtSearch>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<boolean> {
   
   const table = "wshop_pt";
   const method = "exist";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
@@ -994,13 +1039,12 @@ export async function exist(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   const model = await findOne(search, undefined, options);
   const exist = !!model;
+  
   return exist;
 }
 
@@ -1010,20 +1054,24 @@ export async function exist(
  */
 export async function existById(
   id?: Readonly<PtId | null>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ) {
   
   const table = "wshop_pt";
   const method = "existById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (id == null) {
@@ -1036,12 +1084,18 @@ export async function existById(
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
   
+  const queryOptions = {
+    cacheKey1,
+    cacheKey2,
+  };
+  
   interface Result {
     e: number,
   }
   const model = await queryOne<Result>(
     sql,
-    args,{ cacheKey1, cacheKey2 },
+    args,
+    queryOptions,
   );
   const result = !!model?.e;
   
@@ -1168,18 +1222,20 @@ export async function validate(
  */
 export async function create(
   input: Readonly<PtInput>,
-  options?: Readonly<{
-    debug?: boolean;
+  options?: {
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
-  }>,
+    is_silent_mode?: boolean;
+  },
 ): Promise<PtId> {
   
   const table = "wshop_pt";
   const method = "create";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (input) {
       msg += ` input:${ JSON.stringify(input) }`;
@@ -1188,10 +1244,8 @@ export async function create(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!input) {
@@ -1218,18 +1272,20 @@ export async function create(
  */
 export async function creates(
   inputs: PtInput[],
-  options?: Readonly<{
-    debug?: boolean;
+  options?: {
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
-  }>,
+    is_silent_mode?: boolean;
+  },
 ): Promise<PtId[]> {
   
   const table = "wshop_pt";
   const method = "creates";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (inputs) {
       msg += ` inputs:${ JSON.stringify(inputs) }`;
@@ -1238,10 +1294,8 @@ export async function creates(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
-    options = {
-      ...options,
-      debug: false,
-    };
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   const ids = await _creates(inputs, options);
@@ -1251,12 +1305,12 @@ export async function creates(
 
 async function _creates(
   inputs: PtInput[],
-  options?: Readonly<{
-    debug?: boolean;
+  options?: {
+    is_debug?: boolean;
     uniqueType?: UniqueType;
     hasDataPermit?: boolean;
-    silentMode?: boolean;
-  }>,
+    is_silent_mode?: boolean;
+  },
 ): Promise<PtId[]> {
   
   if (inputs.length === 0) {
@@ -1265,8 +1319,7 @@ async function _creates(
   
   const table = "wshop_pt";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   
   const ids2: PtId[] = [ ];
   const inputs2: PtInput[] = [ ];
@@ -1338,7 +1391,7 @@ async function _creates(
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (!silentMode) {
+      if (!is_silent_mode) {
         if (input.create_time != null || input.create_time_save_null) {
           sql += `,${ args.push(input.create_time) }`;
         } else {
@@ -1369,7 +1422,7 @@ async function _creates(
       } else {
         sql += `,${ args.push(input.tenant_id) }`;
       }
-      if (!silentMode) {
+      if (!is_silent_mode) {
         if (input.create_usr_id == null) {
           const authModel = await getAuthModel();
           if (authModel?.id != null) {
@@ -1478,11 +1531,16 @@ async function _creates(
   
   await delCache();
   
-  const debug = getParsedEnv("database_debug_sql") === "true";
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await execute(sql, args, {
-    debug,
+  const res = await execute(sql, args, {
+    debug: is_debug_sql,
   });
+  const affectedRows = res.affectedRows;
+  
+  if (affectedRows !== inputs2.length) {
+    throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
+  }
   
   for (let i = 0; i < inputs2.length; i++) {
     const input = inputs2[i];
@@ -1523,14 +1581,17 @@ export async function delCache() {
 export async function updateTenantById(
   id: PtId,
   tenant_id: Readonly<TenantId>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
+  
   const table = "wshop_pt";
   const method = "updateTenantById";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id } `;
@@ -1542,20 +1603,22 @@ export async function updateTenantById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
-  const tenantExist = await existByIdTenant(tenant_id);
+  const tenantExist = await existByIdTenant(tenant_id, options);
   if (!tenantExist) {
     return 0;
   }
   
   const args = new QueryArgs();
   const sql = `update wshop_pt set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
+  const res = await execute(sql, args);
+  const affectedRows = res.affectedRows;
   
   await delCache();
-  return num;
+  return affectedRows;
 }
 
 /**
@@ -1563,8 +1626,8 @@ export async function updateTenantById(
  * @param {PtId} id
  * @param {PtInput} input
  * @param {({
- *   uniqueType?: "ignore" | "throw" | "update",
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
+ *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
+ * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
  *   ignore: 忽略冲突
  *   throw: 抛出异常
  *   create: 级联插入新数据
@@ -1573,20 +1636,22 @@ export async function updateTenantById(
 export async function updateById(
   id: PtId,
   input: PtInput,
-  options?: Readonly<{
-    debug?: boolean;
-    uniqueType?: "ignore" | "throw";
-    silentMode?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+    uniqueType?: Exclude<UniqueType, UniqueType.Update>;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
 ): Promise<PtId> {
   
   const table = "wshop_pt";
   const method = "updateById";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_debug = get_is_debug(options?.is_debug);
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
+  const is_creating = get_is_creating(options?.is_creating);
   
-  if (options?.debug !== false) {
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (id) {
       msg += ` id:${ id }`;
@@ -1598,6 +1663,8 @@ export async function updateById(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!id) {
@@ -1609,7 +1676,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id as unknown as TenantId);
+    await updateTenantById(id, input.tenant_id, options);
   }
   
   {
@@ -1617,10 +1684,10 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2);
+    let models = await findByUnique(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      if (!options || options.uniqueType === UniqueType.Throw) {
+      if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
         throw await ns("此 {0} 已经存在", await ns("产品"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
@@ -1628,7 +1695,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id);
+  const oldModel = await findById(id, options);
   
   if (!oldModel) {
     throw await ns("编辑失败, 此 {0} 已被删除", await ns("产品"));
@@ -1759,7 +1826,7 @@ export async function updateById(
   );
   
   if (updateFldNum > 0) {
-    if (!silentMode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
@@ -1771,7 +1838,7 @@ export async function updateById(
     } else if (input.update_usr_id != null) {
       sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
     }
-    if (!silentMode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
@@ -1796,8 +1863,8 @@ export async function updateById(
     await delCache();
   }
   
-  if (!silentMode) {
-    const newModel = await findById(id);
+  if (!is_silent_mode) {
+    const newModel = await findById(id, options);
     
     if (!deepCompare(oldModel, newModel)) {
       log(JSON.stringify(oldModel));
@@ -1814,19 +1881,21 @@ export async function updateById(
  */
 export async function deleteByIds(
   ids: PtId[],
-  options?: Readonly<{
-    debug?: boolean;
-    silentMode?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+    is_silent_mode?: boolean;
+    is_creating?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wshop_pt";
   const method = "deleteByIds";
   
-  const context = useContext();
-  const silentMode = options?.silentMode ?? context.silentMode;
+  const is_debug = get_is_debug(options?.is_debug);
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
+  const is_creating = get_is_creating(options?.is_creating);
   
-  if (options?.debug !== false) {
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1835,6 +1904,8 @@ export async function deleteByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1843,26 +1914,26 @@ export async function deleteByIds(
   
   await delCache();
   
-  let num = 0;
+  let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id);
+    const oldModel = await findById(id, options);
     if (!oldModel) {
       continue;
     }
     const args = new QueryArgs();
     let sql = `update wshop_pt set is_deleted=1`;
-    if (!silentMode) {
+    if (!is_silent_mode && !is_creating) {
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
+    const res = await execute(sql, args);
+    affectedRows += res.affectedRows;
   }
   
   await delCache();
   
-  return num;
+  return affectedRows;
 }
 
 /**
@@ -1873,14 +1944,20 @@ export async function deleteByIds(
  */
 export async function getIsEnabledById(
   id: PtId,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<0 | 1 | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const model = await findById(
     id,
     options,
   );
   const is_enabled = model?.is_enabled as (0 | 1 | undefined);
+  
   return is_enabled;
 }
 
@@ -1893,15 +1970,17 @@ export async function getIsEnabledById(
 export async function enableByIds(
   ids: PtId[],
   is_enabled: Readonly<0 | 1>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wshop_pt";
   const method = "enableByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1913,6 +1992,8 @@ export async function enableByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -1942,14 +2023,20 @@ export async function enableByIds(
  */
 export async function getIsLockedById(
   id: PtId,
-  options?: Readonly<{
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<0 | 1 | undefined> {
+  
+  options = options ?? { };
+  options.is_debug = false;
+  
   const model = await findById(
     id,
     options,
   );
   const is_locked = model?.is_locked as (0 | 1 | undefined);
+  
   return is_locked;
 }
 
@@ -1962,15 +2049,17 @@ export async function getIsLockedById(
 export async function lockByIds(
   ids: PtId[],
   is_locked: Readonly<0 | 1>,
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wshop_pt";
   const method = "lockByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -1982,6 +2071,8 @@ export async function lockByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -2007,15 +2098,17 @@ export async function lockByIds(
  */
 export async function revertByIds(
   ids: PtId[],
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wshop_pt";
   const method = "revertByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -2024,6 +2117,8 @@ export async function revertByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -2041,7 +2136,10 @@ export async function revertByIds(
     num += result.affectedRows;
     // 检查数据的唯一索引
     {
-      const old_model = await findById(id);
+      const old_model = await findById(
+        id,
+        options,
+      );
       if (!old_model) {
         continue;
       }
@@ -2049,7 +2147,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as PtInput;
-      let models = await findByUnique(input);
+      let models = await findByUnique(input, options);
       models = models.filter((item) => item.id !== id);
       if (models.length > 0) {
         throw await ns("此 {0} 已经存在", await ns("产品"));
@@ -2069,15 +2167,17 @@ export async function revertByIds(
  */
 export async function forceDeleteByIds(
   ids: PtId[],
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wshop_pt";
   const method = "forceDeleteByIds";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (ids) {
       msg += ` ids:${ JSON.stringify(ids) }`;
@@ -2086,6 +2186,8 @@ export async function forceDeleteByIds(
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   if (!ids || !ids.length) {
@@ -2119,20 +2221,24 @@ export async function forceDeleteByIds(
  * @return {Promise<number>}
  */
 export async function findLastOrderBy(
-  options?: Readonly<{
-    debug?: boolean;
-  }>,
+  options?: {
+    is_debug?: boolean;
+  },
 ): Promise<number> {
   
   const table = "wshop_pt";
   const method = "findLastOrderBy";
   
-  if (options?.debug !== false) {
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
     log(msg);
+    options = options ?? { };
+    options.is_debug = false;
   }
   
   let sql = `select t.order_by order_by from wshop_pt t`;

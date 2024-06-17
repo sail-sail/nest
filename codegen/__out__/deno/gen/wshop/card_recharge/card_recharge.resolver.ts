@@ -1,5 +1,5 @@
 import {
-  useContext,
+  set_is_tran,
 } from "/lib/context.ts";
 
 import Decimal from "decimal.js";
@@ -8,6 +8,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortCardRecharge,
+} from "./card_recharge.model.ts";
 
 import {
   usePermit,
@@ -41,6 +45,8 @@ export async function findAllCardRecharge(
     findAll,
   } = await import("./card_recharge.service.ts");
   
+  checkSortCardRecharge(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneCardRecharge(
   const {
     findOne,
   } = await import("./card_recharge.service.ts");
+  
+  checkSortCardRecharge(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -97,9 +105,7 @@ export async function deleteByIdsCardRecharge(
     deleteByIds,
   } = await import("./card_recharge.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/card_recharge",
@@ -120,9 +126,7 @@ export async function revertByIdsCardRecharge(
     revertByIds,
   } = await import("./card_recharge.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/card_recharge",
@@ -138,18 +142,17 @@ export async function revertByIdsCardRecharge(
 export async function forceDeleteByIdsCardRecharge(
   ids: CardRechargeId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./card_recharge.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/card_recharge",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./card_recharge.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import Decimal from "decimal.js";
@@ -9,6 +10,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortRechargeRule,
+} from "./recharge_rule.model.ts";
 
 import {
   usePermit,
@@ -42,6 +47,8 @@ export async function findAllRechargeRule(
     findAll,
   } = await import("./recharge_rule.service.ts");
   
+  checkSortRechargeRule(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -66,6 +73,8 @@ export async function findOneRechargeRule(
   const {
     findOne,
   } = await import("./recharge_rule.service.ts");
+  
+  checkSortRechargeRule(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -101,9 +110,8 @@ export async function createsRechargeRule(
     creates,
   } = await import("./recharge_rule.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/wshop/recharge_rule",
@@ -157,9 +165,7 @@ export async function updateByIdRechargeRule(
     updateById,
   } = await import("./recharge_rule.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -182,9 +188,7 @@ export async function deleteByIdsRechargeRule(
     deleteByIds,
   } = await import("./recharge_rule.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/recharge_rule",
@@ -206,12 +210,11 @@ export async function enableByIdsRechargeRule(
     enableByIds,
   } = await import("./recharge_rule.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsRechargeRule.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/recharge_rule",
@@ -233,12 +236,11 @@ export async function lockByIdsRechargeRule(
     lockByIds,
   } = await import("./recharge_rule.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsRechargeRule.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/recharge_rule",
@@ -259,9 +261,7 @@ export async function revertByIdsRechargeRule(
     revertByIds,
   } = await import("./recharge_rule.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/recharge_rule",
@@ -277,18 +277,17 @@ export async function revertByIdsRechargeRule(
 export async function forceDeleteByIdsRechargeRule(
   ids: RechargeRuleId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./recharge_rule.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/wshop/recharge_rule",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./recharge_rule.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
