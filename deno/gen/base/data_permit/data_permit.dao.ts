@@ -2,6 +2,7 @@
 import {
   get_is_debug,
   get_is_silent_mode,
+  get_is_creating,
 } from "/lib/context.ts";
 
 import {
@@ -107,6 +108,9 @@ async function getWhereQuery(
   if (search?.menu_id_lbl != null) {
     whereQuery += ` and menu_id_lbl.lbl in ${ args.push(search.menu_id_lbl) }`;
   }
+  if (isNotEmpty(search?.menu_id_lbl_like)) {
+    whereQuery += ` and menu_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.menu_id_lbl_like) + "%") }`;
+  }
   if (search?.scope != null) {
     whereQuery += ` and t.scope in ${ args.push(search.scope) }`;
   }
@@ -164,13 +168,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_data_permit t
-    left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
+  left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找数据权限总数
- * @param { DataPermitSearch } search?
+ * @param {DataPermitSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
@@ -1253,12 +1257,13 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await execute(sql, args, {
+  const res = await execute(sql, args, {
     debug: is_debug_sql,
   });
+  const affectedRows = res.affectedRows;
   
-  for (let i = 0; i < inputs2.length; i++) {
-    const input = inputs2[i];
+  if (affectedRows !== inputs2.length) {
+    throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
   await delCache();
@@ -1292,6 +1297,7 @@ export async function updateById(
     is_debug?: boolean;
     uniqueType?: Exclude<UniqueType, UniqueType.Update>;
     is_silent_mode?: boolean;
+    is_creating?: boolean;
   },
 ): Promise<DataPermitId> {
   
@@ -1300,6 +1306,7 @@ export async function updateById(
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
+  const is_creating = get_is_creating(options?.is_creating);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1332,7 +1339,7 @@ export async function updateById(
     let models = await findByUnique(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      if (!options || options.uniqueType === UniqueType.Throw) {
+      if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
         throw await ns("此 {0} 已经存在", await ns("数据权限"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
@@ -1399,7 +1406,7 @@ export async function updateById(
   let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         let usr_id: UsrId | undefined = authModel?.id;
@@ -1442,7 +1449,7 @@ export async function updateById(
         sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
       }
     }
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
@@ -1488,6 +1495,7 @@ export async function deleteByIds(
   options?: {
     is_debug?: boolean;
     is_silent_mode?: boolean;
+    is_creating?: boolean;
   },
 ): Promise<number> {
   
@@ -1496,6 +1504,7 @@ export async function deleteByIds(
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
+  const is_creating = get_is_creating(options?.is_creating);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1516,7 +1525,7 @@ export async function deleteByIds(
   
   await delCache();
   
-  let num = 0;
+  let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const oldModel = await findById(id, options);
@@ -1525,7 +1534,7 @@ export async function deleteByIds(
     }
     const args = new QueryArgs();
     let sql = `update base_data_permit set is_deleted=1`;
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       const authModel = await getAuthModel();
       let usr_id: UsrId | undefined = authModel?.id;
       if (usr_id != null) {
@@ -1533,7 +1542,7 @@ export async function deleteByIds(
       }
       let usr_lbl = "";
       if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
+        const usr_model = await findByIdUsr(usr_id, options);
         if (!usr_model) {
           usr_id = undefined;
         } else {
@@ -1546,13 +1555,13 @@ export async function deleteByIds(
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
+    const res = await execute(sql, args);
+    affectedRows += res.affectedRows;
   }
   
   await delCache();
   
-  return num;
+  return affectedRows;
 }
 
 /**

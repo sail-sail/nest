@@ -789,7 +789,9 @@ input <#=searchName#> {<#
     } else if (foreignKey.lbl) {
   #>
   "<#=column_comment#>"
-  <#=column_name#>_lbl: [String!]<#
+  <#=column_name#>_<#=foreignKey.lbl#>: [String!]
+  "<#=column_comment#>"
+  <#=column_name#>_<#=foreignKey.lbl#>_like: String<#
     }
   #><#
     } else if (column.dict || column.dictbiz) {

@@ -3,6 +3,11 @@ import type {
   OptionsModel as OptionsModelType,
   OptionsSearch as OptionsSearchType,
   OptionsFieldComment as OptionsFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const optionsId: unique symbol;
@@ -60,4 +65,32 @@ declare global {
   interface OptionsFieldComment extends OptionsFieldCommentType {
   }
   
+}
+
+/** 系统选项 前端允许排序的字段 */
+export const canSortInApiOptions = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 系统选项 检测字段是否允许前端排序 */
+export function checkSortOptions(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortOptions: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiOptions;
+    if (!canSortInApiOptions[prop]) {
+      throw new Error(`checkSortOptions: ${ JSON.stringify(item) }`);
+    }
+  }
 }

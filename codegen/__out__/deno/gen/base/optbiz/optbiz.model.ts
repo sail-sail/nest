@@ -3,6 +3,11 @@ import type {
   OptbizModel as OptbizModelType,
   OptbizSearch as OptbizSearchType,
   OptbizFieldComment as OptbizFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const optbizId: unique symbol;
@@ -63,4 +68,32 @@ declare global {
   interface OptbizFieldComment extends OptbizFieldCommentType {
   }
   
+}
+
+/** 业务选项 前端允许排序的字段 */
+export const canSortInApiOptbiz = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 业务选项 检测字段是否允许前端排序 */
+export function checkSortOptbiz(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortOptbiz: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiOptbiz;
+    if (!canSortInApiOptbiz[prop]) {
+      throw new Error(`checkSortOptbiz: ${ JSON.stringify(item) }`);
+    }
+  }
 }
