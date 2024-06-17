@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -7,6 +8,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortCompany,
+} from "./company.model.ts";
 
 import {
   usePermit,
@@ -40,6 +45,8 @@ export async function findAllCompany(
     findAll,
   } = await import("./company.service.ts");
   
+  checkSortCompany(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +71,8 @@ export async function findOneCompany(
   const {
     findOne,
   } = await import("./company.service.ts");
+  
+  checkSortCompany(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,9 +108,8 @@ export async function createsCompany(
     creates,
   } = await import("./company.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
     "/eams/company",
@@ -135,9 +143,7 @@ export async function updateByIdCompany(
     updateById,
   } = await import("./company.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
@@ -160,9 +166,7 @@ export async function deleteByIdsCompany(
     deleteByIds,
   } = await import("./company.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/eams/company",
@@ -184,12 +188,11 @@ export async function enableByIdsCompany(
     enableByIds,
   } = await import("./company.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsCompany.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/eams/company",
@@ -211,12 +214,11 @@ export async function lockByIdsCompany(
     lockByIds,
   } = await import("./company.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsCompany.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
+  
+  set_is_tran(true);
   
   await usePermit(
     "/eams/company",
@@ -237,9 +239,7 @@ export async function revertByIdsCompany(
     revertByIds,
   } = await import("./company.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/eams/company",
@@ -255,18 +255,17 @@ export async function revertByIdsCompany(
 export async function forceDeleteByIdsCompany(
   ids: CompanyId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./company.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/eams/company",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./company.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }
