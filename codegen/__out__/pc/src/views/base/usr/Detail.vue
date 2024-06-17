@@ -79,16 +79,15 @@
           <el-form-item
             :label="n('头像')"
             prop="img"
-            class="img_form_item"
+            un-w="full"
+            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.img"
               :readonly="isLocked || isReadonly"
+              :inited
             ></UploadImage>
           </el-form-item>
-          
-          <div></div>
-          
         </template>
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">

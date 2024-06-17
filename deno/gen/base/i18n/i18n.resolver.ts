@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortI18n,
+} from "./i18n.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -41,6 +45,8 @@ export async function findAllI18n(
     findAll,
   } = await import("./i18n.service.ts");
   
+  checkSortI18n(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneI18n(
   const {
     findOne,
   } = await import("./i18n.service.ts");
+  
+  checkSortI18n(sort);
   
   const res = await findOne(search, sort);
   return res;

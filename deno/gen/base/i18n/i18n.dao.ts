@@ -106,6 +106,9 @@ async function getWhereQuery(
   if (search?.lang_id_lbl != null) {
     whereQuery += ` and lang_id_lbl.lbl in ${ args.push(search.lang_id_lbl) }`;
   }
+  if (isNotEmpty(search?.lang_id_lbl_like)) {
+    whereQuery += ` and lang_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.lang_id_lbl_like) + "%") }`;
+  }
   if (search?.menu_id != null) {
     whereQuery += ` and t.menu_id in ${ args.push(search.menu_id) }`;
   }
@@ -114,6 +117,9 @@ async function getWhereQuery(
   }
   if (search?.menu_id_lbl != null) {
     whereQuery += ` and menu_id_lbl.lbl in ${ args.push(search.menu_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.menu_id_lbl_like)) {
+    whereQuery += ` and menu_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.menu_id_lbl_like) + "%") }`;
   }
   if (search?.code != null) {
     whereQuery += ` and t.code=${ args.push(search.code) }`;
@@ -178,14 +184,14 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_i18n t
-    left join base_lang lang_id_lbl on lang_id_lbl.id=t.lang_id
-    left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
+  left join base_lang lang_id_lbl on lang_id_lbl.id=t.lang_id
+  left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找国际化总数
- * @param { I18nSearch } search?
+ * @param {I18nSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(
