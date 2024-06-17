@@ -1,55 +1,80 @@
-// import imageSize from "image-size";
+import { encode } from "@jsquash/webp";
+import resize from "@jsquash/resize";
 
-// import type {
-//   ISizeCalculationResult,
-// } from "image-size/dist/types/interface";
+async function getImageDataByCanvas(buf: ArrayBuffer, type: string) {
+  const img = new Image();
+  const blob = new Blob([ buf ], { type });
+  const url = URL.createObjectURL(blob);
+  img.src = url;
+  await new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+  });
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return;
+  }
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0);
+  const imgData = ctx.getImageData(0, 0, img.width, img.height);
+  return imgData;
+}
 
-// const maxImageWidth = 1024;
-// const maxImageHeight = 768;
-
-// const { workerFn } = useWebWorkerFn(
-//   async function (buffer: Uint8Array, dimensions: ISizeCalculationResult) {
-//     const maxImageWidth = 1024;
-//     const maxImageHeight = 768;
-//     try {
-//       return buffer;
-//     } catch (err) {
-//       console.error("checkImageMaxSize", buffer);
-//       return buffer;
-//     }
-//   },
-//   {
-//     dependencies: [
-//     ],
-//   },
-// );
+async function workerFn(
+  file: File,
+  opts?: {
+    compress: boolean,
+    maxImageWidth?: number,
+    maxImageHeight?: number,
+  },
+) {
+  
+  const compress = opts?.compress ?? true;
+  
+  if (!compress) {
+    return file;
+  }
+    
+  const maxImageWidth = opts?.maxImageWidth ?? 1920;
+  const maxImageHeight = opts?.maxImageHeight ?? 1080;
+  
+  let buffer = await file.arrayBuffer();
+  let imgData = await getImageDataByCanvas(buffer, file.type);
+  if (!imgData) {
+    return file;
+  }
+  
+  let { width, height } = imgData;
+  
+  if (width > maxImageWidth) {
+    height = Math.round(height * maxImageWidth / width);
+    width = maxImageWidth;
+  }
+  
+  if (height > maxImageHeight) {
+    width = Math.round(width * maxImageHeight / height);
+    height = maxImageHeight;
+  }
+  
+  imgData = await resize(imgData, { width, height });
+  
+  buffer = await encode(imgData);
+  
+  const fileName = file.name.substring(0, file.name.lastIndexOf(".")) + ".webp";
+  const file2 = new File([ buffer ], fileName, { type: "image/webp" });
+  return file2;
+}
 
 export async function checkImageMaxSize(
   file: File,
+  opts?: {
+    compress: boolean,
+    maxImageWidth?: number,
+    maxImageHeight?: number,
+  },
 ) {
-  return file;
-  // const buffer: Uint8Array = await new Promise((resolve) => {
-  //   const reader = new FileReader();
-  //   reader.onload = () => {
-  //     resolve(new Uint8Array(reader.result as ArrayBuffer));
-  //   };
-  //   reader.readAsArrayBuffer(file);
-  // });
-  // let dimensions: ISizeCalculationResult | undefined;
-  // try {
-  //   dimensions = imageSize(buffer);
-  //   if (!dimensions?.width || !dimensions?.height) {
-  //     return file;
-  //   }
-  //   if (dimensions.width <= maxImageWidth || dimensions.height <= maxImageHeight) {
-  //     return file;
-  //   }
-  // } catch (err) {
-  //   console.error(err);
-  //   return file;
-  // }
-  // const buffer2 = await workerFn(buffer, dimensions);
-  // return new File([ buffer2 ], file.name, {
-  //   type: file.type,
-  // });
+  const file2 = await workerFn(file, opts);
+  return file2;
 }

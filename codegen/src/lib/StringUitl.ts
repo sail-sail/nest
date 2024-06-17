@@ -1,3 +1,6 @@
+import * as crypto from "node:crypto";
+import * as fs from "node:fs";
+
 let UID = Date.now();
 
 export function uniqueID(): string {
@@ -26,6 +29,16 @@ export function formatMsg(msg: string, args: any[]) {
 export function includeFtl(htmlStr: string, open?: string, close?: string) {
   const debug_open = open || "<%";
   const debug_close = close || "%>";
+  const cacheKey = crypto.createHash("md5").update(htmlStr).digest("hex");
+  fs.mkdirSync("cache", { recursive: true });
+  const cachePath = `cache/${ cacheKey }.js`;
+  let str = "";
+  try {
+    str = fs.readFileSync(cachePath, "utf8");
+  } catch (err) { }
+  if (str) {
+    return str;
+  }
   const uuidStr = "29ce888385c9de594b790798e81332ae";
   const uuidStr1 = "29ce888385c9de594b790798e8131ae";
   htmlStr = htmlStr.replace(/'/g, uuidStr);
@@ -58,5 +71,6 @@ export function includeFtl(htmlStr: string, open?: string, close?: string) {
   _out_+='${ htmlStr }';
   _out_;
   `;
+  fs.writeFileSync(cachePath, htmlStr, "utf8");
   return htmlStr;
 }
