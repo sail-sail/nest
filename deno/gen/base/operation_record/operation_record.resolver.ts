@@ -1,11 +1,15 @@
 import {
-  useContext,
+  set_is_tran,
 } from "/lib/context.ts";
 
 import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortOperationRecord,
+} from "./operation_record.model.ts";
 
 import {
   usePermit,
@@ -39,6 +43,8 @@ export async function findAllOperationRecord(
     findAll,
   } = await import("./operation_record.service.ts");
   
+  checkSortOperationRecord(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,6 +69,8 @@ export async function findOneOperationRecord(
   const {
     findOne,
   } = await import("./operation_record.service.ts");
+  
+  checkSortOperationRecord(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -95,9 +103,7 @@ export async function deleteByIdsOperationRecord(
     deleteByIds,
   } = await import("./operation_record.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/operation_record",
@@ -118,9 +124,7 @@ export async function revertByIdsOperationRecord(
     revertByIds,
   } = await import("./operation_record.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
     "/base/operation_record",
@@ -136,18 +140,17 @@ export async function revertByIdsOperationRecord(
 export async function forceDeleteByIdsOperationRecord(
   ids: OperationRecordId[],
 ): Promise<number> {
-  const context = useContext();
   
-  context.is_tran = true;
+  const {
+    forceDeleteByIds,
+  } = await import("./operation_record.service.ts");
+  
+  set_is_tran(true);
   
   await usePermit(
     "/base/operation_record",
     "force_delete",
   );
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./operation_record.service.ts");
   const res = await forceDeleteByIds(ids);
   return res;
 }

@@ -31,8 +31,6 @@ export default defineConfig({
   optimizeDeps: {
     exclude: [
       "@jsquash/webp",
-      "@jsquash/jpeg",
-      "@jsquash/png",
       "@jsquash/resize",
     ],
   },
