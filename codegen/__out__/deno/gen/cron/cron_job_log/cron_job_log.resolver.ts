@@ -1,12 +1,15 @@
 import {
   set_is_tran,
-  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortCronJobLog,
+} from "./cron_job_log.model.ts";
 
 import {
   usePermit,
@@ -40,6 +43,8 @@ export async function findAllCronJobLog(
     findAll,
   } = await import("./cron_job_log.service.ts");
   
+  checkSortCronJobLog(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +69,8 @@ export async function findOneCronJobLog(
   const {
     findOne,
   } = await import("./cron_job_log.service.ts");
+  
+  checkSortCronJobLog(sort);
   
   const res = await findOne(search, sort);
   return res;

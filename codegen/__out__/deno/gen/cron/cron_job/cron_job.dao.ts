@@ -138,6 +138,9 @@ async function getWhereQuery(
   if (search?.job_id_lbl != null) {
     whereQuery += ` and job_id_lbl.lbl in ${ args.push(search.job_id_lbl) }`;
   }
+  if (isNotEmpty(search?.job_id_lbl_like)) {
+    whereQuery += ` and job_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.job_id_lbl_like) + "%") }`;
+  }
   if (search?.cron != null) {
     whereQuery += ` and t.cron=${ args.push(search.cron) }`;
   }
