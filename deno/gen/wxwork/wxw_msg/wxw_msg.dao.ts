@@ -121,6 +121,9 @@ async function getWhereQuery(
   if (search?.wxw_app_id_lbl != null) {
     whereQuery += ` and wxw_app_id_lbl.lbl in ${ args.push(search.wxw_app_id_lbl) }`;
   }
+  if (isNotEmpty(search?.wxw_app_id_lbl_like)) {
+    whereQuery += ` and wxw_app_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.wxw_app_id_lbl_like) + "%") }`;
+  }
   if (search?.errcode != null) {
     whereQuery += ` and t.errcode in ${ args.push(search.errcode) }`;
   }
@@ -211,13 +214,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `wxwork_wxw_msg t
-    left join wxwork_wxw_app wxw_app_id_lbl on wxw_app_id_lbl.id=t.wxw_app_id`;
+  left join wxwork_wxw_app wxw_app_id_lbl on wxw_app_id_lbl.id=t.wxw_app_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找企微消息总数
- * @param { WxwMsgSearch } search?
+ * @param {WxwMsgSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

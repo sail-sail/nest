@@ -146,6 +146,9 @@ async function getWhereQuery(
   if (search?.domain_id_lbl != null) {
     whereQuery += ` and domain_id_lbl.lbl in ${ args.push(search.domain_id_lbl) }`;
   }
+  if (isNotEmpty(search?.domain_id_lbl_like)) {
+    whereQuery += ` and domain_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.domain_id_lbl_like) + "%") }`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
@@ -211,13 +214,13 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `wxwork_wxw_app t
-    left join base_domain domain_id_lbl on domain_id_lbl.id=t.domain_id`;
+  left join base_domain domain_id_lbl on domain_id_lbl.id=t.domain_id`;
   return fromQuery;
 }
 
 /**
  * 根据条件查找企微应用总数
- * @param { WxwAppSearch } search?
+ * @param {WxwAppSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

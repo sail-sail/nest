@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortWxwUsr,
+} from "./wxw_usr.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -41,6 +45,8 @@ export async function findAllWxwUsr(
     findAll,
   } = await import("./wxw_usr.service.ts");
   
+  checkSortWxwUsr(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneWxwUsr(
   const {
     findOne,
   } = await import("./wxw_usr.service.ts");
+  
+  checkSortWxwUsr(sort);
   
   const res = await findOne(search, sort);
   return res;

@@ -228,7 +228,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找企微用户总数
- * @param { WxwUsrSearch } search?
+ * @param {WxwUsrSearch} search?
  * @return {Promise<number>}
  */
 export async function findCount(

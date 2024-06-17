@@ -1,12 +1,15 @@
 import {
   set_is_tran,
-  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortWxwMsg,
+} from "./wxw_msg.model.ts";
 
 import {
   usePermit,
@@ -40,6 +43,8 @@ export async function findAllWxwMsg(
     findAll,
   } = await import("./wxw_msg.service.ts");
   
+  checkSortWxwMsg(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +69,8 @@ export async function findOneWxwMsg(
   const {
     findOne,
   } = await import("./wxw_msg.service.ts");
+  
+  checkSortWxwMsg(sort);
   
   const res = await findOne(search, sort);
   return res;

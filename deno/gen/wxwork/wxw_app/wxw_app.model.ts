@@ -3,6 +3,11 @@ import type {
   WxwAppModel as WxwAppModelType,
   WxwAppSearch as WxwAppSearchType,
   WxwAppFieldComment as WxwAppFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const wxwAppId: unique symbol;
@@ -21,13 +26,17 @@ declare global {
     rem_like?: string;
     /** 创建人 */
     create_usr_id?: UsrId[];
+    /** 创建人 */
     create_usr_id_is_null?: boolean;
+    /** 创建人 */
     create_usr_id_lbl?: string[];
     /** 创建时间 */
     create_time?: string[];
     /** 更新人 */
     update_usr_id?: UsrId[];
+    /** 更新人 */
     update_usr_id_is_null?: boolean;
+    /** 更新人 */
     update_usr_id_lbl?: string[];
     /** 更新时间 */
     update_time?: string[];
@@ -64,4 +73,32 @@ declare global {
   interface WxwAppFieldComment extends WxwAppFieldCommentType {
   }
   
+}
+
+/** 企微应用 前端允许排序的字段 */
+export const canSortInApiWxwApp = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 企微应用 检测字段是否允许前端排序 */
+export function checkSortWxwApp(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortWxwApp: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiWxwApp;
+    if (!canSortInApiWxwApp[prop]) {
+      throw new Error(`checkSortWxwApp: ${ JSON.stringify(item) }`);
+    }
+  }
 }
