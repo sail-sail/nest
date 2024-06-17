@@ -146,6 +146,9 @@ async function getWhereQuery(
   if (search?.domain_id_lbl != null) {
     whereQuery += ` and domain_id_lbl.lbl in ${ args.push(search.domain_id_lbl) }`;
   }
+  if (isNotEmpty(search?.domain_id_lbl_like)) {
+    whereQuery += ` and domain_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.domain_id_lbl_like) + "%") }`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }

@@ -1,12 +1,15 @@
 import {
   set_is_tran,
-  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+
+import {
+  checkSortPayTransactionsJsapi,
+} from "./pay_transactions_jsapi.model.ts";
 
 import {
   usePermit,
@@ -40,6 +43,8 @@ export async function findAllPayTransactionsJsapi(
     findAll,
   } = await import("./pay_transactions_jsapi.service.ts");
   
+  checkSortPayTransactionsJsapi(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +69,8 @@ export async function findOnePayTransactionsJsapi(
   const {
     findOne,
   } = await import("./pay_transactions_jsapi.service.ts");
+  
+  checkSortPayTransactionsJsapi(sort);
   
   const res = await findOne(search, sort);
   return res;

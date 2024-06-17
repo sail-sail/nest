@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortWxoApp,
+} from "./wxo_app.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -41,6 +45,8 @@ export async function findAllWxoApp(
     findAll,
   } = await import("./wxo_app.service.ts");
   
+  checkSortWxoApp(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneWxoApp(
   const {
     findOne,
   } = await import("./wxo_app.service.ts");
+  
+  checkSortWxoApp(sort);
   
   const res = await findOne(search, sort);
   return res;

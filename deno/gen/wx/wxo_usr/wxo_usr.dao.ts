@@ -129,6 +129,9 @@ async function getWhereQuery(
   if (search?.usr_id_lbl != null) {
     whereQuery += ` and usr_id_lbl.lbl in ${ args.push(search.usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.usr_id_lbl_like)) {
+    whereQuery += ` and usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.usr_id_lbl_like) + "%") }`;
+  }
   if (search?.openid != null) {
     whereQuery += ` and t.openid=${ args.push(search.openid) }`;
   }
@@ -189,6 +192,9 @@ async function getWhereQuery(
   }
   if (search?.org_id_lbl != null) {
     whereQuery += ` and org_id_lbl.lbl in ${ args.push(search.org_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.org_id_lbl_like)) {
+    whereQuery += ` and org_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.org_id_lbl_like) + "%") }`;
   }
   return whereQuery;
 }

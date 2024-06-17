@@ -102,6 +102,9 @@ async function getWhereQuery(
   if (search?.wx_app_id_lbl != null) {
     whereQuery += ` and wx_app_id_lbl.lbl in ${ args.push(search.wx_app_id_lbl) }`;
   }
+  if (isNotEmpty(search?.wx_app_id_lbl_like)) {
+    whereQuery += ` and wx_app_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.wx_app_id_lbl_like) + "%") }`;
+  }
   if (search?.access_token != null) {
     whereQuery += ` and t.access_token=${ args.push(search.access_token) }`;
   }
