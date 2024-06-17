@@ -3,6 +3,11 @@ import type {
   SeoModel as SeoModelType,
   SeoSearch as SeoSearchType,
   SeoFieldComment as SeoFieldCommentType,
+  SortInput,
+} from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
 } from "/gen/types.ts";
 
 declare const seoId: unique symbol;
@@ -76,4 +81,32 @@ declare global {
   interface SeoFieldComment extends SeoFieldCommentType {
   }
   
+}
+
+/** SEO优化 前端允许排序的字段 */
+export const canSortInApiSeo = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** SEO优化 检测字段是否允许前端排序 */
+export function checkSortSeo(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortSeo: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiSeo;
+    if (!canSortInApiSeo[prop]) {
+      throw new Error(`checkSortSeo: ${ JSON.stringify(item) }`);
+    }
+  }
 }

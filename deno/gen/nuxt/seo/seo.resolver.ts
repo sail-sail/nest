@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortSeo,
+} from "./seo.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -41,6 +45,8 @@ export async function findAllSeo(
     findAll,
   } = await import("./seo.service.ts");
   
+  checkSortSeo(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneSeo(
   const {
     findOne,
   } = await import("./seo.service.ts");
+  
+  checkSortSeo(sort);
   
   const res = await findOne(search, sort);
   return res;
