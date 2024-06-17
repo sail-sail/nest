@@ -841,9 +841,9 @@ var lastTime = 0;
 export function requestAnimationFrame(callback: Function): number {
 	const currentTime = new Date().getTime();
 	const timeToCall = Math.max(0, 16 - (currentTime - lastTime));
-	const id = <any>setTimeout(() => {
+	const id = setTimeout(() => {
 		callback(currentTime + timeToCall);
-	}, timeToCall);
+	}, timeToCall) as any;
 	lastTime = currentTime + timeToCall;
 	return id;
 }
