@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortMenu,
+} from "./menu.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -41,6 +45,8 @@ export async function findAllMenu(
     findAll,
   } = await import("./menu.service.ts");
   
+  checkSortMenu(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneMenu(
   const {
     findOne,
   } = await import("./menu.service.ts");
+  
+  checkSortMenu(sort);
   
   const res = await findOne(search, sort);
   return res;

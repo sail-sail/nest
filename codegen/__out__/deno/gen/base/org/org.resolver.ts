@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortOrg,
+} from "./org.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -41,6 +45,8 @@ export async function findAllOrg(
     findAll,
   } = await import("./org.service.ts");
   
+  checkSortOrg(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneOrg(
   const {
     findOne,
   } = await import("./org.service.ts");
+  
+  checkSortOrg(sort);
   
   const res = await findOne(search, sort);
   return res;

@@ -127,6 +127,9 @@ async function getWhereQuery(
   if (search?.parent_id_lbl != null) {
     whereQuery += ` and parent_id_lbl.lbl in ${ args.push(search.parent_id_lbl) }`;
   }
+  if (isNotEmpty(search?.parent_id_lbl_like)) {
+    whereQuery += ` and parent_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.parent_id_lbl_like) + "%") }`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }

@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortDomain,
+} from "./domain.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -41,6 +45,8 @@ export async function findAllDomain(
     findAll,
   } = await import("./domain.service.ts");
   
+  checkSortDomain(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneDomain(
   const {
     findOne,
   } = await import("./domain.service.ts");
+  
+  checkSortDomain(sort);
   
   const res = await findOne(search, sort);
   return res;

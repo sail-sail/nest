@@ -10,6 +10,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortDictbiz,
+} from "./dictbiz.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
@@ -41,6 +45,8 @@ export async function findAllDictbiz(
     findAll,
   } = await import("./dictbiz.service.ts");
   
+  checkSortDictbiz(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -65,6 +71,8 @@ export async function findOneDictbiz(
   const {
     findOne,
   } = await import("./dictbiz.service.ts");
+  
+  checkSortDictbiz(sort);
   
   const res = await findOne(search, sort);
   return res;
