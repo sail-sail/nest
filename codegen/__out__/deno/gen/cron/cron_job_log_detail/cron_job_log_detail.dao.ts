@@ -78,7 +78,9 @@ import {
   findOne as findOneCronJobLog,
 } from "/gen/cron/cron_job_log/cron_job_log.dao.ts";
 
-const route_path = "/cron/cron_job_log_detail";
+import {
+  route_path,
+} from "./cron_job_log_detail.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,

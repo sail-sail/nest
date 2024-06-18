@@ -15,6 +15,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./cron_job_log.model.ts";
+
 /**
  * 根据条件查找任务执行日志总数
  */
@@ -106,7 +110,7 @@ export async function deleteByIdsCronJobLog(
   set_is_tran(true);
   
   await usePermit(
-    "/cron/cron_job_log",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -127,7 +131,7 @@ export async function revertByIdsCronJobLog(
   set_is_tran(true);
   
   await usePermit(
-    "/cron/cron_job_log",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -148,7 +152,7 @@ export async function forceDeleteByIdsCronJobLog(
   set_is_tran(true);
   
   await usePermit(
-    "/cron/cron_job_log",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

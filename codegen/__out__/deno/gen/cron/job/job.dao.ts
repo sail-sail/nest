@@ -84,7 +84,9 @@ import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-const route_path = "/cron/job";
+import {
+  route_path,
+} from "./job.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
