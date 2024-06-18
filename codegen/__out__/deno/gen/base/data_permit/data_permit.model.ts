@@ -12,6 +12,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/base/data_permit";
+
 declare const dataPermitId: unique symbol;
 
 declare global {

@@ -84,7 +84,9 @@ import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-const route_path = "/base/background_task";
+import {
+  route_path,
+} from "./background_task.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,

@@ -80,7 +80,9 @@ import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-const route_path = "/base/i18n";
+import {
+  route_path,
+} from "./i18n.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
