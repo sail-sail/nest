@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./domain.model.ts";
+
 /**
  * 根据条件查找域名总数
  */
@@ -112,7 +116,7 @@ export async function createsDomain(
   set_is_creating(true);
   
   await usePermit(
-    "/base/domain",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdDomain(
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/domain",
+    route_path,
     "edit",
   );
   const id2: DomainId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsDomain(
   set_is_tran(true);
   
   await usePermit(
-    "/base/domain",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -190,7 +194,7 @@ export async function defaultByIdDomain(
   set_is_tran(true);
   
   await usePermit(
-    "/base/domain",
+    route_path,
     "edit",
   );
   const res = await defaultById(id);
@@ -216,7 +220,7 @@ export async function enableByIdsDomain(
   set_is_tran(true);
   
   await usePermit(
-    "/base/domain",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -242,7 +246,7 @@ export async function lockByIdsDomain(
   set_is_tran(true);
   
   await usePermit(
-    "/base/domain",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -263,7 +267,7 @@ export async function revertByIdsDomain(
   set_is_tran(true);
   
   await usePermit(
-    "/base/domain",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -284,7 +288,7 @@ export async function forceDeleteByIdsDomain(
   set_is_tran(true);
   
   await usePermit(
-    "/base/domain",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);
