@@ -19,6 +19,10 @@ import {
 
 import "./cron_job.service.ts";
 
+import {
+  route_path,
+} from "./cron_job.model.ts";
+
 /**
  * 根据条件查找定时任务总数
  */
@@ -114,7 +118,7 @@ export async function createsCronJob(
   set_is_creating(true);
   
   await usePermit(
-    "/cron/cron_job",
+    route_path,
     "add",
   );
   
@@ -150,7 +154,7 @@ export async function updateByIdCronJob(
   await setIdByLbl(input);
   
   await usePermit(
-    "/cron/cron_job",
+    route_path,
     "edit",
   );
   const id2: CronJobId = await updateById(id, input);
@@ -171,7 +175,7 @@ export async function deleteByIdsCronJob(
   set_is_tran(true);
   
   await usePermit(
-    "/cron/cron_job",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -197,7 +201,7 @@ export async function enableByIdsCronJob(
   set_is_tran(true);
   
   await usePermit(
-    "/cron/cron_job",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -223,7 +227,7 @@ export async function lockByIdsCronJob(
   set_is_tran(true);
   
   await usePermit(
-    "/cron/cron_job",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -244,7 +248,7 @@ export async function revertByIdsCronJob(
   set_is_tran(true);
   
   await usePermit(
-    "/cron/cron_job",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -265,7 +269,7 @@ export async function forceDeleteByIdsCronJob(
   set_is_tran(true);
   
   await usePermit(
-    "/cron/cron_job",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

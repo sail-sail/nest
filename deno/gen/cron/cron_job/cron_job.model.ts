@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/cron/cron_job";
+
 declare const cronJobId: unique symbol;
 
 declare global {
