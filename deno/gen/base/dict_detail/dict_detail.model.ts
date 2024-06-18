@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/base/dict_detail";
+
 declare const dictDetailId: unique symbol;
 
 declare global {

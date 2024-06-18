@@ -84,7 +84,9 @@ import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-const route_path = "/base/optbiz";
+import {
+  route_path,
+} from "./optbiz.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,

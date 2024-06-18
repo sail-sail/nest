@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./optbiz.model.ts";
+
 /**
  * 根据条件查找业务选项总数
  */
@@ -112,7 +116,7 @@ export async function createsOptbiz(
   set_is_creating(true);
   
   await usePermit(
-    "/base/optbiz",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdOptbiz(
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/optbiz",
+    route_path,
     "edit",
   );
   const id2: OptbizId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsOptbiz(
   set_is_tran(true);
   
   await usePermit(
-    "/base/optbiz",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -195,7 +199,7 @@ export async function enableByIdsOptbiz(
   set_is_tran(true);
   
   await usePermit(
-    "/base/optbiz",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -221,7 +225,7 @@ export async function lockByIdsOptbiz(
   set_is_tran(true);
   
   await usePermit(
-    "/base/optbiz",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -242,7 +246,7 @@ export async function revertByIdsOptbiz(
   set_is_tran(true);
   
   await usePermit(
-    "/base/optbiz",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -263,7 +267,7 @@ export async function forceDeleteByIdsOptbiz(
   set_is_tran(true);
   
   await usePermit(
-    "/base/optbiz",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);
