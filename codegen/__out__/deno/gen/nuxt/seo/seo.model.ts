@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/nuxt/seo";
+
 declare const seoId: unique symbol;
 
 declare global {
