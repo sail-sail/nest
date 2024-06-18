@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/base/tenant";
+
 declare const tenantId: unique symbol;
 
 declare global {
