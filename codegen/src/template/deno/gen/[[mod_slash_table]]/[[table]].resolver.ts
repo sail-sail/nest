@@ -96,6 +96,10 @@ import "./cron_job.service.ts";<#
 }
 #>
 
+import {
+  route_path,
+} from "./<#=table#>.model.ts";
+
 /**
  * 根据条件查找<#=table_comment#>总数
  */
@@ -290,7 +294,7 @@ export async function creates<#=Table_Up2#>(
   set_is_creating(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "add",
   );<#
   if (log) {
@@ -411,7 +415,7 @@ export async function updateById<#=Table_Up2#>(
   await setIdByLbl(input);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "edit",
   );<#
   if (log) {
@@ -465,7 +469,7 @@ export async function deleteByIds<#=Table_Up2#>(
   set_is_tran(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "delete",
   );<#
   if (log) {
@@ -518,7 +522,7 @@ export async function defaultById<#=Table_Up2#>(
   set_is_tran(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "edit",
   );<#
   if (log) {
@@ -573,7 +577,7 @@ export async function enableByIds<#=Table_Up2#>(
   set_is_tran(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "edit",
   );<#
   if (log) {
@@ -635,7 +639,7 @@ export async function lockByIds<#=Table_Up2#>(
   set_is_tran(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "edit",
   );<#
   if (log) {
@@ -685,7 +689,7 @@ export async function revertByIds<#=Table_Up2#>(
   set_is_tran(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "delete",
   );<#
   if (log) {
@@ -735,7 +739,7 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   set_is_tran(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "force_delete",
   );<#
   if (log) {

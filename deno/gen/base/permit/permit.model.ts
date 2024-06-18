@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/base/permit";
+
 declare const permitId: unique symbol;
 
 declare global {

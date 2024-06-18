@@ -15,6 +15,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./login_log.model.ts";
+
 /**
  * 根据条件查找登录日志总数
  */
@@ -106,7 +110,7 @@ export async function deleteByIdsLoginLog(
   set_is_tran(true);
   
   await usePermit(
-    "/base/login_log",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -127,7 +131,7 @@ export async function revertByIdsLoginLog(
   set_is_tran(true);
   
   await usePermit(
-    "/base/login_log",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -148,7 +152,7 @@ export async function forceDeleteByIdsLoginLog(
   set_is_tran(true);
   
   await usePermit(
-    "/base/login_log",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

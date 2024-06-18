@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./dictbiz_detail.model.ts";
+
 /**
  * 根据条件查找业务字典明细总数
  */
@@ -112,7 +116,7 @@ export async function createsDictbizDetail(
   set_is_creating(true);
   
   await usePermit(
-    "/base/dictbiz_detail",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdDictbizDetail(
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/dictbiz_detail",
+    route_path,
     "edit",
   );
   const id2: DictbizDetailId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsDictbizDetail(
   set_is_tran(true);
   
   await usePermit(
-    "/base/dictbiz_detail",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -195,7 +199,7 @@ export async function enableByIdsDictbizDetail(
   set_is_tran(true);
   
   await usePermit(
-    "/base/dictbiz_detail",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -221,7 +225,7 @@ export async function lockByIdsDictbizDetail(
   set_is_tran(true);
   
   await usePermit(
-    "/base/dictbiz_detail",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -242,7 +246,7 @@ export async function revertByIdsDictbizDetail(
   set_is_tran(true);
   
   await usePermit(
-    "/base/dictbiz_detail",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -263,7 +267,7 @@ export async function forceDeleteByIdsDictbizDetail(
   set_is_tran(true);
   
   await usePermit(
-    "/base/dictbiz_detail",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);
