@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/base/login_log";
+
 declare const loginLogId: unique symbol;
 
 declare global {
