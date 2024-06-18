@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./wxw_usr.model.ts";
+
 /**
  * 根据条件查找企微用户总数
  */
@@ -112,7 +116,7 @@ export async function createsWxwUsr(
   set_is_creating(true);
   
   await usePermit(
-    "/wxwork/wxw_usr",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdWxwUsr(
   await setIdByLbl(input);
   
   await usePermit(
-    "/wxwork/wxw_usr",
+    route_path,
     "edit",
   );
   const id2: WxwUsrId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsWxwUsr(
   set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_usr",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -190,7 +194,7 @@ export async function revertByIdsWxwUsr(
   set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_usr",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -211,7 +215,7 @@ export async function forceDeleteByIdsWxwUsr(
   set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_usr",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./wxw_app_token.model.ts";
+
 /**
  * 根据条件查找企微应用接口凭据总数
  */
@@ -112,7 +116,7 @@ export async function createsWxwAppToken(
   set_is_creating(true);
   
   await usePermit(
-    "/wxwork/wxw_app_token",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdWxwAppToken(
   await setIdByLbl(input);
   
   await usePermit(
-    "/wxwork/wxw_app_token",
+    route_path,
     "edit",
   );
   const id2: WxwAppTokenId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsWxwAppToken(
   set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_app_token",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -190,7 +194,7 @@ export async function revertByIdsWxwAppToken(
   set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_app_token",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -211,7 +215,7 @@ export async function forceDeleteByIdsWxwAppToken(
   set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_app_token",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);
