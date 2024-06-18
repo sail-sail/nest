@@ -15,6 +15,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./pay_transactions_jsapi.model.ts";
+
 /**
  * 根据条件查找微信JSAPI下单总数
  */
