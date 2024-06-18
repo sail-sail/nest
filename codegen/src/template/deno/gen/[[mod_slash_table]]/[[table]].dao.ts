@@ -637,7 +637,9 @@ import {<#
 }
 #>
 
-const route_path = "/<#=mod#>/<#=table#>";
+import {
+  route_path,
+} from "./<#=table#>.model.ts";
 <#
 if (
   !(

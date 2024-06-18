@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./data_permit.model.ts";
+
 /**
  * 根据条件查找数据权限总数
  */
@@ -112,7 +116,7 @@ export async function createsDataPermit(
   set_is_creating(true);
   
   await usePermit(
-    "/base/data_permit",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdDataPermit(
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/data_permit",
+    route_path,
     "edit",
   );
   const id2: DataPermitId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsDataPermit(
   set_is_tran(true);
   
   await usePermit(
-    "/base/data_permit",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -190,7 +194,7 @@ export async function revertByIdsDataPermit(
   set_is_tran(true);
   
   await usePermit(
-    "/base/data_permit",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -211,7 +215,7 @@ export async function forceDeleteByIdsDataPermit(
   set_is_tran(true);
   
   await usePermit(
-    "/base/data_permit",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);
