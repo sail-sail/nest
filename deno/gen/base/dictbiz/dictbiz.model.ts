@@ -12,6 +12,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/base/dictbiz";
+
 declare const dictbizId: unique symbol;
 
 declare global {

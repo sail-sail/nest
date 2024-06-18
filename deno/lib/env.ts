@@ -1,8 +1,7 @@
 // deno-lint-ignore-file
 import {
-  configAsync,
-  type DotenvConfig,
-} from "dotenv";
+  parse as parseDotenv,
+} from "@std/dotenv/parse";
 
 declare global {
   interface Window {
@@ -54,30 +53,25 @@ function initEnv() {
 }
 initEnv();
 
-let parsedEnv: DotenvConfig;
+let parsedEnv: Record<string, string>;
 
 async function parseEnv() {
+  let envPath = "";
   if (envKey === "development") {
-    parsedEnv = await configAsync({
-      export: false,
-      path: `${ cwd }/.env.dev`,
-    });
+    envPath = `${ cwd }/.env`;
   } else if (envKey === "production") {
-    parsedEnv = await configAsync({
-      export: false,
-      path: `${ cwd }/.env.prod`,
-    });
+    envPath = `${ cwd }/.env.prod`;
   } else if (!envKey) {
-    parsedEnv = await configAsync({
-      export: false,
-      path: `${ cwd }/.env`,
-    });
+    envPath = `${ cwd }/.env`;
   } else {
-    parsedEnv = await configAsync({
-      export: false,
-      path: `${ cwd }/.env.${ envKey }`,
-    });
+    envPath = `${ cwd }/.env.${ envKey }`;
   }
+  if (!envPath) {
+    throw new Error("envPath is empty");
+  }
+  const str = await Deno.readTextFile(envPath);
+  parsedEnv = parseDotenv(str);
+  return parsedEnv;
 }
 
 /**

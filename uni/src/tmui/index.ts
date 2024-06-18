@@ -15,7 +15,7 @@ if (typeof PageJsonInit?.pages == 'undefined') {
 	PageJsonInit.pages = [];
 }
 PageJsonInit.pages.forEach((el: any) => {
-	let customType: pagesCustomType = <pagesCustomType>(el?.style?.navigationStyle ?? "default");
+	let customType: pagesCustomType = (el?.style?.navigationStyle ?? "default");
 	let bg = (el.style?.navigationBarBackgroundColor ?? PageJsonInit?.globalStyle?.navigationBarBackgroundColor ?? '#FFFFFF') || '#FFFFFF'
 	let txtColor = (el.style?.navigationBarTextStyle ?? PageJsonInit?.globalStyle?.navigationBarTextStyle ?? 'black') || 'black'
 	pages.push({

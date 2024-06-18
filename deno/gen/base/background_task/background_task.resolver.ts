@@ -15,6 +15,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./background_task.model.ts";
+
 /**
  * 根据条件查找后台任务总数
  */
@@ -106,7 +110,7 @@ export async function deleteByIdsBackgroundTask(
   set_is_tran(true);
   
   await usePermit(
-    "/base/background_task",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -127,7 +131,7 @@ export async function revertByIdsBackgroundTask(
   set_is_tran(true);
   
   await usePermit(
-    "/base/background_task",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -148,7 +152,7 @@ export async function forceDeleteByIdsBackgroundTask(
   set_is_tran(true);
   
   await usePermit(
-    "/base/background_task",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);
