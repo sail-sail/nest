@@ -15,6 +15,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./wxw_msg.model.ts";
+
 /**
  * 根据条件查找企微消息总数
  */
@@ -106,7 +110,7 @@ export async function deleteByIdsWxwMsg(
   set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_msg",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -127,7 +131,7 @@ export async function revertByIdsWxwMsg(
   set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_msg",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -148,7 +152,7 @@ export async function forceDeleteByIdsWxwMsg(
   set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_msg",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

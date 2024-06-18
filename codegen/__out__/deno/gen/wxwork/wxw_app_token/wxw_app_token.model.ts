@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/wxwork/wxw_app_token";
+
 declare const wxwAppTokenId: unique symbol;
 
 declare global {

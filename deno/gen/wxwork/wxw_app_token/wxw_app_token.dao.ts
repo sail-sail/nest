@@ -84,7 +84,9 @@ import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-const route_path = "/wxwork/wxw_app_token";
+import {
+  route_path,
+} from "./wxw_app_token.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
