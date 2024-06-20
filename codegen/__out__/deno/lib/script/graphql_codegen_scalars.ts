@@ -1,6 +1,18 @@
 export function getScalars() {
   const scalars = {
     
+    // 百度应用
+    "BaiduAppId": {
+      "input": "BaiduAppId",
+      "output": "BaiduAppId",
+    },
+    
+    // 百度接口凭据
+    "BaiduAppTokenId": {
+      "input": "BaiduAppTokenId",
+      "output": "BaiduAppTokenId",
+    },
+    
     // 后台任务
     "BackgroundTaskId": {
       "input": "BackgroundTaskId",

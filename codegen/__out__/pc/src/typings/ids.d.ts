@@ -1,4 +1,12 @@
 
+declare const baidu_appId: unique symbol;
+/** 百度应用 */
+type BaiduAppId = Distinct<string, typeof baidu_appId>;
+
+declare const baidu_app_tokenId: unique symbol;
+/** 百度接口凭据 */
+type BaiduAppTokenId = Distinct<string, typeof baidu_app_tokenId>;
+
 declare const background_taskId: unique symbol;
 /** 后台任务 */
 type BackgroundTaskId = Distinct<string, typeof background_taskId>;
