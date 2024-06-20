@@ -20,7 +20,7 @@ import {
 export async function getHomeUrls() {
   
   const authModel = await getAuthModel();
-  const usr_id: UsrId = authModel.id;
+  const usr_id = authModel?.id;
   
   const usrModel = await validateOptionUsr(
     await findByIdUsr(usr_id),
