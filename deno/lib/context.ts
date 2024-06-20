@@ -332,6 +332,15 @@ export function get_is_silent_mode(
   return context?.is_silent_mode ?? false;
 }
 
+export function setNotVerifyToken(
+  notVerifyToken: boolean,
+) {
+  const context = useMaybeContext();
+  if (context) {
+    context.notVerifyToken = notVerifyToken;
+  }
+}
+
 export function set_is_silent_mode(
   is_silent_mode: boolean,
 ) {
