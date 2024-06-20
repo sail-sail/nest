@@ -3,6 +3,18 @@ import Layout1 from "@/layout/layout1/index.vue";
 
 export const routesGen: Array<RouteRecordRaw> = [
   {
+    path: "/baidu/baidu_app",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "百度应用",
+        component: () => import("@/views/baidu/baidu_app/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/base/background_task",
     component: Layout1,
     children: [
