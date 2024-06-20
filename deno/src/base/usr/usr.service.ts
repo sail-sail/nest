@@ -223,7 +223,7 @@ export async function changePassword(
   }
   const authModel = await getAuthModel();
   
-  const id: UsrId = authModel.id;
+  const id = authModel?.id;
   
   const usrModel = await usrDaoGen.validateOption(
     await usrDaoGen.findOne({
