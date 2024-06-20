@@ -18,7 +18,7 @@ import {
 
 import { getEnv } from "/lib/env.ts";
 
-export async function getAuthModel<T extends AuthModel>(): Promise<T>;
+export async function getAuthModel<T extends AuthModel>(): Promise<T | undefined>;
 export async function getAuthModel<T extends AuthModel>(notVerifyToken: false): Promise<T>;
 export async function getAuthModel<T extends AuthModel>(notVerifyToken: true): Promise<T | undefined>;
 export async function getAuthModel<T extends AuthModel>(notVerifyToken: boolean): Promise<T | undefined>;
