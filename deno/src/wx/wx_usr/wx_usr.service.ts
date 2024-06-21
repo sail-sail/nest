@@ -196,7 +196,7 @@ export async function code2Session(
  */
 export async function checkBindWxUsr() {
   const authModel = await getAuthModel();
-  if (!authModel.wx_usr_id) {
+  if (!authModel?.wx_usr_id) {
     return false;
   }
   const wx_usrModel = await validateOptionWxUsr(
@@ -224,13 +224,13 @@ export async function bindWxUsr(
   const authModel = await getAuthModel();
   
   const authUsrModel = await validateOptionUsr(
-    await findByIdUsr(authModel.id),
+    await findByIdUsr(authModel?.id),
   );
   if (!authUsrModel.is_hidden) {
     throw await ns("此微信已被其它用户绑定");
   }
   
-  const wx_usr_id = authModel.wx_usr_id;
+  const wx_usr_id = authModel?.wx_usr_id;
   if (!wx_usr_id) {
     throw "wx_usr_id can not be null";
   }
@@ -334,7 +334,7 @@ export async function bindWxUsr(
 /** 解除绑定 */
 export async function unBindWxUsr() {
   const authModel = await getAuthModel();
-  const wx_usr_id = authModel.wx_usr_id;
+  const wx_usr_id = authModel?.wx_usr_id;
   if (!wx_usr_id) {
     throw "wx_usr_id can not be null";
   }
@@ -388,11 +388,11 @@ export async function getPhoneNumber(
   code: string,
 ) {
   const authModel = await getAuthModel();
-  const usr_id: UsrId = authModel.id;
+  const usr_id = authModel?.id;
   const wx_usrModel = await validateOptionWxUsr(
     await findOneWxUsr(
       {
-        usr_id: [ usr_id ],
+        usr_id: usr_id ? [ usr_id ] : [ ],
       },
     ),
   );

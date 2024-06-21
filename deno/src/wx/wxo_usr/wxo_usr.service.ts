@@ -227,7 +227,7 @@ export async function wxoLoginByCode(
  */
 export async function checkBindWxoUsr() {
   const authModel = await getAuthModel();
-  const wxo_usr_id = authModel.wxo_usr_id;
+  const wxo_usr_id = authModel?.wxo_usr_id;
   if (!wxo_usr_id) {
     return false;
   }
@@ -256,13 +256,13 @@ export async function bindWxoUsr(
   const authModel = await getAuthModel();
   
   const authUsrModel = await validateOptionUsr(
-    await findByIdUsr(authModel.id),
+    await findByIdUsr(authModel?.id),
   );
   if (!authUsrModel.is_hidden) {
     throw await ns("此微信已被其它用户绑定");
   }
   
-  const wxo_usr_id = authModel.wxo_usr_id;
+  const wxo_usr_id = authModel?.wxo_usr_id;
   if (!wxo_usr_id) {
     throw "wx_usr_id can not be null";
   }
@@ -367,7 +367,7 @@ export async function bindWxoUsr(
 /** 公众号用户解除绑定 */
 export async function unBindWxoUsr() {
   const authModel = await getAuthModel();
-  const wxo_usr_id = authModel.wxo_usr_id;
+  const wxo_usr_id = authModel?.wxo_usr_id;
   if (!wxo_usr_id) {
     throw "wxo_usr_id can not be null";
   }
