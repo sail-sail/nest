@@ -134,6 +134,7 @@ impl WxwUsrGenMutation {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
+      .with_creating(Some(true))
       .build()
       .scope({
         wxw_usr_resolver::creates(

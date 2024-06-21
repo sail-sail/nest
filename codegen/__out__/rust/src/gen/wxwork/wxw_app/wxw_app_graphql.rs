@@ -186,6 +186,7 @@ impl WxwAppGenMutation {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
+      .with_creating(Some(true))
       .build()
       .scope({
         wxw_app_resolver::creates(

@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,12 +27,22 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::usr::usr_model::UsrId;
 
+lazy_static! {
+  /// 企微用户 前端允许排序的字段
+  static ref CAN_SORT_IN_API_WXW_USR: [&'static str; 2] = [
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxwUsrModel")]
+#[allow(dead_code)]
 pub struct WxwUsrModel {
   /// 租户ID
   #[graphql(skip)]
@@ -186,6 +198,7 @@ impl FromRow<'_, MySqlRow> for WxwUsrModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct WxwUsrFieldComment {
   /// ID
   pub id: String,
@@ -250,6 +263,7 @@ pub struct WxwUsrFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct WxwUsrSearch {
   /// ID
   pub id: Option<WxwUsrId>,
@@ -485,6 +499,7 @@ impl std::fmt::Debug for WxwUsrSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "WxwUsrInput")]
+#[allow(dead_code)]
 pub struct WxwUsrInput {
   /// ID
   pub id: Option<WxwUsrId>,
@@ -764,4 +779,29 @@ impl PartialEq<str> for WxwUsrId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
   }
+}
+
+/// 企微用户 检测字段是否允许前端排序
+pub fn check_sort_wxw_usr(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_WXW_USR.contains(&prop) {
+      return Err(anyhow!("check_sort_wxw_usr: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
+}
+
+/// 获取路由地址
+pub fn get_route_path_wxw_usr() -> String {
+  "/wxwork/wxw_usr".to_owned()
 }
