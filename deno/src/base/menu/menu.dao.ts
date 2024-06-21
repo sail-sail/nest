@@ -47,7 +47,7 @@ async function _getMenus(
       and t.is_enabled = 1
   `;
   const authModel = await getAuthModel();
-  const usr_id = authModel.id;
+  const usr_id = authModel?.id;
   const tenant_id = await getTenant_id(usr_id);
   if (tenant_id) {
     sql += ` and base_tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
