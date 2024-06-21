@@ -140,6 +140,7 @@ export function deepObjectMerge(FirstOBJ : Data, SecondOBJ : Data) : Data { // æ
 export function splitData<T>(arr: Array<T> = [], size = 1): Array<T[]> {
 	const result = [];
 	for (let i = 0; i < arr.length; i += size) {
+    // @ts-ignore
 		result.push(arr.slice(i, i + size));
 	}
 	return result as T[][];

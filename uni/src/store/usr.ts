@@ -1,9 +1,4 @@
 import type {
-  TenantId,
-  UsrId,
-} from "@/typings/ids";
-
-import type {
   GetLoginInfo,
 } from "@/typings/types";
 

@@ -32,7 +32,7 @@
     :clearable="!props.disabled"
     :disabled="props.disabled"
     :readonly="props.readonly"
-    :placeholder="isShowModelLabel && props.multiple ? props.modelLabel : props.placeholder"
+    :placeholder="((isShowModelLabel && props.multiple) ? props.modelLabel : props.placeholder) ?? undefined"
     @keyup.enter.stop
     @keydown.ctrl.c.stop="copyModelLabel"
   >
@@ -273,7 +273,7 @@ const props = withDefaults(
     init?: boolean;
     disabled?: boolean;
     readonly?: boolean;
-    placeholder?: string;
+    placeholder?: string | null;
     readonlyPlaceholder?: string;
     readonlyCollapseTags?: boolean;
     readonlyMaxCollapseTags?: number;
@@ -771,7 +771,7 @@ defineExpose({
     height: auto;
     line-height: normal;
     white-space: normal;
-    top: calc(50% - 2px);
+    top: calc(50% - 1px);
   }
 }
 </style>
