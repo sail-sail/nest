@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/wshop/recharge_rule";
+
 declare const rechargeRuleId: unique symbol;
 
 declare global {

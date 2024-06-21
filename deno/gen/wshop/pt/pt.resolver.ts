@@ -19,6 +19,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./pt.model.ts";
+
 /**
  * 根据条件查找产品总数
  */
@@ -114,7 +118,7 @@ export async function createsPt(
   set_is_creating(true);
   
   await usePermit(
-    "/wshop/pt",
+    route_path,
     "add",
   );
   
@@ -170,7 +174,7 @@ export async function updateByIdPt(
   await setIdByLbl(input);
   
   await usePermit(
-    "/wshop/pt",
+    route_path,
     "edit",
   );
   const id2: PtId = await updateById(id, input);
@@ -191,7 +195,7 @@ export async function deleteByIdsPt(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/pt",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -217,7 +221,7 @@ export async function enableByIdsPt(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/pt",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -243,7 +247,7 @@ export async function lockByIdsPt(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/pt",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -264,7 +268,7 @@ export async function revertByIdsPt(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/pt",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -285,7 +289,7 @@ export async function forceDeleteByIdsPt(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/pt",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

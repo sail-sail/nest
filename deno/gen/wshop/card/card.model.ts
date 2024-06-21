@@ -12,6 +12,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/wshop/card";
+
 declare const cardId: unique symbol;
 
 declare global {

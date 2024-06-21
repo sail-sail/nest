@@ -90,7 +90,9 @@ import {
   findOne as findOneOrg,
 } from "/gen/base/org/org.dao.ts";
 
-const route_path = "/wshop/pt";
+import {
+  route_path,
+} from "./pt.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,

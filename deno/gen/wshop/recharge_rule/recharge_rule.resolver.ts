@@ -19,6 +19,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./recharge_rule.model.ts";
+
 /**
  * 根据条件查找充值赠送规则总数
  */
@@ -114,7 +118,7 @@ export async function createsRechargeRule(
   set_is_creating(true);
   
   await usePermit(
-    "/wshop/recharge_rule",
+    route_path,
     "add",
   );
   
@@ -170,7 +174,7 @@ export async function updateByIdRechargeRule(
   await setIdByLbl(input);
   
   await usePermit(
-    "/wshop/recharge_rule",
+    route_path,
     "edit",
   );
   const id2: RechargeRuleId = await updateById(id, input);
@@ -191,7 +195,7 @@ export async function deleteByIdsRechargeRule(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/recharge_rule",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -217,7 +221,7 @@ export async function enableByIdsRechargeRule(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/recharge_rule",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -243,7 +247,7 @@ export async function lockByIdsRechargeRule(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/recharge_rule",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -264,7 +268,7 @@ export async function revertByIdsRechargeRule(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/recharge_rule",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -285,7 +289,7 @@ export async function forceDeleteByIdsRechargeRule(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/recharge_rule",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

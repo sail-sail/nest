@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./card_recharge.model.ts";
+
 /**
  * 根据条件查找会员卡充值记录总数
  */
@@ -108,7 +112,7 @@ export async function deleteByIdsCardRecharge(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/card_recharge",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -129,7 +133,7 @@ export async function revertByIdsCardRecharge(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/card_recharge",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -150,7 +154,7 @@ export async function forceDeleteByIdsCardRecharge(
   set_is_tran(true);
   
   await usePermit(
-    "/wshop/card_recharge",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);
