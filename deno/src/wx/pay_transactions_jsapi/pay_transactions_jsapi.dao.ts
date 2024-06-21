@@ -167,7 +167,7 @@ export async function transactions_jsapi(
   result.orderInfo = obj.appid;
   log(`transactions_jsapi.result: ${ JSON.stringify(result) }`);
   const authModel = await getAuthModel();
-  const wx_usr_id: WxUsrId | undefined = authModel.wx_usr_id;
+  const wx_usr_id = authModel?.wx_usr_id;
   
   const wx_usrModel = await validateOptionWxUsr(
     await findByIdWxUsr(wx_usr_id),
@@ -216,7 +216,7 @@ export async function getJsapiObj(
   const payer_client_ip = wx_payModel.payer_client_ip;
   
   const authModel = await getAuthModel();
-  const wx_usr_id = authModel.wx_usr_id;
+  const wx_usr_id = authModel?.wx_usr_id;
   
   const wx_usrModel = await validateOptionWxUsr(
     await findByIdWxUsr(wx_usr_id),
