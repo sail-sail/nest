@@ -99,7 +99,7 @@ pub async fn creates(
   let inputs = inputs2;
   
   use_permit(
-    "/base/lang".to_owned(),
+    get_route_path_lang(),
     "add".to_owned(),
   ).await?;
   
@@ -128,7 +128,7 @@ pub async fn update_by_id(
   ).await?;
   
   use_permit(
-    "/base/lang".to_owned(),
+    get_route_path_lang(),
     "edit".to_owned(),
   ).await?;
   
@@ -149,7 +149,7 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/lang".to_owned(),
+    get_route_path_lang(),
     "delete".to_owned(),
   ).await?;
   
@@ -186,7 +186,7 @@ pub async fn enable_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/lang".to_owned(),
+    get_route_path_lang(),
     "edit".to_owned(),
   ).await?;
   
@@ -219,7 +219,7 @@ pub async fn revert_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/lang".to_owned(),
+    get_route_path_lang(),
     "delete".to_owned(),
   ).await?;
   
@@ -239,7 +239,7 @@ pub async fn force_delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/lang".to_owned(),
+    get_route_path_lang(),
     "force_delete".to_owned(),
   ).await?;
   

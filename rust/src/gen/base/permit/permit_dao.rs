@@ -583,15 +583,10 @@ pub async fn find_count(
   Ok(total)
 }
 
-/// 获取路由地址
-pub fn get_route_path() -> String {
-  "/base/permit".to_owned()
-}
-
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
   i18n_dao::NRoute {
-    route_path: get_route_path().into(),
+    route_path: get_route_path_permit().into(),
   }
 }
 

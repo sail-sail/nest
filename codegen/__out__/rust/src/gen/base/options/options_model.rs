@@ -639,3 +639,8 @@ pub fn check_sort_options(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_options() -> String {
+  "/base/options".to_owned()
+}

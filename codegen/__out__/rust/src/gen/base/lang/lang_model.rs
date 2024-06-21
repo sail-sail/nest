@@ -570,3 +570,8 @@ pub fn check_sort_lang(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_lang() -> String {
+  "/base/lang".to_owned()
+}

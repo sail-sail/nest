@@ -774,3 +774,8 @@ pub fn check_sort_dict(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_dict() -> String {
+  "/base/dict".to_owned()
+}

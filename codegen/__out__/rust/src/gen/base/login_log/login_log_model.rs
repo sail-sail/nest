@@ -649,3 +649,8 @@ pub fn check_sort_login_log(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_login_log() -> String {
+  "/base/login_log".to_owned()
+}

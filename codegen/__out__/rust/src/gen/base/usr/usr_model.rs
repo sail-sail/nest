@@ -954,3 +954,8 @@ pub fn check_sort_usr(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_usr() -> String {
+  "/base/usr".to_owned()
+}

@@ -768,3 +768,8 @@ pub fn check_sort_data_permit(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_data_permit() -> String {
+  "/base/data_permit".to_owned()
+}
