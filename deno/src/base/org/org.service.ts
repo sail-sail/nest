@@ -23,6 +23,9 @@ export async function orgLoginSelect(
 ): Promise<Mutation["orgLoginSelect"]> {
   
   const authModel = await getAuthModel();
+  if (!authModel) {
+    throw await ns("用户未登录");
+  }
   if (!org_id && !authModel.org_id) {
     return "";
   }

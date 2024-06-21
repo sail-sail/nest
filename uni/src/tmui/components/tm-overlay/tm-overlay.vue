@@ -27,8 +27,8 @@
 				:class="[
 					bgColor_rp && !props.transprent && ani ? 'blurOnOpacity' : 'blurOffOpacity', 
 				'overlay',
-				store.tmuiConfig?.themeConfig.overflowBlur&&bgColor_rp && !props.transprent && ani?'blurOn':'',
-				store.tmuiConfig?.themeConfig.overflowBlur&&bgColor_rp && !props.transprent && !ani?'blurOff':'',
+				store.tmuiConfig?.themeConfig?.overflowBlur&&bgColor_rp && !props.transprent && ani?'blurOn':'',
+				store.tmuiConfig?.themeConfig?.overflowBlur&&bgColor_rp && !props.transprent && !ani?'blurOff':'',
 				]"
 				:style="[
 					bgColor_rp && !props.transprent ? { backgroundColor: showMask ? bgColor_rp : '' } : '',
@@ -38,7 +38,7 @@
 			></view>
 			<!-- #ifndef APP-NVUE -->
 			<view
-				@click.stop="closeByclick"
+				@click.stop="(closeByclick as any)"
 				:class="[
 					align_rpx,
 					' absolute flex flex-col  l-0 t-0 ',
@@ -55,7 +55,7 @@
 			<!-- #endif -->
 			<!-- #ifdef APP-NVUE -->
 			<view
-				@click.stop="closeByclick"
+				@click.stop="(closeByclick as any)"
 				:class="[align_rpx, ' absolute flex flex-col  l-0 t-0 ', customClass]"
 				:style="[_inContent && !isNvue ? { width: '100%', height: '100%', top: '0px' } : { width: sysinfo.width + 'px', height: sysinfo.height + 'px' }, customCSSStyle]"
 			>
@@ -157,7 +157,7 @@ const customClass = computedClass(props);
 const sysinfo = useWindowInfo();
 
 const isAniing = ref(false);
-let timids = uni.$tm.u.getUid(1);
+let timids = uni.$tm.u.getUid(1) as any;
 let timerId = NaN;
 const animationData = ref(null);
 const showMask = ref(false);

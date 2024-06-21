@@ -58,7 +58,7 @@ let parsedEnv: Record<string, string>;
 async function parseEnv() {
   let envPath = "";
   if (envKey === "development") {
-    envPath = `${ cwd }/.env`;
+    envPath = `${ cwd }/.env.dev`;
   } else if (envKey === "production") {
     envPath = `${ cwd }/.env.prod`;
   } else if (!envKey) {
