@@ -18,6 +18,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/wx/wx_pay_notice";
+
 declare const wxPayNoticeId: unique symbol;
 
 declare global {

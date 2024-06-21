@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./wxo_usr.model.ts";
+
 /**
  * 根据条件查找公众号用户总数
  */
@@ -112,7 +116,7 @@ export async function createsWxoUsr(
   set_is_creating(true);
   
   await usePermit(
-    "/wx/wxo_usr",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdWxoUsr(
   await setIdByLbl(input);
   
   await usePermit(
-    "/wx/wxo_usr",
+    route_path,
     "edit",
   );
   const id2: WxoUsrId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsWxoUsr(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wxo_usr",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -190,7 +194,7 @@ export async function revertByIdsWxoUsr(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wxo_usr",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -211,7 +215,7 @@ export async function forceDeleteByIdsWxoUsr(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wxo_usr",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);
