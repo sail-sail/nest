@@ -7,6 +7,7 @@ const libSuffix = getLibSuffix();
 
 const {
   symbols: image,
+  close,
 } = Deno.dlopen(
   `./lib/image/image.${ libSuffix }`,
   {
@@ -55,3 +56,5 @@ export async function resize(
   const content2 = readPointer(rawResult);
   return content2;
 }
+
+export { close };

@@ -19,7 +19,7 @@ export function generateId() {
  */
 export async function clearCache(): Promise<boolean> {
   const authModel = await getAuthModel();
-  const usr_id = authModel.id;
+  const usr_id = authModel?.id;
   const usr_model = await validateOptionUsr(
     await findByIdUsr(usr_id),
   );
