@@ -1,5 +1,5 @@
 <template>
-	<tm-sheet :transprent="props.transprent" :round="3" _class="flex flex-col overflow" :padding="props.padding"
+	<tm-sheet :transprent="props.transprent" :padding="props.padding"
 		:margin="props.margin">
 		<slot></slot>
 	</tm-sheet>
@@ -211,7 +211,7 @@
 				let rulstVal = {
 					message: '校验通过',
 					validator: true as Function | boolean
-				}
+				} as any
 				for (let j = 0; j < vallist.length; j++) {
 					if (!vallist[j].validator) {
 						isPass = false
@@ -227,7 +227,7 @@
 				let rulstVal = {
 					message: '校验通过',
 					validator: true as Function | boolean
-				}
+				} as any
 				for (let j = 0; j < vallist.length; j++) {
 					if (!vallist[j].validator) {
 						isPass = false

@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./lang.model.ts";
+
 /**
  * 根据条件查找语言总数
  */
@@ -112,7 +116,7 @@ export async function createsLang(
   set_is_creating(true);
   
   await usePermit(
-    "/base/lang",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdLang(
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/lang",
+    route_path,
     "edit",
   );
   const id2: LangId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsLang(
   set_is_tran(true);
   
   await usePermit(
-    "/base/lang",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -195,7 +199,7 @@ export async function enableByIdsLang(
   set_is_tran(true);
   
   await usePermit(
-    "/base/lang",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -216,7 +220,7 @@ export async function revertByIdsLang(
   set_is_tran(true);
   
   await usePermit(
-    "/base/lang",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -237,7 +241,7 @@ export async function forceDeleteByIdsLang(
   set_is_tran(true);
   
   await usePermit(
-    "/base/lang",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

@@ -95,7 +95,7 @@
           >
             <CustomSelect
               v-model="dialogModel.home_url"
-              :method="getHomeUrlMap"
+              :method="(getHomeUrlMap as any)"
               :placeholder="`${ ns('请选择') } ${ n('首页') }`"
               :readonly="isLocked || isReadonly"
             ></CustomSelect>

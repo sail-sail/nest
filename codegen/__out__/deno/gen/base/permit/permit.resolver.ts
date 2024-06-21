@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./permit.model.ts";
+
 /**
  * 根据条件查找按钮权限总数
  */
@@ -112,7 +116,7 @@ export async function createsPermit(
   set_is_creating(true);
   
   await usePermit(
-    "/base/permit",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdPermit(
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/permit",
+    route_path,
     "edit",
   );
   const id2: PermitId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsPermit(
   set_is_tran(true);
   
   await usePermit(
-    "/base/permit",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -190,7 +194,7 @@ export async function revertByIdsPermit(
   set_is_tran(true);
   
   await usePermit(
-    "/base/permit",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -211,7 +215,7 @@ export async function forceDeleteByIdsPermit(
   set_is_tran(true);
   
   await usePermit(
-    "/base/permit",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

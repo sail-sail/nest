@@ -18,8 +18,7 @@ if(import.meta.env.MODE === "development") {
   // #ifndef H5
   host = "localhost";
   port = "4001";
-  // domain = `${ host }${ port ? `:${ port }` : "" }`;
-  domain = "localhost:4000";
+  domain = `${ host }${ port ? `:${ port }` : "" }`;
   protocol = "http:";
   wsProt = "ws:";
   // #endif
@@ -34,6 +33,7 @@ if(import.meta.env.MODE === "development") {
     wsProt = "ws:";
   }
   // #endif
+  domain = "localhost:4000";
 }
 if (import.meta.env.MODE === "production") {
   // #ifndef H5
