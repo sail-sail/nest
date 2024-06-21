@@ -211,7 +211,7 @@
 				let rulstVal = {
 					message: '校验通过',
 					validator: true as Function | boolean
-				}
+				} as any
 				for (let j = 0; j < vallist.length; j++) {
 					if (!vallist[j].validator) {
 						isPass = false
@@ -227,7 +227,7 @@
 				let rulstVal = {
 					message: '校验通过',
 					validator: true as Function | boolean
-				}
+				} as any
 				for (let j = 0; j < vallist.length; j++) {
 					if (!vallist[j].validator) {
 						isPass = false
