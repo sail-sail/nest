@@ -157,9 +157,9 @@ function computedTheme(props : any, dark : boolean, store : any) : cssstyle {
 		outlined,
 		text,
 		borderStyle: borderStyle,
-		borderDirection: <cssDirectionType>borderDirection,
-		linearDirection: <linearDirectionType>linear,
-		linearDeep: <linearDeep>linearDeep,
+		borderDirection: borderDirection as cssDirectionType,
+		linearDirection: linear as linearDirectionType,
+		linearDeep: linearDeep as linearDeep,
 		blur,
 		borderColor: borderColor
 	});

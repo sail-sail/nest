@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/base/operation_record";
+
 declare const operationRecordId: unique symbol;
 
 declare global {
@@ -33,7 +35,9 @@ declare global {
     new_data_like?: string;
     /** 更新人 */
     update_usr_id?: UsrId[];
+    /** 更新人 */
     update_usr_id_is_null?: boolean;
+    /** 更新人 */
     update_usr_id_lbl?: string[];
     /** 更新时间 */
     update_time?: string[];

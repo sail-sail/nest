@@ -77,6 +77,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/<#=mod#>/<#=table#>";
+
 declare const <#=table_Up#>Id: unique symbol;
 
 declare global {
@@ -152,22 +154,11 @@ declare global {
         data_type = 'number';
       }
     #><#
-      if (hasCreateUsrId && column_name === "create_usr_id") {
+      if (foreignKey) {
     #>
     /** <#=column_comment#> */
     <#=column_name#>?: <#=data_type#>;
-    <#=column_name#>_is_null?: boolean;
-    <#=column_name#>_lbl?: string[];<#
-      } else if (hasCreateUsrId && column_name === "update_usr_id") {
-    #>
     /** <#=column_comment#> */
-    <#=column_name#>?: <#=data_type#>;
-    <#=column_name#>_is_null?: boolean;
-    <#=column_name#>_lbl?: string[];<#
-      } else if (foreignKey) {
-    #>
-    /** <#=column_comment#> */
-    <#=column_name#>?: <#=data_type#>;
     <#=column_name#>_is_null?: boolean;<#
       if (modelLabel) {
     #>
@@ -176,11 +167,11 @@ declare global {
       } else if (foreignKey.lbl) {
     #>
     /** <#=column_comment#> */
-    <#=column_name#>_<#=foreignKey.lbl#>?: string[];<#
-      }
-    #>
+    <#=column_name#>_<#=foreignKey.lbl#>?: string[];
     /** <#=column_comment#> */
     <#=column_name#>_<#=foreignKey.lbl#>_like?: string;<#
+      }
+    #><#
       } else if (column.dict || column.dictbiz) {
         let enumColumnName = data_type;
         const columnDictModels = [

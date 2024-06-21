@@ -2382,7 +2382,7 @@ const old_table = table;
     v-slot="listSelectProps"
   >
     <<#=foreignTable_Up#>List
-      v-bind="listSelectProps"
+      v-bind="listSelectProps as any"
     ></<#=foreignTable_Up#>List>
   </ListSelectDialog><#
   }
