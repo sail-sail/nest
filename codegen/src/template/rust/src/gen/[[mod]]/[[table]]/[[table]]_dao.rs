@@ -553,7 +553,7 @@ async fn get_where_query(
   #>
   
   let data_permit_models = get_data_permits(
-    get_route_path(),
+    get_route_path_<#=table#>(),
     options,
   ).await?;
   let has_create_permit = data_permit_models.iter()
@@ -1039,7 +1039,7 @@ async fn get_from_query(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   let data_permit_models = get_data_permits(
-    get_route_path(),
+    get_route_path_<#=table#>(),
     options,
   ).await?;
   let has_create_permit = data_permit_models.iter()
@@ -1782,15 +1782,10 @@ pub async fn find_count(
   Ok(total)
 }
 
-/// 获取路由地址
-pub fn get_route_path() -> String {
-  "/<#=mod#>/<#=table#>".to_owned()
-}
-
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
   i18n_dao::NRoute {
-    route_path: get_route_path().into(),
+    route_path: get_route_path_<#=table#>().into(),
   }
 }
 
@@ -3739,7 +3734,7 @@ pub async fn get_editable_data_permits_by_ids(
   let options = Some(options);
   
   let data_permit_models = get_data_permits(
-    get_route_path(),
+    get_route_path_<#=table#>(),
     options.as_ref(),
   ).await?;
   
@@ -3903,7 +3898,7 @@ pub async fn update_by_id(
   let old_model = old_model.unwrap();
   
   let data_permit_models = get_data_permits(
-    get_route_path(),
+    get_route_path_<#=table#>(),
     options.as_ref(),
   ).await?;
   
@@ -4784,7 +4779,7 @@ pub async fn delete_by_ids(
   #>
   
   let data_permit_models = get_data_permits(
-    get_route_path(),
+    get_route_path_<#=table#>(),
     options.as_ref(),
   ).await?;
   

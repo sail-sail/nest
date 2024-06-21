@@ -669,3 +669,8 @@ pub fn check_sort_dictbiz_detail(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_dictbiz_detail() -> String {
+  "/base/dictbiz_detail".to_owned()
+}

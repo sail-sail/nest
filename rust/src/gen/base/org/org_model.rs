@@ -584,3 +584,8 @@ pub fn check_sort_org(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_org() -> String {
+  "/base/org".to_owned()
+}

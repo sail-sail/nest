@@ -725,3 +725,8 @@ pub fn check_sort_tenant(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_tenant() -> String {
+  "/base/tenant".to_owned()
+}

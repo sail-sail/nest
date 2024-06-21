@@ -561,3 +561,8 @@ pub fn check_sort_permit(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_permit() -> String {
+  "/base/permit".to_owned()
+}

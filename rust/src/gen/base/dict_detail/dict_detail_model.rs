@@ -650,3 +650,8 @@ pub fn check_sort_dict_detail(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_dict_detail() -> String {
+  "/base/dict_detail".to_owned()
+}

@@ -99,7 +99,7 @@ pub async fn creates(
   let inputs = inputs2;
   
   use_permit(
-    "/base/data_permit".to_owned(),
+    get_route_path_data_permit(),
     "add".to_owned(),
   ).await?;
   
@@ -128,7 +128,7 @@ pub async fn update_by_id(
   ).await?;
   
   use_permit(
-    "/base/data_permit".to_owned(),
+    get_route_path_data_permit(),
     "edit".to_owned(),
   ).await?;
   
@@ -149,7 +149,7 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/data_permit".to_owned(),
+    get_route_path_data_permit(),
     "delete".to_owned(),
   ).await?;
   
@@ -181,7 +181,7 @@ pub async fn revert_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/data_permit".to_owned(),
+    get_route_path_data_permit(),
     "delete".to_owned(),
   ).await?;
   
@@ -201,7 +201,7 @@ pub async fn force_delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/data_permit".to_owned(),
+    get_route_path_data_permit(),
     "force_delete".to_owned(),
   ).await?;
   

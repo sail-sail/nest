@@ -750,3 +750,8 @@ pub fn check_sort_dept(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_dept() -> String {
+  "/base/dept".to_owned()
+}

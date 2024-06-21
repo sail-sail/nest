@@ -905,3 +905,8 @@ pub fn check_sort_background_task(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_background_task() -> String {
+  "/base/background_task".to_owned()
+}

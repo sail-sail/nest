@@ -598,3 +598,8 @@ pub fn check_sort_i18n(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_i18n() -> String {
+  "/base/i18n".to_owned()
+}

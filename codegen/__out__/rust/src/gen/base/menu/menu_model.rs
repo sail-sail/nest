@@ -668,3 +668,8 @@ pub fn check_sort_menu(
   
   Ok(())
 }
+
+/// 获取路由地址
+pub fn get_route_path_menu() -> String {
+  "/base/menu".to_owned()
+}
