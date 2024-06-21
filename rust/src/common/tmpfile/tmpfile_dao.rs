@@ -1,6 +1,6 @@
 use std::env;
 use anyhow::Result;
-use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command, request::{tokio_backend::Reqwest, Request}};
+use s3::{command::Command, creds::Credentials, request::{tokio_backend::HyperRequest, Request}, Bucket, BucketConfiguration, Region};
 
 pub type OssBucket = Bucket;
 
@@ -25,7 +25,7 @@ async fn create_bucket(
 ) -> Result<()> {
   let mut config = BucketConfiguration::default();
   config.set_region("us-east-1".parse()?);
-  let request = Reqwest::new(bucket, "", Command::CreateBucket { config })?;
+  let request = HyperRequest::new(bucket, "", Command::CreateBucket { config }).await?;
   let _ = request.response_data(false).await?;
   Ok(())
 }

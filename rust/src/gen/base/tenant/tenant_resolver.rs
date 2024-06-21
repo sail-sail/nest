@@ -18,6 +18,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
   
+  check_sort_tenant(sort.as_deref())?;
+  
   let res = tenant_service::find_all(
     search,
     page,
@@ -48,6 +50,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<TenantModel>> {
+  
+  check_sort_tenant(sort.as_deref())?;
   
   let model = tenant_service::find_one(
     search,
@@ -95,7 +99,7 @@ pub async fn creates(
   let inputs = inputs2;
   
   use_permit(
-    "/base/tenant".to_owned(),
+    get_route_path_tenant(),
     "add".to_owned(),
   ).await?;
   
@@ -124,7 +128,7 @@ pub async fn update_by_id(
   ).await?;
   
   use_permit(
-    "/base/tenant".to_owned(),
+    get_route_path_tenant(),
     "edit".to_owned(),
   ).await?;
   
@@ -145,7 +149,7 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/tenant".to_owned(),
+    get_route_path_tenant(),
     "delete".to_owned(),
   ).await?;
   
@@ -182,7 +186,7 @@ pub async fn enable_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/tenant".to_owned(),
+    get_route_path_tenant(),
     "edit".to_owned(),
   ).await?;
   
@@ -221,7 +225,7 @@ pub async fn lock_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/tenant".to_owned(),
+    get_route_path_tenant(),
     "edit".to_owned(),
   ).await?;
   
@@ -254,7 +258,7 @@ pub async fn revert_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/tenant".to_owned(),
+    get_route_path_tenant(),
     "delete".to_owned(),
   ).await?;
   
@@ -274,7 +278,7 @@ pub async fn force_delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/tenant".to_owned(),
+    get_route_path_tenant(),
     "force_delete".to_owned(),
   ).await?;
   

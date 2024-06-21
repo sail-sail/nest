@@ -70,7 +70,14 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   #><#
   }
   #>
+  SortInput,
 } from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
+} from "/gen/types.ts";
+
+export const route_path = "/<#=mod#>/<#=table#>";
 
 declare const <#=table_Up#>Id: unique symbol;
 
@@ -147,22 +154,11 @@ declare global {
         data_type = 'number';
       }
     #><#
-      if (hasCreateUsrId && column_name === "create_usr_id") {
+      if (foreignKey) {
     #>
     /** <#=column_comment#> */
     <#=column_name#>?: <#=data_type#>;
-    <#=column_name#>_is_null?: boolean;
-    <#=column_name#>_lbl?: string[];<#
-      } else if (hasCreateUsrId && column_name === "update_usr_id") {
-    #>
     /** <#=column_comment#> */
-    <#=column_name#>?: <#=data_type#>;
-    <#=column_name#>_is_null?: boolean;
-    <#=column_name#>_lbl?: string[];<#
-      } else if (foreignKey) {
-    #>
-    /** <#=column_comment#> */
-    <#=column_name#>?: <#=data_type#>;
     <#=column_name#>_is_null?: boolean;<#
       if (modelLabel) {
     #>
@@ -171,7 +167,9 @@ declare global {
       } else if (foreignKey.lbl) {
     #>
     /** <#=column_comment#> */
-    <#=column_name#>_<#=foreignKey.lbl#>?: string[];<#
+    <#=column_name#>_<#=foreignKey.lbl#>?: string[];
+    /** <#=column_comment#> */
+    <#=column_name#>_<#=foreignKey.lbl#>_like?: string;<#
       }
     #><#
       } else if (column.dict || column.dictbiz) {
@@ -593,4 +591,52 @@ declare global {
   interface <#=fieldCommentName#> extends <#=fieldCommentName#>Type {
   }
   
+}
+
+/** <#=table_comment#> 前端允许排序的字段 */
+export const canSortInApi<#=Table_Up#> = {<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted" ||
+      column_name === "is_hidden"
+    ) continue;
+    const data_type = column.DATA_TYPE;
+    const column_comment = column.COLUMN_COMMENT;
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const canSortInApi = column.canSortInApi;
+    if (!canSortInApi) continue;
+    if (foreignKey && foreignKey.type === "multiple") continue;
+    let sortBy = column_name;
+    if (foreignKey) {
+      sortBy = sortBy + "_lbl";
+    }
+  #>
+  // <#=column_comment#>
+  "<#=sortBy#>": true,<#
+  }
+  #>
+};
+
+/** <#=table_comment#> 检测字段是否允许前端排序 */
+export function checkSort<#=Table_Up#>(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSort<#=Table_Up#>: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApi<#=Table_Up#>;
+    if (!canSortInApi<#=Table_Up#>[prop]) {
+      throw new Error(`checkSort<#=Table_Up#>: ${ JSON.stringify(item) }`);
+    }
+  }
 }

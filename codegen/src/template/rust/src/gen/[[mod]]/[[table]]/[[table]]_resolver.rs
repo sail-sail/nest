@@ -104,6 +104,8 @@ pub async fn find_all(
   }
   #>
   
+  check_sort_<#=table#>(sort.as_deref())?;
+  
   let res = <#=table#>_service::find_all(
     search,
     page,
@@ -180,6 +182,8 @@ pub async fn find_one(
   });<#
   }
   #>
+  
+  check_sort_<#=table#>(sort.as_deref())?;
   
   let model = <#=table#>_service::find_one(
     search,
@@ -305,7 +309,7 @@ pub async fn creates(
   let inputs = inputs2;
   
   use_permit(
-    "/<#=mod#>/<#=table#>".to_owned(),
+    get_route_path_<#=table#>(),
     "add".to_owned(),
   ).await?;
   
@@ -402,7 +406,7 @@ pub async fn update_by_id(
   ).await?;
   
   use_permit(
-    "/<#=mod#>/<#=table#>".to_owned(),
+    get_route_path_<#=table#>(),
     "edit".to_owned(),
   ).await?;<#
   if (log) {
@@ -475,7 +479,7 @@ pub async fn delete_by_ids(
   #>
   
   use_permit(
-    "/<#=mod#>/<#=table#>".to_owned(),
+    get_route_path_<#=table#>(),
     "delete".to_owned(),
   ).await?;<#
   if (log) {
@@ -548,7 +552,7 @@ pub async fn default_by_id(
   #>
   
   use_permit(
-    "/<#=mod#>/<#=table#>".to_owned(),
+    get_route_path_<#=table#>(),
     "edit".to_owned(),
   ).await?;<#
   if (log) {
@@ -632,7 +636,7 @@ pub async fn enable_by_ids(
   #>
   
   use_permit(
-    "/<#=mod#>/<#=table#>".to_owned(),
+    get_route_path_<#=table#>(),
     "edit".to_owned(),
   ).await?;<#
   if (log) {
@@ -731,7 +735,7 @@ pub async fn lock_by_ids(
   #>
   
   use_permit(
-    "/<#=mod#>/<#=table#>".to_owned(),
+    get_route_path_<#=table#>(),
     "edit".to_owned(),
   ).await?;<#
   if (log) {
@@ -818,7 +822,7 @@ pub async fn revert_by_ids(
   #>
   
   use_permit(
-    "/<#=mod#>/<#=table#>".to_owned(),
+    get_route_path_<#=table#>(),
     "delete".to_owned(),
   ).await?;<#
   if (log) {
@@ -885,7 +889,7 @@ pub async fn force_delete_by_ids(
   #>
   
   use_permit(
-    "/<#=mod#>/<#=table#>".to_owned(),
+    get_route_path_<#=table#>(),
     "force_delete".to_owned(),
   ).await?;<#
   if (log) {

@@ -101,9 +101,9 @@
       :collapse-transition="false"
       unique-opened
       :router="false"
-      @open="menuOpen"
-      @close="menuClose"
-      @select="menuSelect"
+      @open="(menuOpen as any)"
+      @close="(menuClose as any)"
+      @select="(menuSelect as any)"
     >
       <AppSubMenu
         :children="(menuStore.menus as any[])"

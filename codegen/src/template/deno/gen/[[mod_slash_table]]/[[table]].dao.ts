@@ -129,10 +129,15 @@ const modelTableUps = [ ];
 const inputTableUps = [ ];
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
-#>// deno-lint-ignore-file prefer-const no-unused-vars ban-types
+#>// deno-lint-ignore-file prefer-const no-unused-vars<#
+if (!(hasDataPermit() && hasCreateUsrId)) {
+#> ban-types<#
+}
+#>
 import {
   get_is_debug,
   get_is_silent_mode,
+  get_is_creating,
 } from "/lib/context.ts";
 
 import {
@@ -269,14 +274,6 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";<#
 }
 #><#
-if (hasOrgId) {
-#>
-
-import {
-  existById as existByIdOrg,
-} from "/gen/base/org/org.dao.ts";<#
-}
-#><#
 if (hasMany2manyNotInline) {
 #>
 
@@ -376,7 +373,8 @@ for (let i = 0; i < columns.length; i++) {
   if (column.ignoreCodegen) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
-  if (column_name === "create_usr_id"
+  if (
+    column_name === "create_usr_id"
     || column_name === "update_usr_id"
   ) {
     continue;
@@ -639,7 +637,9 @@ import {<#
 }
 #>
 
-const route_path = "/<#=mod#>/<#=table#>";
+import {
+  route_path,
+} from "./<#=table#>.model.ts";
 <#
 if (
   !(
@@ -752,8 +752,11 @@ async function getWhereQuery(
   }<#
     } else if (foreignKey.lbl) {
   #>
-  if (search?.<#=column_name#>_lbl != null) {
-    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_lbl) }`;
+  if (search?.<#=column_name#>_<#=foreignKey.lbl#> != null) {
+    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }`;
+  }
+  if (isNotEmpty(search?.<#=column_name#>_<#=foreignKey.lbl#>_like)) {
+    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") }`;
   }<#
     }
   #><#
@@ -850,72 +853,72 @@ async function getFromQuery(
   }
   #>
   let fromQuery = `<#=mod#>_<#=table#> t<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      const column_name = column.COLUMN_NAME;
-      if (column.isVirtual) continue;
-      const foreignKey = column.foreignKey;
-      let data_type = column.DATA_TYPE;
-      if (!foreignKey) continue;
-      const foreignTable = foreignKey.table;
-      const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-      const many2many = column.many2many;
-      const modelLabel = column.modelLabel;
-      let cascade_fields = foreignKey.cascade_fields || [ ];
-      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-        cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
-      }
-    #><#
-      if (foreignKey.type === "many2many") {
-    #>
-    left join <#=many2many.mod#>_<#=many2many.table#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>=t.id<#
-      if (hasIsDeleted) {
-      #>
-      and <#=many2many.mod#>_<#=many2many.table#>.is_deleted=${ args.push(is_deleted) }<#
-      }
-      #>
-    left join <#=foreignKey.mod#>_<#=foreignTable#>
-      on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>=<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
-      if (hasIsDeleted) {
-      #>
-      and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted=${ args.push(is_deleted) }<#
-      }
-      #>
-    left join(select
-    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
-      if (foreignKey.lbl && !modelLabel) {
-    #>
-    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
-      }
-    #><#
-      for (let j = 0; j < cascade_fields.length; j++) {
-        const cascade_field = cascade_fields[j];
-    #>
-    json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#>,<#
-      }
-    #>
-    <#=mod#>_<#=table#>.id <#=many2many.column1#>
-    from <#=foreignKey.mod#>_<#=many2many.table#>
-    inner join <#=foreignKey.mod#>_<#=foreignKey.table#> on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
-    inner join <#=mod#>_<#=table#> on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column.isVirtual) continue;
+    const foreignKey = column.foreignKey;
+    let data_type = column.DATA_TYPE;
+    if (!foreignKey) continue;
+    const foreignTable = foreignKey.table;
+    const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    const modelLabel = column.modelLabel;
+    let cascade_fields = foreignKey.cascade_fields || [ ];
+    if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+      cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
+    }
+  #><#
+    if (foreignKey.type === "many2many") {
+  #>
+  left join <#=many2many.mod#>_<#=many2many.table#>
+    on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#>=t.id<#
     if (hasIsDeleted) {
     #>
-    where <#=many2many.mod#>_<#=many2many.table#>.is_deleted=${ args.push(is_deleted) }<#
+    and <#=many2many.mod#>_<#=many2many.table#>.is_deleted=${ args.push(is_deleted) }<#
     }
     #>
-    group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
-      } else if (foreignKey && !foreignKey.multiple) {
-        if (modelLabel) {
-          continue;
-        }
+  left join <#=foreignKey.mod#>_<#=foreignTable#>
+    on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>=<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
+    if (hasIsDeleted) {
     #>
-    left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl on <#=column_name#>_lbl.<#=foreignKey.column#>=t.<#=column_name#><#
+    and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted=${ args.push(is_deleted) }<#
+    }
+    #>
+  left join(select
+  json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.id) <#=column_name#>,<#
+    if (foreignKey.lbl && !modelLabel) {
+  #>
+  json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.lbl#>) <#=column_name#>_lbl,<#
+    }
+  #><#
+    for (let j = 0; j < cascade_fields.length; j++) {
+      const cascade_field = cascade_fields[j];
+  #>
+  json_objectagg(<#=many2many.mod#>_<#=many2many.table#>.order_by,<#=foreignKey.mod#>_<#=foreignTable#>.<#=cascade_field#>) <#=column_name#>_<#=cascade_field#>,<#
+    }
+  #>
+  <#=mod#>_<#=table#>.id <#=many2many.column1#>
+  from <#=foreignKey.mod#>_<#=many2many.table#>
+  inner join <#=foreignKey.mod#>_<#=foreignKey.table#> on <#=foreignKey.mod#>_<#=foreignKey.table#>.<#=foreignKey.column#>=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>
+  inner join <#=mod#>_<#=table#> on <#=mod#>_<#=table#>.id=<#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column1#><#
+  if (hasIsDeleted) {
+  #>
+  where <#=many2many.mod#>_<#=many2many.table#>.is_deleted=${ args.push(is_deleted) }<#
+  }
+  #>
+  group by <#=many2many.column1#>) _<#=foreignTable#> on _<#=foreignTable#>.<#=many2many.column1#>=t.id<#
+    } else if (foreignKey && !foreignKey.multiple) {
+      if (modelLabel) {
+        continue;
       }
-    #><#
+  #>
+  left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl on <#=column_name#>_lbl.<#=foreignKey.column#>=t.<#=column_name#><#
     }
-    #>`;<#
+  #><#
+  }
+  #>`;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if (!hasTenantPermit && hasDeptPermit) {
@@ -931,7 +934,7 @@ async function getFromQuery(
 
 /**
  * 根据条件查找<#=table_comment#>总数
- * @param { <#=searchName#> } search?
+ * @param {<#=searchName#>} search?
  * @return {Promise<number>}
  */
 export async function findCount(
@@ -3962,7 +3965,8 @@ export async function updateById(
   options?: {
     is_debug?: boolean;
     uniqueType?: Exclude<UniqueType, UniqueType.Update>;
-    is_silent_mode?: boolean;<#
+    is_silent_mode?: boolean;
+    is_creating?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -3976,6 +3980,7 @@ export async function updateById(
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
+  const is_creating = get_is_creating(options?.is_creating);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -4455,11 +4460,18 @@ export async function updateById(
     }
     
     for (const input of <#=table#>_create_models) {
-      await create<#=Table_Up#>(input);
+      await create<#=Table_Up#>(input, options);
     }
     for (let i = 0; i < <#=table#>_update_models.length; i++) {
       const { id, input } = <#=table#>_update_models[i];
-      await updateById<#=Table_Up#>(id, { ...input, id: undefined });
+      await updateById<#=Table_Up#>(
+        id,
+        {
+          ...input,
+          id: undefined,
+        },
+        options,
+      );
     }
     await deleteByIds<#=Table_Up#>(
       <#=table#>_delete_ids,
@@ -4478,7 +4490,7 @@ export async function updateById(
   if (updateFldNum > 0) {<#
     if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
     #>
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         if (authModel?.id != null) {
@@ -4492,7 +4504,7 @@ export async function updateById(
     }<#
     } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
     #>
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
         const authModel = await getAuthModel();
         let usr_id: UsrId | undefined = authModel?.id;
@@ -4506,7 +4518,7 @@ export async function updateById(
           }
         }
         if (usr_id != null) {
-          sql += `update_usr_id=${ args.push(authModel.id) },`;
+          sql += `update_usr_id=${ args.push(usr_id) },`;
         }
         if (usr_lbl) {
           sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
@@ -4556,7 +4568,7 @@ export async function updateById(
     #><#
     if (hasUpdateTime) {
     #>
-    if (!is_silent_mode) {
+    if (!is_silent_mode && !is_creating) {
       if (input.update_time != null || input.update_time_save_null) {
         sql += `update_time=${ args.push(input.update_time) },`;
       } else {
@@ -4634,7 +4646,8 @@ export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
   options?: {
     is_debug?: boolean;
-    is_silent_mode?: boolean;<#
+    is_silent_mode?: boolean;
+    is_creating?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -4648,6 +4661,7 @@ export async function deleteByIds(
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
+  const is_creating = get_is_creating(options?.is_creating);
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -4683,7 +4697,7 @@ export async function deleteByIds(
   }
   #>
   
-  let num = 0;
+  let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     const oldModel = await findById(id, options);
@@ -4729,7 +4743,7 @@ export async function deleteByIds(
     if (hasIsDeleted) {
     #>
     let sql = `update <#=mod#>_<#=table#> set is_deleted=1`;
-    if (!is_silent_mode) {<#
+    if (!is_silent_mode && !is_creating) {<#
       if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
       #>
       const authModel = await getAuthModel();
@@ -4747,7 +4761,7 @@ export async function deleteByIds(
       #>
       let usr_lbl = "";
       if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id);
+        const usr_model = await findByIdUsr(usr_id, options);
         if (!usr_model) {
           usr_id = undefined;
         } else {
@@ -4771,8 +4785,8 @@ export async function deleteByIds(
     const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) } limit 1`;<#
     }
     #>
-    const result = await execute(sql, args);
-    num += result.affectedRows;
+    const res = await execute(sql, args);
+    affectedRows += res.affectedRows;
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;
@@ -4832,10 +4846,15 @@ export async function deleteByIds(
   // <#=column_comment#>
   if (ids && ids.length > 0) {
     {
-      const <#=table#>_models = await findAll<#=Table_Up#>({
-        <#=many2many.column1#>: ids,
-        is_deleted: 1,
-      });
+      const <#=table#>_models = await findAll<#=Table_Up#>(
+        {
+          <#=many2many.column1#>: ids,
+          is_deleted: 1,
+        },
+        undefined,
+        undefined,
+        options,
+      );
       await forceDeleteByIds<#=Table_Up#>(
         <#=table#>_models.map((item) => item.id),
         options,
@@ -4869,7 +4888,7 @@ export async function deleteByIds(
   }
   #>
   
-  return num;
+  return affectedRows;
 }<#
 if (hasDefault) {
 #>

@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,12 +27,24 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::usr::usr_model::UsrId;
 
+lazy_static! {
+  /// 后台任务 前端允许排序的字段
+  static ref CAN_SORT_IN_API_BACKGROUND_TASK: [&'static str; 4] = [
+    "begin_time",
+    "end_time",
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "BackgroundTaskModel")]
+#[allow(dead_code)]
 pub struct BackgroundTaskModel {
   /// 租户ID
   #[graphql(skip)]
@@ -180,6 +194,7 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct BackgroundTaskFieldComment {
   /// ID
   pub id: String,
@@ -227,6 +242,7 @@ pub struct BackgroundTaskFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct BackgroundTaskSearch {
   /// ID
   pub id: Option<BackgroundTaskId>,
@@ -386,6 +402,7 @@ impl std::fmt::Debug for BackgroundTaskSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "BackgroundTaskInput")]
+#[allow(dead_code)]
 pub struct BackgroundTaskInput {
   /// ID
   pub id: Option<BackgroundTaskId>,
@@ -867,4 +884,29 @@ impl TryFrom<String> for BackgroundTaskType {
       )),
     }
   }
+}
+
+/// 后台任务 检测字段是否允许前端排序
+pub fn check_sort_background_task(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_BACKGROUND_TASK.contains(&prop) {
+      return Err(anyhow!("check_sort_background_task: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
+}
+
+/// 获取路由地址
+pub fn get_route_path_background_task() -> String {
+  "/base/background_task".to_owned()
 }

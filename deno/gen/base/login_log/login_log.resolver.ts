@@ -1,5 +1,5 @@
 import {
-  useContext,
+  set_is_tran,
 } from "/lib/context.ts";
 
 import type {
@@ -8,8 +8,16 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortLoginLog,
+} from "./login_log.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
+
+import {
+  route_path,
+} from "./login_log.model.ts";
 
 /**
  * 根据条件查找登录日志总数
@@ -39,6 +47,8 @@ export async function findAllLoginLog(
     findAll,
   } = await import("./login_log.service.ts");
   
+  checkSortLoginLog(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,6 +73,8 @@ export async function findOneLoginLog(
   const {
     findOne,
   } = await import("./login_log.service.ts");
+  
+  checkSortLoginLog(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -95,12 +107,10 @@ export async function deleteByIdsLoginLog(
     deleteByIds,
   } = await import("./login_log.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/login_log",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -118,12 +128,10 @@ export async function revertByIdsLoginLog(
     revertByIds,
   } = await import("./login_log.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/login_log",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -136,18 +144,17 @@ export async function revertByIdsLoginLog(
 export async function forceDeleteByIdsLoginLog(
   ids: LoginLogId[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/base/login_log",
-    "force_delete",
-  );
   
   const {
     forceDeleteByIds,
   } = await import("./login_log.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "force_delete",
+  );
   const res = await forceDeleteByIds(ids);
   return res;
 }

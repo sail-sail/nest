@@ -17,6 +17,7 @@ use tokio::sync::Mutex;
 
 use chrono::{Local, NaiveDate, NaiveTime, NaiveDateTime};
 use base64::{engine::general_purpose, Engine};
+use regex::Regex;
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
 use sqlx::{Pool, MySql, Executor, FromRow, Row};
@@ -28,7 +29,7 @@ use super::cache::cache_dao::{get_cache, set_cache, del_cache};
 
 pub use super::cache::cache_dao::del_caches;
 
-use super::gql::model::{SortInput, PageInput};
+use super::gql::model::{PageInput, SortInput};
 
 pub use super::gql::model::UniqueType;
 pub use super::util::string::hash;
@@ -47,7 +48,7 @@ lazy_static! {
   static ref DB_POOL: Pool<MySql> = init_db_pool("").unwrap();
   static ref DB_POOL_DW: Pool<MySql> = init_db_pool("_dw").unwrap();
   static ref IS_DEBUG: bool = init_debug();
-  static ref MULTIPLE_SPACE_REGEX: regex::Regex = regex::Regex::new(r"\s+").unwrap();
+  static ref MULTIPLE_SPACE_REGEX: Regex = Regex::new(r"\s+").unwrap();
 }
 
 tokio::task_local! {
@@ -1081,6 +1082,11 @@ pub struct Ctx {
   /// 静默模式
   is_silent_mode: bool,
   
+  /// 是否处于创建模式, 默认为 false
+  /// 创建模式 update_by_id 时不自动修改 update_usr_id, update_usr_id_lbl 跟 update_time
+  /// 创建模式 delete_by_ids 时不自动修改 delete_usr_id, delete_usr_id_lbl 跟 delete_time
+  is_creating: Option<bool>,
+  
 }
 
 impl Ctx {
@@ -1414,6 +1420,10 @@ pub struct Options {
   #[new(default)]
   is_silent_mode: Option<bool>,
   
+  /// 创建状态
+  #[new(default)]
+  is_creating: Option<bool>,
+  
 }
 
 impl Debug for Options {
@@ -1586,6 +1596,8 @@ pub struct CtxBuilder<'a> {
   
   is_silent_mode: bool,
   
+  is_creating: Option<bool>,
+  
 }
 
 impl <'a> CtxBuilder<'a> {
@@ -1603,6 +1615,7 @@ impl <'a> CtxBuilder<'a> {
       now,
       is_debug: None,
       is_silent_mode: false,
+      is_creating: None,
     }
   }
   
@@ -1697,6 +1710,15 @@ impl <'a> CtxBuilder<'a> {
     self
   }
   
+  #[allow(dead_code)]
+  pub fn with_creating(
+    mut self,
+    is_creating: Option<bool>,
+  ) -> CtxBuilder<'a> {
+    self.is_creating = is_creating;
+    self
+  }
+  
   pub fn build(self) -> Ctx {
     Ctx {
       is_tran: self.is_tran.unwrap_or_default(),
@@ -1706,6 +1728,7 @@ impl <'a> CtxBuilder<'a> {
       now: self.now,
       is_debug: self.is_debug,
       is_silent_mode: self.is_silent_mode,
+      is_creating: self.is_creating,
     }
   }
   
@@ -1732,6 +1755,7 @@ pub fn escape_id(val: impl AsRef<str>) -> String {
  * 转义sql语句中的值
  */
 #[must_use]
+#[allow(dead_code)]
 pub fn escape(val: impl AsRef<str>) -> String {
   let mut val = val.as_ref().to_owned();
   val = val.replace('`', "``");
@@ -1782,19 +1806,10 @@ pub fn get_order_by_query(
   let mut order_by_query = String::with_capacity(128);
   for item in sort {
     let prop = item.prop;
-    let mut order = item.order;
     if !order_by_query.is_empty() {
       order_by_query += ",";
     }
-    if order == "ascending" {
-      "asc".clone_into(&mut order)
-    } else if order == "descending" {
-      "desc".clone_into(&mut order)
-    }
-    if order != "asc" && order != "desc" {
-      continue;
-    }
-    order_by_query += &format!(" {} {}", escape_id(prop), escape(order));
+    order_by_query += &format!(" {} {}", escape_id(prop), item.order);
   }
   if !order_by_query.is_empty() {
     order_by_query = " order by".to_owned() + order_by_query.as_ref();
@@ -1841,8 +1856,21 @@ pub fn get_is_silent_mode(
       return is_silent_mode;
     }
   }
-  let ctx = &CTX.with(|ctx| ctx.clone());
+  let ctx = CTX.with(|ctx| ctx.clone());
   ctx.is_silent_mode
+}
+
+#[must_use]
+pub fn get_is_creating(
+  options: Option<&Options>,
+) -> bool {
+  if let Some(options) = options {
+    if let Some(is_creating) = options.is_creating {
+      return is_creating;
+    }
+  }
+  let ctx = CTX.with(|ctx| ctx.clone());
+  ctx.is_creating.unwrap_or_default()
 }
 
 #[cfg(test)]

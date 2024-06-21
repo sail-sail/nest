@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,14 +27,26 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::role::role_model::RoleId;
 use crate::gen::base::dept::dept_model::DeptId;
 use crate::gen::base::org::org_model::OrgId;
 
+lazy_static! {
+  /// 用户 前端允许排序的字段
+  static ref CAN_SORT_IN_API_USR: [&'static str; 4] = [
+    "username",
+    "order_by",
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "UsrModel")]
+#[allow(dead_code)]
 pub struct UsrModel {
   /// 租户ID
   #[graphql(skip)]
@@ -331,6 +345,7 @@ impl FromRow<'_, MySqlRow> for UsrModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct UsrFieldComment {
   /// ID
   pub id: String,
@@ -388,6 +403,7 @@ pub struct UsrFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct UsrSearch {
   /// ID
   pub id: Option<UsrId>,
@@ -449,6 +465,9 @@ pub struct UsrSearch {
   /// 默认组织
   #[graphql(name = "default_org_id_lbl")]
   pub default_org_id_lbl: Option<Vec<String>>,
+  /// 默认组织
+  #[graphql(name = "default_org_id_lbl_like")]
+  pub default_org_id_lbl_like: Option<String>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -604,6 +623,7 @@ impl std::fmt::Debug for UsrSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "UsrInput")]
+#[allow(dead_code)]
 pub struct UsrInput {
   /// ID
   pub id: Option<UsrId>,
@@ -913,4 +933,29 @@ impl PartialEq<str> for UsrId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
   }
+}
+
+/// 用户 检测字段是否允许前端排序
+pub fn check_sort_usr(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_USR.contains(&prop) {
+      return Err(anyhow!("check_sort_usr: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
+}
+
+/// 获取路由地址
+pub fn get_route_path_usr() -> String {
+  "/base/usr".to_owned()
 }

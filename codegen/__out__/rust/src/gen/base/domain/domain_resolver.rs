@@ -18,6 +18,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<DomainModel>> {
   
+  check_sort_domain(sort.as_deref())?;
+  
   let res = domain_service::find_all(
     search,
     page,
@@ -48,6 +50,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<DomainModel>> {
+  
+  check_sort_domain(sort.as_deref())?;
   
   let model = domain_service::find_one(
     search,
@@ -95,7 +99,7 @@ pub async fn creates(
   let inputs = inputs2;
   
   use_permit(
-    "/base/domain".to_owned(),
+    get_route_path_domain(),
     "add".to_owned(),
   ).await?;
   
@@ -124,7 +128,7 @@ pub async fn update_by_id(
   ).await?;
   
   use_permit(
-    "/base/domain".to_owned(),
+    get_route_path_domain(),
     "edit".to_owned(),
   ).await?;
   
@@ -145,7 +149,7 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/domain".to_owned(),
+    get_route_path_domain(),
     "delete".to_owned(),
   ).await?;
   
@@ -165,7 +169,7 @@ pub async fn default_by_id(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/domain".to_owned(),
+    get_route_path_domain(),
     "edit".to_owned(),
   ).await?;
   
@@ -202,7 +206,7 @@ pub async fn enable_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/domain".to_owned(),
+    get_route_path_domain(),
     "edit".to_owned(),
   ).await?;
   
@@ -241,7 +245,7 @@ pub async fn lock_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/domain".to_owned(),
+    get_route_path_domain(),
     "edit".to_owned(),
   ).await?;
   
@@ -274,7 +278,7 @@ pub async fn revert_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/domain".to_owned(),
+    get_route_path_domain(),
     "delete".to_owned(),
   ).await?;
   
@@ -294,7 +298,7 @@ pub async fn force_delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/domain".to_owned(),
+    get_route_path_domain(),
     "force_delete".to_owned(),
   ).await?;
   

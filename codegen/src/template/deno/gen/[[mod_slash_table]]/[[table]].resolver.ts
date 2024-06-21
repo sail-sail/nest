@@ -29,7 +29,12 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 }
 const hasSummary = columns.some((column) => column.showSummary);
 #>import {
-  useContext,
+  set_is_tran,<#
+  if (opts.noAdd !== true) {
+  #>
+  set_is_creating,<#
+  }
+  #>
 } from "/lib/context.ts";<#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
@@ -67,7 +72,11 @@ import type {<#
   #>
   PageInput,
   SortInput,
-} from "/gen/types.ts";<#
+} from "/gen/types.ts";
+
+import {
+  checkSort<#=Table_Up#>,
+} from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
 
@@ -86,6 +95,10 @@ if (mod === "cron" && table === "cron_job") {
 import "./cron_job.service.ts";<#
 }
 #>
+
+import {
+  route_path,
+} from "./<#=table#>.model.ts";
 
 /**
  * 根据条件查找<#=table_comment#>总数
@@ -128,6 +141,8 @@ export async function findAll<#=Table_Up2#>(
   search.is_hidden = [ 0 ];<#
   }
   #>
+  
+  checkSort<#=Table_Up#>(sort);
   
   const res = await findAll(search, page, sort);<#
   if (hasPassword) {
@@ -198,6 +213,8 @@ export async function findOne<#=Table_Up2#>(
   search.is_hidden = [ 0 ];<#
   }
   #>
+  
+  checkSort<#=Table_Up#>(sort);
   
   const res = await findOne(search, sort);<#
   for (let i = 0; i < columns.length; i++) {
@@ -273,12 +290,11 @@ export async function creates<#=Table_Up2#>(
     creates,
   } = await import("./<#=table#>.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "add",
   );<#
   if (log) {
@@ -394,14 +410,12 @@ export async function updateById<#=Table_Up2#>(
     updateById,
   } = await import("./<#=table#>.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "edit",
   );<#
   if (log) {
@@ -452,12 +466,10 @@ export async function deleteByIds<#=Table_Up2#>(
     deleteByIds,
   } = await import("./<#=table#>.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "delete",
   );<#
   if (log) {
@@ -507,12 +519,10 @@ export async function defaultById<#=Table_Up2#>(
     defaultById,
   } = await import("./<#=table#>.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "edit",
   );<#
   if (log) {
@@ -560,15 +570,14 @@ export async function enableByIds<#=Table_Up2#>(
     enableByIds,
   } = await import("./<#=table#>.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIds<#=Table_Up#>.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  set_is_tran(true);
+  
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "edit",
   );<#
   if (log) {
@@ -623,15 +632,14 @@ export async function lockByIds<#=Table_Up2#>(
     lockByIds,
   } = await import("./<#=table#>.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIds<#=Table_Up#>.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  set_is_tran(true);
+  
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "edit",
   );<#
   if (log) {
@@ -678,12 +686,10 @@ export async function revertByIds<#=Table_Up2#>(
     revertByIds,
   } = await import("./<#=table#>.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/<#=mod#>/<#=table#>",
+    route_path,
     "delete",
   );<#
   if (log) {
@@ -725,18 +731,17 @@ if (opts.noDelete !== true && hasIsDeleted) {
 export async function forceDeleteByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/<#=mod#>/<#=table#>",
-    "force_delete",
-  );
   
   const {
     forceDeleteByIds,
-  } = await import("./<#=table#>.service.ts");<#
+  } = await import("./<#=table#>.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "force_delete",
+  );<#
   if (log) {
   #>
   

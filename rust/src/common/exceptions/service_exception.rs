@@ -5,6 +5,7 @@ use derive_builder::Builder;
 
 #[derive(Builder, Debug, Clone, Default)]
 #[builder(setter(into))]
+#[allow(dead_code)]
 pub struct ServiceException {
   pub code: String,
   pub message: String,

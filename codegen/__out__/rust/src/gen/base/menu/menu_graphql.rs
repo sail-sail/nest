@@ -184,6 +184,7 @@ impl MenuGenMutation {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
+      .with_creating(Some(true))
       .build()
       .scope({
         menu_resolver::creates(

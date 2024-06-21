@@ -3,7 +3,14 @@ import type {
   BackgroundTaskModel as BackgroundTaskModelType,
   BackgroundTaskSearch as BackgroundTaskSearchType,
   BackgroundTaskFieldComment as BackgroundTaskFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
+} from "/gen/types.ts";
+
+export const route_path = "/base/background_task";
 
 declare const backgroundTaskId: unique symbol;
 
@@ -60,4 +67,34 @@ declare global {
   interface BackgroundTaskFieldComment extends BackgroundTaskFieldCommentType {
   }
   
+}
+
+/** 后台任务 前端允许排序的字段 */
+export const canSortInApiBackgroundTask = {
+  // 开始时间
+  "begin_time": true,
+  // 结束时间
+  "end_time": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 后台任务 检测字段是否允许前端排序 */
+export function checkSortBackgroundTask(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortBackgroundTask: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiBackgroundTask;
+    if (!canSortInApiBackgroundTask[prop]) {
+      throw new Error(`checkSortBackgroundTask: ${ JSON.stringify(item) }`);
+    }
+  }
 }

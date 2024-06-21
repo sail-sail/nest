@@ -115,7 +115,9 @@ use chrono::Datelike;<#
 }
 #>
 #[allow(unused_imports)]
-use crate::common::util::string::*;<#
+use crate::common::util::string::sql_like;
+#[allow(unused_imports)]
+use crate::common::gql::model::SortOrderEnum;<#
 if (hasMany2manyNotInline) {
 #>
 
@@ -179,6 +181,7 @@ use crate::common::context::{
   del_caches,
   get_is_debug,
   get_is_silent_mode,
+  get_is_creating,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -550,7 +553,7 @@ async fn get_where_query(
   #>
   
   let data_permit_models = get_data_permits(
-    get_route_path(),
+    get_route_path_<#=table#>(),
     options,
   ).await?;
   let has_create_permit = data_permit_models.iter()
@@ -826,17 +829,17 @@ async fn get_where_query(
     } else if (foreignKey.lbl) {
   #>
   {
-    let <#=column_name_rust#>_lbl: Option<Vec<String>> = match search {
-      Some(item) => item.<#=column_name_rust#>_lbl.clone(),
+    let <#=column_name#>_<#=foreignKey.lbl#>: Option<Vec<String>> = match search {
+      Some(item) => item.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
       None => None,
     };
-    if let Some(<#=column_name_rust#>_lbl) = <#=column_name_rust#>_lbl {
+    if let Some(<#=column_name#>_<#=foreignKey.lbl#>) = <#=column_name#>_<#=foreignKey.lbl#> {
       let arg = {
-        if <#=column_name_rust#>_lbl.is_empty() {
+        if <#=column_name#>_<#=foreignKey.lbl#>.is_empty() {
           "null".to_string()
         } else {
-          let mut items = Vec::with_capacity(<#=column_name_rust#>_lbl.len());
-          for item in <#=column_name_rust#>_lbl {
+          let mut items = Vec::with_capacity(<#=column_name#>_<#=foreignKey.lbl#>.len());
+          for item in <#=column_name#>_<#=foreignKey.lbl#> {
             args.push(item.into());
             items.push("?");
           }
@@ -846,6 +849,16 @@ async fn get_where_query(
       where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+  }
+  {
+    let <#=column_name#>_<#=foreignKey.lbl#>_like = match search {
+      Some(item) => item.<#=column_name#>_<#=foreignKey.lbl#>_like.clone(),
+      None => None,
+    };
+    if let Some(<#=column_name#>_<#=foreignKey.lbl#>_like) = <#=column_name#>_<#=foreignKey.lbl#>_like {
+      where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
+      args.push(format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like)).into());
     }
   }<#
     }
@@ -1026,7 +1039,7 @@ async fn get_from_query(
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   let data_permit_models = get_data_permits(
-    get_route_path(),
+    get_route_path_<#=table#>(),
     options,
   ).await?;
   let has_create_permit = data_permit_models.iter()
@@ -1254,12 +1267,17 @@ pub async fn find_all(
     } else if (opts?.defaultSort.order === "descending") {
       order = "desc";
     }
+    if (order === "asc") {
+      order = "SortOrderEnum::Asc";
+    } else if (order === "desc") {
+      order = "SortOrderEnum::Desc";
+    }
   #>
   
   if !sort.iter().any(|item| item.prop == "<#=prop#>") {
     sort.push(SortInput {
       prop: "<#=prop#>".into(),
-      order: "<#=order#>".into(),
+      order: <#=order#>,
     });
   }<#
   }
@@ -1270,7 +1288,7 @@ pub async fn find_all(
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
-      order: "asc".into(),
+      order: SortOrderEnum::Asc,
     });
   }<#
   }
@@ -1764,15 +1782,10 @@ pub async fn find_count(
   Ok(total)
 }
 
-/// 获取路由地址
-pub fn get_route_path() -> String {
-  "/<#=mod#>/<#=table#>".to_owned()
-}
-
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
   i18n_dao::NRoute {
-    route_path: get_route_path().into(),
+    route_path: get_route_path_<#=table#>().into(),
   }
 }
 
@@ -3386,7 +3399,9 @@ async fn _creates(
   
   let options = options.set_del_cache_key1s(get_cache_tables());<#
   }
-  #><#
+  #>
+  
+  let options = Some(options);<#
   if (
     cache &&
     (mod === "base" && table === "tenant") ||
@@ -3402,10 +3417,10 @@ async fn _creates(
   }
   #>
   
-  execute(
+  let affected_rows = execute(
     sql,
     args,
-    Some(options.clone()),
+    options.clone(),
   ).await?;<#
   if (
     cache &&
@@ -3420,6 +3435,44 @@ async fn _creates(
     vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
   ).await?;<#
   }
+  #>
+  
+  if affected_rows != inputs2_len as u64 {
+    return Err(anyhow!("affectedRows: {affected_rows} != {inputs2_len}"));
+  }<#
+  let hasMany2manyInputs2 = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    let data_type = column.DATA_TYPE;
+    let column_type = column.COLUMN_TYPE;
+    let column_comment = column.COLUMN_COMMENT || "";
+    if (column_comment.indexOf("[") !== -1) {
+      column_comment = column_comment.substring(0, column_comment.indexOf("["));
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+    if (foreignKey && foreignKey.type === "many2many") {
+      if (column.inlineMany2manyTab) continue;
+      hasMany2manyInputs2 = true;
+      break;
+    }
+    if (inlineForeignTabs.length > 0) {
+      hasMany2manyInputs2 = true;
+      break;
+    }
+    if (column.inlineMany2manyTab) {
+      hasMany2manyInputs2 = true;
+      break;
+    }
+  }
+  #><#
+  if (hasMany2manyInputs2) {
   #>
   
   for (i, input) in inputs2
@@ -3491,7 +3544,7 @@ async fn _creates(
         model.<#=inlineForeignTab.column#> = id.clone().into();
         create_<#=table#>(
           model,
-          None,
+          options.clone(),
         ).await?;
       }
     }<#
@@ -3503,7 +3556,7 @@ async fn _creates(
       <#=inline_column_name#>.<#=inlineForeignTab.column#> = id.clone().into();
       create_<#=table#>(
         <#=inline_column_name#>,
-        None,
+        options.clone(),
       ).await?;
     }<#
       }
@@ -3547,13 +3600,15 @@ async fn _creates(
         input.<#=many2many.column1#> = id.clone().into();
         create_<#=table#>(
           input,
-          None,
+          options.clone(),
         ).await?;
       }
     }<#
     }
     #>
+  }<#
   }
+  #>
   
   Ok(ids2)
 }
@@ -3679,7 +3734,7 @@ pub async fn get_editable_data_permits_by_ids(
   let options = Some(options);
   
   let data_permit_models = get_data_permits(
-    get_route_path(),
+    get_route_path_<#=table#>(),
     options.as_ref(),
   ).await?;
   
@@ -3790,6 +3845,7 @@ pub async fn update_by_id(
   let is_silent_mode = get_is_silent_mode(options.as_ref());<#
   }
   #>
+  let is_creating = get_is_creating(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -3842,7 +3898,7 @@ pub async fn update_by_id(
   let old_model = old_model.unwrap();
   
   let data_permit_models = get_data_permits(
-    get_route_path(),
+    get_route_path_<#=table#>(),
     options.as_ref(),
   ).await?;
   
@@ -4353,14 +4409,39 @@ pub async fn update_by_id(
     field_num += 1;
   }<#
   }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const many2many = column.many2many;
+  #><#
+  if (foreignKey && foreignKey.type === "many2many") {
+    if (column.inlineMany2manyTab) continue;
+  #>
+  
+  // <#=column_comment#>
+  if input.<#=column_name_rust#>.is_some() {
+    field_num += 1;
+  }<#
+  }
+  #><#
+  }
   #>
   
   if field_num > 0 {<#
-    if (hasVersion || hasUpdateUsrId || hasUpdateTime) {
+    if (hasVersion) {
     #>
-    if !is_silent_mode {<#
-      if (hasVersion) {
-      #>
+    if !is_silent_mode {
       if let Some(version) = input.version {
         if version > 0 {
           let version2 = get_version_by_id(id.clone()).await?;
@@ -4383,11 +4464,16 @@ pub async fn update_by_id(
           sql_fields += "version=?,";
           args.push((version + 1).into());
         }
-      }<#
       }
-      #><#
-      if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
-      #>
+    } else if let Some(version) = input.version {
+      sql_fields += "version=?,";
+      args.push((version).into());
+    }<#
+    }
+    #><#
+    if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
+    #>
+    if !is_silent_mode && !is_creating {
       if let Some(update_usr_id) = input.update_usr_id {
         if update_usr_id.as_str() != "-" {
           sql_fields += "update_usr_id=?,";
@@ -4399,9 +4485,16 @@ pub async fn update_by_id(
           sql_fields += "update_usr_id=?,";
           args.push(usr_id.into());
         }
-      }<#
-      } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
-      #>
+      }
+    } else if let Some(update_usr_id) = input.update_usr_id {
+      if update_usr_id.as_str() != "-" {
+        sql_fields += "update_usr_id=?,";
+        args.push(update_usr_id.into());
+      }
+    }<#
+    } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
+    #>
+    if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
         let mut usr_id_lbl = String::new();
@@ -4444,39 +4537,8 @@ pub async fn update_by_id(
           sql_fields += "update_usr_id_lbl=?,";
           args.push(usr_id_lbl.into());
         }
-      }<#
       }
-      #><#
-      if (hasUpdateTime) {
-      #>
-      if let Some(update_time) = input.update_time {
-        sql_fields += "update_time=?,";
-        args.push(update_time.into());
-      } else {
-        sql_fields += "update_time=?,";
-        args.push(get_now().into());
-      }<#
-      }
-      #>
-    } else {<#
-      if (hasVersion) {
-      #>
-      if let Some(version) = input.version {
-        sql_fields += "version=?,";
-        args.push((version).into());
-      }<#
-      }
-      #><#
-      if (hasUpdateUsrId && !hasUpdateUsrIdLbl) {
-      #>
-      if let Some(update_usr_id) = input.update_usr_id {
-        if update_usr_id.as_str() != "-" {
-          sql_fields += "update_usr_id=?,";
-          args.push(update_usr_id.into());
-        }
-      }<#
-      } else if (hasUpdateUsrId && hasUpdateUsrIdLbl) {
-      #>
+    } else {
       if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
         let usr_id = input.update_usr_id.clone();
         if let Some(usr_id) = usr_id {
@@ -4487,17 +4549,23 @@ pub async fn update_by_id(
       if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
         sql_fields += "update_usr_id=?,";
         args.push(update_usr_id_lbl.into());
-      }<#
       }
-      #><#
-      if (hasUpdateTime) {
-      #>
+    }<#
+    }
+    #><#
+    if (hasUpdateTime) {
+    #>
+    if !is_silent_mode && !is_creating {
       if let Some(update_time) = input.update_time {
         sql_fields += "update_time=?,";
         args.push(update_time.into());
-      }<#
+      } else {
+        sql_fields += "update_time=?,";
+        args.push(get_now().into());
       }
-      #>
+    } else if let Some(update_time) = input.update_time {
+      sql_fields += "update_time=?,";
+      args.push(update_time.into());
     }<#
     }
     #>
@@ -4567,12 +4635,7 @@ pub async fn update_by_id(
     if (column_name === "id") continue;
     if (column_name === "create_usr_id") continue;
     if (column_name === "create_time") continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
+    const column_comment = column.COLUMN_COMMENT || "";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -4597,8 +4660,6 @@ pub async fn update_by_id(
         column2: "<#=many2many.column2#>",
       },
     ).await?;
-    
-    field_num += 1;
   }<#
   }
   #><#
@@ -4683,6 +4744,7 @@ pub async fn delete_by_ids(
   let is_silent_mode = get_is_silent_mode(options.as_ref());<#
   }
   #>
+  let is_creating = get_is_creating(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -4717,7 +4779,7 @@ pub async fn delete_by_ids(
   #>
   
   let data_permit_models = get_data_permits(
-    get_route_path(),
+    get_route_path_<#=table#>(),
     options.as_ref(),
   ).await?;
   
@@ -4807,52 +4869,53 @@ pub async fn delete_by_ids(
     #>
     
     let mut sql_fields = String::with_capacity(30);
-    sql_fields.push_str("is_deleted=1,");
-    
-    if !is_silent_mode {<#
-      if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
-      #>
-      
-      let mut usr_id = get_auth_id();
-      let mut usr_lbl = String::new();
-      if usr_id.is_some() {
-        let usr_model = find_by_id_usr(
-          usr_id.clone().unwrap(),
-          options.clone(),
-        ).await?;
-        if let Some(usr_model) = usr_model {
-          usr_lbl = usr_model.lbl;
-        } else {
-          usr_id = None;
-        }
-      }<#
+    sql_fields.push_str("is_deleted=1,");<#
+    if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
+    #>
+    let mut usr_id = get_auth_id();
+    let mut usr_lbl = String::new();
+    if usr_id.is_some() {
+      let usr_model = find_by_id_usr(
+        usr_id.clone().unwrap(),
+        options.clone(),
+      ).await?;
+      if let Some(usr_model) = usr_model {
+        usr_lbl = usr_model.lbl;
+      } else {
+        usr_id = None;
       }
-      #><#
-      if (hasDeleteUsrId) {
-      #>
-      
+    }<#
+    }
+    #><#
+    if (hasDeleteUsrId) {
+    #>
+    
+    if !is_silent_mode && !is_creating {
       if let Some(usr_id) = usr_id {
         sql_fields.push_str("delete_usr_id=?,");
         args.push(usr_id.into());
-      }<#
       }
-      #><#
-      if (hasDeleteUsrIdLbl) {
-      #>
-      
-      sql_fields.push_str("delete_usr_id_lbl=?,");
-      args.push(usr_lbl.into());<#
-      }
-      #><#
-      if (hasDeleteTime) {
-      #>
-      
-      sql_fields.push_str("delete_time=?,");
-      args.push(get_now().into());<#
-      }
-      #>
-      
+    }<#
     }
+    #><#
+    if (hasDeleteUsrIdLbl) {
+    #>
+    
+    if !is_silent_mode && !is_creating {
+      sql_fields.push_str("delete_usr_id_lbl=?,");
+      args.push(usr_lbl.into());
+    }<#
+    }
+    #><#
+    if (hasDeleteTime) {
+    #>
+    
+    if !is_silent_mode && !is_creating {
+      sql_fields.push_str("delete_time=?,");
+      args.push(get_now().into());
+    }<#
+    }
+    #>
     
     if sql_fields.ends_with(',') {
       sql_fields.pop();

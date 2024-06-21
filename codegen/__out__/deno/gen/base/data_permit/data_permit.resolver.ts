@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -9,8 +10,16 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortDataPermit,
+} from "./data_permit.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
+
+import {
+  route_path,
+} from "./data_permit.model.ts";
 
 /**
  * 根据条件查找数据权限总数
@@ -40,6 +49,8 @@ export async function findAllDataPermit(
     findAll,
   } = await import("./data_permit.service.ts");
   
+  checkSortDataPermit(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +75,8 @@ export async function findOneDataPermit(
   const {
     findOne,
   } = await import("./data_permit.service.ts");
+  
+  checkSortDataPermit(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,12 +112,11 @@ export async function createsDataPermit(
     creates,
   } = await import("./data_permit.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
-    "/base/data_permit",
+    route_path,
     "add",
   );
   
@@ -135,14 +147,12 @@ export async function updateByIdDataPermit(
     updateById,
   } = await import("./data_permit.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/data_permit",
+    route_path,
     "edit",
   );
   const id2: DataPermitId = await updateById(id, input);
@@ -160,12 +170,10 @@ export async function deleteByIdsDataPermit(
     deleteByIds,
   } = await import("./data_permit.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/data_permit",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -183,12 +191,10 @@ export async function revertByIdsDataPermit(
     revertByIds,
   } = await import("./data_permit.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/data_permit",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -201,18 +207,17 @@ export async function revertByIdsDataPermit(
 export async function forceDeleteByIdsDataPermit(
   ids: DataPermitId[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/base/data_permit",
-    "force_delete",
-  );
   
   const {
     forceDeleteByIds,
   } = await import("./data_permit.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "force_delete",
+  );
   const res = await forceDeleteByIds(ids);
   return res;
 }
