@@ -206,6 +206,7 @@ export async function getClient(
         opt.poolSize = poolSize;
       }
     }
+    opt.charset = opt.charset || "utf8mb4";
     client = await new Client().connect(opt);
     clientMap.set(database_name, client);
   }
@@ -329,6 +330,22 @@ export function get_is_silent_mode(
   }
   const context = useMaybeContext();
   return context?.is_silent_mode ?? false;
+}
+
+export function setNotVerifyToken(
+  notVerifyToken: boolean,
+) {
+  const context = useMaybeContext();
+  if (context) {
+    context.notVerifyToken = notVerifyToken;
+  }
+}
+
+export function set_is_silent_mode(
+  is_silent_mode: boolean,
+) {
+  const context = useContext();
+  context.is_silent_mode = is_silent_mode;
 }
 
 export function get_is_creating(
