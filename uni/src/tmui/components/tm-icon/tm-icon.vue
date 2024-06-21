@@ -65,6 +65,7 @@ import { useTmpiniaStore } from '../../tool/lib/tmpinia'
 // #ifdef APP-NVUE || APP-PLUS-NVUE
 import { tmiconFont } from './tmicon'
 import { toUnicode } from 'punycode'
+declare const weex: any
 var domModule = weex.requireModule('dom')
 const animation = uni.requireNativePlugin('animation')
 // #endif
@@ -165,6 +166,7 @@ const fontSizeComputed = computed(() => {
 		lineHeight: props.lineHeight > -1 ? props.lineHeight + props.unit : (props.fontSize || 30) + props.unit
 	}
 	if (props.lineHeight == 0) {
+    // @ts-ignore
 		delete strc.lineHeight
 	}
 	return strc
