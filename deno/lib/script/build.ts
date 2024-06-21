@@ -3,7 +3,7 @@ import "/lib/env.ts";
 import { getEnv, getEnvs } from "/lib/env.ts";
 
 import {
-  configAsync,
+  parse as parseEnv,
 } from "dotenv";
 
 import { copyDir } from "/lib/util/fs_util.ts";
@@ -294,10 +294,7 @@ async function nuxt() {
     stdio: "inherit",
   });
   
-  const parsedEnv = await configAsync({
-    export: false,
-    path: `${ nuxtDir }/.env.${ env }`,
-  });
+  const parsedEnv = parseEnv(await Deno.readTextFile(`${ nuxtDir }/.env.${ env }`));
   
   const ecosystemStr = await Deno.readTextFile(`${ nuxtDir }/ecosystem.config.js`);
   const ecosystemStr2 = ecosystemStr
