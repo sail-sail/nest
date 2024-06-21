@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -9,8 +10,16 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortI18n,
+} from "./i18n.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
+
+import {
+  route_path,
+} from "./i18n.model.ts";
 
 /**
  * 根据条件查找国际化总数
@@ -40,6 +49,8 @@ export async function findAllI18n(
     findAll,
   } = await import("./i18n.service.ts");
   
+  checkSortI18n(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +75,8 @@ export async function findOneI18n(
   const {
     findOne,
   } = await import("./i18n.service.ts");
+  
+  checkSortI18n(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,12 +112,11 @@ export async function createsI18n(
     creates,
   } = await import("./i18n.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
-    "/base/i18n",
+    route_path,
     "add",
   );
   
@@ -135,14 +147,12 @@ export async function updateByIdI18n(
     updateById,
   } = await import("./i18n.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/i18n",
+    route_path,
     "edit",
   );
   const id2: I18nId = await updateById(id, input);
@@ -160,12 +170,10 @@ export async function deleteByIdsI18n(
     deleteByIds,
   } = await import("./i18n.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/i18n",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -183,12 +191,10 @@ export async function revertByIdsI18n(
     revertByIds,
   } = await import("./i18n.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/i18n",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -201,18 +207,17 @@ export async function revertByIdsI18n(
 export async function forceDeleteByIdsI18n(
   ids: I18nId[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/base/i18n",
-    "force_delete",
-  );
   
   const {
     forceDeleteByIds,
   } = await import("./i18n.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "force_delete",
+  );
   const res = await forceDeleteByIds(ids);
   return res;
 }

@@ -138,6 +138,7 @@ impl I18nGenMutation {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
+      .with_creating(Some(true))
       .build()
       .scope({
         i18n_resolver::creates(

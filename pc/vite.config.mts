@@ -24,6 +24,8 @@ import ReactivityTransform from "@vue-macros/reactivity-transform/vite";
 
 import wasm from "vite-plugin-wasm";
 
+import TurboConsole from "unplugin-turbo-console/vite";
+
 // import VueDevTools from "vite-plugin-vue-devtools";
 
 // https://vitejs.dev/config/
@@ -31,12 +33,11 @@ export default defineConfig({
   optimizeDeps: {
     exclude: [
       "@jsquash/webp",
-      "@jsquash/jpeg",
-      "@jsquash/png",
       "@jsquash/resize",
     ],
   },
   plugins: [
+    TurboConsole(),
     Inspector({
       toggleButtonPos: "top-left",
     }),

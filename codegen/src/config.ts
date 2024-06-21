@@ -278,6 +278,11 @@ export interface TableCloumn {
     /** 不允许通过中文变成id, 也意味着不允许导入, 因为导入只能设置中文 */
     notSetIdByLbl?: boolean;
     
+    /**
+     * 是否在表格中用文本框的形式搜索, 而不是下拉框, 默认为 false
+     */
+    isSearchByLbl?: boolean;
+    
   },
   
   /** foreignTabs 弹出框的大小, 默认为 medium */
@@ -440,6 +445,12 @@ export interface TableCloumn {
    * 点击表格表头是否可排序
    */
   sortable?: boolean,
+  
+  /**
+   * 是否运行在api中排序
+   * 如果 sortable 为 true, 则默认为 true, 否则默认为 false
+   */
+  canSortInApi?: boolean,
   
   /**
    * 是否显示合计

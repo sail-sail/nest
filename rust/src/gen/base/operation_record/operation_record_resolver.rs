@@ -20,6 +20,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<OperationRecordModel>> {
   
+  check_sort_operation_record(sort.as_deref())?;
+  
   let res = operation_record_service::find_all(
     search,
     page,
@@ -50,6 +52,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<OperationRecordModel>> {
+  
+  check_sort_operation_record(sort.as_deref())?;
   
   let model = operation_record_service::find_one(
     search,
@@ -97,7 +101,7 @@ pub async fn creates(
   let inputs = inputs2;
   
   use_permit(
-    "/base/operation_record".to_owned(),
+    get_route_path_operation_record(),
     "add".to_owned(),
   ).await?;
   
@@ -143,7 +147,7 @@ pub async fn update_by_id(
   ).await?;
   
   use_permit(
-    "/base/operation_record".to_owned(),
+    get_route_path_operation_record(),
     "edit".to_owned(),
   ).await?;
   
@@ -164,7 +168,7 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/operation_record".to_owned(),
+    get_route_path_operation_record(),
     "delete".to_owned(),
   ).await?;
   
@@ -196,7 +200,7 @@ pub async fn revert_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/operation_record".to_owned(),
+    get_route_path_operation_record(),
     "delete".to_owned(),
   ).await?;
   
@@ -216,7 +220,7 @@ pub async fn force_delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/operation_record".to_owned(),
+    get_route_path_operation_record(),
     "force_delete".to_owned(),
   ).await?;
   

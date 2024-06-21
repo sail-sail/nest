@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,6 +27,7 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::menu::menu_model::MenuId;
@@ -32,8 +35,18 @@ use crate::gen::base::permit::permit_model::PermitId;
 use crate::gen::base::data_permit::data_permit_model::DataPermitId;
 use crate::gen::base::usr::usr_model::UsrId;
 
+lazy_static! {
+  /// 角色 前端允许排序的字段
+  static ref CAN_SORT_IN_API_ROLE: [&'static str; 3] = [
+    "order_by",
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "RoleModel")]
+#[allow(dead_code)]
 pub struct RoleModel {
   /// 租户ID
   #[graphql(skip)]
@@ -275,6 +288,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct RoleFieldComment {
   /// ID
   pub id: String,
@@ -326,6 +340,7 @@ pub struct RoleFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct RoleSearch {
   /// ID
   pub id: Option<RoleId>,
@@ -495,6 +510,7 @@ impl std::fmt::Debug for RoleSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "RoleInput")]
+#[allow(dead_code)]
 pub struct RoleInput {
   /// ID
   pub id: Option<RoleId>,
@@ -769,4 +785,29 @@ impl PartialEq<str> for RoleId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
   }
+}
+
+/// 角色 检测字段是否允许前端排序
+pub fn check_sort_role(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_ROLE.contains(&prop) {
+      return Err(anyhow!("check_sort_role: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
+}
+
+/// 获取路由地址
+pub fn get_route_path_role() -> String {
+  "/base/role".to_owned()
 }

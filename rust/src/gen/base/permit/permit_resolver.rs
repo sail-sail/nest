@@ -18,6 +18,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<PermitModel>> {
   
+  check_sort_permit(sort.as_deref())?;
+  
   let res = permit_service::find_all(
     search,
     page,
@@ -48,6 +50,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<PermitModel>> {
+  
+  check_sort_permit(sort.as_deref())?;
   
   let model = permit_service::find_one(
     search,
@@ -95,7 +99,7 @@ pub async fn creates(
   let inputs = inputs2;
   
   use_permit(
-    "/base/permit".to_owned(),
+    get_route_path_permit(),
     "add".to_owned(),
   ).await?;
   
@@ -124,7 +128,7 @@ pub async fn update_by_id(
   ).await?;
   
   use_permit(
-    "/base/permit".to_owned(),
+    get_route_path_permit(),
     "edit".to_owned(),
   ).await?;
   
@@ -145,7 +149,7 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/permit".to_owned(),
+    get_route_path_permit(),
     "delete".to_owned(),
   ).await?;
   
@@ -177,7 +181,7 @@ pub async fn revert_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/permit".to_owned(),
+    get_route_path_permit(),
     "delete".to_owned(),
   ).await?;
   
@@ -197,7 +201,7 @@ pub async fn force_delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/permit".to_owned(),
+    get_route_path_permit(),
     "force_delete".to_owned(),
   ).await?;
   

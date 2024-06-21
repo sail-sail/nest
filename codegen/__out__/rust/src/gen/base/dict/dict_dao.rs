@@ -7,7 +7,9 @@ use anyhow::{Result,anyhow};
 #[allow(unused_imports)]
 use tracing::{info, error};
 #[allow(unused_imports)]
-use crate::common::util::string::*;
+use crate::common::util::string::sql_like;
+#[allow(unused_imports)]
+use crate::common::gql::model::SortOrderEnum;
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -30,6 +32,7 @@ use crate::common::context::{
   del_caches,
   get_is_debug,
   get_is_silent_mode,
+  get_is_creating,
 };
 
 use crate::src::base::i18n::i18n_dao;
@@ -550,14 +553,14 @@ pub async fn find_all(
   if !sort.iter().any(|item| item.prop == "order_by") {
     sort.push(SortInput {
       prop: "order_by".into(),
-      order: "asc".into(),
+      order: SortOrderEnum::Asc,
     });
   }
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
-      order: "asc".into(),
+      order: SortOrderEnum::Asc,
     });
   }
   
@@ -720,15 +723,10 @@ pub async fn find_count(
   Ok(total)
 }
 
-/// 获取路由地址
-pub fn get_route_path() -> String {
-  "/base/dict".to_owned()
-}
-
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
   i18n_dao::NRoute {
-    route_path: get_route_path().into(),
+    route_path: get_route_path_dict().into(),
   }
 }
 
@@ -1599,11 +1597,17 @@ async fn _creates(
   
   let options = options.set_del_cache_key1s(get_cache_tables());
   
-  execute(
+  let options = Some(options);
+  
+  let affected_rows = execute(
     sql,
     args,
-    Some(options.clone()),
+    options.clone(),
   ).await?;
+  
+  if affected_rows != inputs2_len as u64 {
+    return Err(anyhow!("affectedRows: {affected_rows} != {inputs2_len}"));
+  }
   
   for (i, input) in inputs2
     .into_iter()
@@ -1617,7 +1621,7 @@ async fn _creates(
         model.dict_id = id.clone().into();
         create_dict_detail(
           model,
-          None,
+          options.clone(),
         ).await?;
       }
     }
@@ -1678,6 +1682,7 @@ pub async fn update_by_id(
   let is_debug = get_is_debug(options.as_ref());
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
+  let is_creating = get_is_creating(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -1867,7 +1872,7 @@ pub async fn update_by_id(
   }
   
   if field_num > 0 {
-    if !is_silent_mode {
+    if !is_silent_mode && !is_creating {
       if input.update_usr_id.is_none() {
         let mut usr_id = get_auth_id();
         let mut usr_id_lbl = String::new();
@@ -1911,13 +1916,6 @@ pub async fn update_by_id(
           args.push(usr_id_lbl.into());
         }
       }
-      if let Some(update_time) = input.update_time {
-        sql_fields += "update_time=?,";
-        args.push(update_time.into());
-      } else {
-        sql_fields += "update_time=?,";
-        args.push(get_now().into());
-      }
     } else {
       if input.update_usr_id.is_some() && input.update_usr_id.clone().unwrap().as_str() != "-" {
         let usr_id = input.update_usr_id.clone();
@@ -1930,10 +1928,18 @@ pub async fn update_by_id(
         sql_fields += "update_usr_id=?,";
         args.push(update_usr_id_lbl.into());
       }
+    }
+    if !is_silent_mode && !is_creating {
       if let Some(update_time) = input.update_time {
         sql_fields += "update_time=?,";
         args.push(update_time.into());
+      } else {
+        sql_fields += "update_time=?,";
+        args.push(get_now().into());
       }
+    } else if let Some(update_time) = input.update_time {
+      sql_fields += "update_time=?,";
+      args.push(update_time.into());
     }
     
     if sql_fields.ends_with(',') {
@@ -2009,6 +2015,7 @@ pub async fn delete_by_ids(
   let is_debug = get_is_debug(options.as_ref());
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
+  let is_creating = get_is_creating(options.as_ref());
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -2045,34 +2052,35 @@ pub async fn delete_by_ids(
     
     let mut sql_fields = String::with_capacity(30);
     sql_fields.push_str("is_deleted=1,");
-    
-    if !is_silent_mode {
-      
-      let mut usr_id = get_auth_id();
-      let mut usr_lbl = String::new();
-      if usr_id.is_some() {
-        let usr_model = find_by_id_usr(
-          usr_id.clone().unwrap(),
-          options.clone(),
-        ).await?;
-        if let Some(usr_model) = usr_model {
-          usr_lbl = usr_model.lbl;
-        } else {
-          usr_id = None;
-        }
+    let mut usr_id = get_auth_id();
+    let mut usr_lbl = String::new();
+    if usr_id.is_some() {
+      let usr_model = find_by_id_usr(
+        usr_id.clone().unwrap(),
+        options.clone(),
+      ).await?;
+      if let Some(usr_model) = usr_model {
+        usr_lbl = usr_model.lbl;
+      } else {
+        usr_id = None;
       }
-      
+    }
+    
+    if !is_silent_mode && !is_creating {
       if let Some(usr_id) = usr_id {
         sql_fields.push_str("delete_usr_id=?,");
         args.push(usr_id.into());
       }
-      
+    }
+    
+    if !is_silent_mode && !is_creating {
       sql_fields.push_str("delete_usr_id_lbl=?,");
       args.push(usr_lbl.into());
-      
+    }
+    
+    if !is_silent_mode && !is_creating {
       sql_fields.push_str("delete_time=?,");
       args.push(get_now().into());
-      
     }
     
     if sql_fields.ends_with(',') {

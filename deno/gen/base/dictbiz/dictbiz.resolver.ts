@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -9,8 +10,16 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortDictbiz,
+} from "./dictbiz.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
+
+import {
+  route_path,
+} from "./dictbiz.model.ts";
 
 /**
  * 根据条件查找业务字典总数
@@ -40,6 +49,8 @@ export async function findAllDictbiz(
     findAll,
   } = await import("./dictbiz.service.ts");
   
+  checkSortDictbiz(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +75,8 @@ export async function findOneDictbiz(
   const {
     findOne,
   } = await import("./dictbiz.service.ts");
+  
+  checkSortDictbiz(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,12 +112,11 @@ export async function createsDictbiz(
     creates,
   } = await import("./dictbiz.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
-    "/base/dictbiz",
+    route_path,
     "add",
   );
   
@@ -135,14 +147,12 @@ export async function updateByIdDictbiz(
     updateById,
   } = await import("./dictbiz.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/dictbiz",
+    route_path,
     "edit",
   );
   const id2: DictbizId = await updateById(id, input);
@@ -160,12 +170,10 @@ export async function deleteByIdsDictbiz(
     deleteByIds,
   } = await import("./dictbiz.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/dictbiz",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -184,15 +192,14 @@ export async function enableByIdsDictbiz(
     enableByIds,
   } = await import("./dictbiz.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsDictbiz.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  set_is_tran(true);
+  
   await usePermit(
-    "/base/dictbiz",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -211,15 +218,14 @@ export async function lockByIdsDictbiz(
     lockByIds,
   } = await import("./dictbiz.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsDictbiz.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  set_is_tran(true);
+  
   await usePermit(
-    "/base/dictbiz",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -237,12 +243,10 @@ export async function revertByIdsDictbiz(
     revertByIds,
   } = await import("./dictbiz.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/dictbiz",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -255,18 +259,17 @@ export async function revertByIdsDictbiz(
 export async function forceDeleteByIdsDictbiz(
   ids: DictbizId[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/base/dictbiz",
-    "force_delete",
-  );
   
   const {
     forceDeleteByIds,
   } = await import("./dictbiz.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "force_delete",
+  );
   const res = await forceDeleteByIds(ids);
   return res;
 }

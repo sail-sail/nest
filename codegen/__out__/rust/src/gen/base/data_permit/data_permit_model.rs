@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,11 +27,21 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 use crate::gen::base::menu::menu_model::MenuId;
 use crate::gen::base::usr::usr_model::UsrId;
 
+lazy_static! {
+  /// 数据权限 前端允许排序的字段
+  static ref CAN_SORT_IN_API_DATA_PERMIT: [&'static str; 2] = [
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DataPermitModel")]
+#[allow(dead_code)]
 pub struct DataPermitModel {
   /// 系统字段
   #[graphql(skip)]
@@ -145,6 +157,7 @@ impl FromRow<'_, MySqlRow> for DataPermitModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct DataPermitFieldComment {
   /// ID
   pub id: String,
@@ -182,6 +195,7 @@ pub struct DataPermitFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct DataPermitSearch {
   /// ID
   pub id: Option<DataPermitId>,
@@ -197,6 +211,9 @@ pub struct DataPermitSearch {
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: Option<Vec<String>>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl_like")]
+  pub menu_id_lbl_like: Option<String>,
   /// 范围
   #[graphql(name = "scope")]
   pub scope: Option<Vec<DataPermitScope>>,
@@ -299,6 +316,7 @@ impl std::fmt::Debug for DataPermitSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "DataPermitInput")]
+#[allow(dead_code)]
 pub struct DataPermitInput {
   /// ID
   pub id: Option<DataPermitId>,
@@ -729,4 +747,29 @@ impl TryFrom<String> for DataPermitType {
       )),
     }
   }
+}
+
+/// 数据权限 检测字段是否允许前端排序
+pub fn check_sort_data_permit(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_DATA_PERMIT.contains(&prop) {
+      return Err(anyhow!("check_sort_data_permit: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
+}
+
+/// 获取路由地址
+pub fn get_route_path_data_permit() -> String {
+  "/base/data_permit".to_owned()
 }

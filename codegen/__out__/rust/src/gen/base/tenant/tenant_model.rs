@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,12 +27,23 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 use crate::gen::base::domain::domain_model::DomainId;
 use crate::gen::base::menu::menu_model::MenuId;
 use crate::gen::base::usr::usr_model::UsrId;
 
+lazy_static! {
+  /// 租户 前端允许排序的字段
+  static ref CAN_SORT_IN_API_TENANT: [&'static str; 3] = [
+    "order_by",
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "TenantModel")]
+#[allow(dead_code)]
 pub struct TenantModel {
   /// 系统字段
   #[graphql(skip)]
@@ -244,6 +257,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct TenantFieldComment {
   /// ID
   pub id: String,
@@ -289,6 +303,7 @@ pub struct TenantFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
+#[allow(dead_code)]
 pub struct TenantSearch {
   /// ID
   pub id: Option<TenantId>,
@@ -430,6 +445,7 @@ impl std::fmt::Debug for TenantSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "TenantInput")]
+#[allow(dead_code)]
 pub struct TenantInput {
   /// ID
   pub id: Option<TenantId>,
@@ -688,4 +704,29 @@ impl PartialEq<str> for TenantId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
   }
+}
+
+/// 租户 检测字段是否允许前端排序
+pub fn check_sort_tenant(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_TENANT.contains(&prop) {
+      return Err(anyhow!("check_sort_tenant: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
+}
+
+/// 获取路由地址
+pub fn get_route_path_tenant() -> String {
+  "/base/tenant".to_owned()
 }

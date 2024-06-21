@@ -20,6 +20,8 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogModel>> {
   
+  check_sort_login_log(sort.as_deref())?;
+  
   let res = login_log_service::find_all(
     search,
     page,
@@ -50,6 +52,8 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<LoginLogModel>> {
+  
+  check_sort_login_log(sort.as_deref())?;
   
   let model = login_log_service::find_one(
     search,
@@ -97,7 +101,7 @@ pub async fn creates(
   let inputs = inputs2;
   
   use_permit(
-    "/base/login_log".to_owned(),
+    get_route_path_login_log(),
     "add".to_owned(),
   ).await?;
   
@@ -143,7 +147,7 @@ pub async fn update_by_id(
   ).await?;
   
   use_permit(
-    "/base/login_log".to_owned(),
+    get_route_path_login_log(),
     "edit".to_owned(),
   ).await?;
   
@@ -164,7 +168,7 @@ pub async fn delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/login_log".to_owned(),
+    get_route_path_login_log(),
     "delete".to_owned(),
   ).await?;
   
@@ -196,7 +200,7 @@ pub async fn revert_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/login_log".to_owned(),
+    get_route_path_login_log(),
     "delete".to_owned(),
   ).await?;
   
@@ -216,7 +220,7 @@ pub async fn force_delete_by_ids(
 ) -> Result<u64> {
   
   use_permit(
-    "/base/login_log".to_owned(),
+    get_route_path_login_log(),
     "force_delete".to_owned(),
   ).await?;
   

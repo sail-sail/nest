@@ -3,7 +3,14 @@ import type {
   DictbizDetailModel as DictbizDetailModelType,
   DictbizDetailSearch as DictbizDetailSearchType,
   DictbizDetailFieldComment as DictbizDetailFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
+} from "/gen/types.ts";
+
+export const route_path = "/base/dictbiz_detail";
 
 declare const dictbizDetailId: unique symbol;
 
@@ -60,4 +67,32 @@ declare global {
   interface DictbizDetailFieldComment extends DictbizDetailFieldCommentType {
   }
   
+}
+
+/** 业务字典明细 前端允许排序的字段 */
+export const canSortInApiDictbizDetail = {
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 业务字典明细 检测字段是否允许前端排序 */
+export function checkSortDictbizDetail(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortDictbizDetail: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiDictbizDetail;
+    if (!canSortInApiDictbizDetail[prop]) {
+      throw new Error(`checkSortDictbizDetail: ${ JSON.stringify(item) }`);
+    }
+  }
 }

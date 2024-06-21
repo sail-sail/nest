@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -9,8 +10,16 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortMenu,
+} from "./menu.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
+
+import {
+  route_path,
+} from "./menu.model.ts";
 
 /**
  * 根据条件查找菜单总数
@@ -40,6 +49,8 @@ export async function findAllMenu(
     findAll,
   } = await import("./menu.service.ts");
   
+  checkSortMenu(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +75,8 @@ export async function findOneMenu(
   const {
     findOne,
   } = await import("./menu.service.ts");
+  
+  checkSortMenu(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,12 +112,11 @@ export async function createsMenu(
     creates,
   } = await import("./menu.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
-    "/base/menu",
+    route_path,
     "add",
   );
   
@@ -135,14 +147,12 @@ export async function updateByIdMenu(
     updateById,
   } = await import("./menu.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/menu",
+    route_path,
     "edit",
   );
   const id2: MenuId = await updateById(id, input);
@@ -160,12 +170,10 @@ export async function deleteByIdsMenu(
     deleteByIds,
   } = await import("./menu.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/menu",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -184,15 +192,14 @@ export async function enableByIdsMenu(
     enableByIds,
   } = await import("./menu.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsMenu.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  set_is_tran(true);
+  
   await usePermit(
-    "/base/menu",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -211,15 +218,14 @@ export async function lockByIdsMenu(
     lockByIds,
   } = await import("./menu.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsMenu.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  set_is_tran(true);
+  
   await usePermit(
-    "/base/menu",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -237,12 +243,10 @@ export async function revertByIdsMenu(
     revertByIds,
   } = await import("./menu.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/menu",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -255,18 +259,17 @@ export async function revertByIdsMenu(
 export async function forceDeleteByIdsMenu(
   ids: MenuId[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/base/menu",
-    "force_delete",
-  );
   
   const {
     forceDeleteByIds,
   } = await import("./menu.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "force_delete",
+  );
   const res = await forceDeleteByIds(ids);
   return res;
 }

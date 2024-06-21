@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -9,8 +10,16 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortUsr,
+} from "./usr.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
+
+import {
+  route_path,
+} from "./usr.model.ts";
 
 /**
  * 根据条件查找用户总数
@@ -46,6 +55,8 @@ export async function findAllUsr(
   search = search || { };
   search.is_hidden = [ 0 ];
   
+  checkSortUsr(sort);
+  
   const res = await findAll(search, page, sort);
   
   for (const model of res) {
@@ -78,6 +89,8 @@ export async function findOneUsr(
   
   search = search || { };
   search.is_hidden = [ 0 ];
+  
+  checkSortUsr(sort);
   
   const res = await findOne(search, sort);
   
@@ -123,12 +136,11 @@ export async function createsUsr(
     creates,
   } = await import("./usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
-    "/base/usr",
+    route_path,
     "add",
   );
   
@@ -159,14 +171,12 @@ export async function updateByIdUsr(
     updateById,
   } = await import("./usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/usr",
+    route_path,
     "edit",
   );
   const id2: UsrId = await updateById(id, input);
@@ -184,12 +194,10 @@ export async function deleteByIdsUsr(
     deleteByIds,
   } = await import("./usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/usr",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -208,15 +216,14 @@ export async function enableByIdsUsr(
     enableByIds,
   } = await import("./usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_enabled !== 0 && is_enabled !== 1) {
     throw new Error(`enableByIdsUsr.is_enabled expect 0 or 1 but got ${ is_enabled }`);
   }
   
+  set_is_tran(true);
+  
   await usePermit(
-    "/base/usr",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -235,15 +242,14 @@ export async function lockByIdsUsr(
     lockByIds,
   } = await import("./usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
   if (is_locked !== 0 && is_locked !== 1) {
     throw new Error(`lockByIdsUsr.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
+  set_is_tran(true);
+  
   await usePermit(
-    "/base/usr",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -261,12 +267,10 @@ export async function revertByIdsUsr(
     revertByIds,
   } = await import("./usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/base/usr",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -279,18 +283,17 @@ export async function revertByIdsUsr(
 export async function forceDeleteByIdsUsr(
   ids: UsrId[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/base/usr",
-    "force_delete",
-  );
   
   const {
     forceDeleteByIds,
   } = await import("./usr.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "force_delete",
+  );
   const res = await forceDeleteByIds(ids);
   return res;
 }

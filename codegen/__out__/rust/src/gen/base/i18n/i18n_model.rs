@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use serde::{Serialize, Deserialize};
 
+use anyhow::{Result,anyhow};
+
 use sqlx::encode::{Encode, IsNull};
 use sqlx::MySql;
 use smol_str::SmolStr;
@@ -25,12 +27,22 @@ use async_graphql::{
 };
 
 use crate::common::context::ArgType;
+use crate::common::gql::model::SortInput;
 use crate::gen::base::lang::lang_model::LangId;
 use crate::gen::base::menu::menu_model::MenuId;
 use crate::gen::base::usr::usr_model::UsrId;
 
+lazy_static! {
+  /// 国际化 前端允许排序的字段
+  static ref CAN_SORT_IN_API_I18N: [&'static str; 2] = [
+    "create_time",
+    "update_time",
+  ];
+}
+
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "I18nModel")]
+#[allow(dead_code)]
 pub struct I18nModel {
   /// ID
   pub id: I18nId,
@@ -142,6 +154,7 @@ impl FromRow<'_, MySqlRow> for I18nModel {
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case", name = "I18nFieldComment")]
+#[allow(dead_code)]
 pub struct I18nFieldComment {
   /// ID
   pub id: String,
@@ -179,6 +192,7 @@ pub struct I18nFieldComment {
 
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case", name = "I18nSearch")]
+#[allow(dead_code)]
 pub struct I18nSearch {
   /// ID
   pub id: Option<I18nId>,
@@ -194,6 +208,9 @@ pub struct I18nSearch {
   /// 语言
   #[graphql(name = "lang_id_lbl")]
   pub lang_id_lbl: Option<Vec<String>>,
+  /// 语言
+  #[graphql(name = "lang_id_lbl_like")]
+  pub lang_id_lbl_like: Option<String>,
   /// 菜单
   #[graphql(name = "menu_id")]
   pub menu_id: Option<Vec<MenuId>>,
@@ -203,6 +220,9 @@ pub struct I18nSearch {
   /// 菜单
   #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: Option<Vec<String>>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl_like")]
+  pub menu_id_lbl_like: Option<String>,
   /// 编码
   #[graphql(name = "code")]
   pub code: Option<String>,
@@ -324,6 +344,7 @@ impl std::fmt::Debug for I18nSearch {
 
 #[derive(InputObject, Default, Clone, Debug)]
 #[graphql(rename_fields = "snake_case", name = "I18nInput")]
+#[allow(dead_code)]
 pub struct I18nInput {
   /// ID
   pub id: Option<I18nId>,
@@ -556,4 +577,29 @@ impl PartialEq<str> for I18nId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
   }
+}
+
+/// 国际化 检测字段是否允许前端排序
+pub fn check_sort_i18n(
+  sort: Option<&[SortInput]>,
+) -> Result<()> {
+  
+  if sort.is_none() {
+    return Ok(());
+  }
+  let sort = sort.unwrap();
+  
+  for item in sort {
+    let prop = item.prop.as_str();
+    if !CAN_SORT_IN_API_I18N.contains(&prop) {
+      return Err(anyhow!("check_sort_i18n: {}", serde_json::to_string(item)?));
+    }
+  }
+  
+  Ok(())
+}
+
+/// 获取路由地址
+pub fn get_route_path_i18n() -> String {
+  "/base/i18n".to_owned()
 }

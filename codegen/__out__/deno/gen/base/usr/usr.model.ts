@@ -3,7 +3,14 @@ import type {
   UsrModel as UsrModelType,
   UsrSearch as UsrSearchType,
   UsrFieldComment as UsrFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
+} from "/gen/types.ts";
+
+export const route_path = "/base/usr";
 
 declare const usrId: unique symbol;
 
@@ -62,4 +69,34 @@ declare global {
   interface UsrFieldComment extends UsrFieldCommentType {
   }
   
+}
+
+/** 用户 前端允许排序的字段 */
+export const canSortInApiUsr = {
+  // 用户名
+  "username": true,
+  // 排序
+  "order_by": true,
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 用户 检测字段是否允许前端排序 */
+export function checkSortUsr(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortUsr: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiUsr;
+    if (!canSortInApiUsr[prop]) {
+      throw new Error(`checkSortUsr: ${ JSON.stringify(item) }`);
+    }
+  }
 }
