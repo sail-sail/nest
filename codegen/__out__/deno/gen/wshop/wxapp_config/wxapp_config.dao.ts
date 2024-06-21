@@ -84,7 +84,9 @@ import {
   findOne as findOneOrg,
 } from "/gen/base/org/org.dao.ts";
 
-const route_path = "/wshop/wxapp_config";
+import {
+  route_path,
+} from "./wxapp_config.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
