@@ -14,6 +14,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/wx/pay_transactions_jsapi";
+
 declare const payTransactionsJsapiId: unique symbol;
 
 declare global {

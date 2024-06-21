@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./wx_app.model.ts";
+
 /**
  * 根据条件查找小程序设置总数
  */
@@ -112,7 +116,7 @@ export async function createsWxApp(
   set_is_creating(true);
   
   await usePermit(
-    "/wx/wx_app",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdWxApp(
   await setIdByLbl(input);
   
   await usePermit(
-    "/wx/wx_app",
+    route_path,
     "edit",
   );
   const id2: WxAppId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsWxApp(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wx_app",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -195,7 +199,7 @@ export async function enableByIdsWxApp(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wx_app",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -221,7 +225,7 @@ export async function lockByIdsWxApp(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wx_app",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -242,7 +246,7 @@ export async function revertByIdsWxApp(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wx_app",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -263,7 +267,7 @@ export async function forceDeleteByIdsWxApp(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wx_app",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

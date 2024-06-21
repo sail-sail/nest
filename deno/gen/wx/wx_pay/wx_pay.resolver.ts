@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./wx_pay.model.ts";
+
 /**
  * 根据条件查找微信支付设置总数
  */
@@ -112,7 +116,7 @@ export async function createsWxPay(
   set_is_creating(true);
   
   await usePermit(
-    "/wx/wx_pay",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdWxPay(
   await setIdByLbl(input);
   
   await usePermit(
-    "/wx/wx_pay",
+    route_path,
     "edit",
   );
   const id2: WxPayId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsWxPay(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wx_pay",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -195,7 +199,7 @@ export async function enableByIdsWxPay(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wx_pay",
+    route_path,
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
@@ -221,7 +225,7 @@ export async function lockByIdsWxPay(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wx_pay",
+    route_path,
     "edit",
   );
   const res = await lockByIds(ids, is_locked);
@@ -242,7 +246,7 @@ export async function revertByIdsWxPay(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wx_pay",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -263,7 +267,7 @@ export async function forceDeleteByIdsWxPay(
   set_is_tran(true);
   
   await usePermit(
-    "/wx/wx_pay",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

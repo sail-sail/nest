@@ -89,7 +89,9 @@ import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-const route_path = "/wx/wx_app";
+import {
+  route_path,
+} from "./wx_app.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -1576,7 +1578,7 @@ export async function updateById(
           }
         }
         if (usr_id != null) {
-          sql += `update_usr_id=${ args.push(authModel.id) },`;
+          sql += `update_usr_id=${ args.push(usr_id) },`;
         }
         if (usr_lbl) {
           sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
