@@ -154,20 +154,11 @@ export async function getTenant_idByWx_usr(): Promise<TenantId | undefined> {
 export async function getTenant_id(
   usr_id?: UsrId | null,
 ): Promise<TenantId | undefined> {
-  const context = useContext();
-  const notVerifyToken = context.notVerifyToken;
-  const authModel = await getAuthModel(notVerifyToken);
+  const authModel = await getAuthModel();
   let tenant_id = authModel?.tenant_id;
   if (!tenant_id && usr_id) {
     const args = new QueryArgs();
-    const sql = /*sql*/`
-      select
-        t.tenant_id
-      from base_usr t
-      where
-        t.id = ${ args.push(usr_id) }
-      limit 1
-    `;
+    const sql = `select t.tenant_id from base_usr t where t.id=${ args.push(usr_id) } limit 1`;
     interface Result {
       tenant_id?: TenantId;
     }

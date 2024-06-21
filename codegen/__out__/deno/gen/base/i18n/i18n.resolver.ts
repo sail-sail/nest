@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./i18n.model.ts";
+
 /**
  * 根据条件查找国际化总数
  */
@@ -112,7 +116,7 @@ export async function createsI18n(
   set_is_creating(true);
   
   await usePermit(
-    "/base/i18n",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdI18n(
   await setIdByLbl(input);
   
   await usePermit(
-    "/base/i18n",
+    route_path,
     "edit",
   );
   const id2: I18nId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsI18n(
   set_is_tran(true);
   
   await usePermit(
-    "/base/i18n",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -190,7 +194,7 @@ export async function revertByIdsI18n(
   set_is_tran(true);
   
   await usePermit(
-    "/base/i18n",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -211,7 +215,7 @@ export async function forceDeleteByIdsI18n(
   set_is_tran(true);
   
   await usePermit(
-    "/base/i18n",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);

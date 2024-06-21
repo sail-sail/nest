@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/base/background_task";
+
 declare const backgroundTaskId: unique symbol;
 
 declare global {

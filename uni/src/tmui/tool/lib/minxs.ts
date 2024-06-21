@@ -235,9 +235,9 @@ export const computedTheme = (props: any, dark:boolean,store:any):cssstyle => {
 		outlined: outlined ? true : false,
 		text: text ? true : false,
 		borderStyle: borderStyle,
-		borderDirection: <cssDirectionType>borderDirection,
-		linearDirection: <linearDirectionType>linear,
-		linearDeep: <linearDeep>linearDeep,
+		borderDirection: borderDirection as cssDirectionType,
+		linearDirection: linear as linearDirectionType,
+		linearDeep: linearDeep as linearDeep,
 		blur: blur,
 		borderColor:borderColor
 	});
