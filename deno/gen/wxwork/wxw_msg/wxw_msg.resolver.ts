@@ -1,5 +1,5 @@
 import {
-  useContext,
+  set_is_tran,
 } from "/lib/context.ts";
 
 import type {
@@ -8,8 +8,16 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortWxwMsg,
+} from "./wxw_msg.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
+
+import {
+  route_path,
+} from "./wxw_msg.model.ts";
 
 /**
  * 根据条件查找企微消息总数
@@ -39,6 +47,8 @@ export async function findAllWxwMsg(
     findAll,
   } = await import("./wxw_msg.service.ts");
   
+  checkSortWxwMsg(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -63,6 +73,8 @@ export async function findOneWxwMsg(
   const {
     findOne,
   } = await import("./wxw_msg.service.ts");
+  
+  checkSortWxwMsg(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -95,12 +107,10 @@ export async function deleteByIdsWxwMsg(
     deleteByIds,
   } = await import("./wxw_msg.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_msg",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -118,12 +128,10 @@ export async function revertByIdsWxwMsg(
     revertByIds,
   } = await import("./wxw_msg.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_msg",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -136,18 +144,17 @@ export async function revertByIdsWxwMsg(
 export async function forceDeleteByIdsWxwMsg(
   ids: WxwMsgId[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/wxwork/wxw_msg",
-    "force_delete",
-  );
   
   const {
     forceDeleteByIds,
   } = await import("./wxw_msg.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "force_delete",
+  );
   const res = await forceDeleteByIds(ids);
   return res;
 }

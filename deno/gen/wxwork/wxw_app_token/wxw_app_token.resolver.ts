@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -9,8 +10,16 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortWxwAppToken,
+} from "./wxw_app_token.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
+
+import {
+  route_path,
+} from "./wxw_app_token.model.ts";
 
 /**
  * 根据条件查找企微应用接口凭据总数
@@ -40,6 +49,8 @@ export async function findAllWxwAppToken(
     findAll,
   } = await import("./wxw_app_token.service.ts");
   
+  checkSortWxwAppToken(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +75,8 @@ export async function findOneWxwAppToken(
   const {
     findOne,
   } = await import("./wxw_app_token.service.ts");
+  
+  checkSortWxwAppToken(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,12 +112,11 @@ export async function createsWxwAppToken(
     creates,
   } = await import("./wxw_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
-    "/wxwork/wxw_app_token",
+    route_path,
     "add",
   );
   
@@ -135,14 +147,12 @@ export async function updateByIdWxwAppToken(
     updateById,
   } = await import("./wxw_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
   await usePermit(
-    "/wxwork/wxw_app_token",
+    route_path,
     "edit",
   );
   const id2: WxwAppTokenId = await updateById(id, input);
@@ -160,12 +170,10 @@ export async function deleteByIdsWxwAppToken(
     deleteByIds,
   } = await import("./wxw_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_app_token",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -183,12 +191,10 @@ export async function revertByIdsWxwAppToken(
     revertByIds,
   } = await import("./wxw_app_token.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_app_token",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -201,18 +207,17 @@ export async function revertByIdsWxwAppToken(
 export async function forceDeleteByIdsWxwAppToken(
   ids: WxwAppTokenId[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/wxwork/wxw_app_token",
-    "force_delete",
-  );
   
   const {
     forceDeleteByIds,
   } = await import("./wxw_app_token.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "force_delete",
+  );
   const res = await forceDeleteByIds(ids);
   return res;
 }

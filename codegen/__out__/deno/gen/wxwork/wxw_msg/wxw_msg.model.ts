@@ -3,7 +3,14 @@ import type {
   WxwMsgModel as WxwMsgModelType,
   WxwMsgSearch as WxwMsgSearchType,
   WxwMsgFieldComment as WxwMsgFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
+} from "/gen/types.ts";
+
+export const route_path = "/wxwork/wxw_msg";
 
 declare const wxwMsgId: unique symbol;
 
@@ -35,11 +42,15 @@ declare global {
     msgid_like?: string;
     /** 创建人 */
     create_usr_id?: UsrId[];
+    /** 创建人 */
     create_usr_id_is_null?: boolean;
+    /** 创建人 */
     create_usr_id_lbl?: string[];
     /** 更新人 */
     update_usr_id?: UsrId[];
+    /** 更新人 */
     update_usr_id_is_null?: boolean;
+    /** 更新人 */
     update_usr_id_lbl?: string[];
     /** 更新时间 */
     update_time?: string[];
@@ -84,4 +95,30 @@ declare global {
   interface WxwMsgFieldComment extends WxwMsgFieldCommentType {
   }
   
+}
+
+/** 企微消息 前端允许排序的字段 */
+export const canSortInApiWxwMsg = {
+  // 发送时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 企微消息 检测字段是否允许前端排序 */
+export function checkSortWxwMsg(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortWxwMsg: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiWxwMsg;
+    if (!canSortInApiWxwMsg[prop]) {
+      throw new Error(`checkSortWxwMsg: ${ JSON.stringify(item) }`);
+    }
+  }
 }

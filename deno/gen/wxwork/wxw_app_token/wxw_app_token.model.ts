@@ -3,7 +3,14 @@ import type {
   WxwAppTokenModel as WxwAppTokenModelType,
   WxwAppTokenSearch as WxwAppTokenSearchType,
   WxwAppTokenFieldComment as WxwAppTokenFieldCommentType,
+  SortInput,
 } from "/gen/types.ts";
+
+import {
+  SortOrderEnum,
+} from "/gen/types.ts";
+
+export const route_path = "/wxwork/wxw_app_token";
 
 declare const wxwAppTokenId: unique symbol;
 
@@ -24,13 +31,17 @@ declare global {
     expires_in?: number[];
     /** 创建人 */
     create_usr_id?: UsrId[];
+    /** 创建人 */
     create_usr_id_is_null?: boolean;
+    /** 创建人 */
     create_usr_id_lbl?: string[];
     /** 创建时间 */
     create_time?: string[];
     /** 更新人 */
     update_usr_id?: UsrId[];
+    /** 更新人 */
     update_usr_id_is_null?: boolean;
+    /** 更新人 */
     update_usr_id_lbl?: string[];
     /** 更新时间 */
     update_time?: string[];
@@ -67,4 +78,30 @@ declare global {
   interface WxwAppTokenFieldComment extends WxwAppTokenFieldCommentType {
   }
   
+}
+
+/** 企微应用接口凭据 前端允许排序的字段 */
+export const canSortInApiWxwAppToken = {
+  // 创建时间
+  "create_time": true,
+  // 更新时间
+  "update_time": true,
+};
+
+/** 企微应用接口凭据 检测字段是否允许前端排序 */
+export function checkSortWxwAppToken(sort?: SortInput[]) {
+  if (!sort) return;
+  for (const item of sort) {
+    const order = item.order;
+    if (
+      order !== SortOrderEnum.Asc && order !== SortOrderEnum.Desc &&
+      order !== SortOrderEnum.Ascending && order !== SortOrderEnum.Descending
+    ) {
+      throw new Error(`checkSortWxwAppToken: ${ JSON.stringify(item) }`);
+    }
+    const prop = item.prop as keyof typeof canSortInApiWxwAppToken;
+    if (!canSortInApiWxwAppToken[prop]) {
+      throw new Error(`checkSortWxwAppToken: ${ JSON.stringify(item) }`);
+    }
+  }
 }
