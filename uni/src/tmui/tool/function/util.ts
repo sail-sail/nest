@@ -140,6 +140,7 @@ export function deepObjectMerge(FirstOBJ : Data, SecondOBJ : Data) : Data { // æ
 export function splitData<T>(arr: Array<T> = [], size = 1): Array<T[]> {
 	const result = [];
 	for (let i = 0; i < arr.length; i += size) {
+    // @ts-ignore
 		result.push(arr.slice(i, i + size));
 	}
 	return result as T[][];
@@ -841,9 +842,9 @@ var lastTime = 0;
 export function requestAnimationFrame(callback: Function): number {
 	const currentTime = new Date().getTime();
 	const timeToCall = Math.max(0, 16 - (currentTime - lastTime));
-	const id = <any>setTimeout(() => {
+	const id = setTimeout(() => {
 		callback(currentTime + timeToCall);
-	}, timeToCall);
+	}, timeToCall) as any;
 	lastTime = currentTime + timeToCall;
 	return id;
 }

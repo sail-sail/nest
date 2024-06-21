@@ -15,7 +15,7 @@ if (typeof PageJsonInit?.pages == 'undefined') {
 	PageJsonInit.pages = [];
 }
 PageJsonInit.pages.forEach((el: any) => {
-	let customType: pagesCustomType = <pagesCustomType>(el?.style?.navigationStyle ?? "default");
+	let customType: pagesCustomType = (el?.style?.navigationStyle ?? "default");
 	let bg = (el.style?.navigationBarBackgroundColor ?? PageJsonInit?.globalStyle?.navigationBarBackgroundColor ?? '#FFFFFF') || '#FFFFFF'
 	let txtColor = (el.style?.navigationBarTextStyle ?? PageJsonInit?.globalStyle?.navigationBarTextStyle ?? 'black') || 'black'
 	pages.push({
@@ -25,7 +25,9 @@ PageJsonInit.pages.forEach((el: any) => {
 		navigationBarTextStyle: txtColor
 	})
 })
+// @ts-ignore
 if (Array.isArray(PageJsonInit?.subPackages ?? null)) {
+  // @ts-ignore
 	PageJsonInit?.subPackages.forEach((el: any) => {
 		let rootPath = el.root;
 		el.pages.forEach((el2: any) => {
@@ -53,11 +55,13 @@ let tabBar: tabBarType = pagers?.tabBar ?? {
 // custom icon
 let cusutomIconList = [];
 // #ifdef APP
+// @ts-ignore
 cusutomIconList = fontJson;
 // #endif
 let $tm = {
 	tabBar: tabBar,
 	pages: pages,
+  // @ts-ignore
 	globalNavStyle: (PageJsonInit?.globalStyle.navigationStyle ?? ""),
 	isOpenDarkModel: (PageJsonInit?.globalStyle?.navigationBarBackgroundColor ?? "").indexOf("@") > -1,
 	isColor: (color: string) => {
