@@ -1,5 +1,6 @@
 import {
-  useContext,
+  set_is_tran,
+  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
@@ -9,8 +10,16 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  checkSortWxwUsr,
+} from "./wxw_usr.model.ts";
+
+import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
+
+import {
+  route_path,
+} from "./wxw_usr.model.ts";
 
 /**
  * 根据条件查找企微用户总数
@@ -40,6 +49,8 @@ export async function findAllWxwUsr(
     findAll,
   } = await import("./wxw_usr.service.ts");
   
+  checkSortWxwUsr(sort);
+  
   const res = await findAll(search, page, sort);
   return res;
 }
@@ -64,6 +75,8 @@ export async function findOneWxwUsr(
   const {
     findOne,
   } = await import("./wxw_usr.service.ts");
+  
+  checkSortWxwUsr(sort);
   
   const res = await findOne(search, sort);
   return res;
@@ -99,12 +112,11 @@ export async function createsWxwUsr(
     creates,
   } = await import("./wxw_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
+  set_is_creating(true);
   
   await usePermit(
-    "/wxwork/wxw_usr",
+    route_path,
     "add",
   );
   
@@ -135,14 +147,12 @@ export async function updateByIdWxwUsr(
     updateById,
   } = await import("./wxw_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await setIdByLbl(input);
   
   await usePermit(
-    "/wxwork/wxw_usr",
+    route_path,
     "edit",
   );
   const id2: WxwUsrId = await updateById(id, input);
@@ -160,12 +170,10 @@ export async function deleteByIdsWxwUsr(
     deleteByIds,
   } = await import("./wxw_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_usr",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -183,12 +191,10 @@ export async function revertByIdsWxwUsr(
     revertByIds,
   } = await import("./wxw_usr.service.ts");
   
-  const context = useContext();
-  
-  context.is_tran = true;
+  set_is_tran(true);
   
   await usePermit(
-    "/wxwork/wxw_usr",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -201,18 +207,17 @@ export async function revertByIdsWxwUsr(
 export async function forceDeleteByIdsWxwUsr(
   ids: WxwUsrId[],
 ): Promise<number> {
-  const context = useContext();
-  
-  context.is_tran = true;
-  
-  await usePermit(
-    "/wxwork/wxw_usr",
-    "force_delete",
-  );
   
   const {
     forceDeleteByIds,
   } = await import("./wxw_usr.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "force_delete",
+  );
   const res = await forceDeleteByIds(ids);
   return res;
 }
