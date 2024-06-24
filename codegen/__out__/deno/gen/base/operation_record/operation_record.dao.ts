@@ -982,23 +982,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_operation_record(id
-,create_time
-,update_time
-,tenant_id
-,create_usr_id
-,create_usr_id_lbl
-,update_usr_id
-,update_usr_id_lbl
-,module
-,module_lbl
-,method
-,method_lbl
-,lbl
-,time
-,old_data
-,new_data
-)values`;
+  let sql = "insert into base_operation_record(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,module,module_lbl,method,method_lbl,lbl,time,old_data,new_data)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {

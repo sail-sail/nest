@@ -1109,22 +1109,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_options(id
-,create_time
-,update_time
-,create_usr_id
-,create_usr_id_lbl
-,update_usr_id
-,update_usr_id_lbl
-,lbl
-,ky
-,val
-,is_locked
-,is_enabled
-,order_by
-,rem
-,is_sys
-)values`;
+  let sql = "insert into base_options(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,ky,val,is_locked,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {

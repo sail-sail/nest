@@ -1465,25 +1465,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_usr(id
-,create_time
-,update_time
-,tenant_id
-,create_usr_id
-,create_usr_id_lbl
-,update_usr_id
-,update_usr_id_lbl
-,img
-,lbl
-,username
-,password
-,default_org_id
-,is_locked
-,is_enabled
-,order_by
-,rem
-,is_hidden
-)values`;
+  let sql = "insert into base_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,img,lbl,username,password,default_org_id,is_locked,is_enabled,order_by,rem,is_hidden)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {

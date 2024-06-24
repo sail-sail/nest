@@ -3202,40 +3202,33 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into <#=mod#>_<#=table#>(id<#
+  let sql = "insert into <#=mod#>_<#=table#>(id<#
 if (hasCreateTime) {
-#>
-,create_time<#
+#>,create_time<#
 }
 #><#
 if (hasUpdateTime) {
-#>
-,update_time<#
+#>,update_time<#
 }
 #><#
 if (hasTenant_id) {
-#>
-,tenant_id<#
+#>,tenant_id<#
 }
 #><#
 if (hasCreateUsrId) {
-#>
-,create_usr_id<#
+#>,create_usr_id<#
 }
 #><#
 if (hasCreateUsrIdLbl) {
-#>
-,create_usr_id_lbl<#
+#>,create_usr_id_lbl<#
 }
 #><#
 if (hasUpdateUsrId) {
-#>
-,update_usr_id<#
+#>,update_usr_id<#
 }
 #><#
 if (hasUpdateUsrIdLbl) {
-#>
-,update_usr_id_lbl<#
+#>,update_usr_id_lbl<#
 }
 #><#
 for (let i = 0; i < columns.length; i++) {
@@ -3262,21 +3255,17 @@ for (let i = 0; i < columns.length; i++) {
   const modelLabel = column.modelLabel;
 #><#
   if (modelLabel) {
-#>
-,<#=modelLabel#><#
+#>,<#=modelLabel#><#
   }
 #><#
   if (column.isPassword) {
-#>
-,<#=column_name_mysql#><#
+#>,<#=column_name_mysql#><#
   } else if (foreignKey && foreignKey.type === "many2many") {
 #><#
   } else if (!foreignKey) {
-#>
-,<#=column_name_mysql#><#
+#>,<#=column_name_mysql#><#
   } else {
-#>
-,<#=column_name_mysql#><#
+#>,<#=column_name_mysql#><#
   }
 #><#
 }
@@ -3298,13 +3287,11 @@ for (let i = 0; i < columns.length; i++) {
 #><#
 for (const key of redundLblKeys) {
   const val = redundLbl[key];
-#>
-,<#=val#><#
+#>,<#=val#><#
 }
 #><#
 }
-#>
-)values`;
+#>)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
