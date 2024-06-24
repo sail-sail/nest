@@ -1044,19 +1044,19 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_permit(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",create_usr_id";
-  sql += ",create_usr_id_lbl";
-  sql += ",update_usr_id";
-  sql += ",update_usr_id_lbl";
-  sql += ",menu_id";
-  sql += ",code";
-  sql += ",lbl";
-  sql += ",rem";
-  sql += ",is_sys";
-  sql += ")values";
+  let sql = `insert into base_permit(id
+,create_time
+,update_time
+,create_usr_id
+,create_usr_id_lbl
+,update_usr_id
+,update_usr_id_lbl
+,menu_id
+,code
+,lbl
+,rem
+,is_sys
+)values`;
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {

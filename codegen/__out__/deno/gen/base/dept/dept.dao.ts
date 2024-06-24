@@ -1293,23 +1293,23 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_dept(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",create_usr_id_lbl";
-  sql += ",update_usr_id";
-  sql += ",update_usr_id_lbl";
-  sql += ",parent_id";
-  sql += ",lbl";
-  sql += ",is_locked";
-  sql += ",is_enabled";
-  sql += ",order_by";
-  sql += ",org_id_lbl"
-  sql += ",org_id";
-  sql += ",rem";
-  sql += ")values";
+  let sql = `insert into base_dept(id
+,create_time
+,update_time
+,tenant_id
+,create_usr_id
+,create_usr_id_lbl
+,update_usr_id
+,update_usr_id_lbl
+,parent_id
+,lbl
+,is_locked
+,is_enabled
+,order_by
+,org_id_lbl
+,org_id
+,rem
+)values`;
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {

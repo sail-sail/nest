@@ -3202,108 +3202,109 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into <#=mod#>_<#=table#>(id`;<#
-  if (hasCreateTime) {
-  #>
-  sql += ",create_time";<#
+  let sql = `insert into <#=mod#>_<#=table#>(id<#
+if (hasCreateTime) {
+#>
+,create_time<#
+}
+#><#
+if (hasUpdateTime) {
+#>
+,update_time<#
+}
+#><#
+if (hasTenant_id) {
+#>
+,tenant_id<#
+}
+#><#
+if (hasCreateUsrId) {
+#>
+,create_usr_id<#
+}
+#><#
+if (hasCreateUsrIdLbl) {
+#>
+,create_usr_id_lbl<#
+}
+#><#
+if (hasUpdateUsrId) {
+#>
+,update_usr_id<#
+}
+#><#
+if (hasUpdateUsrIdLbl) {
+#>
+,update_usr_id_lbl<#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.isVirtual) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "create_usr_id") continue;
+  if (column_name === "create_time") continue;
+  if (column_name === "update_usr_id") continue;
+  if (column_name === "update_time") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
   }
-  #><#
-  if (hasUpdateTime) {
-  #>
-  sql += ",update_time";<#
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const many2many = column.many2many;
+  const column_name_mysql = mysqlKeyEscape(column_name);
+  const modelLabel = column.modelLabel;
+#><#
+  if (modelLabel) {
+#>
+,<#=modelLabel#><#
   }
-  #><#
-  if (hasTenant_id) {
-  #>
-  sql += ",tenant_id";<#
+#><#
+  if (column.isPassword) {
+#>
+,<#=column_name_mysql#><#
+  } else if (foreignKey && foreignKey.type === "many2many") {
+#><#
+  } else if (!foreignKey) {
+#>
+,<#=column_name_mysql#><#
+  } else {
+#>
+,<#=column_name_mysql#><#
   }
-  #><#
-  if (hasCreateUsrId) {
-  #>
-  sql += ",create_usr_id";<#
+#><#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  const column_comment = column.COLUMN_COMMENT || "";
+  const redundLbl = column.redundLbl;
+  if (!redundLbl) {
+    continue;
   }
-  #><#
-  if (hasCreateUsrIdLbl) {
-  #>
-  sql += ",create_usr_id_lbl";<#
+  const redundLblKeys = Object.keys(redundLbl);
+  if (redundLblKeys.length === 0) {
+    continue;
   }
-  #><#
-  if (hasUpdateUsrId) {
-  #>
-  sql += ",update_usr_id";<#
-  }
-  #><#
-  if (hasUpdateUsrIdLbl) {
-  #>
-  sql += ",update_usr_id_lbl";<#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.isVirtual) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    if (column_name === "create_usr_id") continue;
-    if (column_name === "create_time") continue;
-    if (column_name === "update_usr_id") continue;
-    if (column_name === "update_time") continue;
-    let data_type = column.DATA_TYPE;
-    let column_type = column.COLUMN_TYPE;
-    let column_comment = column.COLUMN_COMMENT || "";
-    if (column_comment.indexOf("[") !== -1) {
-      column_comment = column_comment.substring(0, column_comment.indexOf("["));
-    }
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
-    const many2many = column.many2many;
-    const column_name_mysql = mysqlKeyEscape(column_name);
-    const modelLabel = column.modelLabel;
-  #><#
-    if (modelLabel) {
-  #>
-  sql += ",<#=modelLabel#>"<#
-    }
-  #><#
-    if (column.isPassword) {
-  #>
-  sql += ",<#=column_name_mysql#>";<#
-    } else if (foreignKey && foreignKey.type === "many2many") {
-  #><#
-    } else if (!foreignKey) {
-  #>
-  sql += ",<#=column_name_mysql#>";<#
-    } else {
-  #>
-  sql += ",<#=column_name_mysql#>";<#
-    }
-  #><#
-  }
-  #><#
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (column_name === "id") continue;
-    const column_comment = column.COLUMN_COMMENT || "";
-    const redundLbl = column.redundLbl;
-    if (!redundLbl) {
-      continue;
-    }
-    const redundLblKeys = Object.keys(redundLbl);
-    if (redundLblKeys.length === 0) {
-      continue;
-    }
-  #><#
-  for (const key of redundLblKeys) {
-    const val = redundLbl[key];
-  #>sql += ",<#=val#>";<#
-  }
-  #><#
-  }
-  #>
-  sql += ")values";
+#><#
+for (const key of redundLblKeys) {
+  const val = redundLbl[key];
+#>
+,<#=val#><#
+}
+#><#
+}
+#>
+)values`;
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {

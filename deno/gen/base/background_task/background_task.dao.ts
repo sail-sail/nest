@@ -1170,23 +1170,23 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_background_task(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",create_usr_id_lbl";
-  sql += ",update_usr_id";
-  sql += ",update_usr_id_lbl";
-  sql += ",lbl";
-  sql += ",state";
-  sql += ",type";
-  sql += ",result";
-  sql += ",err_msg";
-  sql += ",begin_time";
-  sql += ",end_time";
-  sql += ",rem";
-  sql += ")values";
+  let sql = `insert into base_background_task(id
+,create_time
+,update_time
+,tenant_id
+,create_usr_id
+,create_usr_id_lbl
+,update_usr_id
+,update_usr_id_lbl
+,lbl
+,state
+,type
+,result
+,err_msg
+,begin_time
+,end_time
+,rem
+)values`;
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
