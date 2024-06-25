@@ -920,7 +920,9 @@ export async function validateOption(
   model?: CardRechargeModel,
 ) {
   if (!model) {
-    throw `${ await ns("会员卡充值记录") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("会员卡充值记录") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
@@ -1132,23 +1134,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into wshop_card_recharge(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",update_usr_id";
-  sql += ",transaction_id";
-  sql += ",card_id";
-  sql += ",usr_id";
-  sql += ",amt";
-  sql += ",give_amt";
-  sql += ",balance";
-  sql += ",give_balance";
-  sql += ",integral";
-  sql += ",rem";
-  sql += ",org_id";
-  sql += ")values";
+  let sql = "insert into wshop_card_recharge(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,transaction_id,card_id,usr_id,amt,give_amt,balance,give_balance,integral,rem,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {

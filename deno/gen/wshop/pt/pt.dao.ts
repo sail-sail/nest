@@ -1118,7 +1118,9 @@ export async function validateOption(
   model?: PtModel,
 ) {
   if (!model) {
-    throw `${ await ns("产品") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("产品") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
@@ -1365,28 +1367,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into wshop_pt(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",update_usr_id";
-  sql += ",img";
-  sql += ",lbl";
-  sql += ",price";
-  sql += ",original_price";
-  sql += ",unit";
-  sql += ",is_new";
-  sql += ",introduct";
-  sql += ",is_locked";
-  sql += ",is_enabled";
-  sql += ",order_by";
-  sql += ",detail";
-  sql += ",detail_top_img";
-  sql += ",detail_bottom_img";
-  sql += ",rem";
-  sql += ",org_id";
-  sql += ")values";
+  let sql = "insert into wshop_pt(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,img,lbl,price,original_price,unit,is_new,introduct,is_locked,is_enabled,order_by,detail,detail_top_img,detail_bottom_img,rem,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
