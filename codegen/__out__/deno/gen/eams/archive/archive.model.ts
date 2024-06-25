@@ -10,6 +10,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/eams/archive";
+
 declare const archiveId: unique symbol;
 
 declare global {

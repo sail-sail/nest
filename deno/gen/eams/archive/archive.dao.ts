@@ -80,7 +80,9 @@ import {
   findOne as findOneCompany,
 } from "/gen/eams/company/company.dao.ts";
 
-const route_path = "/eams/archive";
+import {
+  route_path,
+} from "./archive.model.ts";
 
 async function getWhereQuery(
   args: QueryArgs,
@@ -876,7 +878,9 @@ export async function validateOption(
   model?: ArchiveModel,
 ) {
   if (!model) {
-    throw `${ await ns("全宗设置") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("全宗设置") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
@@ -1095,18 +1099,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into eams_archive(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",update_usr_id";
-  sql += ",code";
-  sql += ",lbl";
-  sql += ",company_id";
-  sql += ",order_by";
-  sql += ",rem";
-  sql += ")values";
+  let sql = "insert into eams_archive(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,code,lbl,company_id,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
