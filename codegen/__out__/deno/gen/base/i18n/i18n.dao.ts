@@ -885,7 +885,9 @@ export async function validateOption(
   model?: I18nModel,
 ) {
   if (!model) {
-    throw `${ await ns("国际化") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("国际化") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
