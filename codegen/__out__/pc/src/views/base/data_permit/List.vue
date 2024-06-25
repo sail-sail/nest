@@ -930,7 +930,7 @@ function getTableColumns(): ColumnType[] {
       label: "范围",
       prop: "scope_lbl",
       sortBy: "scope",
-      width: 120,
+      width: 140,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
