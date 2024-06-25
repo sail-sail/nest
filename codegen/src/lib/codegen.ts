@@ -129,9 +129,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
   }).join("");
   
   function hasDataPermit() {
-    if (mod === "base") {
-      return false;
-    }
     if (schema.opts.dataPermit === true) {
       return true;
     }
