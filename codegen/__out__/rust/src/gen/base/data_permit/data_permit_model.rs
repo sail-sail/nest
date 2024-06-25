@@ -561,7 +561,7 @@ pub enum DataPermitScope {
   /// 本部门
   #[graphql(name="dept")]
   Dept,
-  /// 本部门极其父部门
+  /// 本部门及其所有上级
   #[graphql(name="dept_parent")]
   DeptParent,
   /// 本角色

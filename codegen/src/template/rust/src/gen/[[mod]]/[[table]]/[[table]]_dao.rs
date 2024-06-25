@@ -147,7 +147,7 @@ use crate::src::base::dept::dept_dao::{
   get_dept_ids,
   get_auth_dept_ids,
   get_parents_dept_ids,
-  get_auth_and_parents_dept_ids,
+  get_auth_and_children_dept_ids,
 };
 use crate::src::base::role::role_dao::{
   get_role_ids,
@@ -615,7 +615,7 @@ async fn get_where_query(
     where_query.push_str(" and t.create_usr_id=?");
     args.push(usr_id.into());
   } else if !has_tenant_permit && has_dept_parent_permit {
-    let dept_ids = get_auth_and_parents_dept_ids().await?;
+    let dept_ids = get_auth_and_children_dept_ids().await?;
     let arg = {
       if dept_ids.is_empty() {
         "null".to_string()
@@ -5998,6 +5998,11 @@ pub async fn validate_option<T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
+    let backtrace = std::backtrace::Backtrace::capture();
+    error!(
+      "{req_id} {err_msg}: {backtrace}",
+      req_id = get_req_id(),
+    );
     return Err(anyhow!(err_msg));
   }
   Ok(model.unwrap())
