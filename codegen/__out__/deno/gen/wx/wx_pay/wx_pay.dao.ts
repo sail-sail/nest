@@ -956,7 +956,9 @@ export async function validateOption(
   model?: WxPayModel,
 ) {
   if (!model) {
-    throw `${ await ns("微信支付设置") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("微信支付设置") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
@@ -1210,27 +1212,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into wx_wx_pay(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",create_usr_id_lbl";
-  sql += ",update_usr_id";
-  sql += ",update_usr_id_lbl";
-  sql += ",lbl";
-  sql += ",appid";
-  sql += ",mchid";
-  sql += ",public_key";
-  sql += ",private_key";
-  sql += ",v3_key";
-  sql += ",payer_client_ip";
-  sql += ",notify_url";
-  sql += ",is_locked";
-  sql += ",is_enabled";
-  sql += ",order_by";
-  sql += ",rem";
-  sql += ")values";
+  let sql = "insert into wx_wx_pay(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,appid,mchid,public_key,private_key,v3_key,payer_client_ip,notify_url,is_locked,is_enabled,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1777,7 +1759,7 @@ export async function deleteByIds(
     let sql = `update wx_wx_pay set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
       const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_id = authModel?.id;
       if (usr_id != null) {
         sql += `,delete_usr_id=${ args.push(usr_id) }`;
       }

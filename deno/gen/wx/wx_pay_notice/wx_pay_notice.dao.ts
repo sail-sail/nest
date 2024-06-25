@@ -1065,7 +1065,9 @@ export async function validateOption(
   model?: WxPayNoticeModel,
 ) {
   if (!model) {
-    throw `${ await ns("微信支付通知") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("微信支付通知") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
@@ -1354,34 +1356,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into wx_wx_pay_notice(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",create_usr_id_lbl";
-  sql += ",update_usr_id";
-  sql += ",update_usr_id_lbl";
-  sql += ",appid";
-  sql += ",mchid";
-  sql += ",openid";
-  sql += ",out_trade_no";
-  sql += ",transaction_id";
-  sql += ",trade_type";
-  sql += ",trade_state";
-  sql += ",trade_state_desc";
-  sql += ",bank_type";
-  sql += ",attach";
-  sql += ",success_time";
-  sql += ",total";
-  sql += ",payer_total";
-  sql += ",currency";
-  sql += ",payer_currency";
-  sql += ",device_id";
-  sql += ",rem";
-  sql += ",raw";
-  sql += ",org_id";
-  sql += ")values";
+  let sql = "insert into wx_wx_pay_notice(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,appid,mchid,openid,out_trade_no,transaction_id,trade_type,trade_state,trade_state_desc,bank_type,attach,success_time,total,payer_total,currency,payer_currency,device_id,rem,raw,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1984,7 +1959,7 @@ export async function deleteByIds(
     let sql = `update wx_wx_pay_notice set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
       const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_id = authModel?.id;
       if (usr_id != null) {
         sql += `,delete_usr_id=${ args.push(usr_id) }`;
       }
