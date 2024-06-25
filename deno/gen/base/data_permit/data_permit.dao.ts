@@ -937,7 +937,7 @@ export async function validate(
   // 范围
   await validators.chars_max_length(
     input.scope,
-    10,
+    20,
     fieldComments.scope,
   );
   
@@ -1125,19 +1125,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_data_permit(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",create_usr_id";
-  sql += ",create_usr_id_lbl";
-  sql += ",update_usr_id";
-  sql += ",update_usr_id_lbl";
-  sql += ",menu_id";
-  sql += ",scope";
-  sql += ",type";
-  sql += ",rem";
-  sql += ",is_sys";
-  sql += ")values";
+  let sql = "insert into base_data_permit(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,menu_id,scope,type,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1538,7 +1526,7 @@ export async function deleteByIds(
     let sql = `update base_data_permit set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
       const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_id = authModel?.id;
       if (usr_id != null) {
         sql += `,delete_usr_id=${ args.push(usr_id) }`;
       }

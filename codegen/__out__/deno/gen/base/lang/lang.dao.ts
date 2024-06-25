@@ -1071,20 +1071,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_lang(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",create_usr_id";
-  sql += ",create_usr_id_lbl";
-  sql += ",update_usr_id";
-  sql += ",update_usr_id_lbl";
-  sql += ",code";
-  sql += ",lbl";
-  sql += ",is_enabled";
-  sql += ",order_by";
-  sql += ",rem";
-  sql += ",is_sys";
-  sql += ")values";
+  let sql = "insert into base_lang(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1496,7 +1483,7 @@ export async function deleteByIds(
     let sql = `update base_lang set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
       const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_id = authModel?.id;
       if (usr_id != null) {
         sql += `,delete_usr_id=${ args.push(usr_id) }`;
       }
