@@ -982,23 +982,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_operation_record(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",create_usr_id_lbl";
-  sql += ",update_usr_id";
-  sql += ",update_usr_id_lbl";
-  sql += ",module";
-  sql += ",module_lbl";
-  sql += ",method";
-  sql += ",method_lbl";
-  sql += ",lbl";
-  sql += ",time";
-  sql += ",old_data";
-  sql += ",new_data";
-  sql += ")values";
+  let sql = "insert into base_operation_record(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,module,module_lbl,method,method_lbl,lbl,time,old_data,new_data)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1480,7 +1464,7 @@ export async function deleteByIds(
     let sql = `update base_operation_record set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
       const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_id = authModel?.id;
       if (usr_id != null) {
         sql += `,delete_usr_id=${ args.push(usr_id) }`;
       }
