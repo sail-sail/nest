@@ -1001,7 +1001,9 @@ export async function validateOption(
   model?: CronJobModel,
 ) {
   if (!model) {
-    throw `${ await ns("定时任务") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("定时任务") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }

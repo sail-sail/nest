@@ -909,7 +909,9 @@ export async function validateOption(
   model?: CronJobLogModel,
 ) {
   if (!model) {
-    throw `${ await ns("任务执行日志") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("任务执行日志") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
