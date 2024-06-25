@@ -954,7 +954,9 @@ export async function validateOption(
   model?: DictbizDetailModel,
 ) {
   if (!model) {
-    throw `${ await ns("业务字典明细") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("业务字典明细") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }

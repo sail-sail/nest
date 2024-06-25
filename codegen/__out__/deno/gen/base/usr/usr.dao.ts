@@ -1239,7 +1239,9 @@ export async function validateOption(
   model?: UsrModel,
 ) {
   if (!model) {
-    throw `${ await ns("用户") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("用户") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
