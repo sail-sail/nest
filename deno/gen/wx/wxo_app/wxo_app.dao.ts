@@ -1004,7 +1004,9 @@ export async function validateOption(
   model?: WxoAppModel,
 ) {
   if (!model) {
-    throw `${ await ns("公众号设置") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("公众号设置") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
