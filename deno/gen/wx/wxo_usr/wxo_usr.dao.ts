@@ -867,7 +867,9 @@ export async function validateOption(
   model?: WxoUsrModel,
 ) {
   if (!model) {
-    throw `${ await ns("公众号用户") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("公众号用户") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }

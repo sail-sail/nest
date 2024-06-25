@@ -956,7 +956,9 @@ export async function validateOption(
   model?: WxPayModel,
 ) {
   if (!model) {
-    throw `${ await ns("微信支付设置") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("微信支付设置") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
