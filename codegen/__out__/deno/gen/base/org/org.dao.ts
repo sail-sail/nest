@@ -887,7 +887,9 @@ export async function validateOption(
   model?: OrgModel,
 ) {
   if (!model) {
-    throw `${ await ns("组织") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("组织") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }

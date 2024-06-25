@@ -907,7 +907,9 @@ export async function validateOption(
   model?: OptbizModel,
 ) {
   if (!model) {
-    throw `${ await ns("业务选项") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("业务选项") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }

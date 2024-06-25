@@ -806,7 +806,9 @@ export async function validateOption(
   model?: LoginLogModel,
 ) {
   if (!model) {
-    throw `${ await ns("登录日志") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("登录日志") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
