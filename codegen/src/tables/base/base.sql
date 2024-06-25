@@ -319,7 +319,7 @@ drop table if exists `base_data_permit`;
 CREATE TABLE if not exists `base_data_permit` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '菜单',
-  `scope` varchar(10) NOT NULL DEFAULT 'tenant' COMMENT '范围,dict:data_permit_scope',
+  `scope` varchar(20) NOT NULL DEFAULT 'tenant' COMMENT '范围,dict:data_permit_scope',
   `type` varchar(10) NOT NULL DEFAULT 'editable' COMMENT '类型,dict:data_permit_type',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `is_sys` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统记录,dict:is_sys',
@@ -330,6 +330,8 @@ CREATE TABLE if not exists `base_data_permit` (
   `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
   `update_time` datetime DEFAULT NULL COMMENT '更新时间',
   `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`menu_id`, `scope`, `is_deleted`),
   PRIMARY KEY (`id`)

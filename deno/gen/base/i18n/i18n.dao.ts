@@ -80,7 +80,9 @@ import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-const route_path = "/base/i18n";
+import {
+  route_path,
+} from "./i18n.model.ts";
 
 // deno-lint-ignore require-await
 async function getWhereQuery(
@@ -883,7 +885,9 @@ export async function validateOption(
   model?: I18nModel,
 ) {
   if (!model) {
-    throw `${ await ns("国际化") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("国际化") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
@@ -1109,19 +1113,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into base_i18n(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",create_usr_id";
-  sql += ",create_usr_id_lbl";
-  sql += ",update_usr_id";
-  sql += ",update_usr_id_lbl";
-  sql += ",lang_id";
-  sql += ",menu_id";
-  sql += ",code";
-  sql += ",lbl";
-  sql += ",rem";
-  sql += ")values";
+  let sql = "insert into base_i18n(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lang_id,menu_id,code,lbl,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1406,7 +1398,7 @@ export async function updateById(
           }
         }
         if (usr_id != null) {
-          sql += `update_usr_id=${ args.push(authModel.id) },`;
+          sql += `update_usr_id=${ args.push(usr_id) },`;
         }
         if (usr_lbl) {
           sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
@@ -1522,7 +1514,7 @@ export async function deleteByIds(
     let sql = `update base_i18n set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
       const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_id = authModel?.id;
       if (usr_id != null) {
         sql += `,delete_usr_id=${ args.push(usr_id) }`;
       }

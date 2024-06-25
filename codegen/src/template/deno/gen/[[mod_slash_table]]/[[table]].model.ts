@@ -77,6 +77,8 @@ import {
   SortOrderEnum,
 } from "/gen/types.ts";
 
+export const route_path = "/<#=mod#>/<#=table#>";
+
 declare const <#=table_Up#>Id: unique symbol;
 
 declare global {

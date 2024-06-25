@@ -83,7 +83,7 @@ if (typeof list_tree === "string") {
         :empty-text="inited ? undefined : ns('加载中...')"
         un-w="full"
         un-m="b-4"
-        :filter-node-method="filterNode"
+        :filter-node-method="(filterNode as any)"
         @node-click="onNode"
       ></el-tree>
     </div>
