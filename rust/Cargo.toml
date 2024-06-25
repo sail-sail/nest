@@ -91,10 +91,7 @@ name = "rust4xh4hrm"
 path = "src/main.rs"
 
 [profile.release]
-panic = "abort"
-incremental = true
-debug = 0
-strip = "debuginfo"
+panic = "unwind"
 
 [[bin]]
 name = "schema"

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use crate::common::context::get_auth_model;
+use crate::common::context::{get_auth_model, Options};
 
 use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
@@ -21,9 +21,12 @@ pub async fn get_auth_dept_ids() -> Result<Vec<DeptId>> {
   
   let usr_id = aut_model.id;
   
+  let options = Options::new();
+  let options = options.set_is_debug(Some(false));
+  
   let usr_model = find_by_id_usr(
     usr_id,
-    None,
+    Some(options),
   ).await?;
   
   if usr_model.is_none() {
@@ -46,9 +49,12 @@ pub async fn get_dept_ids(
   usr_id: UsrId,
 ) -> Result<Vec<DeptId>> {
   
+  let options = Options::new();
+  let options = options.set_is_debug(Some(false));
+  
   let usr_model = find_by_id_usr(
     usr_id,
-    None,
+    Some(options),
   ).await?;
   
   if usr_model.is_none() {
@@ -71,9 +77,13 @@ async fn get_parents_by_id(
   parent_ids: &mut Vec<DeptId>,
 ) -> Result<()> {
   
-  if parent_ids.is_empty() {
+  if ids.is_empty() {
     return Ok(());
   }
+  
+  let options = Options::new();
+  let options = options.set_is_debug(Some(false));
+  let options = Some(options);
   
   let dept_models = find_all_dept(
     DeptSearch {
@@ -83,10 +93,11 @@ async fn get_parents_by_id(
     }.into(),
     None,
     None,
-    None,
+    options,
   ).await?;
   
-  let ids2: Vec<DeptId> = dept_models.into_iter()
+  let ids2: Vec<DeptId> = dept_models
+    .into_iter()
     .map(|dept_model| {
       dept_model.parent_id
     }).collect();
@@ -142,4 +153,62 @@ pub async fn get_parents_dept_ids(
   ).await?;
   
   Ok(parent_ids)
+}
+
+/// 获取当前用户所在部门及其全部子部门的id
+#[allow(dead_code)]
+pub async fn get_auth_and_children_dept_ids() -> Result<Vec<DeptId>> {
+  
+  let dept_ids = get_auth_dept_ids().await?;
+  
+  let mut children_ids: Vec<DeptId> = vec![];
+  
+  for id in dept_ids {
+    get_children_all_dept_ids(
+      id,
+      &mut children_ids,
+    ).await?;
+  }
+  
+  Ok(children_ids)
+}
+
+/// 递归获取指定部门子部门的id列表
+#[allow(dead_code)]
+async fn get_children_all_dept_ids(
+  parent_id: DeptId,
+  children_ids: &mut Vec<DeptId>,
+) -> Result<()> {
+  
+  children_ids.push(parent_id.clone());
+  
+  let options = Options::new();
+  let options = options.set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let dept_models = find_all_dept(
+    DeptSearch {
+      parent_id: vec![parent_id].into(),
+      is_enabled: vec![1].into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    options,
+  ).await?;
+  
+  let ids: Vec<DeptId> = dept_models
+    .into_iter()
+    .map(|dept_model| {
+      dept_model.id
+    }).collect();
+  
+  for id in ids {
+    Box::pin(get_children_all_dept_ids(
+      id,
+      children_ids,
+    )).await?;
+  }
+  
+  Ok(())
 }

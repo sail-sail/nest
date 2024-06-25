@@ -148,6 +148,7 @@ use crate::src::base::dept::dept_dao::{
   get_auth_dept_ids,
   get_parents_dept_ids,
   get_auth_and_parents_dept_ids,
+  get_auth_and_children_dept_ids,
 };
 use crate::src::base::role::role_dao::{
   get_role_ids,
@@ -615,7 +616,7 @@ async fn get_where_query(
     where_query.push_str(" and t.create_usr_id=?");
     args.push(usr_id.into());
   } else if !has_tenant_permit && has_dept_parent_permit {
-    let dept_ids = get_auth_and_parents_dept_ids().await?;
+    let dept_ids = get_auth_and_children_dept_ids().await?;
     let arg = {
       if dept_ids.is_empty() {
         "null".to_string()
@@ -631,8 +632,24 @@ async fn get_where_query(
     where_query.push_str(" and _permit_usr_dept_.dept_id in (");
     where_query.push_str(&arg);
     where_query.push(')');
-  }
-  if !has_tenant_permit && has_dept_parent_permit {
+  } else if !has_tenant_permit && has_dept_permit {
+    let dept_ids = get_auth_dept_ids().await?;
+    let arg = {
+      if dept_ids.is_empty() {
+        "null".to_string()
+      } else {
+        let mut items = Vec::with_capacity(dept_ids.len());
+        for dept_id in dept_ids {
+          args.push(dept_id.into());
+          items.push("?");
+        }
+        items.join(",")
+      }
+    };
+    where_query.push_str(" and _permit_usr_dept_.dept_id in (");
+    where_query.push_str(&arg);
+    where_query.push(')');
+  } else if !has_tenant_permit && has_role_permit {
     let role_ids = get_auth_role_ids().await?;
     let arg = {
       if role_ids.is_empty() {
@@ -3730,7 +3747,7 @@ pub async fn get_editable_data_permits_by_ids(
   
   let options = Options::from(options)
     .set_has_data_permit(true);
-  
+  let options = options.set_is_debug(Some(false));
   let options = Some(options);
   
   let data_permit_models = get_data_permits(
@@ -3758,7 +3775,7 @@ pub async fn get_editable_data_permits_by_ids(
     }.into(),
     None,
     None,
-    None,
+    options,
   ).await?;
   
   for id in ids {
@@ -3788,7 +3805,7 @@ pub async fn get_editable_data_permits_by_ids(
         editable_data_permits.push(0);
       }
     } else if !has_tenant_permit && has_dept_parent_permit {
-      let dept_ids = get_auth_dept_ids().await?;
+      let dept_ids = get_auth_and_parents_dept_ids().await?;
       let model_dept_ids = get_parents_dept_ids(
         Some(model.create_usr_id.clone()),
       ).await?;
@@ -3931,7 +3948,7 @@ pub async fn update_by_id(
   if !data_permit_models.is_empty() && !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && !has_create_permit {
     return get_not_permit_err_fn().await;
   } else if !has_tenant_permit && has_dept_parent_permit {
-    let dept_ids = get_auth_dept_ids().await?;
+    let dept_ids = get_auth_and_parents_dept_ids().await?;
     let model_dept_ids = get_parents_dept_ids(
       old_model.create_usr_id.clone().into(),
     ).await?;
@@ -4833,9 +4850,13 @@ pub async fn delete_by_ids(
     #>
     
     let old_model = old_model.unwrap();
-    
-    if !has_tenant_permit && has_dept_parent_permit {
-      let dept_ids = get_auth_dept_ids().await?;
+    if !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && has_create_permit {
+      let usr_id = get_auth_id().unwrap_or_default();
+      if old_model.create_usr_id != usr_id {
+        return get_not_permit_err_fn().await;
+      }
+    } else if !has_tenant_permit && has_dept_parent_permit {
+      let dept_ids = get_auth_and_parents_dept_ids().await?;
       let model_dept_ids = get_parents_dept_ids(
         old_model.create_usr_id.clone().into(),
       ).await?;
@@ -5998,6 +6019,11 @@ pub async fn validate_option<T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
+    let backtrace = std::backtrace::Backtrace::capture();
+    error!(
+      "{req_id} {err_msg}: {backtrace}",
+      req_id = get_req_id(),
+    );
     return Err(anyhow!(err_msg));
   }
   Ok(model.unwrap())

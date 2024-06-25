@@ -174,7 +174,7 @@ pub async fn delete_by_ids(
     }),
     None,
     None,
-    None,
+    options.clone(),
   ).await?;
   for model in models {
     if model.is_sys == 1 {
