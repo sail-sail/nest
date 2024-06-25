@@ -17,6 +17,10 @@ import {
   usePermit,
 } from "/src/base/permit/permit.service.ts";
 
+import {
+  route_path,
+} from "./archive.model.ts";
+
 /**
  * 根据条件查找全宗设置总数
  */
@@ -112,7 +116,7 @@ export async function createsArchive(
   set_is_creating(true);
   
   await usePermit(
-    "/eams/archive",
+    route_path,
     "add",
   );
   
@@ -148,7 +152,7 @@ export async function updateByIdArchive(
   await setIdByLbl(input);
   
   await usePermit(
-    "/eams/archive",
+    route_path,
     "edit",
   );
   const id2: ArchiveId = await updateById(id, input);
@@ -169,7 +173,7 @@ export async function deleteByIdsArchive(
   set_is_tran(true);
   
   await usePermit(
-    "/eams/archive",
+    route_path,
     "delete",
   );
   const res = await deleteByIds(ids);
@@ -190,7 +194,7 @@ export async function revertByIdsArchive(
   set_is_tran(true);
   
   await usePermit(
-    "/eams/archive",
+    route_path,
     "delete",
   );
   const res = await revertByIds(ids);
@@ -211,7 +215,7 @@ export async function forceDeleteByIdsArchive(
   set_is_tran(true);
   
   await usePermit(
-    "/eams/archive",
+    route_path,
     "force_delete",
   );
   const res = await forceDeleteByIds(ids);
