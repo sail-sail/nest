@@ -39,7 +39,12 @@ export async function getDataPermits(
   const usr_id = authModel.id;
   
   const usr_model = await validateOptionUsr(
-    await findByIdUsr(usr_id),
+    await findByIdUsr(
+      usr_id,
+      {
+        is_debug: false,
+      },
+    ),
   );
   await validateIsEnabledUsr(usr_model);
   
@@ -49,16 +54,29 @@ export async function getDataPermits(
   if (username === "admin") {
     return [ ];
   }
-  const menuModel = await findOneMenu({
-    route_path,
-  });
+  const menuModel = await findOneMenu(
+    {
+      route_path,
+    },
+    undefined,
+    {
+      is_debug: false,
+    },
+  );
   if (!menuModel) {
     return [ ];
   }
   
-  const role_models = await findAllRole({
-    ids: role_ids,
-  });
+  const role_models = await findAllRole(
+    {
+      ids: role_ids,
+    },
+    undefined,
+    undefined,
+    {
+      is_debug: false,
+    },
+  );
   
   let data_permit_ids = [ ];
   for (const role_model of role_models) {
@@ -66,9 +84,16 @@ export async function getDataPermits(
   }
   data_permit_ids = Array.from(new Set(data_permit_ids));
   
-  const dataPermitModels = await findAllDataPermit({
-    ids: data_permit_ids,
-    menu_id: [ menuModel.id ],
-  });
+  const dataPermitModels = await findAllDataPermit(
+    {
+      ids: data_permit_ids,
+      menu_id: [ menuModel.id ],
+    },
+    undefined,
+    undefined,
+    {
+      is_debug: false,
+    },
+  );
   return dataPermitModels;
 }
