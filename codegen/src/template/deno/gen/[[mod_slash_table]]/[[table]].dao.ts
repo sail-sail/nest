@@ -417,6 +417,7 @@ import {
 
 import {
   getAuthDeptIds,
+  getAuthAndParentsDeptIds,
   getAuthAndChildrenDeptIds,
   getParentsDeptIds,
   getDeptIds,
@@ -3905,7 +3906,7 @@ export async function getEditableDataPermitsByIds(
         dataPermits.push(0);
       }
     } else if (!hasTenantPermit && hasDeptParentPermit) {
-      const dept_ids = await getAuthAndChildrenDeptIds();
+      const dept_ids = await getAuthAndParentsDeptIds();
       const model_dept_ids = await getParentsDeptIds(model.create_usr_id);
       if (model_dept_ids.some((item) => dept_ids.includes(item))) {
         dataPermits.push(1);
@@ -4677,7 +4678,11 @@ export async function deleteByIds(
   const hasRolePermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Role && item.type === DataPermitType.Editable);
   const hasDeptPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Dept && item.type === DataPermitType.Editable);
   const hasDeptParentPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.DeptParent && item.type === DataPermitType.Editable);
-  const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant && item.type === DataPermitType.Editable);<#
+  const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant && item.type === DataPermitType.Editable);
+  
+  if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && !hasCreatePermit && dataPermitModels.length > 0) {
+    throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
+  }<#
   }
   #><#
   if (cache) {
@@ -4697,17 +4702,13 @@ export async function deleteByIds(
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     
-    if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && !hasCreatePermit && dataPermitModels.length > 0) {
-      throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
-    }
-    
     if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && hasCreatePermit) {
       const authModel = await getAuthModel();
       if (oldModel.create_usr_id !== authModel?.id) {
         throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
       }
     } else if (!hasTenantPermit && hasDeptParentPermit) {
-      const dept_ids = await getAuthAndChildrenDeptIds();
+      const dept_ids = await getAuthAndParentsDeptIds();
       const model_dept_ids = await getParentsDeptIds(oldModel.create_usr_id);
       if (!model_dept_ids.some((item) => dept_ids.includes(item))) {
         throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
