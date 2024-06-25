@@ -663,7 +663,7 @@ export default defineConfig({
         COLUMN_NAME: "scope",
         require: true,
         search: true,
-        width: 120,
+        width: 140,
         align: "center",
       },
       {
