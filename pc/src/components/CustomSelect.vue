@@ -698,6 +698,7 @@ watch(
     inited,
     !props.multiple,
     options4SelectV2.length > 0,
+    props.readonly,
   ],
   () => {
     refreshWrapperHeight();

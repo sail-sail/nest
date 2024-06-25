@@ -2096,6 +2096,11 @@ pub async fn validate_option<T>(
       None,
     ).await?;
     let err_msg = table_comment + &msg1;
+    let backtrace = std::backtrace::Backtrace::capture();
+    error!(
+      "{req_id} {err_msg}: {backtrace}",
+      req_id = get_req_id(),
+    );
     return Err(anyhow!(err_msg));
   }
   Ok(model.unwrap())

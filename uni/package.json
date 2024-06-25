@@ -55,12 +55,12 @@
     "@vueuse/core": "10.11.0",
     "dayjs": "1.11.11",
     "decimal.js-light": "2.5.1",
-    "graphql": "16.8.2",
+    "graphql": "16.9.0",
     "graphql-combine-query": "1.2.4",
     "numeral": "2.0.6",
     "pinia": "2.1.7",
     "pinia-plugin-unistorage": "0.0.19",
-    "vue": "3.4.28",
+    "vue": "3.4.30",
     "vue-demi": "0.14.8",
     "vue-i18n": "9.13.1"
   },
@@ -70,14 +70,14 @@
     "@dcloudio/uni-cli-shared": "3.0.0-4010520240507001",
     "@dcloudio/uni-stacktracey": "3.0.0-4010520240507001",
     "@dcloudio/vite-plugin-uni": "3.0.0-4010520240507001",
-    "@types/node": "20.14.7",
+    "@types/node": "20.14.8",
     "@typescript-eslint/eslint-plugin": "7.13.1",
     "@typescript-eslint/parser": "7.13.1",
     "@uni-helper/uni-app-types": "0.5.13",
     "@unocss/preset-attributify": "0.61.0",
     "@vue-macros/reactivity-transform": "0.4.6",
-    "@vue/runtime-core": "3.4.28",
-    "@vue/runtime-dom": "3.4.28",
+    "@vue/runtime-core": "3.4.30",
+    "@vue/runtime-dom": "3.4.30",
     "cross-env": "7.0.3",
     "eslint": "9.5.0",
     "eslint-plugin-vue": "9.26.0",
@@ -99,7 +99,7 @@
     "vite-plugin-inspect": "0.8.4",
     "vite-plugin-vue-inspector": "5.1.2",
     "vitest": "1.6.0",
-    "vue-router": "4.3.3",
-    "vue-tsc": "2.0.21"
+    "vue-router": "4.4.0",
+    "vue-tsc": "2.0.22"
   }
 }
