@@ -937,7 +937,7 @@ export async function validate(
   // 范围
   await validators.chars_max_length(
     input.scope,
-    10,
+    20,
     fieldComments.scope,
   );
   
@@ -1526,7 +1526,7 @@ export async function deleteByIds(
     let sql = `update base_data_permit set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
       const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_id = authModel?.id;
       if (usr_id != null) {
         sql += `,delete_usr_id=${ args.push(usr_id) }`;
       }
