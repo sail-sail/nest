@@ -12,7 +12,7 @@ enum DataPermitScope {
   create
   "本部门"
   dept
-  "本部门极其父部门"
+  "本部门及其所有上级"
   dept_parent
   "本角色"
   role
