@@ -937,7 +937,9 @@ export async function validateOption(
   model?: BackgroundTaskModel,
 ) {
   if (!model) {
-    throw `${ await ns("后台任务") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("后台任务") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
