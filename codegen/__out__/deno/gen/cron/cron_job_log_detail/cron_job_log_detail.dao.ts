@@ -924,15 +924,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into cron_cron_job_log_detail(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",update_usr_id";
-  sql += ",cron_job_log_id";
-  sql += ",lbl";
-  sql += ")values";
+  let sql = "insert into cron_cron_job_log_detail(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,cron_job_log_id,lbl)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
