@@ -77,12 +77,13 @@ async fn get_parents_by_id(
   parent_ids: &mut Vec<DeptId>,
 ) -> Result<()> {
   
-  if parent_ids.is_empty() {
+  if ids.is_empty() {
     return Ok(());
   }
   
   let options = Options::new();
   let options = options.set_is_debug(Some(false));
+  let options = Some(options);
   
   let dept_models = find_all_dept(
     DeptSearch {
@@ -92,10 +93,11 @@ async fn get_parents_by_id(
     }.into(),
     None,
     None,
-    Some(options),
+    options,
   ).await?;
   
-  let ids2: Vec<DeptId> = dept_models.into_iter()
+  let ids2: Vec<DeptId> = dept_models
+    .into_iter()
     .map(|dept_model| {
       dept_model.parent_id
     }).collect();
@@ -182,6 +184,7 @@ async fn get_children_all_dept_ids(
   
   let options = Options::new();
   let options = options.set_is_debug(Some(false));
+  let options = Some(options);
   
   let dept_models = find_all_dept(
     DeptSearch {
@@ -191,7 +194,7 @@ async fn get_children_all_dept_ids(
     }.into(),
     None,
     None,
-    Some(options),
+    options,
   ).await?;
   
   let ids: Vec<DeptId> = dept_models

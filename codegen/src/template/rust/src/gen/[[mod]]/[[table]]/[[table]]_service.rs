@@ -135,7 +135,15 @@ pub async fn find_all(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(&mut search).await?;<#
+  if (hasDataPermit() && hasCreateUsrId) {
+  #>
+  
+  let options = Options::from(options)
+    .set_has_data_permit(true);
+  let options = Some(options);<#
+  }
+  #>
   
   let res = <#=table#>_dao::find_all(
     Some(search),
@@ -160,8 +168,8 @@ pub async fn find_count(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -187,8 +195,8 @@ pub async fn find_one(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -210,8 +218,8 @@ pub async fn find_by_id(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -230,10 +238,6 @@ pub async fn get_editable_data_permits_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<Vec<u8>> {
-  
-  let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();
   
   let res = <#=table#>_dao::get_editable_data_permits_by_ids(
     ids,
@@ -420,8 +424,8 @@ pub async fn delete_by_ids(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #><#
   if (hasLocked) {
@@ -434,7 +438,7 @@ pub async fn delete_by_ids(
     }),
     None,
     None,
-    None,
+    options.clone(),
   ).await?;
   for model in models {
     if model.is_locked == 1 {
@@ -464,7 +468,7 @@ pub async fn delete_by_ids(
     }),
     None,
     None,
-    None,
+    options.clone(),
   ).await?;
   for model in models {
     if model.is_sys == 1 {
@@ -495,8 +499,8 @@ pub async fn default_by_id(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -523,8 +527,8 @@ pub async fn get_is_enabled_by_id(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -547,8 +551,8 @@ pub async fn enable_by_ids(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -577,8 +581,8 @@ pub async fn get_is_locked_by_id(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -601,8 +605,8 @@ pub async fn lock_by_ids(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -625,8 +629,8 @@ pub async fn get_field_comments(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -649,8 +653,8 @@ pub async fn revert_by_ids(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -676,8 +680,8 @@ pub async fn force_delete_by_ids(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -696,15 +700,7 @@ if (hasOrderBy) {
 /// 查找 <#=table_comment#> order_by 字段的最大值
 pub async fn find_last_order_by(
   options: Option<Options>,
-) -> Result<u32> {<#
-  if (hasDataPermit() && hasCreateUsrId) {
-  #>
-  
-  let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
-  }
-  #>
+) -> Result<u32> {
   
   let res = <#=table#>_dao::find_last_order_by(
     options,
