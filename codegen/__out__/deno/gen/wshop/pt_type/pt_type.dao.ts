@@ -1011,7 +1011,9 @@ export async function validateOption(
   model?: PtTypeModel,
 ) {
   if (!model) {
-    throw `${ await ns("产品类别") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("产品类别") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
@@ -1223,22 +1225,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into wshop_pt_type(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",update_usr_id";
-  sql += ",img";
-  sql += ",lbl";
-  sql += ",is_home";
-  sql += ",is_recommend";
-  sql += ",is_locked";
-  sql += ",is_enabled";
-  sql += ",order_by";
-  sql += ",rem";
-  sql += ",org_id";
-  sql += ")values";
+  let sql = "insert into wshop_pt_type(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,img,lbl,is_home,is_recommend,is_locked,is_enabled,order_by,rem,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {

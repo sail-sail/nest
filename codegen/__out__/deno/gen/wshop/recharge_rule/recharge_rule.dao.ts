@@ -939,7 +939,9 @@ export async function validateOption(
   model?: RechargeRuleModel,
 ) {
   if (!model) {
-    throw `${ await ns("充值赠送规则") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("充值赠送规则") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
@@ -1144,20 +1146,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into wshop_recharge_rule(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",update_usr_id";
-  sql += ",lbl";
-  sql += ",amt";
-  sql += ",give_amt";
-  sql += ",is_locked";
-  sql += ",is_enabled";
-  sql += ",rem";
-  sql += ",org_id";
-  sql += ")values";
+  let sql = "insert into wshop_recharge_rule(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,lbl,amt,give_amt,is_locked,is_enabled,rem,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {

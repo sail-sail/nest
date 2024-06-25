@@ -927,7 +927,9 @@ export async function validateOption(
   model?: WxappConfigModel,
 ) {
   if (!model) {
-    throw `${ await ns("小程序配置") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("小程序配置") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
@@ -1146,21 +1148,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into wshop_wxapp_config(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",update_usr_id";
-  sql += ",img";
-  sql += ",lbl";
-  sql += ",val";
-  sql += ",is_locked";
-  sql += ",is_enabled";
-  sql += ",rem";
-  sql += ",is_sys";
-  sql += ",org_id";
-  sql += ")values";
+  let sql = "insert into wshop_wxapp_config(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,img,lbl,val,is_locked,is_enabled,rem,is_sys,org_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
