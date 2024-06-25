@@ -28,7 +28,7 @@ import dayjs from "dayjs";
   const keys = data[0];
   for (let i = 1; i < data.length; i++) {
     const vals = data[i];
-    const row = <T>{ };
+    const row = { } as T;
     for (let k = 0; k < keys.length; k++) {
       const key = keys[k];
       let val = vals[k];
@@ -177,7 +177,7 @@ function num2Date(valTmp: number | string | Date) {
       date = new Date(valTmp);
     }
   }
-  if(isNaN(<any>date)) {
+  if(isNaN(date as any)) {
     date = undefined;
   }
   return date;

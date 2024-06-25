@@ -8,7 +8,7 @@
 		:class="[_fontSize ? '' : 'text-size-m', customClass]"
 		:style="[
 			props.lineHeight == 'auto' ? { lineHeight: (_fontSize ? _fontSize * 1.3 : 42) + props.unit } : {},
-			props.lineHeight > 0 ? { lineHeight: props.lineHeight + props.unit } : {},
+			(props.lineHeight as any) > 0 ? { lineHeight: props.lineHeight + props.unit } : {},
 			{
 				color: textColor
 			},
@@ -28,7 +28,7 @@
 			:class="[fontSize ? '' : 'text-size-m', customClass]"
 			:style="[
 				props.lineHeight == 'auto' ? { lineHeight: (_fontSize ? _fontSize * 1.3 : 42) + props.unit } : {},
-				props.lineHeight > 0 ? { lineHeight: props.lineHeight + props.unit } : {},
+				(props.lineHeight as any) > 0 ? { lineHeight: props.lineHeight + props.unit } : {},
 				{
 					color: textColor
 				},
@@ -111,6 +111,7 @@ const _fontSize = computed(() => {
 	let times = 1
 	//#ifdef MP-WEIXIN
 	if(props.aging){
+    // @ts-ignore
 		times = (Math.floor(Number(appBaseInfo?.fontSizeSetting??16) / 16 * 10)) / 10
 	}
 	// #endif

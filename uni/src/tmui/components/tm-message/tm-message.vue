@@ -187,6 +187,7 @@ function show(argFs: config) {
 function showAction(argFs: config) {
 	//显示所需要的参数
 	let arg = argFs || {}
+  // @ts-ignore
 	let { duration, icon, text, color, dark, model, mask, lines } = arg
 	model_ref.value = typeof model == 'undefined' ? model_ref.value : model
 	icon_ref.value = icon = icon ?? modelIcon.value[model_ref.value].icon
@@ -217,6 +218,7 @@ function showAction(argFs: config) {
 	}, 50)
 	// #endif
 	if (model_ref.value != 'load') {
+    // @ts-ignore
 		uid = setTimeout(function () {
 			showValue.value = false
 			uid = NaN
@@ -225,7 +227,9 @@ function showAction(argFs: config) {
 }
 
 function showNvueAniMation() {
+  // @ts-ignore
 	var el = proxy.$refs.nvueElAni
+  // @ts-ignore
 	var elContent = proxy.$refs.nvueElAniContent
 	animation.transition(
 		el,

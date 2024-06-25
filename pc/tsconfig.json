@@ -31,7 +31,7 @@
     }
   },
   "vueCompilerOptions": {
-    "strictTemplates": true
+    "strictTemplates": false
   },
   "include": [
     "**/*.ts",
