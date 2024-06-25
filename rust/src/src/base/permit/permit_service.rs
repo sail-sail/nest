@@ -250,15 +250,20 @@ pub async fn use_permit(
   // 切分成多个批次查询
   let mut permit_ids_arr = Vec::<Vec<PermitId>>::new();
   let batch_size = 100;
-  let batch_count = permit_ids.len() / batch_size;
+  let batch_count = (permit_ids.len() / batch_size) + 1;
+  
   for i in 0..batch_count {
     let start = i * batch_size;
-    let end = (i + 1) * batch_size;
+    let mut end = (i + 1) * batch_size;
+    if end > permit_ids.len() {
+      end = permit_ids.len();
+    }
     let permit_ids = permit_ids[start..end].to_vec();
     permit_ids_arr.push(permit_ids);
   }
   let menu_id = menu_model.id;
   for permit_ids in permit_ids_arr.into_iter() {
+  
     let permit_model = find_one_permit(
       PermitSearch {
         ids: permit_ids.into(),
@@ -269,6 +274,7 @@ pub async fn use_permit(
       None,
       options.clone(),
     ).await?;
+    
     if permit_model.is_some() {
       return Ok(());
     }
