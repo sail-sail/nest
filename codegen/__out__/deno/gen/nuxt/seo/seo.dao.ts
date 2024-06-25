@@ -893,7 +893,9 @@ export async function validateOption(
   model?: SeoModel,
 ) {
   if (!model) {
-    throw `${ await ns("SEO优化") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("SEO优化") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
@@ -1133,25 +1135,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = `insert into nuxt_seo(id`;
-  sql += ",create_time";
-  sql += ",update_time";
-  sql += ",tenant_id";
-  sql += ",create_usr_id";
-  sql += ",create_usr_id_lbl";
-  sql += ",update_usr_id";
-  sql += ",update_usr_id_lbl";
-  sql += ",title";
-  sql += ",description";
-  sql += ",keywords";
-  sql += ",og_image";
-  sql += ",og_title";
-  sql += ",og_description";
-  sql += ",is_locked";
-  sql += ",is_default";
-  sql += ",order_by";
-  sql += ",rem";
-  sql += ")values";
+  let sql = "insert into nuxt_seo(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,title,description,keywords,og_image,og_title,og_description,is_locked,is_default,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1676,7 +1660,7 @@ export async function deleteByIds(
     let sql = `update nuxt_seo set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
       const authModel = await getAuthModel();
-      let usr_id: UsrId | undefined = authModel?.id;
+      let usr_id = authModel?.id;
       if (usr_id != null) {
         sql += `,delete_usr_id=${ args.push(usr_id) }`;
       }
