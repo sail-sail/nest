@@ -960,7 +960,9 @@ export async function validateOption(
   model?: DictModel,
 ) {
   if (!model) {
-    throw `${ await ns("系统字典") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("系统字典") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }

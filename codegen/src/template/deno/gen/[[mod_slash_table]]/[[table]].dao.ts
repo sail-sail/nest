@@ -2860,7 +2860,9 @@ export async function validateOption(
   model?: <#=modelName#>,
 ) {
   if (!model) {
-    throw `${ await ns("<#=table_comment#>") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("<#=table_comment#>") } ${ await ns("不存在") }`;
+    error(new Error(err_msg));
+    throw err_msg;
   }
   return model;
 }
