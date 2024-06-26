@@ -42,7 +42,6 @@ function watchFn() {
         `${ pjPath }/tmp/**`,
         `${ pjPath }/typings/**`,
         `${ pjPath }/**/types.ts`,
-        `${ pjPath }/.eslintrc.js`,
         `${ pjPath }/.gitignore`,
         `${ pjPath }/*.diff`,
         `${ pjPath }/*.md`,
