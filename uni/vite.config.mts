@@ -109,9 +109,6 @@ export default defineConfig({
       resolvers: [
         IconsResolver(),
       ],
-      eslintrc: {
-        enabled: true,
-      },
       dts: "./src/typings/auto-imports.d.ts",
       ignore: [
         "RouterLink",

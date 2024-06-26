@@ -244,6 +244,11 @@ export interface TableCloumn {
     type?: "many2many",
     
     /**
+     * 外键关联的类型, many2many: 多对多关联时, 是否不允许级联删除, 默认为: false
+     */
+    many2many_no_cascade_delete?: boolean;
+    
+    /**
      * Detail.vue 修改页面中选择数据的方式
      *   select: 下拉框 (默认)
      *   selectInput: 弹框选择
@@ -314,7 +319,7 @@ export interface TableCloumn {
     mod?: string,
     
     /**
-     * 多对多右边的表名
+     * 多对多中间表的表名
      */
     table?: string,
     
