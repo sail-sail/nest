@@ -370,6 +370,24 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
+    
+    // 创建人
+    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
+    
+    // 更新人
+    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
+    
+    // 更新时间
+    if (model.update_time) {
+      const update_time = dayjs(model.update_time);
+      if (isNaN(update_time.toDate().getTime())) {
+        model.update_time_lbl = (model.update_time || "").toString();
+      } else {
+        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.update_time_lbl = "";
+    }
   }
   
   return result;
