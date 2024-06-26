@@ -4,7 +4,6 @@
   "scripts": {
     "start": "cross-env NODE_OPTIONS=--max-old-space-size=4096 uni -p mp-weixin",
     "typecheck": "vue-tsc --noEmit --skipLibCheck",
-    "lint": "eslint --ext .ts,.vue src",
     "dev:app": "uni -p app",
     "dev:custom": "uni -p",
     "dev:h5": "uni",
