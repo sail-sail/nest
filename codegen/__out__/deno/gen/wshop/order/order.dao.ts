@@ -590,6 +590,18 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
+    // 订单号-日期
+    if (model.lbl_date_seq) {
+      const lbl_date_seq = dayjs(model.lbl_date_seq);
+      if (isNaN(lbl_date_seq.toDate().getTime())) {
+        model.lbl_date_seq_lbl = (model.lbl_date_seq || "").toString();
+      } else {
+        model.lbl_date_seq_lbl = lbl_date_seq.format("YYYY-MM-DD");
+      }
+    } else {
+      model.lbl_date_seq_lbl = "";
+    }
+    
     // 订单状态
     let status_lbl = model.status as string;
     if (!isEmpty(model.status)) {
@@ -665,6 +677,9 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
+    
+    // 组织
+    model.org_id_lbl = model.org_id_lbl || "";
   }
   
   return result;
@@ -678,6 +693,24 @@ export async function setIdByLbl(
   const options = {
     is_debug: false,
   };
+  // 订单号-日期
+  if (!input.lbl_date_seq && input.lbl_date_seq_lbl) {
+    const lbl_date_seq_lbl = dayjs(input.lbl_date_seq_lbl);
+    if (lbl_date_seq_lbl.isValid()) {
+      input.lbl_date_seq = lbl_date_seq_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.lbl_date_seq } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.lbl_date_seq) {
+    const lbl_date_seq = dayjs(input.lbl_date_seq);
+    if (!lbl_date_seq.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.lbl_date_seq } ${ await ns("日期格式错误") }`;
+    }
+    input.lbl_date_seq = dayjs(input.lbl_date_seq).format("YYYY-MM-DD HH:mm:ss");
+  }
   
   const [
     is_lockedDict, // 锁定
@@ -694,6 +727,12 @@ export async function setIdByLbl(
     "order_status",
     "order_type",
   ]);
+  
+  // 订单号-日期
+  if (isNotEmpty(input.lbl_date_seq_lbl) && input.lbl_date_seq == null) {
+    input.lbl_date_seq_lbl = String(input.lbl_date_seq_lbl).trim();
+    input.lbl_date_seq = input.lbl_date_seq_lbl;
+  }
   
   // 订单状态
   if (isNotEmpty(input.status_lbl) && input.status == null) {
@@ -754,6 +793,21 @@ export async function setIdByLbl(
     const val = is_enabledDict.find((itemTmp) => itemTmp.lbl === input.is_enabled_lbl)?.val;
     if (val != null) {
       input.is_enabled = Number(val);
+    }
+  }
+  
+  // 组织
+  if (isNotEmpty(input.org_id_lbl) && input.org_id == null) {
+    input.org_id_lbl = String(input.org_id_lbl).trim();
+    const orgModel = await findOneOrg(
+      {
+        lbl: input.org_id_lbl,
+      },
+      undefined,
+      options,
+    );
+    if (orgModel) {
+      input.org_id = orgModel.id;
     }
   }
 }
