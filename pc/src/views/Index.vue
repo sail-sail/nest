@@ -69,11 +69,9 @@ import type {
   Component,
 } from "vue";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { Pagination, A11y } from "swiper/modules";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { Swiper, SwiperSlide } from "swiper/vue";
 
