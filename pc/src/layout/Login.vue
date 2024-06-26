@@ -11,13 +11,13 @@
     un-text="transparent"
     @click="clearCacheClk"
   >
-    清空缓存
+    {{ ns("清空缓存") }}
   </div>
   <div class="login_div">
     <div
-      style="margin-top: 20px;margin-left: 20px;font-size: 14px;color: white;"
+      style="margin-top: 14px;margin-left: 20px;font-size: 16px;color: white;"
     >
-      {{ i18n.ns('登 录') }}
+      {{ ns(app_title) }}
     </div>
     <el-form
       ref="formRef"
@@ -58,7 +58,7 @@
         <CustomSelect
           v-model="model.lang"
           :method="getLoginLangs"
-          :placeholder="`${ i18n.ns('请选择') } ${ i18n.n('语言') }`"
+          :placeholder="`${ ns('请选择') } ${ n('语言') }`"
           :pinyin-filterable="false"
           :options4-select-v2="[
             {
@@ -100,7 +100,7 @@
         <el-input
           v-model="model.username"
           class="from_input"
-          :placeholder="`${ i18n.ns('请输入') } ${ i18n.n('用户名') }`"
+          :placeholder="`${ ns('请输入') } ${ n('用户名') }`"
           :input-style="inputStyle"
           clearable
           :prefix-icon="User"
@@ -113,7 +113,7 @@
           v-model="model.password" 
           class="from_input"
           size="large"
-          :placeholder="`${ i18n.ns('请输入') } ${ i18n.n('密码') }`"
+          :placeholder="`${ ns('请输入') } ${ n('密码') }`"
           type="password"
           :input-style="inputStyle"
           show-password
@@ -133,12 +133,12 @@
         <span
           v-if="usrStore.isLogining"
         >
-          {{ i18n.ns("登 录") }}
+          {{ ns("登 录") }}
         </span>
         <span
           v-else
         >
-          {{ i18n.ns("正在登录") }}...
+          {{ ns("正在登录") }}...
         </span>
       </el-button>
       
@@ -148,10 +148,6 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  useI18n,
-} from "@/locales/i18n";
-
 import {
   lang,
 } from "@/locales/index";
@@ -175,6 +171,9 @@ import type {
 } from "#/types";
 
 let i18n = $ref(useI18n("/base/usr"));
+
+let ns = i18n.ns;
+let n = i18n.n;
 
 const usrStore = useUsrStore();
 const indexStore = useIndexStore();
@@ -201,6 +200,7 @@ const VITE_SERVER_I18N_ENABLE = import.meta.env.VITE_SERVER_I18N_ENABLE;
 if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
   model.lang = "zh-cn";
 }
+const app_title = import.meta.env.VITE_APP_TITLE;
 
 let loginRef = $ref<InstanceType<typeof HTMLDivElement>>();
 
@@ -211,13 +211,13 @@ let form_rules = $ref<Record<string, FormItemRule[]>>({ });
 watchEffect(() => {
   form_rules = {
     tenant_id: [
-      { required: true, message: `${ i18n.ns("请选择") } ${ i18n.n("租户") }` },
+      { required: true, message: `${ ns("请选择") } ${ n("租户") }` },
     ],
     username: [
-      { required: true, message: `${ i18n.ns("请输入") } ${ i18n.n("用户名") }` },
+      { required: true, message: `${ ns("请输入") } ${ n("用户名") }` },
     ],
     password: [
-      { required: true, message: `${ i18n.ns("请输入") } ${ i18n.n("密码") }` },
+      { required: true, message: `${ ns("请输入") } ${ n("密码") }` },
     ],
   };
 });
@@ -331,6 +331,8 @@ async function getLoginTenantsEfc() {
 
 async function initI18nEfc() {
   i18n = useI18n("/base/usr");
+  ns = i18n.ns;
+  n = i18n.n;
   await Promise.all([
     i18n.initSysI18ns([
       "请选择",
