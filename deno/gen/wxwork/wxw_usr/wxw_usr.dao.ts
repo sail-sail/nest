@@ -407,6 +407,30 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // 创建时间
+    if (model.create_time) {
+      const create_time = dayjs(model.create_time);
+      if (isNaN(create_time.toDate().getTime())) {
+        model.create_time_lbl = (model.create_time || "").toString();
+      } else {
+        model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.create_time_lbl = "";
+    }
+    
+    // 更新时间
+    if (model.update_time) {
+      const update_time = dayjs(model.update_time);
+      if (isNaN(update_time.toDate().getTime())) {
+        model.update_time_lbl = (model.update_time || "").toString();
+      } else {
+        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.update_time_lbl = "";
+    }
   }
   
   return result;
@@ -859,6 +883,69 @@ export async function validate(
     input.userid,
     64,
     fieldComments.userid,
+  );
+  
+  // 手机号
+  await validators.chars_max_length(
+    input.mobile,
+    11,
+    fieldComments.mobile,
+  );
+  
+  // 性别
+  await validators.chars_max_length(
+    input.gender,
+    1,
+    fieldComments.gender,
+  );
+  
+  // 邮箱
+  await validators.chars_max_length(
+    input.email,
+    64,
+    fieldComments.email,
+  );
+  
+  // 企业邮箱
+  await validators.chars_max_length(
+    input.biz_email,
+    64,
+    fieldComments.biz_email,
+  );
+  
+  // 直属上级
+  await validators.chars_max_length(
+    input.direct_leader,
+    64,
+    fieldComments.direct_leader,
+  );
+  
+  // 职位
+  await validators.chars_max_length(
+    input.position,
+    44,
+    fieldComments.position,
+  );
+  
+  // 头像
+  await validators.chars_max_length(
+    input.avatar,
+    512,
+    fieldComments.avatar,
+  );
+  
+  // 头像缩略图
+  await validators.chars_max_length(
+    input.thumb_avatar,
+    512,
+    fieldComments.thumb_avatar,
+  );
+  
+  // 个人二维码
+  await validators.chars_max_length(
+    input.qr_code,
+    512,
+    fieldComments.qr_code,
   );
   
   // 备注

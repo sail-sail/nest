@@ -444,6 +444,18 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
+    
+    // 更新时间
+    if (model.update_time) {
+      const update_time = dayjs(model.update_time);
+      if (isNaN(update_time.toDate().getTime())) {
+        model.update_time_lbl = (model.update_time || "").toString();
+      } else {
+        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.update_time_lbl = "";
+    }
   }
   
   return result;
@@ -907,6 +919,13 @@ export async function validate(
     fieldComments.description,
   );
   
+  // 链接
+  await validators.chars_max_length(
+    input.url,
+    1024,
+    fieldComments.url,
+  );
+  
   // 按钮文字
   await validators.chars_max_length(
     input.btntxt,
@@ -919,6 +938,13 @@ export async function validate(
     input.errmsg,
     256,
     fieldComments.errmsg,
+  );
+  
+  // 消息ID
+  await validators.chars_max_length(
+    input.msgid,
+    255,
+    fieldComments.msgid,
   );
   
 }
