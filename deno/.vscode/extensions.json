@@ -25,8 +25,6 @@
     "antfu.browse-lite",
     "antfu.where-am-i",
     "vitest.explorer",
-    "dbaeumer.vscode-eslint",
-    "maggie.eslint-rules-zh-plugin",
     "britesnow.vscode-toggle-quotes",
     "ponetto.vscode-diff-viewer",
     "chakrounanas.turbo-console-log",
@@ -34,6 +32,8 @@
     "antfu.pair-diff",
     "jacobpfeifer.pfeifer-hurl",
     "tmui-helper.tmui-helper",
-    "ms-vscode.vscode-speech"
+    "ms-vscode.vscode-speech",
+    "yoavbls.pretty-ts-errors",
+    "hongyan-prettyjson.pretty-json-vscode"
   ]
 }
