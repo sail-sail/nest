@@ -1937,6 +1937,35 @@ export async function deleteByIds(
     sql += ` where id=${ args.push(id) } limit 1`;
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;
+    {
+      const menu_ids = oldModel.menu_ids;
+      if (menu_ids && menu_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_role_menu set is_deleted=1 where menu_id in ${ args.push(menu_ids) } and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const permit_ids = oldModel.permit_ids;
+      if (permit_ids && permit_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_role_permit set is_deleted=1 where permit_id in ${ args.push(permit_ids) } and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const data_permit_ids = oldModel.data_permit_ids;
+      if (data_permit_ids && data_permit_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_role_data_permit set is_deleted=1 where data_permit_id in ${ args.push(data_permit_ids) } and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const args = new QueryArgs();
+      const sql = `update base_usr_role set is_deleted=1 where role_id=${ args.push(id) } and is_deleted=0`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();
