@@ -520,6 +520,9 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
+    
+    // 组织
+    model.org_id_lbl = model.org_id_lbl || "";
   }
   
   return result;
@@ -560,6 +563,21 @@ export async function setIdByLbl(
     const val = genderDict.find((itemTmp) => itemTmp.lbl === input.gender_lbl)?.val;
     if (val != null) {
       input.gender = Number(val);
+    }
+  }
+  
+  // 组织
+  if (isNotEmpty(input.org_id_lbl) && input.org_id == null) {
+    input.org_id_lbl = String(input.org_id_lbl).trim();
+    const orgModel = await findOneOrg(
+      {
+        lbl: input.org_id_lbl,
+      },
+      undefined,
+      options,
+    );
+    if (orgModel) {
+      input.org_id = orgModel.id;
     }
   }
 }
