@@ -34,6 +34,8 @@
     "antfu.pair-diff",
     "jacobpfeifer.pfeifer-hurl",
     "tmui-helper.tmui-helper",
-    "ms-vscode.vscode-speech"
+    "ms-vscode.vscode-speech",
+    "yoavbls.pretty-ts-errors",
+    "hongyan-prettyjson.pretty-json-vscode"
   ]
 }

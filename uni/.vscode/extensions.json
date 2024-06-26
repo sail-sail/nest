@@ -14,6 +14,8 @@
     "tmui-helper.tmui-helper",
     "cc-simple.uni-app-path",
     "uni-helper.uni-app-schemas-vscode",
-    "uni-helper.uni-highlight-vscode"
+    "uni-helper.uni-highlight-vscode",
+    "yoavbls.pretty-ts-errors",
+    "hongyan-prettyjson.pretty-json-vscode"
   ]
 }

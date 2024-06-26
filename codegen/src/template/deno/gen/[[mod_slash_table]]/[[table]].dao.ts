@@ -317,7 +317,6 @@ import type {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "is_deleted") continue;
@@ -432,7 +431,6 @@ import {
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   const comment = column.COLUMN_COMMENT;
   let is_nullable = column.IS_NULLABLE === "YES";
@@ -1515,7 +1513,6 @@ export async function findAll(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const table_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -1559,7 +1556,6 @@ export async function findAll(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_sys") continue;
@@ -1743,7 +1739,6 @@ export async function findAll(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       let is_nullable = column.IS_NULLABLE === "YES";
@@ -1793,7 +1788,6 @@ export async function setIdByLbl(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (
       [
@@ -1960,7 +1954,6 @@ export async function setIdByLbl(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if ([
       "id",
@@ -2879,7 +2872,6 @@ export async function validate(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "is_sys") {
       continue;
@@ -3689,7 +3681,6 @@ for (const key of redundLblKeys) {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       let is_nullable = column.IS_NULLABLE === "YES";
@@ -4371,10 +4362,8 @@ export async function updateById(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
-    let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -4807,10 +4796,8 @@ export async function deleteByIds(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
-    let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -5235,7 +5222,6 @@ export async function revertByIds(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -5382,7 +5368,6 @@ export async function forceDeleteByIds(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
