@@ -19,7 +19,7 @@
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/typescript": "4.0.7",
     "@graphql-codegen/typescript-operations": "4.2.1",
-    "@types/node": "20.14.8",
+    "@types/node": "20.14.9",
     "chokidar": "3.6.0",
     "commander": "12.1.0",
     "dotenv": "16.4.5",

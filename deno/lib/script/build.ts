@@ -1,6 +1,9 @@
 // npm run build -- -- --command uni
 import "/lib/env.ts";
-import { getEnv, getEnvs } from "/lib/env.ts";
+import {
+  getEnv,
+  // getEnvs,
+} from "/lib/env.ts";
 
 import { copyDir } from "/lib/util/fs_util.ts";
 
@@ -92,88 +95,88 @@ async function compile() {
         await Deno.remove(denoDir+"/../build/"+dirEntry.name);
       }
     }
-    const allowReads = [
-      ".",
-      "./tmp",
-    ];
-    const allowWrites = [
-      "./tmp",
-    ];
-    const allowEnvs = [
-      "NODE_DEBUG",
-      "NODE_ENV",
-    ];
-    const allowNets = [ ];
-    // 服务器端口
-    allowNets.push(`${ await getEnv("server_host") }:${ await getEnv("server_port") }`);
-    // 数据库
-    if (await getEnv("database_hostname")) {
-      allowNets.push(`${ await getEnv("database_hostname") }:${ await getEnv("database_port") }`);
-    }
-    // 附件
-    if (await getEnv("oss_endpoint")) {
-      const url = new URL(await getEnv("oss_endpoint"));
-      allowNets.push(url.host);
-    }
-    // 缓存
-    if (await getEnv("cache_hostname")) {
-      allowNets.push(`${ await getEnv("cache_hostname") }:${ await getEnv("cache_port") }`);
-    }
-    // 临时文件
-    if (await getEnv("tmpfile_endpoint")) {
-      const url = new URL(await getEnv("tmpfile_endpoint"));
-      allowNets.push(url.host);
-    }
-    const conf = await getEnvs();
-    const keys = Object.keys(conf);
-    [
-      "log_path",
-      "server_port",
-      "server_host",
-      "server_tokentimeout",
-      "server_title",
+    // const allowReads = [
+    //   ".",
+    //   "./tmp",
+    // ];
+    // const allowWrites = [
+    //   "./tmp",
+    // ];
+    // const allowEnvs = [
+    //   "NODE_DEBUG",
+    //   "NODE_ENV",
+    // ];
+    // const allowNets = [ ];
+    // // 服务器端口
+    // allowNets.push(`${ await getEnv("server_host") }:${ await getEnv("server_port") }`);
+    // // 数据库
+    // if (await getEnv("database_hostname")) {
+    //   allowNets.push(`${ await getEnv("database_hostname") }:${ await getEnv("database_port") }`);
+    // }
+    // // 附件
+    // if (await getEnv("oss_endpoint")) {
+    //   const url = new URL(await getEnv("oss_endpoint"));
+    //   allowNets.push(url.host);
+    // }
+    // // 缓存
+    // if (await getEnv("cache_hostname")) {
+    //   allowNets.push(`${ await getEnv("cache_hostname") }:${ await getEnv("cache_port") }`);
+    // }
+    // // 临时文件
+    // if (await getEnv("tmpfile_endpoint")) {
+    //   const url = new URL(await getEnv("tmpfile_endpoint"));
+    //   allowNets.push(url.host);
+    // }
+    // const conf = await getEnvs();
+    // const keys = Object.keys(conf);
+    // [
+    //   "log_path",
+    //   "server_port",
+    //   "server_host",
+    //   "server_tokentimeout",
+    //   "server_title",
       
-      "database_type",
-      "database_hostname",
-      "database_port",
-      "database_socketpath",
-      "database_username",
-      "database_password",
-      "database_database",
-      "database_pool_size",
+    //   "database_type",
+    //   "database_hostname",
+    //   "database_port",
+    //   "database_socketpath",
+    //   "database_username",
+    //   "database_password",
+    //   "database_database",
+    //   "database_pool_size",
       
-      "oss_type",
-      "oss_endpoint",
-      "oss_accesskey",
-      "oss_secretkey",
-      "oss_bucket",
+    //   "oss_type",
+    //   "oss_endpoint",
+    //   "oss_accesskey",
+    //   "oss_secretkey",
+    //   "oss_bucket",
       
-      "cache_type",
-      "cache_hostname",
-      "cache_password",
-      "cache_port",
-      "cache_db",
+    //   "cache_type",
+    //   "cache_hostname",
+    //   "cache_password",
+    //   "cache_port",
+    //   "cache_db",
       
-      "tmpfile_type",
-      "tmpfile_endpoint",
-      "tmpfile_accesskey",
-      "tmpfile_secretkey",
-      "tmpfile_bucket",
-    ].forEach(function(key) {
-      if (!keys.includes(key)) {
-        keys.push(key);
-      }
-    });
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      if (!allowEnvs.includes(key)) {
-        allowEnvs.push(key);
-      }
-    }
-    if (await getEnv("log_path")) {
-      allowWrites.push(await getEnv("log_path"));
-      allowReads.push(await getEnv("log_path"));
-    }
+    //   "tmpfile_type",
+    //   "tmpfile_endpoint",
+    //   "tmpfile_accesskey",
+    //   "tmpfile_secretkey",
+    //   "tmpfile_bucket",
+    // ].forEach(function(key) {
+    //   if (!keys.includes(key)) {
+    //     keys.push(key);
+    //   }
+    // });
+    // for (let i = 0; i < keys.length; i++) {
+    //   const key = keys[i];
+    //   if (!allowEnvs.includes(key)) {
+    //     allowEnvs.push(key);
+    //   }
+    // }
+    // if (await getEnv("log_path")) {
+    //   allowWrites.push(await getEnv("log_path"));
+    //   allowReads.push(await getEnv("log_path"));
+    // }
     let cmds = [
       "compile",
       // "--no-check",
@@ -211,12 +214,13 @@ async function compile() {
 
 async function pc() {
   console.log("pc");
+  const args = [
+    "run",
+  ];
+  args.push(`build-${ env }`);
   const command = new Deno.Command(pnpmCmd, {
     cwd: pcDir,
-    args: [
-      "run",
-      "build",
-    ],
+    args,
     stderr: "inherit",
     stdout: "inherit",
   });

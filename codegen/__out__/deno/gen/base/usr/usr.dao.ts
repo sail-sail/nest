@@ -2104,6 +2104,35 @@ export async function deleteByIds(
     sql += ` where id=${ args.push(id) } limit 1`;
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;
+    {
+      const role_ids = oldModel.role_ids;
+      if (role_ids && role_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_usr_role set is_deleted=1 where role_id in ${ args.push(role_ids) } and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const dept_ids = oldModel.dept_ids;
+      if (dept_ids && dept_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_usr_dept set is_deleted=1 where dept_id in ${ args.push(dept_ids) } and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const org_ids = oldModel.org_ids;
+      if (org_ids && org_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_usr_org set is_deleted=1 where org_id in ${ args.push(org_ids) } and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const args = new QueryArgs();
+      const sql = `update base_dept_usr set is_deleted=1 where usr_id=${ args.push(id) } and is_deleted=0`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();
