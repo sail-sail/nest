@@ -1904,12 +1904,15 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from base_menu where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from base_menu where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);

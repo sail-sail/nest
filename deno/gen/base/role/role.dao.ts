@@ -2236,17 +2236,20 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from base_role where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from base_role where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
-    {
+    if (oldModel) {
       const menu_ids = oldModel.menu_ids;
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
@@ -2254,7 +2257,7 @@ export async function forceDeleteByIds(
         await execute(sql, args);
       }
     }
-    {
+    if (oldModel) {
       const permit_ids = oldModel.permit_ids;
       if (permit_ids && permit_ids.length > 0) {
         const args = new QueryArgs();
@@ -2262,7 +2265,7 @@ export async function forceDeleteByIds(
         await execute(sql, args);
       }
     }
-    {
+    if (oldModel) {
       const data_permit_ids = oldModel.data_permit_ids;
       if (data_permit_ids && data_permit_ids.length > 0) {
         const args = new QueryArgs();
