@@ -1585,6 +1585,11 @@ export async function deleteByIds(
     sql += ` where id=${ args.push(id) } limit 1`;
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;
+    {
+      const args = new QueryArgs();
+      const sql = `update base_usr_org set is_deleted=1 where org_id=${ args.push(id) } and is_deleted=0`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();
@@ -1855,16 +1860,24 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from base_org where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from base_org where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    {
+      const args = new QueryArgs();
+      const sql = `delete from base_usr_org where org_id=${ args.push(id) }`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();
