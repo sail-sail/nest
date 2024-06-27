@@ -514,10 +514,18 @@ export async function getFieldComments(): Promise<WxwMsgFieldComment> {
     touser: await n("成员ID"),
     title: await n("标题"),
     description: await n("描述"),
+    url: await n("链接"),
     btntxt: await n("按钮文字"),
     create_time: await n("发送时间"),
     create_time_lbl: await n("发送时间"),
     errmsg: await n("错误信息"),
+    msgid: await n("消息ID"),
+    create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
