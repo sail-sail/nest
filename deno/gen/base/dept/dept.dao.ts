@@ -2134,16 +2134,32 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from base_dept where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from base_dept where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    if (oldModel) {
+      const usr_ids = oldModel.usr_ids;
+      if (usr_ids && usr_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_dept_usr where usr_id in ${ args.push(usr_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const args = new QueryArgs();
+      const sql = `delete from base_usr_dept where dept_id=${ args.push(id) }`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();
