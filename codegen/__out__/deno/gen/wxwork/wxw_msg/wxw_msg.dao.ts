@@ -444,6 +444,18 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
+    
+    // 更新时间
+    if (model.update_time) {
+      const update_time = dayjs(model.update_time);
+      if (isNaN(update_time.toDate().getTime())) {
+        model.update_time_lbl = (model.update_time || "").toString();
+      } else {
+        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.update_time_lbl = "";
+    }
   }
   
   return result;
@@ -502,10 +514,18 @@ export async function getFieldComments(): Promise<WxwMsgFieldComment> {
     touser: await n("成员ID"),
     title: await n("标题"),
     description: await n("描述"),
+    url: await n("链接"),
     btntxt: await n("按钮文字"),
     create_time: await n("发送时间"),
     create_time_lbl: await n("发送时间"),
     errmsg: await n("错误信息"),
+    msgid: await n("消息ID"),
+    create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
@@ -907,6 +927,13 @@ export async function validate(
     fieldComments.description,
   );
   
+  // 链接
+  await validators.chars_max_length(
+    input.url,
+    1024,
+    fieldComments.url,
+  );
+  
   // 按钮文字
   await validators.chars_max_length(
     input.btntxt,
@@ -919,6 +946,13 @@ export async function validate(
     input.errmsg,
     256,
     fieldComments.errmsg,
+  );
+  
+  // 消息ID
+  await validators.chars_max_length(
+    input.msgid,
+    255,
+    fieldComments.msgid,
   );
   
 }
@@ -1698,12 +1732,15 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from wxwork_wxw_msg where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from wxwork_wxw_msg where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
