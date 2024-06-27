@@ -386,7 +386,6 @@ type <#=fieldCommentName#> {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     let is_nullable = column.IS_NULLABLE === "YES";
     const foreignKey = column.foreignKey;
