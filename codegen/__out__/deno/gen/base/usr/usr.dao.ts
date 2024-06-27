@@ -2413,6 +2413,35 @@ export async function forceDeleteByIds(
     const sql = `delete from base_usr where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    {
+      const role_ids = oldModel.role_ids;
+      if (role_ids && role_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_usr_role where role_id in ${ args.push(role_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const dept_ids = oldModel.dept_ids;
+      if (dept_ids && dept_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_usr_dept where dept_id in ${ args.push(dept_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const org_ids = oldModel.org_ids;
+      if (org_ids && org_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_usr_org where org_id in ${ args.push(org_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const args = new QueryArgs();
+      const sql = `delete from base_dept_usr where usr_id=${ args.push(id) }`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();

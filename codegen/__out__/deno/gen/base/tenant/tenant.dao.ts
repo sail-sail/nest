@@ -2041,6 +2041,22 @@ export async function forceDeleteByIds(
     const sql = `delete from base_tenant where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    {
+      const domain_ids = oldModel.domain_ids;
+      if (domain_ids && domain_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_tenant_domain where domain_id in ${ args.push(domain_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const menu_ids = oldModel.menu_ids;
+      if (menu_ids && menu_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_tenant_menu where menu_id in ${ args.push(menu_ids) }`;
+        await execute(sql, args);
+      }
+    }
   }
   
   await delCache();
