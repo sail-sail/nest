@@ -2104,6 +2104,35 @@ export async function deleteByIds(
     sql += ` where id=${ args.push(id) } limit 1`;
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;
+    {
+      const role_ids = oldModel.role_ids;
+      if (role_ids && role_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_usr_role set is_deleted=1 where role_id in ${ args.push(role_ids) } and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const dept_ids = oldModel.dept_ids;
+      if (dept_ids && dept_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_usr_dept set is_deleted=1 where dept_id in ${ args.push(dept_ids) } and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const org_ids = oldModel.org_ids;
+      if (org_ids && org_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_usr_org set is_deleted=1 where org_id in ${ args.push(org_ids) } and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const args = new QueryArgs();
+      const sql = `update base_dept_usr set is_deleted=1 where usr_id=${ args.push(id) } and is_deleted=0`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();
@@ -2374,16 +2403,48 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from base_usr where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from base_usr where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    if (oldModel) {
+      const role_ids = oldModel.role_ids;
+      if (role_ids && role_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_usr_role where role_id in ${ args.push(role_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    if (oldModel) {
+      const dept_ids = oldModel.dept_ids;
+      if (dept_ids && dept_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_usr_dept where dept_id in ${ args.push(dept_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    if (oldModel) {
+      const org_ids = oldModel.org_ids;
+      if (org_ids && org_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_usr_org where org_id in ${ args.push(org_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const args = new QueryArgs();
+      const sql = `delete from base_dept_usr where usr_id=${ args.push(id) }`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();
