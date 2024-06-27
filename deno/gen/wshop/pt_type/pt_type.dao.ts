@@ -648,6 +648,8 @@ export async function getFieldComments(): Promise<PtTypeFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
+    org_id: await n("组织"),
+    org_id_lbl: await n("组织"),
   };
   return fieldComments;
 }
@@ -1964,16 +1966,24 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from wshop_pt_type where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from wshop_pt_type where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    {
+      const args = new QueryArgs();
+      const sql = `delete from wshop_pt_pt_type where pt_type_id=${ args.push(id) }`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();

@@ -90,7 +90,7 @@ declare global {
     lbl_seq?: number | null;
     /** 订单号-日期 */
     lbl_date_seq?: string | null;
-    lbl_date_seq_lbl?: String | null;
+    lbl_date_seq_lbl?: string | null;
     lbl_date_seq_save_null?: boolean | null;
     /** 组织 */
     org_id?: OrgId | null;
