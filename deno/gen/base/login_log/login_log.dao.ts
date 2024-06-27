@@ -475,6 +475,12 @@ export async function getFieldComments(): Promise<LoginLogFieldComment> {
     ip: await n("IP"),
     create_time: await n("登录时间"),
     create_time_lbl: await n("登录时间"),
+    create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }

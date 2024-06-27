@@ -2209,7 +2209,6 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
