@@ -2054,6 +2054,7 @@ pub async fn del_cache() -> Result<()> {
 }
 
 /// 根据 ids 删除租户
+#[allow(unused_variables)]
 pub async fn delete_by_ids(
   ids: Vec<TenantId>,
   options: Option<Options>,
@@ -2101,6 +2102,7 @@ pub async fn delete_by_ids(
     if old_model.is_none() {
       continue;
     }
+    let old_model = old_model.unwrap();
     
     let mut args = QueryArgs::new();
     
@@ -2143,7 +2145,7 @@ pub async fn delete_by_ids(
     
     let sql = format!("update {table} set {sql_fields} where id=? limit 1");
     
-    args.push(id.into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -2158,6 +2160,58 @@ pub async fn delete_by_ids(
       args,
       options.clone(),
     ).await?;
+    {
+      let domain_ids = old_model.domain_ids.clone();
+      if !domain_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_tenant_domain set is_deleted=1 where".to_owned();
+        let arg = {
+          let mut items = Vec::with_capacity(domain_ids.len());
+          for item in domain_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" domain_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=0");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let menu_ids = old_model.menu_ids.clone();
+      if !menu_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_tenant_menu set is_deleted=1 where".to_owned();
+        let arg = {
+          let mut items = Vec::with_capacity(menu_ids.len());
+          for item in menu_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" menu_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=0");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
   }
   
   del_caches(
@@ -2461,6 +2515,7 @@ pub async fn revert_by_ids(
 }
 
 /// 根据 ids 彻底删除租户
+#[allow(unused_variables)]
 pub async fn force_delete_by_ids(
   ids: Vec<TenantId>,
   options: Option<Options>,
@@ -2494,7 +2549,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let model = find_all(
+    let old_model = find_all(
       TenantSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -2505,17 +2560,18 @@ pub async fn force_delete_by_ids(
       options.clone(),
     ).await?.into_iter().next();
     
-    if model.is_none() {
+    if old_model.is_none() {
       continue;
     }
+    let old_model = old_model.unwrap();
     
-    info!("force_delete_by_ids: {}", serde_json::to_string(&model)?);
+    info!("force_delete_by_ids: {}", serde_json::to_string(&old_model)?);
     
     let mut args = QueryArgs::new();
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -2534,6 +2590,48 @@ pub async fn force_delete_by_ids(
       args,
       options.clone(),
     ).await?;
+    {
+      let domain_ids = old_model.domain_ids.clone();
+      if !domain_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "delete from base_tenant_domain where".to_owned();
+        let mut items = Vec::with_capacity(domain_ids.len());
+        for item in domain_ids {
+          items.push("?");
+          args.push(item.clone().into());
+        }
+        sql.push_str(" domain_id in (");
+        sql.push_str(&items.join(","));
+        sql.push(')');
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let menu_ids = old_model.menu_ids.clone();
+      if !menu_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "delete from base_tenant_menu where".to_owned();
+        let mut items = Vec::with_capacity(menu_ids.len());
+        for item in menu_ids {
+          items.push("?");
+          args.push(item.clone().into());
+        }
+        sql.push_str(" menu_id in (");
+        sql.push_str(&items.join(","));
+        sql.push(')');
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
     
     del_caches(
       vec![ "dao.sql.base_menu._getMenus" ].as_slice(),

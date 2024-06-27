@@ -2563,6 +2563,7 @@ pub async fn del_cache() -> Result<()> {
 }
 
 /// 根据 ids 删除用户
+#[allow(unused_variables)]
 pub async fn delete_by_ids(
   ids: Vec<UsrId>,
   options: Option<Options>,
@@ -2610,6 +2611,7 @@ pub async fn delete_by_ids(
     if old_model.is_none() {
       continue;
     }
+    let old_model = old_model.unwrap();
     
     let mut args = QueryArgs::new();
     
@@ -2652,7 +2654,7 @@ pub async fn delete_by_ids(
     
     let sql = format!("update {table} set {sql_fields} where id=? limit 1");
     
-    args.push(id.into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -2667,6 +2669,95 @@ pub async fn delete_by_ids(
       args,
       options.clone(),
     ).await?;
+    {
+      let role_ids = old_model.role_ids.clone();
+      if !role_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_usr_role set is_deleted=1 where".to_owned();
+        let arg = {
+          let mut items = Vec::with_capacity(role_ids.len());
+          for item in role_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" role_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=0");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let dept_ids = old_model.dept_ids.clone();
+      if !dept_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_usr_dept set is_deleted=1 where".to_owned();
+        let arg = {
+          let mut items = Vec::with_capacity(dept_ids.len());
+          for item in dept_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" dept_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=0");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let org_ids = old_model.org_ids.clone();
+      if !org_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_usr_org set is_deleted=1 where".to_owned();
+        let arg = {
+          let mut items = Vec::with_capacity(org_ids.len());
+          for item in org_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" org_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=0");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let mut args = QueryArgs::new();
+      let sql = "update base_dept_usr set is_deleted=1 where usr_id=? and is_deleted=0".to_owned();
+      args.push(id.clone().into());
+      let args: Vec<_> = args.into();
+      execute(
+        sql,
+        args,
+        options.clone(),
+      ).await?;
+    }
   }
   
   del_caches(
@@ -2970,6 +3061,7 @@ pub async fn revert_by_ids(
 }
 
 /// 根据 ids 彻底删除用户
+#[allow(unused_variables)]
 pub async fn force_delete_by_ids(
   ids: Vec<UsrId>,
   options: Option<Options>,
@@ -3003,7 +3095,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let model = find_all(
+    let old_model = find_all(
       UsrSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -3014,17 +3106,18 @@ pub async fn force_delete_by_ids(
       options.clone(),
     ).await?.into_iter().next();
     
-    if model.is_none() {
+    if old_model.is_none() {
       continue;
     }
+    let old_model = old_model.unwrap();
     
-    info!("force_delete_by_ids: {}", serde_json::to_string(&model)?);
+    info!("force_delete_by_ids: {}", serde_json::to_string(&old_model)?);
     
     let mut args = QueryArgs::new();
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -3043,6 +3136,80 @@ pub async fn force_delete_by_ids(
       args,
       options.clone(),
     ).await?;
+    {
+      let role_ids = old_model.role_ids.clone();
+      if !role_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "delete from base_usr_role where".to_owned();
+        let mut items = Vec::with_capacity(role_ids.len());
+        for item in role_ids {
+          items.push("?");
+          args.push(item.clone().into());
+        }
+        sql.push_str(" role_id in (");
+        sql.push_str(&items.join(","));
+        sql.push(')');
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let dept_ids = old_model.dept_ids.clone();
+      if !dept_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "delete from base_usr_dept where".to_owned();
+        let mut items = Vec::with_capacity(dept_ids.len());
+        for item in dept_ids {
+          items.push("?");
+          args.push(item.clone().into());
+        }
+        sql.push_str(" dept_id in (");
+        sql.push_str(&items.join(","));
+        sql.push(')');
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let org_ids = old_model.org_ids.clone();
+      if !org_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "delete from base_usr_org where".to_owned();
+        let mut items = Vec::with_capacity(org_ids.len());
+        for item in org_ids {
+          items.push("?");
+          args.push(item.clone().into());
+        }
+        sql.push_str(" org_id in (");
+        sql.push_str(&items.join(","));
+        sql.push(')');
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let mut args = QueryArgs::new();
+      let sql = "delete from base_dept_usr where usr_id=?".to_owned();
+      args.push(id.clone().into());
+      let args: Vec<_> = args.into();
+      execute(
+        sql,
+        args,
+        options.clone(),
+      ).await?;
+    }
     
     del_caches(
       vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
