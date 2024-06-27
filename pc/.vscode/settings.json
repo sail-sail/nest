@@ -20,7 +20,6 @@
     ".eslintrc-auto-import.json": true,
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true,
-    "**/.eslintrc.js": true,
     "public/ejsexcel.min.js": true
   },
   "search.exclude": {
@@ -44,7 +43,6 @@
     ".eslintrc-auto-import.json": true,
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true,
-    "**/.eslintrc.js": true,
     "public/ejsexcel.min.js": true
   },
   "deno.enable": false,
