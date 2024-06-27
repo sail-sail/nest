@@ -76,8 +76,6 @@
     "@vue/runtime-core": "3.4.30",
     "@vue/runtime-dom": "3.4.30",
     "cross-env": "7.0.3",
-    "eslint": "9.5.0",
-    "eslint-plugin-vue": "9.26.0",
     "husky": "9.0.11",
     "less": "4.2.0",
     "postcss": "8.4.38",
