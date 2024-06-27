@@ -1934,6 +1934,7 @@ pub async fn del_cache() -> Result<()> {
 }
 
 /// 根据 ids 删除企微消息
+#[allow(unused_variables)]
 pub async fn delete_by_ids(
   ids: Vec<WxwMsgId>,
   options: Option<Options>,
@@ -1977,6 +1978,7 @@ pub async fn delete_by_ids(
     if old_model.is_none() {
       continue;
     }
+    let old_model = old_model.unwrap();
     
     let mut args = QueryArgs::new();
     
@@ -2019,7 +2021,7 @@ pub async fn delete_by_ids(
     
     let sql = format!("update {table} set {sql_fields} where id=? limit 1");
     
-    args.push(id.into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -2137,6 +2139,7 @@ pub async fn revert_by_ids(
 }
 
 /// 根据 ids 彻底删除企微消息
+#[allow(unused_variables)]
 pub async fn force_delete_by_ids(
   ids: Vec<WxwMsgId>,
   options: Option<Options>,
@@ -2170,7 +2173,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let model = find_all(
+    let old_model = find_all(
       WxwMsgSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -2181,17 +2184,18 @@ pub async fn force_delete_by_ids(
       options.clone(),
     ).await?.into_iter().next();
     
-    if model.is_none() {
+    if old_model.is_none() {
       continue;
     }
+    let old_model = old_model.unwrap();
     
-    info!("force_delete_by_ids: {}", serde_json::to_string(&model)?);
+    info!("force_delete_by_ids: {}", serde_json::to_string(&old_model)?);
     
     let mut args = QueryArgs::new();
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
