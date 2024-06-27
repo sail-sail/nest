@@ -492,6 +492,14 @@ export async function getFieldComments(): Promise<BaiduAppTokenFieldComment> {
     token_time: await n("令牌创建时间"),
     token_time_lbl: await n("令牌创建时间"),
     expires_in: await n("令牌超时时间"),
+    create_usr_id: await n("创建人"),
+    create_usr_id_lbl: await n("创建人"),
+    create_time: await n("创建时间"),
+    create_time_lbl: await n("创建时间"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
@@ -1657,12 +1665,15 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from baidu_baidu_app_token where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from baidu_baidu_app_token where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
