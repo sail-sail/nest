@@ -2031,16 +2031,35 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from base_tenant where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from base_tenant where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    if (oldModel) {
+      const domain_ids = oldModel.domain_ids;
+      if (domain_ids && domain_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_tenant_domain where domain_id in ${ args.push(domain_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    if (oldModel) {
+      const menu_ids = oldModel.menu_ids;
+      if (menu_ids && menu_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_tenant_menu where menu_id in ${ args.push(menu_ids) }`;
+        await execute(sql, args);
+      }
+    }
   }
   
   await delCache();

@@ -495,7 +495,7 @@ declare global {
     #>
     /** <#=column_comment#> */
     <#=column_name#>?: <#=data_type#> | null;
-    <#=column_name#>_lbl?: String | null;<#
+    <#=column_name#>_lbl?: string | null;<#
       if (is_nullable) {
     #>
     <#=column_name#>_save_null?: boolean | null;<#
@@ -534,7 +534,7 @@ declare global {
       if (hasModelLabel) {
     #>
     /** <#=column_comment#> */
-    <#=modelLabel#>?: String | null;<#
+    <#=modelLabel#>?: string | null;<#
       }
     #><#
       } else {
