@@ -432,6 +432,10 @@ export async function getFieldComments(): Promise<OperationRecordFieldComment> {
     create_usr_id_lbl: await n("操作人"),
     create_time: await n("操作时间"),
     create_time_lbl: await n("操作时间"),
+    update_usr_id: await n("更新人"),
+    update_usr_id_lbl: await n("更新人"),
+    update_time: await n("更新时间"),
+    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
