@@ -740,6 +740,8 @@ export async function getFieldComments(): Promise<WxPayNoticeFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
+    org_id: await n("组织"),
+    org_id_lbl: await n("组织"),
   };
   return fieldComments;
 }
