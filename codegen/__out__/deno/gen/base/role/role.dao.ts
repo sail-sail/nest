@@ -2246,6 +2246,35 @@ export async function forceDeleteByIds(
     const sql = `delete from base_role where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    {
+      const menu_ids = oldModel.menu_ids;
+      if (menu_ids && menu_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_role_menu where menu_id in ${ args.push(menu_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const permit_ids = oldModel.permit_ids;
+      if (permit_ids && permit_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_role_permit where permit_id in ${ args.push(permit_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const data_permit_ids = oldModel.data_permit_ids;
+      if (data_permit_ids && data_permit_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_role_data_permit where data_permit_id in ${ args.push(data_permit_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const args = new QueryArgs();
+      const sql = `delete from base_usr_role where role_id=${ args.push(id) }`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();

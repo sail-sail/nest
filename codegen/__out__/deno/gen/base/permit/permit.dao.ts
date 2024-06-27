@@ -1598,6 +1598,11 @@ export async function forceDeleteByIds(
     const sql = `delete from base_permit where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    {
+      const args = new QueryArgs();
+      const sql = `delete from base_role_permit where permit_id=${ args.push(id) }`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();
