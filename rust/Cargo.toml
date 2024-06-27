@@ -1,8 +1,8 @@
 [package]
-name = "rust4xh4hrm"
+name = "rust"
 version = "0.1.0"
 edition = "2021"
-default-run = "rust4xh4hrm"
+default-run = "rust"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -87,7 +87,7 @@ tikv-jemallocator = "0.5"
 # protobuf-codegen = "3.2"
 
 [[bin]]
-name = "rust4xh4hrm"
+name = "rust"
 path = "src/main.rs"
 
 [profile.release]
