@@ -577,6 +577,7 @@ export async function getFieldComments(): Promise<CardRechargeFieldComment> {
   const n = initN(route_path);
   const fieldComments: CardRechargeFieldComment = {
     id: await n("ID"),
+    transaction_id: await n("微信支付订单号"),
     card_id: await n("会员卡"),
     card_id_lbl: await n("会员卡"),
     usr_id: await n("用户"),
@@ -595,6 +596,8 @@ export async function getFieldComments(): Promise<CardRechargeFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
+    org_id: await n("组织"),
+    org_id_lbl: await n("组织"),
   };
   return fieldComments;
 }
@@ -1702,12 +1705,15 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from wshop_card_recharge where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from wshop_card_recharge where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);

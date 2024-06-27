@@ -99,6 +99,12 @@ type OrderModel {
 type OrderFieldComment {
   "ID"
   id: String!
+  "订单号-序列号"
+  lbl_seq: String!
+  "订单号-日期"
+  lbl_date_seq: String!
+  "订单号-日期"
+  lbl_date_seq_lbl: String!
   "订单号"
   lbl: String!
   "公司"
@@ -159,6 +165,10 @@ type OrderFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
+  "组织"
+  org_id: String!
+  "组织"
+  org_id_lbl: String!
 }
 input OrderInput {
   "ID"

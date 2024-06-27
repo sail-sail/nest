@@ -51,6 +51,8 @@ type CardRechargeModel {
 type CardRechargeFieldComment {
   "ID"
   id: String!
+  "微信支付订单号"
+  transaction_id: String!
   "会员卡"
   card_id: String!
   "会员卡"
@@ -87,6 +89,10 @@ type CardRechargeFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
+  "组织"
+  org_id: String!
+  "组织"
+  org_id_lbl: String!
 }
 input CardRechargeInput {
   "ID"

@@ -693,24 +693,6 @@ export async function setIdByLbl(
   const options = {
     is_debug: false,
   };
-  // 订单号-日期
-  if (!input.lbl_date_seq && input.lbl_date_seq_lbl) {
-    const lbl_date_seq_lbl = dayjs(input.lbl_date_seq_lbl);
-    if (lbl_date_seq_lbl.isValid()) {
-      input.lbl_date_seq = lbl_date_seq_lbl.format("YYYY-MM-DD HH:mm:ss");
-    } else {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.lbl_date_seq } ${ await ns("日期格式错误") }`;
-    }
-  }
-  if (input.lbl_date_seq) {
-    const lbl_date_seq = dayjs(input.lbl_date_seq);
-    if (!lbl_date_seq.isValid()) {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.lbl_date_seq } ${ await ns("日期格式错误") }`;
-    }
-    input.lbl_date_seq = dayjs(input.lbl_date_seq).format("YYYY-MM-DD HH:mm:ss");
-  }
   
   const [
     is_lockedDict, // 锁定
@@ -819,6 +801,9 @@ export async function getFieldComments(): Promise<OrderFieldComment> {
   const n = initN(route_path);
   const fieldComments: OrderFieldComment = {
     id: await n("ID"),
+    lbl_seq: await n("订单号-序列号"),
+    lbl_date_seq: await n("订单号-日期"),
+    lbl_date_seq_lbl: await n("订单号-日期"),
     lbl: await n("订单号"),
     company: await n("公司"),
     phone: await n("联系电话"),
@@ -849,6 +834,8 @@ export async function getFieldComments(): Promise<OrderFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
+    org_id: await n("组织"),
+    org_id_lbl: await n("组织"),
   };
   return fieldComments;
 }
@@ -2257,12 +2244,15 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    {
-      const args = new QueryArgs();
-      const sql = `select * from wshop_order where id=${ args.push(id) }`;
-      const model = await queryOne(sql, args);
-      log("forceDeleteByIds:", model);
-    }
+    const oldModel = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    log("forceDeleteByIds:", oldModel);
     const args = new QueryArgs();
     const sql = `delete from wshop_order where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
