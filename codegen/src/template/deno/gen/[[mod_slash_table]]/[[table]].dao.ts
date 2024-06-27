@@ -5424,7 +5424,58 @@ export async function forceDeleteByIds(
     const args = new QueryArgs();
     const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
-    num += result.affectedRows;
+    num += result.affectedRows;<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.inlineMany2manyTab) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      const many2many_no_cascade_delete = foreignKey.many2many_no_cascade_delete;
+      const many2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      if (!many2manySchema) {
+        throw `many2many 中的表: ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+        process.exit(1);
+      }
+    #>
+    {
+      const <#=column_name#> = oldModel.<#=column_name#>;
+      if (<#=column_name#> && <#=column_name#>.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#> in ${ args.push(<#=column_name#>) }`;
+        await execute(sql, args);
+      }
+    }<#
+    }
+    #><#
+    for (const table_name of table_names) {
+    const optTable = optTables[table_name];
+    const hasIsDeleted = optTable.columns.some((column) => column.COLUMN_NAME === "is_deleted");
+    for (const column of optTable.columns) {
+      if (column.inlineMany2manyTab) continue;
+      const foreignKey = column.foreignKey;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (foreignKey.mod !== mod || foreignKey.table !== table) continue;
+      const many2many_no_cascade_delete = foreignKey.many2many_no_cascade_delete;
+    #>
+    {
+      const args = new QueryArgs();
+      const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=${ args.push(id) }`;
+      await execute(sql, args);
+    }<#
+    }
+    #><#
+    }
+    #>
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;

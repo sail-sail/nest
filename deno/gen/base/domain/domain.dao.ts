@@ -1894,6 +1894,11 @@ export async function forceDeleteByIds(
     const sql = `delete from base_domain where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
+    {
+      const args = new QueryArgs();
+      const sql = `delete from base_tenant_domain where domain_id=${ args.push(id) }`;
+      await execute(sql, args);
+    }
   }
   
   await delCache();
