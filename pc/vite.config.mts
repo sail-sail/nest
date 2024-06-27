@@ -212,9 +212,6 @@ export default defineConfig({
         ElementPlusResolver(),
         IconsResolver(),
       ],
-      eslintrc: {
-        enabled: true,
-      },
       dts: "./src/typings/auto-imports.d.ts",
     }),
     Components({

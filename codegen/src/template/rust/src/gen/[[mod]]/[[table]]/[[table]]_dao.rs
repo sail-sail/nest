@@ -295,7 +295,6 @@ use crate::gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   const table_comment = column.COLUMN_COMMENT;
   let is_nullable = column.IS_NULLABLE === "YES";
@@ -435,7 +434,6 @@ use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::*;<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
   const column_name = column.COLUMN_NAME;
   const table_comment = column.COLUMN_COMMENT;
   let is_nullable = column.IS_NULLABLE === "YES";
@@ -1539,7 +1537,6 @@ pub async fn find_all(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const table_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -1686,7 +1683,6 @@ pub async fn find_all(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       let is_nullable = column.IS_NULLABLE === "YES";
@@ -2421,6 +2417,10 @@ pub async fn set_id_by_lbl(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    if (column.isPassword) continue;
+    if (column.isEncrypt) continue;
+    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     if (
       [
@@ -3583,7 +3583,6 @@ async fn _creates(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       let is_nullable = column.IS_NULLABLE === "YES";
@@ -4297,7 +4296,6 @@ pub async fn update_by_id(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -4746,6 +4744,7 @@ pub async fn del_cache() -> Result<()> {
 }
 
 /// 根据 ids 删除<#=table_comment#>
+#[allow(unused_variables)]
 pub async fn delete_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
@@ -4845,11 +4844,11 @@ pub async fn delete_by_ids(
     ).await?;
     if old_model.is_none() {
       continue;
-    }<#
+    }
+    let old_model = old_model.unwrap();<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     
-    let old_model = old_model.unwrap();
     if !has_tenant_permit && !has_dept_permit && !has_dept_parent_permit && !has_role_permit && has_create_permit {
       let usr_id = get_auth_id().unwrap_or_default();
       if old_model.create_usr_id != usr_id {
@@ -4950,7 +4949,7 @@ pub async fn delete_by_ids(
     }
     #>
     
-    args.push(id.into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -4968,7 +4967,170 @@ pub async fn delete_by_ids(
       sql,
       args,
       options.clone(),
-    ).await?;
+    ).await?;<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.inlineMany2manyTab) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      const many2many_no_cascade_delete = foreignKey.many2many_no_cascade_delete;
+      const many2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      if (!many2manySchema) {
+        throw `many2many 中的表: ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+        process.exit(1);
+      }
+    #>
+    {
+      let <#=column_name#> = old_model.<#=column_name#>.clone();
+      if !<#=column_name#>.is_empty() {
+        let mut args = QueryArgs::new();<#
+        if (!many2many_no_cascade_delete) {
+        #><#
+        if (hasIsDeleted) {
+        #>
+        let mut sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=1 where".to_owned();
+        let arg = {
+          let mut items = Vec::with_capacity(<#=column_name#>.len());
+          for item in <#=column_name#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" <#=many2many.column2#> in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=0");
+        let sql = sql;<#
+        } else {
+        #>
+        let mut sql = "delete from <#=mod#>_<#=many2many.table#> where".to_owned();
+        let arg = {
+          let mut items = Vec::with_capacity(<#=column_name#>.len());
+          for item in <#=column_name#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" <#=many2many.column2#> in (");
+        sql.push_str(&arg);
+        sql.push(')');<#
+        }
+        #>
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;<#
+        } else {
+        #>
+        let mut sql = "select count(id) as total from <#=mod#>_<#=many2many.table#> where".to_owned();
+        let arg = {
+          let mut items = Vec::with_capacity(<#=column_name#>.len());
+          for item in <#=column_name#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" <#=many2many.column2#> in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=0");
+        let args: Vec<_> = args.into();
+        let res: Option<CountModel> = query_one(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+        
+        let total = res
+          .map(|item| item.total)
+          .unwrap_or_default();
+        
+        if total <= 0 {
+          let err_msg = i18n_dao::ns(
+            "请先删除关联数据".to_owned(),
+            None,
+          ).await?;
+          return Err(anyhow!(err_msg));
+        }<#
+        }
+        #>
+      }
+    }<#
+    }
+    #><#
+    for (const table_name of table_names) {
+    const optTable = optTables[table_name];
+    const hasIsDeleted = optTable.columns.some((column) => column.COLUMN_NAME === "is_deleted");
+    for (const column of optTable.columns) {
+      if (column.inlineMany2manyTab) continue;
+      const foreignKey = column.foreignKey;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (foreignKey.mod !== mod || foreignKey.table !== table) continue;
+      const many2many_no_cascade_delete = foreignKey.many2many_no_cascade_delete;
+    #>
+    {
+      let mut args = QueryArgs::new();<#
+      if (!many2many_no_cascade_delete) {
+      #><#
+      if (hasIsDeleted) {
+      #>
+      let sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=1 where <#=many2many.column2#>=? and is_deleted=0".to_owned();
+      args.push(id.clone().into());<#
+      } else {
+      #>
+      let sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=? and is_deleted=0".to_owned();
+      args.push(id.clone().into());<#
+      }
+      #>
+      let args: Vec<_> = args.into();
+      execute(
+        sql,
+        args,
+        options.clone(),
+      ).await?;<#
+      } else {
+      #>
+      let sql = "select count(id) as total from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=? and is_deleted=0".to_owned();
+      let args: Vec<_> = args.into();
+      let res: Option<CountModel> = query_one(
+        sql,
+        args,
+        options.clone(),
+      ).await?;
+        
+      let total = res
+        .map(|item| item.total)
+        .unwrap_or_default();
+      
+      if total <= 0 {
+        let err_msg = i18n_dao::ns(
+          "请先删除关联数据".to_owned(),
+          None,
+        ).await?;
+        return Err(anyhow!(err_msg));
+      }<#
+      }
+      #>
+    }<#
+    }
+    #><#
+    }
+    #>
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;
@@ -5007,7 +5169,6 @@ pub async fn delete_by_ids(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -5629,7 +5790,6 @@ pub async fn revert_by_ids(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -5692,6 +5852,7 @@ if (hasIsDeleted) {
 #>
 
 /// 根据 ids 彻底删除<#=table_comment#>
+#[allow(unused_variables)]
 pub async fn force_delete_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
@@ -5725,7 +5886,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let model = find_all(
+    let old_model = find_all(
       <#=tableUP#>Search {
         id: id.clone().into(),<#
         if (hasIsDeleted) {
@@ -5740,17 +5901,22 @@ pub async fn force_delete_by_ids(
       options.clone(),
     ).await?.into_iter().next();
     
-    if model.is_none() {
+    if old_model.is_none() {
       continue;
     }
+    let old_model = old_model.unwrap();
     
-    info!("force_delete_by_ids: {}", serde_json::to_string(&model)?);
+    info!("force_delete_by_ids: {}", serde_json::to_string(&old_model)?);
     
     let mut args = QueryArgs::new();
     
-    let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
+    let sql = format!("delete from {table} where id=?<#
+    if (hasIsDeleted) {
+    #> and is_deleted=1<#
+    }
+    #> limit 1");
     
-    args.push(id.into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -5783,6 +5949,76 @@ pub async fn force_delete_by_ids(
       args,
       options.clone(),
     ).await?;<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.inlineMany2manyTab) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      const many2many_no_cascade_delete = foreignKey.many2many_no_cascade_delete;
+      const many2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      if (!many2manySchema) {
+        throw `many2many 中的表: ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+        process.exit(1);
+      }
+    #>
+    {
+      let <#=column_name#> = old_model.<#=column_name#>.clone();
+      if !<#=column_name#>.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "delete from <#=mod#>_<#=many2many.table#> where".to_owned();
+        let mut items = Vec::with_capacity(<#=column_name#>.len());
+        for item in <#=column_name#> {
+          items.push("?");
+          args.push(item.clone().into());
+        }
+        sql.push_str(" <#=many2many.column2#> in (");
+        sql.push_str(&items.join(","));
+        sql.push(')');
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }<#
+    }
+    #><#
+    for (const table_name of table_names) {
+    const optTable = optTables[table_name];
+    const hasIsDeleted = optTable.columns.some((column) => column.COLUMN_NAME === "is_deleted");
+    for (const column of optTable.columns) {
+      if (column.inlineMany2manyTab) continue;
+      const foreignKey = column.foreignKey;
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      if (foreignKey.mod !== mod || foreignKey.table !== table) continue;
+      const many2many_no_cascade_delete = foreignKey.many2many_no_cascade_delete;
+    #>
+    {
+      let mut args = QueryArgs::new();
+      let sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=?".to_owned();
+      args.push(id.clone().into());
+      let args: Vec<_> = args.into();
+      execute(
+        sql,
+        args,
+        options.clone(),
+      ).await?;
+    }<#
+    }
+    #><#
+    }
+    #><#
     if (
       cache &&
       (mod === "base" && table === "tenant") ||
@@ -5831,7 +6067,6 @@ pub async fn force_delete_by_ids(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
     const column_name = column.COLUMN_NAME;
     const column_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
