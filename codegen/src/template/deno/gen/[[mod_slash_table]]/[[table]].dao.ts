@@ -5421,8 +5421,12 @@ export async function forceDeleteByIds(
     const id = ids[i];
     const oldModel = await findOne(
       {
-        id,
-        is_deleted: 1,
+        id,<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted: 1,<#
+        }
+        #>
       },
       undefined,
       options,
