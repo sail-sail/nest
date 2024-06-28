@@ -14,43 +14,62 @@ const {
 
 const argv = minimist(process.argv.slice(2));
 
-const target = argv.target || "";
 const env = argv.env || "prod";
 
 const projectDir = `${ __dirname }/../../../../`;
-const buildDir = process.cwd() + "/../build/" + target;
+const buildDir = process.cwd() + "/../build/";
 const commands = (argv.command || "").split(",").filter((v) => v);
 const projectName = ecosystem.apps[0].script.replace("./", "");
 
+const rustDir = projectDir + "/rust";
+const pcDir = projectDir + "/pc";
+const uniDir = projectDir + "/uni";
+
+async function codegen() {
+  console.log("codegen");
+  child_process.execSync("npm run codegen", {
+    cwd: `${ projectDir }`,
+    stdio: "inherit",
+  });
+}
+
 async function copyEnv() {
   console.log("copyEnv");
-  const ecosystemStr = await readFile(`${ projectDir }/rust/ecosystem.config.js`, "utf8");
+  const ecosystemStr = await readFile(`${ rustDir }/ecosystem.config.js`, "utf8");
   const ecosystemStr2 = ecosystemStr.replaceAll("{env}", env);
   await mkdir(`${ buildDir }/rust`, { recursive: true });
   await writeFile(buildDir + "/rust/ecosystem.config.js", ecosystemStr2);
-  await copy(`${ projectDir }/rust` + "/.env." + env, buildDir + "/rust/.env");
+  await copy(rustDir + "/.env." + env, buildDir + "/rust/.env");
 }
 
 async function gqlgen() {
   console.log("gqlgen");
   child_process.execSync("npm run gqlgen", {
-    cwd: `${ projectDir }/rust`,
+    cwd: rustDir,
     stdio: "inherit",
   });
 }
 
 async function pc() {
   console.log("pc");
-  child_process.execSync("npm run build", {
-    cwd: `${ projectDir }/pc`,
+  child_process.execSync(`npm run build-${ env }`, {
+    cwd: pcDir,
     stdio: "inherit",
   });
+  // index.html
+  {
+    const str = await readFile(`${ buildDir }/pc/index.html`, "utf8");
+    const str2 = str.replaceAll("$__version__$", new Date().getTime().toString(16));
+    await writeFile(`${ buildDir }/pc/index.html`, str2);
+  }
+  // ejsexcel.min.js
+  await copy(`${ pcDir }/node_modules/ejsexcel-browserify/dist/ejsexcel.min.js`, `${ buildDir }/pc/ejsexcel.min.js`);
 }
 
 async function uni() {
   console.log("uni");
   child_process.execSync("npm run build:h5", {
-    cwd: `${ projectDir }/uni`,
+    cwd: uniDir,
     stdio: "inherit",
   });
   await mkdir(`${ buildDir }/uni`, { recursive: true });
@@ -95,6 +114,8 @@ if (commands.length > 0) {
     const command = commands[i].trim();
     if (command === "copyEnv") {
       await copyEnv();
+    } else if (command === "codegen") {
+      await codegen();
     } else if (command === "gqlgen") {
       await gqlgen();
     } else if (command === "compile") {
@@ -115,6 +136,7 @@ if (commands.length > 0) {
     } catch (err) {
     }
     await copyEnv();
+    await codegen();
     await gqlgen();
     await compile();
     await pc();
