@@ -68,16 +68,16 @@
     "unocss": "0.61.0",
     "unplugin-auto-import": "0.17.6",
     "unplugin-icons": "0.19.0",
-    "unplugin-turbo-console": "1.8.7",
-    "unplugin-vue-components": "0.27.1",
+    "unplugin-turbo-console": "1.8.9",
+    "unplugin-vue-components": "0.27.2",
     "unplugin-vue-define-options": "1.4.5",
-    "vite": "5.3.1",
+    "vite": "5.3.2",
     "vite-plugin-inspect": "0.8.4",
     "vite-plugin-pwa": "0.20.0",
     "vite-plugin-vue-devtools": "7.3.4",
     "vite-plugin-vue-inspector": "5.1.2",
     "vite-plugin-wasm": "3.3.0",
     "vitest": "1.6.0",
-    "vue-tsc": "2.0.22"
+    "vue-tsc": "2.0.23-alpha.1"
   }
 }
