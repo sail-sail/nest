@@ -2585,7 +2585,7 @@ pub async fn validate_is_enabled(
       "已禁用".to_owned(),
       None,
     ).await?;
-    let err_msg = table_comment + &msg1;
+    let err_msg = table_comment + msg1.as_str();
     return Err(anyhow!(err_msg));
   }
   Ok(())
@@ -2605,7 +2605,7 @@ pub async fn validate_option<T>(
       "不存在".to_owned(),
       None,
     ).await?;
-    let err_msg = table_comment + &msg1;
+    let err_msg = table_comment + msg1.as_str();
     let backtrace = std::backtrace::Backtrace::capture();
     error!(
       "{req_id} {err_msg}: {backtrace}",
