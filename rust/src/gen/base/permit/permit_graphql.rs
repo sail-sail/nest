@@ -48,7 +48,7 @@ impl PermitGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<PermitSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

@@ -23,6 +23,7 @@ use crate::common::context::{
   QueryArgs,
   Options,
   FIND_ALL_IDS_LIMIT,
+  MAX_SAFE_INTEGER,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -679,7 +680,7 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<DictbizDetailSearch>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<u64> {
   
   let table = "base_dictbiz_detail";
   let method = "find_count";
@@ -947,6 +948,10 @@ pub async fn find_by_ids(
   let options = Some(options);
   
   let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(anyhow!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+  }
   
   let search = DictbizDetailSearch {
     ids: Some(ids.clone()),
@@ -2021,6 +2026,10 @@ pub async fn delete_by_ids(
     return Ok(0);
   }
   
+  if ids.len() as u64 > MAX_SAFE_INTEGER {
+    return Err(anyhow!("ids.len(): {} > MAX_SAFE_INTEGER", ids.len()));
+  }
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
@@ -2093,6 +2102,10 @@ pub async fn delete_by_ids(
       args,
       options.clone(),
     ).await?;
+  }
+  
+  if num > MAX_SAFE_INTEGER {
+    return Err(anyhow!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
   Ok(num)

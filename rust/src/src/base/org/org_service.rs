@@ -1,13 +1,14 @@
 use anyhow::Result;
 
-use crate::common::auth::auth_dao;
+use crate::common::auth::auth_dao::get_token_by_auth_model;
 use crate::common::context::{
   Ctx,
+  Options,
   get_auth_model,
   get_auth_org_id,
 };
 
-use crate::gen::base::usr::usr_dao;
+use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 use crate::gen::base::org::org_model::OrgId;
 
@@ -25,9 +26,14 @@ pub async fn org_login_select(
     .ok_or_else(|| 
       anyhow::anyhow!("auth_model.is_none()")
     )?;
-  let usr_model = usr_dao::find_by_id(
+  
+  let options = Options::new();
+  let options = options.set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let usr_model = find_by_id_usr(
     auth_model.id.clone(),
-    None,
+    options,
   ).await?;
   let org_ids: Vec<OrgId> = {
     if let Some(usr_model) = usr_model {
@@ -40,7 +46,7 @@ pub async fn org_login_select(
     return Err(anyhow::anyhow!("org_id: {org_id} dose not exit in login usr"));
   }
   auth_model.org_id = org_id.into();
-  let token = auth_dao::get_token_by_auth_model(&auth_model)?;
+  let token = get_token_by_auth_model(&auth_model)?;
   ctx.set_auth_model(auth_model);
   Ok(token)
 }

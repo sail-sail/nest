@@ -36,7 +36,7 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<RoleSearch>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<u64> {
   
   let num = role_service::find_count(
     search,

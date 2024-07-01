@@ -50,7 +50,7 @@ impl I18nGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<I18nSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

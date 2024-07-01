@@ -169,6 +169,7 @@ use crate::common::context::{
   QueryArgs,
   Options,
   FIND_ALL_IDS_LIMIT,
+  MAX_SAFE_INTEGER,
   CountModel,
   UniqueType,<#
   if (hasOrderBy) {
@@ -1729,7 +1730,7 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
   let method = "find_count";
@@ -2092,6 +2093,10 @@ pub async fn find_by_ids(
   let options = Some(options);
   
   let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(anyhow!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+  }
   
   let search = <#=Table_Up#>Search {
     ids: Some(ids.clone()),
@@ -4776,6 +4781,10 @@ pub async fn delete_by_ids(
   
   if ids.is_empty() {
     return Ok(0);
+  }
+  
+  if ids.len() as u64 > MAX_SAFE_INTEGER {
+    return Err(anyhow!("ids.len(): {} > MAX_SAFE_INTEGER", ids.len()));
   }<#
   if (
     cache &&
@@ -5131,6 +5140,10 @@ pub async fn delete_by_ids(
     #><#
     }
     #>
+  }
+  
+  if num > MAX_SAFE_INTEGER {
+    return Err(anyhow!("num: {} > MAX_SAFE_INTEGER", num));
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;

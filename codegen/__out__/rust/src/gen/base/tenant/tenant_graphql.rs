@@ -48,7 +48,7 @@ impl TenantGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<TenantSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
