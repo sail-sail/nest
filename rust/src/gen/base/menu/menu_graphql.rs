@@ -48,7 +48,7 @@ impl MenuGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<MenuSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

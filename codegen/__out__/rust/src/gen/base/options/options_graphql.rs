@@ -48,7 +48,7 @@ impl OptionsGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<OptionsSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

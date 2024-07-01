@@ -50,7 +50,7 @@ impl DictbizGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<DictbizSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

@@ -50,7 +50,7 @@ impl LoginLogGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<LoginLogSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use crate::common::context::get_auth_id_err;
+use crate::common::context::{get_auth_id_err, Options};
 
 use crate::gen::base::role::role_dao::find_all as find_all_role;
 
@@ -13,12 +13,16 @@ use crate::gen::base::usr::usr_dao::{
 /// 获取当前角色的首页轮播图路由
 pub async fn get_home_urls() -> Result<Vec<String>> {
   
+  let options = Options::new()
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let usr_id = get_auth_id_err()?;
   
   // 获取当前登录用户
   let usr_model = find_usr_by_id(
     usr_id,
-    None,
+    options.clone(),
   ).await?;
   let usr_model = validate_option_usr(
     usr_model,
@@ -36,7 +40,7 @@ pub async fn get_home_urls() -> Result<Vec<String>> {
     }.into(),
     None,
     None,
-    None,
+    options.clone(),
   ).await?;
   
   let home_urls = role_models

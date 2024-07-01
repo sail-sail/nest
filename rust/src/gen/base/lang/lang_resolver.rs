@@ -34,7 +34,7 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<LangSearch>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<u64> {
   
   let num = lang_service::find_count(
     search,

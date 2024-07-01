@@ -31,10 +31,14 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let usr_id = get_auth_id_err()?;
   
+  let options = Options::new();
+  let options = options.set_is_debug(Some(false));
+  let options = Some(options);
+  
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id.clone(),
-      None,
+      options,
     ).await?,
   ).await?;
   validate_is_enabled_usr(&usr_model).await?;

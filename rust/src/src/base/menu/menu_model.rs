@@ -8,9 +8,9 @@ pub struct GetMenus {
   pub id: String,
   pub parent_id: String,
   pub lbl: String,
-  pub route_path: Option<String>,
-  pub route_query: Option<String>,
-  pub order_by: Option<u32>,
+  pub route_path: String,
+  pub route_query: String,
+  pub order_by: u32,
 }
 
 impl FromRow<'_, MySqlRow> for GetMenus {
@@ -21,9 +21,9 @@ impl FromRow<'_, MySqlRow> for GetMenus {
     let parent_id: String = row.try_get("parent_id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    let route_path: Option<String> = row.try_get("route_path")?;
-    let route_query: Option<String> = row.try_get("route_query")?;
-    let order_by: Option<u32> = row.try_get("order_by")?;
+    let route_path: String = row.try_get("route_path")?;
+    let route_query: String = row.try_get("route_query")?;
+    let order_by: u32 = row.try_get("order_by")?;
     
     let model = Self {
       id,

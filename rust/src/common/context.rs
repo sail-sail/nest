@@ -19,7 +19,7 @@ use chrono::{Local, NaiveDate, NaiveTime, NaiveDateTime};
 use base64::{engine::general_purpose, Engine};
 use regex::Regex;
 
-use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
+use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions, MySqlRow};
 use sqlx::{Pool, MySql, Executor, FromRow, Row};
 use sqlx::pool::PoolConnection;
 
@@ -39,7 +39,8 @@ use crate::gen::base::usr::usr_model::UsrId;
 use crate::gen::base::tenant::tenant_model::TenantId;
 use crate::gen::base::org::org_model::OrgId;
 
-pub static FIND_ALL_IDS_LIMIT: usize = 5000;
+pub const FIND_ALL_IDS_LIMIT: usize = 5000;
+pub const MAX_SAFE_INTEGER: u64 = 9007199254740991;
 
 lazy_static! {
   static ref SERVER_TOKEN_TIMEOUT: i64 = env::var("server_tokentimeout").unwrap()
@@ -1111,11 +1112,40 @@ impl Ctx {
 //   CTX.with(|ctx| ctx.clone())
 // }
 
-#[derive(SimpleObject, FromRow, Default, Serialize, Deserialize)]
+#[derive(SimpleObject, Default, Serialize, Deserialize)]
 pub struct CountModel {
   
-  pub total: i64,
+  pub total: u64,
   
+}
+
+impl FromRow<'_, MySqlRow> for CountModel {
+  fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    
+    let total: i64 = row.try_get("total")?;
+    if total < 0 {
+      return Err(sqlx::Error::ColumnDecode {
+        index: "total".to_owned(),
+        source: Box::new(sqlx::Error::Protocol(
+          "total < 0".to_owned(),
+        )),
+      });
+    }
+    let total = total as u64;
+    
+    if total > MAX_SAFE_INTEGER {
+      return Err(sqlx::Error::ColumnDecode {
+        index: "total".to_owned(),
+        source: Box::new(sqlx::Error::Protocol(
+          "total > MAX_SAFE_INTEGER".to_owned(),
+        )),
+      });
+    }
+    
+    Ok(CountModel {
+      total,
+    })
+  }
 }
 
 #[derive(SimpleObject, FromRow, Default, Serialize, Deserialize)]
