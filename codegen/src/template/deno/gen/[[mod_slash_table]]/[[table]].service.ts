@@ -44,7 +44,12 @@ if (opts.filterDataByCreateUsr || hasOrgId) {
 #>
 
 import {
-  getAuthModel,
+  get_usr_id,<#
+  if (hasOrgId) {
+  #>
+  get_org_id,<#
+  }
+  #>
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -76,8 +81,12 @@ async function setSearchQuery(<#
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
+  const usr_id = await get_usr_id();<#
+    if (hasOrgId) {
+  #>
+  const org_id = await get_org_id();<#
+    }
+  #>
   const usr_model = await findByIdUsr(usr_id);
   if (!usr_id || !usr_model) {
     throw new Error("usr_id can not be null");
@@ -85,8 +94,8 @@ async function setSearchQuery(<#
     if (hasOrgId) {
   #>
   const org_ids: OrgId[] = [ ];
-  if (authModel?.org_id) {
-    org_ids.push(authModel.org_id);
+  if (org_id) {
+    org_ids.push(org_id);
   } else {
     org_ids.push(...usr_model.org_ids);
     org_ids.push("" as OrgId);
