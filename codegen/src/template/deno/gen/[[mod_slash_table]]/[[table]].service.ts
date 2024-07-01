@@ -63,8 +63,15 @@ import {
 
 import * as <#=table#>Dao from "./<#=table#>.dao.ts";
 
-async function setSearchQuery(
-  search: <#=searchName#>,
+async function setSearchQuery(<#
+  if (opts.filterDataByCreateUsr || hasOrgId) {
+  #>
+  search: <#=searchName#>,<#
+  } else {
+  #>
+  _search: <#=searchName#>,<#
+  }
+  #>
 ) {<#
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
