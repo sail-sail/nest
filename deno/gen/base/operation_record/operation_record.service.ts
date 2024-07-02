@@ -7,7 +7,7 @@ import type {
 import * as operation_recordDao from "./operation_record.dao.ts";
 
 async function setSearchQuery(
-  search: OperationRecordSearch,
+  _search: OperationRecordSearch,
 ) {
   
 }

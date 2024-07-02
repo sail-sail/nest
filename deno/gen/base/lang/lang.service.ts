@@ -11,7 +11,7 @@ import {
 import * as langDao from "./lang.dao.ts";
 
 async function setSearchQuery(
-  search: LangSearch,
+  _search: LangSearch,
 ) {
   
 }

@@ -86,6 +86,9 @@ export function checkSortDept(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortDept: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiDept;
     if (!canSortInApiDept[prop]) {
       throw new Error(`checkSortDept: ${ JSON.stringify(item) }`);

@@ -11,7 +11,7 @@ import {
 import * as dictbiz_detailDao from "./dictbiz_detail.dao.ts";
 
 async function setSearchQuery(
-  search: DictbizDetailSearch,
+  _search: DictbizDetailSearch,
 ) {
   
 }
