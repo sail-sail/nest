@@ -131,6 +131,9 @@ let inputRef = $ref<InstanceType<typeof ElInput>>();
 let textareaHeight = $shallowRef<number>();
 
 useResizeObserver($$(inputRef) as any, (entries) => {
+  if (props.type !== "textarea") {
+    return;
+  }
   const [ entry ] = entries;
   const { height } = entry.contentRect;
   textareaHeight = height - 2;
