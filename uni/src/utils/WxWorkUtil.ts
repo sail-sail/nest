@@ -5,7 +5,10 @@ import {
   wxwLoginByCode,
 } from "./Api";
 
-export async function wxwGetAppid() {
+export async function wxwGetAppid(): Promise<{
+  appid: string;
+  agentid: string;
+}> {
   const host = cfg.domain;
   
   const res: {
@@ -28,11 +31,12 @@ export async function wxwGetAppid() {
   });
   const data = res?.wxwGetAppid;
   if (!data || !data.appid || !data.agentid) {
+    const err_msg = "请联系管理员配置企业微信 appid 和 agentid";
     await uni.showModal({
-      content: "请联系管理员配置企业微信 appid 和 agentid",
+      content: err_msg,
       showCancel: false,
     });
-    return;
+    throw new Error(err_msg);
   }
   return data;
 }
