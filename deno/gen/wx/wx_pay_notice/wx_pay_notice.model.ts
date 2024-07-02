@@ -142,6 +142,9 @@ export function checkSortWxPayNotice(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortWxPayNotice: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiWxPayNotice;
     if (!canSortInApiWxPayNotice[prop]) {
       throw new Error(`checkSortWxPayNotice: ${ JSON.stringify(item) }`);
