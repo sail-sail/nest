@@ -50,7 +50,7 @@ impl WxwMsgGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<WxwMsgSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

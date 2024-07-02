@@ -36,7 +36,7 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<WxwAppSearch>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<u64> {
   
   let num = wxw_app_service::find_count(
     search,
