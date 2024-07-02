@@ -7,7 +7,7 @@ import type {
 import * as wxw_app_tokenDao from "./wxw_app_token.dao.ts";
 
 async function setSearchQuery(
-  search: WxwAppTokenSearch,
+  _search: WxwAppTokenSearch,
 ) {
   
 }
