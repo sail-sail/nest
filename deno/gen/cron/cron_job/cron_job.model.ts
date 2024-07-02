@@ -91,6 +91,9 @@ export function checkSortCronJob(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortCronJob: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiCronJob;
     if (!canSortInApiCronJob[prop]) {
       throw new Error(`checkSortCronJob: ${ JSON.stringify(item) }`);
