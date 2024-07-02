@@ -116,6 +116,9 @@ export function checkSortWxwMsg(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortWxwMsg: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiWxwMsg;
     if (!canSortInApiWxwMsg[prop]) {
       throw new Error(`checkSortWxwMsg: ${ JSON.stringify(item) }`);

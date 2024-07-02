@@ -99,6 +99,9 @@ export function checkSortWxwAppToken(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortWxwAppToken: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiWxwAppToken;
     if (!canSortInApiWxwAppToken[prop]) {
       throw new Error(`checkSortWxwAppToken: ${ JSON.stringify(item) }`);

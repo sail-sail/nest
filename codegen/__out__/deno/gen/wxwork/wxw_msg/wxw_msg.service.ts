@@ -7,7 +7,7 @@ import type {
 import * as wxw_msgDao from "./wxw_msg.dao.ts";
 
 async function setSearchQuery(
-  search: WxwMsgSearch,
+  _search: WxwMsgSearch,
 ) {
   
 }
