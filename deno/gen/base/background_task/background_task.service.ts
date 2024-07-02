@@ -5,7 +5,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  getAuthModel,
+  get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -18,8 +18,7 @@ async function setSearchQuery(
   search: BackgroundTaskSearch,
 ) {
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
+  const usr_id = await get_usr_id();
   const usr_model = await findByIdUsr(usr_id);
   if (!usr_id || !usr_model) {
     throw new Error("usr_id can not be null");
