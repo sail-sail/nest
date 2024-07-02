@@ -255,7 +255,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
-  getAuthModel,<#
+  get_usr_id,<#
   if (hasPassword) {
   #>
   getPassword,<#
@@ -682,9 +682,9 @@ async function getWhereQuery(
   #>
   
   if (!hasTenantPermit && !hasDeptPermit && !hasRolePermit && hasCreatePermit) {
-    const authModel = await getAuthModel();
-    if (authModel?.id != null) {
-      whereQuery += ` and t.create_usr_id=${ args.push(authModel.id) }`;
+    const usr_id = await get_usr_id();
+    if (usr_id != null) {
+      whereQuery += ` and t.create_usr_id=${ args.push(usr_id) }`;
     }
   } else if (!hasTenantPermit && hasDeptParentPermit) {
     const dept_ids = await getAuthAndChildrenDeptIds();
@@ -703,8 +703,8 @@ async function getWhereQuery(
   #>
   
   if (search?.tenant_id == null) {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const usr_id = await get_usr_id();
+    const tenant_id = await getTenant_id(usr_id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
     }
@@ -3325,8 +3325,8 @@ for (const key of redundLblKeys) {
       if (hasTenant_id) {
       #>
       if (input.tenant_id == null) {
-        const authModel = await getAuthModel();
-        const tenant_id = await getTenant_id(authModel?.id);
+        const usr_id = await get_usr_id();
+        const tenant_id = await getTenant_id(usr_id);
         if (tenant_id) {
           sql += `,${ args.push(tenant_id) }`;
         } else {
@@ -3343,9 +3343,9 @@ for (const key of redundLblKeys) {
       #>
       if (!is_silent_mode) {
         if (input.create_usr_id == null) {
-          const authModel = await getAuthModel();
-          if (authModel?.id != null) {
-            sql += `,${ args.push(authModel.id) }`;
+          const usr_id = await get_usr_id();
+          if (usr_id != null) {
+            sql += `,${ args.push(usr_id) }`;
           } else {
             sql += ",default";
           }
@@ -3365,8 +3365,7 @@ for (const key of redundLblKeys) {
       #>
       if (!is_silent_mode) {
         if (input.create_usr_id == null) {
-          const authModel = await getAuthModel();
-          let usr_id: UsrId | undefined = authModel?.id;
+          let usr_id = await get_usr_id();
           let usr_lbl = "";
           if (usr_id) {
             const usr_model = await findByIdUsr(usr_id, options);
@@ -3893,8 +3892,8 @@ export async function getEditableDataPermitsByIds(
       continue;
     }
     if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && hasCreatePermit) {
-      const authModel = await getAuthModel();
-      if (authModel?.id === model.create_usr_id) {
+      const usr_id = await get_usr_id();
+      if (usr_id === model.create_usr_id) {
         dataPermits.push(1);
       } else {
         dataPermits.push(0);
@@ -4035,8 +4034,8 @@ export async function updateById(
   }
   
   if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && hasCreatePermit) {
-    const authModel = await getAuthModel();
-    if (oldModel.create_usr_id !== authModel?.id) {
+    const usr_id = await get_usr_id();
+    if (oldModel.create_usr_id !== usr_id) {
       throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
     }
   } else if (!hasTenantPermit && hasDeptParentPermit) {
@@ -4475,9 +4474,9 @@ export async function updateById(
     #>
     if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
-        const authModel = await getAuthModel();
-        if (authModel?.id != null) {
-          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        const usr_id = await get_usr_id();
+        if (usr_id != null) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
         }
       } else if (input.update_usr_id as unknown as string !== "-") {
         sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
@@ -4489,8 +4488,7 @@ export async function updateById(
     #>
     if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
-        const authModel = await getAuthModel();
-        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_id = await get_usr_id();
         let usr_lbl = "";
         if (usr_id) {
           const usr_model = await findByIdUsr(usr_id, options);
@@ -4695,8 +4693,8 @@ export async function deleteByIds(
     #>
     
     if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && hasCreatePermit) {
-      const authModel = await getAuthModel();
-      if (oldModel.create_usr_id !== authModel?.id) {
+      const usr_id = await get_usr_id();
+      if (oldModel.create_usr_id !== usr_id) {
         throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
       }
     } else if (!hasTenantPermit && hasDeptParentPermit) {
@@ -4729,8 +4727,7 @@ export async function deleteByIds(
     if (!is_silent_mode && !is_creating) {<#
       if (hasDeleteUsrId || hasDeleteUsrIdLbl) {
       #>
-      const authModel = await getAuthModel();
-      let usr_id = authModel?.id;<#
+      let usr_id = await get_usr_id();<#
       }
       #><#
       if (hasDeleteUsrId) {
@@ -5622,8 +5619,8 @@ export async function findLastOrderBy(
   if (hasTenant_id) {
   #>
   {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const usr_id = await get_usr_id();
+    const tenant_id = await getTenant_id(usr_id);
     whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
   }<#
   }
