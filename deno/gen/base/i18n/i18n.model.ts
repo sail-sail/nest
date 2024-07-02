@@ -77,6 +77,9 @@ export function checkSortI18n(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortI18n: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiI18n;
     if (!canSortInApiI18n[prop]) {
       throw new Error(`checkSortI18n: ${ JSON.stringify(item) }`);

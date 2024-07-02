@@ -87,6 +87,9 @@ export function checkSortTenant(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortTenant: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiTenant;
     if (!canSortInApiTenant[prop]) {
       throw new Error(`checkSortTenant: ${ JSON.stringify(item) }`);

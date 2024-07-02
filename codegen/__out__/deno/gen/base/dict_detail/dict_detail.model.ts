@@ -87,6 +87,9 @@ export function checkSortDictDetail(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortDictDetail: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiDictDetail;
     if (!canSortInApiDictDetail[prop]) {
       throw new Error(`checkSortDictDetail: ${ JSON.stringify(item) }`);

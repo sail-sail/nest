@@ -634,6 +634,9 @@ export function checkSort<#=Table_Up#>(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSort<#=Table_Up#>: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApi<#=Table_Up#>;
     if (!canSortInApi<#=Table_Up#>[prop]) {
       throw new Error(`checkSort<#=Table_Up#>: ${ JSON.stringify(item) }`);
