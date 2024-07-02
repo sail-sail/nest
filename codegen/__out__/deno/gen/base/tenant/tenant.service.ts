@@ -11,7 +11,7 @@ import {
 import * as tenantDao from "./tenant.dao.ts";
 
 async function setSearchQuery(
-  search: TenantSearch,
+  _search: TenantSearch,
 ) {
   
 }

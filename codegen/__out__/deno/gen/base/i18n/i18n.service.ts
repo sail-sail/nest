@@ -7,7 +7,7 @@ import type {
 import * as i18nDao from "./i18n.dao.ts";
 
 async function setSearchQuery(
-  search: I18nSearch,
+  _search: I18nSearch,
 ) {
   
 }
