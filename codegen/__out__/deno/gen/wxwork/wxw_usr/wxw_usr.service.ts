@@ -7,7 +7,7 @@ import type {
 import * as wxw_usrDao from "./wxw_usr.dao.ts";
 
 async function setSearchQuery(
-  search: WxwUsrSearch,
+  _search: WxwUsrSearch,
 ) {
   
 }

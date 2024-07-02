@@ -11,7 +11,7 @@ import {
 import * as wxw_appDao from "./wxw_app.dao.ts";
 
 async function setSearchQuery(
-  search: WxwAppSearch,
+  _search: WxwAppSearch,
 ) {
   
 }
