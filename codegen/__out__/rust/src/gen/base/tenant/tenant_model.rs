@@ -718,6 +718,9 @@ pub fn check_sort_tenant(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_TENANT.contains(&prop) {
       return Err(anyhow!("check_sort_tenant: {}", serde_json::to_string(item)?));
     }

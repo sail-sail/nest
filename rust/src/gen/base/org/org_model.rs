@@ -577,6 +577,9 @@ pub fn check_sort_org(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_ORG.contains(&prop) {
       return Err(anyhow!("check_sort_org: {}", serde_json::to_string(item)?));
     }
