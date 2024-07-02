@@ -88,6 +88,9 @@ export function checkSortDomain(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortDomain: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiDomain;
     if (!canSortInApiDomain[prop]) {
       throw new Error(`checkSortDomain: ${ JSON.stringify(item) }`);

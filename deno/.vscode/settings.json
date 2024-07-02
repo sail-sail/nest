@@ -67,6 +67,5 @@
       "source": "./gen/**/*/*.ts",
       "target": "../codegen/template/<basename>"
     },
-  ],
-  "eslint.enable": false
+  ]
 }
