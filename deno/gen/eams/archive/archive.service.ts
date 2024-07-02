@@ -7,7 +7,7 @@ import type {
 import * as archiveDao from "./archive.dao.ts";
 
 async function setSearchQuery(
-  search: ArchiveSearch,
+  _search: ArchiveSearch,
 ) {
   
 }
