@@ -59,7 +59,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
-  getAuthModel,
+  get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -1100,8 +1100,7 @@ async function _creates(
       }
       if (!is_silent_mode) {
         if (input.create_usr_id == null) {
-          const authModel = await getAuthModel();
-          let usr_id: UsrId | undefined = authModel?.id;
+          let usr_id = await get_usr_id();
           let usr_lbl = "";
           if (usr_id) {
             const usr_model = await findByIdUsr(usr_id, options);
@@ -1357,8 +1356,7 @@ export async function updateById(
   if (updateFldNum > 0) {
     if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
-        const authModel = await getAuthModel();
-        let usr_id: UsrId | undefined = authModel?.id;
+        let usr_id = await get_usr_id();
         let usr_lbl = "";
         if (usr_id) {
           const usr_model = await findByIdUsr(usr_id, options);
@@ -1484,8 +1482,7 @@ export async function deleteByIds(
     const args = new QueryArgs();
     let sql = `update base_lang set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
-      const authModel = await getAuthModel();
-      let usr_id = authModel?.id;
+      let usr_id = await get_usr_id();
       if (usr_id != null) {
         sql += `,delete_usr_id=${ args.push(usr_id) }`;
       }
