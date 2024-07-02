@@ -106,6 +106,9 @@ export function checkSortSeo(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortSeo: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiSeo;
     if (!canSortInApiSeo[prop]) {
       throw new Error(`checkSortSeo: ${ JSON.stringify(item) }`);
