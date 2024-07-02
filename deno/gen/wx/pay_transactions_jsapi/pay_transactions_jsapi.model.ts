@@ -140,6 +140,9 @@ export function checkSortPayTransactionsJsapi(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortPayTransactionsJsapi: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiPayTransactionsJsapi;
     if (!canSortInApiPayTransactionsJsapi[prop]) {
       throw new Error(`checkSortPayTransactionsJsapi: ${ JSON.stringify(item) }`);
