@@ -90,6 +90,9 @@ export function checkSortOptions(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortOptions: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiOptions;
     if (!canSortInApiOptions[prop]) {
       throw new Error(`checkSortOptions: ${ JSON.stringify(item) }`);
