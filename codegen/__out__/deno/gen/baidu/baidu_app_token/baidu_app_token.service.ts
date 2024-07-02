@@ -7,7 +7,7 @@ import type {
 import * as baidu_app_tokenDao from "./baidu_app_token.dao.ts";
 
 async function setSearchQuery(
-  search: BaiduAppTokenSearch,
+  _search: BaiduAppTokenSearch,
 ) {
   
 }

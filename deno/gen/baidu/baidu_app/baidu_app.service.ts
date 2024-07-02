@@ -11,7 +11,7 @@ import {
 import * as baidu_appDao from "./baidu_app.dao.ts";
 
 async function setSearchQuery(
-  search: BaiduAppSearch,
+  _search: BaiduAppSearch,
 ) {
   
 }

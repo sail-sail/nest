@@ -98,6 +98,9 @@ export function checkSortBaiduApp(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortBaiduApp: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiBaiduApp;
     if (!canSortInApiBaiduApp[prop]) {
       throw new Error(`checkSortBaiduApp: ${ JSON.stringify(item) }`);

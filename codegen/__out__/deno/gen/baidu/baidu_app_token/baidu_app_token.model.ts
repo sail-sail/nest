@@ -96,6 +96,9 @@ export function checkSortBaiduAppToken(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortBaiduAppToken: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiBaiduAppToken;
     if (!canSortInApiBaiduAppToken[prop]) {
       throw new Error(`checkSortBaiduAppToken: ${ JSON.stringify(item) }`);
