@@ -90,6 +90,9 @@ export function checkSortDictbizDetail(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortDictbizDetail: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiDictbizDetail;
     if (!canSortInApiDictbizDetail[prop]) {
       throw new Error(`checkSortDictbizDetail: ${ JSON.stringify(item) }`);

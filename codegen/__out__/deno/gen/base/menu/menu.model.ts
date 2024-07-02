@@ -91,6 +91,9 @@ export function checkSortMenu(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortMenu: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiMenu;
     if (!canSortInApiMenu[prop]) {
       throw new Error(`checkSortMenu: ${ JSON.stringify(item) }`);

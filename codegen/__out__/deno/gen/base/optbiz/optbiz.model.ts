@@ -93,6 +93,9 @@ export function checkSortOptbiz(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortOptbiz: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiOptbiz;
     if (!canSortInApiOptbiz[prop]) {
       throw new Error(`checkSortOptbiz: ${ JSON.stringify(item) }`);
