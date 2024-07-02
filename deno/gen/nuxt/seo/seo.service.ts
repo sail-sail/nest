@@ -11,7 +11,7 @@ import {
 import * as seoDao from "./seo.dao.ts";
 
 async function setSearchQuery(
-  search: SeoSearch,
+  _search: SeoSearch,
 ) {
   
 }
