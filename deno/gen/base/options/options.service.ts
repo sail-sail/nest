@@ -11,7 +11,7 @@ import {
 import * as optionsDao from "./options.dao.ts";
 
 async function setSearchQuery(
-  search: OptionsSearch,
+  _search: OptionsSearch,
 ) {
   
 }
