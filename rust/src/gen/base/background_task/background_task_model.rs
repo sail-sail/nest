@@ -898,6 +898,9 @@ pub fn check_sort_background_task(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_BACKGROUND_TASK.contains(&prop) {
       return Err(anyhow!("check_sort_background_task: {}", serde_json::to_string(item)?));
     }

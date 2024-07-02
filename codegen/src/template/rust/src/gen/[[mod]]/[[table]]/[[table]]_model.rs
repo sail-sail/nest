@@ -2974,6 +2974,9 @@ pub fn check_sort_<#=table#>(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_<#=table.toUpperCase()#>.contains(&prop) {
       return Err(anyhow!("check_sort_<#=table#>: {}", serde_json::to_string(item)?));
     }

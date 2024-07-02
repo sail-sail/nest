@@ -947,6 +947,9 @@ pub fn check_sort_usr(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_USR.contains(&prop) {
       return Err(anyhow!("check_sort_usr: {}", serde_json::to_string(item)?));
     }

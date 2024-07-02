@@ -662,6 +662,9 @@ pub fn check_sort_dictbiz_detail(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_DICTBIZ_DETAIL.contains(&prop) {
       return Err(anyhow!("check_sort_dictbiz_detail: {}", serde_json::to_string(item)?));
     }
