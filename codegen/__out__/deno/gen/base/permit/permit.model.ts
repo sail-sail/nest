@@ -81,6 +81,9 @@ export function checkSortPermit(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortPermit: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiPermit;
     if (!canSortInApiPermit[prop]) {
       throw new Error(`checkSortPermit: ${ JSON.stringify(item) }`);

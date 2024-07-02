@@ -50,7 +50,7 @@ impl DeptGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<DeptSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

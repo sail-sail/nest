@@ -50,7 +50,7 @@ impl OperationRecordGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<OperationRecordSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

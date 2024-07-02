@@ -49,11 +49,12 @@ pub async fn get_data_permits(
   
   let options = Options::new();
   let options = options.set_is_debug(Some(false));
+  let options = Some(options);
   
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id,
-      Some(options.clone()),
+      options.clone(),
     ).await?,
   ).await?;
   validate_is_enabled_usr(&usr_model).await?;
@@ -71,7 +72,7 @@ pub async fn get_data_permits(
       ..Default::default()
     }.into(),
     None,
-    Some(options.clone()),
+    options.clone(),
   ).await?;
   
   if menu_model.is_none() {
@@ -87,7 +88,7 @@ pub async fn get_data_permits(
     }.into(),
     None,
     None,
-    Some(options.clone()),
+    options.clone(),
   ).await?;
   
   let data_permit_ids = role_models
@@ -107,7 +108,7 @@ pub async fn get_data_permits(
     }.into(),
     None,
     None,
-    Some(options),
+    options,
   ).await?;
   
   Ok(data_permit_models)

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use crate::common::context::get_auth_model;
+use crate::common::context::{get_auth_model, Options};
 
 use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
@@ -17,9 +17,13 @@ pub async fn get_auth_role_ids() -> Result<Vec<RoleId>> {
   
   let aut_model = aut_model.unwrap();
   
+  let options = Options::new()
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let usr_model = find_by_id_usr(
     aut_model.id,
-    None,
+    options,
   ).await?;
   
   if usr_model.is_none() {
@@ -43,9 +47,13 @@ pub async fn get_role_ids(
   usr_id: UsrId,
 ) -> Result<Vec<RoleId>> {
   
+  let options = Options::new()
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let usr_model = find_by_id_usr(
     usr_id,
-    None,
+    options,
   ).await?;
   
   if usr_model.is_none() {

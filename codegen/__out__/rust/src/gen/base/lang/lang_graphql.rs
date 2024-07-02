@@ -48,7 +48,7 @@ impl LangGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<LangSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

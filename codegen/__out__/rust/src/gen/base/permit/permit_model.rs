@@ -150,32 +150,46 @@ impl FromRow<'_, MySqlRow> for PermitModel {
 #[allow(dead_code)]
 pub struct PermitFieldComment {
   /// ID
+  #[graphql(name = "id")]
   pub id: String,
   /// 菜单
+  #[graphql(name = "menu_id")]
   pub menu_id: String,
   /// 菜单
+  #[graphql(name = "menu_id_lbl")]
   pub menu_id_lbl: String,
   /// 编码
+  #[graphql(name = "code")]
   pub code: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 创建人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: String,
   /// 创建时间
+  #[graphql(name = "create_time")]
   pub create_time: String,
   /// 创建时间
+  #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
   /// 更新人
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: String,
   /// 更新时间
+  #[graphql(name = "update_time")]
   pub update_time: String,
   /// 更新时间
+  #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
 }
 
@@ -554,6 +568,9 @@ pub fn check_sort_permit(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_PERMIT.contains(&prop) {
       return Err(anyhow!("check_sort_permit: {}", serde_json::to_string(item)?));
     }

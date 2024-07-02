@@ -348,56 +348,82 @@ impl FromRow<'_, MySqlRow> for UsrModel {
 #[allow(dead_code)]
 pub struct UsrFieldComment {
   /// ID
+  #[graphql(name = "id")]
   pub id: String,
   /// 头像
+  #[graphql(name = "img")]
   pub img: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 用户名
+  #[graphql(name = "username")]
   pub username: String,
   /// 所属角色
+  #[graphql(name = "role_ids")]
   pub role_ids: String,
   /// 所属角色
+  #[graphql(name = "role_ids_lbl")]
   pub role_ids_lbl: String,
   /// 所属部门
+  #[graphql(name = "dept_ids")]
   pub dept_ids: String,
   /// 所属部门
+  #[graphql(name = "dept_ids_lbl")]
   pub dept_ids_lbl: String,
   /// 所属组织
+  #[graphql(name = "org_ids")]
   pub org_ids: String,
   /// 所属组织
+  #[graphql(name = "org_ids_lbl")]
   pub org_ids_lbl: String,
   /// 默认组织
+  #[graphql(name = "default_org_id")]
   pub default_org_id: String,
   /// 默认组织
+  #[graphql(name = "default_org_id_lbl")]
   pub default_org_id_lbl: String,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: String,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: String,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 创建人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: String,
   /// 创建时间
+  #[graphql(name = "create_time")]
   pub create_time: String,
   /// 创建时间
+  #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
   /// 更新人
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: String,
   /// 更新时间
+  #[graphql(name = "update_time")]
   pub update_time: String,
   /// 更新时间
+  #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
 }
 
@@ -947,6 +973,9 @@ pub fn check_sort_usr(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_USR.contains(&prop) {
       return Err(anyhow!("check_sort_usr: {}", serde_json::to_string(item)?));
     }

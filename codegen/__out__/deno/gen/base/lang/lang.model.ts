@@ -85,6 +85,9 @@ export function checkSortLang(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortLang: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiLang;
     if (!canSortInApiLang[prop]) {
       throw new Error(`checkSortLang: ${ JSON.stringify(item) }`);

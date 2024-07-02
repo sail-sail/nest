@@ -95,6 +95,9 @@ export function checkSortOperationRecord(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortOperationRecord: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiOperationRecord;
     if (!canSortInApiOperationRecord[prop]) {
       throw new Error(`checkSortOperationRecord: ${ JSON.stringify(item) }`);

@@ -8,8 +8,8 @@ defineGraphql(menuResolver, /* GraphQL */`
     id: MenuId!
     parent_id: MenuId!
     lbl: String!
-    route_path: String
-    route_query: String
+    route_path: String!
+    route_query: String!
   }
 
   type Query {

@@ -48,7 +48,7 @@ impl DictGenQuery {
     &self,
     ctx: &Context<'_>,
     search: Option<DictSearch>,
-  ) -> Result<i64> {
+  ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()

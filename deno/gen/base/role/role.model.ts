@@ -89,6 +89,9 @@ export function checkSortRole(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortRole: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiRole;
     if (!canSortInApiRole[prop]) {
       throw new Error(`checkSortRole: ${ JSON.stringify(item) }`);
