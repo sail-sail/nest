@@ -92,6 +92,9 @@ export function checkSortBackgroundTask(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortBackgroundTask: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiBackgroundTask;
     if (!canSortInApiBackgroundTask[prop]) {
       throw new Error(`checkSortBackgroundTask: ${ JSON.stringify(item) }`);

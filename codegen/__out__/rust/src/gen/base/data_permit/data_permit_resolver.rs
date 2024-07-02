@@ -34,7 +34,7 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<DataPermitSearch>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<u64> {
   
   let num = data_permit_service::find_count(
     search,

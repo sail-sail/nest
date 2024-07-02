@@ -16,7 +16,9 @@ import {
   useContext,
 } from "/lib/context.ts";
 
-import { getEnv } from "/lib/env.ts";
+import {
+  getEnv,
+} from "/lib/env.ts";
 
 export async function getAuthModel<T extends AuthModel>(): Promise<T | undefined>;
 export async function getAuthModel<T extends AuthModel>(notVerifyToken: false): Promise<T>;
@@ -78,6 +80,38 @@ export async function getAuthModel<T extends AuthModel>(
     response?.headers.set(AUTHORIZATION, "");
   }
   return authModel;
+}
+
+export async function get_usr_id(): Promise<UsrId | undefined>;
+export async function get_usr_id(notVerifyToken: false): Promise<UsrId>;
+export async function get_usr_id(notVerifyToken: true): Promise<UsrId | undefined>;
+export async function get_usr_id(notVerifyToken: boolean): Promise<UsrId | undefined>;
+
+export async function get_usr_id(
+  notVerifyToken?: boolean,
+): Promise<UsrId | undefined> {
+  // deno-lint-ignore no-explicit-any
+  const authModel = await getAuthModel<AuthModel>(notVerifyToken as any);
+  if (!authModel) {
+    return;
+  }
+  return authModel.id;
+}
+
+export async function get_org_id(): Promise<OrgId | undefined>;
+export async function get_org_id(notVerifyToken: false): Promise<OrgId>;
+export async function get_org_id(notVerifyToken: true): Promise<OrgId | undefined>;
+export async function get_org_id(notVerifyToken: boolean): Promise<OrgId | undefined>;
+
+export async function get_org_id(
+  notVerifyToken?: boolean,
+): Promise<OrgId | undefined> {
+  // deno-lint-ignore no-explicit-any
+  const authModel = await getAuthModel<AuthModel>(notVerifyToken as any);
+  if (!authModel) {
+    return;
+  }
+  return authModel.org_id;
 }
 
 /**

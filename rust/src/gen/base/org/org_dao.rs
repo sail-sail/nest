@@ -23,6 +23,7 @@ use crate::common::context::{
   QueryArgs,
   Options,
   FIND_ALL_IDS_LIMIT,
+  MAX_SAFE_INTEGER,
   CountModel,
   UniqueType,
   OrderByModel,
@@ -575,7 +576,7 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<OrgSearch>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<u64> {
   
   let table = "base_org";
   let method = "find_count";
@@ -837,6 +838,10 @@ pub async fn find_by_ids(
   let options = Some(options);
   
   let len = ids.len();
+  
+  if len > FIND_ALL_IDS_LIMIT {
+    return Err(anyhow!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+  }
   
   let search = OrgSearch {
     ids: Some(ids.clone()),
@@ -1842,6 +1847,10 @@ pub async fn delete_by_ids(
     return Ok(0);
   }
   
+  if ids.len() as u64 > MAX_SAFE_INTEGER {
+    return Err(anyhow!("ids.len(): {} > MAX_SAFE_INTEGER", ids.len()));
+  }
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
@@ -1925,6 +1934,10 @@ pub async fn delete_by_ids(
         options.clone(),
       ).await?;
     }
+  }
+  
+  if num > MAX_SAFE_INTEGER {
+    return Err(anyhow!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
   Ok(num)
@@ -2362,7 +2375,7 @@ pub async fn validate_is_enabled(
       "已禁用".to_owned(),
       None,
     ).await?;
-    let err_msg = table_comment + &msg1;
+    let err_msg = table_comment + msg1.as_str();
     return Err(anyhow!(err_msg));
   }
   Ok(())
@@ -2382,7 +2395,7 @@ pub async fn validate_option<T>(
       "不存在".to_owned(),
       None,
     ).await?;
-    let err_msg = table_comment + &msg1;
+    let err_msg = table_comment + msg1.as_str();
     let backtrace = std::backtrace::Backtrace::capture();
     error!(
       "{req_id} {err_msg}: {backtrace}",

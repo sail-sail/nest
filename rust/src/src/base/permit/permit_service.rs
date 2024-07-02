@@ -17,7 +17,7 @@ use crate::gen::base::menu::menu_model::{MenuSearch, MenuId};
 
 use super::permit_model::GetUsrPermits;
 
-use crate::gen::base::usr::usr_dao;
+use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 use crate::gen::base::role::role_dao::find_all as find_all_role;
 use crate::gen::base::role::role_model::RoleSearch;
@@ -38,9 +38,13 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
   }
   let auth_model = auth_model.unwrap();
   
-  let usr_model = usr_dao::find_by_id(
+  let options = Options::new();
+  let options = options.set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let usr_model = find_by_id_usr(
     auth_model.id,
-    None,
+    options.clone(),
   ).await?;
   if usr_model.is_none() {
     return Ok(Vec::new());
@@ -60,7 +64,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
     }.into(),
     None,
     None,
-    None,
+    options.clone(),
   ).await?;
   
   let mut permit_ids = Vec::<PermitId>::new();
@@ -103,7 +107,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
       }.into(),
       None,
       None,
-      None,
+      options.clone(),
     ).await?;
     permit_models.append(&mut permit_models_tmp);
   }
@@ -122,7 +126,7 @@ pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {
     
     let menu_model = find_by_id_menu(
       menu_id.clone(),
-      None,
+      options.clone(),
     ).await?;
     
     if menu_model.is_none() {
@@ -195,7 +199,7 @@ pub async fn use_permit(
   
   let usr_id = auth_model.id;
   
-  let usr_model = usr_dao::find_by_id(
+  let usr_model = find_by_id_usr(
     usr_id,
     options.clone(),
   ).await?;

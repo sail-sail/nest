@@ -1,6 +1,7 @@
 use anyhow::Result;
 use crate::common::context::{
   Ctx,
+  Options,
   get_auth_model_err,
   get_auth_org_id,
   get_now,
@@ -295,9 +296,13 @@ pub async fn change_password(
   
   let usr_id = auth_model.id;
   
+  let options = Options::new()
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let usr_model = find_by_id_usr(
     usr_id.clone(),
-    None,
+    options.clone(),
   ).await?;
   let usr_model = validate_option_usr(
     usr_model
@@ -322,7 +327,7 @@ pub async fn change_password(
       password: password.into(),
       ..Default::default()
     },
-    None,
+    options.clone(),
   ).await?;
   
   Ok(true)
@@ -330,11 +335,15 @@ pub async fn change_password(
 
 pub async fn get_login_info() -> Result<GetLoginInfo> {
   
+  let options = Options::new()
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
   let auth_model = get_auth_model_err()?;
   
   let usr_model = find_by_id_usr(
     auth_model.id,
-    None,
+    options,
   ).await?;
   let usr_model = validate_option_usr(
     usr_model

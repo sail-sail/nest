@@ -36,7 +36,7 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<OperationRecordSearch>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<u64> {
   
   let num = operation_record_service::find_count(
     search,

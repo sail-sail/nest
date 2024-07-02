@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::common::context::get_auth_id_err;
+use crate::common::context::{get_auth_id_err, Options};
 
 use crate::gen::base::usr::usr_dao::{
   find_by_id as find_by_id_usr,
@@ -15,10 +15,14 @@ pub async fn clear_cache(
   
   let usr_id = get_auth_id_err()?;
   
+  let options = Options::new();
+  let options = options.set_is_debug(Some(false));
+  let options = Some(options);
+  
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id,
-      None,
+      options,
     ).await?
   ).await?;
   

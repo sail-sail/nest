@@ -87,5 +87,6 @@
       "source": "./deno/gen/*.ts",
       "target": "<dir>/../codegen/template/deno/<basename>"
     }
-  ]
+  ],
+  "rust-analyzer.typing.continueCommentsOnNewline": false
 }

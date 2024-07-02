@@ -177,40 +177,58 @@ impl FromRow<'_, MySqlRow> for OptionsModel {
 #[allow(dead_code)]
 pub struct OptionsFieldComment {
   /// ID
+  #[graphql(name = "id")]
   pub id: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 键
+  #[graphql(name = "ky")]
   pub ky: String,
   /// 值
+  #[graphql(name = "val")]
   pub val: String,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: String,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: String,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 创建人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: String,
   /// 创建时间
+  #[graphql(name = "create_time")]
   pub create_time: String,
   /// 创建时间
+  #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
   /// 更新人
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: String,
   /// 更新时间
+  #[graphql(name = "update_time")]
   pub update_time: String,
   /// 更新时间
+  #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
 }
 
@@ -632,6 +650,9 @@ pub fn check_sort_options(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_OPTIONS.contains(&prop) {
       return Err(anyhow!("check_sort_options: {}", serde_json::to_string(item)?));
     }

@@ -69,7 +69,7 @@
     un-flex="~ gap-1 wrap"
     un-items-center
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2"
+    un-p="x-2.5 y-1.25"
     un-box-border
     un-rounded
     un-w="full"
@@ -177,7 +177,7 @@
     un-flex="~ gap-1 wrap"
     un-items-center
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2"
+    un-p="x-2.5 y-1.25"
     un-box-border
     un-rounded
     un-w="full"
