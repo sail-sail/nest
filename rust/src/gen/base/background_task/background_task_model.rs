@@ -197,46 +197,67 @@ impl FromRow<'_, MySqlRow> for BackgroundTaskModel {
 #[allow(dead_code)]
 pub struct BackgroundTaskFieldComment {
   /// ID
+  #[graphql(name = "id")]
   pub id: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 状态
+  #[graphql(name = "state")]
   pub state: String,
   /// 状态
+  #[graphql(name = "state_lbl")]
   pub state_lbl: String,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: String,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: String,
   /// 执行结果
+  #[graphql(name = "result")]
   pub result: String,
   /// 错误信息
+  #[graphql(name = "err_msg")]
   pub err_msg: String,
   /// 开始时间
+  #[graphql(name = "begin_time")]
   pub begin_time: String,
   /// 开始时间
+  #[graphql(name = "begin_time_lbl")]
   pub begin_time_lbl: String,
   /// 结束时间
+  #[graphql(name = "end_time")]
   pub end_time: String,
   /// 结束时间
+  #[graphql(name = "end_time_lbl")]
   pub end_time_lbl: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 创建人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 创建人
+  #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: String,
   /// 创建时间
+  #[graphql(name = "create_time")]
   pub create_time: String,
   /// 创建时间
+  #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
   /// 更新人
+  #[graphql(name = "update_usr_id")]
   pub update_usr_id: String,
   /// 更新人
+  #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: String,
   /// 更新时间
+  #[graphql(name = "update_time")]
   pub update_time: String,
   /// 更新时间
+  #[graphql(name = "update_time_lbl")]
   pub update_time_lbl: String,
 }
 
