@@ -1512,6 +1512,9 @@ pub struct <#=tableUP#>FieldComment {<#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: String,
@@ -1519,6 +1522,9 @@ pub struct <#=tableUP#>FieldComment {<#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_lbl")]<#
   }
   #>
   pub <#=column_name#>_lbl: String,<#
@@ -1528,6 +1534,9 @@ pub struct <#=tableUP#>FieldComment {<#
   if (onlyCodegenDeno) {
   #>
   #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
   }
   #>
   pub <#=column_name_rust#>: String,<#

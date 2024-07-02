@@ -161,22 +161,31 @@ impl FromRow<'_, MySqlRow> for LoginLogModel {
 #[allow(dead_code)]
 pub struct LoginLogFieldComment {
   /// ID
+  #[graphql(name = "id")]
   pub id: String,
   /// 类型
+  #[graphql(name = "type")]
   pub r#type: String,
   /// 类型
+  #[graphql(name = "type_lbl")]
   pub type_lbl: String,
   /// 用户名
+  #[graphql(name = "username")]
   pub username: String,
   /// 登录成功
+  #[graphql(name = "is_succ")]
   pub is_succ: String,
   /// 登录成功
+  #[graphql(name = "is_succ_lbl")]
   pub is_succ_lbl: String,
   /// IP
+  #[graphql(name = "ip")]
   pub ip: String,
   /// 登录时间
+  #[graphql(name = "create_time")]
   pub create_time: String,
   /// 登录时间
+  #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
   /// 创建人
   #[graphql(skip)]

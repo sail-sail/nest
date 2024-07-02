@@ -173,30 +173,43 @@ impl FromRow<'_, MySqlRow> for OperationRecordModel {
 #[allow(dead_code)]
 pub struct OperationRecordFieldComment {
   /// ID
+  #[graphql(name = "id")]
   pub id: String,
   /// 模块
+  #[graphql(name = "module")]
   pub module: String,
   /// 模块名称
+  #[graphql(name = "module_lbl")]
   pub module_lbl: String,
   /// 方法
+  #[graphql(name = "method")]
   pub method: String,
   /// 方法名称
+  #[graphql(name = "method_lbl")]
   pub method_lbl: String,
   /// 操作
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 耗时(毫秒)
+  #[graphql(name = "time")]
   pub time: String,
   /// 操作前数据
+  #[graphql(name = "old_data")]
   pub old_data: String,
   /// 操作后数据
+  #[graphql(name = "new_data")]
   pub new_data: String,
   /// 操作人
+  #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
   /// 操作人
+  #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: String,
   /// 操作时间
+  #[graphql(name = "create_time")]
   pub create_time: String,
   /// 操作时间
+  #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
   /// 更新人
   #[graphql(skip)]
