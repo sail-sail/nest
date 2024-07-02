@@ -11,7 +11,7 @@ import {
 import * as companyDao from "./company.dao.ts";
 
 async function setSearchQuery(
-  search: CompanySearch,
+  _search: CompanySearch,
 ) {
   
 }

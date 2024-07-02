@@ -59,7 +59,7 @@ import {
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
-  getAuthModel,
+  get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -94,8 +94,8 @@ async function getWhereQuery(
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   
   if (search?.tenant_id == null) {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const usr_id = await get_usr_id();
+    const tenant_id = await getTenant_id(usr_id);
     if (tenant_id) {
       whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
     }
@@ -1166,8 +1166,8 @@ async function _creates(
         sql += `,null`;
       }
       if (input.tenant_id == null) {
-        const authModel = await getAuthModel();
-        const tenant_id = await getTenant_id(authModel?.id);
+        const usr_id = await get_usr_id();
+        const tenant_id = await getTenant_id(usr_id);
         if (tenant_id) {
           sql += `,${ args.push(tenant_id) }`;
         } else {
@@ -1180,9 +1180,9 @@ async function _creates(
       }
       if (!is_silent_mode) {
         if (input.create_usr_id == null) {
-          const authModel = await getAuthModel();
-          if (authModel?.id != null) {
-            sql += `,${ args.push(authModel.id) }`;
+          const usr_id = await get_usr_id();
+          if (usr_id != null) {
+            sql += `,${ args.push(usr_id) }`;
           } else {
             sql += ",default";
           }
@@ -1452,9 +1452,9 @@ export async function updateById(
   if (updateFldNum > 0) {
     if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
-        const authModel = await getAuthModel();
-        if (authModel?.id != null) {
-          sql += `update_usr_id=${ args.push(authModel.id) },`;
+        const usr_id = await get_usr_id();
+        if (usr_id != null) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
         }
       } else if (input.update_usr_id as unknown as string !== "-") {
         sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
@@ -1873,8 +1873,8 @@ export async function findLastOrderBy(
   const args = new QueryArgs();
   whereQuery.push(` t.is_deleted=0`);
   {
-    const authModel = await getAuthModel();
-    const tenant_id = await getTenant_id(authModel?.id);
+    const usr_id = await get_usr_id();
+    const tenant_id = await getTenant_id(usr_id);
     whereQuery.push(` t.tenant_id=${ args.push(tenant_id) }`);
   }
   if (whereQuery.length > 0) {

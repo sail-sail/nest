@@ -86,6 +86,9 @@ export function checkSortCompany(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortCompany: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiCompany;
     if (!canSortInApiCompany[prop]) {
       throw new Error(`checkSortCompany: ${ JSON.stringify(item) }`);

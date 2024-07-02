@@ -84,6 +84,9 @@ export function checkSortArchive(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortArchive: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiArchive;
     if (!canSortInApiArchive[prop]) {
       throw new Error(`checkSortArchive: ${ JSON.stringify(item) }`);
