@@ -94,6 +94,9 @@ export function checkSortUsr(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortUsr: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiUsr;
     if (!canSortInApiUsr[prop]) {
       throw new Error(`checkSortUsr: ${ JSON.stringify(item) }`);
