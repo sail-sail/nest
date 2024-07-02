@@ -174,20 +174,28 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
 #[allow(dead_code)]
 pub struct WxwAppTokenFieldComment {
   /// ID
+  #[graphql(name = "id")]
   pub id: String,
   /// 企微应用
+  #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: String,
   /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
   pub wxw_app_id_lbl: String,
   /// 类型corp和contact
+  #[graphql(name = "type")]
   pub r#type: String,
   /// 令牌
+  #[graphql(name = "access_token")]
   pub access_token: String,
   /// 令牌创建时间
+  #[graphql(name = "token_time")]
   pub token_time: String,
   /// 令牌创建时间
+  #[graphql(name = "token_time_lbl")]
   pub token_time_lbl: String,
   /// 令牌超时时间
+  #[graphql(name = "expires_in")]
   pub expires_in: String,
   /// 创建人
   #[graphql(skip)]
@@ -613,6 +621,9 @@ pub fn check_sort_wxw_app_token(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_WXW_APP_TOKEN.contains(&prop) {
       return Err(anyhow!("check_sort_wxw_app_token: {}", serde_json::to_string(item)?));
     }

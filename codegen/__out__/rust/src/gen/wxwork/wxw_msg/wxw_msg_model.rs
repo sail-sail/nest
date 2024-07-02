@@ -193,31 +193,43 @@ impl FromRow<'_, MySqlRow> for WxwMsgModel {
 #[allow(dead_code)]
 pub struct WxwMsgFieldComment {
   /// ID
+  #[graphql(name = "id")]
   pub id: String,
   /// 企微应用
+  #[graphql(name = "wxw_app_id")]
   pub wxw_app_id: String,
   /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
   pub wxw_app_id_lbl: String,
   /// 发送状态
+  #[graphql(name = "errcode")]
   pub errcode: String,
   /// 发送状态
+  #[graphql(name = "errcode_lbl")]
   pub errcode_lbl: String,
   /// 成员ID
+  #[graphql(name = "touser")]
   pub touser: String,
   /// 标题
+  #[graphql(name = "title")]
   pub title: String,
   /// 描述
+  #[graphql(name = "description")]
   pub description: String,
   /// 链接
   #[graphql(skip)]
   pub url: String,
   /// 按钮文字
+  #[graphql(name = "btntxt")]
   pub btntxt: String,
   /// 发送时间
+  #[graphql(name = "create_time")]
   pub create_time: String,
   /// 发送时间
+  #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
   /// 错误信息
+  #[graphql(name = "errmsg")]
   pub errmsg: String,
   /// 消息ID
   #[graphql(skip)]
@@ -722,6 +734,9 @@ pub fn check_sort_wxw_msg(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_WXW_MSG.contains(&prop) {
       return Err(anyhow!("check_sort_wxw_msg: {}", serde_json::to_string(item)?));
     }

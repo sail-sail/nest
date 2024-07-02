@@ -36,7 +36,7 @@ pub async fn find_all(
 pub async fn find_count(
   search: Option<WxwMsgSearch>,
   options: Option<Options>,
-) -> Result<i64> {
+) -> Result<u64> {
   
   let num = wxw_msg_service::find_count(
     search,

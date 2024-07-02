@@ -210,32 +210,46 @@ impl FromRow<'_, MySqlRow> for WxwAppModel {
 #[allow(dead_code)]
 pub struct WxwAppFieldComment {
   /// ID
+  #[graphql(name = "id")]
   pub id: String,
   /// 名称
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 企业ID
+  #[graphql(name = "corpid")]
   pub corpid: String,
   /// 应用ID
+  #[graphql(name = "agentid")]
   pub agentid: String,
   /// 可信域名
+  #[graphql(name = "domain_id")]
   pub domain_id: String,
   /// 可信域名
+  #[graphql(name = "domain_id_lbl")]
   pub domain_id_lbl: String,
   /// 应用密钥
+  #[graphql(name = "corpsecret")]
   pub corpsecret: String,
   /// 通讯录密钥
+  #[graphql(name = "contactsecret")]
   pub contactsecret: String,
   /// 锁定
+  #[graphql(name = "is_locked")]
   pub is_locked: String,
   /// 锁定
+  #[graphql(name = "is_locked_lbl")]
   pub is_locked_lbl: String,
   /// 启用
+  #[graphql(name = "is_enabled")]
   pub is_enabled: String,
   /// 启用
+  #[graphql(name = "is_enabled_lbl")]
   pub is_enabled_lbl: String,
   /// 排序
+  #[graphql(name = "order_by")]
   pub order_by: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 创建人
   #[graphql(skip)]
@@ -725,6 +739,9 @@ pub fn check_sort_wxw_app(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_WXW_APP.contains(&prop) {
       return Err(anyhow!("check_sort_wxw_app: {}", serde_json::to_string(item)?));
     }

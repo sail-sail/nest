@@ -201,10 +201,13 @@ impl FromRow<'_, MySqlRow> for WxwUsrModel {
 #[allow(dead_code)]
 pub struct WxwUsrFieldComment {
   /// ID
+  #[graphql(name = "id")]
   pub id: String,
   /// 姓名
+  #[graphql(name = "lbl")]
   pub lbl: String,
   /// 用户ID
+  #[graphql(name = "userid")]
   pub userid: String,
   /// 手机号
   #[graphql(skip)]
@@ -234,6 +237,7 @@ pub struct WxwUsrFieldComment {
   #[graphql(skip)]
   pub qr_code: String,
   /// 备注
+  #[graphql(name = "rem")]
   pub rem: String,
   /// 创建人
   #[graphql(skip)]
@@ -793,6 +797,9 @@ pub fn check_sort_wxw_usr(
   
   for item in sort {
     let prop = item.prop.as_str();
+    if prop.is_empty() {
+      continue;
+    }
     if !CAN_SORT_IN_API_WXW_USR.contains(&prop) {
       return Err(anyhow!("check_sort_wxw_usr: {}", serde_json::to_string(item)?));
     }
