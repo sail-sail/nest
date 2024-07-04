@@ -19,10 +19,6 @@ import {
 
 import * as cardDao from "./card.dao.ts";
 
-import {
-  updateSeqLbl,
-} from "/src/wshop/card/card.dao.ts";
-
 async function setSearchQuery(
   search: CardSearch,
 ) {
@@ -171,10 +167,19 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<CardId[]> {
-  const ids = await cardDao.creates(inputs, options);
-  for (const id of ids) {
-    await updateSeqLbl(id);
+  
+  const {
+    getLblSeq,
+  } = await import("/src/wshop/card/card.dao.ts");
+  
+  // 自动生成会员卡卡号
+  for (const input of inputs) {
+    const model = await getLblSeq();
+    input.lbl = model.lbl;
+    input.lbl_seq = model.lbl_seq;
   }
+  
+  const ids = await cardDao.creates(inputs, options);
   return ids;
 }
 
