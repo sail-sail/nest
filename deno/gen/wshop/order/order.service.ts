@@ -19,10 +19,6 @@ import {
 
 import * as orderDao from "./order.dao.ts";
 
-import {
-  updateSeqLbl,
-} from "/src/wshop/order/order.dao.ts";
-
 async function setSearchQuery(
   search: OrderSearch,
 ) {
@@ -171,10 +167,20 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<OrderId[]> {
-  const ids = await orderDao.creates(inputs, options);
-  for (let i = 0; i < ids.length; i++) {
-    await updateSeqLbl(ids[i]);
+  
+  const {
+    getLblSeq,
+  } = await import("/src/wshop/order/order.dao.ts");
+  
+  // 自动生成订单编号
+  for (const input of inputs) {
+    const model = await getLblSeq();
+    input.lbl = model.lbl;
+    input.lbl_seq = model.lbl_seq;
+    input.lbl_date_seq = model.lbl_date_seq;
   }
+  
+  const ids = await orderDao.creates(inputs, options);
   return ids;
 }
 
