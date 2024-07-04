@@ -113,6 +113,9 @@ export function checkSortCardRecharge(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortCardRecharge: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiCardRecharge;
     if (!canSortInApiCardRecharge[prop]) {
       throw new Error(`checkSortCardRecharge: ${ JSON.stringify(item) }`);

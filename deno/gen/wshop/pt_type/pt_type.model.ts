@@ -109,6 +109,9 @@ export function checkSortPtType(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortPtType: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiPtType;
     if (!canSortInApiPtType[prop]) {
       throw new Error(`checkSortPtType: ${ JSON.stringify(item) }`);

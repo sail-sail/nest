@@ -134,6 +134,9 @@ export function checkSortOrder(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortOrder: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiOrder;
     if (!canSortInApiOrder[prop]) {
       throw new Error(`checkSortOrder: ${ JSON.stringify(item) }`);

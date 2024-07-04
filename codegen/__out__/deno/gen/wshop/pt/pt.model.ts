@@ -126,6 +126,9 @@ export function checkSortPt(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortPt: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiPt;
     if (!canSortInApiPt[prop]) {
       throw new Error(`checkSortPt: ${ JSON.stringify(item) }`);

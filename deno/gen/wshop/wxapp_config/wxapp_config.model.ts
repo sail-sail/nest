@@ -108,6 +108,9 @@ export function checkSortWxappConfig(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortWxappConfig: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiWxappConfig;
     if (!canSortInApiWxappConfig[prop]) {
       throw new Error(`checkSortWxappConfig: ${ JSON.stringify(item) }`);
