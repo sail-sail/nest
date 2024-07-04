@@ -113,6 +113,9 @@ export function checkSortCardConsume(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortCardConsume: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiCardConsume;
     if (!canSortInApiCardConsume[prop]) {
       throw new Error(`checkSortCardConsume: ${ JSON.stringify(item) }`);

@@ -102,6 +102,9 @@ export function checkSortRechargeRule(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortRechargeRule: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiRechargeRule;
     if (!canSortInApiRechargeRule[prop]) {
       throw new Error(`checkSortRechargeRule: ${ JSON.stringify(item) }`);
