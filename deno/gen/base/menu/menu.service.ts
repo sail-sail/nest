@@ -11,7 +11,7 @@ import {
 import * as menuDao from "./menu.dao.ts";
 
 async function setSearchQuery(
-  search: MenuSearch,
+  _search: MenuSearch,
 ) {
   
 }

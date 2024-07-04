@@ -11,7 +11,7 @@ import {
 import * as permitDao from "./permit.dao.ts";
 
 async function setSearchQuery(
-  search: PermitSearch,
+  _search: PermitSearch,
 ) {
   
 }

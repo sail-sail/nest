@@ -73,7 +73,7 @@ async function _getMenus(
     parent_id: string,
     lbl: string,
     route_path: string,
-    route_query?: string,
+    route_query: string,
     order_by: number,
   };
   

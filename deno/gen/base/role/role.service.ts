@@ -11,7 +11,7 @@ import {
 import * as roleDao from "./role.dao.ts";
 
 async function setSearchQuery(
-  search: RoleSearch,
+  _search: RoleSearch,
 ) {
   
 }
