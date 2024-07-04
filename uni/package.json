@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "cross-env NODE_OPTIONS=--max-old-space-size=4096 uni -p mp-weixin",
-    "typecheck": "vue-tsc --noEmit --skipLibCheck",
+    "typecheck": "vue-tsc --noEmit --skipLibCheck --project tsconfig_tc.json",
     "dev:app": "uni -p app",
     "dev:custom": "uni -p",
     "dev:h5": "uni",

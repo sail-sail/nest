@@ -41,5 +41,9 @@
     "**/*.d.ts",
     "**/*.tsx",
     "**/*.vue"
+  ],
+  "exclude": [
+    "src/tmui/**/*.ts",
+    "src/tmui/**/*.vue"
   ]
 }
