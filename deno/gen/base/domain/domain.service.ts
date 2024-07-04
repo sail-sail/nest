@@ -11,7 +11,7 @@ import {
 import * as domainDao from "./domain.dao.ts";
 
 async function setSearchQuery(
-  search: DomainSearch,
+  _search: DomainSearch,
 ) {
   
 }

@@ -87,6 +87,9 @@ export function checkSortLoginLog(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortLoginLog: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiLoginLog;
     if (!canSortInApiLoginLog[prop]) {
       throw new Error(`checkSortLoginLog: ${ JSON.stringify(item) }`);
