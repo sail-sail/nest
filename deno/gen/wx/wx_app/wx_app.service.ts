@@ -11,7 +11,7 @@ import {
 import * as wx_appDao from "./wx_app.dao.ts";
 
 async function setSearchQuery(
-  search: WxAppSearch,
+  _search: WxAppSearch,
 ) {
   
 }
