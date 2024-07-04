@@ -104,6 +104,9 @@ export function checkSortWxPay(sort?: SortInput[]) {
     ) {
       throw new Error(`checkSortWxPay: ${ JSON.stringify(item) }`);
     }
+    if (!item.prop) {
+      continue;
+    }
     const prop = item.prop as keyof typeof canSortInApiWxPay;
     if (!canSortInApiWxPay[prop]) {
       throw new Error(`checkSortWxPay: ${ JSON.stringify(item) }`);
