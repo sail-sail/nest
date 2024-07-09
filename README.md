@@ -27,3 +27,5 @@
     - 第二套有相同功能的后端: rust + mysql + async-graphql
 
 7. [github](https://github.com/sail-sail/nest.git)
+
+8. [文档](https://sail-sail.github.io/docs/)
