@@ -2148,13 +2148,13 @@ export async function forceDeleteByIds(
       const usr_ids = oldModel.usr_ids;
       if (usr_ids && usr_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_dept_usr where usr_id in ${ args.push(usr_ids) }`;
+        const sql = `delete from base_dept_usr where dept_id=${ args.push(id) } usr_id in ${ args.push(usr_ids) }`;
         await execute(sql, args);
       }
     }
     {
       const args = new QueryArgs();
-      const sql = `delete from base_usr_dept where dept_id=${ args.push(id) }`;
+      const sql = `delete from base_usr_dept where usr_id=${ args.push(id) } dept_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }
