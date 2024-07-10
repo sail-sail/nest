@@ -1896,7 +1896,7 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `delete from base_tenant_domain where domain_id=${ args.push(id) }`;
+      const sql = `delete from base_tenant_domain where tenant_id=${ args.push(id) } domain_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }
