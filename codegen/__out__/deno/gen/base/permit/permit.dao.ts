@@ -1600,7 +1600,7 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `delete from base_role_permit where permit_id=${ args.push(id) }`;
+      const sql = `delete from base_role_permit where role_id=${ args.push(id) } permit_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }

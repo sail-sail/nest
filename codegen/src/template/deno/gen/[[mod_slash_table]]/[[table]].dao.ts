@@ -5461,7 +5461,7 @@ export async function forceDeleteByIds(
       const <#=column_name#> = oldModel.<#=column_name#>;
       if (<#=column_name#> && <#=column_name#>.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#> in ${ args.push(<#=column_name#>) }`;
+        const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } <#=many2many.column2#> in ${ args.push(<#=column_name#>) }`;
         await execute(sql, args);
       }
     }<#
@@ -5480,7 +5480,7 @@ export async function forceDeleteByIds(
     #>
     {
       const args = new QueryArgs();
-      const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=${ args.push(id) }`;
+      const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } <#=many2many.column2#>=${ args.push(id) }`;
       await execute(sql, args);
     }<#
     }

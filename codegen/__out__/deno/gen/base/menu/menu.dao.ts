@@ -1916,12 +1916,12 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `delete from base_role_menu where menu_id=${ args.push(id) }`;
+      const sql = `delete from base_role_menu where role_id=${ args.push(id) } menu_id=${ args.push(id) }`;
       await execute(sql, args);
     }
     {
       const args = new QueryArgs();
-      const sql = `delete from base_tenant_menu where menu_id=${ args.push(id) }`;
+      const sql = `delete from base_tenant_menu where tenant_id=${ args.push(id) } menu_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }
