@@ -5006,7 +5006,8 @@ pub async fn delete_by_ids(
         #><#
         if (hasIsDeleted) {
         #>
-        let mut sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=1 where".to_owned();
+        let mut sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=1 where <#=many2many.column1#>=? and".to_owned();
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -5022,7 +5023,8 @@ pub async fn delete_by_ids(
         let sql = sql;<#
         } else {
         #>
-        let mut sql = "delete from <#=mod#>_<#=many2many.table#> where".to_owned();
+        let mut sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=? and".to_owned();
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -5044,7 +5046,8 @@ pub async fn delete_by_ids(
         ).await?;<#
         } else {
         #>
-        let mut sql = "select count(id) as total from <#=mod#>_<#=many2many.table#> where".to_owned();
+        let mut sql = "select count(id) as total from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=? and".to_owned();
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -5987,7 +5990,8 @@ pub async fn force_delete_by_ids(
       let <#=column_name#> = old_model.<#=column_name#>.clone();
       if !<#=column_name#>.is_empty() {
         let mut args = QueryArgs::new();
-        let mut sql = "delete from <#=mod#>_<#=many2many.table#> where".to_owned();
+        let mut sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=? and".to_owned();
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(<#=column_name#>.len());
         for item in <#=column_name#> {
           items.push("?");
