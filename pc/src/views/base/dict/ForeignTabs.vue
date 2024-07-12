@@ -22,21 +22,25 @@
         un-flex="~ [1_0_0] col"
         un-w="full"
       >
+      
+      <template
+        v-if="tabGroup === 'code'"
+      >
         
-        <el-tab-pane
-          lazy
-          :label="'系统字典明细' + (dict_detailTotal != null ? ` (${ dict_detailTotal })` : '')"
-          name="系统字典明细"
-        >
-          <Dict_detailList
-            :dict_id="dialogModel.id"
-            :is_deleted="dialogModel.is_deleted ? '1' : '0'"
-            :is-locked="dialogModel.is_deleted ? '1' : '0'"
-            @add="useAllFindDebounce"
-            @remove="useAllFindDebounce"
-            @revert="useAllFindDebounce"
-          ></Dict_detailList>
-        </el-tab-pane>
+          <el-tab-pane
+            :label="'系统字典明细' + (dict_detail_total != null ? ` (${ dict_detail_total })` : '')"
+          >
+            <Dict_detailList
+              :dict_id="dialogModel.id"
+              :is_deleted="dialogModel.is_deleted ? '1' : '0'"
+              :is-locked="dialogModel.is_deleted ? '1' : '0'"
+              @add="useAllFindDebounce"
+              @remove="useAllFindDebounce"
+              @revert="useAllFindDebounce"
+            ></Dict_detailList>
+          </el-tab-pane>
+          
+        </template>
         
       </el-tabs>
     </div>
@@ -85,13 +89,15 @@ let dialogModel = $ref<{
   is_deleted?: number | null,
 }>({ });
 
-let tabName = $ref("系统字典明细");
+let tabGroup = $ref("");
 
-let dict_detailTotal = $ref<number>();
+let tabName = $ref<string>();
+
+let dict_detail_total = $ref<number>();
 
 async function useFindCountDict_detail() {
   const dict_id: DictId[] = [ dialogModel.id! ];
-  dict_detailTotal = await findCountDict_detail(
+  dict_detail_total = await findCountDict_detail(
     {
       is_deleted: dialogModel.is_deleted,
       dict_id,
@@ -124,6 +130,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
+    tabGroup: string;
     model?: {
       id?: DictId;
       is_deleted?: number | null;
@@ -140,6 +147,7 @@ async function showDialog(
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
   const action = arg?.action;
+  tabGroup = arg?.tabGroup ?? tabGroup;
   dialogModel.is_deleted = model?.is_deleted;
   dialogAction = action || "list";
   if (dialogAction === "list") {
