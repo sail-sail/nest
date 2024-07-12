@@ -2045,7 +2045,7 @@ export async function forceDeleteByIds(
       const domain_ids = oldModel.domain_ids;
       if (domain_ids && domain_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_tenant_domain where tenant_id=${ args.push(id) } domain_id in ${ args.push(domain_ids) }`;
+        const sql = `delete from base_tenant_domain where tenant_id=${ args.push(id) } and domain_id in ${ args.push(domain_ids) }`;
         await execute(sql, args);
       }
     }
@@ -2053,7 +2053,7 @@ export async function forceDeleteByIds(
       const menu_ids = oldModel.menu_ids;
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_tenant_menu where tenant_id=${ args.push(id) } menu_id in ${ args.push(menu_ids) }`;
+        const sql = `delete from base_tenant_menu where tenant_id=${ args.push(id) } and menu_id in ${ args.push(menu_ids) }`;
         await execute(sql, args);
       }
     }

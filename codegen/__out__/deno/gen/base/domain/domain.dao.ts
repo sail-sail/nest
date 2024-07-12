@@ -1572,7 +1572,7 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `update base_tenant_domain set is_deleted=1 where tenant_id=${ args.push(id) } and domain_id=${ args.push(id) } and is_deleted=0`;
+      const sql = `update base_tenant_domain set is_deleted=1 where domain_id=${ args.push(id) } and is_deleted=0`;
       await execute(sql, args);
     }
   }
@@ -1896,7 +1896,7 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `delete from base_tenant_domain where tenant_id=${ args.push(id) } domain_id=${ args.push(id) }`;
+      const sql = `delete from base_tenant_domain where domain_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }
