@@ -4,7 +4,7 @@
   "description": "codegen",
   "license": "MIT",
   "scripts": {
-    "codegen": "git add . && ts-node src/bin/codegen.ts",
+    "codegen": "ts-node src/bin/codegen.ts",
     "gqlgen": "cd ../rust && npm run gqlgen",
     "codeapply": "ts-node src/bin/codeapply.ts",
     "coderemove": "ts-node src/bin/coderemove_rs.ts",
