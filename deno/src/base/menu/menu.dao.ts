@@ -77,11 +77,28 @@ async function _getMenus(
     order_by: number,
   };
   
-  const result = await query<Result>(sql, args, { cacheKey1, cacheKey2 });
+  let models = await query<Result>(
+    sql,
+    args,
+    {
+      cacheKey1,
+      cacheKey2,
+    },
+  );
   
-  result.sort((a, b) => a.order_by - b.order_by);
+  const {
+    getEnv,
+  } = await import("/lib/env.ts");
   
-  return result;
+  const server_i18n_enable = await getEnv("server_i18n_enable");
+  
+  if (server_i18n_enable === "false") {
+    models = models.filter((item) => item.route_path !== "/base/i18n" && item.route_path !== "/base/lang");
+  }
+  
+  models.sort((a, b) => a.order_by - b.order_by);
+  
+  return models;
 }
 
 export async function getMenus() {
