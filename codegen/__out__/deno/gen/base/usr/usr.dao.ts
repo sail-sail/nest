@@ -46,10 +46,6 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
-import {
-  deepCompare,
-} from "/lib/util/object_util.ts";
-
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -2020,11 +2016,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    const newModel = await findById(id, options);
-    
-    if (!deepCompare(oldModel, newModel)) {
-      log(JSON.stringify(oldModel));
-    }
+    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
   }
   
   return id;
@@ -2077,6 +2069,9 @@ export async function deleteByIds(
     if (!oldModel) {
       continue;
     }
+    if (!is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    }
     const args = new QueryArgs();
     let sql = `update base_usr set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
@@ -2105,7 +2100,7 @@ export async function deleteByIds(
       const role_ids = oldModel.role_ids;
       if (role_ids && role_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_usr_role set is_deleted=1 where role_id in ${ args.push(role_ids) } and is_deleted=0`;
+        const sql = `update base_usr_role set is_deleted=1 where usr_id=${ args.push(id) } and role_id in ${ args.push(role_ids) } and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -2113,7 +2108,7 @@ export async function deleteByIds(
       const dept_ids = oldModel.dept_ids;
       if (dept_ids && dept_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_usr_dept set is_deleted=1 where dept_id in ${ args.push(dept_ids) } and is_deleted=0`;
+        const sql = `update base_usr_dept set is_deleted=1 where usr_id=${ args.push(id) } and dept_id in ${ args.push(dept_ids) } and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -2121,7 +2116,7 @@ export async function deleteByIds(
       const org_ids = oldModel.org_ids;
       if (org_ids && org_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_usr_org set is_deleted=1 where org_id in ${ args.push(org_ids) } and is_deleted=0`;
+        const sql = `update base_usr_org set is_deleted=1 where usr_id=${ args.push(id) } and org_id in ${ args.push(org_ids) } and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -2370,12 +2365,14 @@ export async function forceDeleteByIds(
   ids: UsrId[],
   options?: {
     is_debug?: boolean;
+    is_silent_mode?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_usr";
   const method = "forceDeleteByIds";
   
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
@@ -2408,7 +2405,9 @@ export async function forceDeleteByIds(
       undefined,
       options,
     );
-    log("forceDeleteByIds:", oldModel);
+    if (oldModel && !is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    }
     const args = new QueryArgs();
     const sql = `delete from base_usr where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
@@ -2417,7 +2416,7 @@ export async function forceDeleteByIds(
       const role_ids = oldModel.role_ids;
       if (role_ids && role_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_usr_role where role_id in ${ args.push(role_ids) }`;
+        const sql = `delete from base_usr_role where usr_id=${ args.push(id) } and role_id in ${ args.push(role_ids) }`;
         await execute(sql, args);
       }
     }
@@ -2425,7 +2424,7 @@ export async function forceDeleteByIds(
       const dept_ids = oldModel.dept_ids;
       if (dept_ids && dept_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_usr_dept where dept_id in ${ args.push(dept_ids) }`;
+        const sql = `delete from base_usr_dept where usr_id=${ args.push(id) } and dept_id in ${ args.push(dept_ids) }`;
         await execute(sql, args);
       }
     }
@@ -2433,7 +2432,7 @@ export async function forceDeleteByIds(
       const org_ids = oldModel.org_ids;
       if (org_ids && org_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_usr_org where org_id in ${ args.push(org_ids) }`;
+        const sql = `delete from base_usr_org where usr_id=${ args.push(id) } and org_id in ${ args.push(org_ids) }`;
         await execute(sql, args);
       }
     }
