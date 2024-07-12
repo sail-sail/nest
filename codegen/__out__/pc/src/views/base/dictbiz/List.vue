@@ -517,7 +517,7 @@
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property] + ' - ' + row.lbl)"
+                  @click="openForeignTabs(row.id, 'code', row[column.property] + ' - ' + row.lbl)"
                 >
                   {{ row[column.property] }}
                 </el-link>
@@ -1761,12 +1761,17 @@ async function onRevertByIds() {
 
 let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();
 
-async function openForeignTabs(id: DictbizId, title: string) {
+async function openForeignTabs(
+  id: DictbizId,
+  tabGroup: string,
+  title: string,
+) {
   if (!foreignTabsRef) {
     return;
   }
   await foreignTabsRef.showDialog({
     title,
+    tabGroup,
     model: {
       id,
       is_deleted: search.is_deleted,
