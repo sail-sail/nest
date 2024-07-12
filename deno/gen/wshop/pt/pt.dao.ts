@@ -1936,7 +1936,7 @@ export async function deleteByIds(
       const pt_type_ids = oldModel.pt_type_ids;
       if (pt_type_ids && pt_type_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update wshop_pt_pt_type set is_deleted=1 where pt_type_id in ${ args.push(pt_type_ids) } and is_deleted=0`;
+        const sql = `update wshop_pt_pt_type set is_deleted=1 where pt_id=${ args.push(id) } and pt_type_id in ${ args.push(pt_type_ids) } and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -2227,7 +2227,7 @@ export async function forceDeleteByIds(
       const pt_type_ids = oldModel.pt_type_ids;
       if (pt_type_ids && pt_type_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from wshop_pt_pt_type where pt_type_id in ${ args.push(pt_type_ids) }`;
+        const sql = `delete from wshop_pt_pt_type where pt_id=${ args.push(id) } pt_type_id in ${ args.push(pt_type_ids) }`;
         await execute(sql, args);
       }
     }
