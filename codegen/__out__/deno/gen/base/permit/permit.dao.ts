@@ -1467,7 +1467,7 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `update base_role_permit set is_deleted=1 where role_id=${ args.push(id) } and permit_id=${ args.push(id) } and is_deleted=0`;
+      const sql = `update base_role_permit set is_deleted=1 where permit_id=${ args.push(id) } and is_deleted=0`;
       await execute(sql, args);
     }
   }
@@ -1600,7 +1600,7 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `delete from base_role_permit where role_id=${ args.push(id) } permit_id=${ args.push(id) }`;
+      const sql = `delete from base_role_permit where permit_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }
