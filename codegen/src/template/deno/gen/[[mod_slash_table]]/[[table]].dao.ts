@@ -223,11 +223,15 @@ import {
   hash,<#
   }
   #>
-} from "/lib/util/string_util.ts";
+} from "/lib/util/string_util.ts";<#
+if (opts?.history_table) {
+#>
 
 import {
   deepCompare,
-} from "/lib/util/object_util.ts";
+} from "/lib/util/object_util.ts";<#
+}
+#>
 
 import * as validators from "/lib/validators/mod.ts";<#
   if (hasDict) {
@@ -4585,13 +4589,15 @@ export async function updateById(
   #>
   
   if (!is_silent_mode) {
+    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+  }<#
+  if (opts?.history_table) {
+  #>
+  
+  if (!is_silent_mode) {
     const newModel = await findById(id, options);
     
     if (!deepCompare(oldModel, newModel)) {
-      log(JSON.stringify(oldModel));<#
-      if (opts?.history_table) {
-      #>
-      
       const {
         create: createHistory,
       } = await import("/gen/<#=mod#>/<#=opts.history_table#>/<#=opts.history_table#>.dao.ts");
@@ -4603,11 +4609,11 @@ export async function updateById(
           id: undefined,
         },
         options,
-      );<#
-      }
-      #>
+      );
     }
   }<#
+  }
+  #><#
   if (mod === "cron" && table === "cron_job") {
   #>
   
@@ -4688,6 +4694,9 @@ export async function deleteByIds(
     const oldModel = await findById(id, options);
     if (!oldModel) {
       continue;
+    }
+    if (!is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
     }<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
@@ -5381,12 +5390,14 @@ export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
   options?: {
     is_debug?: boolean;
+    is_silent_mode?: boolean;
   },
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
   const method = "forceDeleteByIds";
   
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
@@ -5427,7 +5438,9 @@ export async function forceDeleteByIds(
       undefined,
       options,
     );
-    log("forceDeleteByIds:", oldModel);
+    if (oldModel && !is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    }
     const args = new QueryArgs();
     const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) }<#
     if (hasIsDeleted) {
