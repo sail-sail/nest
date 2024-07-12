@@ -1693,7 +1693,7 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `update wshop_pt_pt_type set is_deleted=1 where pt_type_id=${ args.push(id) } and is_deleted=0`;
+      const sql = `update wshop_pt_pt_type set is_deleted=1 where pt_id=${ args.push(id) } and pt_type_id=${ args.push(id) } and is_deleted=0`;
       await execute(sql, args);
     }
   }
@@ -1981,7 +1981,7 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `delete from wshop_pt_pt_type where pt_type_id=${ args.push(id) }`;
+      const sql = `delete from wshop_pt_pt_type where pt_id=${ args.push(id) } pt_type_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }
