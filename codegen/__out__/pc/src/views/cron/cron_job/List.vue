@@ -525,7 +525,7 @@
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property] + ' - ' + row.lbl)"
+                  @click="openForeignTabs(row.id, 'lbl', row[column.property] + ' - ' + row.lbl)"
                 >
                   {{ row[column.property] }}
                 </el-link>
@@ -1808,12 +1808,17 @@ async function onRevertByIds() {
 
 let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();
 
-async function openForeignTabs(id: CronJobId, title: string) {
+async function openForeignTabs(
+  id: CronJobId,
+  tabGroup: string,
+  title: string,
+) {
   if (!foreignTabsRef) {
     return;
   }
   await foreignTabsRef.showDialog({
     title,
+    tabGroup,
     model: {
       id,
       is_deleted: search.is_deleted,

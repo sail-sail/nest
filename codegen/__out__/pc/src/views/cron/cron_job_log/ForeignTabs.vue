@@ -22,21 +22,25 @@
         un-flex="~ [1_0_0] col"
         un-w="full"
       >
+      
+      <template
+        v-if="tabGroup === 'exec_state'"
+      >
         
-        <el-tab-pane
-          lazy
-          :label="'任务执行日志明细' + (cron_job_log_detailTotal != null ? ` (${ cron_job_log_detailTotal })` : '')"
-          name="任务执行日志明细"
-        >
-          <Cron_job_log_detailList
-            :cron_job_log_id="dialogModel.id"
-            :is_deleted="dialogModel.is_deleted ? '1' : '0'"
-            :is-locked="dialogModel.is_deleted ? '1' : '0'"
-            @add="useAllFindDebounce"
-            @remove="useAllFindDebounce"
-            @revert="useAllFindDebounce"
-          ></Cron_job_log_detailList>
-        </el-tab-pane>
+          <el-tab-pane
+            :label="'任务执行日志明细' + (cron_job_log_detail_total != null ? ` (${ cron_job_log_detail_total })` : '')"
+          >
+            <Cron_job_log_detailList
+              :cron_job_log_id="dialogModel.id"
+              :is_deleted="dialogModel.is_deleted ? '1' : '0'"
+              :is-locked="dialogModel.is_deleted ? '1' : '0'"
+              @add="useAllFindDebounce"
+              @remove="useAllFindDebounce"
+              @revert="useAllFindDebounce"
+            ></Cron_job_log_detailList>
+          </el-tab-pane>
+          
+        </template>
         
       </el-tabs>
     </div>
@@ -85,13 +89,15 @@ let dialogModel = $ref<{
   is_deleted?: number | null,
 }>({ });
 
-let tabName = $ref("任务执行日志明细");
+let tabGroup = $ref("");
 
-let cron_job_log_detailTotal = $ref<number>();
+let tabName = $ref<string>();
+
+let cron_job_log_detail_total = $ref<number>();
 
 async function useFindCountCron_job_log_detail() {
   const cron_job_log_id: CronJobLogId[] = [ dialogModel.id! ];
-  cron_job_log_detailTotal = await findCountCron_job_log_detail(
+  cron_job_log_detail_total = await findCountCron_job_log_detail(
     {
       is_deleted: dialogModel.is_deleted,
       cron_job_log_id,
@@ -124,6 +130,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
+    tabGroup: string;
     model?: {
       id?: CronJobLogId;
       is_deleted?: number | null;
@@ -140,6 +147,7 @@ async function showDialog(
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
   const action = arg?.action;
+  tabGroup = arg?.tabGroup ?? tabGroup;
   dialogModel.is_deleted = model?.is_deleted;
   dialogAction = action || "list";
   if (dialogAction === "list") {
