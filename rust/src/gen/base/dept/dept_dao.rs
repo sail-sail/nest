@@ -2342,7 +2342,8 @@ pub async fn delete_by_ids(
       let usr_ids = old_model.usr_ids.clone();
       if !usr_ids.is_empty() {
         let mut args = QueryArgs::new();
-        let mut sql = "update base_dept_usr set is_deleted=1 where".to_owned();
+        let mut sql = "update base_dept_usr set is_deleted=1 where dept_id=? and".to_owned();
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(usr_ids.len());
           for item in usr_ids {
@@ -2729,7 +2730,8 @@ pub async fn force_delete_by_ids(
       let usr_ids = old_model.usr_ids.clone();
       if !usr_ids.is_empty() {
         let mut args = QueryArgs::new();
-        let mut sql = "delete from base_dept_usr where".to_owned();
+        let mut sql = "delete from base_dept_usr where dept_id=? and".to_owned();
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(usr_ids.len());
         for item in usr_ids {
           items.push("?");
