@@ -22,21 +22,25 @@
         un-flex="~ [1_0_0] col"
         un-w="full"
       >
+      
+      <template
+        v-if="tabGroup === 'code'"
+      >
         
-        <el-tab-pane
-          lazy
-          :label="'业务字典' + (dictbiz_detailTotal != null ? ` (${ dictbiz_detailTotal })` : '')"
-          name="业务字典"
-        >
-          <Dictbiz_detailList
-            :dictbiz_id="dialogModel.id"
-            :is_deleted="dialogModel.is_deleted ? '1' : '0'"
-            :is-locked="dialogModel.is_deleted ? '1' : '0'"
-            @add="useAllFindDebounce"
-            @remove="useAllFindDebounce"
-            @revert="useAllFindDebounce"
-          ></Dictbiz_detailList>
-        </el-tab-pane>
+          <el-tab-pane
+            :label="'业务字典' + (dictbiz_detail_total != null ? ` (${ dictbiz_detail_total })` : '')"
+          >
+            <Dictbiz_detailList
+              :dictbiz_id="dialogModel.id"
+              :is_deleted="dialogModel.is_deleted ? '1' : '0'"
+              :is-locked="dialogModel.is_deleted ? '1' : '0'"
+              @add="useAllFindDebounce"
+              @remove="useAllFindDebounce"
+              @revert="useAllFindDebounce"
+            ></Dictbiz_detailList>
+          </el-tab-pane>
+          
+        </template>
         
       </el-tabs>
     </div>
@@ -85,13 +89,15 @@ let dialogModel = $ref<{
   is_deleted?: number | null,
 }>({ });
 
-let tabName = $ref("业务字典");
+let tabGroup = $ref("");
 
-let dictbiz_detailTotal = $ref<number>();
+let tabName = $ref<string>();
+
+let dictbiz_detail_total = $ref<number>();
 
 async function useFindCountDictbiz_detail() {
   const dictbiz_id: DictbizId[] = [ dialogModel.id! ];
-  dictbiz_detailTotal = await findCountDictbiz_detail(
+  dictbiz_detail_total = await findCountDictbiz_detail(
     {
       is_deleted: dialogModel.is_deleted,
       dictbiz_id,
@@ -124,6 +130,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
+    tabGroup: string;
     model?: {
       id?: DictbizId;
       is_deleted?: number | null;
@@ -140,6 +147,7 @@ async function showDialog(
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
   const action = arg?.action;
+  tabGroup = arg?.tabGroup ?? tabGroup;
   dialogModel.is_deleted = model?.is_deleted;
   dialogAction = action || "list";
   if (dialogAction === "list") {
