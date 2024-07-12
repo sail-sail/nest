@@ -3,9 +3,7 @@ const Table_Up = table.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const tableUp = Table_Up.substring(0, 1).toLowerCase() + Table_Up.substring(1);
-const column = columns.find((item) => item.foreignTabs?.length > 0);
-const foreignTabs = column?.foreignTabs || [ ];
-const foreignTabsDialogType = column?.foreignTabsDialogType || "medium";
+const foreignTabsDialogType = columns.find((item) => item.foreignTabs?.length > 0)?.foreignTabsDialogType || "medium";
 #><template>
 <CustomDialog
   ref="customDialogRef"
@@ -30,26 +28,44 @@ const foreignTabsDialogType = column?.foreignTabsDialogType || "medium";
         un-flex="~ [1_0_0] col"
         un-w="full"
       ><#
-      for (let im = 0; im < foreignTabs.length; im++) {
-        const item = foreignTabs[im];
-        const itemTable = item.table;
-        const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+      for (let ic = 0; ic < columns.length; ic++) {
+        const column = columns[ic];
+        if (!column.foreignTabs) continue;
+        const foreignTabs = column.foreignTabs || [ ];
+        const column_name = column.COLUMN_NAME;
       #>
+      
+      <template
+        v-if="tabGroup === '<#=column_name#>'"
+      ><#
+        for (let im = 0; im < foreignTabs.length; im++) {
+          const item = foreignTabs[im];
+          const itemTable = item.table;
+          const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+          const item_total = `${ itemTable }_total`;
+        #>
         
-        <el-tab-pane
-          lazy
-          :label="'<#=item.label#>' + (<#=itemTable#>Total != null ? ` (${ <#=itemTable#>Total })` : '')"
-          name="<#=item.label#>"
-        >
-          <<#=itemTableUp#>List
-            :<#=item.column#>="dialogModel.id"
-            :is_deleted="dialogModel.is_deleted ? '1' : '0'"
-            :is-locked="dialogModel.is_deleted ? '1' : '0'"
-            @add="useAllFindDebounce"
-            @remove="useAllFindDebounce"
-            @revert="useAllFindDebounce"
-          ></<#=itemTableUp#>List>
-        </el-tab-pane><#
+          <el-tab-pane<#
+            if (im !== 0) {
+            #>
+            lazy<#
+            }
+            #>
+            :label="'<#=item.label#>' + (<#=item_total#> != null ? ` (${ <#=item_total#> })` : '')"
+          >
+            <<#=itemTableUp#>List
+              :<#=item.column#>="dialogModel.id"
+              :is_deleted="dialogModel.is_deleted ? '1' : '0'"
+              :is-locked="dialogModel.is_deleted ? '1' : '0'"
+              @add="useAllFindDebounce"
+              @remove="useAllFindDebounce"
+              @revert="useAllFindDebounce"
+            ></<#=itemTableUp#>List>
+          </el-tab-pane><#
+          }
+          #>
+          
+        </template><#
         }
         #>
         
@@ -79,10 +95,15 @@ const foreignTabsDialogType = column?.foreignTabsDialogType || "medium";
 </template>
 
 <script lang="ts" setup><#
-for (let im = 0; im < foreignTabs.length; im++) {
-  const item = foreignTabs[im];
-  const itemTable = item.table;
-  const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+for (let ic = 0; ic < columns.length; ic++) {
+  const column = columns[ic];
+  if (!column.foreignTabs) continue;
+  const foreignTabs = column.foreignTabs || [ ];
+#><#
+  for (let im = 0; im < foreignTabs.length; im++) {
+    const item = foreignTabs[im];
+    const itemTable = item.table;
+    const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
 #>
 
 import <#=itemTableUp#>List from "@/views/<#=item.mod#>/<#=itemTable#>/List.vue";
@@ -90,6 +111,8 @@ import <#=itemTableUp#>List from "@/views/<#=item.mod#>/<#=itemTable#>/List.vue"
 import {
   findCount as findCount<#=itemTableUp#>,
 } from "@/views/<#=item.mod#>/<#=itemTable#>/Api";<#
+  }
+#><#
 }
 #>
 
@@ -107,35 +130,52 @@ let dialogModel = $ref<{
   is_deleted?: number | null,
 }>({ });
 
-let tabName = $ref("<#=foreignTabs[0]?.label || ""#>");<#
-for (let im = 0; im < foreignTabs.length; im++) {
-  const item = foreignTabs[im];
-  const itemTable = item.table;
-  const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+let tabGroup = $ref("");
+
+let tabName = $ref<string>();<#
+for (let ic = 0; ic < columns.length; ic++) {
+  const column = columns[ic];
+  if (!column.foreignTabs) continue;
+  const foreignTabs = column.foreignTabs || [ ];
+#><#
+  for (let im = 0; im < foreignTabs.length; im++) {
+    const item = foreignTabs[im];
+    const itemTable = item.table;
+    const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+    const item_total = `${ itemTable }_total`;
 #>
 
-let <#=itemTable#>Total = $ref<number>();
+let <#=item_total#> = $ref<number>();
 
 async function useFindCount<#=itemTableUp#>() {
   const <#=item.column#>: <#=Table_Up#>Id[] = [ dialogModel.id! ];
-  <#=itemTable#>Total = await findCount<#=itemTableUp#>(
+  <#=item_total#> = await findCount<#=itemTableUp#>(
     {
       is_deleted: dialogModel.is_deleted,
       <#=item.column#>,
     },
   );
 }<#
+  }
+#><#
 }
 #>
 
 async function useAllFindCount() {
   await Promise.all([<#
-    for (let im = 0; im < foreignTabs.length; im++) {
-      const item = foreignTabs[im];
-      const itemTable = item.table;
-      const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+    for (let ic = 0; ic < columns.length; ic++) {
+      const column = columns[ic];
+      if (!column.foreignTabs) continue;
+      const foreignTabs = column.foreignTabs || [ ];
+    #><#
+      for (let im = 0; im < foreignTabs.length; im++) {
+        const item = foreignTabs[im];
+        const itemTable = item.table;
+        const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
     #>
     useFindCount<#=itemTableUp#>(),<#
+      }
+    #><#
     }
     #>
   ]);
@@ -160,6 +200,7 @@ let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 async function showDialog(
   arg?: {
     title?: string;
+    tabGroup: string;
     model?: {
       id?: <#=Table_Up#>Id;
       is_deleted?: number | null;
@@ -176,6 +217,7 @@ async function showDialog(
   onCloseResolve = dialogRes.onCloseResolve;
   const model = arg?.model;
   const action = arg?.action;
+  tabGroup = arg?.tabGroup ?? tabGroup;
   dialogModel.is_deleted = model?.is_deleted;
   dialogAction = action || "list";
   if (dialogAction === "list") {
