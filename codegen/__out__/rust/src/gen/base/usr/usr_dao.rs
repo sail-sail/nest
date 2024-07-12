@@ -2246,6 +2246,17 @@ pub async fn update_by_id(
     ).await?;
     return Err(anyhow!(err_msg));
   }
+  let old_model = old_model.unwrap();
+  
+  if !is_silent_mode {
+    info!(
+      "{} {}.{}: {}",
+      get_req_id(),
+      table,
+      method,
+      serde_json::to_string(&old_model)?,
+    );
+  }
   
   {
     let mut input = input.clone();
@@ -2622,6 +2633,16 @@ pub async fn delete_by_ids(
     }
     let old_model = old_model.unwrap();
     
+    if !is_silent_mode {
+      info!(
+        "{} {}.{}: {}",
+        get_req_id(),
+        table,
+        method,
+        serde_json::to_string(&old_model)?,
+      );
+    }
+    
     let mut args = QueryArgs::new();
     
     let mut sql_fields = String::with_capacity(30);
@@ -2682,7 +2703,8 @@ pub async fn delete_by_ids(
       let role_ids = old_model.role_ids.clone();
       if !role_ids.is_empty() {
         let mut args = QueryArgs::new();
-        let mut sql = "update base_usr_role set is_deleted=1 where".to_owned();
+        let mut sql = "update base_usr_role set is_deleted=1 where usr_id=? and".to_owned();
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(role_ids.len());
           for item in role_ids {
@@ -2708,7 +2730,8 @@ pub async fn delete_by_ids(
       let dept_ids = old_model.dept_ids.clone();
       if !dept_ids.is_empty() {
         let mut args = QueryArgs::new();
-        let mut sql = "update base_usr_dept set is_deleted=1 where".to_owned();
+        let mut sql = "update base_usr_dept set is_deleted=1 where usr_id=? and".to_owned();
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(dept_ids.len());
           for item in dept_ids {
@@ -2734,7 +2757,8 @@ pub async fn delete_by_ids(
       let org_ids = old_model.org_ids.clone();
       if !org_ids.is_empty() {
         let mut args = QueryArgs::new();
-        let mut sql = "update base_usr_org set is_deleted=1 where".to_owned();
+        let mut sql = "update base_usr_org set is_deleted=1 where usr_id=? and".to_owned();
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(org_ids.len());
           for item in org_ids {
@@ -3085,6 +3109,8 @@ pub async fn force_delete_by_ids(
   
   let is_debug = get_is_debug(options.as_ref());
   
+  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  
   if is_debug {
     let mut msg = format!("{table}.{method}:");
     msg += &format!(" ids: {:?}", &ids);
@@ -3124,7 +3150,15 @@ pub async fn force_delete_by_ids(
     }
     let old_model = old_model.unwrap();
     
-    info!("force_delete_by_ids: {}", serde_json::to_string(&old_model)?);
+    if !is_silent_mode {
+      info!(
+        "{} {}.{}: {}",
+        get_req_id(),
+        table,
+        method,
+        serde_json::to_string(&old_model)?,
+      );
+    }
     
     let mut args = QueryArgs::new();
     
@@ -3153,7 +3187,8 @@ pub async fn force_delete_by_ids(
       let role_ids = old_model.role_ids.clone();
       if !role_ids.is_empty() {
         let mut args = QueryArgs::new();
-        let mut sql = "delete from base_usr_role where".to_owned();
+        let mut sql = "delete from base_usr_role where usr_id=? and".to_owned();
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(role_ids.len());
         for item in role_ids {
           items.push("?");
@@ -3174,7 +3209,8 @@ pub async fn force_delete_by_ids(
       let dept_ids = old_model.dept_ids.clone();
       if !dept_ids.is_empty() {
         let mut args = QueryArgs::new();
-        let mut sql = "delete from base_usr_dept where".to_owned();
+        let mut sql = "delete from base_usr_dept where usr_id=? and".to_owned();
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(dept_ids.len());
         for item in dept_ids {
           items.push("?");
@@ -3195,7 +3231,8 @@ pub async fn force_delete_by_ids(
       let org_ids = old_model.org_ids.clone();
       if !org_ids.is_empty() {
         let mut args = QueryArgs::new();
-        let mut sql = "delete from base_usr_org where".to_owned();
+        let mut sql = "delete from base_usr_org where usr_id=? and".to_owned();
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(org_ids.len());
         for item in org_ids {
           items.push("?");
