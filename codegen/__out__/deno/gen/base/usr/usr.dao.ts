@@ -2127,7 +2127,7 @@ export async function deleteByIds(
     }
     {
       const args = new QueryArgs();
-      const sql = `update base_dept_usr set is_deleted=1 where dept_id=${ args.push(id) } and usr_id=${ args.push(id) } and is_deleted=0`;
+      const sql = `update base_dept_usr set is_deleted=1 where usr_id=${ args.push(id) } and is_deleted=0`;
       await execute(sql, args);
     }
   }
@@ -2417,7 +2417,7 @@ export async function forceDeleteByIds(
       const role_ids = oldModel.role_ids;
       if (role_ids && role_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_usr_role where usr_id=${ args.push(id) } role_id in ${ args.push(role_ids) }`;
+        const sql = `delete from base_usr_role where usr_id=${ args.push(id) } and role_id in ${ args.push(role_ids) }`;
         await execute(sql, args);
       }
     }
@@ -2425,7 +2425,7 @@ export async function forceDeleteByIds(
       const dept_ids = oldModel.dept_ids;
       if (dept_ids && dept_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_usr_dept where usr_id=${ args.push(id) } dept_id in ${ args.push(dept_ids) }`;
+        const sql = `delete from base_usr_dept where usr_id=${ args.push(id) } and dept_id in ${ args.push(dept_ids) }`;
         await execute(sql, args);
       }
     }
@@ -2433,13 +2433,13 @@ export async function forceDeleteByIds(
       const org_ids = oldModel.org_ids;
       if (org_ids && org_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_usr_org where usr_id=${ args.push(id) } org_id in ${ args.push(org_ids) }`;
+        const sql = `delete from base_usr_org where usr_id=${ args.push(id) } and org_id in ${ args.push(org_ids) }`;
         await execute(sql, args);
       }
     }
     {
       const args = new QueryArgs();
-      const sql = `delete from base_dept_usr where dept_id=${ args.push(id) } usr_id=${ args.push(id) }`;
+      const sql = `delete from base_dept_usr where usr_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }

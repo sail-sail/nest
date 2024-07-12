@@ -1584,7 +1584,7 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `update base_usr_org set is_deleted=1 where usr_id=${ args.push(id) } and org_id=${ args.push(id) } and is_deleted=0`;
+      const sql = `update base_usr_org set is_deleted=1 where org_id=${ args.push(id) } and is_deleted=0`;
       await execute(sql, args);
     }
   }
@@ -1872,7 +1872,7 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `delete from base_usr_org where usr_id=${ args.push(id) } org_id=${ args.push(id) }`;
+      const sql = `delete from base_usr_org where org_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }
