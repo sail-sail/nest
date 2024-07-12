@@ -593,36 +593,30 @@ const hasAtt = columns.some((item) => item.isAtt);
         </template>
         <span>{{ ns('刷新') }}</span>
       </el-button><#
-      if (hasForeignTabsButton) {
-        let label = "";
-        for (let ii = 0; ii < columns.length; ii++) {
-          const column = columns[ii];
-          if (!column.foreignTabs) {
-            continue;
-          }
-          if (column.foreignTabs.length === 0) {
-            continue;
-          }
-          for (let iii = 0; iii < column.foreignTabs.length; iii++) {
-            const foreignTab = column.foreignTabs[iii];
-            if (foreignTab.linkType !== "button") {
-              continue;
-            }
-            label = foreignTab.label;
-            break;
-          }
+      for (let ii = 0; ii < columns.length; ii++) {
+        const column = columns[ii];
+        if (!column.foreignTabs) {
+          continue;
         }
+        const tabGroup = column.COLUMN_NAME || "";
+        for (let iii = 0; iii < column.foreignTabs.length; iii++) {
+          const foreignTab = column.foreignTabs[iii];
+          if (foreignTab.linkType !== "button") {
+            continue;
+          }
+          const label = foreignTab.label;
       #>
       
       <el-button
         plain
-        @click="onOpenForeignTabs"
+        @click="onOpenForeignTabs(tabGroup, label)"
       >
         <template #icon>
           <ElIconTickets />
         </template>
         <span>{{ ns('<#=label#>') }}</span>
       </el-button><#
+        }
       }
       #><#
       if (opts.noExport !== true) {
@@ -743,33 +737,30 @@ const hasAtt = columns.some((item) => item.isAtt);
             </el-dropdown-item><#
             }
             #><#
-            if (hasForeignTabsMore) {
-              let label = "";
-              for (let ii = 0; ii < columns.length; ii++) {
-                const column = columns[ii];
-                if (!column.foreignTabs) {
-                  continue;
-                }
-                if (column.foreignTabs.length === 0) {
-                  continue;
-                }
-                for (let iii = 0; iii < column.foreignTabs.length; iii++) {
-                  const foreignTab = column.foreignTabs[iii];
-                  if (foreignTab.linkType !== "more") {
-                    continue;
-                  }
-                  label = foreignTab.label;
-                  break;
-                }
+            for (let ii = 0; ii < columns.length; ii++) {
+              const column = columns[ii];
+              if (!column.foreignTabs) {
+                continue;
               }
+              const tabGroup = column.COLUMN_NAME || "";
+              for (let iii = 0; iii < column.foreignTabs.length; iii++) {
+                const foreignTab = column.foreignTabs[iii];
+                if (foreignTab.linkType !== "button") {
+                  continue;
+                }
+                const label = foreignTab.label;
             #>
             
             <el-dropdown-item
               un-justify-center
-              @click="onOpenForeignTabs"
+              @click="onOpenForeignTabs(tabGroup, label)"
             >
+              <template #icon>
+                <ElIconTickets />
+              </template>
               <span>{{ ns('<#=label#>') }}</span>
             </el-dropdown-item><#
+              }
             }
             #>
             
@@ -1063,7 +1054,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property]<#
+                  @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
                   if (opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
@@ -1207,7 +1198,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property]<#
+                  @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
                   if (opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
@@ -1270,7 +1261,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               <template #default="{ row, column }">
                 <el-link
                   type="primary"
-                  @click="openForeignTabs(row.id, row[column.property]<#
+                  @click="openForeignTabs(row.id, '<#=column.COLUMN_NAME#>', row[column.property]<#
                   if (opts.lbl_field) {
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
@@ -3588,7 +3579,10 @@ let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();<#
 if (hasForeignTabsButton || hasForeignTabsMore) {
 #>
 
-async function onOpenForeignTabs() {
+async function onOpenForeignTabs(
+  tabGroup: string,
+  title: string,
+) {
   tableFocus();
   if (selectedIds.length === 0) {
     ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("<#=table_comment#>")));
@@ -3599,18 +3593,23 @@ async function onOpenForeignTabs() {
     return;
   }
   const id = selectedIds[0];
-  await openForeignTabs(id, "");
+  await openForeignTabs(id, tabGroup, title);
   tableFocus();
 }<#
 }
 #>
 
-async function openForeignTabs(id: <#=Table_Up#>Id, title: string) {
+async function openForeignTabs(
+  id: <#=Table_Up#>Id,
+  tabGroup: string,
+  title: string,
+) {
   if (!foreignTabsRef) {
     return;
   }
   await foreignTabsRef.showDialog({
     title,
+    tabGroup,
     model: {
       id,<#
       if (hasIsDeleted) {
