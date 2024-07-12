@@ -46,10 +46,6 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
-import {
-  deepCompare,
-} from "/lib/util/object_util.ts";
-
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -1853,11 +1849,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    const newModel = await findById(id, options);
-    
-    if (!deepCompare(oldModel, newModel)) {
-      log(JSON.stringify(oldModel));
-    }
+    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
   }
   
   return id;
@@ -1910,6 +1902,9 @@ export async function deleteByIds(
     if (!oldModel) {
       continue;
     }
+    if (!is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    }
     const args = new QueryArgs();
     let sql = `update base_role set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
@@ -1960,7 +1955,7 @@ export async function deleteByIds(
     }
     {
       const args = new QueryArgs();
-      const sql = `update base_usr_role set is_deleted=1 where usr_id=${ args.push(id) } and role_id=${ args.push(id) } and is_deleted=0`;
+      const sql = `update base_usr_role set is_deleted=1 where role_id=${ args.push(id) } and is_deleted=0`;
       await execute(sql, args);
     }
   }
@@ -2203,12 +2198,14 @@ export async function forceDeleteByIds(
   ids: RoleId[],
   options?: {
     is_debug?: boolean;
+    is_silent_mode?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_role";
   const method = "forceDeleteByIds";
   
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
@@ -2241,7 +2238,9 @@ export async function forceDeleteByIds(
       undefined,
       options,
     );
-    log("forceDeleteByIds:", oldModel);
+    if (oldModel && !is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    }
     const args = new QueryArgs();
     const sql = `delete from base_role where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
@@ -2250,7 +2249,7 @@ export async function forceDeleteByIds(
       const menu_ids = oldModel.menu_ids;
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_role_menu where role_id=${ args.push(id) } menu_id in ${ args.push(menu_ids) }`;
+        const sql = `delete from base_role_menu where role_id=${ args.push(id) } and menu_id in ${ args.push(menu_ids) }`;
         await execute(sql, args);
       }
     }
@@ -2258,7 +2257,7 @@ export async function forceDeleteByIds(
       const permit_ids = oldModel.permit_ids;
       if (permit_ids && permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_role_permit where role_id=${ args.push(id) } permit_id in ${ args.push(permit_ids) }`;
+        const sql = `delete from base_role_permit where role_id=${ args.push(id) } and permit_id in ${ args.push(permit_ids) }`;
         await execute(sql, args);
       }
     }
@@ -2266,13 +2265,13 @@ export async function forceDeleteByIds(
       const data_permit_ids = oldModel.data_permit_ids;
       if (data_permit_ids && data_permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_role_data_permit where role_id=${ args.push(id) } data_permit_id in ${ args.push(data_permit_ids) }`;
+        const sql = `delete from base_role_data_permit where role_id=${ args.push(id) } and data_permit_id in ${ args.push(data_permit_ids) }`;
         await execute(sql, args);
       }
     }
     {
       const args = new QueryArgs();
-      const sql = `delete from base_usr_role where usr_id=${ args.push(id) } role_id=${ args.push(id) }`;
+      const sql = `delete from base_usr_role where role_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }
