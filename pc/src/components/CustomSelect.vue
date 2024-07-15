@@ -652,23 +652,7 @@ async function refreshEfc() {
 }
 
 function onValueChange() {
-  if (!props.multiple) {
-    const model = data.find((item) => props.optionsMap(item).value === modelValue);
-    emit("change", model);
-    return;
-  }
-  let models: any[] = [ ];
-  let modelValues: string[] = [ ];
-  if (Array.isArray(modelValue)) {
-    modelValues = modelValue;
-  } else {
-    modelValues = modelValue?.split(",") || [ ];
-  }
-  for (const value of modelValues) {
-    const model = data.find((item) => props.optionsMap(item).value === value)!;
-    models.push(model);
-  }
-  emit("change", models);
+  emit("change", modelValue);
 }
 
 async function refreshWrapperHeight() {

@@ -26,7 +26,7 @@
   @keyup.enter.stop
   @clear="onClear"
   @change="onChange"
-  @check="onCheck"
+  @check-change="onCheck"
   :clearable="!props.disabled"
   @node-click="onNodeClick"
   @keydown.ctrl.c.stop="copyModelLabel"
@@ -215,23 +215,7 @@ function onClear() {
 }
 
 async function onChange() {
-  await nextTick();
-  if (!props.multiple) {
-    if (!modelValue) {
-      emit("change", undefined);
-      return;
-    }
-    const model = treeSelectFn(data, modelValue as string)!;
-    emit("change", model);
-    return;
-  }
-  let models: any[] = [ ];
-  let modelValues = (modelValue || [ ]) as string[];
-  for (const id of modelValues) {
-    const model = treeSelectFn(data, id)!;
-    models.push(model);
-  }
-  emit("change", models);
+  emit("change", modelValue);
 }
 
 function treeSelectFn<
@@ -265,6 +249,9 @@ async function onNodeClick(data: any, node: TreeNode) {
   if (props.multiple) {
     const modelValueArr: any = Array.isArray(modelValue) ? modelValue : [ modelValue ];
     if (modelValueArr.includes(data.id)) {
+      modelValue = modelValueArr.filter((id: string) => id !== data.id);
+      emit("update:modelValue", modelValue);
+      await onChange();
       return;
     }
     if (modelValueArr.includes(data.id)) {
@@ -287,22 +274,7 @@ async function onNodeClick(data: any, node: TreeNode) {
 }
 
 function onCheck() {
-  if (!props.multiple) {
-    if (!modelValue) {
-      emit("change", undefined);
-      return;
-    }
-    const model = treeSelectFn(data, modelValue as string)!;
-    emit("change", model);
-    return;
-  }
-  let models: any[] = [ ];
-  let modelValues = (modelValue || [ ]) as string[];
-  for (const id of modelValues) {
-    const model = treeSelectFn(data, id)!;
-    models.push(model);
-  }
-  emit("change", models);
+  emit("change", modelValue);
 }
 
 async function refreshEfc() {
