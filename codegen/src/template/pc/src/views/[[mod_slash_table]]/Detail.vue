@@ -2372,14 +2372,14 @@ const old_table = table;
     }).join("");
   #>
   
-  <!-- 权益 -->
+  <!-- <#=column_comment#> -->
   <ListSelectDialog
     ref="<#=column_name#>ListSelectDialogRef"
     :is-locked="isLocked"
     v-slot="listSelectProps"
   >
     <<#=foreignTable_Up#>List
-      v-bind="listSelectProps as any"
+      v-bind="(listSelectProps as any)"
     ></<#=foreignTable_Up#>List>
   </ListSelectDialog><#
   }

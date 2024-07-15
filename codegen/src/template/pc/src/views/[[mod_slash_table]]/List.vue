@@ -1455,7 +1455,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       :props-not-reset="[ 'is_enabled' ]"<#
       }
       #>
-      v-bind="listSelectProps"
+      v-bind="(listSelectProps as any)"
     ></<#=Foreign_Table_Up#>List>
   </ListSelectDialog><#
     } else if (
