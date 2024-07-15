@@ -76,7 +76,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       un-items-center
       
       @submit.prevent
-      @keydown.enter="onSearch"
+      @keydown.enter="onSearch(true)"
     ><#
       let hasSearchExpand = false;
       const searchIntColumns = [ ];
@@ -140,7 +140,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             })"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
-            @change="onSearch"
+            @change="onSearch(false)"
           ></CustomTreeSelect>
         </el-form-item>
       </template><#
@@ -166,7 +166,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             })"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
-            @change="onSearch"
+            @change="onSearch(false)"
           ></CustomTreeSelect>
         </el-form-item>
       </template><#
@@ -188,7 +188,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             })"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
-            @change="onSearch"
+            @change="onSearch(false)"
           ></CustomSelect>
         </el-form-item>
       </template><#
@@ -202,7 +202,7 @@ const hasAtt = columns.some((item) => item.isAtt);
           <CustomInput
             v-model="search.<#=column_name#>_<#=foreignKey.lbl#>_like"
             :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
-            @change="onSearch"
+            @change="onSearch(false)"
           ></CustomInput>
         </el-form-item>
       </template><#
@@ -224,7 +224,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             })"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
-            @change="onSearch"
+            @change="onSearch(false)"
           ></CustomSelect>
         </el-form-item>
       </template><#
@@ -242,7 +242,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             code="<#=column.dict#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
-            @change="onSearch"
+            @change="onSearch(false)"
           ></DictSelect><#
           } else {
           #>
@@ -251,7 +251,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             code="<#=column.dict#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-            @change="onSearch"
+            @change="onSearch(false)"
           ></DictSelect><#
           }
           #>
@@ -271,7 +271,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             code="<#=column.dictbiz#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
             multiple
-            @change="onSearch"
+            @change="onSearch(false)"
           ></DictbizSelect><#
           } else {
           #>
@@ -280,7 +280,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             code="<#=column.dictbiz#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
-            @change="onSearch"
+            @change="onSearch(false)"
           ></DictbizSelect><#
           }
           #>
@@ -306,7 +306,7 @@ const hasAtt = columns.some((item) => item.isAtt);
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             @clear="onSearchClear"
-            @change="onSearch"
+            @change="onSearch(false)"
           ></CustomDatePicker>
         </el-form-item>
       </template><#
@@ -452,7 +452,7 @@ const hasAtt = columns.some((item) => item.isAtt);
         <el-button
           plain
           type="primary"
-          @click="onSearch"
+          @click="onSearch(true)"
         >
           <template #icon>
             <ElIconSearch />
@@ -818,7 +818,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       
       <el-button
         plain
-        @click="onSearch"
+        @click="onSearch(true)"
       >
         <template #icon>
           <ElIconRefresh />
@@ -2150,8 +2150,10 @@ async function recycleChg() {
 }
 
 /** 查询 */
-async function onSearch() {
-  tableFocus();
+async function onSearch(isFocus: boolean) {
+  if (isFocus) {
+    tableFocus();
+  }
   await dataGrid(true);
 }
 
@@ -2161,7 +2163,7 @@ async function onSearchStaging(searchStaging?: <#=searchName#>) {
     return;
   }
   search = searchStaging;
-  await onSearch();
+  await onSearch(true);
 }
 
 /** 刷新 */

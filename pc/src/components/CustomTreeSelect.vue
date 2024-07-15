@@ -251,7 +251,7 @@ async function onNodeClick(data: any, node: TreeNode) {
     if (modelValueArr.includes(data.id)) {
       modelValue = modelValueArr.filter((id: string) => id !== data.id);
       emit("update:modelValue", modelValue);
-      await onChange();
+      emit("change", modelValue);
       return;
     }
     if (modelValueArr.includes(data.id)) {
@@ -261,7 +261,7 @@ async function onNodeClick(data: any, node: TreeNode) {
     }
     modelValue = modelValueArr;
     emit("update:modelValue", modelValue);
-    await onChange();
+    emit("change", modelValue);
   } else {
     if (modelValue === data.id) {
       modelValue = "";
@@ -269,7 +269,7 @@ async function onNodeClick(data: any, node: TreeNode) {
       modelValue = data.id;
     }
     emit("update:modelValue", modelValue);
-    await onChange();
+    emit("change", modelValue);
   }
 }
 
