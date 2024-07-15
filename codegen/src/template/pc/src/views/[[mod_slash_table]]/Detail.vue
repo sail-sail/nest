@@ -51,6 +51,16 @@ for (let i = 0; i < columns.length; i++) {
   }
   columnNum++;
 }
+
+let detailFormCols = opts.detailFormCols;
+if (detailFormCols == null) {
+  if (columnNum <= 4) {
+    detailFormCols = 1;
+  } else {
+    detailFormCols = 2;
+  }
+}
+
 let detailCustomDialogType = opts.detailCustomDialogType;
 if (!detailCustomDialogType) {
   if (columnNum > 20 || hasInlineForeignTabs) {
@@ -153,23 +163,12 @@ const old_table = table;
       <el-form
         ref="formRef"
         size="default"
-        label-width="auto"<#
-          if (columnNum > 4) {
-        #>
+        label-width="auto"
         
-        un-grid="~ cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(<#=detailFormCols#>,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
-        un-items-center<#
-          } else {
-        #>
-        
-        un-grid="~ cols-[repeat(1,380px)]"
-        un-gap="x-2 y-4"
-        un-justify-items-end
-        un-items-center<#
-          }
-        #>
+        un-items-center
         
         :model="dialogModel"
         :rules="form_rules"
@@ -692,6 +691,7 @@ const old_table = table;
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
+            const opts = inlineForeignSchema.opts;
             const inline_column_name = inlineForeignTab.column_name;
             const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
           #><#
@@ -1169,27 +1169,24 @@ const old_table = table;
               }
               columnNum++;
             }
+            let detailFormCols = opts.detailFormCols;
+            if (detailFormCols == null) {
+              if (columnNum <= 4) {
+                detailFormCols = 1;
+              } else {
+                detailFormCols = 2;
+              }
+            }
             #>
               <el-form
                 ref="formRef"
                 size="default"
-                label-width="auto"<#
-                  if (columnNum > 4) {
-                #>
+                label-width="auto"
                 
-                un-grid="~ cols-[repeat(2,380px)]"
+                un-grid="~ cols-[repeat(<#=detailFormCols#>,380px)]"
                 un-gap="x-2 y-4"
                 un-justify-items-end
-                un-items-center<#
-                  } else {
-                #>
-                
-                un-grid="~ cols-[repeat(1,380px)]"
-                un-gap="x-2 y-4"
-                un-justify-items-end
-                un-items-center<#
-                  }
-                #>
+                un-items-center
                 
                 :model="dialogModel"
                 :rules="form_rules"
