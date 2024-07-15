@@ -60,6 +60,7 @@ if (detailFormCols == null) {
     detailFormCols = 2;
   }
 }
+const detailFormWidth = opts.detailFormWidth;
 
 let detailCustomDialogType = opts.detailCustomDialogType;
 if (!detailCustomDialogType) {
@@ -165,7 +166,7 @@ const old_table = table;
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(<#=detailFormCols#>,380px)]"
+        un-grid="~ cols-[repeat(<#=detailFormCols#>,<#=detailFormWidth#>)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -1173,13 +1174,14 @@ const old_table = table;
                 detailFormCols = 2;
               }
             }
+            const detailFormWidth = opts.detailFormWidth;
             #>
               <el-form
                 ref="formRef"
                 size="default"
                 label-width="auto"
                 
-                un-grid="~ cols-[repeat(<#=detailFormCols#>,380px)]"
+                un-grid="~ cols-[repeat(<#=detailFormCols#>,<#=detailFormWidth#>)]"
                 un-gap="x-2 y-4"
                 un-justify-items-end
                 un-items-center
