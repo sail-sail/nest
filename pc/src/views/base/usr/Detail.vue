@@ -79,8 +79,6 @@
           <el-form-item
             :label="n('头像')"
             prop="img"
-            un-w="full"
-            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.img"
@@ -231,7 +229,6 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
-            un-grid="col-span-2"
           >
             <CustomInput
               v-model="dialogModel.rem"

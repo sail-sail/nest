@@ -233,16 +233,12 @@ const old_table = table;
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
-            if (column.isTextarea && columnNum <= 4) {
+            if (
+              (column.isTextarea && detailFormCols > 1) &&
+              (column.isImg && detailFormCols > 1 && column.maxFileSize > 1)
+            ) {
             #>
-            un-grid="col-span-1"<#
-            } else if (column.isTextarea && columnNum > 4) {
-            #>
-            un-grid="col-span-2"<#
-            } else if (column.isImg) {
-            #>
-            un-w="full"
-            un-grid="col-span-2"<#
+            un-grid="col-span-<#=detailFormCols#>"<#
             }
             #>
           ><#
@@ -255,7 +251,7 @@ const old_table = table;
               :max-size="<#=column.attMaxSize#>"<#
               }
               #><#
-              if (column.maxFileSize) {
+              if (column.maxFileSize > 1) {
               #>
               :max-file-size="<#=column.maxFileSize#>"<#
               }
@@ -1248,16 +1244,12 @@ const old_table = table;
                 <el-form-item
                   :label="n('<#=column_comment#>')"
                   prop="<#=inline_column_name#>.<#=column_name#>"<#
-                  if (column.isTextarea && columnNum <= 4) {
+                  if (
+                    (column.isTextarea && detailFormCols > 1) &&
+                    (column.isImg && detailFormCols > 1 && column.maxFileSize > 1)
+                  ) {
                   #>
-                  un-grid="col-span-1"<#
-                  } else if (column.isTextarea && columnNum > 4) {
-                  #>
-                  un-grid="col-span-2"<#
-                  } else if (column.isImg) {
-                  #>
-                  un-w="full"
-                  un-grid="col-span-2"<#
+                  un-grid="col-span-<#=detailFormCols#>"<#
                   }
                   #>
                 ><#
