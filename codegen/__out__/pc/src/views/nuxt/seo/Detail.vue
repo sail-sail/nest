@@ -118,8 +118,6 @@
           <el-form-item
             :label="n('分享图片')"
             prop="og_image"
-            un-w="full"
-            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.og_image"
