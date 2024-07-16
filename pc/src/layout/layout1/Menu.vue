@@ -247,6 +247,7 @@ initFrame();
   --el-menu-sub-item-height: var(--el-menu-item-height);
   --el-menu-active-color: var(--el-color-primary);
   --el-menu-hover-bg-color: var(--el-color-black);
+  border: 0;
   :deep(.el-menu-item.is-active) {
     background-color: var(--el-color-black);
   }
@@ -259,7 +260,6 @@ initFrame();
     left: 0;
     background-color: var(--el-color-primary);
   }
-  border: 0;
 }
 //.top_menu_item {
 //  align-items: center;
