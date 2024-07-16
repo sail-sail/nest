@@ -21,7 +21,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
 tokio = { version = "1.38", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
 poem = { version = "3.0.1", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "tokio-metrics", "websocket"], default-features = false }
-async-graphql = { version = "7.0.6", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str"] }
+async-graphql = { version = "7.0.7", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str"] }
 smol_str = { version = "0.2", features = ["serde"] }
 slab = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
@@ -46,7 +46,7 @@ urlencoding = "2.1"
 # sqlformat = "0.2.3"
 smallvec = { version = "1.13", features = ["union", "serde"] }
 # downcast-rs = "1.2"
-uuid = { version = "1.8", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "1.10", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12"
 deadpool-redis = "0.15"
 redis = { version = "0.25", features = ["tokio-comp"], default-features = false }
@@ -75,6 +75,7 @@ derive_more = "0.99"
 derive_builder = "0.20"
 strum = { version = "0.26", features = ["derive"] }
 itertools = "0.13.0"
+color-backtrace = "0.6.1"
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.0"
