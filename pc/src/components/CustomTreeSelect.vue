@@ -101,9 +101,10 @@ import {
 } from "@/utils/common";
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: string | string[] | null): void,
-  (e: "change", value?: any | any[] | null): void,
-  (e: "clear"): void,
+  (e: "data", value: any[]): void;
+  (e: "update:modelValue", value?: string | string[] | null): void;
+  (e: "change", value?: any | any[] | null): void;
+  (e: "clear"): void;
 }>();
 
 const props = withDefaults(
@@ -174,7 +175,7 @@ const modelLabels: string[] = $computed(() => {
   }
   const label = props.props.label || "label";
   if (!props.multiple) {
-    const model = treeSelectFn(data, modelValue as string)!;
+    const model = findModelById(data, modelValue as string)!;
     if (!model) {
       return [ "" ];
     }
@@ -186,7 +187,7 @@ const modelLabels: string[] = $computed(() => {
   let models: string[] = [ ];
   let modelValues = (modelValue || [ ]) as string[];
   for (const id of modelValues) {
-    const model = treeSelectFn(data, id);
+    const model = findModelById(data, id);
     if (!model) {
       models.push("");
       continue;
@@ -204,21 +205,22 @@ function onClear() {
   if (!props.multiple) {
     modelValue = "";
     emit("update:modelValue", modelValue);
-    emit("change", modelValue);
+    emit("change", undefined);
     emit("clear");
     return;
   }
   modelValue = [ ];
   emit("update:modelValue", modelValue);
-  emit("change", modelValue);
+  emit("change", [ ]);
   emit("clear");
 }
 
-async function onChange() {
-  emit("change", modelValue);
+function onChange() {
+  const models = getModelsByValue();
+  emit("change", models);
 }
 
-function treeSelectFn<
+function findModelById<
   T extends {
     id: string;
     children?: T[];
@@ -229,7 +231,7 @@ function treeSelectFn<
       return item;
     }
     if (item.children) {
-      const item2 = treeSelectFn(item.children, id);
+      const item2 = findModelById(item.children, id);
       if (item2) {
         return item2;
       }
@@ -238,7 +240,22 @@ function treeSelectFn<
   return;
 }
 
-async function onNodeClick(data: any, node: TreeNode) {
+function getModelsByValue() {
+  if (!props.multiple) {
+    return findModelById(data, modelValue as string);
+  }
+  const modelValues = (modelValue || [ ]) as string[];
+  const models: any[] = [ ];
+  for (const id of modelValues) {
+    const model = findModelById(data, id);
+    if (model) {
+      models.push(model);
+    }
+  }
+  return models;
+}
+
+function onNodeClick(data: any, node: TreeNode) {
   let disabled = props.props.disabled as any;
   if (disabled instanceof Function) {
     disabled = disabled(data);
@@ -251,7 +268,8 @@ async function onNodeClick(data: any, node: TreeNode) {
     if (modelValueArr.includes(data.id)) {
       modelValue = modelValueArr.filter((id: string) => id !== data.id);
       emit("update:modelValue", modelValue);
-      emit("change", modelValue);
+      const models = getModelsByValue();
+      emit("change", models);
       return;
     }
     if (modelValueArr.includes(data.id)) {
@@ -261,7 +279,8 @@ async function onNodeClick(data: any, node: TreeNode) {
     }
     modelValue = modelValueArr;
     emit("update:modelValue", modelValue);
-    emit("change", modelValue);
+    const models = getModelsByValue();
+    emit("change", models);
   } else {
     if (modelValue === data.id) {
       modelValue = "";
@@ -269,12 +288,14 @@ async function onNodeClick(data: any, node: TreeNode) {
       modelValue = data.id;
     }
     emit("update:modelValue", modelValue);
-    emit("change", modelValue);
+    const models = getModelsByValue();
+    emit("change", models);
   }
 }
 
 function onCheck() {
-  emit("change", modelValue);
+  const models = getModelsByValue();
+  emit("change", models);
 }
 
 async function refreshEfc() {
@@ -285,6 +306,7 @@ async function refreshEfc() {
   }
   data = await method();
   inited = true;
+  emit("data", data);
 }
 
 if (props.init) {
