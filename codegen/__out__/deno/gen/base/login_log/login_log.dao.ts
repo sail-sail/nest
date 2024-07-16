@@ -387,7 +387,7 @@ export async function findAll(
     // 登录成功
     let is_succ_lbl = model.is_succ?.toString() || "";
     if (model.is_succ != null) {
-      const dictItem = is_succDict.find((dictItem) => dictItem.val === model.is_succ.toString());
+      const dictItem = is_succDict.find((dictItem) => dictItem.val === String(model.is_succ));
       if (dictItem) {
         is_succ_lbl = dictItem.lbl;
       }
