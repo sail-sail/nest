@@ -227,10 +227,11 @@ export type DictbizModel = GetDictbiz;
 const t = getCurrentInstance();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: any): void,
-  (e: "update:modelLabel", value?: string | null): void,
-  (e: "change", value?: any): void,
-  (e: "clear"): void,
+  (e: "data", value: DictbizModel[]): void;
+  (e: "update:modelValue", value?: any): void;
+  (e: "update:modelLabel", value?: string | null): void;
+  (e: "change", value?: any): void;
+  (e: "clear"): void;
 }>();
 
 type OptionsMap = (item: DictbizModel) => OptionType;
@@ -355,7 +356,8 @@ let isSelectAll = $computed({
       modelValue = [ ];
     }
     emit("update:modelValue", modelValue);
-    emit("change", modelValue);
+    const models = getModelsByValue();
+    emit("change", models);
   },
 });
 
@@ -446,23 +448,27 @@ function modelValueUpdate(value?: string | string[] | null) {
 
 function onValueChange() {
   emit("update:modelValue", modelValue);
-  if (!props.multiple) {
-    const model = dictbizModels.find((item) => modelValue != null && String(props.optionsMap(item).value) == String(modelValue));
-    emit("change", model);
-    return;
-  }
-  let models: DictbizModel[] = [ ];
-  let modelValues: string[] = [ ];
-  if (Array.isArray(modelValue)) {
-    modelValues = modelValue;
-  } else {
-    modelValues = modelValue?.split(",") || [ ];
-  }
-  for (const value of modelValues) {
-    const model = dictbizModels.find((item) => value != null && String(props.optionsMap(item).value) == String(value))!;
-    models.push(model);
-  }
+  const models = getModelsByValue();
   emit("change", models);
+}
+
+function findModelById(id: string) {
+  return data.find((item) => props.optionsMap(item).value === id);
+}
+
+function getModelsByValue() {
+  if (!props.multiple) {
+    return findModelById(modelValue as string);
+  }
+  const modelValues = (modelValue || [ ]) as string[];
+  const models: any[] = [ ];
+  for (const id of modelValues) {
+    const model = findModelById(id);
+    if (model) {
+      models.push(model);
+    }
+  }
+  return models;
 }
 
 let options4SelectV2 = $shallowRef<OptionType[]>([ ]);
@@ -516,7 +522,7 @@ async function refreshDropdownWidth() {
   }
 }
 
-let dictbizModels = $ref<DictbizModel[]>([ ]);
+let data = $ref<DictbizModel[]>([ ]);
 
 const {
   ns,
@@ -528,7 +534,7 @@ const modelLabels: string[] = $computed(() => {
     return [ "" ];
   }
   if (!props.multiple) {
-    const model = dictbizModels.find((item) => modelValue != null && String(props.optionsMap(item).value) === String(modelValue));
+    const model = data.find((item) => modelValue != null && String(props.optionsMap(item).value) === String(modelValue));
     if (!model) {
       return [ "" ];
     }
@@ -537,7 +543,7 @@ const modelLabels: string[] = $computed(() => {
   let labels: string[] = [ ];
   let modelValues = (modelValue || [ ]) as string[];
   for (const value of modelValues) {
-    const model = dictbizModels.find((item) => value != null && String(props.optionsMap(item).value) === String(value));
+    const model = data.find((item) => value != null && String(props.optionsMap(item).value) === String(value));
     if (!model) {
       continue;
     }
@@ -551,14 +557,14 @@ function onClear() {
     modelValue = "";
     emit("update:modelValue", modelValue);
     emit("update:modelLabel", "");
-    emit("change", modelValue);
+    emit("change", undefined);
     emit("clear");
     return;
   }
   modelValue = [ ];
   emit("update:modelValue", modelValue);
   emit("update:modelLabel", "");
-  emit("change", modelValue);
+  emit("change", [ ]);
   emit("clear");
 }
 
@@ -585,14 +591,15 @@ async function refreshEfc() {
   const code = props.code;
   if (!code) {
     inited = false;
-    dictbizModels = [ ];
+    data = [ ];
     return;
   }
   inited = false;
   await nextTick();
-  [ dictbizModels ] = await getDictbiz([ code ]);
-  options4SelectV2 = dictbizModels.map(props.optionsMap);
+  [ data ] = await getDictbiz([ code ]);
+  options4SelectV2 = data.map(props.optionsMap);
   inited = true;
+  emit("data", data);
 }
 
 async function refreshWrapperHeight() {

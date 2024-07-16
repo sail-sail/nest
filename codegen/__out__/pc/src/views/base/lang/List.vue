@@ -24,7 +24,7 @@
       un-items-center
       
       @submit.prevent
-      @keydown.enter="onSearch"
+      @keydown.enter="onSearch(true)"
     >
       
       <template v-if="builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null)">
@@ -63,7 +63,7 @@
             @update:model-value="($event != null && $event !== '') ? is_enabled_search = [ $event ] : is_enabled_search = [ ]"
             code="is_enabled"
             :placeholder="`${ ns('请选择') } ${ n('启用') }`"
-            @change="onSearch"
+            @change="onSearch(false)"
           ></DictSelect>
         </el-form-item>
       </template>
@@ -129,7 +129,7 @@
         <el-button
           plain
           type="primary"
-          @click="onSearch"
+          @click="onSearch(true)"
         >
           <template #icon>
             <ElIconSearch />
@@ -361,7 +361,7 @@
       
       <el-button
         plain
-        @click="onSearch"
+        @click="onSearch(true)"
       >
         <template #icon>
           <ElIconRefresh />
@@ -816,8 +816,10 @@ async function recycleChg() {
 }
 
 /** 查询 */
-async function onSearch() {
-  tableFocus();
+async function onSearch(isFocus: boolean) {
+  if (isFocus) {
+    tableFocus();
+  }
   await dataGrid(true);
 }
 
@@ -827,7 +829,7 @@ async function onSearchStaging(searchStaging?: LangSearch) {
     return;
   }
   search = searchStaging;
-  await onSearch();
+  await onSearch(true);
 }
 
 /** 刷新 */

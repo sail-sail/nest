@@ -138,7 +138,6 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
-            un-grid="col-span-2"
           >
             <CustomInput
               v-model="dialogModel.rem"
