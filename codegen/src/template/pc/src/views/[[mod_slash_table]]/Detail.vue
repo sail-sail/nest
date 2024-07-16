@@ -235,7 +235,7 @@ const old_table = table;
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
             if (
-              (column.isTextarea && detailFormCols > 1) &&
+              (column.isTextarea && detailFormCols > 1) ||
               (column.isImg && detailFormCols > 1 && column.maxFileSize > 1)
             ) {
             #>
@@ -1247,7 +1247,7 @@ const old_table = table;
                   :label="n('<#=column_comment#>')"
                   prop="<#=inline_column_name#>.<#=column_name#>"<#
                   if (
-                    (column.isTextarea && detailFormCols > 1) &&
+                    (column.isTextarea && detailFormCols > 1) ||
                     (column.isImg && detailFormCols > 1 && column.maxFileSize > 1)
                   ) {
                   #>
