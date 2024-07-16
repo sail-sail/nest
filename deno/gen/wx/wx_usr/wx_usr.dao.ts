@@ -486,7 +486,7 @@ export async function findAll(
     // 性别
     let gender_lbl = model.gender?.toString() || "";
     if (model.gender != null) {
-      const dictItem = genderDict.find((dictItem) => dictItem.val === model.gender.toString());
+      const dictItem = genderDict.find((dictItem) => dictItem.val === String(model.gender));
       if (dictItem) {
         gender_lbl = dictItem.lbl;
       }
