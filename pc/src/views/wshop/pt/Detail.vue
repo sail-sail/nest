@@ -79,8 +79,6 @@
           <el-form-item
             :label="n('图标')"
             prop="img"
-            un-w="full"
-            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.img"
@@ -231,8 +229,6 @@
           <el-form-item
             :label="n('详情顶部图片')"
             prop="detail_top_img"
-            un-w="full"
-            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.detail_top_img"
@@ -247,8 +243,6 @@
           <el-form-item
             :label="n('详情底部图片')"
             prop="detail_bottom_img"
-            un-w="full"
-            un-grid="col-span-2"
           >
             <UploadImage
               v-model="dialogModel.detail_bottom_img"
