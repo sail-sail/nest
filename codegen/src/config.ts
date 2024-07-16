@@ -803,6 +803,9 @@ export interface TablesConfigItem {
     /** Detail.vue 中表单的列数, 默认为: 当控件个数小于等于 4 为 1, 大于 4 为 2 */
     detailFormCols?: number;
     
+    /** Detail.vue 中表单文本框的宽度, 默认为: 380px */
+    detailFormWidth?: string;
+    
   },
   columns?: TableCloumn[];
   records?: any[];
