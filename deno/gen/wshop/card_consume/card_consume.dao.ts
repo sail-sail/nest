@@ -46,10 +46,6 @@ import {
   shortUuidV4,
 } from "/lib/util/string_util.ts";
 
-import {
-  deepCompare,
-} from "/lib/util/object_util.ts";
-
 import * as validators from "/lib/validators/mod.ts";
 
 import { UniqueException } from "/lib/exceptions/unique.execption.ts";
@@ -1535,11 +1531,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    const newModel = await findById(id, options);
-    
-    if (!deepCompare(oldModel, newModel)) {
-      log(JSON.stringify(oldModel));
-    }
+    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
   }
   
   return id;
@@ -1589,6 +1581,9 @@ export async function deleteByIds(
     const oldModel = await findById(id, options);
     if (!oldModel) {
       continue;
+    }
+    if (!is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
     }
     const args = new QueryArgs();
     let sql = `update wshop_card_consume set is_deleted=1`;
@@ -1677,12 +1672,14 @@ export async function forceDeleteByIds(
   ids: CardConsumeId[],
   options?: {
     is_debug?: boolean;
+    is_silent_mode?: boolean;
   },
 ): Promise<number> {
   
   const table = "wshop_card_consume";
   const method = "forceDeleteByIds";
   
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
@@ -1713,7 +1710,9 @@ export async function forceDeleteByIds(
       undefined,
       options,
     );
-    log("forceDeleteByIds:", oldModel);
+    if (oldModel && !is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    }
     const args = new QueryArgs();
     const sql = `delete from wshop_card_consume where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);

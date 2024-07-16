@@ -46,10 +46,6 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
-import {
-  deepCompare,
-} from "/lib/util/object_util.ts";
-
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -478,7 +474,7 @@ export async function findAll(
     // 首页显示
     let is_home_lbl = model.is_home?.toString() || "";
     if (model.is_home != null) {
-      const dictItem = is_homeDict.find((dictItem) => dictItem.val === model.is_home.toString());
+      const dictItem = is_homeDict.find((dictItem) => dictItem.val === String(model.is_home));
       if (dictItem) {
         is_home_lbl = dictItem.lbl;
       }
@@ -488,7 +484,7 @@ export async function findAll(
     // 推荐
     let is_recommend_lbl = model.is_recommend?.toString() || "";
     if (model.is_recommend != null) {
-      const dictItem = is_recommendDict.find((dictItem) => dictItem.val === model.is_recommend.toString());
+      const dictItem = is_recommendDict.find((dictItem) => dictItem.val === String(model.is_recommend));
       if (dictItem) {
         is_recommend_lbl = dictItem.lbl;
       }
@@ -498,7 +494,7 @@ export async function findAll(
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
     if (model.is_locked != null) {
-      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
+      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === String(model.is_locked));
       if (dictItem) {
         is_locked_lbl = dictItem.lbl;
       }
@@ -508,7 +504,7 @@ export async function findAll(
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
     if (model.is_enabled != null) {
-      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
+      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === String(model.is_enabled));
       if (dictItem) {
         is_enabled_lbl = dictItem.lbl;
       }
@@ -1626,11 +1622,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    const newModel = await findById(id, options);
-    
-    if (!deepCompare(oldModel, newModel)) {
-      log(JSON.stringify(oldModel));
-    }
+    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
   }
   
   return id;
@@ -1683,6 +1675,9 @@ export async function deleteByIds(
     if (!oldModel) {
       continue;
     }
+    if (!is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    }
     const args = new QueryArgs();
     let sql = `update wshop_pt_type set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
@@ -1693,7 +1688,7 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `update wshop_pt_pt_type set is_deleted=1 where pt_id=${ args.push(id) } and pt_type_id=${ args.push(id) } and is_deleted=0`;
+      const sql = `update wshop_pt_pt_type set is_deleted=1 where pt_type_id=${ args.push(id) } and is_deleted=0`;
       await execute(sql, args);
     }
   }
@@ -1936,12 +1931,14 @@ export async function forceDeleteByIds(
   ids: PtTypeId[],
   options?: {
     is_debug?: boolean;
+    is_silent_mode?: boolean;
   },
 ): Promise<number> {
   
   const table = "wshop_pt_type";
   const method = "forceDeleteByIds";
   
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
@@ -1974,14 +1971,16 @@ export async function forceDeleteByIds(
       undefined,
       options,
     );
-    log("forceDeleteByIds:", oldModel);
+    if (oldModel && !is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    }
     const args = new QueryArgs();
     const sql = `delete from wshop_pt_type where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
     {
       const args = new QueryArgs();
-      const sql = `delete from wshop_pt_pt_type where pt_id=${ args.push(id) } pt_type_id=${ args.push(id) }`;
+      const sql = `delete from wshop_pt_pt_type where pt_type_id=${ args.push(id) }`;
       await execute(sql, args);
     }
   }
