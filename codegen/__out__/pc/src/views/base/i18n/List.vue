@@ -24,7 +24,7 @@
       un-items-center
       
       @submit.prevent
-      @keydown.enter="onSearch"
+      @keydown.enter="onSearch(true)"
     >
       
       <template v-if="showBuildIn || builtInSearch?.lang_id == null">
@@ -43,7 +43,7 @@
             })"
             :placeholder="`${ ns('请选择') } ${ n('语言') }`"
             multiple
-            @change="onSearch"
+            @change="onSearch(false)"
           ></CustomSelect>
         </el-form-item>
       </template>
@@ -64,7 +64,7 @@
             })"
             :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
             multiple
-            @change="onSearch"
+            @change="onSearch(false)"
           ></CustomTreeSelect>
         </el-form-item>
       </template>
@@ -156,7 +156,7 @@
         <el-button
           plain
           type="primary"
-          @click="onSearch"
+          @click="onSearch(true)"
         >
           <template #icon>
             <ElIconSearch />
@@ -372,7 +372,7 @@
       
       <el-button
         plain
-        @click="onSearch"
+        @click="onSearch(true)"
       >
         <template #icon>
           <ElIconRefresh />
@@ -832,8 +832,10 @@ async function recycleChg() {
 }
 
 /** 查询 */
-async function onSearch() {
-  tableFocus();
+async function onSearch(isFocus: boolean) {
+  if (isFocus) {
+    tableFocus();
+  }
   await dataGrid(true);
 }
 
@@ -843,7 +845,7 @@ async function onSearchStaging(searchStaging?: I18nSearch) {
     return;
   }
   search = searchStaging;
-  await onSearch();
+  await onSearch(true);
 }
 
 /** 刷新 */
