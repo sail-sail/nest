@@ -24,7 +24,7 @@
       un-items-center
       
       @submit.prevent
-      @keydown.enter="onSearch"
+      @keydown.enter="onSearch(true)"
     >
       
       <template v-if="showBuildIn || builtInSearch?.cron_job_id == null">
@@ -43,7 +43,7 @@
             })"
             :placeholder="`${ ns('请选择') } ${ n('定时任务') }`"
             multiple
-            @change="onSearch"
+            @change="onSearch(false)"
           ></CustomSelect>
         </el-form-item>
       </template>
@@ -58,7 +58,7 @@
             code="cron_job_log_exec_state"
             :placeholder="`${ ns('请选择') } ${ n('执行状态') }`"
             multiple
-            @change="onSearch"
+            @change="onSearch(false)"
           ></DictSelect>
         </el-form-item>
       </template>
@@ -74,7 +74,7 @@
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             @clear="onSearchClear"
-            @change="onSearch"
+            @change="onSearch(false)"
           ></CustomDatePicker>
         </el-form-item>
       </template>
@@ -140,7 +140,7 @@
         <el-button
           plain
           type="primary"
-          @click="onSearch"
+          @click="onSearch(true)"
         >
           <template #icon>
             <ElIconSearch />
@@ -312,7 +312,7 @@
       
       <el-button
         plain
-        @click="onSearch"
+        @click="onSearch(true)"
       >
         <template #icon>
           <ElIconRefresh />
@@ -758,8 +758,10 @@ async function recycleChg() {
 }
 
 /** 查询 */
-async function onSearch() {
-  tableFocus();
+async function onSearch(isFocus: boolean) {
+  if (isFocus) {
+    tableFocus();
+  }
   await dataGrid(true);
 }
 
@@ -769,7 +771,7 @@ async function onSearchStaging(searchStaging?: CronJobLogSearch) {
     return;
   }
   search = searchStaging;
-  await onSearch();
+  await onSearch(true);
 }
 
 /** 刷新 */
