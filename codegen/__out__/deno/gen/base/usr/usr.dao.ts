@@ -642,7 +642,7 @@ export async function findAll(
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
     if (model.is_locked != null) {
-      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
+      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === String(model.is_locked));
       if (dictItem) {
         is_locked_lbl = dictItem.lbl;
       }
@@ -652,7 +652,7 @@ export async function findAll(
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
     if (model.is_enabled != null) {
-      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
+      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === String(model.is_enabled));
       if (dictItem) {
         is_enabled_lbl = dictItem.lbl;
       }

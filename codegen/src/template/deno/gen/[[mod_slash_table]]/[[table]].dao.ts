@@ -1655,7 +1655,7 @@ export async function findAll(
     // <#=column_comment#>
     let <#=column_name#>_lbl = model.<#=column_name#>?.toString() || "";
     if (model.<#=column_name#> != null) {
-      const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === model.<#=column_name#>.toString());
+      const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === String(model.<#=column_name#>));
       if (dictItem) {
         <#=column_name#>_lbl = dictItem.lbl;
       }
@@ -2037,8 +2037,8 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> == null) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
+  if (isNotEmpty(input.<#=column_name#>_<#=foreignKey.lbl#>) && input.<#=column_name#> == null) {
+    input.<#=column_name#>_<#=foreignKey.lbl#> = String(input.<#=column_name#>_<#=foreignKey.lbl#>).trim();<#
     let foreignTable_UpTmp = foreignTable_Up;
     if (foreignTable_Up === Table_Up) {
       foreignTable_UpTmp = "";
@@ -2046,7 +2046,7 @@ export async function setIdByLbl(
     #>
     const <#=foreignTable#>Model = await findOne<#=foreignTable_UpTmp#>(
       {
-        <#=foreignKey.lbl#>: input.<#=column_name#>_lbl,
+        <#=foreignKey.lbl#>: input.<#=column_name#>_<#=foreignKey.lbl#>,
       },
       undefined,
       options,
@@ -2060,17 +2060,17 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl
+  if (!input.<#=column_name#> && input.<#=column_name#>_<#=foreignKey.lbl#>) {
+    input.<#=column_name#>_<#=foreignKey.lbl#> = input.<#=column_name#>_<#=foreignKey.lbl#>
       .map((item: string) => item.trim())
       .filter((item: string) => item);
-    input.<#=column_name#>_lbl = Array.from(new Set(input.<#=column_name#>_lbl));
-    if (input.<#=column_name#>_lbl.length === 0) {
+    input.<#=column_name#>_<#=foreignKey.lbl#> = Array.from(new Set(input.<#=column_name#>_<#=foreignKey.lbl#>));
+    if (input.<#=column_name#>_<#=foreignKey.lbl#>.length === 0) {
       input.<#=column_name#> = [ ];
     } else {
       const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `select t.id from <#=foreignKey.mod#>_<#=foreignTable#> t where t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }`;
+      const sql = `select t.id from <#=foreignKey.mod#>_<#=foreignTable#> t where t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_<#=foreignKey.lbl#>) }`;
       interface Result {
         id: <#=foreignTable_Up#>Id;
       }
