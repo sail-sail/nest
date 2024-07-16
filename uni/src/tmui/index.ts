@@ -191,7 +191,7 @@ export default {
 		}
 
 		// #ifndef APP-NVUE
-		app.use(languageByGlobal())
+		// app.use(languageByGlobal())
 		// #endif
 		let appconfig = {};
 		// #ifdef MP

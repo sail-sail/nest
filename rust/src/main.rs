@@ -103,6 +103,8 @@ async fn main() -> Result<(), std::io::Error> {
     }
   });
   
+  color_backtrace::install();
+  
   let schema: QuerySchema = Schema::build(
     Query::default(),
     Mutation::default(),

@@ -626,6 +626,10 @@ async function getSchema0(
       }
     }
   }
+  if (tables[table_name]?.opts?.detailFormWidth == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.detailFormWidth = "380px";
+  }
   return records2;
 }
 
