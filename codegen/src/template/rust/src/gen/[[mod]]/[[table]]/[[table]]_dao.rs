@@ -2677,18 +2677,18 @@ pub async fn set_id_by_lbl(
   #>
   
   // <#=column_comment#>
-  if input.<#=column_name#>_lbl.is_some()
-    && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty()
+  if input.<#=column_name#>_<#=foreignKey.lbl#>.is_some()
+    && !input.<#=column_name#>_<#=foreignKey.lbl#>.as_ref().unwrap().is_empty()
     && input.<#=column_name_rust#>.is_none()
   {
-    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl.map(|item| 
+    input.<#=column_name#>_<#=foreignKey.lbl#> = input.<#=column_name#>_<#=foreignKey.lbl#>.map(|item| 
       item.trim().to_owned()
     );<#
     if (foreignTableUp !== tableUP) {
     #>
     let model = <#=daoStr#>find_one(
       crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
-        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_lbl.clone(),
+        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
         ..Default::default()
       }.into(),
       None,
@@ -2698,7 +2698,7 @@ pub async fn set_id_by_lbl(
     #>
     let model = <#=daoStr#>find_one(
       <#=tableUP#>Search {
-        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_lbl.clone(),
+        <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
         ..Default::default()
       }.into(),
       None,
@@ -2714,21 +2714,21 @@ pub async fn set_id_by_lbl(
   #>
   
   // <#=column_comment#>
-  if input.<#=column_name#>_lbl.is_some() && input.<#=column_name_rust#>.is_none() {
-    input.<#=column_name_rust#>_lbl = input.<#=column_name_rust#>_lbl.map(|item| 
+  if input.<#=column_name#>_<#=foreignKey.lbl#>.is_some() && input.<#=column_name_rust#>.is_none() {
+    input.<#=column_name_rust#>_<#=foreignKey.lbl#> = input.<#=column_name_rust#>_<#=foreignKey.lbl#>.map(|item| 
       item.into_iter()
         .map(|item| item.trim().to_owned())
         .filter(|item| !item.is_empty())
         .collect::<Vec<String>>()
     );
-    input.<#=column_name_rust#>_lbl = input.<#=column_name_rust#>_lbl.map(|item| {
+    input.<#=column_name_rust#>_<#=foreignKey.lbl#> = input.<#=column_name_rust#>_<#=foreignKey.lbl#>.map(|item| {
       let mut set = HashSet::new();
       item.into_iter()
         .filter(|item| set.insert(item.clone()))
         .collect::<Vec<String>>()
     });
     let mut models = vec![];
-    for lbl in input.<#=column_name_rust#>_lbl.clone().unwrap_or_default() {
+    for lbl in input.<#=column_name_rust#>_<#=foreignKey.lbl#>.clone().unwrap_or_default() {
       let model = <#=daoStr#>find_one(
         crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
           <#=foreignKey.lbl#>: lbl.into(),
