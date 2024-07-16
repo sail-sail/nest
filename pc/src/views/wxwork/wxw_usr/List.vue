@@ -24,7 +24,7 @@
       un-items-center
       
       @submit.prevent
-      @keydown.enter="onSearch"
+      @keydown.enter="onSearch(true)"
     >
       
       <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
@@ -101,7 +101,7 @@
         <el-button
           plain
           type="primary"
-          @click="onSearch"
+          @click="onSearch(true)"
         >
           <template #icon>
             <ElIconSearch />
@@ -329,7 +329,7 @@
       
       <el-button
         plain
-        @click="onSearch"
+        @click="onSearch(true)"
       >
         <template #icon>
           <ElIconRefresh />
@@ -696,8 +696,10 @@ async function recycleChg() {
 }
 
 /** 查询 */
-async function onSearch() {
-  tableFocus();
+async function onSearch(isFocus: boolean) {
+  if (isFocus) {
+    tableFocus();
+  }
   await dataGrid(true);
 }
 
@@ -707,7 +709,7 @@ async function onSearchStaging(searchStaging?: WxwUsrSearch) {
     return;
   }
   search = searchStaging;
-  await onSearch();
+  await onSearch(true);
 }
 
 /** 刷新 */
