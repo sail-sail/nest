@@ -11,8 +11,15 @@ import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
-import { FileSystemIconLoader } from "unplugin-icons/loaders";
-import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+
+import {
+  FileSystemIconLoader,
+} from "unplugin-icons/loaders";
+
+import {
+  ElementPlusResolver,
+  VueUseComponentsResolver,
+} from "unplugin-vue-components/resolvers";
 
 import Unocss from "unocss/vite";
 
@@ -62,24 +69,18 @@ export default defineConfig({
           "@/components/ListSelectDialog.vue": [
             [ "default", "ListSelectDialog" ],
           ],
-        },
-        {
           "@/components/CustomDialog.vue": [
             [ "default", "CustomDialog" ],
           ],
           "@/components/CustomInput.vue": [
             [ "default", "CustomInput" ],
           ],
-        },
-        {
           "@/utils/common": [
             "getDict",
             "getDictbiz",
             "showUploadMsg",
             "list2tree",
           ],
-        },
-        {
           "@/utils/excel_util": [
             "getExcelData",
             "toExcelColumns",
@@ -89,13 +90,9 @@ export default defineConfig({
             "splitArr",
             "splitCreateArr",
           ],
-        },
-        {
           "@/locales" : [
             "getLocale",
           ],
-        },
-        {
           "element-plus": [
             "ElButton",
             "ElInput",
@@ -210,6 +207,7 @@ export default defineConfig({
       ],
       resolvers: [
         ElementPlusResolver(),
+        VueUseComponentsResolver(),
         IconsResolver(),
       ],
       dts: "./src/typings/auto-imports.d.ts",

@@ -241,10 +241,11 @@ const t = getCurrentInstance();
 const usrStore = useUsrStore();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: string | string[] | null): void,
-  (e: "update:modelLabel", value?: string | null): void,
-  (e: "change", value?: any | any[] | null): void,
-  (e: "clear"): void,
+  (e: "data", value: any[]): void;
+  (e: "update:modelValue", value?: string | string[] | null): void;
+  (e: "update:modelLabel", value?: string | null): void;
+  (e: "change", value?: any | any[] | null): void;
+  (e: "clear"): void;
 }>();
 
 const {
@@ -375,7 +376,8 @@ let isSelectAll = $computed({
       modelValue = [ ];
     }
     emit("update:modelValue", modelValue);
-    emit("change", modelValue);
+    const models = getModelsByValue();
+    emit("change", models);
   },
 });
 
@@ -548,14 +550,14 @@ function onClear() {
     modelValue = "";
     emit("update:modelValue", modelValue);
     emit("update:modelLabel", "");
-    emit("change", modelValue);
+    emit("change", undefined);
     emit("clear");
     return;
   }
   modelValue = [ ];
   emit("update:modelValue", modelValue);
   emit("update:modelLabel", "");
-  emit("change", modelValue);
+  emit("change", [ ]);
   emit("clear");
 }
 
@@ -649,26 +651,31 @@ async function refreshEfc() {
   data = await method();
   options4SelectV2 = data.map(props.optionsMap);
   inited = true;
+  emit("data", data);
 }
 
 function onValueChange() {
-  if (!props.multiple) {
-    const model = data.find((item) => props.optionsMap(item).value === modelValue);
-    emit("change", model);
-    return;
-  }
-  let models: any[] = [ ];
-  let modelValues: string[] = [ ];
-  if (Array.isArray(modelValue)) {
-    modelValues = modelValue;
-  } else {
-    modelValues = modelValue?.split(",") || [ ];
-  }
-  for (const value of modelValues) {
-    const model = data.find((item) => props.optionsMap(item).value === value)!;
-    models.push(model);
-  }
+  const models = getModelsByValue();
   emit("change", models);
+}
+
+function findModelById(id: string) {
+  return data.find((item) => props.optionsMap(item).value === id);
+}
+
+function getModelsByValue() {
+  if (!props.multiple) {
+    return findModelById(modelValue as string);
+  }
+  const modelValues = (modelValue || [ ]) as string[];
+  const models: any[] = [ ];
+  for (const id of modelValues) {
+    const model = findModelById(id);
+    if (model) {
+      models.push(model);
+    }
+  }
+  return models;
 }
 
 async function refreshWrapperHeight() {
