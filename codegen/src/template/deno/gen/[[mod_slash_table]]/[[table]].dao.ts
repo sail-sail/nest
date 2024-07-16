@@ -223,11 +223,15 @@ import {
   hash,<#
   }
   #>
-} from "/lib/util/string_util.ts";
+} from "/lib/util/string_util.ts";<#
+if (opts?.history_table) {
+#>
 
 import {
   deepCompare,
-} from "/lib/util/object_util.ts";
+} from "/lib/util/object_util.ts";<#
+}
+#>
 
 import * as validators from "/lib/validators/mod.ts";<#
   if (hasDict) {
@@ -1651,7 +1655,7 @@ export async function findAll(
     // <#=column_comment#>
     let <#=column_name#>_lbl = model.<#=column_name#>?.toString() || "";
     if (model.<#=column_name#> != null) {
-      const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === model.<#=column_name#>.toString());
+      const dictItem = <#=column_name#>Dict.find((dictItem) => dictItem.val === String(model.<#=column_name#>));
       if (dictItem) {
         <#=column_name#>_lbl = dictItem.lbl;
       }
@@ -2033,8 +2037,8 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (isNotEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> == null) {
-    input.<#=column_name#>_lbl = String(input.<#=column_name#>_lbl).trim();<#
+  if (isNotEmpty(input.<#=column_name#>_<#=foreignKey.lbl#>) && input.<#=column_name#> == null) {
+    input.<#=column_name#>_<#=foreignKey.lbl#> = String(input.<#=column_name#>_<#=foreignKey.lbl#>).trim();<#
     let foreignTable_UpTmp = foreignTable_Up;
     if (foreignTable_Up === Table_Up) {
       foreignTable_UpTmp = "";
@@ -2042,7 +2046,7 @@ export async function setIdByLbl(
     #>
     const <#=foreignTable#>Model = await findOne<#=foreignTable_UpTmp#>(
       {
-        <#=foreignKey.lbl#>: input.<#=column_name#>_lbl,
+        <#=foreignKey.lbl#>: input.<#=column_name#>_<#=foreignKey.lbl#>,
       },
       undefined,
       options,
@@ -2056,17 +2060,17 @@ export async function setIdByLbl(
   #>
   
   // <#=column_comment#>
-  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
-    input.<#=column_name#>_lbl = input.<#=column_name#>_lbl
+  if (!input.<#=column_name#> && input.<#=column_name#>_<#=foreignKey.lbl#>) {
+    input.<#=column_name#>_<#=foreignKey.lbl#> = input.<#=column_name#>_<#=foreignKey.lbl#>
       .map((item: string) => item.trim())
       .filter((item: string) => item);
-    input.<#=column_name#>_lbl = Array.from(new Set(input.<#=column_name#>_lbl));
-    if (input.<#=column_name#>_lbl.length === 0) {
+    input.<#=column_name#>_<#=foreignKey.lbl#> = Array.from(new Set(input.<#=column_name#>_<#=foreignKey.lbl#>));
+    if (input.<#=column_name#>_<#=foreignKey.lbl#>.length === 0) {
       input.<#=column_name#> = [ ];
     } else {
       const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `select t.id from <#=foreignKey.mod#>_<#=foreignTable#> t where t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_lbl) }`;
+      const sql = `select t.id from <#=foreignKey.mod#>_<#=foreignTable#> t where t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_<#=foreignKey.lbl#>) }`;
       interface Result {
         id: <#=foreignTable_Up#>Id;
       }
@@ -4585,13 +4589,15 @@ export async function updateById(
   #>
   
   if (!is_silent_mode) {
+    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+  }<#
+  if (opts?.history_table) {
+  #>
+  
+  if (!is_silent_mode) {
     const newModel = await findById(id, options);
     
     if (!deepCompare(oldModel, newModel)) {
-      log(JSON.stringify(oldModel));<#
-      if (opts?.history_table) {
-      #>
-      
       const {
         create: createHistory,
       } = await import("/gen/<#=mod#>/<#=opts.history_table#>/<#=opts.history_table#>.dao.ts");
@@ -4603,11 +4609,11 @@ export async function updateById(
           id: undefined,
         },
         options,
-      );<#
-      }
-      #>
+      );
     }
   }<#
+  }
+  #><#
   if (mod === "cron" && table === "cron_job") {
   #>
   
@@ -4688,6 +4694,9 @@ export async function deleteByIds(
     const oldModel = await findById(id, options);
     if (!oldModel) {
       continue;
+    }
+    if (!is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
     }<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
@@ -4833,16 +4842,16 @@ export async function deleteByIds(
       #><#
       if (hasIsDeleted) {
       #>
-      const sql = `update <#=mod#>_<#=many2many.table#> set is_deleted=1 where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#>=${ args.push(id) } and is_deleted=0`;<#
+      const sql = `update <#=mod#>_<#=many2many.table#> set is_deleted=1 where <#=many2many.column2#>=${ args.push(id) } and is_deleted=0`;<#
       } else {
       #>
-      const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#>=${ args.push(id) } and is_deleted=0`;<#
+      const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=${ args.push(id) } and is_deleted=0`;<#
       }
       #>
       await execute(sql, args);<#
       } else {
       #>
-      const sql = `select id from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#>=${ args.push(id) } and is_deleted=0`;
+      const sql = `select id from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=${ args.push(id) } and is_deleted=0`;
       const model = await queryOne(sql, args);
       if (model) {
         throw await ns("请先删除关联数据");
@@ -5381,12 +5390,14 @@ export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
   options?: {
     is_debug?: boolean;
+    is_silent_mode?: boolean;
   },
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
   const method = "forceDeleteByIds";
   
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
@@ -5427,7 +5438,9 @@ export async function forceDeleteByIds(
       undefined,
       options,
     );
-    log("forceDeleteByIds:", oldModel);
+    if (oldModel && !is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    }
     const args = new QueryArgs();
     const sql = `delete from <#=mod#>_<#=table#> where id=${ args.push(id) }<#
     if (hasIsDeleted) {
@@ -5461,7 +5474,7 @@ export async function forceDeleteByIds(
       const <#=column_name#> = oldModel.<#=column_name#>;
       if (<#=column_name#> && <#=column_name#>.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } <#=many2many.column2#> in ${ args.push(<#=column_name#>) }`;
+        const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in ${ args.push(<#=column_name#>) }`;
         await execute(sql, args);
       }
     }<#
@@ -5480,7 +5493,7 @@ export async function forceDeleteByIds(
     #>
     {
       const args = new QueryArgs();
-      const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } <#=many2many.column2#>=${ args.push(id) }`;
+      const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=${ args.push(id) }`;
       await execute(sql, args);
     }<#
     }

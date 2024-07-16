@@ -46,10 +46,6 @@ import {
   hash,
 } from "/lib/util/string_util.ts";
 
-import {
-  deepCompare,
-} from "/lib/util/object_util.ts";
-
 import * as validators from "/lib/validators/mod.ts";
 
 import {
@@ -443,7 +439,7 @@ export async function findAll(
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
     if (model.is_locked != null) {
-      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === model.is_locked.toString());
+      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === String(model.is_locked));
       if (dictItem) {
         is_locked_lbl = dictItem.lbl;
       }
@@ -453,7 +449,7 @@ export async function findAll(
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
     if (model.is_enabled != null) {
-      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === model.is_enabled.toString());
+      const dictItem = is_enabledDict.find((dictItem) => dictItem.val === String(model.is_enabled));
       if (dictItem) {
         is_enabled_lbl = dictItem.lbl;
       }
@@ -1615,11 +1611,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    const newModel = await findById(id, options);
-    
-    if (!deepCompare(oldModel, newModel)) {
-      log(JSON.stringify(oldModel));
-    }
+    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
   }
   
   return id;
@@ -1671,6 +1663,9 @@ export async function deleteByIds(
     const oldModel = await findById(id, options);
     if (!oldModel) {
       continue;
+    }
+    if (!is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
     }
     const args = new QueryArgs();
     let sql = `update base_dictbiz_detail set is_deleted=1`;
@@ -1936,12 +1931,14 @@ export async function forceDeleteByIds(
   ids: DictbizDetailId[],
   options?: {
     is_debug?: boolean;
+    is_silent_mode?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_dictbiz_detail";
   const method = "forceDeleteByIds";
   
+  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
@@ -1974,7 +1971,9 @@ export async function forceDeleteByIds(
       undefined,
       options,
     );
-    log("forceDeleteByIds:", oldModel);
+    if (oldModel && !is_silent_mode) {
+      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    }
     const args = new QueryArgs();
     const sql = `delete from base_dictbiz_detail where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
