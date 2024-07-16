@@ -51,6 +51,17 @@ for (let i = 0; i < columns.length; i++) {
   }
   columnNum++;
 }
+
+let detailFormCols = opts.detailFormCols;
+if (detailFormCols == null) {
+  if (columnNum <= 4) {
+    detailFormCols = 1;
+  } else {
+    detailFormCols = 2;
+  }
+}
+const detailFormWidth = opts.detailFormWidth;
+
 let detailCustomDialogType = opts.detailCustomDialogType;
 if (!detailCustomDialogType) {
   if (columnNum > 20 || hasInlineForeignTabs) {
@@ -153,23 +164,12 @@ const old_table = table;
       <el-form
         ref="formRef"
         size="default"
-        label-width="auto"<#
-          if (columnNum > 4) {
-        #>
+        label-width="auto"
         
-        un-grid="~ cols-[repeat(2,380px)]"
+        un-grid="~ cols-[repeat(<#=detailFormCols#>,<#=detailFormWidth#>)]"
         un-gap="x-2 y-4"
         un-justify-items-end
-        un-items-center<#
-          } else {
-        #>
-        
-        un-grid="~ cols-[repeat(1,380px)]"
-        un-gap="x-2 y-4"
-        un-justify-items-end
-        un-items-center<#
-          }
-        #>
+        un-items-center
         
         :model="dialogModel"
         :rules="form_rules"
@@ -234,16 +234,12 @@ const old_table = table;
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
-            if (column.isTextarea && columnNum <= 4) {
+            if (
+              (column.isTextarea && detailFormCols > 1) &&
+              (column.isImg && detailFormCols > 1 && column.maxFileSize > 1)
+            ) {
             #>
-            un-grid="col-span-1"<#
-            } else if (column.isTextarea && columnNum > 4) {
-            #>
-            un-grid="col-span-2"<#
-            } else if (column.isImg) {
-            #>
-            un-w="full"
-            un-grid="col-span-2"<#
+            un-grid="col-span-<#=detailFormCols#>"<#
             }
             #>
           ><#
@@ -256,7 +252,7 @@ const old_table = table;
               :max-size="<#=column.attMaxSize#>"<#
               }
               #><#
-              if (column.maxFileSize) {
+              if (column.maxFileSize > 1) {
               #>
               :max-file-size="<#=column.maxFileSize#>"<#
               }
@@ -692,6 +688,7 @@ const old_table = table;
               throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 不存在`;
               process.exit(1);
             }
+            const opts = inlineForeignSchema.opts;
             const inline_column_name = inlineForeignTab.column_name;
             const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
           #><#
@@ -1169,27 +1166,25 @@ const old_table = table;
               }
               columnNum++;
             }
+            let detailFormCols = opts.detailFormCols;
+            if (detailFormCols == null) {
+              if (columnNum <= 4) {
+                detailFormCols = 1;
+              } else {
+                detailFormCols = 2;
+              }
+            }
+            const detailFormWidth = opts.detailFormWidth;
             #>
               <el-form
                 ref="formRef"
                 size="default"
-                label-width="auto"<#
-                  if (columnNum > 4) {
-                #>
+                label-width="auto"
                 
-                un-grid="~ cols-[repeat(2,380px)]"
+                un-grid="~ cols-[repeat(<#=detailFormCols#>,<#=detailFormWidth#>)]"
                 un-gap="x-2 y-4"
                 un-justify-items-end
-                un-items-center<#
-                  } else {
-                #>
-                
-                un-grid="~ cols-[repeat(1,380px)]"
-                un-gap="x-2 y-4"
-                un-justify-items-end
-                un-items-center<#
-                  }
-                #>
+                un-items-center
                 
                 :model="dialogModel"
                 :rules="form_rules"
@@ -1251,16 +1246,12 @@ const old_table = table;
                 <el-form-item
                   :label="n('<#=column_comment#>')"
                   prop="<#=inline_column_name#>.<#=column_name#>"<#
-                  if (column.isTextarea && columnNum <= 4) {
+                  if (
+                    (column.isTextarea && detailFormCols > 1) &&
+                    (column.isImg && detailFormCols > 1 && column.maxFileSize > 1)
+                  ) {
                   #>
-                  un-grid="col-span-1"<#
-                  } else if (column.isTextarea && columnNum > 4) {
-                  #>
-                  un-grid="col-span-2"<#
-                  } else if (column.isImg) {
-                  #>
-                  un-w="full"
-                  un-grid="col-span-2"<#
+                  un-grid="col-span-<#=detailFormCols#>"<#
                   }
                   #>
                 ><#
@@ -2375,14 +2366,14 @@ const old_table = table;
     }).join("");
   #>
   
-  <!-- 权益 -->
+  <!-- <#=column_comment#> -->
   <ListSelectDialog
     ref="<#=column_name#>ListSelectDialogRef"
     :is-locked="isLocked"
     v-slot="listSelectProps"
   >
     <<#=foreignTable_Up#>List
-      v-bind="listSelectProps as any"
+      v-bind="(listSelectProps as any)"
     ></<#=foreignTable_Up#>List>
   </ListSelectDialog><#
   }
