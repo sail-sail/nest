@@ -77,8 +77,8 @@
             un-p="x-1"
             un-h="full"
             un-cursor-pointer
-            un-bg="[var(--el-fill-color-lighter)] hover:gray"
-            un-text="hover:white hover:dark:black"
+            un-bg="hover:gray-200"
+            un-text="hover:black"
             @click="scrollLeftClk"
           >
             <ElIconArrowLeft />
@@ -88,8 +88,8 @@
             un-p="x-1"
             un-h="full"
             un-cursor-pointer
-            un-bg="[var(--el-fill-color-lighter)] hover:gray"
-            un-text="hover:white hover:dark:black"
+            un-bg="hover:gray-200"
+            un-text="hover:black"
             @click="scrollRightClk"
           >
             <ElIconArrowRight />
