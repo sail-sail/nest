@@ -4,7 +4,7 @@ import {
 } from "/lib/context.ts";
 
 import {
-  getAuthModel,
+  get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -46,8 +46,10 @@ async function _getMenus(
       t.is_deleted = 0
       and t.is_enabled = 1
   `;
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
+  const usr_id = await get_usr_id();
+  if (!usr_id) {
+    return [ ];
+  }
   const tenant_id = await getTenant_id(usr_id);
   if (tenant_id) {
     sql += ` and base_tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
@@ -56,7 +58,12 @@ async function _getMenus(
     sql += ` and t.parent_id = ${ args.push(parent_id) }`;
   }
   const usr_model = await validateOptionUsr(
-    await findByIdUsr(usr_id),
+    await findByIdUsr(
+      usr_id,
+      {
+        is_debug: false,
+      },
+    ),
   );
   const username = usr_model.username;
   if (username !== "admin") {

@@ -40,6 +40,7 @@
     "diffEditor.wordWrap": "off",
     "editor.formatOnSave": false,
     "deno.codeLens.references": false,
-    "deno.codeLens.referencesAllFunctions": false
+    "deno.codeLens.referencesAllFunctions": false,
+    "git.timeline.showUncommitted": true
   }
 }
