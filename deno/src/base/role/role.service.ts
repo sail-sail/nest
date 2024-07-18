@@ -9,7 +9,7 @@ import {
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  getAuthModel,
+  get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -19,15 +19,19 @@ import {
 /** 获取当前角色的首页轮播图路由 */
 export async function getHomeUrls() {
   
-  const authModel = await getAuthModel();
-  const usr_id = authModel?.id;
+  const usr_id = await get_usr_id();
   
-  const usrModel = await validateOptionUsr(
-    await findByIdUsr(usr_id),
+  const usr_model = await validateOptionUsr(
+    await findByIdUsr(
+      usr_id,
+      {
+        is_debug: false,
+      },
+    ),
   );
-  await validateIsEnabledUsr(usrModel);
+  await validateIsEnabledUsr(usr_model);
   
-  const role_ids = usrModel.role_ids;
+  const role_ids = usr_model.role_ids;
   
   const roleModels = await findAllRole({
     ids: role_ids,
