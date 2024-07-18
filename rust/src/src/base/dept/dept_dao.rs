@@ -51,10 +51,11 @@ pub async fn get_dept_ids(
   
   let options = Options::new();
   let options = options.set_is_debug(Some(false));
+  let options = Some(options);
   
   let usr_model = find_by_id_usr(
     usr_id,
-    Some(options),
+    options,
   ).await?;
   
   if usr_model.is_none() {
