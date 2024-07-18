@@ -82,7 +82,7 @@ async function parseEnv() {
  */
 export async function getEnv(key: string): Promise<string> {
   const val = Deno.env.get(key);
-  if (val) {
+  if (val != null) {
     return val;
   }
   if (!parsedEnv) {
@@ -102,21 +102,4 @@ export function getParsedEnv(key: string): string {
  */
 export function setEnv(key: string, val: string) {
   Deno.env.set(key, val)
-}
-
-export async function getEnvs() {
-  const obj = Deno.env.toObject();
-  if (!parsedEnv) {
-    await parseEnv();
-  }
-  const envs: {[key: string]: string} = { };
-  const keys = Object.keys(parsedEnv);
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    const val = obj[key] ?? parsedEnv[key];
-    if (val != null) {
-      envs[key] = val;
-    }
-  }
-  return envs;
 }
