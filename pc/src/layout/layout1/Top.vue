@@ -8,17 +8,24 @@
   un-items-center
   un-text="4"
   un-font="bold"
+  un-whitespace-nowrap
 >
-  {{ ns(app_title) }}
+  <div
+    v-if="!menuStore.isCollapse"
+  >
+    {{ ns(app_title) }}
+  </div>
 </div>
 </template>
 
 <script setup lang="ts">
-const app_title = import.meta.env.VITE_APP_TITLE;
+const menuStore = useMenuStore();
 
 const {
   ns,
 } = useI18n();
+
+const app_title = import.meta.env.VITE_APP_TITLE;
 
 </script>
 
