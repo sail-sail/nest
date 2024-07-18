@@ -15,6 +15,9 @@
     "db_gen_crypto_key": "deno run -A ./lib/script/db_gen_crypto_key.ts",
     "preinstall": "npx only-allow pnpm"
   },
+  "dependencies": {
+    "path-to-regexp": "6.2.1"
+  },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/typescript": "4.0.9",
