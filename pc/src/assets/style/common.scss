@@ -64,6 +64,7 @@ html,body {
   height: 90vh;
   --el-dialog-width: 960px;
   --el-dialog-padding-primary: 0;
+  border-radius: var(--el-border-radius-base);
   .el-dialog__footer {
     display: none;
   }
