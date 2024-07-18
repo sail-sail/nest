@@ -75,6 +75,10 @@ import {
 } from "/gen/cron/cron_job_log/cron_job_log.dao.ts";
 
 import {
+  findById as findByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
+
+import {
   route_path,
 } from "./cron_job_log_detail.model.ts";
 
@@ -129,10 +133,7 @@ async function getWhereQuery(
     whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and create_usr_id_lbl.lbl in ${ args.push(search.create_usr_id_lbl) }`;
-  }
-  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
-    whereQuery += ` and create_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.create_usr_id_lbl_like) + "%") }`;
+    whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
@@ -141,10 +142,7 @@ async function getWhereQuery(
     whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and update_usr_id_lbl.lbl in ${ args.push(search.update_usr_id_lbl) }`;
-  }
-  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
-    whereQuery += ` and update_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.update_usr_id_lbl_like) + "%") }`;
+    whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -165,9 +163,7 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `cron_cron_job_log_detail t
-  left join cron_cron_job_log cron_job_log_id_lbl on cron_job_log_id_lbl.id=t.cron_job_log_id
-  left join base_usr create_usr_id_lbl on create_usr_id_lbl.id=t.create_usr_id
-  left join base_usr update_usr_id_lbl on update_usr_id_lbl.id=t.update_usr_id`;
+  left join cron_cron_job_log cron_job_log_id_lbl on cron_job_log_id_lbl.id=t.cron_job_log_id`;
   return fromQuery;
 }
 
@@ -299,8 +295,6 @@ export async function findAll(
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
-      ,create_usr_id_lbl.lbl create_usr_id_lbl
-      ,update_usr_id_lbl.lbl update_usr_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -366,12 +360,6 @@ export async function findAll(
     } else {
       model.create_time_lbl = "";
     }
-    
-    // 创建人
-    model.create_usr_id_lbl = model.create_usr_id_lbl || "";
-    
-    // 更新人
-    model.update_usr_id_lbl = model.update_usr_id_lbl || "";
     
     // 更新时间
     if (model.update_time) {
@@ -946,7 +934,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = "insert into cron_cron_job_log_detail(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,cron_job_log_id,lbl)values";
+  let sql = "insert into cron_cron_job_log_detail(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,cron_job_log_id,lbl)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -986,16 +974,41 @@ async function _creates(
       }
       if (!is_silent_mode) {
         if (input.create_usr_id == null) {
-          const usr_id = await get_usr_id();
+          let usr_id = await get_usr_id();
+          let usr_lbl = "";
+          if (usr_id) {
+            const usr_model = await findByIdUsr(usr_id, options);
+            if (!usr_model) {
+              usr_id = undefined;
+            } else {
+              usr_lbl = usr_model.lbl;
+            }
+          }
           if (usr_id != null) {
             sql += `,${ args.push(usr_id) }`;
           } else {
             sql += ",default";
           }
+          sql += `,${ args.push(usr_lbl) }`;
         } else if (input.create_usr_id as unknown as string === "-") {
           sql += ",default";
+          sql += ",default";
         } else {
-          sql += `,${ args.push(input.create_usr_id) }`;
+          let usr_id: UsrId | undefined = input.create_usr_id;
+          let usr_lbl = "";
+          const usr_model = await findByIdUsr(usr_id, options);
+          if (!usr_model) {
+            usr_id = undefined;
+            usr_lbl = "";
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+          if (usr_id) {
+            sql += `,${ args.push(usr_id) }`;
+          } else {
+            sql += ",default";
+          }
+          sql += `,${ args.push(usr_lbl) }`;
         }
       } else {
         if (input.create_usr_id == null) {
@@ -1003,9 +1016,19 @@ async function _creates(
         } else {
           sql += `,${ args.push(input.create_usr_id) }`;
         }
+        if (input.create_usr_id_lbl == null) {
+          sql += ",default";
+        } else {
+          sql += `,${ args.push(input.create_usr_id_lbl) }`;
+        }
       }
       if (input.update_usr_id != null) {
         sql += `,${ args.push(input.update_usr_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.update_usr_id_lbl != null) {
+        sql += `,${ args.push(input.update_usr_id_lbl) }`;
       } else {
         sql += ",default";
       }
@@ -1190,6 +1213,11 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (isNotEmpty(input.create_usr_id_lbl)) {
+    sql += `create_usr_id_lbl=?,`;
+    args.push(input.create_usr_id_lbl);
+    updateFldNum++;
+  }
   if (input.create_usr_id != null) {
     if (input.create_usr_id != oldModel.create_usr_id) {
       sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
@@ -1201,15 +1229,45 @@ export async function updateById(
   if (updateFldNum > 0) {
     if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
-        const usr_id = await get_usr_id();
+        let usr_id = await get_usr_id();
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id, options);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
         if (usr_id != null) {
           sql += `update_usr_id=${ args.push(usr_id) },`;
         }
-      } else if (input.update_usr_id as unknown as string !== "-") {
+        if (usr_lbl) {
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
+        let usr_id: UsrId | undefined = input.update_usr_id;
+        let usr_lbl = "";
+        if (usr_id) {
+          const usr_model = await findByIdUsr(usr_id, options);
+          if (!usr_model) {
+            usr_id = undefined;
+          } else {
+            usr_lbl = usr_model.lbl;
+          }
+        }
+        if (usr_id) {
+          sql += `update_usr_id=${ args.push(usr_id) },`;
+          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
+        }
+      }
+    } else {
+      if (input.update_usr_id != null) {
         sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
       }
-    } else if (input.update_usr_id != null) {
-      sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
+      if (input.update_usr_id_lbl != null) {
+        sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
+      }
     }
     if (!is_silent_mode && !is_creating) {
       if (input.update_time != null || input.update_time_save_null) {
@@ -1288,6 +1346,22 @@ export async function deleteByIds(
     const args = new QueryArgs();
     let sql = `update cron_cron_job_log_detail set is_deleted=1`;
     if (!is_silent_mode && !is_creating) {
+      let usr_id = await get_usr_id();
+      if (usr_id != null) {
+        sql += `,delete_usr_id=${ args.push(usr_id) }`;
+      }
+      let usr_lbl = "";
+      if (usr_id) {
+        const usr_model = await findByIdUsr(usr_id, options);
+        if (!usr_model) {
+          usr_id = undefined;
+        } else {
+          usr_lbl = usr_model.lbl;
+        }
+      }
+      if (usr_lbl) {
+        sql += `,delete_usr_id_lbl=${ args.push(usr_lbl) }`;
+      }
       sql += `,delete_time=${ args.push(reqDate()) }`;
     }
     sql += ` where id=${ args.push(id) } limit 1`;
