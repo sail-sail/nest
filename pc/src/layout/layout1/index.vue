@@ -77,8 +77,8 @@
             un-p="x-1"
             un-h="full"
             un-cursor-pointer
-            un-bg="[var(--el-fill-color-lighter)] hover:gray"
-            un-text="hover:white hover:dark:black"
+            un-bg="hover:gray-200"
+            un-text="hover:black"
             @click="scrollLeftClk"
           >
             <ElIconArrowLeft />
@@ -88,8 +88,8 @@
             un-p="x-1"
             un-h="full"
             un-cursor-pointer
-            un-bg="[var(--el-fill-color-lighter)] hover:gray"
-            un-text="hover:white hover:dark:black"
+            un-bg="hover:gray-200"
+            un-text="hover:black"
             @click="scrollRightClk"
           >
             <ElIconArrowRight />
@@ -343,6 +343,9 @@
       <div
         ref="tab_active_lineRef"
         
+        :class="{
+          tab_active_line: inited,
+        }"
         un-hidden
         un-pos-absolute
         un-bottom-0
@@ -350,7 +353,6 @@
         un-bg="[var(--el-menu-active-color)]"
         un-h="0.5"
         un-border-rounded
-        un-transition="property-[width,left] duration-[300ms]"
         un-ease-in
       ></div>
     </div>
@@ -710,5 +712,8 @@ initFrame();
     --el-input-text-color: #FFF;
     --el-input-border-color: transparent;
   }
+}
+.tab_active_line {
+  @apply transition-property-[width,left] duration-[300ms] ease-in;
 }
 </style>

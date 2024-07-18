@@ -4,6 +4,7 @@ import {
 
 import {
   createToken,
+  get_usr_id,
   getAuthModel,
   getPassword,
 } from "/lib/auth/auth.dao.ts";
@@ -13,9 +14,17 @@ import {
   getOrgIdsById,
 } from "./usr.dao.ts";
 
-import * as usrDaoGen from "/gen/base/usr/usr.dao.ts";
+import {
+  findById as findByIdUsr,
+  findOne as findOneUsr,
+  validateOption as validateOptionUsr,
+  validateIsEnabled as validateIsEnabledUsr,
+  updateById as updateByIdUsr,
+} from "/gen/base/usr/usr.dao.ts";
 
-import * as orgDaoGen from "/gen/base/org/org.dao.ts";
+import {
+  findAll as findAllOrg,
+} from "/gen/base/org/org.dao.ts";
 
 import {
   create as createLoginLog,
@@ -152,12 +161,17 @@ export async function getLoginInfo() {
   }
   const org_id = authModel.org_id;
   const id: UsrId = authModel.id;
-  const usrModel = await usrDaoGen.findById(id);
-  if (!usrModel) {
+  const usr_model = await findByIdUsr(
+    id,
+    {
+      is_debug: false,
+    },
+  );
+  if (!usr_model) {
     throw await ns("用户不存在");
   }
-  const org_ids = usrModel.org_ids || [ ];
-  const orgModels = await orgDaoGen.findAll();
+  const org_ids = usr_model.org_ids || [ ];
+  const orgModels = await findAllOrg();
   const org_id_models: { id: OrgId, lbl: string }[] = [ ];
   for (let i = 0; i < orgModels.length; i++) {
     const orgModel = orgModels[i];
@@ -169,8 +183,8 @@ export async function getLoginInfo() {
     }
   }
   return {
-    lbl: usrModel.lbl,
-    username: usrModel.username,
+    lbl: usr_model.lbl,
+    username: usr_model.username,
     lang: authModel.lang,
     org_id,
     org_id_models,
@@ -221,24 +235,26 @@ export async function changePassword(
   if (password !== confirmPassword) {
     throw await ns("两次输入的密码不一致");
   }
-  const authModel = await getAuthModel();
+  const usr_id = await get_usr_id();
   
-  const id = authModel?.id;
+  if (!usr_id) {
+    throw await ns("未登录");
+  }
   
-  const usrModel = await usrDaoGen.validateOption(
-    await usrDaoGen.findOne({
-      id,
-    }),
+  const usr_model = await validateOptionUsr(
+    await findOneUsr(
+      {
+        id: usr_id,
+      },
+    ),
   );
-  await usrDaoGen.validateIsEnabled(usrModel);
-  
-  const usr_id: UsrId = usrModel.id;
+  await validateIsEnabledUsr(usr_model);
   
   const oldPassword2 = await getPassword(oldPassword);
-  if (usrModel.password !== oldPassword2) {
+  if (usr_model.password !== oldPassword2) {
     throw await ns("旧密码错误");
   }
-  await usrDaoGen.updateById(
+  await updateByIdUsr(
     usr_id,
     {
       password,
