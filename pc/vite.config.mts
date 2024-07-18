@@ -205,6 +205,7 @@ export default defineConfig({
           ],
         },
       ],
+      viteOptimizeDeps: false,
       resolvers: [
         ElementPlusResolver(),
         VueUseComponentsResolver(),
