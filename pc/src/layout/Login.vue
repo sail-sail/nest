@@ -288,8 +288,13 @@ async function onLogin() {
       org_id: model.org_id,
     }),
   );
-  if (usrStore.username !== model.username) {
+  const old_tenant_id = usrStore.tenant_id;
+  const old_username = usrStore.username;
+  if (old_username !== model.username) {
     tabsStore.closeOtherTabs();
+    if (tabsStore.actTab) {
+      tabsStore.closeCurrentTab(tabsStore.actTab);
+    }
   }
   usrStore.authorization = loginModel.authorization;
   usrStore.usr_id = loginModel.usr_id;
@@ -300,7 +305,12 @@ async function onLogin() {
   await Promise.all([
     indexStore.initI18nVersion(),
   ]);
-  window.history.go(0);
+  if (old_username !== model.username || old_tenant_id !== model.tenant_id) {
+    tabsStore.tabs = [ ];
+    location.href = "/";
+  } else {
+    window.history.go(0);
+  }
 }
 
 let tenants = $ref<{
