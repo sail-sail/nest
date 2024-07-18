@@ -212,7 +212,7 @@
           <el-form-item
             :label="n('详情')"
             prop="detail"
-            un-grid="col-span-2"
+            un-grid="col-span-full"
           >
             <CustomInput
               v-model="dialogModel.detail"
@@ -257,7 +257,7 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
-            un-grid="col-span-2"
+            un-grid="col-span-full"
           >
             <CustomInput
               v-model="dialogModel.rem"
