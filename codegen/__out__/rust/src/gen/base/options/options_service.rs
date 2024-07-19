@@ -118,12 +118,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<OptionsId>> {
   
-  let ids = options_dao::creates(
+  let options_ids = options_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(options_ids)
 }
 
 /// 根据 id 修改系统选项
@@ -170,13 +170,13 @@ pub async fn update_by_id(
     }
   }
   
-  let res = options_dao::update_by_id(
+  let options_id = options_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(options_id)
 }
 
 /// 根据 ids 删除系统选项

@@ -120,12 +120,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<UsrId>> {
   
-  let ids = usr_dao::creates(
+  let usr_ids = usr_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(usr_ids)
 }
 
 /// 用户根据id修改租户id
@@ -174,13 +174,13 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
-  let res = usr_dao::update_by_id(
+  let usr_id = usr_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(usr_id)
 }
 
 /// 根据 ids 删除用户

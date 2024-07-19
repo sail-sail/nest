@@ -11,6 +11,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
+use crate::src::base::options::options_dao::update_i18n_version;
 
 use super::i18n_model::*;
 use super::i18n_dao;
@@ -115,12 +116,14 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<I18nId>> {
   
-  let ids = i18n_dao::creates(
+  let i18n_ids = i18n_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  update_i18n_version().await?;
+  
+  Ok(i18n_ids)
 }
 
 /// 根据 id 修改国际化
@@ -132,13 +135,15 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<I18nId> {
   
-  let res = i18n_dao::update_by_id(
+  let i18n_id = i18n_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  update_i18n_version().await?;
+  
+  Ok(i18n_id)
 }
 
 /// 根据 ids 删除国际化
@@ -152,6 +157,8 @@ pub async fn delete_by_ids(
     ids,
     options,
   ).await?;
+  
+  update_i18n_version().await?;
   
   Ok(num)
 }
@@ -179,6 +186,8 @@ pub async fn revert_by_ids(
     ids,
     options,
   ).await?;
+  
+  update_i18n_version().await?;
   
   Ok(num)
 }

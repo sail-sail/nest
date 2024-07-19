@@ -120,12 +120,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<RoleId>> {
   
-  let ids = role_dao::creates(
+  let role_ids = role_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(role_ids)
 }
 
 /// 角色根据id修改租户id
@@ -174,13 +174,13 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
-  let res = role_dao::update_by_id(
+  let role_id = role_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(role_id)
 }
 
 /// 根据 ids 删除角色

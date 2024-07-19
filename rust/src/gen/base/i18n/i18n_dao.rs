@@ -1787,8 +1787,6 @@ pub async fn update_by_id(
     }
   }
   
-  crate::src::base::options::options_dao::update_i18n_version().await?;
-  
   Ok(id)
 }
 
@@ -1934,8 +1932,6 @@ pub async fn delete_by_ids(
     return Err(anyhow!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  crate::src::base::options::options_dao::update_i18n_version().await?;
-  
   Ok(num)
 }
 
@@ -2036,8 +2032,6 @@ pub async fn revert_by_ids(
     }
     
   }
-  
-  crate::src::base::options::options_dao::update_i18n_version().await?;
   
   Ok(num)
 }
