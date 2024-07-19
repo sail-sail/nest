@@ -12,7 +12,6 @@
     "ibm.output-colorizer",
     "deanhjjiang.split-line",
     "antfu.where-am-i",
-    "serayuzgur.crates",
     "rust-lang.rust-analyzer",
     "swellaby.vscode-rust-test-adapter",
     "hdevalke.rust-test-lens",
