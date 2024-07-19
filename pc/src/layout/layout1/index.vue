@@ -343,6 +343,9 @@
       <div
         ref="tab_active_lineRef"
         
+        :class="{
+          tab_active_line: inited,
+        }"
         un-hidden
         un-pos-absolute
         un-bottom-0
@@ -350,7 +353,6 @@
         un-bg="[var(--el-menu-active-color)]"
         un-h="0.5"
         un-border-rounded
-        un-transition="property-[width,left] duration-[300ms]"
         un-ease-in
       ></div>
     </div>
@@ -710,5 +712,8 @@ initFrame();
     --el-input-text-color: #FFF;
     --el-input-border-color: transparent;
   }
+}
+.tab_active_line {
+  @apply transition-property-[width,left] duration-[300ms] ease-in;
 }
 </style>
