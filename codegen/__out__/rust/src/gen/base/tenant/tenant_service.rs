@@ -118,12 +118,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<TenantId>> {
   
-  let ids = tenant_dao::creates(
+  let tenant_ids = tenant_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(tenant_ids)
 }
 
 /// 根据 id 修改租户
@@ -155,13 +155,13 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
-  let res = tenant_dao::update_by_id(
+  let tenant_id = tenant_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(tenant_id)
 }
 
 /// 根据 ids 删除租户

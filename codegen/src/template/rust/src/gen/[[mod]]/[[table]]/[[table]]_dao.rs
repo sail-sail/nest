@@ -4713,12 +4713,6 @@ pub async fn update_by_id(
   }<#
   }
   #><#
-    if (mod === "base" && table === "i18n") {
-  #>
-  
-  crate::src::base::options::options_dao::update_i18n_version().await?;<#
-    }
-  #><#
   if (opts?.history_table) {
     const historyTable = opts.history_table;
     const historyTableUp = historyTable.split("_").map(function(item) {
@@ -5279,12 +5273,6 @@ pub async fn delete_by_ids(
     vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
   ).await?;<#
   }
-  #><#
-    if (table === "i18n" && mod === "base") {
-  #>
-  
-  crate::src::base::options::options_dao::update_i18n_version().await?;<#
-    }
   #>
   
   Ok(num)
@@ -5868,12 +5856,6 @@ pub async fn revert_by_ids(
     options.clone(),
   ).await?;<#
   }
-  #><#
-    if (table === "i18n" && mod === "base") {
-  #>
-  
-  crate::src::base::options::options_dao::update_i18n_version().await?;<#
-    }
   #>
   
   Ok(num)

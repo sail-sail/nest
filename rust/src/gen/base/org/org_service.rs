@@ -120,12 +120,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<OrgId>> {
   
-  let ids = org_dao::creates(
+  let org_ids = org_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(org_ids)
 }
 
 /// 组织根据id修改租户id
@@ -174,13 +174,13 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
-  let res = org_dao::update_by_id(
+  let org_id = org_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(org_id)
 }
 
 /// 根据 ids 删除组织

@@ -118,12 +118,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<DictId>> {
   
-  let ids = dict_dao::creates(
+  let dict_ids = dict_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(dict_ids)
 }
 
 /// 根据 id 修改系统字典
@@ -174,13 +174,13 @@ pub async fn update_by_id(
     }
   }
   
-  let res = dict_dao::update_by_id(
+  let dict_id = dict_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(dict_id)
 }
 
 /// 根据 ids 删除系统字典

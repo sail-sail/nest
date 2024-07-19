@@ -120,12 +120,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<DictbizId>> {
   
-  let ids = dictbiz_dao::creates(
+  let dictbiz_ids = dictbiz_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(dictbiz_ids)
 }
 
 /// 业务字典根据id修改租户id
@@ -174,13 +174,13 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
-  let res = dictbiz_dao::update_by_id(
+  let dictbiz_id = dictbiz_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(dictbiz_id)
 }
 
 /// 根据 ids 删除业务字典

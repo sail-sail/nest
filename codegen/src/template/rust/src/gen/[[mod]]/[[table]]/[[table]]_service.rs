@@ -73,6 +73,11 @@ use crate::gen::base::usr::usr_dao::{
   validate_option as validate_option_usr,
 };<#
 }
+#><#
+if (mod === "base" && table === "i18n") {
+#>
+use crate::src::base::options::options_dao::update_i18n_version;<#
+}
 #>
 
 use super::<#=table#>_model::*;
@@ -271,17 +276,23 @@ pub async fn creates(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
-  let ids = <#=table#>_dao::creates(
+  let <#=table#>_ids = <#=table#>_dao::creates(
     inputs,
     options,
-  ).await?;
+  ).await?;<#
+  if (mod === "base" && table === "i18n") {
+  #>
   
-  Ok(ids)
+  update_i18n_version().await?;<#
+  }
+  #>
+  
+  Ok(<#=table#>_ids)
 }<#
 if (hasTenant_id) {
 #>
@@ -297,8 +308,8 @@ pub async fn update_tenant_by_id(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #>
   
@@ -306,7 +317,13 @@ pub async fn update_tenant_by_id(
     id,
     tenant_id,
     options,
-  ).await?;
+  ).await?;<#
+  if (mod === "base" && table === "i18n") {
+  #>
+  
+  update_i18n_version().await?;<#
+  }
+  #>
   
   Ok(num)
 }<#
@@ -325,8 +342,8 @@ pub async fn update_by_id(
   #>
   
   let options = Options::from(options)
-    .set_has_data_permit(true)
-    .into();<#
+    .set_has_data_permit(true);
+  let options = Some(options);<#
   }
   #><#
   if (hasLocked) {
@@ -405,13 +422,19 @@ pub async fn update_by_id(
   }
   #>
   
-  let res = <#=table#>_dao::update_by_id(
+  let <#=table#>_id = <#=table#>_dao::update_by_id(
     id,
     input,
     options,
-  ).await?;
+  ).await?;<#
+  if (mod === "base" && table === "i18n") {
+  #>
   
-  Ok(res)
+  update_i18n_version().await?;<#
+  }
+  #>
+  
+  Ok(<#=table#>_id)
 }
 
 /// 根据 ids 删除<#=table_comment#>
@@ -482,7 +505,13 @@ pub async fn delete_by_ids(
   let num = <#=table#>_dao::delete_by_ids(
     ids,
     options,
-  ).await?;
+  ).await?;<#
+  if (mod === "base" && table === "i18n") {
+  #>
+  
+  update_i18n_version().await?;<#
+  }
+  #>
   
   Ok(num)
 }<#
@@ -560,7 +589,13 @@ pub async fn enable_by_ids(
     ids,
     is_locked,
     options,
-  ).await?;
+  ).await?;<#
+  if (mod === "base" && table === "i18n") {
+  #>
+  
+  update_i18n_version().await?;<#
+  }
+  #>
   
   Ok(num)
 }<#
@@ -661,7 +696,13 @@ pub async fn revert_by_ids(
   let num = <#=table#>_dao::revert_by_ids(
     ids,
     options,
-  ).await?;
+  ).await?;<#
+  if (mod === "base" && table === "i18n") {
+  #>
+  
+  update_i18n_version().await?;<#
+  }
+  #>
   
   Ok(num)
 }<#

@@ -118,12 +118,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<DictDetailId>> {
   
-  let ids = dict_detail_dao::creates(
+  let dict_detail_ids = dict_detail_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(dict_detail_ids)
 }
 
 /// 根据 id 修改系统字典明细
@@ -155,13 +155,13 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
-  let res = dict_detail_dao::update_by_id(
+  let dict_detail_id = dict_detail_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(dict_detail_id)
 }
 
 /// 根据 ids 删除系统字典明细
