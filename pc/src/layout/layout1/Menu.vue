@@ -14,22 +14,24 @@
     un-items-center
   >
     <div
-      v-if="!menuStore.isCollapse"
       un-flex="~ [1_0_0]"
       un-overflow-hidden
       un-w="full"
-      un-h="full"
       un-justify-center
+      un-items-center
+      un-h="8"
     >
       <div
+        v-if="!menuStore.isCollapse"
         un-flex="~ [1_0_0]"
         un-justify-center
         un-items-center
         un-b="1 solid gray-600 hover:[var(--el-color-primary)]"
-        un-m="x-2 y-1"
+        un-m="l-2"
         un-rounded="md"
-        un-text="gray hover:[var(--el-color-primary)]"
+        un-text="3 gray hover:[var(--el-color-primary)]"
         un-pos-relative
+        un-h="6"
       >
         <div
           v-show="!menuStore.search && !menuSearchForcused"
@@ -41,14 +43,14 @@
           @click="menuSearchClk"
         >
           <el-icon
-            un-text="hover:[var(--el-color-primary)]"
+            un-text="3.5"
           >
             <ElIconSearch />
           </el-icon>
           <span
             un-m="l-1"
           >
-            菜单导航
+            {{ ns('菜单导航') }}
           </span>
         </div>
         <input
@@ -74,12 +76,30 @@
           v-show="menuStore.search"
           un-pos="absolute"
           un-right="2"
-          un-top="1"
           un-text="gray hover:red"
           un-cursor-pointer
           @click="menuStore.search = '';menuSearchForcused = false"
         >
           <ElIconClose />
+        </el-icon>
+      </div>
+      <div
+        un-p="x-2"
+        un-box-border
+        un-cursor-pointer
+        un-text="hover:[var(--el-color-primary)]"
+        @click="menuStore.isCollapse = !menuStore.isCollapse"
+      >
+        <el-icon
+          size="18"
+          un-self-center
+        >
+          <ElIconExpand
+            v-if="menuStore.isCollapse"
+          />
+          <ElIconFold
+            v-else
+          />
         </el-icon>
       </div>
     </div>
