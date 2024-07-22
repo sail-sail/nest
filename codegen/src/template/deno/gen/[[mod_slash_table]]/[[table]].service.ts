@@ -64,6 +64,14 @@ import {
   <#=Table_Up#>Summary,
 } from "/gen/types.ts";<#
 }
+#><#
+if (mod === "base" && table === "i18n") {
+#>
+  
+import {
+  update_i18n_version,
+} from "/src/base/options/options.dao.ts";<#
+}
 #>
 
 import * as <#=table#>Dao from "./<#=table#>.dao.ts";
@@ -336,7 +344,13 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<<#=Table_Up#>Id[]> {
-  const ids = await <#=table#>Dao.creates(inputs, options);
+  const ids = await <#=table#>Dao.creates(inputs, options);<#
+  if (mod === "base" && table === "i18n") {
+  #>
+  
+  await update_i18n_version();<#
+  }
+  #>
   return ids;
 }<#
 if (hasVersion) {
@@ -448,16 +462,10 @@ export async function updateById(
   }<#
     }
   #>);<#
-  if (table === "i18n") {
+  if (mod === "base" && table === "i18n") {
   #>
   
-  {
-    const {
-      updateI18n_version,
-    } = await import("/src/base/options/options.dao.ts");
-    
-    await updateI18n_version();
-  }<#
+  await update_i18n_version();<#
   }
   #>
   return id2;
@@ -513,13 +521,10 @@ export async function deleteByIds(
   }<#
     }
   #>);<#
-  if (table === "i18n") {
+  if (mod === "base" && table === "i18n") {
   #>
   
-  {
-    const optionsDaoSrc = await import("/src/base/options/options.dao.ts");
-    await optionsDaoSrc.updateI18n_version();
-  }<#
+  await update_i18n_version();<#
   }
   #>
   return data;
