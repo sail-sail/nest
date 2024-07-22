@@ -91,42 +91,72 @@ export async function nLang(
   } = await import("/gen/base/menu/menu.dao.ts");
   
   let i18nLbl = code;
-  const langModel = await findOneLang({
-    code: langCode,
-    is_enabled: [ 1 ],
-  });
+  const langModel = await findOneLang(
+    {
+      code: langCode,
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    {
+      is_debug: false,
+    },
+  );
   let menu_id: MenuId | undefined;
   if (routePath != null) {
-    const menuModel = await findOneMenu({
-      route_path: routePath,
-      is_enabled: [ 1 ],
-    });
-    menu_id = menuModel?.id;
+    const menu_model = await findOneMenu(
+      {
+        route_path: routePath,
+        is_enabled: [ 1 ],
+      },
+      undefined,
+      {
+        is_debug: false,
+      },
+    );
+    menu_id = menu_model?.id;
   }
   if (langModel) {
-    let i18nModel: I18nModel | undefined
+    let i18n_model: I18nModel | undefined
     if (menu_id) {
-      i18nModel = await findOneI18n({
-        lang_id: [ langModel.id ],
-        menu_id: [ menu_id ],
-        code,
-      });
-      if (!i18nModel) {
-        i18nModel = await findOneI18n({
+      i18n_model = await findOneI18n(
+        {
           lang_id: [ langModel.id ],
-          menu_id_is_null: true,
+          menu_id: [ menu_id ],
           code,
-        });
+        },
+        undefined,
+        {
+          is_debug: false,
+        },
+      );
+      if (!i18n_model) {
+        i18n_model = await findOneI18n(
+          {
+            lang_id: [ langModel.id ],
+            menu_id: [ "" as MenuId ],
+            code,
+          },
+          undefined,
+          {
+            is_debug: false,
+          },
+        );
       }
     } else {
-      i18nModel = await findOneI18n({
-        lang_id: [ langModel.id ],
-        menu_id_is_null: true,
-        code,
-      });
+      i18n_model = await findOneI18n(
+        {
+          lang_id: [ langModel.id ],
+          menu_id: [ "" as MenuId ],
+          code,
+        },
+        undefined,
+        {
+          is_debug: false,
+        },
+      );
     }
-    if (i18nModel) {
-      i18nLbl = i18nModel.lbl;
+    if (i18n_model) {
+      i18nLbl = i18n_model.lbl;
     }
   }
   if (args.length === 1 && typeof args[0] === "object") {
