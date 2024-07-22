@@ -23,6 +23,22 @@ type WxwAppTokenModel {
   token_time_lbl: String!
   "令牌超时时间"
   expires_in: Int!
+  "企业jsapi_ticket"
+  jsapi_ticket: String!
+  "企业jsapi_ticket创建时间"
+  jsapi_ticket_time: NaiveDateTime
+  "企业jsapi_ticket创建时间"
+  jsapi_ticket_time_lbl: String!
+  "企业jsapi_ticket超时时间"
+  jsapi_ticket_expires_in: Int!
+  "应用jsapi_ticket"
+  jsapi_ticket_agent_config: String!
+  "应用jsapi_ticket创建时间"
+  jsapi_ticket_agent_config_time: NaiveDateTime
+  "应用jsapi_ticket创建时间"
+  jsapi_ticket_agent_config_time_lbl: String!
+  "应用jsapi_ticket超时时间"
+  jsapi_ticket_agent_config_expires_in: Int!
   "是否已删除"
   is_deleted: Int!
 }
@@ -43,6 +59,22 @@ type WxwAppTokenFieldComment {
   token_time_lbl: String!
   "令牌超时时间"
   expires_in: String!
+  "企业jsapi_ticket"
+  jsapi_ticket: String!
+  "企业jsapi_ticket创建时间"
+  jsapi_ticket_time: String!
+  "企业jsapi_ticket创建时间"
+  jsapi_ticket_time_lbl: String!
+  "企业jsapi_ticket超时时间"
+  jsapi_ticket_expires_in: String!
+  "应用jsapi_ticket"
+  jsapi_ticket_agent_config: String!
+  "应用jsapi_ticket创建时间"
+  jsapi_ticket_agent_config_time: String!
+  "应用jsapi_ticket创建时间"
+  jsapi_ticket_agent_config_time_lbl: String!
+  "应用jsapi_ticket超时时间"
+  jsapi_ticket_agent_config_expires_in: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -79,6 +111,26 @@ input WxwAppTokenInput {
   token_time_save_null: Boolean
   "令牌超时时间"
   expires_in: Int
+  "企业jsapi_ticket"
+  jsapi_ticket: String
+  "企业jsapi_ticket创建时间"
+  jsapi_ticket_time: NaiveDateTime
+  "企业jsapi_ticket创建时间"
+  jsapi_ticket_time_lbl: String
+  "企业jsapi_ticket创建时间"
+  jsapi_ticket_time_save_null: Boolean
+  "企业jsapi_ticket超时时间"
+  jsapi_ticket_expires_in: Int
+  "应用jsapi_ticket"
+  jsapi_ticket_agent_config: String
+  "应用jsapi_ticket创建时间"
+  jsapi_ticket_agent_config_time: NaiveDateTime
+  "应用jsapi_ticket创建时间"
+  jsapi_ticket_agent_config_time_lbl: String
+  "应用jsapi_ticket创建时间"
+  jsapi_ticket_agent_config_time_save_null: Boolean
+  "应用jsapi_ticket超时时间"
+  jsapi_ticket_agent_config_expires_in: Int
 }
 input WxwAppTokenSearch {
   "是否已删除"

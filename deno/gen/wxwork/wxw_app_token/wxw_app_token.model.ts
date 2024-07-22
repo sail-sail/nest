@@ -29,6 +29,20 @@ declare global {
     token_time?: string[];
     /** 令牌超时时间 */
     expires_in?: number[];
+    /** 企业jsapi_ticket */
+    jsapi_ticket?: string;
+    jsapi_ticket_like?: string;
+    /** 企业jsapi_ticket创建时间 */
+    jsapi_ticket_time?: string[];
+    /** 企业jsapi_ticket超时时间 */
+    jsapi_ticket_expires_in?: number[];
+    /** 应用jsapi_ticket */
+    jsapi_ticket_agent_config?: string;
+    jsapi_ticket_agent_config_like?: string;
+    /** 应用jsapi_ticket创建时间 */
+    jsapi_ticket_agent_config_time?: string[];
+    /** 应用jsapi_ticket超时时间 */
+    jsapi_ticket_agent_config_expires_in?: number[];
     /** 创建人 */
     create_usr_id?: UsrId[];
     /** 创建人 */

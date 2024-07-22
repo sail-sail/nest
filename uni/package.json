@@ -52,6 +52,7 @@
     "@dcloudio/uni-mp-xhs": "3.0.0-4020320240708001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-4020320240708001",
     "@vueuse/core": "10.11.0",
+    "@wecom/jssdk": "2.0.2",
     "dayjs": "1.11.12",
     "decimal.js-light": "2.5.1",
     "graphql": "16.9.0",
