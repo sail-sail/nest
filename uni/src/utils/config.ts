@@ -10,7 +10,6 @@ let protocol = "http:";
 let domain = "";
 let wsProt = "ws:";
 let appid = "wwa41c5d81c7ecd8ef";
-let agentid = "1000002";
 
 const homePage = `/${pages.pages[0]?.path}`;
 
@@ -77,7 +76,6 @@ const config: {
   homePage: string;
   domain: string;
   appid: string;
-  agentid: string;
   pinia: Pinia | undefined;
 } = {
   urlBase,
@@ -90,7 +88,6 @@ const config: {
   homePage,
   domain,
   appid,
-  agentid,
   pinia: undefined,
 };
 
