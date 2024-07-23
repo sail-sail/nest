@@ -59,7 +59,7 @@ async fn get_where_query(
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
-  let mut where_query = String::with_capacity(80 * 12 * 2);
+  let mut where_query = String::with_capacity(80 * 18 * 2);
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
   {
@@ -251,6 +251,112 @@ async fn get_where_query(
     if let Some(expires_in_lt) = expires_in_lt {
       where_query.push_str(" and t.expires_in <= ?");
       args.push(expires_in_lt.into());
+    }
+  }
+  // 企业jsapi_ticket
+  {
+    let jsapi_ticket = match search {
+      Some(item) => item.jsapi_ticket.clone(),
+      None => None,
+    };
+    if let Some(jsapi_ticket) = jsapi_ticket {
+      where_query.push_str(" and t.jsapi_ticket = ?");
+      args.push(jsapi_ticket.into());
+    }
+    let jsapi_ticket_like = match search {
+      Some(item) => item.jsapi_ticket_like.clone(),
+      None => None,
+    };
+    if let Some(jsapi_ticket_like) = jsapi_ticket_like {
+      where_query.push_str(" and t.jsapi_ticket like ?");
+      args.push(format!("%{}%", sql_like(&jsapi_ticket_like)).into());
+    }
+  }
+  // 企业jsapi_ticket创建时间
+  {
+    let mut jsapi_ticket_time = match search {
+      Some(item) => item.jsapi_ticket_time.unwrap_or_default(),
+      None => Default::default(),
+    };
+    let jsapi_ticket_time_gt = jsapi_ticket_time[0].take();
+    let jsapi_ticket_time_lt = jsapi_ticket_time[1].take();
+    if let Some(jsapi_ticket_time_gt) = jsapi_ticket_time_gt {
+      where_query.push_str(" and t.jsapi_ticket_time >= ?");
+      args.push(jsapi_ticket_time_gt.into());
+    }
+    if let Some(jsapi_ticket_time_lt) = jsapi_ticket_time_lt {
+      where_query.push_str(" and t.jsapi_ticket_time <= ?");
+      args.push(jsapi_ticket_time_lt.into());
+    }
+  }
+  // 企业jsapi_ticket超时时间
+  {
+    let mut jsapi_ticket_expires_in = match search {
+      Some(item) => item.jsapi_ticket_expires_in.unwrap_or_default(),
+      None => Default::default(),
+    };
+    let jsapi_ticket_expires_in_gt = jsapi_ticket_expires_in[0].take();
+    let jsapi_ticket_expires_in_lt = jsapi_ticket_expires_in[1].take();
+    if let Some(jsapi_ticket_expires_in_gt) = jsapi_ticket_expires_in_gt {
+      where_query.push_str(" and t.jsapi_ticket_expires_in >= ?");
+      args.push(jsapi_ticket_expires_in_gt.into());
+    }
+    if let Some(jsapi_ticket_expires_in_lt) = jsapi_ticket_expires_in_lt {
+      where_query.push_str(" and t.jsapi_ticket_expires_in <= ?");
+      args.push(jsapi_ticket_expires_in_lt.into());
+    }
+  }
+  // 应用jsapi_ticket
+  {
+    let jsapi_ticket_agent_config = match search {
+      Some(item) => item.jsapi_ticket_agent_config.clone(),
+      None => None,
+    };
+    if let Some(jsapi_ticket_agent_config) = jsapi_ticket_agent_config {
+      where_query.push_str(" and t.jsapi_ticket_agent_config = ?");
+      args.push(jsapi_ticket_agent_config.into());
+    }
+    let jsapi_ticket_agent_config_like = match search {
+      Some(item) => item.jsapi_ticket_agent_config_like.clone(),
+      None => None,
+    };
+    if let Some(jsapi_ticket_agent_config_like) = jsapi_ticket_agent_config_like {
+      where_query.push_str(" and t.jsapi_ticket_agent_config like ?");
+      args.push(format!("%{}%", sql_like(&jsapi_ticket_agent_config_like)).into());
+    }
+  }
+  // 应用jsapi_ticket创建时间
+  {
+    let mut jsapi_ticket_agent_config_time = match search {
+      Some(item) => item.jsapi_ticket_agent_config_time.unwrap_or_default(),
+      None => Default::default(),
+    };
+    let jsapi_ticket_agent_config_time_gt = jsapi_ticket_agent_config_time[0].take();
+    let jsapi_ticket_agent_config_time_lt = jsapi_ticket_agent_config_time[1].take();
+    if let Some(jsapi_ticket_agent_config_time_gt) = jsapi_ticket_agent_config_time_gt {
+      where_query.push_str(" and t.jsapi_ticket_agent_config_time >= ?");
+      args.push(jsapi_ticket_agent_config_time_gt.into());
+    }
+    if let Some(jsapi_ticket_agent_config_time_lt) = jsapi_ticket_agent_config_time_lt {
+      where_query.push_str(" and t.jsapi_ticket_agent_config_time <= ?");
+      args.push(jsapi_ticket_agent_config_time_lt.into());
+    }
+  }
+  // 应用jsapi_ticket超时时间
+  {
+    let mut jsapi_ticket_agent_config_expires_in = match search {
+      Some(item) => item.jsapi_ticket_agent_config_expires_in.unwrap_or_default(),
+      None => Default::default(),
+    };
+    let jsapi_ticket_agent_config_expires_in_gt = jsapi_ticket_agent_config_expires_in[0].take();
+    let jsapi_ticket_agent_config_expires_in_lt = jsapi_ticket_agent_config_expires_in[1].take();
+    if let Some(jsapi_ticket_agent_config_expires_in_gt) = jsapi_ticket_agent_config_expires_in_gt {
+      where_query.push_str(" and t.jsapi_ticket_agent_config_expires_in >= ?");
+      args.push(jsapi_ticket_agent_config_expires_in_gt.into());
+    }
+    if let Some(jsapi_ticket_agent_config_expires_in_lt) = jsapi_ticket_agent_config_expires_in_lt {
+      where_query.push_str(" and t.jsapi_ticket_agent_config_expires_in <= ?");
+      args.push(jsapi_ticket_agent_config_expires_in_lt.into());
     }
   }
   // 创建人
@@ -644,6 +750,14 @@ pub async fn get_field_comments(
     "令牌创建时间".into(),
     "令牌创建时间".into(),
     "令牌超时时间".into(),
+    "企业jsapi_ticket".into(),
+    "企业jsapi_ticket创建时间".into(),
+    "企业jsapi_ticket创建时间".into(),
+    "企业jsapi_ticket超时时间".into(),
+    "应用jsapi_ticket".into(),
+    "应用jsapi_ticket创建时间".into(),
+    "应用jsapi_ticket创建时间".into(),
+    "应用jsapi_ticket超时时间".into(),
     "创建人".into(),
     "创建人".into(),
     "创建时间".into(),
@@ -675,14 +789,22 @@ pub async fn get_field_comments(
     token_time: vec[5].to_owned(),
     token_time_lbl: vec[6].to_owned(),
     expires_in: vec[7].to_owned(),
-    create_usr_id: vec[8].to_owned(),
-    create_usr_id_lbl: vec[9].to_owned(),
-    create_time: vec[10].to_owned(),
-    create_time_lbl: vec[11].to_owned(),
-    update_usr_id: vec[12].to_owned(),
-    update_usr_id_lbl: vec[13].to_owned(),
-    update_time: vec[14].to_owned(),
-    update_time_lbl: vec[15].to_owned(),
+    jsapi_ticket: vec[8].to_owned(),
+    jsapi_ticket_time: vec[9].to_owned(),
+    jsapi_ticket_time_lbl: vec[10].to_owned(),
+    jsapi_ticket_expires_in: vec[11].to_owned(),
+    jsapi_ticket_agent_config: vec[12].to_owned(),
+    jsapi_ticket_agent_config_time: vec[13].to_owned(),
+    jsapi_ticket_agent_config_time_lbl: vec[14].to_owned(),
+    jsapi_ticket_agent_config_expires_in: vec[15].to_owned(),
+    create_usr_id: vec[16].to_owned(),
+    create_usr_id_lbl: vec[17].to_owned(),
+    create_time: vec[18].to_owned(),
+    create_time_lbl: vec[19].to_owned(),
+    update_usr_id: vec[20].to_owned(),
+    update_usr_id_lbl: vec[21].to_owned(),
+    update_time: vec[22].to_owned(),
+    update_time_lbl: vec[23].to_owned(),
   };
   Ok(field_comments)
 }
@@ -1153,6 +1275,50 @@ pub async fn set_id_by_lbl(
     }
   }
   
+  // 企业jsapi_ticket创建时间
+  if input.jsapi_ticket_time.is_none() {
+    if let Some(jsapi_ticket_time_lbl) = input.jsapi_ticket_time_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.jsapi_ticket_time = chrono::NaiveDateTime::parse_from_str(jsapi_ticket_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.jsapi_ticket_time.is_none() {
+        input.jsapi_ticket_time = chrono::NaiveDateTime::parse_from_str(jsapi_ticket_time_lbl, "%Y-%m-%d").ok();
+      }
+      if input.jsapi_ticket_time.is_none() {
+        let field_comments = get_field_comments(
+          None,
+        ).await?;
+        let column_comment = field_comments.jsapi_ticket_time;
+        
+        let err_msg = i18n_dao::ns(
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(anyhow!("{column_comment} {err_msg}"));
+      }
+    }
+  }
+  
+  // 应用jsapi_ticket创建时间
+  if input.jsapi_ticket_agent_config_time.is_none() {
+    if let Some(jsapi_ticket_agent_config_time_lbl) = input.jsapi_ticket_agent_config_time_lbl.as_ref().filter(|s| !s.is_empty()) {
+      input.jsapi_ticket_agent_config_time = chrono::NaiveDateTime::parse_from_str(jsapi_ticket_agent_config_time_lbl, "%Y-%m-%d %H:%M:%S").ok();
+      if input.jsapi_ticket_agent_config_time.is_none() {
+        input.jsapi_ticket_agent_config_time = chrono::NaiveDateTime::parse_from_str(jsapi_ticket_agent_config_time_lbl, "%Y-%m-%d").ok();
+      }
+      if input.jsapi_ticket_agent_config_time.is_none() {
+        let field_comments = get_field_comments(
+          None,
+        ).await?;
+        let column_comment = field_comments.jsapi_ticket_agent_config_time;
+        
+        let err_msg = i18n_dao::ns(
+          "日期格式错误".to_owned(),
+          None,
+        ).await?;
+        return Err(anyhow!("{column_comment} {err_msg}"));
+      }
+    }
+  }
+  
   // 企微应用
   if input.wxw_app_id_lbl.is_some()
     && !input.wxw_app_id_lbl.as_ref().unwrap().is_empty()
@@ -1273,7 +1439,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 12 + 20);
+  let mut sql_fields = String::with_capacity(80 * 18 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1293,9 +1459,21 @@ async fn _creates(
   sql_fields += ",token_time";
   // 令牌超时时间
   sql_fields += ",expires_in";
+  // 企业jsapi_ticket
+  sql_fields += ",jsapi_ticket";
+  // 企业jsapi_ticket创建时间
+  sql_fields += ",jsapi_ticket_time";
+  // 企业jsapi_ticket超时时间
+  sql_fields += ",jsapi_ticket_expires_in";
+  // 应用jsapi_ticket
+  sql_fields += ",jsapi_ticket_agent_config";
+  // 应用jsapi_ticket创建时间
+  sql_fields += ",jsapi_ticket_agent_config_time";
+  // 应用jsapi_ticket超时时间
+  sql_fields += ",jsapi_ticket_agent_config_expires_in";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 12 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 18 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1455,6 +1633,52 @@ async fn _creates(
     if let Some(expires_in) = input.expires_in {
       sql_values += ",?";
       args.push(expires_in.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 企业jsapi_ticket
+    if let Some(jsapi_ticket) = input.jsapi_ticket {
+      sql_values += ",?";
+      args.push(jsapi_ticket.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 企业jsapi_ticket创建时间
+    if let Some(jsapi_ticket_time) = input.jsapi_ticket_time {
+      sql_values += ",?";
+      args.push(jsapi_ticket_time.into());
+    } else if input.jsapi_ticket_time_save_null == Some(true) {
+      sql_values += ",null";
+    } else {
+      sql_values += ",default";
+    }
+    // 企业jsapi_ticket超时时间
+    if let Some(jsapi_ticket_expires_in) = input.jsapi_ticket_expires_in {
+      sql_values += ",?";
+      args.push(jsapi_ticket_expires_in.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 应用jsapi_ticket
+    if let Some(jsapi_ticket_agent_config) = input.jsapi_ticket_agent_config {
+      sql_values += ",?";
+      args.push(jsapi_ticket_agent_config.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 应用jsapi_ticket创建时间
+    if let Some(jsapi_ticket_agent_config_time) = input.jsapi_ticket_agent_config_time {
+      sql_values += ",?";
+      args.push(jsapi_ticket_agent_config_time.into());
+    } else if input.jsapi_ticket_agent_config_time_save_null == Some(true) {
+      sql_values += ",null";
+    } else {
+      sql_values += ",default";
+    }
+    // 应用jsapi_ticket超时时间
+    if let Some(jsapi_ticket_agent_config_expires_in) = input.jsapi_ticket_agent_config_expires_in {
+      sql_values += ",?";
+      args.push(jsapi_ticket_agent_config_expires_in.into());
     } else {
       sql_values += ",default";
     }
@@ -1678,7 +1902,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 12 + 20);
+  let mut sql_fields = String::with_capacity(80 * 18 + 20);
   
   let mut field_num: usize = 0;
   
@@ -1719,6 +1943,48 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "expires_in=?,";
     args.push(expires_in.into());
+  }
+  // 企业jsapi_ticket
+  if let Some(jsapi_ticket) = input.jsapi_ticket {
+    field_num += 1;
+    sql_fields += "jsapi_ticket=?,";
+    args.push(jsapi_ticket.into());
+  }
+  // 企业jsapi_ticket创建时间
+  if let Some(jsapi_ticket_time) = input.jsapi_ticket_time {
+    field_num += 1;
+    sql_fields += "jsapi_ticket_time=?,";
+    args.push(jsapi_ticket_time.into());
+  } else if input.jsapi_ticket_time_save_null == Some(true) {
+    field_num += 1;
+    sql_fields += "jsapi_ticket_time=null,";
+  }
+  // 企业jsapi_ticket超时时间
+  if let Some(jsapi_ticket_expires_in) = input.jsapi_ticket_expires_in {
+    field_num += 1;
+    sql_fields += "jsapi_ticket_expires_in=?,";
+    args.push(jsapi_ticket_expires_in.into());
+  }
+  // 应用jsapi_ticket
+  if let Some(jsapi_ticket_agent_config) = input.jsapi_ticket_agent_config {
+    field_num += 1;
+    sql_fields += "jsapi_ticket_agent_config=?,";
+    args.push(jsapi_ticket_agent_config.into());
+  }
+  // 应用jsapi_ticket创建时间
+  if let Some(jsapi_ticket_agent_config_time) = input.jsapi_ticket_agent_config_time {
+    field_num += 1;
+    sql_fields += "jsapi_ticket_agent_config_time=?,";
+    args.push(jsapi_ticket_agent_config_time.into());
+  } else if input.jsapi_ticket_agent_config_time_save_null == Some(true) {
+    field_num += 1;
+    sql_fields += "jsapi_ticket_agent_config_time=null,";
+  }
+  // 应用jsapi_ticket超时时间
+  if let Some(jsapi_ticket_agent_config_expires_in) = input.jsapi_ticket_agent_config_expires_in {
+    field_num += 1;
+    sql_fields += "jsapi_ticket_agent_config_expires_in=?,";
+    args.push(jsapi_ticket_agent_config_expires_in.into());
   }
   
   if field_num > 0 {
@@ -2016,7 +2282,7 @@ pub async fn revert_by_ids(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.as_ref().into());
     
     let args: Vec<_> = args.into();
     
@@ -2147,7 +2413,7 @@ pub async fn force_delete_by_ids(
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.as_ref().into());
     
     let args: Vec<_> = args.into();
     
