@@ -81,6 +81,24 @@ export default defineConfig({
       {
         COLUMN_NAME: "expires_in",
       },
+      {
+        COLUMN_NAME: "jsapi_ticket",
+      },
+      {
+        COLUMN_NAME: "jsapi_ticket_time",
+      },
+      {
+        COLUMN_NAME: "jsapi_ticket_expires_in",
+      },
+      {
+        COLUMN_NAME: "jsapi_ticket_agent_config",
+      },
+      {
+        COLUMN_NAME: "jsapi_ticket_agent_config_time",
+      },
+      {
+        COLUMN_NAME: "jsapi_ticket_agent_config_expires_in",
+      },
     ],
   },
   // 企微用户

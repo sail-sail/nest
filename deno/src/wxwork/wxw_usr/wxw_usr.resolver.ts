@@ -1,5 +1,5 @@
 import {
-  useContext,
+  setNotVerifyToken,
 } from "/lib/context.ts";
 
 import type {
@@ -16,9 +16,8 @@ export async function wxwGetAppid(
   const {
     wxwGetAppid,
   } = await import("./wxw_usr.service.ts");
-  const context = useContext();
   
-  context.notVerifyToken = true;
+  setNotVerifyToken(true);
   
   const res = await wxwGetAppid(host);
   return res;
@@ -33,9 +32,9 @@ export async function wxwLoginByCode(
   const {
     wxwLoginByCode,
   } = await import("./wxw_usr.service.ts");
-  const context = useContext();
   
-  context.notVerifyToken = true;
+  setNotVerifyToken(true);
+  
   const res = await wxwLoginByCode(input);
   return res;
 }
