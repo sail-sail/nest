@@ -148,6 +148,50 @@ async function getWhereQuery(
       whereQuery += ` and t.expires_in<=${ args.push(search.expires_in[1]) }`;
     }
   }
+  if (search?.jsapi_ticket != null) {
+    whereQuery += ` and t.jsapi_ticket=${ args.push(search.jsapi_ticket) }`;
+  }
+  if (isNotEmpty(search?.jsapi_ticket_like)) {
+    whereQuery += ` and t.jsapi_ticket like ${ args.push("%" + sqlLike(search?.jsapi_ticket_like) + "%") }`;
+  }
+  if (search?.jsapi_ticket_time != null) {
+    if (search.jsapi_ticket_time[0] != null) {
+      whereQuery += ` and t.jsapi_ticket_time>=${ args.push(search.jsapi_ticket_time[0]) }`;
+    }
+    if (search.jsapi_ticket_time[1] != null) {
+      whereQuery += ` and t.jsapi_ticket_time<=${ args.push(search.jsapi_ticket_time[1]) }`;
+    }
+  }
+  if (search?.jsapi_ticket_expires_in != null) {
+    if (search.jsapi_ticket_expires_in[0] != null) {
+      whereQuery += ` and t.jsapi_ticket_expires_in>=${ args.push(search.jsapi_ticket_expires_in[0]) }`;
+    }
+    if (search.jsapi_ticket_expires_in[1] != null) {
+      whereQuery += ` and t.jsapi_ticket_expires_in<=${ args.push(search.jsapi_ticket_expires_in[1]) }`;
+    }
+  }
+  if (search?.jsapi_ticket_agent_config != null) {
+    whereQuery += ` and t.jsapi_ticket_agent_config=${ args.push(search.jsapi_ticket_agent_config) }`;
+  }
+  if (isNotEmpty(search?.jsapi_ticket_agent_config_like)) {
+    whereQuery += ` and t.jsapi_ticket_agent_config like ${ args.push("%" + sqlLike(search?.jsapi_ticket_agent_config_like) + "%") }`;
+  }
+  if (search?.jsapi_ticket_agent_config_time != null) {
+    if (search.jsapi_ticket_agent_config_time[0] != null) {
+      whereQuery += ` and t.jsapi_ticket_agent_config_time>=${ args.push(search.jsapi_ticket_agent_config_time[0]) }`;
+    }
+    if (search.jsapi_ticket_agent_config_time[1] != null) {
+      whereQuery += ` and t.jsapi_ticket_agent_config_time<=${ args.push(search.jsapi_ticket_agent_config_time[1]) }`;
+    }
+  }
+  if (search?.jsapi_ticket_agent_config_expires_in != null) {
+    if (search.jsapi_ticket_agent_config_expires_in[0] != null) {
+      whereQuery += ` and t.jsapi_ticket_agent_config_expires_in>=${ args.push(search.jsapi_ticket_agent_config_expires_in[0]) }`;
+    }
+    if (search.jsapi_ticket_agent_config_expires_in[1] != null) {
+      whereQuery += ` and t.jsapi_ticket_agent_config_expires_in<=${ args.push(search.jsapi_ticket_agent_config_expires_in[1]) }`;
+    }
+  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
   }
@@ -404,6 +448,30 @@ export async function findAll(
       model.token_time_lbl = "";
     }
     
+    // 企业jsapi_ticket创建时间
+    if (model.jsapi_ticket_time) {
+      const jsapi_ticket_time = dayjs(model.jsapi_ticket_time);
+      if (isNaN(jsapi_ticket_time.toDate().getTime())) {
+        model.jsapi_ticket_time_lbl = (model.jsapi_ticket_time || "").toString();
+      } else {
+        model.jsapi_ticket_time_lbl = jsapi_ticket_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.jsapi_ticket_time_lbl = "";
+    }
+    
+    // 应用jsapi_ticket创建时间
+    if (model.jsapi_ticket_agent_config_time) {
+      const jsapi_ticket_agent_config_time = dayjs(model.jsapi_ticket_agent_config_time);
+      if (isNaN(jsapi_ticket_agent_config_time.toDate().getTime())) {
+        model.jsapi_ticket_agent_config_time_lbl = (model.jsapi_ticket_agent_config_time || "").toString();
+      } else {
+        model.jsapi_ticket_agent_config_time_lbl = jsapi_ticket_agent_config_time.format("YYYY-MM-DD HH:mm:ss");
+      }
+    } else {
+      model.jsapi_ticket_agent_config_time_lbl = "";
+    }
+    
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
@@ -458,6 +526,42 @@ export async function setIdByLbl(
     }
     input.token_time = dayjs(input.token_time).format("YYYY-MM-DD HH:mm:ss");
   }
+  // 企业jsapi_ticket创建时间
+  if (!input.jsapi_ticket_time && input.jsapi_ticket_time_lbl) {
+    const jsapi_ticket_time_lbl = dayjs(input.jsapi_ticket_time_lbl);
+    if (jsapi_ticket_time_lbl.isValid()) {
+      input.jsapi_ticket_time = jsapi_ticket_time_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.jsapi_ticket_time } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.jsapi_ticket_time) {
+    const jsapi_ticket_time = dayjs(input.jsapi_ticket_time);
+    if (!jsapi_ticket_time.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.jsapi_ticket_time } ${ await ns("日期格式错误") }`;
+    }
+    input.jsapi_ticket_time = dayjs(input.jsapi_ticket_time).format("YYYY-MM-DD HH:mm:ss");
+  }
+  // 应用jsapi_ticket创建时间
+  if (!input.jsapi_ticket_agent_config_time && input.jsapi_ticket_agent_config_time_lbl) {
+    const jsapi_ticket_agent_config_time_lbl = dayjs(input.jsapi_ticket_agent_config_time_lbl);
+    if (jsapi_ticket_agent_config_time_lbl.isValid()) {
+      input.jsapi_ticket_agent_config_time = jsapi_ticket_agent_config_time_lbl.format("YYYY-MM-DD HH:mm:ss");
+    } else {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.jsapi_ticket_agent_config_time } ${ await ns("日期格式错误") }`;
+    }
+  }
+  if (input.jsapi_ticket_agent_config_time) {
+    const jsapi_ticket_agent_config_time = dayjs(input.jsapi_ticket_agent_config_time);
+    if (!jsapi_ticket_agent_config_time.isValid()) {
+      const fieldComments = await getFieldComments();
+      throw `${ fieldComments.jsapi_ticket_agent_config_time } ${ await ns("日期格式错误") }`;
+    }
+    input.jsapi_ticket_agent_config_time = dayjs(input.jsapi_ticket_agent_config_time).format("YYYY-MM-DD HH:mm:ss");
+  }
   
   // 企微应用
   if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id == null) {
@@ -479,6 +583,18 @@ export async function setIdByLbl(
     input.token_time_lbl = String(input.token_time_lbl).trim();
     input.token_time = input.token_time_lbl;
   }
+  
+  // 企业jsapi_ticket创建时间
+  if (isNotEmpty(input.jsapi_ticket_time_lbl) && input.jsapi_ticket_time == null) {
+    input.jsapi_ticket_time_lbl = String(input.jsapi_ticket_time_lbl).trim();
+    input.jsapi_ticket_time = input.jsapi_ticket_time_lbl;
+  }
+  
+  // 应用jsapi_ticket创建时间
+  if (isNotEmpty(input.jsapi_ticket_agent_config_time_lbl) && input.jsapi_ticket_agent_config_time == null) {
+    input.jsapi_ticket_agent_config_time_lbl = String(input.jsapi_ticket_agent_config_time_lbl).trim();
+    input.jsapi_ticket_agent_config_time = input.jsapi_ticket_agent_config_time_lbl;
+  }
 }
 
 /**
@@ -495,6 +611,14 @@ export async function getFieldComments(): Promise<WxwAppTokenFieldComment> {
     token_time: await n("令牌创建时间"),
     token_time_lbl: await n("令牌创建时间"),
     expires_in: await n("令牌超时时间"),
+    jsapi_ticket: await n("企业jsapi_ticket"),
+    jsapi_ticket_time: await n("企业jsapi_ticket创建时间"),
+    jsapi_ticket_time_lbl: await n("企业jsapi_ticket创建时间"),
+    jsapi_ticket_expires_in: await n("企业jsapi_ticket超时时间"),
+    jsapi_ticket_agent_config: await n("应用jsapi_ticket"),
+    jsapi_ticket_agent_config_time: await n("应用jsapi_ticket创建时间"),
+    jsapi_ticket_agent_config_time_lbl: await n("应用jsapi_ticket创建时间"),
+    jsapi_ticket_agent_config_expires_in: await n("应用jsapi_ticket超时时间"),
     create_usr_id: await n("创建人"),
     create_usr_id_lbl: await n("创建人"),
     create_time: await n("创建时间"),
@@ -950,6 +1074,20 @@ export async function validate(
     fieldComments.access_token,
   );
   
+  // 企业jsapi_ticket
+  await validators.chars_max_length(
+    input.jsapi_ticket,
+    600,
+    fieldComments.jsapi_ticket,
+  );
+  
+  // 应用jsapi_ticket
+  await validators.chars_max_length(
+    input.jsapi_ticket_agent_config,
+    600,
+    fieldComments.jsapi_ticket_agent_config,
+  );
+  
 }
 
 /**
@@ -1106,7 +1244,7 @@ async function _creates(
   }
   
   const args = new QueryArgs();
-  let sql = "insert into wxwork_wxw_app_token(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,wxw_app_id,type,access_token,token_time,expires_in)values";
+  let sql = "insert into wxwork_wxw_app_token(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,wxw_app_id,type,access_token,token_time,expires_in,jsapi_ticket,jsapi_ticket_time,jsapi_ticket_expires_in,jsapi_ticket_agent_config,jsapi_ticket_agent_config_time,jsapi_ticket_agent_config_expires_in)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1226,6 +1364,36 @@ async function _creates(
       }
       if (input.expires_in != null) {
         sql += `,${ args.push(input.expires_in) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.jsapi_ticket != null) {
+        sql += `,${ args.push(input.jsapi_ticket) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.jsapi_ticket_time != null || input.jsapi_ticket_time_save_null) {
+        sql += `,${ args.push(input.jsapi_ticket_time) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.jsapi_ticket_expires_in != null) {
+        sql += `,${ args.push(input.jsapi_ticket_expires_in) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.jsapi_ticket_agent_config != null) {
+        sql += `,${ args.push(input.jsapi_ticket_agent_config) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.jsapi_ticket_agent_config_time != null || input.jsapi_ticket_agent_config_time_save_null) {
+        sql += `,${ args.push(input.jsapi_ticket_agent_config_time) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.jsapi_ticket_agent_config_expires_in != null) {
+        sql += `,${ args.push(input.jsapi_ticket_agent_config_expires_in) }`;
       } else {
         sql += ",default";
       }
@@ -1422,6 +1590,42 @@ export async function updateById(
   if (input.expires_in != null) {
     if (input.expires_in != oldModel.expires_in) {
       sql += `expires_in=${ args.push(input.expires_in) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.jsapi_ticket != null) {
+    if (input.jsapi_ticket != oldModel.jsapi_ticket) {
+      sql += `jsapi_ticket=${ args.push(input.jsapi_ticket) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.jsapi_ticket_time != null || input.jsapi_ticket_time_save_null) {
+    if (input.jsapi_ticket_time != oldModel.jsapi_ticket_time) {
+      sql += `jsapi_ticket_time=${ args.push(input.jsapi_ticket_time) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.jsapi_ticket_expires_in != null) {
+    if (input.jsapi_ticket_expires_in != oldModel.jsapi_ticket_expires_in) {
+      sql += `jsapi_ticket_expires_in=${ args.push(input.jsapi_ticket_expires_in) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.jsapi_ticket_agent_config != null) {
+    if (input.jsapi_ticket_agent_config != oldModel.jsapi_ticket_agent_config) {
+      sql += `jsapi_ticket_agent_config=${ args.push(input.jsapi_ticket_agent_config) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.jsapi_ticket_agent_config_time != null || input.jsapi_ticket_agent_config_time_save_null) {
+    if (input.jsapi_ticket_agent_config_time != oldModel.jsapi_ticket_agent_config_time) {
+      sql += `jsapi_ticket_agent_config_time=${ args.push(input.jsapi_ticket_agent_config_time) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.jsapi_ticket_agent_config_expires_in != null) {
+    if (input.jsapi_ticket_agent_config_expires_in != oldModel.jsapi_ticket_agent_config_expires_in) {
+      sql += `jsapi_ticket_agent_config_expires_in=${ args.push(input.jsapi_ticket_agent_config_expires_in) },`;
       updateFldNum++;
     }
   }
