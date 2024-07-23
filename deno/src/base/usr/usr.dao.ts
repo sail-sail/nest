@@ -20,7 +20,7 @@ import {
 export async function getTokenByUsrId(
   usr_id: UsrId,
   tenant_id?: TenantId,
-  lang = "zh_CN",
+  lang = "zh-CN",
   org_id?: OrgId | null,
 ) {
   const usr_model = await validateOptionUsr(
