@@ -38,21 +38,6 @@
       un-flex="~ row"
       un-pos-relative
     >
-      <el-icon
-        size="18"
-        un-text="hover:[var(--el-color-primary)]"
-        un-self-center
-        un-cursor-pointer
-        un-m="x-2"
-        @click="menuStore.isCollapse = !menuStore.isCollapse"
-      >
-        <ElIconExpand
-          v-if="menuStore.isCollapse"
-        />
-        <ElIconFold
-          v-else
-        />
-      </el-icon>
       <Tabs
         ref="tabsRef"
         un-flex="~ [1_0_0]"
@@ -419,7 +404,7 @@ const menuStore = useMenuStore();
 
 let locales = $ref([
   {
-    code: "zh-cn",
+    code: "zh-CN",
     lbl: "简体中文",
   },
 ]);
