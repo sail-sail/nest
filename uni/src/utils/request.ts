@@ -381,11 +381,11 @@ export async function uniLogin() {
   }
   if (providers && providers.includes("weixin")) {
     const systemInfo = uni.getSystemInfoSync();
-    let appLanguage = systemInfo.appLanguage?.toLocaleLowerCase() || "zh-cn";
+    let appLanguage = systemInfo.appLanguage || "zh-CN";
     if (appLanguage === "en") {
-      appLanguage = "en-us";
-    } else if (["zh", "zh-hans", "zh-hant", "zh-hans-cn", "zh-hk", "zh-tw", "zh-mo"].includes(appLanguage)) {
-      appLanguage = "zh-cn";
+      appLanguage = "en-US";
+    } else if (["zh", "zh-hans", "zh-hant", "zh-hans-cn"].includes(appLanguage?.toLocaleLowerCase())) {
+      appLanguage = "zh-CN";
     }
     const loginRes = await uni.login({ provider: "weixin" });
     const code = loginRes?.code;

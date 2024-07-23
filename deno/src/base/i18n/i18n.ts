@@ -56,7 +56,7 @@ export async function nLang(
   ...args: any[]
 ) {
   const server_i18n_enable = await getEnv("server_i18n_enable");
-  if (server_i18n_enable === "false") {
+  if (server_i18n_enable === "false" || !langCode) {
     if (args.length === 1 && typeof args[0] === "object") {
       const obj = args[0];
       let i18nLbl = code;
@@ -90,8 +90,8 @@ export async function nLang(
     findOne: findOneMenu,
   } = await import("/gen/base/menu/menu.dao.ts");
   
-  let i18nLbl = code;
-  const langModel = await findOneLang(
+  let i18n_lbl = code;
+  const lang_model = await findOneLang(
     {
       code: langCode,
       is_enabled: [ 1 ],
@@ -115,12 +115,12 @@ export async function nLang(
     );
     menu_id = menu_model?.id;
   }
-  if (langModel) {
+  if (lang_model) {
     let i18n_model: I18nModel | undefined
     if (menu_id) {
       i18n_model = await findOneI18n(
         {
-          lang_id: [ langModel.id ],
+          lang_id: [ lang_model.id ],
           menu_id: [ menu_id ],
           code,
         },
@@ -129,23 +129,10 @@ export async function nLang(
           is_debug: false,
         },
       );
-      if (!i18n_model) {
-        i18n_model = await findOneI18n(
-          {
-            lang_id: [ langModel.id ],
-            menu_id: [ "" as MenuId ],
-            code,
-          },
-          undefined,
-          {
-            is_debug: false,
-          },
-        );
-      }
     } else {
       i18n_model = await findOneI18n(
         {
-          lang_id: [ langModel.id ],
+          lang_id: [ lang_model.id ],
           menu_id: [ "" as MenuId ],
           code,
         },
@@ -156,17 +143,17 @@ export async function nLang(
       );
     }
     if (i18n_model) {
-      i18nLbl = i18n_model.lbl;
+      i18n_lbl = i18n_model.lbl;
     }
   }
   if (args.length === 1 && typeof args[0] === "object") {
     const obj = args[0];
-    i18nLbl = i18nLbl.replace(reg, (str) => {
+    i18n_lbl = i18n_lbl.replace(reg, (str) => {
       const str2 = str.substring(1, str.length-1);
       return obj[str2] ?? str;
     });
   } else if (args.length > 0) {
-    i18nLbl = i18nLbl.replace(reg, (str) => {
+    i18n_lbl = i18n_lbl.replace(reg, (str) => {
       const str2 = str.substring(1, str.length-1);
       const num = Number(str2);
       if (isNaN(num)) {
@@ -175,5 +162,5 @@ export async function nLang(
       return args[num] ?? str;
     });
   }
-  return i18nLbl;
+  return i18n_lbl;
 }
