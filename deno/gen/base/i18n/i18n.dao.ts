@@ -914,21 +914,21 @@ export async function validate(
   // 菜单
   await validators.chars_max_length(
     input.menu_id,
-    45,
+    22,
     fieldComments.menu_id,
   );
   
   // 编码
   await validators.chars_max_length(
     input.code,
-    45,
+    500,
     fieldComments.code,
   );
   
   // 名称
   await validators.chars_max_length(
     input.lbl,
-    45,
+    500,
     fieldComments.lbl,
   );
   
