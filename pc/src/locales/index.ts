@@ -23,13 +23,13 @@ export function getLocale(): string {
       usr = JSON.parse(usrStr);
     } catch (e) { }
   }
-  let lang = usr?.lang?.toLowerCase();
+  let lang = usr?.lang;
   if (lang) {
     return lang;
   }
-  lang = navigator.language.toLowerCase();
-  if ([ "zh", "zh-cn", "zh-hans", "zh-hans-cn" ].indexOf(lang) > -1) {
-    lang = "zh-cn";
+  lang = navigator.language;
+  if ([ "zh", "zh-cn", "zh-hans", "zh-hans-cn" ].indexOf(lang.toLocaleLowerCase()) > -1) {
+    lang = "zh-CN";
   }
   const locales = Object.keys(messages);
   for (const locale of locales) {

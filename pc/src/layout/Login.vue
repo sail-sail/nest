@@ -63,11 +63,11 @@
           :options4-select-v2="[
             {
               label: '中文',
-              value: 'zh-cn',
+              value: 'zh-CN',
             },
             {
               label: 'English',
-              value: 'en',
+              value: 'en-US',
             },
           ]"
           :options-map="(item: LangModel) => {
@@ -198,7 +198,7 @@ let model = $ref<MutationLoginArgs["input"]>({
 
 const VITE_SERVER_I18N_ENABLE = import.meta.env.VITE_SERVER_I18N_ENABLE;
 if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
-  model.lang = "zh-cn";
+  model.lang = "zh-CN";
 }
 const app_title = import.meta.env.VITE_APP_TITLE;
 
