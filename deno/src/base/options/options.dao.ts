@@ -20,7 +20,7 @@ export async function getOptionsByLbl(
 /**
  * 更新国际化版本号
  **/
-export async function updateI18n_version() {
+export async function update_i18n_version() {
   const models = await getOptionsByLbl("国际化版本号");
   const optionsModel = models.find((m) => m.ky === "i18n_version");
   if (!optionsModel) {
