@@ -46,6 +46,7 @@
     "rust-analyzer.showUnlinkedFileNotification": false,
     "deno.codeLens.references": false,
     "deno.codeLens.referencesAllFunctions": false,
+    "git.timeline.showUncommitted": true,
     "rust-analyzer.imports.group.enable": false,
     "rust-analyzer.imports.merge.glob": false
   }

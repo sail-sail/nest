@@ -38,21 +38,6 @@
       un-flex="~ row"
       un-pos-relative
     >
-      <el-icon
-        size="18"
-        un-text="hover:[var(--el-color-primary)]"
-        un-self-center
-        un-cursor-pointer
-        un-m="x-2"
-        @click="menuStore.isCollapse = !menuStore.isCollapse"
-      >
-        <ElIconExpand
-          v-if="menuStore.isCollapse"
-        />
-        <ElIconFold
-          v-else
-        />
-      </el-icon>
       <Tabs
         ref="tabsRef"
         un-flex="~ [1_0_0]"
@@ -77,8 +62,8 @@
             un-p="x-1"
             un-h="full"
             un-cursor-pointer
-            un-bg="[var(--el-fill-color-lighter)] hover:gray"
-            un-text="hover:white hover:dark:black"
+            un-bg="hover:gray-200"
+            un-text="hover:black"
             @click="scrollLeftClk"
           >
             <ElIconArrowLeft />
@@ -88,8 +73,8 @@
             un-p="x-1"
             un-h="full"
             un-cursor-pointer
-            un-bg="[var(--el-fill-color-lighter)] hover:gray"
-            un-text="hover:white hover:dark:black"
+            un-bg="hover:gray-200"
+            un-text="hover:black"
             @click="scrollRightClk"
           >
             <ElIconArrowRight />
@@ -343,6 +328,9 @@
       <div
         ref="tab_active_lineRef"
         
+        :class="{
+          tab_active_line: inited,
+        }"
         un-hidden
         un-pos-absolute
         un-bottom-0
@@ -350,7 +338,6 @@
         un-bg="[var(--el-menu-active-color)]"
         un-h="0.5"
         un-border-rounded
-        un-transition="property-[width,left] duration-[300ms]"
         un-ease-in
       ></div>
     </div>
@@ -417,7 +404,7 @@ const menuStore = useMenuStore();
 
 let locales = $ref([
   {
-    code: "zh-cn",
+    code: "zh-CN",
     lbl: "简体中文",
   },
 ]);
@@ -710,5 +697,8 @@ initFrame();
     --el-input-text-color: #FFF;
     --el-input-border-color: transparent;
   }
+}
+.tab_active_line {
+  @apply transition-property-[width,left] duration-[300ms] ease-in;
 }
 </style>

@@ -138,12 +138,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<BackgroundTaskId>> {
   
-  let ids = background_task_dao::creates(
+  let background_task_ids = background_task_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(background_task_ids)
 }
 
 /// 后台任务根据id修改租户id
@@ -172,13 +172,13 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<BackgroundTaskId> {
   
-  let res = background_task_dao::update_by_id(
+  let background_task_id = background_task_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(background_task_id)
 }
 
 /// 根据 ids 删除后台任务

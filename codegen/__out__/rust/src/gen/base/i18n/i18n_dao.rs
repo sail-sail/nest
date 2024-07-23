@@ -1787,8 +1787,6 @@ pub async fn update_by_id(
     }
   }
   
-  crate::src::base::options::options_dao::update_i18n_version().await?;
-  
   Ok(id)
 }
 
@@ -1934,8 +1932,6 @@ pub async fn delete_by_ids(
     return Err(anyhow!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
-  crate::src::base::options::options_dao::update_i18n_version().await?;
-  
   Ok(num)
 }
 
@@ -1976,7 +1972,7 @@ pub async fn revert_by_ids(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.as_ref().into());
     
     let args: Vec<_> = args.into();
     
@@ -2036,8 +2032,6 @@ pub async fn revert_by_ids(
     }
     
   }
-  
-  crate::src::base::options::options_dao::update_i18n_version().await?;
   
   Ok(num)
 }
@@ -2109,7 +2103,7 @@ pub async fn force_delete_by_ids(
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.as_ref().into());
     
     let args: Vec<_> = args.into();
     

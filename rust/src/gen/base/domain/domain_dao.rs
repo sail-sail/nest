@@ -1985,7 +1985,7 @@ pub async fn delete_by_ids(
     {
       let mut args = QueryArgs::new();
       let sql = "update base_tenant_domain set is_deleted=1 where domain_id=? and is_deleted=0".to_owned();
-      args.push(id.clone().into());
+      args.push(id.as_ref().into());
       let args: Vec<_> = args.into();
       execute(
         sql,
@@ -2035,7 +2035,7 @@ pub async fn default_by_id(
     
     let sql = format!("update {table} set is_default=0 where is_default=1 and id!=?");
     
-    args.push(id.clone().into());
+    args.push(id.as_ref().into());
     
     let args: Vec<_> = args.into();
     
@@ -2274,7 +2274,7 @@ pub async fn revert_by_ids(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.as_ref().into());
     
     let args: Vec<_> = args.into();
     
@@ -2405,7 +2405,7 @@ pub async fn force_delete_by_ids(
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.as_ref().into());
     
     let args: Vec<_> = args.into();
     
@@ -2423,7 +2423,7 @@ pub async fn force_delete_by_ids(
     {
       let mut args = QueryArgs::new();
       let sql = "delete from base_tenant_domain where domain_id=?".to_owned();
-      args.push(id.clone().into());
+      args.push(id.as_ref().into());
       let args: Vec<_> = args.into();
       execute(
         sql,

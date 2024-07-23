@@ -63,11 +63,11 @@
           :options4-select-v2="[
             {
               label: '中文',
-              value: 'zh-cn',
+              value: 'zh-CN',
             },
             {
               label: 'English',
-              value: 'en',
+              value: 'en-US',
             },
           ]"
           :options-map="(item: LangModel) => {
@@ -198,7 +198,7 @@ let model = $ref<MutationLoginArgs["input"]>({
 
 const VITE_SERVER_I18N_ENABLE = import.meta.env.VITE_SERVER_I18N_ENABLE;
 if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
-  model.lang = "zh-cn";
+  model.lang = "zh-CN";
 }
 const app_title = import.meta.env.VITE_APP_TITLE;
 
@@ -288,8 +288,13 @@ async function onLogin() {
       org_id: model.org_id,
     }),
   );
-  if (usrStore.username !== model.username) {
+  const old_tenant_id = usrStore.tenant_id;
+  const old_username = usrStore.username;
+  if (old_username !== model.username) {
     tabsStore.closeOtherTabs();
+    if (tabsStore.actTab) {
+      tabsStore.closeCurrentTab(tabsStore.actTab);
+    }
   }
   usrStore.authorization = loginModel.authorization;
   usrStore.usr_id = loginModel.usr_id;
@@ -300,7 +305,12 @@ async function onLogin() {
   await Promise.all([
     indexStore.initI18nVersion(),
   ]);
-  window.history.go(0);
+  if (old_username !== model.username || old_tenant_id !== model.tenant_id) {
+    tabsStore.tabs = [ ];
+    location.href = "/";
+  } else {
+    window.history.go(0);
+  }
 }
 
 let tenants = $ref<{

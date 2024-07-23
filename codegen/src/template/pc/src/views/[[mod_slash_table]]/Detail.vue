@@ -239,7 +239,7 @@ const old_table = table;
               (column.isImg && detailFormCols > 1 && column.maxFileSize > 1)
             ) {
             #>
-            un-grid="col-span-<#=detailFormCols#>"<#
+            un-grid="col-span-full"<#
             }
             #>
           ><#
@@ -1251,7 +1251,7 @@ const old_table = table;
                     (column.isImg && detailFormCols > 1 && column.maxFileSize > 1)
                   ) {
                   #>
-                  un-grid="col-span-<#=detailFormCols#>"<#
+                  un-grid="col-span-full"<#
                   }
                   #>
                 ><#

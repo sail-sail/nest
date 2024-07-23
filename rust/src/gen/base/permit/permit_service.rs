@@ -118,12 +118,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<PermitId>> {
   
-  let ids = permit_dao::creates(
+  let permit_ids = permit_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(permit_ids)
 }
 
 /// 根据 id 修改按钮权限
@@ -151,13 +151,13 @@ pub async fn update_by_id(
     }
   }
   
-  let res = permit_dao::update_by_id(
+  let permit_id = permit_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(permit_id)
 }
 
 /// 根据 ids 删除按钮权限

@@ -120,12 +120,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<OperationRecordId>> {
   
-  let ids = operation_record_dao::creates(
+  let operation_record_ids = operation_record_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(operation_record_ids)
 }
 
 /// 操作记录根据id修改租户id
@@ -154,13 +154,13 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<OperationRecordId> {
   
-  let res = operation_record_dao::update_by_id(
+  let operation_record_id = operation_record_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(operation_record_id)
 }
 
 /// 根据 ids 删除操作记录

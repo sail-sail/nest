@@ -10,15 +10,20 @@ import {
  * 获取当前用户拥有的角色id列表
  */
 export async function getAuthRoleIds() {
-  const authModel = await getAuthModel(false);
-  if (!authModel) {
+  const auth_model = await getAuthModel(false);
+  if (!auth_model) {
     return [ ];
   }
-  const usrModel = await findByIdUsr(authModel.id);
-  if (!usrModel || !usrModel.is_enabled) {
+  const usr_model = await findByIdUsr(
+    auth_model.id,
+    {
+      is_debug: false,
+    },
+  );
+  if (!usr_model || !usr_model.is_enabled) {
     return [ ];
   }
-  const role_ids = usrModel.role_ids || [ ];
+  const role_ids = usr_model.role_ids || [ ];
   return role_ids;
 }
 
@@ -29,10 +34,15 @@ export async function getAuthRoleIds() {
 export async function getRoleIds(
   usr_id?: UsrId,
 ) {
-  const usrModel = await findByIdUsr(usr_id);
-  if (!usrModel || !usrModel.is_enabled) {
+  const usr_model = await findByIdUsr(
+    usr_id,
+    {
+      is_debug: false,
+    },
+  );
+  if (!usr_model || !usr_model.is_enabled) {
     return [ ];
   }
-  const role_ids = usrModel.role_ids || [ ];
+  const role_ids = usr_model.role_ids || [ ];
   return role_ids;
 }

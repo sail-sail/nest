@@ -118,12 +118,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<LangId>> {
   
-  let ids = lang_dao::creates(
+  let lang_ids = lang_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(lang_ids)
 }
 
 /// 根据 id 修改语言
@@ -135,13 +135,13 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<LangId> {
   
-  let res = lang_dao::update_by_id(
+  let lang_id = lang_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(lang_id)
 }
 
 /// 根据 ids 删除语言

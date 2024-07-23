@@ -118,12 +118,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<DomainId>> {
   
-  let ids = domain_dao::creates(
+  let domain_ids = domain_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(domain_ids)
 }
 
 /// 根据 id 修改域名
@@ -155,13 +155,13 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
-  let res = domain_dao::update_by_id(
+  let domain_id = domain_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(domain_id)
 }
 
 /// 根据 ids 删除域名
