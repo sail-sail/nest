@@ -3,6 +3,10 @@ import type {
   PageInput,
   SortInput,
 } from "/gen/types.ts";
+  
+import {
+  update_i18n_version,
+} from "/src/base/options/options.dao.ts";
 
 import * as i18nDao from "./i18n.dao.ts";
 
@@ -136,6 +140,8 @@ export async function creates(
   },
 ): Promise<I18nId[]> {
   const ids = await i18nDao.creates(inputs, options);
+  
+  await update_i18n_version();
   return ids;
 }
 
@@ -152,13 +158,7 @@ export async function updateById(
   
   const id2 = await i18nDao.updateById(id, input);
   
-  {
-    const {
-      updateI18n_version,
-    } = await import("/src/base/options/options.dao.ts");
-    
-    await updateI18n_version();
-  }
+  await update_i18n_version();
   return id2;
 }
 
@@ -173,10 +173,7 @@ export async function deleteByIds(
   
   const data = await i18nDao.deleteByIds(ids);
   
-  {
-    const optionsDaoSrc = await import("/src/base/options/options.dao.ts");
-    await optionsDaoSrc.updateI18n_version();
-  }
+  await update_i18n_version();
   return data;
 }
 
