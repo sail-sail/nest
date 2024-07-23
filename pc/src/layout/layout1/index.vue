@@ -404,7 +404,7 @@ const menuStore = useMenuStore();
 
 let locales = $ref([
   {
-    code: "zh-cn",
+    code: "zh-CN",
     lbl: "简体中文",
   },
 ]);
