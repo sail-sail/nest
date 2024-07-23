@@ -233,7 +233,7 @@ export class Context {
   cacheMap: Map<any, any> = new Map();
   
   /** 当前请求的语言 */
-  lang = "zh-cn";
+  lang = "zh-CN";
   
   /** token */
   authorization: string | null | undefined;

@@ -97,9 +97,6 @@ export default defineConfig({
           "@/tmui/components/tm-message/tm-message.vue": [
             [ "default", "TmMessage" ],
           ],
-          "@/components/CustomForm/CustomForm.vue": [
-            [ "default", "CustomForm" ]
-          ],
         },
       ],
       resolvers: [
