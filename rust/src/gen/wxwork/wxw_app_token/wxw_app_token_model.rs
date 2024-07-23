@@ -71,6 +71,30 @@ pub struct WxwAppTokenModel {
   /// 令牌超时时间
   #[graphql(name = "expires_in")]
   pub expires_in: u32,
+  /// 企业jsapi_ticket
+  #[graphql(name = "jsapi_ticket")]
+  pub jsapi_ticket: String,
+  /// 企业jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_time")]
+  pub jsapi_ticket_time: Option<chrono::NaiveDateTime>,
+  /// 企业jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_time_lbl")]
+  pub jsapi_ticket_time_lbl: String,
+  /// 企业jsapi_ticket超时时间
+  #[graphql(name = "jsapi_ticket_expires_in")]
+  pub jsapi_ticket_expires_in: u32,
+  /// 应用jsapi_ticket
+  #[graphql(name = "jsapi_ticket_agent_config")]
+  pub jsapi_ticket_agent_config: String,
+  /// 应用jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_agent_config_time")]
+  pub jsapi_ticket_agent_config_time: Option<chrono::NaiveDateTime>,
+  /// 应用jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_agent_config_time_lbl")]
+  pub jsapi_ticket_agent_config_time_lbl: String,
+  /// 应用jsapi_ticket超时时间
+  #[graphql(name = "jsapi_ticket_agent_config_expires_in")]
+  pub jsapi_ticket_agent_config_expires_in: u32,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -121,6 +145,26 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
     };
     // 令牌超时时间
     let expires_in: u32 = row.try_get("expires_in")?;
+    // 企业jsapi_ticket
+    let jsapi_ticket: String = row.try_get("jsapi_ticket")?;
+    // 企业jsapi_ticket创建时间
+    let jsapi_ticket_time: Option<chrono::NaiveDateTime> = row.try_get("jsapi_ticket_time")?;
+    let jsapi_ticket_time_lbl: String = match jsapi_ticket_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
+    };
+    // 企业jsapi_ticket超时时间
+    let jsapi_ticket_expires_in: u32 = row.try_get("jsapi_ticket_expires_in")?;
+    // 应用jsapi_ticket
+    let jsapi_ticket_agent_config: String = row.try_get("jsapi_ticket_agent_config")?;
+    // 应用jsapi_ticket创建时间
+    let jsapi_ticket_agent_config_time: Option<chrono::NaiveDateTime> = row.try_get("jsapi_ticket_agent_config_time")?;
+    let jsapi_ticket_agent_config_time_lbl: String = match jsapi_ticket_agent_config_time {
+      Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
+      None => String::new(),
+    };
+    // 应用jsapi_ticket超时时间
+    let jsapi_ticket_agent_config_expires_in: u32 = row.try_get("jsapi_ticket_agent_config_expires_in")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -155,6 +199,14 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
       token_time,
       token_time_lbl,
       expires_in,
+      jsapi_ticket,
+      jsapi_ticket_time,
+      jsapi_ticket_time_lbl,
+      jsapi_ticket_expires_in,
+      jsapi_ticket_agent_config,
+      jsapi_ticket_agent_config_time,
+      jsapi_ticket_agent_config_time_lbl,
+      jsapi_ticket_agent_config_expires_in,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -197,6 +249,30 @@ pub struct WxwAppTokenFieldComment {
   /// 令牌超时时间
   #[graphql(name = "expires_in")]
   pub expires_in: String,
+  /// 企业jsapi_ticket
+  #[graphql(name = "jsapi_ticket")]
+  pub jsapi_ticket: String,
+  /// 企业jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_time")]
+  pub jsapi_ticket_time: String,
+  /// 企业jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_time_lbl")]
+  pub jsapi_ticket_time_lbl: String,
+  /// 企业jsapi_ticket超时时间
+  #[graphql(name = "jsapi_ticket_expires_in")]
+  pub jsapi_ticket_expires_in: String,
+  /// 应用jsapi_ticket
+  #[graphql(name = "jsapi_ticket_agent_config")]
+  pub jsapi_ticket_agent_config: String,
+  /// 应用jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_agent_config_time")]
+  pub jsapi_ticket_agent_config_time: String,
+  /// 应用jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_agent_config_time_lbl")]
+  pub jsapi_ticket_agent_config_time_lbl: String,
+  /// 应用jsapi_ticket超时时间
+  #[graphql(name = "jsapi_ticket_agent_config_expires_in")]
+  pub jsapi_ticket_agent_config_expires_in: String,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: String,
@@ -264,6 +340,30 @@ pub struct WxwAppTokenSearch {
   /// 令牌超时时间
   #[graphql(skip)]
   pub expires_in: Option<[Option<u32>; 2]>,
+  /// 企业jsapi_ticket
+  #[graphql(skip)]
+  pub jsapi_ticket: Option<String>,
+  /// 企业jsapi_ticket
+  #[graphql(skip)]
+  pub jsapi_ticket_like: Option<String>,
+  /// 企业jsapi_ticket创建时间
+  #[graphql(skip)]
+  pub jsapi_ticket_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
+  /// 企业jsapi_ticket超时时间
+  #[graphql(skip)]
+  pub jsapi_ticket_expires_in: Option<[Option<u32>; 2]>,
+  /// 应用jsapi_ticket
+  #[graphql(skip)]
+  pub jsapi_ticket_agent_config: Option<String>,
+  /// 应用jsapi_ticket
+  #[graphql(skip)]
+  pub jsapi_ticket_agent_config_like: Option<String>,
+  /// 应用jsapi_ticket创建时间
+  #[graphql(skip)]
+  pub jsapi_ticket_agent_config_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
+  /// 应用jsapi_ticket超时时间
+  #[graphql(skip)]
+  pub jsapi_ticket_agent_config_expires_in: Option<[Option<u32>; 2]>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -336,6 +436,36 @@ impl std::fmt::Debug for WxwAppTokenSearch {
     if let Some(ref expires_in) = self.expires_in {
       item = item.field("expires_in", expires_in);
     }
+    // 企业jsapi_ticket
+    if let Some(ref jsapi_ticket) = self.jsapi_ticket {
+      item = item.field("jsapi_ticket", jsapi_ticket);
+    }
+    if let Some(ref jsapi_ticket_like) = self.jsapi_ticket_like {
+      item = item.field("jsapi_ticket_like", jsapi_ticket_like);
+    }
+    // 企业jsapi_ticket创建时间
+    if let Some(ref jsapi_ticket_time) = self.jsapi_ticket_time {
+      item = item.field("jsapi_ticket_time", jsapi_ticket_time);
+    }
+    // 企业jsapi_ticket超时时间
+    if let Some(ref jsapi_ticket_expires_in) = self.jsapi_ticket_expires_in {
+      item = item.field("jsapi_ticket_expires_in", jsapi_ticket_expires_in);
+    }
+    // 应用jsapi_ticket
+    if let Some(ref jsapi_ticket_agent_config) = self.jsapi_ticket_agent_config {
+      item = item.field("jsapi_ticket_agent_config", jsapi_ticket_agent_config);
+    }
+    if let Some(ref jsapi_ticket_agent_config_like) = self.jsapi_ticket_agent_config_like {
+      item = item.field("jsapi_ticket_agent_config_like", jsapi_ticket_agent_config_like);
+    }
+    // 应用jsapi_ticket创建时间
+    if let Some(ref jsapi_ticket_agent_config_time) = self.jsapi_ticket_agent_config_time {
+      item = item.field("jsapi_ticket_agent_config_time", jsapi_ticket_agent_config_time);
+    }
+    // 应用jsapi_ticket超时时间
+    if let Some(ref jsapi_ticket_agent_config_expires_in) = self.jsapi_ticket_agent_config_expires_in {
+      item = item.field("jsapi_ticket_agent_config_expires_in", jsapi_ticket_agent_config_expires_in);
+    }
     // 创建人
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
@@ -398,6 +528,36 @@ pub struct WxwAppTokenInput {
   /// 令牌超时时间
   #[graphql(name = "expires_in")]
   pub expires_in: Option<u32>,
+  /// 企业jsapi_ticket
+  #[graphql(name = "jsapi_ticket")]
+  pub jsapi_ticket: Option<String>,
+  /// 企业jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_time")]
+  pub jsapi_ticket_time: Option<chrono::NaiveDateTime>,
+  /// 企业jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_time_lbl")]
+  pub jsapi_ticket_time_lbl: Option<String>,
+  /// 企业jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_time_save_null")]
+  pub jsapi_ticket_time_save_null: Option<bool>,
+  /// 企业jsapi_ticket超时时间
+  #[graphql(name = "jsapi_ticket_expires_in")]
+  pub jsapi_ticket_expires_in: Option<u32>,
+  /// 应用jsapi_ticket
+  #[graphql(name = "jsapi_ticket_agent_config")]
+  pub jsapi_ticket_agent_config: Option<String>,
+  /// 应用jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_agent_config_time")]
+  pub jsapi_ticket_agent_config_time: Option<chrono::NaiveDateTime>,
+  /// 应用jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_agent_config_time_lbl")]
+  pub jsapi_ticket_agent_config_time_lbl: Option<String>,
+  /// 应用jsapi_ticket创建时间
+  #[graphql(name = "jsapi_ticket_agent_config_time_save_null")]
+  pub jsapi_ticket_agent_config_time_save_null: Option<bool>,
+  /// 应用jsapi_ticket超时时间
+  #[graphql(name = "jsapi_ticket_agent_config_expires_in")]
+  pub jsapi_ticket_agent_config_expires_in: Option<u32>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -449,6 +609,22 @@ impl From<WxwAppTokenModel> for WxwAppTokenInput {
       token_time_save_null: Some(true),
       // 令牌超时时间
       expires_in: model.expires_in.into(),
+      // 企业jsapi_ticket
+      jsapi_ticket: model.jsapi_ticket.into(),
+      // 企业jsapi_ticket创建时间
+      jsapi_ticket_time: model.jsapi_ticket_time,
+      jsapi_ticket_time_lbl: model.jsapi_ticket_time_lbl.into(),
+      jsapi_ticket_time_save_null: Some(true),
+      // 企业jsapi_ticket超时时间
+      jsapi_ticket_expires_in: model.jsapi_ticket_expires_in.into(),
+      // 应用jsapi_ticket
+      jsapi_ticket_agent_config: model.jsapi_ticket_agent_config.into(),
+      // 应用jsapi_ticket创建时间
+      jsapi_ticket_agent_config_time: model.jsapi_ticket_agent_config_time,
+      jsapi_ticket_agent_config_time_lbl: model.jsapi_ticket_agent_config_time_lbl.into(),
+      jsapi_ticket_agent_config_time_save_null: Some(true),
+      // 应用jsapi_ticket超时时间
+      jsapi_ticket_agent_config_expires_in: model.jsapi_ticket_agent_config_expires_in.into(),
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -485,6 +661,18 @@ impl From<WxwAppTokenInput> for WxwAppTokenSearch {
       token_time: input.token_time.map(|x| [Some(x), Some(x)]),
       // 令牌超时时间
       expires_in: input.expires_in.map(|x| [Some(x), Some(x)]),
+      // 企业jsapi_ticket
+      jsapi_ticket: input.jsapi_ticket,
+      // 企业jsapi_ticket创建时间
+      jsapi_ticket_time: input.jsapi_ticket_time.map(|x| [Some(x), Some(x)]),
+      // 企业jsapi_ticket超时时间
+      jsapi_ticket_expires_in: input.jsapi_ticket_expires_in.map(|x| [Some(x), Some(x)]),
+      // 应用jsapi_ticket
+      jsapi_ticket_agent_config: input.jsapi_ticket_agent_config,
+      // 应用jsapi_ticket创建时间
+      jsapi_ticket_agent_config_time: input.jsapi_ticket_agent_config_time.map(|x| [Some(x), Some(x)]),
+      // 应用jsapi_ticket超时时间
+      jsapi_ticket_agent_config_expires_in: input.jsapi_ticket_agent_config_expires_in.map(|x| [Some(x), Some(x)]),
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人

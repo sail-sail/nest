@@ -120,12 +120,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<WxwAppTokenId>> {
   
-  let ids = wxw_app_token_dao::creates(
+  let wxw_app_token_ids = wxw_app_token_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(wxw_app_token_ids)
 }
 
 /// 企微应用接口凭据根据id修改租户id
@@ -154,13 +154,13 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<WxwAppTokenId> {
   
-  let res = wxw_app_token_dao::update_by_id(
+  let wxw_app_token_id = wxw_app_token_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(wxw_app_token_id)
 }
 
 /// 根据 ids 删除企微应用接口凭据

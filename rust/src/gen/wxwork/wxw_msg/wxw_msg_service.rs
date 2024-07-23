@@ -120,12 +120,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgId>> {
   
-  let ids = wxw_msg_dao::creates(
+  let wxw_msg_ids = wxw_msg_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(wxw_msg_ids)
 }
 
 /// 企微消息根据id修改租户id
@@ -154,13 +154,13 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<WxwMsgId> {
   
-  let res = wxw_msg_dao::update_by_id(
+  let wxw_msg_id = wxw_msg_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(wxw_msg_id)
 }
 
 /// 根据 ids 删除企微消息
