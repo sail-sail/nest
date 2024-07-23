@@ -881,14 +881,14 @@ export async function validate(
   // 编码
   await validators.chars_max_length(
     input.code,
-    10,
+    22,
     fieldComments.code,
   );
   
   // 名称
   await validators.chars_max_length(
     input.lbl,
-    22,
+    100,
     fieldComments.lbl,
   );
   

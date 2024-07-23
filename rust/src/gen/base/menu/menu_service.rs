@@ -118,12 +118,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<MenuId>> {
   
-  let ids = menu_dao::creates(
+  let menu_ids = menu_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(menu_ids)
 }
 
 /// 根据 id 修改菜单
@@ -155,13 +155,13 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
-  let res = menu_dao::update_by_id(
+  let menu_id = menu_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(menu_id)
 }
 
 /// 根据 ids 删除菜单

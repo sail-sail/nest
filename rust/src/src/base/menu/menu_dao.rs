@@ -1,7 +1,7 @@
 use anyhow::Result;
 use crate::common::context::{
   query,
-  get_auth_id_err,
+  get_auth_id,
   get_auth_tenant_id,
   QueryArgs,
   Options,
@@ -17,7 +17,11 @@ use crate::gen::base::usr::usr_dao::{
 
 async fn find_menus() -> Result<Vec<GetMenus>> {
   
-  let table = "base_menu";
+  let usr_id = get_auth_id();
+  if usr_id.is_none() {
+    return Ok(vec![]);
+  }
+  let usr_id = usr_id.unwrap();
   
   let mut args = QueryArgs::new();
   
@@ -25,11 +29,9 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let tenant_id = get_auth_tenant_id();
   if let Some(tenant_id) = tenant_id {
-    where_query.push_str(" and base_tenant_menu.tenant_id = ?");
+    where_query.push_str(" and base_tenant_menu.tenant_id=?");
     args.push(tenant_id.into());
   }
-  
-  let usr_id = get_auth_id_err()?;
   
   let options = Options::new();
   let options = options.set_is_debug(Some(false));
@@ -46,7 +48,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   let username = usr_model.username;
   
   if username != "admin" {
-    where_query.push_str(" and base_usr_role.usr_id = ?");
+    where_query.push_str(" and base_usr_role.usr_id=?");
     args.push(usr_id.into());
   }
   
@@ -58,7 +60,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
       t.route_path,
       t.route_query,
       t.order_by
-    from {table} t
+    from base_menu t
     inner join base_tenant_menu
       on t.id = base_tenant_menu.menu_id
       and base_tenant_menu.is_deleted = 0
@@ -84,7 +86,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let options = options.set_is_debug(Some(false));
   
-  let options = options.set_cache_key(table, &sql, &args);
+  let options = options.set_cache_key("base_menu._getMenus", &sql, &args);
   
   let options = options.into();
   

@@ -149,12 +149,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<DeptId>> {
   
-  let ids = dept_dao::creates(
+  let dept_ids = dept_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(dept_ids)
 }
 
 /// 部门根据id修改租户id
@@ -203,13 +203,13 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
-  let res = dept_dao::update_by_id(
+  let dept_id = dept_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(dept_id)
 }
 
 /// 根据 ids 删除部门

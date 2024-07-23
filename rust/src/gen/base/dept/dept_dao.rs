@@ -2364,7 +2364,7 @@ pub async fn delete_by_ids(
       if !usr_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_dept_usr set is_deleted=1 where dept_id=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.as_ref().into());
         let arg = {
           let mut items = Vec::with_capacity(usr_ids.len());
           for item in usr_ids {
@@ -2389,7 +2389,7 @@ pub async fn delete_by_ids(
     {
       let mut args = QueryArgs::new();
       let sql = "update base_usr_dept set is_deleted=1 where dept_id=? and is_deleted=0".to_owned();
-      args.push(id.clone().into());
+      args.push(id.as_ref().into());
       let args: Vec<_> = args.into();
       execute(
         sql,
@@ -2611,7 +2611,7 @@ pub async fn revert_by_ids(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.as_ref().into());
     
     let args: Vec<_> = args.into();
     
@@ -2742,7 +2742,7 @@ pub async fn force_delete_by_ids(
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.clone().into());
+    args.push(id.as_ref().into());
     
     let args: Vec<_> = args.into();
     
@@ -2762,11 +2762,11 @@ pub async fn force_delete_by_ids(
       if !usr_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "delete from base_dept_usr where dept_id=? and".to_owned();
-        args.push(id.clone().into());
+        args.push(id.as_ref().into());
         let mut items = Vec::with_capacity(usr_ids.len());
         for item in usr_ids {
           items.push("?");
-          args.push(item.clone().into());
+          args.push(item.as_ref().into());
         }
         sql.push_str(" usr_id in (");
         sql.push_str(&items.join(","));
@@ -2782,7 +2782,7 @@ pub async fn force_delete_by_ids(
     {
       let mut args = QueryArgs::new();
       let sql = "delete from base_usr_dept where dept_id=?".to_owned();
-      args.push(id.clone().into());
+      args.push(id.as_ref().into());
       let args: Vec<_> = args.into();
       execute(
         sql,

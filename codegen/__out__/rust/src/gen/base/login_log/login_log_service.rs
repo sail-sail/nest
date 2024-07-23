@@ -120,12 +120,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<LoginLogId>> {
   
-  let ids = login_log_dao::creates(
+  let login_log_ids = login_log_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(login_log_ids)
 }
 
 /// 登录日志根据id修改租户id
@@ -154,13 +154,13 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<LoginLogId> {
   
-  let res = login_log_dao::update_by_id(
+  let login_log_id = login_log_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(login_log_id)
 }
 
 /// 根据 ids 删除登录日志

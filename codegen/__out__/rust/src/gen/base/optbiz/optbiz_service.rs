@@ -120,12 +120,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<OptbizId>> {
   
-  let ids = optbiz_dao::creates(
+  let optbiz_ids = optbiz_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(optbiz_ids)
 }
 
 /// 业务选项根据id修改租户id
@@ -189,13 +189,13 @@ pub async fn update_by_id(
     }
   }
   
-  let res = optbiz_dao::update_by_id(
+  let optbiz_id = optbiz_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(optbiz_id)
 }
 
 /// 根据 ids 删除业务选项

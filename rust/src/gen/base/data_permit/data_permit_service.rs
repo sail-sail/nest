@@ -118,12 +118,12 @@ pub async fn creates(
   options: Option<Options>,
 ) -> Result<Vec<DataPermitId>> {
   
-  let ids = data_permit_dao::creates(
+  let data_permit_ids = data_permit_dao::creates(
     inputs,
     options,
   ).await?;
   
-  Ok(ids)
+  Ok(data_permit_ids)
 }
 
 /// 根据 id 修改数据权限
@@ -152,13 +152,13 @@ pub async fn update_by_id(
     }
   }
   
-  let res = data_permit_dao::update_by_id(
+  let data_permit_id = data_permit_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(data_permit_id)
 }
 
 /// 根据 ids 删除数据权限

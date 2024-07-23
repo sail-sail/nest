@@ -166,6 +166,7 @@ export default defineStore("tabs", function() {
     if (!tab) {
       return;
     }
+    tab.active = false;
     removeTab(tab, force);
   }
   
