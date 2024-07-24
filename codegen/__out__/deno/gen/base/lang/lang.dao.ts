@@ -168,11 +168,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找语言总数
- * @param {LangSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找语言总数 */
 export async function findCount(
   search?: Readonly<LangSearch>,
   options?: {
@@ -535,12 +531,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {LangModel} oldModel
- * @param {LangInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<LangModel>,
   input: Readonly<LangInput>,
@@ -562,13 +553,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查语言是否已经存在
- * @param {LangInput} input
- * @param {LangModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<LangId | undefined>}
- */
+/** 通过唯一约束检查 语言 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<LangInput>,
   oldModel: Readonly<LangModel>,
@@ -915,17 +900,7 @@ export async function validate(
   
 }
 
-/**
- * 创建语言
- * @param {LangInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<LangId>} 
- */
+/** 创建 语言 */
 export async function create(
   input: Readonly<LangInput>,
   options?: {
@@ -965,17 +940,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建语言
- * @param {LangInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<LangId[]>} 
- */
+/** 批量创建 语言 */
 export async function creates(
   inputs: LangInput[],
   options?: {
@@ -1216,18 +1181,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.base_lang`);
 }
 
-/**
- * 根据 id 修改语言
- * @param {LangId} id
- * @param {LangInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<LangId>}
- */
+/** 根据 id 修改 语言 */
 export async function updateById(
   id: LangId,
   input: LangInput,
@@ -1424,11 +1378,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除语言
- * @param {LangId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 语言 */
 export async function deleteByIds(
   ids: LangId[],
   options?: {
@@ -1505,12 +1455,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ID 查找语言是否已启用
- * 不存在则返回 undefined
- * @param {LangId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 语言 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: LangId,
   options?: {
@@ -1530,12 +1475,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-/**
- * 根据 ids 启用或者禁用语言
- * @param {LangId[]} ids
- * @param {0 | 1} is_enabled
- * @return {Promise<number>}
- */
+/** 根据 ids 启用或者禁用 语言 */
 export async function enableByIds(
   ids: LangId[],
   is_enabled: Readonly<0 | 1>,
@@ -1583,11 +1523,7 @@ export async function enableByIds(
   return num;
 }
 
-/**
- * 根据 ids 还原语言
- * @param {LangId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 语言 */
 export async function revertByIds(
   ids: LangId[],
   options?: {
@@ -1621,30 +1557,41 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: LangId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update base_lang set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as LangInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("语言"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update base_lang set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   await delCache();
@@ -1652,11 +1599,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除语言
- * @param {LangId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 语言 */
 export async function forceDeleteByIds(
   ids: LangId[],
   options?: {
