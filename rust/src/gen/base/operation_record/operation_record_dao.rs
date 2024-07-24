@@ -1925,29 +1925,30 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = Some(options);
-    
-    num += execute(
-      sql,
-      args,
+    let mut old_model = find_one(
+      OperationRecordSearch {
+        id: Some(id.clone()),
+        is_deleted: Some(1),
+        ..Default::default()
+      }.into(),
+      None,
       options.clone(),
     ).await?;
     
-    // 检查数据的唯一索引
-    {
-      let old_model = find_by_id(
+    if old_model.is_none() {
+      old_model = find_by_id(
         id.clone(),
         options.clone(),
       ).await?;
-      
-      if old_model.is_none() {
-        continue;
-      }
-      let old_model = old_model.unwrap();
-      
-      let mut input: OperationRecordInput = old_model.into();
+    }
+    
+    if old_model.is_none() {
+      continue;
+    }
+    let old_model = old_model.unwrap();
+    
+    {
+      let mut input: OperationRecordInput = old_model.clone().into();
       input.id = None;
       
       let models = find_by_unique(
@@ -1956,7 +1957,8 @@ pub async fn revert_by_ids(
         options.clone(),
       ).await?;
       
-      let models: Vec<OperationRecordModel> = models.into_iter()
+      let models: Vec<OperationRecordModel> = models
+        .into_iter()
         .filter(|item| 
           item.id != id
         )
@@ -1977,6 +1979,12 @@ pub async fn revert_by_ids(
         return Err(anyhow!(err_msg));
       }
     }
+    
+    num += execute(
+      sql,
+      args,
+      options.clone(),
+    ).await?;
     
   }
   
