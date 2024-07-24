@@ -2729,8 +2729,13 @@ pub async fn revert_by_ids(
     return Ok(0);
   }
   
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = options.set_del_cache_key1s(get_cache_tables());
   let options = Some(options);
   
   let mut num = 0;
@@ -2743,39 +2748,30 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
-    num += execute(
-      sql,
-      args,
+    let mut old_model = find_one(
+      RoleSearch {
+        id: Some(id.clone()),
+        is_deleted: Some(1),
+        ..Default::default()
+      }.into(),
+      None,
       options.clone(),
     ).await?;
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;
-    
-    // 检查数据的唯一索引
-    {
-      let old_model = find_by_id(
+    if old_model.is_none() {
+      old_model = find_by_id(
         id.clone(),
         options.clone(),
       ).await?;
-      
-      if old_model.is_none() {
-        continue;
-      }
-      let old_model = old_model.unwrap();
-      
-      let mut input: RoleInput = old_model.into();
+    }
+    
+    if old_model.is_none() {
+      continue;
+    }
+    let old_model = old_model.unwrap();
+    
+    {
+      let mut input: RoleInput = old_model.clone().into();
       input.id = None;
       
       let models = find_by_unique(
@@ -2784,7 +2780,8 @@ pub async fn revert_by_ids(
         options.clone(),
       ).await?;
       
-      let models: Vec<RoleModel> = models.into_iter()
+      let models: Vec<RoleModel> = models
+        .into_iter()
         .filter(|item| 
           item.id != id
         )
@@ -2806,7 +2803,98 @@ pub async fn revert_by_ids(
       }
     }
     
+    num += execute(
+      sql,
+      args,
+      options.clone(),
+    ).await?;
+    {
+      let menu_ids = old_model.menu_ids.clone();
+      if !menu_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_role_menu set is_deleted=0 where role_id=? and".to_owned();
+        args.push(id.as_ref().into());
+        let arg = {
+          let mut items = Vec::with_capacity(menu_ids.len());
+          for item in menu_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" menu_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=1");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let permit_ids = old_model.permit_ids.clone();
+      if !permit_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_role_permit set is_deleted=0 where role_id=? and".to_owned();
+        args.push(id.as_ref().into());
+        let arg = {
+          let mut items = Vec::with_capacity(permit_ids.len());
+          for item in permit_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" permit_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=1");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let data_permit_ids = old_model.data_permit_ids.clone();
+      if !data_permit_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_role_data_permit set is_deleted=0 where role_id=? and".to_owned();
+        args.push(id.as_ref().into());
+        let arg = {
+          let mut items = Vec::with_capacity(data_permit_ids.len());
+          for item in data_permit_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" data_permit_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=1");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    
   }
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;
   
   Ok(num)
 }

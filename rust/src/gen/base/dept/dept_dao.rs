@@ -2603,6 +2603,7 @@ pub async fn revert_by_ids(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = options.set_del_cache_key1s(get_cache_tables());
   let options = Some(options);
   
   let mut num = 0;
@@ -2615,31 +2616,30 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());
-    
-    let options = Some(options);
-    
-    num += execute(
-      sql,
-      args,
+    let mut old_model = find_one(
+      DeptSearch {
+        id: Some(id.clone()),
+        is_deleted: Some(1),
+        ..Default::default()
+      }.into(),
+      None,
       options.clone(),
     ).await?;
     
-    // 检查数据的唯一索引
-    {
-      let old_model = find_by_id(
+    if old_model.is_none() {
+      old_model = find_by_id(
         id.clone(),
         options.clone(),
       ).await?;
-      
-      if old_model.is_none() {
-        continue;
-      }
-      let old_model = old_model.unwrap();
-      
-      let mut input: DeptInput = old_model.into();
+    }
+    
+    if old_model.is_none() {
+      continue;
+    }
+    let old_model = old_model.unwrap();
+    
+    {
+      let mut input: DeptInput = old_model.clone().into();
       input.id = None;
       
       let models = find_by_unique(
@@ -2648,7 +2648,8 @@ pub async fn revert_by_ids(
         options.clone(),
       ).await?;
       
-      let models: Vec<DeptModel> = models.into_iter()
+      let models: Vec<DeptModel> = models
+        .into_iter()
         .filter(|item| 
           item.id != id
         )
@@ -2667,6 +2668,39 @@ pub async fn revert_by_ids(
           map.into(),
         ).await?;
         return Err(anyhow!(err_msg));
+      }
+    }
+    
+    num += execute(
+      sql,
+      args,
+      options.clone(),
+    ).await?;
+    {
+      let usr_ids = old_model.usr_ids.clone();
+      if !usr_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_dept_usr set is_deleted=0 where dept_id=? and".to_owned();
+        args.push(id.as_ref().into());
+        let arg = {
+          let mut items = Vec::with_capacity(usr_ids.len());
+          for item in usr_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" usr_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=1");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
       }
     }
     

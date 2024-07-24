@@ -5636,10 +5636,29 @@ pub async fn revert_by_ids(
   
   if ids.is_empty() {
     return Ok(0);
+  }<#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
+  ).await?;<#
   }
+  #>
   
   let options = Options::from(options)
-    .set_is_debug(Some(false));
+    .set_is_debug(Some(false));<#
+  if (cache) {
+  #>
+  let options = options.set_del_cache_key1s(get_cache_tables());<#
+  }
+  #>
   let options = Some(options);
   
   let mut num = 0;
@@ -5652,63 +5671,30 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let options = Options::from(options.clone());<#
-    if (cache) {
-    #>
-    
-    let options = options.set_del_cache_key1s(get_cache_tables());<#
-    }
-    #>
-    
-    let options = Some(options);<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
-    
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
-    
-    num += execute(
-      sql,
-      args,
+    let mut old_model = find_one(
+      <#=tableUP#>Search {
+        id: Some(id.clone()),
+        is_deleted: Some(1),
+        ..Default::default()
+      }.into(),
+      None,
       options.clone(),
-    ).await?;<#
-    if (
-      cache &&
-      (mod === "base" && table === "tenant") ||
-      (mod === "base" && table === "role") ||
-      (mod === "base" && table === "menu") ||
-      (mod === "base" && table === "usr")
-    ) {
-    #>
+    ).await?;
     
-    del_caches(
-      vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
-    ).await?;<#
-    }
-    #>
-    
-    // 检查数据的唯一索引
-    {
-      let old_model = find_by_id(
+    if old_model.is_none() {
+      old_model = find_by_id(
         id.clone(),
         options.clone(),
       ).await?;
-      
-      if old_model.is_none() {
-        continue;
-      }
-      let old_model = old_model.unwrap();
-      
-      let mut input: <#=tableUP#>Input = old_model.into();
+    }
+    
+    if old_model.is_none() {
+      continue;
+    }
+    let old_model = old_model.unwrap();
+    
+    {
+      let mut input: <#=tableUP#>Input = old_model.clone().into();
       input.id = None;
       
       let models = find_by_unique(
@@ -5717,7 +5703,8 @@ pub async fn revert_by_ids(
         options.clone(),
       ).await?;
       
-      let models: Vec<<#=tableUP#>Model> = models.into_iter()
+      let models: Vec<<#=tableUP#>Model> = models
+        .into_iter()
         .filter(|item| 
           item.id != id
         )
@@ -5738,6 +5725,92 @@ pub async fn revert_by_ids(
         return Err(anyhow!(err_msg));
       }
     }
+    
+    num += execute(
+      sql,
+      args,
+      options.clone(),
+    ).await?;<#
+    let has_many2many_no_cascade_delete_revert = false;
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.inlineMany2manyTab) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      const many2many_no_cascade_delete = foreignKey.many2many_no_cascade_delete;
+      const many2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      if (!many2manySchema) {
+        throw `many2many 中的表: ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+        process.exit(1);
+      }
+      if (many2many_no_cascade_delete) continue;
+      has_many2many_no_cascade_delete_revert = true;
+    }
+    #><#
+    if (has_many2many_no_cascade_delete_revert) {
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.inlineMany2manyTab) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      const many2many_no_cascade_delete = foreignKey.many2many_no_cascade_delete;
+      const many2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      if (!many2manySchema) {
+        throw `many2many 中的表: ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+        process.exit(1);
+      }
+      if (many2many_no_cascade_delete) continue;
+    #>
+    {
+      let <#=column_name#> = old_model.<#=column_name#>.clone();
+      if !<#=column_name#>.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=0 where <#=many2many.column1#>=? and".to_owned();
+        args.push(id.as_ref().into());
+        let arg = {
+          let mut items = Vec::with_capacity(<#=column_name#>.len());
+          for item in <#=column_name#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" <#=many2many.column2#> in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=1");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }<#
+    }
+    #><#
+    }
+    #>
     
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
@@ -5854,6 +5927,20 @@ pub async fn revert_by_ids(
       .map(|item| item.id)
       .collect::<Vec<_>>(),
     options.clone(),
+  ).await?;<#
+  }
+  #><#
+  if (
+    cache &&
+    (mod === "base" && table === "tenant") ||
+    (mod === "base" && table === "role") ||
+    (mod === "base" && table === "menu") ||
+    (mod === "base" && table === "usr")
+  ) {
+  #>
+  
+  del_caches(
+    vec![ "dao.sql.base_menu._getMenus" ].as_slice(),
   ).await?;<#
   }
   #>
