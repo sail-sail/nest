@@ -170,11 +170,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找数据权限总数
- * @param {DataPermitSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找数据权限总数 */
 export async function findCount(
   search?: Readonly<DataPermitSearch>,
   options?: {
@@ -595,12 +591,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {DataPermitModel} oldModel
- * @param {DataPermitInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<DataPermitModel>,
   input: Readonly<DataPermitInput>,
@@ -618,13 +609,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查数据权限是否已经存在
- * @param {DataPermitInput} input
- * @param {DataPermitModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<DataPermitId | undefined>}
- */
+/** 通过唯一约束检查 数据权限 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<DataPermitInput>,
   oldModel: Readonly<DataPermitModel>,
@@ -969,17 +954,7 @@ export async function validate(
   
 }
 
-/**
- * 创建数据权限
- * @param {DataPermitInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<DataPermitId>} 
- */
+/** 创建 数据权限 */
 export async function create(
   input: Readonly<DataPermitInput>,
   options?: {
@@ -1019,17 +994,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建数据权限
- * @param {DataPermitInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<DataPermitId[]>} 
- */
+/** 批量创建 数据权限 */
 export async function creates(
   inputs: DataPermitInput[],
   options?: {
@@ -1265,18 +1230,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.base_data_permit`);
 }
 
-/**
- * 根据 id 修改数据权限
- * @param {DataPermitId} id
- * @param {DataPermitInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<DataPermitId>}
- */
+/** 根据 id 修改 数据权限 */
 export async function updateById(
   id: DataPermitId,
   input: DataPermitInput,
@@ -1467,11 +1421,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除数据权限
- * @param {DataPermitId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 数据权限 */
 export async function deleteByIds(
   ids: DataPermitId[],
   options?: {
@@ -1553,11 +1503,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ids 还原数据权限
- * @param {DataPermitId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 数据权限 */
 export async function revertByIds(
   ids: DataPermitId[],
   options?: {
@@ -1591,30 +1537,41 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: DataPermitId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update base_data_permit set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as DataPermitInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("数据权限"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update base_data_permit set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   await delCache();
@@ -1622,11 +1579,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除数据权限
- * @param {DataPermitId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 数据权限 */
 export async function forceDeleteByIds(
   ids: DataPermitId[],
   options?: {
