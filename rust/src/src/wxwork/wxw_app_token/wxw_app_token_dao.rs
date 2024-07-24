@@ -3,6 +3,8 @@ use tracing::{info, error};
 
 use anyhow::{Result, anyhow};
 
+use sha1::{Sha1, Digest};
+
 use crate::common::context::{
   get_req_id,
   get_now,
@@ -13,6 +15,7 @@ use crate::gen::wxwork::wxw_app_token::wxw_app_token_dao::{
   find_one as find_one_wxw_app_token,
   create as create_wxw_app_token,
   update_by_id as update_by_id_wxw_app_token,
+  validate_option as validate_option_wxw_app_token,
 };
 use crate::gen::wxwork::wxw_app_token::wxw_app_token_model::{
   WxwAppTokenInput,
@@ -25,9 +28,11 @@ use crate::gen::wxwork::wxw_app::wxw_app_dao::{
   validate_is_enabled as validate_is_enabled_wxw_app,
 };
 
-use crate::src::wxwork::wxw_app_token::wxw_app_token_model::{
+use super::wxw_app_token_model::{
   GetuserRes,
+  GetJsapiTicketRes,
   GetuserinfoModel,
+  WxwGetConfigSignature,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -301,6 +306,268 @@ pub async fn get_contact_access_token(
   Ok(access_token)
 }
 
+/// 获取企业的jsapi_ticket
+async fn get_jsapi_ticket(
+  wxw_app_id: WxwAppId,
+  force: Option<bool>,
+) -> Result<String> {
+  
+  let force = force.unwrap_or(false);
+  
+  let wxw_app_model = validate_option_wxw_app(
+    find_by_id_wxw_app(
+      wxw_app_id.clone(),
+      None,
+    ).await?,
+  ).await?;
+  
+  validate_is_enabled_wxw_app(
+    &wxw_app_model,
+  ).await?;
+  
+  let wxw_app_token_model = validate_option_wxw_app_token(
+    find_one_wxw_app_token(
+      WxwAppTokenSearch {
+        wxw_app_id: vec![wxw_app_id.clone()].into(),
+        r#type: "corp".to_owned().into(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?,
+  ).await?;
+  
+  let now = get_now();
+  let now_sec = now.and_utc().timestamp_millis() / 1000;
+  
+  let jsapi_ticket = wxw_app_token_model.jsapi_ticket;
+  let jsapi_ticket_expires_in = wxw_app_token_model.jsapi_ticket_expires_in as i64;
+  let jsapi_ticket_time = wxw_app_token_model.jsapi_ticket_time;
+  let jsapi_ticket_time_sec = jsapi_ticket_time
+    .map(|x| x.and_utc().timestamp_millis() / 1000)
+    .unwrap_or(0);
+  
+  if force
+    || jsapi_ticket_expires_in == 0
+    || jsapi_ticket.is_empty()
+    || jsapi_ticket_time_sec == 0
+    || now_sec > jsapi_ticket_time_sec + jsapi_ticket_expires_in + 120
+  {
+    let access_token = get_access_token(
+      wxw_app_id.clone(),
+      force.into(),
+    ).await?;
+    
+    let url = format!(
+      "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token={access_token}",
+      access_token = urlencoding::encode(&access_token),
+    );
+    let res = reqwest::get(&url).await?;
+    
+    let data_str = res.text().await?;
+    let data: GetJsapiTicketRes = serde_json::from_str(&data_str)?;
+    
+    let (
+      ticket,
+      expires_in,
+      errcode,
+      errmsg,
+    ) = (
+      data.ticket,
+      data.expires_in,
+      data.errcode,
+      data.errmsg,
+    );
+    
+    if ticket.is_empty() || expires_in == 0 || errcode != 0 {
+      let req_id = get_req_id();
+      let msg =  serde_json::to_string(&data_str)?;
+      error!("{req_id} 企业微信应用 获取 jsapi_ticket 失败: {url}: {msg}");
+      let msg = format!("企业微信应用 获取 jsapi_ticket 失败: {errmsg}");
+      return Err(anyhow!(msg));
+    }
+    
+    update_by_id_wxw_app_token(
+      wxw_app_token_model.id,
+      WxwAppTokenInput {
+        jsapi_ticket: ticket.clone().into(),
+        jsapi_ticket_expires_in: expires_in.into(),
+        jsapi_ticket_time: now.into(),
+        ..Default::default()
+      },
+      None,
+    ).await?;
+    
+    return Ok(ticket);
+  }
+  
+  Ok(jsapi_ticket)
+}
+
+/// 获取企业的jsapi_ticket, 跟签名
+/// https://developer.work.weixin.qq.com/document/path/90506
+pub async fn get_jsapi_ticket_signature(
+  wxw_app_id: WxwAppId,
+  url: String,
+  force: Option<bool>,
+) -> Result<WxwGetConfigSignature> {
+  
+  let jsapi_ticket = get_jsapi_ticket(
+    wxw_app_id.clone(),
+    force,
+  ).await?;
+  
+  let nonce_str = uuid::Uuid::new_v4().to_string().replace('-', "");
+  let timestamp = (get_now().and_utc().timestamp_millis() / 1000).to_string();
+  
+  let signature = format!(
+    "jsapi_ticket={jsapi_ticket}&noncestr={nonce_str}&timestamp={timestamp}&url={url}",
+  );
+  
+  let mut hasher = Sha1::new();
+  hasher.update(signature.as_bytes());
+  let signature = hasher.finalize();
+  let signature = hex::encode(signature);
+  
+  Ok(WxwGetConfigSignature {
+    timestamp,
+    nonce_str,
+    signature,
+  })
+}
+
+/// 获取应用 jsapi_ticket
+pub async fn get_jsapi_ticket_agent_config(
+  wxw_app_id: WxwAppId,
+  force: Option<bool>,
+) -> Result<String> {
+  
+  let force = force.unwrap_or(false);
+  
+  let wxw_app_model = validate_option_wxw_app(
+    find_by_id_wxw_app(
+      wxw_app_id.clone(),
+      None,
+    ).await?,
+  ).await?;
+  
+  validate_is_enabled_wxw_app(
+    &wxw_app_model,
+  ).await?;
+  
+  let wxw_app_token_model = validate_option_wxw_app_token(
+    find_one_wxw_app_token(
+      WxwAppTokenSearch {
+        wxw_app_id: vec![wxw_app_id.clone()].into(),
+        r#type: "corp".to_owned().into(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+    ).await?,
+  ).await?;
+  
+  let now = get_now();
+  let now_sec = now.and_utc().timestamp_millis() / 1000;
+  
+  let jsapi_ticket_agent_config = wxw_app_token_model.jsapi_ticket_agent_config;
+  let jsapi_ticket_agent_config_expires_in = wxw_app_token_model.jsapi_ticket_agent_config_expires_in as i64;
+  let jsapi_ticket_agent_config_time = wxw_app_token_model.jsapi_ticket_agent_config_time;
+  let jsapi_ticket_agent_config_time_sec = jsapi_ticket_agent_config_time
+    .map(|x| x.and_utc().timestamp_millis() / 1000)
+    .unwrap_or(0);
+  
+  if force
+    || jsapi_ticket_agent_config_expires_in == 0
+    || jsapi_ticket_agent_config.is_empty()
+    || jsapi_ticket_agent_config_time_sec == 0
+    || now_sec > jsapi_ticket_agent_config_time_sec + jsapi_ticket_agent_config_expires_in + 120
+  {
+    let access_token = get_access_token(
+      wxw_app_id.clone(),
+      force.into(),
+    ).await?;
+    
+    let url = format!(
+      "https://qyapi.weixin.qq.com/cgi-bin/ticket/get?access_token={access_token}",
+      access_token = urlencoding::encode(&access_token),
+    );
+    let res = reqwest::get(&url).await?;
+    
+    let data_str = res.text().await?;
+    let data: GetJsapiTicketRes = serde_json::from_str(&data_str)?;
+    
+    let (
+      ticket,
+      expires_in,
+      errcode,
+      errmsg,
+    ) = (
+      data.ticket,
+      data.expires_in,
+      data.errcode,
+      data.errmsg,
+    );
+    
+    if ticket.is_empty() || expires_in == 0 || errcode != 0 {
+      let req_id = get_req_id();
+      let msg =  serde_json::to_string(&data_str)?;
+      error!("{req_id} 企业微信应用 获取 应用jsapi_ticket 失败: {url}: {msg}");
+      let msg = format!("企业微信应用 获取 应用jsapi_ticket 失败: {errmsg}");
+      return Err(anyhow!(msg));
+    }
+    
+    update_by_id_wxw_app_token(
+      wxw_app_token_model.id,
+      WxwAppTokenInput {
+        jsapi_ticket_agent_config: ticket.clone().into(),
+        jsapi_ticket_agent_config_expires_in: expires_in.into(),
+        jsapi_ticket_agent_config_time: now.into(),
+        ..Default::default()
+      },
+      None,
+    ).await?;
+    
+    return Ok(ticket);
+  }
+  
+  Ok(jsapi_ticket_agent_config)
+}
+
+/// 获取应用的jsapi_ticket, 跟签名
+/// https://developer.work.weixin.qq.com/document/path/90506
+pub async fn get_jsapi_ticket_agent_config_signature(
+  wxw_app_id: WxwAppId,
+  url: String,
+  force: Option<bool>,
+) -> Result<WxwGetConfigSignature> {
+  
+  let jsapi_ticket = get_jsapi_ticket_agent_config(
+    wxw_app_id.clone(),
+    force,
+  ).await?;
+  
+  let nonce_str = uuid::Uuid::new_v4().to_string().replace('-', "");
+  let timestamp = (get_now().and_utc().timestamp_millis() / 1000).to_string();
+  
+  let signature = format!(
+    "jsapi_ticket={jsapi_ticket}&noncestr={nonce_str}&timestamp={timestamp}&url={url}",
+  );
+  
+  let mut hasher = Sha1::new();
+  hasher.update(signature.as_bytes());
+  let signature = hasher.finalize();
+  let signature = hex::encode(signature);
+  
+  Ok(WxwGetConfigSignature {
+    timestamp,
+    nonce_str,
+    signature,
+  })
+}
+
+/// 获取访问用户身份
+/// https://developer.work.weixin.qq.com/document/path/91023
 async fn fetch_getuserinfo_by_code(
   wxw_app_id: WxwAppId,
   code: String,

@@ -33,6 +33,7 @@ rust-s3 = { version = "0.33.0", features = ["tokio-rustls-tls", "tokio-stream", 
 imstr = { version = "0.2", features = ["serde"] }
 jwt = "0.16"
 sha2 = "0.10"
+sha1 = "0.10"
 hmac = { version = "0.12", features = ["reset"] }
 # protobuf = "3.3"
 hex-literal = "0.4"

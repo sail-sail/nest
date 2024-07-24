@@ -16,6 +16,7 @@ pub struct SrcQuery(
   crate::src::base::permit::permit_graphql::PermitQuery,
   crate::src::base::role::role_graphql::RoleQuery,
   crate::src::wxwork::wxw_usr::wxw_usr_graphql::WxwUsrQuery,
+  crate::src::wxwork::wxw_app_token::wxw_app_token_graphql::WxwAppTokenQuery,
 );
 
 #[derive(MergedObject, Default)]
