@@ -241,11 +241,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找企微应用接口凭据总数
- * @param {WxwAppTokenSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找企微应用接口凭据总数 */
 export async function findCount(
   search?: Readonly<WxwAppTokenSearch>,
   options?: {
@@ -718,12 +714,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {WxwAppTokenModel} oldModel
- * @param {WxwAppTokenInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<WxwAppTokenModel>,
   input: Readonly<WxwAppTokenInput>,
@@ -746,13 +737,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查企微应用接口凭据是否已经存在
- * @param {WxwAppTokenInput} input
- * @param {WxwAppTokenModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<WxwAppTokenId | undefined>}
- */
+/** 通过唯一约束检查 企微应用接口凭据 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<WxwAppTokenInput>,
   oldModel: Readonly<WxwAppTokenModel>,
@@ -1090,17 +1075,7 @@ export async function validate(
   
 }
 
-/**
- * 创建企微应用接口凭据
- * @param {WxwAppTokenInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<WxwAppTokenId>} 
- */
+/** 创建 企微应用接口凭据 */
 export async function create(
   input: Readonly<WxwAppTokenInput>,
   options?: {
@@ -1140,17 +1115,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建企微应用接口凭据
- * @param {WxwAppTokenInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<WxwAppTokenId[]>} 
- */
+/** 批量创建 企微应用接口凭据 */
 export async function creates(
   inputs: WxwAppTokenInput[],
   options?: {
@@ -1429,14 +1394,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.wxwork_wxw_app_token`);
 }
 
-/**
- * 企微应用接口凭据根据id修改租户id
- * @param {WxwAppTokenId} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** 企微应用接口凭据 根据 id 修改 租户id */
 export async function updateTenantById(
   id: WxwAppTokenId,
   tenant_id: Readonly<TenantId>,
@@ -1480,18 +1438,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 修改企微应用接口凭据
- * @param {WxwAppTokenId} id
- * @param {WxwAppTokenInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<WxwAppTokenId>}
- */
+/** 根据 id 修改 企微应用接口凭据 */
 export async function updateById(
   id: WxwAppTokenId,
   input: WxwAppTokenInput,
@@ -1723,11 +1670,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除企微应用接口凭据
- * @param {WxwAppTokenId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 企微应用接口凭据 */
 export async function deleteByIds(
   ids: WxwAppTokenId[],
   options?: {
@@ -1804,11 +1747,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ids 还原企微应用接口凭据
- * @param {WxwAppTokenId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 企微应用接口凭据 */
 export async function revertByIds(
   ids: WxwAppTokenId[],
   options?: {
@@ -1842,30 +1781,41 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: WxwAppTokenId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update wxwork_wxw_app_token set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as WxwAppTokenInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("企微应用接口凭据"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update wxwork_wxw_app_token set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   await delCache();
@@ -1873,11 +1823,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除企微应用接口凭据
- * @param {WxwAppTokenId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 企微应用接口凭据 */
 export async function forceDeleteByIds(
   ids: WxwAppTokenId[],
   options?: {
