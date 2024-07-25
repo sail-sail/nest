@@ -1,5 +1,5 @@
 id,parent_id,lbl,route_path,route_query,is_enabled,order_by
 67lomz6zTpu62gFGoOi9tg,,任务调度,,,1,20000
-0RBzpvXXSEmRea/vmgb5Ig,67lomz6zTpu62gFGoOi9tg,定时任务,/cron/cron_job,,1,20001
-KxSe54uhQT6oIycd8BSOeA,67lomz6zTpu62gFGoOi9tg,任务执行日志,/cron/cron_job_log,,1,20002
-RsLw6vqaRiKU4VwDnshrfA,67lomz6zTpu62gFGoOi9tg,任务,/cron/job,,1,20003
+RsLw6vqaRiKU4VwDnshrfA,67lomz6zTpu62gFGoOi9tg,任务,/cron/job,,1,20001
+0RBzpvXXSEmRea/vmgb5Ig,67lomz6zTpu62gFGoOi9tg,定时任务,/cron/cron_job,,1,20002
+KxSe54uhQT6oIycd8BSOeA,67lomz6zTpu62gFGoOi9tg,定时任务日志,/cron/cron_job_log,,1,20003
