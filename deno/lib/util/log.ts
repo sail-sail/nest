@@ -1,6 +1,11 @@
 // deno-lint-ignore-file no-empty
 import dayjs from "dayjs";
 
+import {
+  basename,
+  extname,
+} from "jsr:@std/path";
+
 export interface LogConfig {
   path: string;
   lever?: "log"|"error"|"info";
@@ -53,12 +58,17 @@ export function logInit(conf: LogConfig) {
               continue;
             }
             const file = fileEntry.name;
-            const dateTmp = dayjs(file, separate+".log");
-            if(dateTmp.isValid()) {
+            const baseFilename = basename(file, extname(file));
+            const dateTmp = dayjs(baseFilename, separate, false);
+            if(!dateTmp.isValid()) {
               continue;
             }
             if(date.getTime() - dateTmp.toDate().getTime() >= expire_time) {
-              await Deno.remove(conf.path + "/" + file);
+              try {
+                await Deno.remove(conf.path + "/" + file);
+              } catch (_err) {
+                console.error(_err);
+              }
             }
           }
         }
