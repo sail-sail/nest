@@ -130,13 +130,13 @@ declare global {
         data_type = 'string';
       }
       else if (column.DATA_TYPE === 'date') {
-        data_type = 'string[]';
+        data_type = '[(string|undefined|null), (string|undefined|null)]';
       }
       else if (column.DATA_TYPE === 'datetime') {
-        data_type = 'string[]';
+        data_type = '[(string|undefined|null), (string|undefined|null)]';
       }
       else if (column.DATA_TYPE === 'int') {
-        data_type = 'number[]';
+        data_type = '[(number|undefined|null), (number|undefined|null)]';
       }
       else if (column.DATA_TYPE === 'json') {
         data_type = 'string';
@@ -148,7 +148,7 @@ declare global {
         data_type = 'number';
       }
       else if (column.DATA_TYPE === 'decimal') {
-        data_type = 'string[]';
+        data_type = '[(string|undefined|null), (string|undefined|null)]';
       }
       if (column_name.startsWith("is_")) {
         data_type = 'number';
