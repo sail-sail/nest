@@ -15,7 +15,7 @@ const messages = {
   },
 };
 
-function getLocale(): string {
+export function getLocale(): string {
   let usr: any = { };
   const usrStr = localStorage.getItem("usr");
   if (usrStr) {
