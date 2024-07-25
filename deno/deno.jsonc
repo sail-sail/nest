@@ -29,6 +29,7 @@
     "@std/fs": "jsr:@std/fs@0.229.3",
     "@std/io": "jsr:@std/io@0.224.3",
     "@std/log": "jsr:@std/log@0.224.5",
+    "@std/path": "jsr:@std/path@1.0.1",
     "S3": "https://deno.land/x/s3@0.5.0/mod.ts",
     "S3/S3Error": "https://deno.land/x/s3@0.5.0/src/error.ts",
     "canvas": "https://deno.land/x/canvas@v1.4.1/mod.ts",
