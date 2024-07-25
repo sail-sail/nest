@@ -206,11 +206,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找百度应用总数
- * @param {BaiduAppSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找百度应用总数 */
 export async function findCount(
   search?: Readonly<BaiduAppSearch>,
   options?: {
@@ -611,12 +607,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {BaiduAppModel} oldModel
- * @param {BaiduAppInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<BaiduAppModel>,
   input: Readonly<BaiduAppInput>,
@@ -638,13 +629,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查百度应用是否已经存在
- * @param {BaiduAppInput} input
- * @param {BaiduAppModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<BaiduAppId | undefined>}
- */
+/** 通过唯一约束检查 百度应用 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<BaiduAppInput>,
   oldModel: Readonly<BaiduAppModel>,
@@ -1012,17 +997,7 @@ export async function validate(
   
 }
 
-/**
- * 创建百度应用
- * @param {BaiduAppInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<BaiduAppId>} 
- */
+/** 创建 百度应用 */
 export async function create(
   input: Readonly<BaiduAppInput>,
   options?: {
@@ -1062,17 +1037,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建百度应用
- * @param {BaiduAppInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<BaiduAppId[]>} 
- */
+/** 批量创建 百度应用 */
 export async function creates(
   inputs: BaiduAppInput[],
   options?: {
@@ -1341,14 +1306,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.baidu_baidu_app`);
 }
 
-/**
- * 百度应用根据id修改租户id
- * @param {BaiduAppId} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** 百度应用 根据 id 修改 租户id */
 export async function updateTenantById(
   id: BaiduAppId,
   tenant_id: Readonly<TenantId>,
@@ -1392,18 +1350,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 修改百度应用
- * @param {BaiduAppId} id
- * @param {BaiduAppInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<BaiduAppId>}
- */
+/** 根据 id 修改 百度应用 */
 export async function updateById(
   id: BaiduAppId,
   input: BaiduAppInput,
@@ -1623,11 +1570,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除百度应用
- * @param {BaiduAppId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 百度应用 */
 export async function deleteByIds(
   ids: BaiduAppId[],
   options?: {
@@ -1704,12 +1647,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ID 查找百度应用是否已启用
- * 不存在则返回 undefined
- * @param {BaiduAppId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 百度应用 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: BaiduAppId,
   options?: {
@@ -1729,12 +1667,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-/**
- * 根据 ids 启用或者禁用百度应用
- * @param {BaiduAppId[]} ids
- * @param {0 | 1} is_enabled
- * @return {Promise<number>}
- */
+/** 根据 ids 启用或者禁用 百度应用 */
 export async function enableByIds(
   ids: BaiduAppId[],
   is_enabled: Readonly<0 | 1>,
@@ -1782,13 +1715,7 @@ export async function enableByIds(
   return num;
 }
 
-/**
- * 根据 ID 查找百度应用是否已锁定
- * 已锁定的不能修改和删除
- * 不存在则返回 undefined
- * @param {BaiduAppId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 百度应用 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: BaiduAppId,
   options?: {
@@ -1808,12 +1735,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
-/**
- * 根据 ids 锁定或者解锁百度应用
- * @param {BaiduAppId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
- */
+/** 根据 ids 锁定或者解锁 百度应用 */
 export async function lockByIds(
   ids: BaiduAppId[],
   is_locked: Readonly<0 | 1>,
@@ -1859,11 +1781,7 @@ export async function lockByIds(
   return num;
 }
 
-/**
- * 根据 ids 还原百度应用
- * @param {BaiduAppId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 百度应用 */
 export async function revertByIds(
   ids: BaiduAppId[],
   options?: {
@@ -1897,30 +1815,41 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: BaiduAppId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update baidu_baidu_app set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as BaiduAppInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("百度应用"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update baidu_baidu_app set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   await delCache();
@@ -1928,11 +1857,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除百度应用
- * @param {BaiduAppId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 百度应用 */
 export async function forceDeleteByIds(
   ids: BaiduAppId[],
   options?: {
