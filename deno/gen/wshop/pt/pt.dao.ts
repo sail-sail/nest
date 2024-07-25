@@ -287,11 +287,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找产品总数
- * @param {PtSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找产品总数 */
 export async function findCount(
   search?: Readonly<PtSearch>,
   options?: {
@@ -819,12 +815,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {PtModel} oldModel
- * @param {PtInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<PtModel>,
   input: Readonly<PtInput>,
@@ -841,13 +832,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查产品是否已经存在
- * @param {PtInput} input
- * @param {PtModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<PtId | undefined>}
- */
+/** 通过唯一约束检查 产品 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<PtInput>,
   oldModel: Readonly<PtModel>,
@@ -1229,17 +1214,7 @@ export async function validate(
   
 }
 
-/**
- * 创建产品
- * @param {PtInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<PtId>} 
- */
+/** 创建 产品 */
 export async function create(
   input: Readonly<PtInput>,
   options?: {
@@ -1279,17 +1254,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建产品
- * @param {PtInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<PtId[]>} 
- */
+/** 批量创建 产品 */
 export async function creates(
   inputs: PtInput[],
   options?: {
@@ -1569,14 +1534,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.wshop_pt`);
 }
 
-/**
- * 产品根据id修改租户id
- * @param {PtId} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** 产品 根据 id 修改 租户id */
 export async function updateTenantById(
   id: PtId,
   tenant_id: Readonly<TenantId>,
@@ -1620,18 +1578,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 修改产品
- * @param {PtId} id
- * @param {PtInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<PtId>}
- */
+/** 根据 id 修改 产品 */
 export async function updateById(
   id: PtId,
   input: PtInput,
@@ -1869,11 +1816,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除产品
- * @param {PtId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 产品 */
 export async function deleteByIds(
   ids: PtId[],
   options?: {
@@ -1942,12 +1885,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ID 查找产品是否已启用
- * 不存在则返回 undefined
- * @param {PtId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 产品 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: PtId,
   options?: {
@@ -1967,12 +1905,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-/**
- * 根据 ids 启用或者禁用产品
- * @param {PtId[]} ids
- * @param {0 | 1} is_enabled
- * @return {Promise<number>}
- */
+/** 根据 ids 启用或者禁用 产品 */
 export async function enableByIds(
   ids: PtId[],
   is_enabled: Readonly<0 | 1>,
@@ -2020,13 +1953,7 @@ export async function enableByIds(
   return num;
 }
 
-/**
- * 根据 ID 查找产品是否已锁定
- * 已锁定的不能修改和删除
- * 不存在则返回 undefined
- * @param {PtId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 产品 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: PtId,
   options?: {
@@ -2046,12 +1973,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
-/**
- * 根据 ids 锁定或者解锁产品
- * @param {PtId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
- */
+/** 根据 ids 锁定或者解锁 产品 */
 export async function lockByIds(
   ids: PtId[],
   is_locked: Readonly<0 | 1>,
@@ -2097,11 +2019,7 @@ export async function lockByIds(
   return num;
 }
 
-/**
- * 根据 ids 还原产品
- * @param {PtId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 产品 */
 export async function revertByIds(
   ids: PtId[],
   options?: {
@@ -2135,28 +2053,47 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: PtId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update wshop_pt set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as PtInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("产品"));
+      }
+    }
+    const args = new QueryArgs();
+    const sql = `update wshop_pt set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
+    {
+      const pt_type_ids = old_model.pt_type_ids;
+      if (pt_type_ids && pt_type_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update wshop_pt_pt_type set is_deleted=0 where pt_id=${ args.push(id) } and pt_type_id in ${ args.push(pt_type_ids) } and is_deleted=1`;
+        await execute(sql, args);
       }
     }
   }
@@ -2166,11 +2103,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除产品
- * @param {PtId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 产品 */
 export async function forceDeleteByIds(
   ids: PtId[],
   options?: {
