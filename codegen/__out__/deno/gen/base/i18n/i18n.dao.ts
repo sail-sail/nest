@@ -187,11 +187,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找国际化总数
- * @param {I18nSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找国际化总数 */
 export async function findCount(
   search?: Readonly<I18nSearch>,
   options?: {
@@ -573,12 +569,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {I18nModel} oldModel
- * @param {I18nInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<I18nModel>,
   input: Readonly<I18nInput>,
@@ -597,13 +588,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查国际化是否已经存在
- * @param {I18nInput} input
- * @param {I18nModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<I18nId | undefined>}
- */
+/** 通过唯一约束检查 国际化 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<I18nInput>,
   oldModel: Readonly<I18nModel>,
@@ -955,17 +940,7 @@ export async function validate(
   
 }
 
-/**
- * 创建国际化
- * @param {I18nInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<I18nId>} 
- */
+/** 创建 国际化 */
 export async function create(
   input: Readonly<I18nInput>,
   options?: {
@@ -1005,17 +980,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建国际化
- * @param {I18nInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<I18nId[]>} 
- */
+/** 批量创建 国际化 */
 export async function creates(
   inputs: I18nInput[],
   options?: {
@@ -1251,18 +1216,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.base_i18n`);
 }
 
-/**
- * 根据 id 修改国际化
- * @param {I18nId} id
- * @param {I18nInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<I18nId>}
- */
+/** 根据 id 修改 国际化 */
 export async function updateById(
   id: I18nId,
   input: I18nInput,
@@ -1453,11 +1407,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除国际化
- * @param {I18nId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 国际化 */
 export async function deleteByIds(
   ids: I18nId[],
   options?: {
@@ -1534,11 +1484,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ids 还原国际化
- * @param {I18nId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 国际化 */
 export async function revertByIds(
   ids: I18nId[],
   options?: {
@@ -1572,30 +1518,41 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: I18nId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update base_i18n set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as I18nInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("国际化"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update base_i18n set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   await delCache();
@@ -1603,11 +1560,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除国际化
- * @param {I18nId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 国际化 */
 export async function forceDeleteByIds(
   ids: I18nId[],
   options?: {
