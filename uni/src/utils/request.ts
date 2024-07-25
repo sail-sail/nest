@@ -43,14 +43,16 @@ export async function uploadFile(config: {
     }
   } catch (err2) {
     if (config.showErrMsg) {
-      let errMsg = (err2 as Error).toString();
-      uni.showToast({
-        title: errMsg,
-        icon: "error",
-        duration: 3000,
-        mask: true,
-        position: "center",
-      });
+      const errMsg = (err2 as Error).toString() || "";
+      if (errMsg) {
+        uni.showToast({
+          title: errMsg,
+          icon: "error",
+          duration: 3000,
+          mask: true,
+          position: "center",
+        });
+      }
     }
     throw err2;
   } finally {
@@ -66,14 +68,16 @@ export async function uploadFile(config: {
     return res;
   }
   if (err && config.showErrMsg) {
-    let errMsg = err.errMsg || err.toString();
-    uni.showToast({
-      title: errMsg,
-      icon: "error",
-      duration: 3000,
-      mask: true,
-      position: "center",
-    });
+    const errMsg = err.errMsg || err.toString() || "";
+    if (errMsg) {
+      uni.showToast({
+        title: errMsg,
+        icon: "error",
+        duration: 3000,
+        mask: true,
+        position: "center",
+      });
+    }
     throw err;
   }
   const data = res.data;
@@ -150,14 +154,16 @@ export async function downloadFile(
     res = await uni.downloadFile(config as any) as any;
   } catch (err2) {
     if (config?.showErrMsg) {
-      let errMsg = (err2 as Error).toString();
-      uni.showToast({
-        title: errMsg,
-        icon: "error",
-        duration: 3000,
-        mask: true,
-        position: "center",
-      });
+      const errMsg = (err2 as Error).toString() || "";
+      if (errMsg) {
+        uni.showToast({
+          title: errMsg,
+          icon: "error",
+          duration: 3000,
+          mask: true,
+          position: "center",
+        });
+      }
     }
     throw err2;
   }
@@ -305,14 +311,16 @@ export async function request<T>(
     usrStore.setAuthorization(header["authorization"]);
   }
   if (err && (!config || config.showErrMsg !== false)) {
-    let errMsg = (err as any).errMsg || err.toString();
-    uni.showToast({
-      title: errMsg,
-      icon: "none",
-      duration: 3000,
-      mask: true,
-      position: "center",
-    });
+    const errMsg = (err as any).errMsg || err.toString() || "";
+    if (errMsg) {
+      uni.showToast({
+        title: errMsg,
+        icon: "none",
+        duration: 3000,
+        mask: true,
+        position: "center",
+      });
+    }
     throw err;
   }
   if (config.reqType === "graphql") {

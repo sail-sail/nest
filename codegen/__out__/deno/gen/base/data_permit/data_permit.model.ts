@@ -27,9 +27,9 @@ declare global {
     rem?: string;
     rem_like?: string;
     /** 创建时间 */
-    create_time?: string[];
+    create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
-    update_time?: string[];
+    update_time?: [(string|undefined|null), (string|undefined|null)];
   }
 
   interface DataPermitModel extends DataPermitModelType {
