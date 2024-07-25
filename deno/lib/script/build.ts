@@ -292,6 +292,7 @@ async function nuxt() {
   }
   await Deno.mkdir(`${ buildDir }/../nuxt/`, { recursive: true });
   await copyDir(`${ nuxtDir }/.output/`, `${ buildDir }/../nuxt/`);
+  await Deno.copyFile(`${ nuxtDir }/.npmrc`, `${ buildDir }/../nuxt/server/.npmrc`);
   
   child_process.execSync(`npm install --omit=dev --legacy-peer-deps`, {
     cwd: `${ buildDir }/../nuxt/server/`,
