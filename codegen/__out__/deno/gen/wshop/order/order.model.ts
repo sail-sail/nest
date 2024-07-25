@@ -24,34 +24,34 @@ declare global {
 
   interface OrderSearch extends OrderSearchType {
     /** 订单号-序列号 */
-    lbl_seq?: number[];
+    lbl_seq?: [(number|undefined|null), (number|undefined|null)];
     /** 订单号-日期 */
-    lbl_date_seq?: string[];
+    lbl_date_seq?: [(string|undefined|null), (string|undefined|null)];
     /** 订单状态 */
     status?: OrderStatus[];
     /** 订单金额 */
-    price?: string[];
+    price?: [(string|undefined|null), (string|undefined|null)];
     /** 订单类别 */
     type?: OrderType[];
     /** 消费充值金额 */
-    amt?: string[];
+    amt?: [(string|undefined|null), (string|undefined|null)];
     /** 消费赠送金额 */
-    give_amt?: string[];
+    give_amt?: [(string|undefined|null), (string|undefined|null)];
     /** 获得积分 */
-    integral?: number[];
+    integral?: [(number|undefined|null), (number|undefined|null)];
     /** 消费后充值余额 */
-    balance?: string[];
+    balance?: [(string|undefined|null), (string|undefined|null)];
     /** 消费后赠送余额 */
-    give_balance?: string[];
+    give_balance?: [(string|undefined|null), (string|undefined|null)];
     /** 锁定 */
     is_locked?: number[];
     /** 备注 */
     rem?: string;
     rem_like?: string;
     /** 创建时间 */
-    create_time?: string[];
+    create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
-    update_time?: string[];
+    update_time?: [(string|undefined|null), (string|undefined|null)];
     /** 组织 */
     org_id?: OrgId[];
     /** 组织 */

@@ -23,9 +23,9 @@ declare global {
     img?: string;
     img_like?: string;
     /** 价格 */
-    price?: string[];
+    price?: [(string|undefined|null), (string|undefined|null)];
     /** 原价 */
-    original_price?: string[];
+    original_price?: [(string|undefined|null), (string|undefined|null)];
     /** 单位 */
     unit?: string;
     unit_like?: string;
@@ -37,7 +37,7 @@ declare global {
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */
-    order_by?: number[];
+    order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 详情 */
     detail?: string;
     detail_like?: string;
@@ -51,9 +51,9 @@ declare global {
     rem?: string;
     rem_like?: string;
     /** 创建时间 */
-    create_time?: string[];
+    create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
-    update_time?: string[];
+    update_time?: [(string|undefined|null), (string|undefined|null)];
     /** 组织 */
     org_id?: OrgId[];
     /** 组织 */
