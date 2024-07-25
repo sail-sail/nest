@@ -50,11 +50,11 @@ declare global {
     attach?: string;
     attach_like?: string;
     /** 支付完成时间 */
-    success_time?: string[];
+    success_time?: [(string|undefined|null), (string|undefined|null)];
     /** 总金额 */
-    total?: number[];
+    total?: [(number|undefined|null), (number|undefined|null)];
     /** 用户支付金额 */
-    payer_total?: number[];
+    payer_total?: [(number|undefined|null), (number|undefined|null)];
     /** 货币类型 */
     currency?: WxPayNoticeCurrency[];
     /** 用户支付币种 */
@@ -69,9 +69,9 @@ declare global {
     raw?: string;
     raw_like?: string;
     /** 创建时间 */
-    create_time?: string[];
+    create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
-    update_time?: string[];
+    update_time?: [(string|undefined|null), (string|undefined|null)];
     /** 组织 */
     org_id?: OrgId[];
     /** 组织 */
