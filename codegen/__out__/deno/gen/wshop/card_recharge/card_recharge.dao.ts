@@ -259,11 +259,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找会员卡充值记录总数
- * @param {CardRechargeSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找会员卡充值记录总数 */
 export async function findCount(
   search?: Readonly<CardRechargeSearch>,
   options?: {
@@ -645,12 +641,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {CardRechargeModel} oldModel
- * @param {CardRechargeInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<CardRechargeModel>,
   input: Readonly<CardRechargeInput>,
@@ -662,13 +653,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查会员卡充值记录是否已经存在
- * @param {CardRechargeInput} input
- * @param {CardRechargeModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<CardRechargeId | undefined>}
- */
+/** 通过唯一约束检查 会员卡充值记录 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<CardRechargeInput>,
   oldModel: Readonly<CardRechargeModel>,
@@ -1004,17 +989,7 @@ export async function validate(
   
 }
 
-/**
- * 创建会员卡充值记录
- * @param {CardRechargeInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<CardRechargeId>} 
- */
+/** 创建 会员卡充值记录 */
 export async function create(
   input: Readonly<CardRechargeInput>,
   options?: {
@@ -1054,17 +1029,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建会员卡充值记录
- * @param {CardRechargeInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<CardRechargeId[]>} 
- */
+/** 批量创建 会员卡充值记录 */
 export async function creates(
   inputs: CardRechargeInput[],
   options?: {
@@ -1292,14 +1257,7 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 会员卡充值记录根据id修改租户id
- * @param {CardRechargeId} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** 会员卡充值记录 根据 id 修改 租户id */
 export async function updateTenantById(
   id: CardRechargeId,
   tenant_id: Readonly<TenantId>,
@@ -1341,18 +1299,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 修改会员卡充值记录
- * @param {CardRechargeId} id
- * @param {CardRechargeInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<CardRechargeId>}
- */
+/** 根据 id 修改 会员卡充值记录 */
 export async function updateById(
   id: CardRechargeId,
   input: CardRechargeInput,
@@ -1537,11 +1484,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除会员卡充值记录
- * @param {CardRechargeId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 会员卡充值记录 */
 export async function deleteByIds(
   ids: CardRechargeId[],
   options?: {
@@ -1598,11 +1541,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ids 还原会员卡充值记录
- * @param {CardRechargeId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 会员卡充值记录 */
 export async function revertByIds(
   ids: CardRechargeId[],
   options?: {
@@ -1634,40 +1573,47 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: CardRechargeId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update wshop_card_recharge set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as CardRechargeInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("会员卡充值记录"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update wshop_card_recharge set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   return num;
 }
 
-/**
- * 根据 ids 彻底删除会员卡充值记录
- * @param {CardRechargeId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 会员卡充值记录 */
 export async function forceDeleteByIds(
   ids: CardRechargeId[],
   options?: {

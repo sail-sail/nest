@@ -213,11 +213,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找充值赠送规则总数
- * @param {RechargeRuleSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找充值赠送规则总数 */
 export async function findCount(
   search?: Readonly<RechargeRuleSearch>,
   options?: {
@@ -640,12 +636,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {RechargeRuleModel} oldModel
- * @param {RechargeRuleInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<RechargeRuleModel>,
   input: Readonly<RechargeRuleInput>,
@@ -662,13 +653,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查充值赠送规则是否已经存在
- * @param {RechargeRuleInput} input
- * @param {RechargeRuleModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<RechargeRuleId | undefined>}
- */
+/** 通过唯一约束检查 充值赠送规则 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<RechargeRuleInput>,
   oldModel: Readonly<RechargeRuleModel>,
@@ -1008,17 +993,7 @@ export async function validate(
   
 }
 
-/**
- * 创建充值赠送规则
- * @param {RechargeRuleInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<RechargeRuleId>} 
- */
+/** 创建 充值赠送规则 */
 export async function create(
   input: Readonly<RechargeRuleInput>,
   options?: {
@@ -1058,17 +1033,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建充值赠送规则
- * @param {RechargeRuleInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<RechargeRuleId[]>} 
- */
+/** 批量创建 充值赠送规则 */
 export async function creates(
   inputs: RechargeRuleInput[],
   options?: {
@@ -1292,14 +1257,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.wshop_recharge_rule`);
 }
 
-/**
- * 充值赠送规则根据id修改租户id
- * @param {RechargeRuleId} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** 充值赠送规则 根据 id 修改 租户id */
 export async function updateTenantById(
   id: RechargeRuleId,
   tenant_id: Readonly<TenantId>,
@@ -1343,18 +1301,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 修改充值赠送规则
- * @param {RechargeRuleId} id
- * @param {RechargeRuleInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<RechargeRuleId>}
- */
+/** 根据 id 修改 充值赠送规则 */
 export async function updateById(
   id: RechargeRuleId,
   input: RechargeRuleInput,
@@ -1527,11 +1474,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 充值赠送规则 */
 export async function deleteByIds(
   ids: RechargeRuleId[],
   options?: {
@@ -1592,12 +1535,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ID 查找充值赠送规则是否已启用
- * 不存在则返回 undefined
- * @param {RechargeRuleId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 充值赠送规则 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: RechargeRuleId,
   options?: {
@@ -1617,12 +1555,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-/**
- * 根据 ids 启用或者禁用充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @param {0 | 1} is_enabled
- * @return {Promise<number>}
- */
+/** 根据 ids 启用或者禁用 充值赠送规则 */
 export async function enableByIds(
   ids: RechargeRuleId[],
   is_enabled: Readonly<0 | 1>,
@@ -1670,13 +1603,7 @@ export async function enableByIds(
   return num;
 }
 
-/**
- * 根据 ID 查找充值赠送规则是否已锁定
- * 已锁定的不能修改和删除
- * 不存在则返回 undefined
- * @param {RechargeRuleId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 充值赠送规则 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: RechargeRuleId,
   options?: {
@@ -1696,12 +1623,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
-/**
- * 根据 ids 锁定或者解锁充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
- */
+/** 根据 ids 锁定或者解锁 充值赠送规则 */
 export async function lockByIds(
   ids: RechargeRuleId[],
   is_locked: Readonly<0 | 1>,
@@ -1747,11 +1669,7 @@ export async function lockByIds(
   return num;
 }
 
-/**
- * 根据 ids 还原充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 充值赠送规则 */
 export async function revertByIds(
   ids: RechargeRuleId[],
   options?: {
@@ -1785,30 +1703,41 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: RechargeRuleId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update wshop_recharge_rule set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as RechargeRuleInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("充值赠送规则"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update wshop_recharge_rule set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   await delCache();
@@ -1816,11 +1745,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 充值赠送规则 */
 export async function forceDeleteByIds(
   ids: RechargeRuleId[],
   options?: {
