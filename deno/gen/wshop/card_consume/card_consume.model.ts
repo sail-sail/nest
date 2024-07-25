@@ -23,22 +23,22 @@ declare global {
     transaction_id?: string;
     transaction_id_like?: string;
     /** 消费充值金额 */
-    amt?: string[];
+    amt?: [(string|undefined|null), (string|undefined|null)];
     /** 消费赠送金额 */
-    give_amt?: string[];
+    give_amt?: [(string|undefined|null), (string|undefined|null)];
     /** 获得积分 */
-    integral?: number[];
+    integral?: [(number|undefined|null), (number|undefined|null)];
     /** 消费后余额 */
-    balance?: string[];
+    balance?: [(string|undefined|null), (string|undefined|null)];
     /** 消费后赠送余额 */
-    give_balance?: string[];
+    give_balance?: [(string|undefined|null), (string|undefined|null)];
     /** 备注 */
     rem?: string;
     rem_like?: string;
     /** 创建时间 */
-    create_time?: string[];
+    create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
-    update_time?: string[];
+    update_time?: [(string|undefined|null), (string|undefined|null)];
     /** 组织 */
     org_id?: OrgId[];
     /** 组织 */

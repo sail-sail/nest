@@ -22,17 +22,17 @@ declare global {
 
   interface CardSearch extends CardSearchType {
     /** 卡号-序列号 */
-    lbl_seq?: number[];
+    lbl_seq?: [(number|undefined|null), (number|undefined|null)];
     /** 会员等级 */
     grade?: CardGrade[];
     /** 充值余额 */
-    balance?: string[];
+    balance?: [(string|undefined|null), (string|undefined|null)];
     /** 赠送余额 */
-    give_balance?: string[];
+    give_balance?: [(string|undefined|null), (string|undefined|null)];
     /** 积分 */
-    integral?: number[];
+    integral?: [(number|undefined|null), (number|undefined|null)];
     /** 累计消费 */
-    growth_amt?: string[];
+    growth_amt?: [(string|undefined|null), (string|undefined|null)];
     /** 默认 */
     is_default_card?: number[];
     /** 锁定 */
@@ -41,9 +41,9 @@ declare global {
     rem?: string;
     rem_like?: string;
     /** 创建时间 */
-    create_time?: string[];
+    create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
-    update_time?: string[];
+    update_time?: [(string|undefined|null), (string|undefined|null)];
     /** 组织 */
     org_id?: OrgId[];
     /** 组织 */

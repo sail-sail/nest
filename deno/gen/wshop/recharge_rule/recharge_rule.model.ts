@@ -20,18 +20,18 @@ declare global {
 
   interface RechargeRuleSearch extends RechargeRuleSearchType {
     /** 充值金额 */
-    amt?: string[];
+    amt?: [(string|undefined|null), (string|undefined|null)];
     /** 赠送金额 */
-    give_amt?: string[];
+    give_amt?: [(string|undefined|null), (string|undefined|null)];
     /** 锁定 */
     is_locked?: number[];
     /** 备注 */
     rem?: string;
     rem_like?: string;
     /** 创建时间 */
-    create_time?: string[];
+    create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
-    update_time?: string[];
+    update_time?: [(string|undefined|null), (string|undefined|null)];
     /** 组织 */
     org_id?: OrgId[];
     /** 组织 */
