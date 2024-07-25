@@ -74,8 +74,6 @@
     "@uni-helper/uni-app-types": "0.5.13",
     "@unocss/preset-attributify": "0.61.5",
     "@vue-macros/reactivity-transform": "1.0.0",
-    "@vue/runtime-core": "3.4.34",
-    "@vue/runtime-dom": "3.4.34",
     "cross-env": "7.0.3",
     "husky": "9.1.1",
     "less": "4.2.0",
