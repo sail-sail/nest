@@ -259,11 +259,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找小程序用户总数
- * @param {WxUsrSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找小程序用户总数 */
 export async function findCount(
   search?: Readonly<WxUsrSearch>,
   options?: {
@@ -676,12 +672,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {WxUsrModel} oldModel
- * @param {WxUsrInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<WxUsrModel>,
   input: Readonly<WxUsrInput>,
@@ -698,13 +689,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查小程序用户是否已经存在
- * @param {WxUsrInput} input
- * @param {WxUsrModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<WxUsrId | undefined>}
- */
+/** 通过唯一约束检查 小程序用户 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<WxUsrInput>,
   oldModel: Readonly<WxUsrModel>,
@@ -1105,17 +1090,7 @@ export async function validate(
   
 }
 
-/**
- * 创建小程序用户
- * @param {WxUsrInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<WxUsrId>} 
- */
+/** 创建 小程序用户 */
 export async function create(
   input: Readonly<WxUsrInput>,
   options?: {
@@ -1155,17 +1130,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建小程序用户
- * @param {WxUsrInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<WxUsrId[]>} 
- */
+/** 批量创建 小程序用户 */
 export async function creates(
   inputs: WxUsrInput[],
   options?: {
@@ -1459,14 +1424,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.wx_wx_usr`);
 }
 
-/**
- * 小程序用户根据id修改租户id
- * @param {WxUsrId} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** 小程序用户 根据 id 修改 租户id */
 export async function updateTenantById(
   id: WxUsrId,
   tenant_id: Readonly<TenantId>,
@@ -1510,18 +1468,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 修改小程序用户
- * @param {WxUsrId} id
- * @param {WxUsrInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<WxUsrId>}
- */
+/** 根据 id 修改 小程序用户 */
 export async function updateById(
   id: WxUsrId,
   input: WxUsrInput,
@@ -1771,11 +1718,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除小程序用户
- * @param {WxUsrId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 小程序用户 */
 export async function deleteByIds(
   ids: WxUsrId[],
   options?: {
@@ -1852,11 +1795,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ids 还原小程序用户
- * @param {WxUsrId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 小程序用户 */
 export async function revertByIds(
   ids: WxUsrId[],
   options?: {
@@ -1890,30 +1829,41 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: WxUsrId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update wx_wx_usr set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as WxUsrInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("小程序用户"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update wx_wx_usr set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   await delCache();
@@ -1921,11 +1871,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除小程序用户
- * @param {WxUsrId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 小程序用户 */
 export async function forceDeleteByIds(
   ids: WxUsrId[],
   options?: {
