@@ -57,13 +57,18 @@ export function logInit(conf: LogConfig) {
             if (!fileEntry.isFile) {
               continue;
             }
-            const file = basename(fileEntry.name, extname(fileEntry.name));
-            const dateTmp = dayjs(file, separate, false);
+            const file = fileEntry.name;
+            const baseFilename = basename(file, extname(file));
+            const dateTmp = dayjs(baseFilename, separate, false);
             if(!dateTmp.isValid()) {
               continue;
             }
             if(date.getTime() - dateTmp.toDate().getTime() >= expire_time) {
-              await Deno.remove(conf.path + "/" + file);
+              try {
+                await Deno.remove(conf.path + "/" + file);
+              } catch (_err) {
+                console.error(_err);
+              }
             }
           }
         }
