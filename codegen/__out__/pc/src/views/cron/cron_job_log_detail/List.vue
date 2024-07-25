@@ -419,7 +419,7 @@
           :key="col.prop"
         >
           
-          <!-- 任务执行日志 -->
+          <!-- 定时任务日志 -->
           <template v-if="'cron_job_log_id_lbl' === col.prop && (showBuildIn || builtInSearch?.cron_job_log_id == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -502,7 +502,7 @@ import {
 } from "./Api";
 
 defineOptions({
-  name: "任务执行日志明细",
+  name: "定时任务日志明细",
 });
 
 const pagePath = "/cron/cron_job_log_detail";
@@ -552,8 +552,8 @@ const props = defineProps<{
   selectedIds?: CronJobLogDetailId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: CronJobLogDetailId; // ID
-  cron_job_log_id?: string|string[]; // 任务执行日志
-  cron_job_log_id_lbl?: string; // 任务执行日志
+  cron_job_log_id?: string|string[]; // 定时任务日志
+  cron_job_log_id_lbl?: string; // 定时任务日志
   lbl?: string; // 日志明细
   lbl_like?: string; // 日志明细
 }>();
@@ -789,7 +789,7 @@ let tableData = $ref<CronJobLogDetailModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "任务执行日志",
+      label: "定时任务日志",
       prop: "cron_job_log_id_lbl",
       sortBy: "cron_job_log_id_lbl",
       align: "center",
@@ -1022,7 +1022,7 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("任务执行日志明细")));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("定时任务日志明细")));
     return;
   }
   const search = getDataSearch();
@@ -1030,7 +1030,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + await nsAsync("任务执行日志明细"),
+    title: await nsAsync("查看") + await nsAsync("定时任务日志明细"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1060,11 +1060,11 @@ async function onDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("任务执行日志明细")));
+    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("定时任务日志明细")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("任务执行日志明细")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("定时任务日志明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1078,7 +1078,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("任务执行日志明细")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("定时任务日志明细")));
     emit("remove", num);
   }
 }
@@ -1094,11 +1094,11 @@ async function onForceDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("任务执行日志明细")));
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("定时任务日志明细")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("任务执行日志明细")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("定时任务日志明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1109,7 +1109,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("任务执行日志明细")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("定时任务日志明细")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1126,11 +1126,11 @@ async function onRevertByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("任务执行日志明细")));
+    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("定时任务日志明细")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("任务执行日志明细")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("定时任务日志明细")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1143,7 +1143,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("任务执行日志明细")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("定时任务日志明细")));
     emit("revert", num);
   }
 }
@@ -1151,7 +1151,7 @@ async function onRevertByIds() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "任务执行日志",
+    "定时任务日志",
     "日志明细",
     "创建时间",
   ];

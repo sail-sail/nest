@@ -77,11 +77,11 @@ CREATE TABLE if not exists `cron_cron_job_log` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='定时任务日志';
 
------------------------------------------------------------------------- 任务执行日志明细
+------------------------------------------------------------------------ 定时任务日志明细
 drop table if exists `cron_cron_job_log_detail`;
 CREATE TABLE if not exists `cron_cron_job_log_detail` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `cron_job_log_id` varchar(22) NOT NULL DEFAULT '' COMMENT '任务执行日志',
+  `cron_job_log_id` varchar(22) NOT NULL DEFAULT '' COMMENT '定时任务日志',
   `lbl` text NOT NULL COMMENT '日志明细',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -96,4 +96,4 @@ CREATE TABLE if not exists `cron_cron_job_log_detail` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX(`cron_job_log_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='任务执行日志明细';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='定时任务日志明细';

@@ -13,7 +13,7 @@ async function setSearchQuery(
 }
 
 /**
- * 根据条件查找任务执行日志明细总数
+ * 根据条件查找定时任务日志明细总数
  * @param {CronJobLogDetailSearch} search? 搜索条件
  * @return {Promise<number>}
  */
@@ -30,7 +30,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找任务执行日志明细列表
+ * 根据搜索条件和分页查找定时任务日志明细列表
  * @param {CronJobLogDetailSearch} search? 搜索条件
  * @param {PageInput} page? 分页条件
  * @param {SortInput|SortInput[]} sort? 排序
@@ -59,7 +59,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 根据条件查找第一个任务执行日志明细
+ * 根据条件查找第一个定时任务日志明细
  * @param {CronJobLogDetailSearch} search? 搜索条件
  */
 export async function findOne(
@@ -76,7 +76,7 @@ export async function findOne(
 }
 
 /**
- * 根据 id 查找任务执行日志明细
+ * 根据 id 查找定时任务日志明细
  * @param {CronJobLogDetailId} id
  */
 export async function findById(
@@ -87,7 +87,7 @@ export async function findById(
 }
 
 /**
- * 根据搜索条件查找任务执行日志明细是否存在
+ * 根据搜索条件查找定时任务日志明细是否存在
  * @param {CronJobLogDetailSearch} search? 搜索条件
  */
 export async function exist(
@@ -103,7 +103,7 @@ export async function exist(
 }
 
 /**
- * 根据 id 查找任务执行日志明细是否存在
+ * 根据 id 查找定时任务日志明细是否存在
  * @param {CronJobLogDetailId} id
  */
 export async function existById(
@@ -114,7 +114,7 @@ export async function existById(
 }
 
 /**
- * 增加和修改时校验任务执行日志明细
+ * 增加和修改时校验定时任务日志明细
  * @param input 
  */
 export async function validate(
@@ -125,7 +125,7 @@ export async function validate(
 }
 
 /**
- * 批量创建任务执行日志明细
+ * 批量创建定时任务日志明细
  * @param {CronJobLogDetailInput[]} inputs
  * @return {Promise<CronJobLogDetailId[]>} ids
  */
@@ -140,7 +140,7 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改任务执行日志明细
+ * 根据 id 修改定时任务日志明细
  * @param {CronJobLogDetailId} id
  * @param {CronJobLogDetailInput} input
  * @return {Promise<CronJobLogDetailId>}
@@ -155,7 +155,7 @@ export async function updateById(
 }
 
 /**
- * 根据 ids 删除任务执行日志明细
+ * 根据 ids 删除定时任务日志明细
  * @param {CronJobLogDetailId[]} ids
  * @return {Promise<number>}
  */
@@ -168,7 +168,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原任务执行日志明细
+ * 根据 ids 还原定时任务日志明细
  * @param {CronJobLogDetailId[]} ids
  * @return {Promise<number>}
  */
@@ -180,7 +180,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除任务执行日志明细
+ * 根据 ids 彻底删除定时任务日志明细
  * @param {CronJobLogDetailId[]} ids
  * @return {Promise<number>}
  */
@@ -192,7 +192,7 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 获取任务执行日志明细字段注释
+ * 获取定时任务日志明细字段注释
  */
 export async function getFieldComments(): Promise<CronJobLogDetailFieldComment> {
   const data = await cron_job_log_detailDao.getFieldComments();

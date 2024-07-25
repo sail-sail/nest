@@ -24,7 +24,7 @@ declare global {
 export const cronJobLogDetailFields = [
   // ID
   "id",
-  // 任务执行日志
+  // 定时任务日志
   "cron_job_log_id",
   // 日志明细
   "lbl",

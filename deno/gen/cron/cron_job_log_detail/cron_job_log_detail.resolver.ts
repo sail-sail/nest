@@ -20,7 +20,7 @@ import {
 } from "./cron_job_log_detail.model.ts";
 
 /**
- * 根据条件查找任务执行日志明细总数
+ * 根据条件查找定时任务日志明细总数
  */
 export async function findCountCronJobLogDetail(
   search?: CronJobLogDetailSearch,
@@ -35,7 +35,7 @@ export async function findCountCronJobLogDetail(
 }
 
 /**
- * 根据搜索条件和分页查找任务执行日志明细列表
+ * 根据搜索条件和分页查找定时任务日志明细列表
  */
 export async function findAllCronJobLogDetail(
   search?: CronJobLogDetailSearch,
@@ -54,7 +54,7 @@ export async function findAllCronJobLogDetail(
 }
 
 /**
- * 获取任务执行日志明细字段注释
+ * 获取定时任务日志明细字段注释
  */
 export async function getFieldCommentsCronJobLogDetail(): Promise<CronJobLogDetailFieldComment> {
   const { getFieldComments } = await import("./cron_job_log_detail.service.ts");
@@ -63,7 +63,7 @@ export async function getFieldCommentsCronJobLogDetail(): Promise<CronJobLogDeta
 }
 
 /**
- * 根据条件查找第一个任务执行日志明细
+ * 根据条件查找第一个定时任务日志明细
  */
 export async function findOneCronJobLogDetail(
   search?: CronJobLogDetailSearch,
@@ -81,7 +81,7 @@ export async function findOneCronJobLogDetail(
 }
 
 /**
- * 根据 id 查找任务执行日志明细
+ * 根据 id 查找定时任务日志明细
  */
 export async function findByIdCronJobLogDetail(
   id: CronJobLogDetailId,
@@ -97,7 +97,7 @@ export async function findByIdCronJobLogDetail(
 }
 
 /**
- * 根据 ids 删除任务执行日志明细
+ * 根据 ids 删除定时任务日志明细
  */
 export async function deleteByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
@@ -118,7 +118,7 @@ export async function deleteByIdsCronJobLogDetail(
 }
 
 /**
- * 根据 ids 还原任务执行日志明细
+ * 根据 ids 还原定时任务日志明细
  */
 export async function revertByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
@@ -139,7 +139,7 @@ export async function revertByIdsCronJobLogDetail(
 }
 
 /**
- * 根据 ids 彻底删除任务执行日志明细
+ * 根据 ids 彻底删除定时任务日志明细
  */
 export async function forceDeleteByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],

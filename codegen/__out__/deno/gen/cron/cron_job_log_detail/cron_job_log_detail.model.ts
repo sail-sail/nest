@@ -68,7 +68,7 @@ declare global {
   
 }
 
-/** 任务执行日志明细 前端允许排序的字段 */
+/** 定时任务日志明细 前端允许排序的字段 */
 export const canSortInApiCronJobLogDetail = {
   // 创建时间
   "create_time": true,
@@ -76,7 +76,7 @@ export const canSortInApiCronJobLogDetail = {
   "update_time": true,
 };
 
-/** 任务执行日志明细 检测字段是否允许前端排序 */
+/** 定时任务日志明细 检测字段是否允许前端排序 */
 export function checkSortCronJobLogDetail(sort?: SortInput[]) {
   if (!sort) return;
   for (const item of sort) {
