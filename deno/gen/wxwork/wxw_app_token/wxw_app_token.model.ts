@@ -26,23 +26,23 @@ declare global {
     access_token?: string;
     access_token_like?: string;
     /** 令牌创建时间 */
-    token_time?: string[];
+    token_time?: [(string|undefined|null), (string|undefined|null)];
     /** 令牌超时时间 */
-    expires_in?: number[];
+    expires_in?: [(number|undefined|null), (number|undefined|null)];
     /** 企业jsapi_ticket */
     jsapi_ticket?: string;
     jsapi_ticket_like?: string;
     /** 企业jsapi_ticket创建时间 */
-    jsapi_ticket_time?: string[];
+    jsapi_ticket_time?: [(string|undefined|null), (string|undefined|null)];
     /** 企业jsapi_ticket超时时间 */
-    jsapi_ticket_expires_in?: number[];
+    jsapi_ticket_expires_in?: [(number|undefined|null), (number|undefined|null)];
     /** 应用jsapi_ticket */
     jsapi_ticket_agent_config?: string;
     jsapi_ticket_agent_config_like?: string;
     /** 应用jsapi_ticket创建时间 */
-    jsapi_ticket_agent_config_time?: string[];
+    jsapi_ticket_agent_config_time?: [(string|undefined|null), (string|undefined|null)];
     /** 应用jsapi_ticket超时时间 */
-    jsapi_ticket_agent_config_expires_in?: number[];
+    jsapi_ticket_agent_config_expires_in?: [(number|undefined|null), (number|undefined|null)];
     /** 创建人 */
     create_usr_id?: UsrId[];
     /** 创建人 */
@@ -50,7 +50,7 @@ declare global {
     /** 创建人 */
     create_usr_id_lbl?: string[];
     /** 创建时间 */
-    create_time?: string[];
+    create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新人 */
     update_usr_id?: UsrId[];
     /** 更新人 */
@@ -58,7 +58,7 @@ declare global {
     /** 更新人 */
     update_usr_id_lbl?: string[];
     /** 更新时间 */
-    update_time?: string[];
+    update_time?: [(string|undefined|null), (string|undefined|null)];
     tenant_id?: TenantId | null;
   }
 
