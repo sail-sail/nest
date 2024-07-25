@@ -579,7 +579,7 @@ import {
 import ForeignTabs from "./ForeignTabs.vue";
 
 defineOptions({
-  name: "任务执行日志",
+  name: "定时任务日志",
 });
 
 const pagePath = "/cron/cron_job_log";
@@ -1164,7 +1164,7 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("任务执行日志")));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("定时任务日志")));
     return;
   }
   const search = getDataSearch();
@@ -1172,7 +1172,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + await nsAsync("任务执行日志"),
+    title: await nsAsync("查看") + await nsAsync("定时任务日志"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1202,11 +1202,11 @@ async function onDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("任务执行日志")));
+    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("定时任务日志")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("任务执行日志")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("定时任务日志")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1220,7 +1220,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("任务执行日志")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("定时任务日志")));
     emit("remove", num);
   }
 }
@@ -1236,11 +1236,11 @@ async function onForceDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("任务执行日志")));
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("定时任务日志")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("任务执行日志")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("定时任务日志")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1251,7 +1251,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("任务执行日志")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("定时任务日志")));
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1268,11 +1268,11 @@ async function onRevertByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("任务执行日志")));
+    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("定时任务日志")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("任务执行日志")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("定时任务日志")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1285,7 +1285,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("任务执行日志")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("定时任务日志")));
     emit("revert", num);
   }
 }

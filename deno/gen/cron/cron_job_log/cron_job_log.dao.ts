@@ -203,7 +203,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/** 根据条件查找任务执行日志总数 */
+/** 根据条件查找定时任务日志总数 */
 export async function findCount(
   search?: Readonly<CronJobLogSearch>,
   options?: {
@@ -247,7 +247,7 @@ export async function findCount(
 }
 
 /**
- * 根据搜索条件和分页查找任务执行日志列表
+ * 根据搜索条件和分页查找定时任务日志列表
  * @param {CronJobLogSearch} search? 搜索条件
  * @param {SortInput|SortInput[]} sort? 排序
  */
@@ -552,7 +552,7 @@ export async function setIdByLbl(
 }
 
 /**
- * 获取任务执行日志字段注释
+ * 获取定时任务日志字段注释
  */
 export async function getFieldComments(): Promise<CronJobLogFieldComment> {
   const n = initN(route_path);
@@ -581,7 +581,7 @@ export async function getFieldComments(): Promise<CronJobLogFieldComment> {
 }
 
 /**
- * 通过唯一约束获得任务执行日志列表
+ * 通过唯一约束获得定时任务日志列表
  * @param {CronJobLogInput} search0
  */
 export async function findByUnique(
@@ -639,7 +639,7 @@ export function equalsByUnique(
   return false;
 }
 
-/** 通过唯一约束检查 任务执行日志 是否已经存在 */
+/** 通过唯一约束检查 定时任务日志 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<CronJobLogInput>,
   oldModel: Readonly<CronJobLogModel>,
@@ -656,7 +656,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("任务执行日志")));
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("定时任务日志")));
     }
     if (uniqueType === UniqueType.Update) {
       const id: CronJobLogId = await updateById(
@@ -677,7 +677,7 @@ export async function checkByUnique(
 }
 
 /**
- * 根据条件查找第一个任务执行日志
+ * 根据条件查找第一个定时任务日志
  * @param {CronJobLogSearch} search?
  */
 export async function findOne(
@@ -727,7 +727,7 @@ export async function findOne(
 }
 
 /**
- * 根据 id 查找任务执行日志
+ * 根据 id 查找定时任务日志
  * @param {CronJobLogId} id
  */
 export async function findById(
@@ -770,7 +770,7 @@ export async function findById(
   return model;
 }
 
-/** 根据 ids 查找任务执行日志 */
+/** 根据 ids 查找定时任务日志 */
 export async function findByIds(
   ids: CronJobLogId[],
   options?: {
@@ -825,7 +825,7 @@ export async function findByIds(
 }
 
 /**
- * 根据搜索条件判断任务执行日志是否存在
+ * 根据搜索条件判断定时任务日志是否存在
  * @param {CronJobLogSearch} search?
  */
 export async function exist(
@@ -859,7 +859,7 @@ export async function exist(
 }
 
 /**
- * 根据id判断任务执行日志是否存在
+ * 根据id判断定时任务日志是否存在
  * @param {CronJobLogId} id
  */
 export async function existById(
@@ -903,12 +903,12 @@ export async function existById(
   return result;
 }
 
-/** 校验任务执行日志是否存在 */
+/** 校验定时任务日志是否存在 */
 export async function validateOption(
   model?: CronJobLogModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("任务执行日志") } ${ await ns("不存在") }`;
+    const err_msg = `${ await ns("定时任务日志") } ${ await ns("不存在") }`;
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -916,7 +916,7 @@ export async function validateOption(
 }
 
 /**
- * 任务执行日志增加和修改时校验输入
+ * 定时任务日志增加和修改时校验输入
  * @param input 
  */
 export async function validate(
@@ -954,7 +954,7 @@ export async function validate(
   
 }
 
-/** 创建 任务执行日志 */
+/** 创建 定时任务日志 */
 export async function create(
   input: Readonly<CronJobLogInput>,
   options?: {
@@ -994,7 +994,7 @@ export async function create(
   return id;
 }
 
-/** 批量创建 任务执行日志 */
+/** 批量创建 定时任务日志 */
 export async function creates(
   inputs: CronJobLogInput[],
   options?: {
@@ -1237,7 +1237,7 @@ async function _creates(
   return ids2;
 }
 
-/** 任务执行日志 根据 id 修改 租户id */
+/** 定时任务日志 根据 id 修改 租户id */
 export async function updateTenantById(
   id: CronJobLogId,
   tenant_id: Readonly<TenantId>,
@@ -1279,7 +1279,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/** 根据 id 修改 任务执行日志 */
+/** 根据 id 修改 定时任务日志 */
 export async function updateById(
   id: CronJobLogId,
   input: CronJobLogInput,
@@ -1335,7 +1335,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("任务执行日志"));
+        throw await ns("此 {0} 已经存在", await ns("定时任务日志"));
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1345,7 +1345,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("任务执行日志"));
+    throw await ns("编辑失败, 此 {0} 已被删除", await ns("定时任务日志"));
   }
   
   const args = new QueryArgs();
@@ -1475,7 +1475,7 @@ export async function updateById(
   return id;
 }
 
-/** 根据 ids 删除 任务执行日志 */
+/** 根据 ids 删除 定时任务日志 */
 export async function deleteByIds(
   ids: CronJobLogId[],
   options?: {
@@ -1548,7 +1548,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/** 根据 ids 还原 任务执行日志 */
+/** 根据 ids 还原 定时任务日志 */
 export async function revertByIds(
   ids: CronJobLogId[],
   options?: {
@@ -1608,7 +1608,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("任务执行日志"));
+        throw await ns("此 {0} 已经存在", await ns("定时任务日志"));
       }
     }
     const args = new QueryArgs();
@@ -1620,7 +1620,7 @@ export async function revertByIds(
   return num;
 }
 
-/** 根据 ids 彻底删除 任务执行日志 */
+/** 根据 ids 彻底删除 定时任务日志 */
 export async function forceDeleteByIds(
   ids: CronJobLogId[],
   options?: {

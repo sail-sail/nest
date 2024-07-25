@@ -260,7 +260,7 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "任务执行日志",
+        name: "定时任务日志",
         component: () => import("@/views/cron/cron_job_log/List.vue"),
         props: (route) => route.query,
       },

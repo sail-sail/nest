@@ -84,7 +84,7 @@ declare const cron_jobId: unique symbol;
 type CronJobId = Distinct<string, typeof cron_jobId>;
 
 declare const cron_job_logId: unique symbol;
-/** 任务执行日志 */
+/** 定时任务日志 */
 type CronJobLogId = Distinct<string, typeof cron_job_logId>;
 
 declare const cron_job_log_detailId: unique symbol;

@@ -6,7 +6,7 @@ import * as resolver from "./cron_job_log.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar CronJobLogId
 
-"任务执行日志执行状态"
+"定时任务日志执行状态"
 enum CronJobLogExecState {
   "执行中"
   running
@@ -135,23 +135,23 @@ input CronJobLogSearch {
   begin_time: [NaiveDateTime]
 }
 type Query {
-  "根据条件查找任务执行日志总数"
+  "根据条件查找定时任务日志总数"
   findCountCronJobLog(search: CronJobLogSearch): Int!
-  "根据搜索条件和分页查找任务执行日志列表"
+  "根据搜索条件和分页查找定时任务日志列表"
   findAllCronJobLog(search: CronJobLogSearch, page: PageInput, sort: [SortInput!]): [CronJobLogModel!]!
-  "获取任务执行日志字段注释"
+  "获取定时任务日志字段注释"
   getFieldCommentsCronJobLog: CronJobLogFieldComment!
-  "根据条件查找第一个任务执行日志"
+  "根据条件查找第一个定时任务日志"
   findOneCronJobLog(search: CronJobLogSearch, sort: [SortInput!]): CronJobLogModel
-  "根据 id 查找任务执行日志"
+  "根据 id 查找定时任务日志"
   findByIdCronJobLog(id: CronJobLogId!): CronJobLogModel
 }
 type Mutation {
-  "根据 ids 删除任务执行日志"
+  "根据 ids 删除定时任务日志"
   deleteByIdsCronJobLog(ids: [CronJobLogId!]!): Int!
-  "根据 ids 还原任务执行日志"
+  "根据 ids 还原定时任务日志"
   revertByIdsCronJobLog(ids: [CronJobLogId!]!): Int!
-  "根据 ids 彻底删除任务执行日志"
+  "根据 ids 彻底删除定时任务日志"
   forceDeleteByIdsCronJobLog(ids: [CronJobLogId!]!): Int!
 }
 
