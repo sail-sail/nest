@@ -41,7 +41,7 @@ declare global {
     trade_state_desc?: string;
     trade_state_desc_like?: string;
     /** 支付完成时间 */
-    success_time?: string[];
+    success_time?: [(string|undefined|null), (string|undefined|null)];
     /** 交易限制时间 */
     time_expire?: string;
     time_expire_like?: string;
@@ -57,7 +57,7 @@ declare global {
     /** 是否支持发票 */
     support_fapiao?: number[];
     /** 订单金额(分) */
-    total_fee?: number[];
+    total_fee?: [(number|undefined|null), (number|undefined|null)];
     /** 货币类型 */
     currency?: PayTransactionsJsapiCurrency[];
     /** 用户标识 */
@@ -67,9 +67,9 @@ declare global {
     prepay_id?: string;
     prepay_id_like?: string;
     /** 创建时间 */
-    create_time?: string[];
+    create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
-    update_time?: string[];
+    update_time?: [(string|undefined|null), (string|undefined|null)];
     /** 组织 */
     org_id?: OrgId[];
     /** 组织 */
