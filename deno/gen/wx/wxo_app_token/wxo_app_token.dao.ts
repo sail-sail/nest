@@ -174,11 +174,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找小程序接口凭据总数
- * @param {WxoAppTokenSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找小程序接口凭据总数 */
 export async function findCount(
   search?: Readonly<WxoAppTokenSearch>,
   options?: {
@@ -550,12 +546,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {WxoAppTokenModel} oldModel
- * @param {WxoAppTokenInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<WxoAppTokenModel>,
   input: Readonly<WxoAppTokenInput>,
@@ -572,13 +563,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查小程序接口凭据是否已经存在
- * @param {WxoAppTokenInput} input
- * @param {WxoAppTokenModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<WxoAppTokenId | undefined>}
- */
+/** 通过唯一约束检查 小程序接口凭据 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<WxoAppTokenInput>,
   oldModel: Readonly<WxoAppTokenModel>,
@@ -895,17 +880,7 @@ export async function validate(
   
 }
 
-/**
- * 创建小程序接口凭据
- * @param {WxoAppTokenInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<WxoAppTokenId>} 
- */
+/** 创建 小程序接口凭据 */
 export async function create(
   input: Readonly<WxoAppTokenInput>,
   options?: {
@@ -945,17 +920,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建小程序接口凭据
- * @param {WxoAppTokenInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<WxoAppTokenId[]>} 
- */
+/** 批量创建 小程序接口凭据 */
 export async function creates(
   inputs: WxoAppTokenInput[],
   options?: {
@@ -1186,18 +1151,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.wx_wxo_app_token`);
 }
 
-/**
- * 根据 id 修改小程序接口凭据
- * @param {WxoAppTokenId} id
- * @param {WxoAppTokenInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<WxoAppTokenId>}
- */
+/** 根据 id 修改 小程序接口凭据 */
 export async function updateById(
   id: WxoAppTokenId,
   input: WxoAppTokenInput,
@@ -1382,11 +1336,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除小程序接口凭据
- * @param {WxoAppTokenId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 小程序接口凭据 */
 export async function deleteByIds(
   ids: WxoAppTokenId[],
   options?: {
@@ -1463,11 +1413,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ids 还原小程序接口凭据
- * @param {WxoAppTokenId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 小程序接口凭据 */
 export async function revertByIds(
   ids: WxoAppTokenId[],
   options?: {
@@ -1501,30 +1447,41 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: WxoAppTokenId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update wx_wxo_app_token set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as WxoAppTokenInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("小程序接口凭据"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update wx_wxo_app_token set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   await delCache();
@@ -1532,11 +1489,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除小程序接口凭据
- * @param {WxoAppTokenId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 小程序接口凭据 */
 export async function forceDeleteByIds(
   ids: WxoAppTokenId[],
   options?: {
