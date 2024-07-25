@@ -246,8 +246,8 @@ CREATE TABLE if not exists `base_menu` (
 drop table if exists `base_lang`;
 CREATE TABLE if not exists `base_lang` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `code` varchar(10) NOT NULL DEFAULT '' COMMENT '编码',
-  `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
+  `code` varchar(22) NOT NULL DEFAULT '' COMMENT '编码',
+  `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
   `is_lock` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_lock',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
@@ -273,9 +273,9 @@ drop table if exists `base_i18n`;
 CREATE TABLE if not exists `base_i18n` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lang_id` varchar(22) NOT NULL DEFAULT '' COMMENT '语言',
-  `menu_id` varchar(45) NOT NULL DEFAULT '' COMMENT '菜单',
-  `code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
-  `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
+  `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '菜单',
+  `code` varchar(500) NOT NULL DEFAULT '' COMMENT '编码',
+  `lbl` varchar(500) NOT NULL DEFAULT '' COMMENT '名称',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',

@@ -23,20 +23,13 @@ export function getLocale(): string {
       usr = JSON.parse(usrStr);
     } catch (e) { }
   }
-  let lang = usr?.lang?.toLowerCase();
+  let lang = usr?.lang;
   if (lang) {
     return lang;
   }
-  lang = navigator.language.toLowerCase();
-  if ([ "zh", "zh-cn", "zh-hans", "zh-hans-cn" ].indexOf(lang) > -1) {
-    lang = "zh-cn";
-  }
-  const locales = Object.keys(messages);
-  for (const locale of locales) {
-    if (lang.indexOf(locale) > -1) {
-      lang = locale;
-      break;
-    }
+  lang = navigator.language;
+  if ([ "zh", "zh-cn", "zh-hans", "zh-hans-cn" ].indexOf(lang.toLowerCase()) > -1) {
+    lang = "zh-CN";
   }
   if (lang && usr?.lang !== lang) {
     usr.lang = lang;
@@ -47,4 +40,4 @@ export function getLocale(): string {
 
 export const lang = getLocale();
 
-export default messages[lang];
+export default messages[lang.toLowerCase()] || messages["zh-cn"];

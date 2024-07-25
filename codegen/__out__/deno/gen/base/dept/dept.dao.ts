@@ -235,11 +235,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找部门总数
- * @param {DeptSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找部门总数 */
 export async function findCount(
   search?: Readonly<DeptSearch>,
   options?: {
@@ -754,12 +750,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {DeptModel} oldModel
- * @param {DeptInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<DeptModel>,
   input: Readonly<DeptInput>,
@@ -777,13 +768,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查部门是否已经存在
- * @param {DeptInput} input
- * @param {DeptModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<DeptId | undefined>}
- */
+/** 通过唯一约束检查 部门 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<DeptInput>,
   oldModel: Readonly<DeptModel>,
@@ -1137,17 +1122,7 @@ export async function validate(
   
 }
 
-/**
- * 创建部门
- * @param {DeptInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<DeptId>} 
- */
+/** 创建 部门 */
 export async function create(
   input: Readonly<DeptInput>,
   options?: {
@@ -1187,17 +1162,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建部门
- * @param {DeptInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<DeptId[]>} 
- */
+/** 批量创建 部门 */
 export async function creates(
   inputs: DeptInput[],
   options?: {
@@ -1477,14 +1442,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.base_dept`);
 }
 
-/**
- * 部门根据id修改租户id
- * @param {DeptId} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** 部门 根据 id 修改 租户id */
 export async function updateTenantById(
   id: DeptId,
   tenant_id: Readonly<TenantId>,
@@ -1528,18 +1486,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 修改部门
- * @param {DeptId} id
- * @param {DeptInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<DeptId>}
- */
+/** 根据 id 修改 部门 */
 export async function updateById(
   id: DeptId,
   input: DeptInput,
@@ -1769,11 +1716,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除部门
- * @param {DeptId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 部门 */
 export async function deleteByIds(
   ids: DeptId[],
   options?: {
@@ -1863,12 +1806,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ID 查找部门是否已启用
- * 不存在则返回 undefined
- * @param {DeptId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 部门 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: DeptId,
   options?: {
@@ -1888,12 +1826,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-/**
- * 根据 ids 启用或者禁用部门
- * @param {DeptId[]} ids
- * @param {0 | 1} is_enabled
- * @return {Promise<number>}
- */
+/** 根据 ids 启用或者禁用 部门 */
 export async function enableByIds(
   ids: DeptId[],
   is_enabled: Readonly<0 | 1>,
@@ -1941,13 +1874,7 @@ export async function enableByIds(
   return num;
 }
 
-/**
- * 根据 ID 查找部门是否已锁定
- * 已锁定的不能修改和删除
- * 不存在则返回 undefined
- * @param {DeptId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 部门 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: DeptId,
   options?: {
@@ -1967,12 +1894,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
-/**
- * 根据 ids 锁定或者解锁部门
- * @param {DeptId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
- */
+/** 根据 ids 锁定或者解锁 部门 */
 export async function lockByIds(
   ids: DeptId[],
   is_locked: Readonly<0 | 1>,
@@ -2018,11 +1940,7 @@ export async function lockByIds(
   return num;
 }
 
-/**
- * 根据 ids 还原部门
- * @param {DeptId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 部门 */
 export async function revertByIds(
   ids: DeptId[],
   options?: {
@@ -2056,28 +1974,47 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: DeptId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update base_dept set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as DeptInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("部门"));
+      }
+    }
+    const args = new QueryArgs();
+    const sql = `update base_dept set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
+    {
+      const usr_ids = old_model.usr_ids;
+      if (usr_ids && usr_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_dept_usr set is_deleted=0 where dept_id=${ args.push(id) } and usr_id in ${ args.push(usr_ids) } and is_deleted=1`;
+        await execute(sql, args);
       }
     }
   }
@@ -2087,11 +2024,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除部门
- * @param {DeptId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 部门 */
 export async function forceDeleteByIds(
   ids: DeptId[],
   options?: {

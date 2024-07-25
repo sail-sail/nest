@@ -304,8 +304,8 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        max: 10,
-        message: `${ n("编码") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
+        max: 22,
+        message: `${ n("编码") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
       },
     ],
     // 名称
@@ -316,8 +316,8 @@ watchEffect(async () => {
       },
       {
         type: "string",
-        max: 22,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+        max: 100,
+        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
       },
     ],
     // 排序
