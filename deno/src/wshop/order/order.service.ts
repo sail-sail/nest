@@ -1,5 +1,5 @@
 import {
-  getAuthModel,
+  get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -32,15 +32,14 @@ import {
 import { Decimal } from "decimal.js";
 
 import {
-  updateSeqLbl as updateSeqLblOrder,
+  getLblSeq,
 } from "/src/wshop/order/order.dao.ts";
 
 /** 立即支付 */
 export async function payNow(
   input: PayNowInput,
 ) {
-  const authModel = await getAuthModel();
-  const usr_id = authModel.id;
+  const usr_id = await get_usr_id(false);
   const cardModel = await findOneCard(
     {
       usr_id: [ usr_id ],
@@ -100,7 +99,16 @@ export async function payNow(
     },
   );
   
-  const order_id = await createOrder({
+  const {
+    lbl,
+    lbl_seq,
+    lbl_date_seq,
+  } = await getLblSeq();
+  
+  await createOrder({
+    lbl,
+    lbl_seq,
+    lbl_date_seq,
     usr_id,
     card_id: cardModel.id,
     status: OrderStatus.InProgress,
@@ -115,7 +123,6 @@ export async function payNow(
     balance,
     give_balance,
   });
-  await updateSeqLblOrder(order_id);
   
   // 会员卡消费记录
   await createCardConsume({
