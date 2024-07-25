@@ -123,9 +123,15 @@ export class Client {
    * @param params query params
    */
   async execute(sql: string, params?: any[]): Promise<ExecuteResult> {
-    return await this.useConnection(async (connection) => {
-      return await connection.execute(sql, params);
-    });
+    try {
+      return await this.useConnection(async (connection) => {
+        return await connection.execute(sql, params);
+      });
+    } catch (err) {
+      console.error(sql);
+      console.error(JSON.stringify(params));
+      throw err;
+    }
   }
 
   async useConnection<T>(fn: (conn: Connection) => Promise<T>): Promise<T> {
