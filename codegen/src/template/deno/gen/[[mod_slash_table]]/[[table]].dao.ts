@@ -935,11 +935,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找<#=table_comment#>总数
- * @param {<#=searchName#>} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找<#=table_comment#>总数 */
 export async function findCount(
   search?: Readonly<<#=searchName#>>,
   options?: {
@@ -2405,12 +2401,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {<#=modelName#>} oldModel
- * @param {<#=inputName#>} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<<#=modelName#>>,
   input: Readonly<<#=inputName#>>,
@@ -2455,13 +2446,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查<#=table_comment#>是否已经存在
- * @param {<#=inputName#>} input
- * @param {<#=modelName#>} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<<#=Table_Up#>Id | undefined>}
- */
+/** 通过唯一约束检查 <#=table_comment#> 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<<#=inputName#>>,
   oldModel: Readonly<<#=modelName#>>,
@@ -2500,11 +2485,7 @@ export async function checkByUnique(
 if (hasSummary) {
 #>
 
-/**
- * 根据搜索条件查找<#=table_comment#>合计
- * @param {<#=searchName#>} search? 搜索条件
- * @return {Promise<<#=Table_Up#>Summary>}
- */
+/** 根据搜索条件查找 <#=table_comment#> 合计 */
 export async function findSummary(
   search?: Readonly<<#=searchName#>>,
   options?: {
@@ -3038,17 +3019,7 @@ export async function validate(
   
 }
 
-/**
- * 创建<#=table_comment#>
- * @param {<#=inputName#>} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<<#=Table_Up#>Id>} 
- */
+/** 创建 <#=table_comment#> */
 export async function create(
   input: Readonly<<#=inputName#>>,
   options?: {
@@ -3088,17 +3059,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建<#=table_comment#>
- * @param {<#=inputName#>[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<<#=Table_Up#>Id[]>} 
- */
+/** 批量创建 <#=table_comment#> */
 export async function creates(
   inputs: <#=inputName#>[],
   options?: {
@@ -3763,14 +3724,7 @@ export async function delCache() {
 if (hasTenant_id) {
 #>
 
-/**
- * <#=table_comment#>根据id修改租户id
- * @param {<#=Table_Up#>Id} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** <#=table_comment#> 根据 id 修改 租户id */
 export async function updateTenantById(
   id: <#=Table_Up#>Id,
   tenant_id: Readonly<TenantId>,
@@ -3935,18 +3889,7 @@ export async function getEditableDataPermitsByIds(
 }
 #>
 
-/**
- * 根据 id 修改<#=table_comment#>
- * @param {<#=Table_Up#>Id} id
- * @param {<#=inputName#>} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<<#=Table_Up#>Id>}
- */
+/** 根据 id 修改 <#=table_comment#> */
 export async function updateById(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
@@ -4624,11 +4567,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 <#=table_comment#> */
 export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
   options?: {
@@ -4967,11 +4906,7 @@ export async function deleteByIds(
 if (hasDefault) {
 #>
 
-/**
- * 根据 id 设置默认<#=table_comment#>
- * @param {<#=Table_Up#>Id} id
- * @return {Promise<number>}
- */
+/** 根据 id 设置默认<#=table_comment#> */
 export async function defaultById(
   id: <#=Table_Up#>Id,
   options?: {
@@ -5015,12 +4950,7 @@ export async function defaultById(
 if (hasEnabled) {
 #>
 
-/**
- * 根据 ID 查找<#=table_comment#>是否已启用
- * 不存在则返回 undefined
- * @param {<#=Table_Up#>Id} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 <#=table_comment#> 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: <#=Table_Up#>Id,
   options?: {
@@ -5040,12 +4970,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-/**
- * 根据 ids 启用或者禁用<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @param {0 | 1} is_enabled
- * @return {Promise<number>}
- */
+/** 根据 ids 启用或者禁用 <#=table_comment#> */
 export async function enableByIds(
   ids: <#=Table_Up#>Id[],
   is_enabled: Readonly<0 | 1>,
@@ -5111,13 +5036,7 @@ export async function enableByIds(
 if (hasLocked) {
 #>
 
-/**
- * 根据 ID 查找<#=table_comment#>是否已锁定
- * 已锁定的不能修改和删除
- * 不存在则返回 undefined
- * @param {<#=Table_Up#>Id} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 <#=table_comment#> 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: <#=Table_Up#>Id,
   options?: {
@@ -5137,12 +5056,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
-/**
- * 根据 ids 锁定或者解锁<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
- */
+/** 根据 ids 锁定或者解锁 <#=table_comment#> */
 export async function lockByIds(
   ids: <#=Table_Up#>Id[],
   is_locked: Readonly<0 | 1>,
@@ -5200,11 +5114,7 @@ export async function lockByIds(
 if (hasIsDeleted) {
 #>
 
-/**
- * 根据 ids 还原<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 <#=table_comment#> */
 export async function revertByIds(
   ids: <#=Table_Up#>Id[],
   options?: {
@@ -5242,30 +5152,84 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: <#=Table_Up#>Id = ids[i];
-    const args = new QueryArgs();
-    const sql = `update <#=mod#>_<#=table#> set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,<#
+        if (hasIsDeleted) {
+        #>
+        is_deleted: 1,<#
+        }
+        #>
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as <#=Table_Up#>Input;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("<#=table_comment#>"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update <#=mod#>_<#=table#> set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.inlineMany2manyTab) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_comment = column.COLUMN_COMMENT;
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey && foreignKey.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const many2many = column.many2many;
+      if (!many2many || !foreignKey) continue;
+      const many2many_no_cascade_delete = foreignKey.many2many_no_cascade_delete;
+      const many2manySchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      if (!many2manySchema) {
+        throw `many2many 中的表: ${ foreignKey.mod }_${ foreignKey.table } 不存在`;
+        process.exit(1);
+      }
+    #>
+    {
+      const <#=column_name#> = old_model.<#=column_name#>;
+      if (<#=column_name#> && <#=column_name#>.length > 0) {
+        const args = new QueryArgs();<#
+        if (!many2many_no_cascade_delete) {
+        #><#
+        if (hasIsDeleted) {
+        #>
+        const sql = `update <#=mod#>_<#=many2many.table#> set is_deleted=0 where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in ${ args.push(<#=column_name#>) } and is_deleted=1`;<#
+        }
+        #>
+        await execute(sql, args);<#
+        }
+        #>
+      }
+    }<#
+    }
+    #>
   }<#
   for (const inlineForeignTab of inlineForeignTabs) {
     const table = inlineForeignTab.table;
@@ -5381,11 +5345,7 @@ export async function revertByIds(
 if (hasIsDeleted) {
 #>
 
-/**
- * 根据 ids 彻底删除<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 <#=table_comment#> */
 export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
   options?: {
