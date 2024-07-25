@@ -26,7 +26,7 @@ declare global {
     method?: string;
     method_like?: string;
     /** 耗时(毫秒) */
-    time?: number[];
+    time?: [(number|undefined|null), (number|undefined|null)];
     /** 操作前数据 */
     old_data?: string;
     old_data_like?: string;
@@ -40,7 +40,7 @@ declare global {
     /** 更新人 */
     update_usr_id_lbl?: string[];
     /** 更新时间 */
-    update_time?: string[];
+    update_time?: [(string|undefined|null), (string|undefined|null)];
     tenant_id?: TenantId | null;
   }
 
