@@ -203,11 +203,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找任务执行日志总数
- * @param {CronJobLogSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找任务执行日志总数 */
 export async function findCount(
   search?: Readonly<CronJobLogSearch>,
   options?: {
@@ -631,12 +627,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {CronJobLogModel} oldModel
- * @param {CronJobLogInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<CronJobLogModel>,
   input: Readonly<CronJobLogInput>,
@@ -648,13 +639,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查任务执行日志是否已经存在
- * @param {CronJobLogInput} input
- * @param {CronJobLogModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<CronJobLogId | undefined>}
- */
+/** 通过唯一约束检查 任务执行日志 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<CronJobLogInput>,
   oldModel: Readonly<CronJobLogModel>,
@@ -969,17 +954,7 @@ export async function validate(
   
 }
 
-/**
- * 创建任务执行日志
- * @param {CronJobLogInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<CronJobLogId>} 
- */
+/** 创建 任务执行日志 */
 export async function create(
   input: Readonly<CronJobLogInput>,
   options?: {
@@ -1019,17 +994,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建任务执行日志
- * @param {CronJobLogInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<CronJobLogId[]>} 
- */
+/** 批量创建 任务执行日志 */
 export async function creates(
   inputs: CronJobLogInput[],
   options?: {
@@ -1272,14 +1237,7 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 任务执行日志根据id修改租户id
- * @param {CronJobLogId} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** 任务执行日志 根据 id 修改 租户id */
 export async function updateTenantById(
   id: CronJobLogId,
   tenant_id: Readonly<TenantId>,
@@ -1321,18 +1279,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 修改任务执行日志
- * @param {CronJobLogId} id
- * @param {CronJobLogInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<CronJobLogId>}
- */
+/** 根据 id 修改 任务执行日志 */
 export async function updateById(
   id: CronJobLogId,
   input: CronJobLogInput,
@@ -1528,11 +1475,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除任务执行日志
- * @param {CronJobLogId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 任务执行日志 */
 export async function deleteByIds(
   ids: CronJobLogId[],
   options?: {
@@ -1605,11 +1548,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ids 还原任务执行日志
- * @param {CronJobLogId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 任务执行日志 */
 export async function revertByIds(
   ids: CronJobLogId[],
   options?: {
@@ -1641,40 +1580,47 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: CronJobLogId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update cron_cron_job_log set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as CronJobLogInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("任务执行日志"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update cron_cron_job_log set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   return num;
 }
 
-/**
- * 根据 ids 彻底删除任务执行日志
- * @param {CronJobLogId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 任务执行日志 */
 export async function forceDeleteByIds(
   ids: CronJobLogId[],
   options?: {

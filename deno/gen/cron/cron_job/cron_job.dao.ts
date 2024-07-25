@@ -221,11 +221,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找定时任务总数
- * @param {CronJobSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找定时任务总数 */
 export async function findCount(
   search?: Readonly<CronJobSearch>,
   options?: {
@@ -685,12 +681,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {CronJobModel} oldModel
- * @param {CronJobInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<CronJobModel>,
   input: Readonly<CronJobInput>,
@@ -708,13 +699,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查定时任务是否已经存在
- * @param {CronJobInput} input
- * @param {CronJobModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<CronJobId | undefined>}
- */
+/** 通过唯一约束检查 定时任务 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<CronJobInput>,
   oldModel: Readonly<CronJobModel>,
@@ -1075,17 +1060,7 @@ export async function validate(
   
 }
 
-/**
- * 创建定时任务
- * @param {CronJobInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<CronJobId>} 
- */
+/** 创建 定时任务 */
 export async function create(
   input: Readonly<CronJobInput>,
   options?: {
@@ -1125,17 +1100,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建定时任务
- * @param {CronJobInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<CronJobId[]>} 
- */
+/** 批量创建 定时任务 */
 export async function creates(
   inputs: CronJobInput[],
   options?: {
@@ -1401,14 +1366,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.cron_cron_job`);
 }
 
-/**
- * 定时任务根据id修改租户id
- * @param {CronJobId} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** 定时任务 根据 id 修改 租户id */
 export async function updateTenantById(
   id: CronJobId,
   tenant_id: Readonly<TenantId>,
@@ -1454,18 +1412,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 修改定时任务
- * @param {CronJobId} id
- * @param {CronJobInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<CronJobId>}
- */
+/** 根据 id 修改 定时任务 */
 export async function updateById(
   id: CronJobId,
   input: CronJobInput,
@@ -1681,11 +1628,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除定时任务
- * @param {CronJobId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 定时任务 */
 export async function deleteByIds(
   ids: CronJobId[],
   options?: {
@@ -1764,12 +1707,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ID 查找定时任务是否已启用
- * 不存在则返回 undefined
- * @param {CronJobId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 定时任务 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: CronJobId,
   options?: {
@@ -1789,12 +1727,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-/**
- * 根据 ids 启用或者禁用定时任务
- * @param {CronJobId[]} ids
- * @param {0 | 1} is_enabled
- * @return {Promise<number>}
- */
+/** 根据 ids 启用或者禁用 定时任务 */
 export async function enableByIds(
   ids: CronJobId[],
   is_enabled: Readonly<0 | 1>,
@@ -1844,13 +1777,7 @@ export async function enableByIds(
   return num;
 }
 
-/**
- * 根据 ID 查找定时任务是否已锁定
- * 已锁定的不能修改和删除
- * 不存在则返回 undefined
- * @param {CronJobId} id
- * @return {Promise<0 | 1 | undefined>}
- */
+/** 根据 id 查找 定时任务 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: CronJobId,
   options?: {
@@ -1870,12 +1797,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
-/**
- * 根据 ids 锁定或者解锁定时任务
- * @param {CronJobId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
- */
+/** 根据 ids 锁定或者解锁 定时任务 */
 export async function lockByIds(
   ids: CronJobId[],
   is_locked: Readonly<0 | 1>,
@@ -1921,11 +1843,7 @@ export async function lockByIds(
   return num;
 }
 
-/**
- * 根据 ids 还原定时任务
- * @param {CronJobId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 定时任务 */
 export async function revertByIds(
   ids: CronJobId[],
   options?: {
@@ -1959,30 +1877,41 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: CronJobId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update cron_cron_job set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as CronJobInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("定时任务"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update cron_cron_job set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   await delCache();
@@ -1992,11 +1921,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除定时任务
- * @param {CronJobId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 定时任务 */
 export async function forceDeleteByIds(
   ids: CronJobId[],
   options?: {
