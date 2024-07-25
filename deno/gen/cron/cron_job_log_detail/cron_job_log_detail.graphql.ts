@@ -9,7 +9,7 @@ scalar CronJobLogDetailId
 type CronJobLogDetailModel {
   "ID"
   id: CronJobLogDetailId!
-  "任务执行日志"
+  "定时任务日志"
   cron_job_log_id: CronJobLogId!
   "日志明细"
   lbl: String!
@@ -23,9 +23,9 @@ type CronJobLogDetailModel {
 type CronJobLogDetailFieldComment {
   "ID"
   id: String!
-  "任务执行日志"
+  "定时任务日志"
   cron_job_log_id: String!
-  "任务执行日志"
+  "定时任务日志"
   cron_job_log_id_lbl: String!
   "日志明细"
   lbl: String!
@@ -49,7 +49,7 @@ type CronJobLogDetailFieldComment {
 input CronJobLogDetailInput {
   "ID"
   id: CronJobLogDetailId
-  "任务执行日志"
+  "定时任务日志"
   cron_job_log_id: CronJobLogId
   "日志明细"
   lbl: String
@@ -61,9 +61,9 @@ input CronJobLogDetailSearch {
   ids: [CronJobLogDetailId!]
   "ID"
   id: CronJobLogDetailId
-  "任务执行日志"
+  "定时任务日志"
   cron_job_log_id: [CronJobLogId!]
-  "任务执行日志"
+  "定时任务日志"
   cron_job_log_id_is_null: Boolean
   "日志明细"
   lbl: String
@@ -72,23 +72,23 @@ input CronJobLogDetailSearch {
   create_time: [NaiveDateTime]
 }
 type Query {
-  "根据条件查找任务执行日志明细总数"
+  "根据条件查找定时任务日志明细总数"
   findCountCronJobLogDetail(search: CronJobLogDetailSearch): Int!
-  "根据搜索条件和分页查找任务执行日志明细列表"
+  "根据搜索条件和分页查找定时任务日志明细列表"
   findAllCronJobLogDetail(search: CronJobLogDetailSearch, page: PageInput, sort: [SortInput!]): [CronJobLogDetailModel!]!
-  "获取任务执行日志明细字段注释"
+  "获取定时任务日志明细字段注释"
   getFieldCommentsCronJobLogDetail: CronJobLogDetailFieldComment!
-  "根据条件查找第一个任务执行日志明细"
+  "根据条件查找第一个定时任务日志明细"
   findOneCronJobLogDetail(search: CronJobLogDetailSearch, sort: [SortInput!]): CronJobLogDetailModel
-  "根据 id 查找任务执行日志明细"
+  "根据 id 查找定时任务日志明细"
   findByIdCronJobLogDetail(id: CronJobLogDetailId!): CronJobLogDetailModel
 }
 type Mutation {
-  "根据 ids 删除任务执行日志明细"
+  "根据 ids 删除定时任务日志明细"
   deleteByIdsCronJobLogDetail(ids: [CronJobLogDetailId!]!): Int!
-  "根据 ids 还原任务执行日志明细"
+  "根据 ids 还原定时任务日志明细"
   revertByIdsCronJobLogDetail(ids: [CronJobLogDetailId!]!): Int!
-  "根据 ids 彻底删除任务执行日志明细"
+  "根据 ids 彻底删除定时任务日志明细"
   forceDeleteByIdsCronJobLogDetail(ids: [CronJobLogDetailId!]!): Int!
 }
 

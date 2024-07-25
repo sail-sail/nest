@@ -162,7 +162,7 @@ export default defineConfig({
       },
     ],
   },
-  // 任务执行日志明细
+  // 定时任务日志明细
   cron_cron_job_log_detail: {
     opts: {
       noAdd: true,

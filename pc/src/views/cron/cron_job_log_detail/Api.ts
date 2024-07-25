@@ -25,7 +25,7 @@ export function intoInput(
   const input: CronJobLogDetailInput = {
     // ID
     id: model?.id,
-    // 任务执行日志
+    // 定时任务日志
     cron_job_log_id: model?.cron_job_log_id,
     // 日志明细
     lbl: model?.lbl,
@@ -34,7 +34,7 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找任务执行日志明细列表
+ * 根据搜索条件查找定时任务日志明细列表
  * @param {CronJobLogDetailSearch} search?
  * @param {PageInput} page
  * @param {Sort[]} sort?
@@ -71,7 +71,7 @@ export async function findAll(
 }
 
 /**
- * 根据条件查找第一个任务执行日志明细
+ * 根据条件查找第一个定时任务日志明细
  * @param {CronJobLogDetailSearch} search?
  * @param {Sort[]} sort?
  * @param {GqlOpt} opt?
@@ -102,7 +102,7 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找任务执行日志明细总数
+ * 根据搜索条件查找定时任务日志明细总数
  * @param {CronJobLogDetailSearch} search?
  * @param {GqlOpt} opt?
  */
@@ -127,7 +127,7 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找任务执行日志明细
+ * 根据 id 查找定时任务日志明细
  * @param {CronJobLogDetailId} id
  * @param {GqlOpt} opt?
  */
@@ -155,7 +155,7 @@ export async function findById(
 }
 
 /**
- * 根据 ids 删除任务执行日志明细
+ * 根据 ids 删除定时任务日志明细
  * @param {CronJobLogDetailId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -180,7 +180,7 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原任务执行日志明细
+ * 根据 ids 还原定时任务日志明细
  * @param {CronJobLogDetailId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -205,7 +205,7 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除任务执行日志明细
+ * 根据 ids 彻底删除定时任务日志明细
  * @param {CronJobLogDetailId[]} ids
  * @param {GqlOpt} opt?
  */
@@ -274,7 +274,7 @@ export async function getCronJobLogList() {
 }
 
 /**
- * 下载任务执行日志明细导入模板
+ * 下载定时任务日志明细导入模板
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
@@ -303,7 +303,7 @@ export function useDownloadImportTemplate(routePath: string) {
       },
     });
     try {
-      const sheetName = await nsAsync("任务执行日志明细");
+      const sheetName = await nsAsync("定时任务日志明细");
       const buffer = await workerFn(
         `${ location.origin }/import_template/cron/cron_job_log_detail.xlsx`,
         {
@@ -367,7 +367,7 @@ export function useExportExcel(routePath: string) {
         await setLblById(model, true);
       }
       try {
-        const sheetName = await nsAsync("任务执行日志明细");
+        const sheetName = await nsAsync("定时任务日志明细");
         const buffer = await workerFn(
           `${ location.origin }/excel_template/cron/cron_job_log_detail.xlsx`,
           {

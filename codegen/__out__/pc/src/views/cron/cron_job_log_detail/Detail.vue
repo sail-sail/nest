@@ -210,11 +210,11 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
-    // 任务执行日志
+    // 定时任务日志
     cron_job_log_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("任务执行日志") }`,
+        message: `${ await nsAsync("请选择") } ${ n("定时任务日志") }`,
       },
     ],
     // 日志明细
@@ -569,7 +569,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "任务执行日志",
+    "定时任务日志",
     "日志明细",
     "创建时间",
   ];

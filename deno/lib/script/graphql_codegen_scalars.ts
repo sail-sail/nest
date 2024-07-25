@@ -133,7 +133,7 @@ export function getScalars() {
       "output": "CronJobLogId",
     },
     
-    // 任务执行日志明细
+    // 定时任务日志明细
     "CronJobLogDetailId": {
       "input": "CronJobLogDetailId",
       "output": "CronJobLogDetailId",
