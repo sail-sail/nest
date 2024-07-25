@@ -191,11 +191,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
-/**
- * 根据条件查找百度接口凭据总数
- * @param {BaiduAppTokenSearch} search?
- * @return {Promise<number>}
- */
+/** 根据条件查找百度接口凭据总数 */
 export async function findCount(
   search?: Readonly<BaiduAppTokenSearch>,
   options?: {
@@ -567,12 +563,7 @@ export async function findByUnique(
   return models;
 }
 
-/**
- * 根据唯一约束对比对象是否相等
- * @param {BaiduAppTokenModel} oldModel
- * @param {BaiduAppTokenInput} input
- * @return {boolean}
- */
+/** 根据唯一约束对比对象是否相等 */
 export function equalsByUnique(
   oldModel: Readonly<BaiduAppTokenModel>,
   input: Readonly<BaiduAppTokenInput>,
@@ -589,13 +580,7 @@ export function equalsByUnique(
   return false;
 }
 
-/**
- * 通过唯一约束检查百度接口凭据是否已经存在
- * @param {BaiduAppTokenInput} input
- * @param {BaiduAppTokenModel} oldModel
- * @param {UniqueType} uniqueType
- * @return {Promise<BaiduAppTokenId | undefined>}
- */
+/** 通过唯一约束检查 百度接口凭据 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<BaiduAppTokenInput>,
   oldModel: Readonly<BaiduAppTokenModel>,
@@ -912,17 +897,7 @@ export async function validate(
   
 }
 
-/**
- * 创建百度接口凭据
- * @param {BaiduAppTokenInput} input
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<BaiduAppTokenId>} 
- */
+/** 创建 百度接口凭据 */
 export async function create(
   input: Readonly<BaiduAppTokenInput>,
   options?: {
@@ -962,17 +937,7 @@ export async function create(
   return id;
 }
 
-/**
- * 批量创建百度接口凭据
- * @param {BaiduAppTokenInput[]} inputs
- * @param {({
- *   uniqueType?: UniqueType,
- * })} options? 唯一约束冲突时的处理选项, 默认为 throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   update: 更新冲突数据
- * @return {Promise<BaiduAppTokenId[]>} 
- */
+/** 批量创建 百度接口凭据 */
 export async function creates(
   inputs: BaiduAppTokenInput[],
   options?: {
@@ -1216,14 +1181,7 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.baidu_baidu_app_token`);
 }
 
-/**
- * 百度接口凭据根据id修改租户id
- * @param {BaiduAppTokenId} id
- * @param {TenantId} tenant_id
- * @param {{
- *   }} [options]
- * @return {Promise<number>}
- */
+/** 百度接口凭据 根据 id 修改 租户id */
 export async function updateTenantById(
   id: BaiduAppTokenId,
   tenant_id: Readonly<TenantId>,
@@ -1267,18 +1225,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 修改百度接口凭据
- * @param {BaiduAppTokenId} id
- * @param {BaiduAppTokenInput} input
- * @param {({
- *   uniqueType?: Exclude<UniqueType, UniqueType.Update>;
- * })} options? 唯一约束冲突时的处理选项, 默认为 UniqueType.Throw,
- *   ignore: 忽略冲突
- *   throw: 抛出异常
- *   create: 级联插入新数据
- * @return {Promise<BaiduAppTokenId>}
- */
+/** 根据 id 修改 百度接口凭据 */
 export async function updateById(
   id: BaiduAppTokenId,
   input: BaiduAppTokenInput,
@@ -1468,11 +1415,7 @@ export async function updateById(
   return id;
 }
 
-/**
- * 根据 ids 删除百度接口凭据
- * @param {BaiduAppTokenId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 删除 百度接口凭据 */
 export async function deleteByIds(
   ids: BaiduAppTokenId[],
   options?: {
@@ -1549,11 +1492,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-/**
- * 根据 ids 还原百度接口凭据
- * @param {BaiduAppTokenId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 还原 百度接口凭据 */
 export async function revertByIds(
   ids: BaiduAppTokenId[],
   options?: {
@@ -1587,30 +1526,41 @@ export async function revertByIds(
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
-    const id: BaiduAppTokenId = ids[i];
-    const args = new QueryArgs();
-    const sql = `update baidu_baidu_app_token set is_deleted = 0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    // 检查数据的唯一索引
-    {
-      const old_model = await findById(
+    const id = ids[i];
+    let old_model = await findOne(
+      {
+        id,
+        is_deleted: 1,
+      },
+      undefined,
+      options,
+    );
+    if (!old_model) {
+      old_model = await findById(
         id,
         options,
       );
-      if (!old_model) {
-        continue;
-      }
+    }
+    if (!old_model) {
+      continue;
+    }
+    {
       const input = {
         ...old_model,
         id: undefined,
       } as BaiduAppTokenInput;
-      let models = await findByUnique(input, options);
-      models = models.filter((item) => item.id !== id);
-      if (models.length > 0) {
+      const models = await findByUnique(input, options);
+      for (const model of models) {
+        if (model.id === id) {
+          continue;
+        }
         throw await ns("此 {0} 已经存在", await ns("百度接口凭据"));
       }
     }
+    const args = new QueryArgs();
+    const sql = `update baidu_baidu_app_token set is_deleted=0 where id=${ args.push(id) } limit 1`;
+    const result = await execute(sql, args);
+    num += result.affectedRows;
   }
   
   await delCache();
@@ -1618,11 +1568,7 @@ export async function revertByIds(
   return num;
 }
 
-/**
- * 根据 ids 彻底删除百度接口凭据
- * @param {BaiduAppTokenId[]} ids
- * @return {Promise<number>}
- */
+/** 根据 ids 彻底删除 百度接口凭据 */
 export async function forceDeleteByIds(
   ids: BaiduAppTokenId[],
   options?: {
