@@ -62,7 +62,7 @@
     "pinia": "2.1.7",
     "pinia-plugin-unistorage": "0.1.2",
     "vue": "3.4.34",
-    "vue-demi": "0.14.9"
+    "vue-demi": "0.14.10"
   },
   "devDependencies": {
     "@dcloudio/types": "3.4.12",
@@ -75,7 +75,7 @@
     "@unocss/preset-attributify": "0.61.5",
     "@vue-macros/reactivity-transform": "1.0.0",
     "cross-env": "7.0.3",
-    "husky": "9.1.1",
+    "husky": "9.1.2",
     "less": "4.2.0",
     "postcss": "8.4.40",
     "sass": "1.77.8",
@@ -89,11 +89,11 @@
     "unplugin-icons": "0.19.0",
     "unplugin-turbo-console": "1.9.11",
     "unplugin-vue-components": "0.27.3",
-    "vite": "5.3.4",
+    "vite": "5.3.5",
     "vite-plugin-inspect": "0.8.5",
     "vite-plugin-vue-inspector": "5.1.3",
     "vitest": "2.0.4",
     "vue-router": "4.4.0",
-    "vue-tsc": "2.0.28"
+    "vue-tsc": "2.0.29"
   }
 }
