@@ -27,6 +27,8 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
   }"
+  @mouseenter="onMouseEnter"
+  @mouseleave="onMouseLeave"
 >
   <CustomInput
     v-bind="$attrs"
@@ -38,8 +40,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     :clearable="false"
     class="select_input"
     :placeholder="props.placeholder"
-    @mouseenter="mouseEnter"
-    @mouseleave="mouseLeave"
     @keydown.enter="onEnter"
   >
     <template
@@ -190,11 +190,11 @@ watch(
 
 let isHover = $ref(false);
 
-function mouseEnter() {
+function onMouseEnter() {
   isHover = true;
 }
 
-function mouseLeave() {
+function onMouseLeave() {
   isHover = false;
 }
 
