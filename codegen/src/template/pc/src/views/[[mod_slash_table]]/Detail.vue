@@ -398,6 +398,7 @@ const old_table = table;
               readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #>
+              @change="() => formRef?.validateField('<#=column_name#>')"
             ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (foreignSchema && foreignSchema.opts?.list_tree
               && !foreignSchema.opts?.ignoreCodegen
@@ -842,6 +843,7 @@ const old_table = table;
                       readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #>
+                      @change="() => formRef?.validateField('<#=column_name#>')"
                     >
                     </SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree
@@ -1410,6 +1412,7 @@ const old_table = table;
                     readonly-placeholder="<#=readonlyPlaceholder#>"<#
                     }
                     #>
+                    @change="() => formRef?.validateField('<#=column_name#>')"
                   ></SelectInput<#=Foreign_Table_Up#>><#
                   } else if (foreignSchema && foreignSchema.opts?.list_tree
                     && !foreignSchema.opts?.ignoreCodegen
@@ -1886,6 +1889,7 @@ const old_table = table;
                       readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #>
+                      @change="() => formRef?.validateField('<#=column_name#>')"
                     >
                     </SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree

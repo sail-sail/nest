@@ -28,75 +28,68 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     label_readonly_0: !props.labelReadonly,
   }"
 >
-  <el-tooltip
-    :content="inputValue"
-    :disabled="!inputValue || !props.labelReadonly"
+  <CustomInput
+    v-bind="$attrs"
+    ref="inputRef"
+    @click="onInput('input')"
+    v-model="inputValue"
+    @clear="(onClear as any)"
+    :readonly="props.labelReadonly"
+    :clearable="false"
+    class="select_input"
+    :placeholder="props.placeholder"
+    @mouseenter="mouseEnter"
+    @mouseleave="mouseLeave"
+    @keydown.enter="onEnter"
   >
-    <CustomInput
-      v-bind="$attrs"
-      ref="inputRef"
-      @click="onInput('input')"
-      v-model="inputValue"
-      @clear="(onClear as any)"
-      :readonly="props.labelReadonly"
-      :clearable="false"
-      class="select_input"
-      :placeholder="props.placeholder"
-      @mouseenter="mouseEnter"
-      @mouseleave="mouseLeave"
-      @keydown.enter="onEnter"
+    <template
+      v-for="(item, key, index) in $slots"
+      :key="index"
+      #[key]
+    >
+      <slot
+        :name="key"
+      ></slot>
+    </template>
+    <template
+      #suffix
+      v-if="!$slots.suffix"
     >
       <template
-        v-for="(item, key, index) in $slots"
-        :key="index"
-        #[key]
-      >
-        <slot
-          :name="key"
-        ></slot>
-      </template>
-      <template
-        #suffix
-        v-if="!$slots.suffix"
+        v-if="!props.disabled"
       >
         <template
-          v-if="!props.disabled"
+          v-if="modelValue && modelValue.length > 0 && props.labelReadonly"
         >
-          <template
-            v-if="modelValue && modelValue.length > 0 && props.labelReadonly"
+          <el-icon
+            @click="onClear"
+            un-cursor-pointer
+            un-m="r-0.5"
+            size="14"
           >
-            <el-icon
-              @click="onClear"
-              un-cursor-pointer
-              un-text="hover:red-500"
-              un-m="r-0.5"
-              size="14"
-            >
-              <ElIconCircleClose
-                v-if="isHover"
-              />
-              <ElIconArrowDown
-                v-else
-              />
-            </el-icon>
-          </template>
-          <template
-            v-else
+            <ElIconCircleClose
+              v-if="isHover"
+            />
+            <ElIconArrowDown
+              v-else
+            />
+          </el-icon>
+        </template>
+        <template
+          v-else
+        >
+          <el-icon
+            @click="onInput('icon')"
+            un-cursor-pointer
+            un-m="r-0.5"
+            size="14"
           >
-            <el-icon
-              @click="onInput('icon')"
-              un-cursor-pointer
-              un-text="hover:blue-500"
-              un-m="r-0.5"
-              size="14"
-            >
-              <ElIconArrowDown />
-            </el-icon>
-          </template>
+            <ElIconArrowDown />
+          </el-icon>
         </template>
       </template>
-    </CustomInput>
-  </el-tooltip>
+    </template>
+  </CustomInput>
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"
@@ -308,7 +301,10 @@ function blur() {
   inputRef.blur();
 }
 
-function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
+async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
+  await nextTick();
+  await nextTick();
+  await nextTick();
   if (props.multiple) {
     emit("change", value);
     return;
