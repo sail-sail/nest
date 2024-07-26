@@ -244,6 +244,7 @@ function onClear(e?: PointerEvent) {
   emit("update:modelValue", modelValue);
   emit("change");
   emit("clear");
+  emit("validateField");
 }
 
 
