@@ -44,8 +44,8 @@
       </template>
       <template #error>
         <div
-          un-w="full"
           un-h="full"
+          un-aspect-ratio="1"
           un-flex="~ [1_0_0] col"
           un-overflow-hidden
           un-justify-center
