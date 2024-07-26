@@ -159,6 +159,7 @@
               v-model="dialogModel.card_id"
               :placeholder="`${ ns('请选择') } ${ n('会员卡') }`"
               :readonly="isLocked || isReadonly"
+              @validate-field="() => formRef?.validateField('card_id')"
             ></SelectInputCard>
           </el-form-item>
         </template>

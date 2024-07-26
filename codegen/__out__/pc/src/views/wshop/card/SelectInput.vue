@@ -6,76 +6,69 @@
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
   }"
+  @mouseenter="onMouseEnter"
+  @mouseleave="onMouseLeave"
 >
-  <el-tooltip
-    :content="inputValue"
-    :disabled="!inputValue || !props.labelReadonly"
+  <CustomInput
+    v-bind="$attrs"
+    ref="inputRef"
+    @click="onInput('input')"
+    v-model="inputValue"
+    @clear="(onClear as any)"
+    :readonly="props.labelReadonly"
+    :clearable="false"
+    class="select_input"
+    :placeholder="props.placeholder"
+    @keydown.enter="onEnter"
   >
-    <CustomInput
-      v-bind="$attrs"
-      ref="inputRef"
-      @click="onInput('input')"
-      v-model="inputValue"
-      @clear="(onClear as any)"
-      :readonly="props.labelReadonly"
-      :clearable="false"
-      class="select_input"
-      :placeholder="props.placeholder"
-      @mouseenter="mouseEnter"
-      @mouseleave="mouseLeave"
-      @keydown.enter="onEnter"
+    <template
+      v-for="(item, key, index) in $slots"
+      :key="index"
+      #[key]
+    >
+      <slot
+        :name="key"
+      ></slot>
+    </template>
+    <template
+      #suffix
+      v-if="!$slots.suffix"
     >
       <template
-        v-for="(item, key, index) in $slots"
-        :key="index"
-        #[key]
-      >
-        <slot
-          :name="key"
-        ></slot>
-      </template>
-      <template
-        #suffix
-        v-if="!$slots.suffix"
+        v-if="!props.disabled"
       >
         <template
-          v-if="!props.disabled"
+          v-if="modelValue && modelValue.length > 0 && props.labelReadonly"
         >
-          <template
-            v-if="modelValue && modelValue.length > 0 && props.labelReadonly"
+          <el-icon
+            @click="onClear"
+            un-cursor-pointer
+            un-m="r-0.5"
+            size="14"
           >
-            <el-icon
-              @click="onClear"
-              un-cursor-pointer
-              un-text="hover:red-500"
-              un-m="r-0.5"
-              size="14"
-            >
-              <ElIconCircleClose
-                v-if="isHover"
-              />
-              <ElIconArrowDown
-                v-else
-              />
-            </el-icon>
-          </template>
-          <template
-            v-else
+            <ElIconCircleClose
+              v-if="isHover"
+            />
+            <ElIconArrowDown
+              v-else
+            />
+          </el-icon>
+        </template>
+        <template
+          v-else
+        >
+          <el-icon
+            @click="onInput('icon')"
+            un-cursor-pointer
+            un-m="r-0.5"
+            size="14"
           >
-            <el-icon
-              @click="onInput('icon')"
-              un-cursor-pointer
-              un-text="hover:blue-500"
-              un-m="r-0.5"
-              size="14"
-            >
-              <ElIconArrowDown />
-            </el-icon>
-          </template>
+            <ElIconArrowDown />
+          </el-icon>
         </template>
       </template>
-    </CustomInput>
-  </el-tooltip>
+    </template>
+  </CustomInput>
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"
@@ -113,6 +106,7 @@ let emit = defineEmits<{
   (e: "update:modelValue", value?: CardId | CardId[] | null): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: CardModel | (CardModel | undefined)[] | null): void,
+  (e: "validateField"): void,
   (e: "clear"): void,
 }>();
 
@@ -175,11 +169,11 @@ watch(
 
 let isHover = $ref(false);
 
-function mouseEnter() {
+function onMouseEnter() {
   isHover = true;
 }
 
-function mouseLeave() {
+function onMouseLeave() {
   isHover = false;
 }
 
@@ -287,16 +281,26 @@ function blur() {
   inputRef.blur();
 }
 
-function onSelectList(value?: CardModel | (CardModel | undefined)[] | null) {
+async function onSelectList(value?: CardModel | (CardModel | undefined)[] | null) {
+  await nextTick();
   if (props.multiple) {
     emit("change", value);
+    await nextTick();
+    await nextTick();
+    emit("validateField");
     return;
   }
   if (!Array.isArray(value)) {
     emit("change", value);
+    await nextTick();
+    await nextTick();
+    emit("validateField");
     return;
   }
   emit("change", value[0]);
+  await nextTick();
+  await nextTick();
+  emit("validateField");
 }
 
 defineExpose({
