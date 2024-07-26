@@ -127,6 +127,7 @@ let emit = defineEmits<{
   (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
+  (e: "validateField"): void,
   (e: "clear"): void,
 }>();
 
@@ -303,17 +304,24 @@ function blur() {
 
 async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
   await nextTick();
-  await nextTick();
-  await nextTick();
   if (props.multiple) {
     emit("change", value);
+    await nextTick();
+    await nextTick();
+    emit("validateField");
     return;
   }
   if (!Array.isArray(value)) {
     emit("change", value);
+    await nextTick();
+    await nextTick();
+    emit("validateField");
     return;
   }
   emit("change", value[0]);
+  await nextTick();
+  await nextTick();
+  emit("validateField");
 }
 
 defineExpose({
