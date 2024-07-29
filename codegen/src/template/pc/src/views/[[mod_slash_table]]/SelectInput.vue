@@ -247,7 +247,6 @@ async function refreshInputValue() {
   } else {
     models = await getModelsByIds(modelValueArr);
   }
-  const models = await getModelsByIds(modelValueArr);
   inputValue = models.map((item) => item?.<#=opts?.lbl_field || "lbl"#> || "").join(", ");
   oldInputValue = inputValue;
 }
