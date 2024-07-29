@@ -229,6 +229,7 @@ import {
   findLastOrderBy,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -240,7 +241,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/base/org";
+const pagePath = getPagePath();
 
 const {
   n,

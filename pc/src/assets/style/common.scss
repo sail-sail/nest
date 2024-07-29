@@ -280,11 +280,7 @@ body .el-input-number.is-without-controls .el-input__inner {
   }
 }
 .select_input_wrapper.label_readonly_1 {
-  .el-input {
-    .el-input__inner {
-      @apply cursor-pointer;
-    }
-  }
+  @apply cursor-pointer;
 }
 .select_input_wrapper.label_readonly_0 {
   .el-input {
@@ -404,7 +400,7 @@ html:is(.dark) {
 .dict_select_readonly,
 .dictbiz_select_readonly,
 .custom_select_readonly,
-.custom_input_readonly,
+.custom_input_readonly:not(.select_input),
 .custom_date_picker_readonly,
 .custom_input_number_readonly,
 .custom_switch_readonly,
@@ -425,7 +421,7 @@ html:is(.dark) {
   .dict_select_readonly,
   .dictbiz_select_readonly,
   .custom_select_readonly,
-  .custom_input_readonly,
+  .custom_input_readonly:not(.select_input),
   .custom_date_picker_readonly,
   .custom_input_number_readonly,
   .custom_switch_readonly,
@@ -436,7 +432,7 @@ html:is(.dark) {
   .dict_select_readonly,
   .dictbiz_select_readonly,
   .custom_select_readonly,
-  .custom_input_readonly,
+  .custom_input_readonly:not(.select_input),
   .custom_date_picker_readonly,
   .custom_input_number_readonly,
   .custom_switch_readonly,
