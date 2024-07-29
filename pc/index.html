@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html
+  lang="en"
+  style="width: 100%;height: 100%;margin: 0;padding: 0;"
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="renderer" content="webkit"/>
@@ -12,9 +15,36 @@
       window.localStorage.setItem("__version", "$__version__$");
     </script>
     <title>%VITE_APP_TITLE%</title>
+    <style>
+      @keyframes loading {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
-  <body>
-    <div id="app" style="width: 100%;height: 100%;"></div>
+  <body
+    style="width: 100%;height: 100%;margin: 0;padding: 0;"
+  >
+    <div id="app" style="width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;">
+      <div
+        style="width: 80px;height: 80px;animation: loading 1s linear infinite;color: #409eff;"
+      >
+        <svg
+          viewBox="0 0 1024 1024"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill="currentColor"
+            d="M864 323.2c-9.6 0-22.4-6.4-25.6-16C764.8 195.2 643.2 128 512 128c-19.2 0-32-12.8-32-32s12.8-32 32-32c153.6 0 297.6 76.8 377.6 208 9.6 16 6.4 35.2-9.6 44.8-3.2 3.2-9.6 6.4-16 6.4z"
+          ></path>
+        </svg>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
