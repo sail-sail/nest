@@ -351,6 +351,7 @@ import {
   findOne,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -366,7 +367,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wshop/card";
+const pagePath = getPagePath();
 
 const {
   n,

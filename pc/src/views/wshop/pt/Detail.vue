@@ -382,6 +382,7 @@ import {
   findLastOrderBy,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -397,7 +398,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wshop/pt";
+const pagePath = getPagePath();
 
 const {
   n,

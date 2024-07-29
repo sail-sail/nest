@@ -245,6 +245,7 @@ import {
   findOne,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -256,7 +257,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wshop/recharge_rule";
+const pagePath = getPagePath();
 
 const {
   n,

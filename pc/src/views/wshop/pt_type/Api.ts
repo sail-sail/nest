@@ -599,6 +599,10 @@ export async function findLastOrderBy(
   return res;
 }
 
+export function getPagePath() {
+  return "/wshop/pt_type";
+}
+
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: PtTypeInput = {

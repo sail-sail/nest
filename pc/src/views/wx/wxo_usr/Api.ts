@@ -542,6 +542,10 @@ export async function importModels(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
+export function getPagePath() {
+  return "/wx/wxo_usr";
+}
+
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: WxoUsrInput = {

@@ -315,6 +315,7 @@ import {
   findLastOrderBy,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -330,7 +331,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wx/wxo_app";
+const pagePath = getPagePath();
 
 const {
   n,

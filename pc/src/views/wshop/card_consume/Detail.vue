@@ -273,6 +273,7 @@ import type {
 import {
   findOne,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -289,7 +290,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wshop/card_consume";
+const pagePath = getPagePath();
 
 const {
   n,
