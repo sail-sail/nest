@@ -254,6 +254,7 @@ import {
   findOne,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -270,7 +271,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/base/data_permit";
+const pagePath = getPagePath();
 
 const {
   n,

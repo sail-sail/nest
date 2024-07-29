@@ -263,6 +263,7 @@ import {
   findOne,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -282,7 +283,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/base/i18n";
+const pagePath = getPagePath();
 
 const {
   n,

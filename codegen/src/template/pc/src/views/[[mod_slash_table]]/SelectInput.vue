@@ -108,7 +108,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     un-min="h-8"
     un-line-height="normal"
     un-break-words
-    class="custom_select_readonly"
+    class="custom_select_readonly select_input_readonly"
     v-bind="$attrs"
   >
     {{ inputValue ?? "" }}
@@ -121,6 +121,7 @@ import SelectList from "./SelectList.vue";
 
 import {
   findAll,
+  getPagePath,
 } from "./Api";
 
 let emit = defineEmits<{
@@ -131,12 +132,14 @@ let emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
+const pagePath = getPagePath();
+
 const {
   n,
   ns,
   nAsync,
   nsAsync,
-} = useI18n("/<#=mod#>/<#=table#>");
+} = useI18n(pagePath);
 
 const props = withDefaults(
   defineProps<{
@@ -158,6 +161,7 @@ const props = withDefaults(
 );
 
 let inputValue = $ref("");
+let oldInputValue = $ref("");
 
 watch(
   () => inputValue,
@@ -167,6 +171,7 @@ watch(
 );
 
 let modelValue = $ref(props.modelValue);
+let selectedValue: <#=modelName#> | (<#=modelName#> | undefined)[] | null | undefined = undefined;
 
 watch(
   () => props.modelValue,
@@ -231,16 +236,27 @@ async function refreshInputValue() {
   const modelValueArr = getModelValueArr();
   if (modelValueArr.length === 0) {
     inputValue = "";
+    oldInputValue = inputValue;
     return;
+  }
+  let models: CardModel[];
+  if (selectedValue && Array.isArray(selectedValue)) {
+    models = selectedValue.filter((item) => item != null);
+  } else if (selectedValue) {
+    models = [ selectedValue ];
+  } else {
+    models = await getModelsByIds(modelValueArr);
   }
   const models = await getModelsByIds(modelValueArr);
   inputValue = models.map((item) => item?.<#=opts?.lbl_field || "lbl"#> || "").join(", ");
+  oldInputValue = inputValue;
 }
 
 function onClear(e?: PointerEvent) {
   e?.stopPropagation();
   modelValue = undefined;
   inputValue = "";
+  oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
   emit("change");
   emit("clear");
@@ -304,12 +320,16 @@ function blur() {
 }
 
 async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
+  selectedValue = value;
   await nextTick();
   if (props.multiple) {
     emit("change", value);
     await nextTick();
     await nextTick();
     emit("validateField");
+    if (oldInputValue !== inputValue) {
+      await refreshInputValue();
+    }
     return;
   }
   if (!Array.isArray(value)) {
@@ -317,12 +337,18 @@ async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined
     await nextTick();
     await nextTick();
     emit("validateField");
+    if (oldInputValue !== inputValue) {
+      await refreshInputValue();
+    }
     return;
   }
   emit("change", value[0]);
   await nextTick();
   await nextTick();
   emit("validateField");
+  if (oldInputValue !== inputValue) {
+    await refreshInputValue();
+  }
 }
 
 defineExpose({
