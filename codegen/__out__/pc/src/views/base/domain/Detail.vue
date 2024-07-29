@@ -242,6 +242,7 @@ import {
   findLastOrderBy,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -253,7 +254,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/base/domain";
+const pagePath = getPagePath();
 
 const {
   n,

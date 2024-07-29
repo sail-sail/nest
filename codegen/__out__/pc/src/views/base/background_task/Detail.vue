@@ -261,6 +261,7 @@ import type {
 import {
   findOne,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -272,7 +273,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/base/background_task";
+const pagePath = getPagePath();
 
 const {
   n,

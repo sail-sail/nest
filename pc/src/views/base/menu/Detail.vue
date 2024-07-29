@@ -270,6 +270,7 @@ import {
   findLastOrderBy,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -285,7 +286,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/base/menu";
+const pagePath = getPagePath();
 
 const {
   n,

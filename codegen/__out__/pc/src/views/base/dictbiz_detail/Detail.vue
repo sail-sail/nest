@@ -263,6 +263,7 @@ import {
   findLastOrderBy,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -278,7 +279,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/base/dictbiz_detail";
+const pagePath = getPagePath();
 
 const {
   n,

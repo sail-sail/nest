@@ -354,6 +354,7 @@ import {
   findLastOrderBy,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -374,7 +375,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/base/usr";
+const pagePath = getPagePath();
 
 const {
   n,

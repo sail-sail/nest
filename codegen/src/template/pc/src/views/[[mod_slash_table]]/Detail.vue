@@ -2414,6 +2414,7 @@ import {<#
   getEditableDataPermitsByIds,<#
   }
   #>
+  getPagePath,
 } from "./Api";<#
 const foreignTableArr2 = [];
 const foreignTableArr3 = [];
@@ -2920,15 +2921,7 @@ if (mod === "cron" && table === "cron_job") {
 #>
 
 import cronstrue from "cronstrue/i18n";
-import { lang } from "@/locales/index";
-
-let locale = $computed(() => {
-  if (lang === "zh-cn") {
-    return "zh_CN";
-  } else if (lang === "zh-tw") {
-    return "zh_TW";
-  }
-});<#
+import { lang } from "@/locales/index";<#
 }
 #>
 
@@ -2941,7 +2934,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/<#=mod#>/<#=table#>";
+const pagePath = getPagePath();
 
 const {
   n,
@@ -4125,11 +4118,7 @@ let job_lbl = $ref<string>("");
 
 // 任务
 function onJobId(jobModel?: JobModel) {
-  if (!jobModel) {
-    job_lbl = "";
-    return;
-  }
-  job_lbl = jobModel.lbl;
+  job_lbl = jobModel?.lbl || "";
 }
 
 let cron_lbl = $computed(() => {
@@ -4138,8 +4127,10 @@ let cron_lbl = $computed(() => {
   }
   try {
     return cronstrue.toString(
-      dialogModel.cron, {
-        locale,
+      dialogModel.cron,
+      {
+        use24HourTimeFormat: true,
+        locale: lang.replace("-", "_"),
       },
     );
   } catch (err) {

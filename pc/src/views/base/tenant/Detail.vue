@@ -274,6 +274,7 @@ import {
   findLastOrderBy,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -292,7 +293,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/base/tenant";
+const pagePath = getPagePath();
 
 const {
   n,
