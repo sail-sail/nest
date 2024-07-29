@@ -242,6 +242,7 @@ import {
   findOne,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -253,7 +254,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wshop/wxapp_config";
+const pagePath = getPagePath();
 
 const {
   n,

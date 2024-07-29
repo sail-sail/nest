@@ -262,6 +262,7 @@ import {
   findOne,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -277,7 +278,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wx/wxo_usr";
+const pagePath = getPagePath();
 
 const {
   n,

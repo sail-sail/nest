@@ -322,6 +322,7 @@ import {
   findOne,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -339,7 +340,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wshop/order";
+const pagePath = getPagePath();
 
 const {
   n,

@@ -580,6 +580,10 @@ export async function findLastOrderBy(
   return res;
 }
 
+export function getPagePath() {
+  return "/wx/wx_app";
+}
+
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: WxAppInput = {
