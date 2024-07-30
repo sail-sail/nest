@@ -16,12 +16,37 @@
     </script>
     <title>%VITE_APP_TITLE%</title>
     <style>
-      @keyframes loading {
-        from {
-          transform: rotate(0deg);
+      .el-loading-spinner .circular {
+        animation: loading-rotate 2s linear infinite;
+        display: inline;
+        height: 50px;
+        width: 50px;
+      }
+      .el-loading-spinner .path {
+        animation: loading-dash 1.5s ease-in-out infinite;
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: 0;
+        stroke-width: 2;
+        stroke: #409eff;
+        stroke-linecap: round;
+      }
+      @keyframes loading-dash {
+        0% {
+          stroke-dasharray: 1, 200;
+          stroke-dashoffset: 0;
         }
-        to {
-          transform: rotate(360deg);
+        50% {
+          stroke-dasharray: 90, 150;
+          stroke-dashoffset: -40px;
+        }
+        100% {
+          stroke-dasharray: 90, 150;
+          stroke-dashoffset: -120px;
+        }
+      }
+      @keyframes loading-rotate {
+        100% {
+          transform: rotate(1turn);
         }
       }
     </style>
@@ -30,21 +55,32 @@
     style="width: 100%;height: 100%;margin: 0;padding: 0;"
   >
     <div id="app" style="width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;">
-      <div
-        style="width: 80px;height: 80px;animation: loading 1s linear infinite;color: #409eff;"
-      >
+      <div class="el-loading-spinner">
         <svg
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
+          class="circular"
+          viewBox="0 0 50 50"
         >
-          <path
-            fill="currentColor"
-            d="M864 323.2c-9.6 0-22.4-6.4-25.6-16C764.8 195.2 643.2 128 512 128c-19.2 0-32-12.8-32-32s12.8-32 32-32c153.6 0 297.6 76.8 377.6 208 9.6 16 6.4 35.2-9.6 44.8-3.2 3.2-9.6 6.4-16 6.4z"
-          ></path>
+          <circle class="path" cx="25" cy="25" r="20" fill="none"></circle>
         </svg>
       </div>
     </div>
+    <script>
+      let prefersDarkMode = false;
+      const vueuseColor = localStorage.getItem("vueuse-color-scheme");
+      if (vueuseColor === "dark") {
+        prefersDarkMode = true;
+      } else if (vueuseColor === "light") {
+        prefersDarkMode = false;
+      } else {
+        prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      }
+      if (prefersDarkMode) {
+        const el = document.documentElement;
+        if (el) {
+          el.style.setProperty("color-scheme", "dark");
+        }
+      }
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

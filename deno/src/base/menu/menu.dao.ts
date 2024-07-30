@@ -16,14 +16,6 @@ import {
   validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-import {
-  route_path as route_path_menu,
-} from "/gen/base/menu/menu.model.ts";
-
-import {
-  initN,
-} from "/src/base/i18n/i18n.ts";
-
 async function _getMenus(
   parent_id?: MenuId,
 ) {
@@ -109,40 +101,11 @@ async function _getMenus(
   
   if (server_i18n_enable === "false") {
     models = models.filter((item) => item.route_path !== "/base/i18n" && item.route_path !== "/base/lang");
-  } else {
-    await initI18nMenus(models);
   }
   
   models.sort((a, b) => a.order_by - b.order_by);
   
   return models;
-}
-
-/** 菜单国际化 */
-async function initI18nMenus(models: { lbl: string }[]) {
-  const n = initN(route_path_menu);
-  const set = new Set<string>();
-  for (let i = 0; i < models.length; i++) {
-    const item = models[i];
-    set.add(item.lbl);
-  }
-  const arrPrms = new Array<Promise<string>>(set.size);
-  let i = 0;
-  for (const item of set) {
-    arrPrms[i] = n(item);
-    i++;
-  }
-  const arr = await Promise.all(arrPrms);
-  const map = new Map<string, string>();
-  i = 0;
-  for (const item of set) {
-    map.set(item, arr[i]);
-    i++;
-  }
-  for (let i = 0; i < models.length; i++) {
-    const item = models[i];
-    item.lbl = map.get(item.lbl) || item.lbl;
-  }
 }
 
 export async function getMenus() {

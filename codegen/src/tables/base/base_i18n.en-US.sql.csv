@@ -1,0 +1,116 @@
+id,lang_id,menu_id,code,lbl
+fZ27Q16tTveXV6HvKNRQ7w,eYHRCo6WQFm4TBWYzAdERg,,新增,Add
+kO9HdH0pTNSQNMQfr9bRWA,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 复制 的数据,Please select the data to be copied
+7rn6J85YQNmTN5N5quMBlQ,eYHRCo6WQFm4TBWYzAdERg,,复制,Copy
+vrNmFTvnSY2+uWNMC8y3iw,eYHRCo6WQFm4TBWYzAdERg,,请选择需要修改的数据,Please select the data to be modified
+ew9eZD8CSQK++Gle8Hixuw,eYHRCo6WQFm4TBWYzAdERg,,修改,Edit
+D0S3CGgkTiKnwQTvPNfQjA,eYHRCo6WQFm4TBWYzAdERg,,查询,Query
+5XtJyEEVRva0Ocml9tUhPg,eYHRCo6WQFm4TBWYzAdERg,,重置,Reset
+faDtIsBSS6WpS6AWUXED9w,eYHRCo6WQFm4TBWYzAdERg,,查看,View
+v8Z1SP9XQFOvCwy7fIpL4A,eYHRCo6WQFm4TBWYzAdERg,,更多操作,More
+xOznNREdRHCCIKTp0k1iyw,eYHRCo6WQFm4TBWYzAdERg,,导出,Export
+Wt93C3mSQx6pZUNW85yw1g,eYHRCo6WQFm4TBWYzAdERg,,导入,Import
+JkWwsuLWRMaWynTZ6HbxJw,eYHRCo6WQFm4TBWYzAdERg,,编辑,Edit
+I8WJ2AsaTDOB2hS77TCBFg,eYHRCo6WQFm4TBWYzAdERg,,彻底删除,Completely Delete
+M38ch+hfQ2y/PgxEi+E73Q,eYHRCo6WQFm4TBWYzAdERg,,刷新,Refresh
+vzmcwe85T0KOmHplKo6QbQ,eYHRCo6WQFm4TBWYzAdERg,,列操作,Column Operation
+mU3dccCaQnqQPfEHFOHjNg,eYHRCo6WQFm4TBWYzAdERg,,暂存,Temporary
+usxeViWkST2e3n+X5d5j8Q,eYHRCo6WQFm4TBWYzAdERg,,查询条件暂存,Query condition temporary
+GCBs6skUQ3GexqpWaDu9GQ,eYHRCo6WQFm4TBWYzAdERg,,回收站,Recycle Bin
+StE2amFsSJiElbM7PxnwVg,eYHRCo6WQFm4TBWYzAdERg,,已选择,Selected
+6KZKnzQtTsa8FZ0fdWHnBA,eYHRCo6WQFm4TBWYzAdERg,,关闭,Close
+IJPZm2VfSqqG19Z9ZYWxYQ,eYHRCo6WQFm4TBWYzAdERg,,保存并继续,Save and Continue
+VqqkyIB1Re21lVhuvRsihw,eYHRCo6WQFm4TBWYzAdERg,,确定要重置表单吗,Are you sure you want to reset the form?
+mbEJzZ9cTrmBjbzEKnfg8g,eYHRCo6WQFm4TBWYzAdERg,,确定删除已选择的 {0} {1},Are you sure you want to delete the selected {0} {1}?
+HXFOFaPORbGSpz7sr/HCfQ,eYHRCo6WQFm4TBWYzAdERg,,请选择需要删除的 {0},Please select the {0} to be deleted
+XnNZCoA4SNWRxmn8lSxqjQ,eYHRCo6WQFm4TBWYzAdERg,,无权限,Unauthorized
+6UlLyJULTUGhnwLGl8JWiw,eYHRCo6WQFm4TBWYzAdERg,,删除 {0} {1} 成功,Delete {0} {1} successfully
+5Up5WozrQdqYGKBpnPU2eQ,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 彻底删除 的 {0},Please select the {0} to be completely deleted
+XWNj4QGQSvq/XDcZBTWC+A,eYHRCo6WQFm4TBWYzAdERg,,确定 彻底删除 已选择的 {0} {1},Confirm to completely delete the selected {0} {1}
+eV7MehtaQeGRDiw9BGYsfA,eYHRCo6WQFm4TBWYzAdERg,,彻底删除 {0} {1} 成功,Completely delete {0} {1} successfully
+r3RnSlUORpm/WtAQp0vCyg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要还原的 {0},Please select the {0} to be restored
+mIUhD5roTOG3xXYR9ESTAA,eYHRCo6WQFm4TBWYzAdERg,,确定还原已选择的 {0} {1},Confirm to restore the selected {0} {1}
+2KP/vPmjRv6EPd75rvL7Gg,eYHRCo6WQFm4TBWYzAdERg,,还原 {0} {1} 成功,Restore {0} {1} successfully
+sefsRmhfStma5j9MdOEwJg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要查看的 {0},Please select the {0} to be viewed
+PWdm/EMmRPiZlksqHSRDSQ,eYHRCo6WQFm4TBWYzAdERg,,加载中...,Loading...
+s/qvBvhPT1GI5qHYAM+GxA,eYHRCo6WQFm4TBWYzAdERg,,页面不存在,Page not found
+x5IqSxyhSX22u/k2VKq2Cw,eYHRCo6WQFm4TBWYzAdERg,,返回,Return
+Muax5v/uR5GM83WxU1qiQQ,eYHRCo6WQFm4TBWYzAdERg,,菜单导航,Menu Navigation
+wUtPZhnBR86AMKJ62McpaQ,eYHRCo6WQFm4TBWYzAdERg,,请选择需要删除的数据,Please select the data to be deleted
+A9Vm/OxxTJe1kI7D0toUqg,eYHRCo6WQFm4TBWYzAdERg,,确定删除已选择的 {0} 条数据,Confirm to delete the selected {0} pieces of data
+YmjmzT5DTQW0Fnub85cCzQ,eYHRCo6WQFm4TBWYzAdERg,,确定,Confirm
+e3FmYcfiRd+z/ZzZylpL2Q,eYHRCo6WQFm4TBWYzAdERg,,取消,Cancel
+Q3wF6s7zToeP1Ec1dPT8hA,eYHRCo6WQFm4TBWYzAdERg,,删除 {0} 条数据成功,Delete {0} pieces of data successfully
+RDilrZWZQ0mFZyFw1+wpow,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 彻底删除 的数据,Please select the data to be completely deleted
+uqOx78z9S5SIHYQ7SP6Q8w,eYHRCo6WQFm4TBWYzAdERg,,确定 彻底删除 已选择的 {0} 条数据,Confirm to completely delete the selected {0} pieces of data
+qzuXvYyVTvGuLbHuU+pv1g,eYHRCo6WQFm4TBWYzAdERg,,彻底删除 {0} 条数据成功,Completely delete {0} pieces of data successfully
+AKrVZI1QRM27oK3W2IHFuw,eYHRCo6WQFm4TBWYzAdERg,,锁定,Lock
+LTC+KNAjRe+usenZJpq7aA,eYHRCo6WQFm4TBWYzAdERg,,解锁,Unlock
+BvK1jCQXS8iFkXTNw2baRg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 锁定 的数据,Please select the data to be locked
+ZQzdh2afTpOgw6RnWPsr6A,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 解锁 的数据,Please select the data to be unlocked
+AOcCPjhwRHOVOSEtocA8Sg,eYHRCo6WQFm4TBWYzAdERg,,锁定 {0} 条数据成功,Lock {0} pieces of data successfully
+Y4diBPPWT6iYiJ80K/BsNA,eYHRCo6WQFm4TBWYzAdERg,,解锁 {0} 条数据成功,Unlock {0} pieces of data successfully
+Fa/M4Hm+TzeSbxNgswDLxA,eYHRCo6WQFm4TBWYzAdERg,,启用,Enable
+5cdJHes9SVORXOO78XrD2g,eYHRCo6WQFm4TBWYzAdERg,,禁用,Disable
+K7T6R6BUTOmIPaAJcigjow,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 启用 的数据,Please select the data to be enabled
+Vqkxp3edR4qWlBEd+j5lqw,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 禁用 的数据,Please select the data to be disabled
+veXuk6hkQwSpeCOdeq647A,eYHRCo6WQFm4TBWYzAdERg,,启用 {0} 条数据成功,Enable {0} pieces of data successfully
+i4rpKYiKSUm8+XQjG7CreA,eYHRCo6WQFm4TBWYzAdERg,,禁用 {0} 条数据成功,Disable {0} pieces of data successfully
+ocqOoTC4RTqIt5acqytNOg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要还原的数据,Please select the data to restore
+eUqQOAY8RVy3czS/1/xN8w,eYHRCo6WQFm4TBWYzAdERg,,确定还原已选择的 {0} 条数据,Confirm to restore the selected {0} pieces of data
+vi091MmERpaIolbY0wurxQ,eYHRCo6WQFm4TBWYzAdERg,,还原 {0} 条数据成功,Restore {0} pieces of data successfully
+c9XnVIP1QlWVH4lvIIsRRg,eYHRCo6WQFm4TBWYzAdERg,,还原 {0} 条数据成功,Restore {0} pieces of data successfully
+0LrK+P3jSQ+qM+tF6AQjzg,eYHRCo6WQFm4TBWYzAdERg,,请输入,Please enter
+PoSjTPGDTKeBfyCMIV7BlA,eYHRCo6WQFm4TBWYzAdERg,,请选择,Please select
+X4iqaZHZQWqYymzn+6jR3A,eYHRCo6WQFm4TBWYzAdERg,,批量导入,Batch Import
+rnt8uL28SAqd6t54qTxoFQ,eYHRCo6WQFm4TBWYzAdERg,,正在导入...,Importing...
+ZaCobtbNQzaNKD5TjUT08Q,eYHRCo6WQFm4TBWYzAdERg,,新增成功,Add successfully
+ap02DeGpSqOjwhrKB2/QTA,eYHRCo6WQFm4TBWYzAdERg,,编辑成功,Edit successfully
++zKiTrzFQX+ND9G4vZReqQ,eYHRCo6WQFm4TBWYzAdERg,,取消,Cancel
+EtCtoR6uTHKOHm04GLjWzw,eYHRCo6WQFm4TBWYzAdERg,,保存,Save
+vZVGIYeHSoOGz7S38Z48GA,eYHRCo6WQFm4TBWYzAdERg,,上一项,Previous
+pKJZq3tvQIiV0dYXa4ifXA,eYHRCo6WQFm4TBWYzAdERg,,下一项,Next
+wucgwrfnTKSS692qi99evQ,eYHRCo6WQFm4TBWYzAdERg,,开始,Start
+6h7IZQ0GQ/2ICSf7tDclyA,eYHRCo6WQFm4TBWYzAdERg,,数据已经存在,Data already exists
+EwhF0nxvR42gRKIlMobH6w,eYHRCo6WQFm4TBWYzAdERg,,不能修改已经锁定的数据,Unable to modify locked data
+qsJon7BaT1GenCH7sK2B1A,eYHRCo6WQFm4TBWYzAdERg,,不能删除已经锁定的数据,Unable to delete locked data
+0IisbqBXQDuSf9fRPBfUdg,eYHRCo6WQFm4TBWYzAdERg,,版本号,Version
+9oS3go9ASMahCddminFdUw,eYHRCo6WQFm4TBWYzAdERg,,创建人,Creator
+q3FYtUyXSYiDzDTgcQ4SLQ,eYHRCo6WQFm4TBWYzAdERg,,创建时间,Creation Time
++W2rlzsJS16EVWB5yzvtPA,eYHRCo6WQFm4TBWYzAdERg,,更新人,Updater
+ziPsIVUAQMav3m6YNTt+hQ,eYHRCo6WQFm4TBWYzAdERg,,更新时间,Update Time
+VXqqQfe6RImljIdOJgP3+w,eYHRCo6WQFm4TBWYzAdERg,,删除,Delete
+wKQ4ZjuCQuis7LpZXVaYFg,eYHRCo6WQFm4TBWYzAdERg,,删除时间,Deletion Time
+u81qzHdvQvWnLcp/AwDEvA,eYHRCo6WQFm4TBWYzAdERg,,导出失败,Export failed
+tnPRnqK3Qr2Di7MKeK3Pdg,eYHRCo6WQFm4TBWYzAdERg,,上传,Upload
+j0q2AJ+NS4iln8PIDX2GgA,MGExYjJhODVkY2FlNDI4OW,,下载,Download
+Ns1W3ROITMWZ2/xLorRZMw,MGExYjJhODVkY2FlNDI4OW,,打印,Print
++FHxokPLQBu7iTrUmIEiBQ,MGExYjJhODVkY2FlNDI4OW,,网页中打开,Open in web
+516Y0LTNTQWPQGudS23k9Q,MGExYjJhODVkY2FlNDI4OW,,前移,Move forward
++haDYzDcQwa9q6WwQkIiBQ,MGExYjJhODVkY2FlNDI4OW,,后移,Move backward
+7JEso81eTfu6anGus5GTUg,MGExYjJhODVkY2FlNDI4OW,,(暂无附件),(No attachments)
+MO6g+QxgSFKsLGV4J59+4Q,MGExYjJhODVkY2FlNDI4OW,,"加载中, 请稍后...","Loading, please wait..."
+v5spr5iTQP2pwmIa/wn30w,MGExYjJhODVkY2FlNDI4OW,,最多只能上传 {0} 个附件,Up to {0} attachments can be uploaded
+pO8sqGu0T86hQiXQiI3qZw,MGExYjJhODVkY2FlNDI4OW,,确定删除当前附件吗？,Are you sure you want to delete the current attachment?
+A5dcTiQkTrahFOf21g4nHQ,MGExYjJhODVkY2FlNDI4OW,,删除成功,Delete successfully
+KQpyJoZKQzWXiSvlooyOSw,eYHRCo6WQFm4TBWYzAdERg,,"文件 {0} 尚未上传, 确定取消?","File {0} has not been uploaded, are you sure you want to cancel?"
+/wvTeQcJRVCFeg/y/0md1g,eYHRCo6WQFm4TBWYzAdERg,,正在导入,Importing
+2PgaOD36T62/1cxu8VGp5A,eYHRCo6WQFm4TBWYzAdERg,,确定停止导入?,Confirm to stop importing?
+88xPEhoPTlu4wmyzSDo+/A,eYHRCo6WQFm4TBWYzAdERg,,停止导入,Stop importing
+zxiXsZxSQnGO+NZxMh6Riw,eYHRCo6WQFm4TBWYzAdERg,,我再想想,Let me think again
+QtJ1lzrySIyg2rtYpK/3Vw,eYHRCo6WQFm4TBWYzAdERg,,"修改失败, 数据已被删除","Modification failed, data has been deleted"
+kTfy0dUNQGGvXl77NNLiZQ,eYHRCo6WQFm4TBWYzAdERg,,登录,Login
+p3MZE67rSQWXWDAhUVIY3A,eYHRCo6WQFm4TBWYzAdERg,,正在登录,Logging in
+2fVeWJpJSYSGmvXqOBTmcw,eYHRCo6WQFm4TBWYzAdERg,,文件,File
+kpBkVS2KThu8zjGuRViXFg,eYHRCo6WQFm4TBWYzAdERg,,下载导入模板,Download import template
+hBnG+uPxSAKYeZW7cz2Q8Q,eYHRCo6WQFm4TBWYzAdERg,,导入模板,Import template
+7yL2KUvpR4CVWo6EIWGLxg,eYHRCo6WQFm4TBWYzAdERg,,确定删除当前图片吗？,Are you sure you want to delete the current image?
+S2zIGxt1QVWQ4qInwJbTtQ,eYHRCo6WQFm4TBWYzAdERg,,最多只能上传 {0} 张图片,Up to {0} images can be uploaded
+1jIapXE8TReM5lBioI548g,eYHRCo6WQFm4TBWYzAdERg,,文件大小不能超过 {0}M,File size cannot exceed {0}M
+4nIR5P8fTgSVedWwJbcjoQ,eYHRCo6WQFm4TBWYzAdERg,,还原,Restore
+5LoNLP+jRBOyu7FjQHfv1A,eYHRCo6WQFm4TBWYzAdERg,,不能删除系统记录,Unable to delete system records
+AEbisem9RoGpMlyNfVcjKQ,eYHRCo6WQFm4TBWYzAdERg,,管理系统,Management System
+Egt9hJQZR/Saw0l2s4Kfmg,eYHRCo6WQFm4TBWYzAdERg,,管理系统 (测试库),Management System (Test)
+TTVr2duJTVitqhlRtx0AkA,eYHRCo6WQFm4TBWYzAdERg,,确定清空缓存?,Confirm to clear the cache?
+hapETeJGSYi4S5dBhQkvdQ,eYHRCo6WQFm4TBWYzAdERg,,确定退出登录?,Confirm to log out?
+2Arl4LHQQ+OxPhSTXGMRvQ,eYHRCo6WQFm4TBWYzAdERg,,提示,Notice

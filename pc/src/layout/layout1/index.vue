@@ -252,7 +252,7 @@
                 un-whitespace-nowrap
               >
                 
-                <el-dropdown-item @click="toggleDark(!isDark)">
+                <el-dropdown-item @click="onToggleDark(!isDark)">
                   <template v-if="!isDark">
                     <ElIcon>
                       <div un-i="iconfont-moon"></div>
@@ -412,6 +412,13 @@ let locales = $ref([
 // 黑暗模式
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
+
+function onToggleDark(
+  isDark: boolean,
+) {
+  document.documentElement.style.removeProperty("color-scheme");
+  return toggleDark(isDark);
+}
 
 // 设置选项卡到当前的路由
 watch(
