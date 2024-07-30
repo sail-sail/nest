@@ -242,6 +242,19 @@ CREATE TABLE if not exists `base_menu` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='菜单';
 
+------------------------------------------------------------------------ 菜单语言
+drop table if exists `base_menu_lang`;
+CREATE TABLE if not exists `base_menu_lang` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `lang_id` varchar(22) NOT NULL DEFAULT '' COMMENT '语言',
+  `menu_id` varchar(22) NOT NULL DEFAULT '' COMMENT '菜单',
+  `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  INDEX (`lang_id`, `menu_id`, `is_deleted`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='菜单语言';
+
 ------------------------------------------------------------------------ 语言
 drop table if exists `base_lang`;
 CREATE TABLE if not exists `base_lang` (

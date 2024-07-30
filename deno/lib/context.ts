@@ -235,6 +235,8 @@ export class Context {
   /** 当前请求的语言 */
   lang = "zh-CN";
   
+  lang_id: LangId | undefined;
+  
   /** token */
   authorization: string | null | undefined;
   
@@ -657,6 +659,23 @@ export function getNow() {
     throw new ServiceException("context is empty!");
   }
   return context.reqDate;
+}
+
+/** 获取当前语言ID */
+export async function get_lang_id() {
+  const context = useMaybeContext();
+  if (context?.lang_id) {
+    return context?.lang_id;
+  }
+  const lang = context?.lang;
+  if (lang) {
+    type Result = {
+      id: LangId;
+    }
+    const res = await queryOne<Result>(`select id from base_lang where code=?`, [ lang ]);
+    context.lang_id = res?.id;
+    return context.lang_id;
+  }
 }
 
 export async function getCache(

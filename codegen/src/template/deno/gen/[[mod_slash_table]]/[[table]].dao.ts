@@ -137,7 +137,12 @@ if (!(hasDataPermit() && hasCreateUsrId)) {
 import {
   get_is_debug,
   get_is_silent_mode,
-  get_is_creating,
+  get_is_creating,<#
+  if (opts.langTable) {
+  #>
+  get_lang_id,<#
+  }
+  #>
 } from "/lib/context.ts";
 
 import {
@@ -822,7 +827,7 @@ async function getWhereQuery(
 }
 <#
 if (
-  !(hasDataPermit() && hasCreateUsrId)
+  !(hasDataPermit() && hasCreateUsrId) && !opts.langTable
 ) {
 #>
 // deno-lint-ignore require-await<#
@@ -920,6 +925,11 @@ async function getFromQuery(
   left join <#=foreignKey.mod#>_<#=foreignTable#> <#=column_name#>_lbl on <#=column_name#>_lbl.<#=foreignKey.column#>=t.<#=column_name#><#
     }
   #><#
+  }
+  #><#
+  if (opts.langTable) {
+  #>
+  left join <#=opts.langTable.opts.table_name#> on <#=opts.langTable.opts.table_name#>.<#=table#>_id=t.id and <#=opts.langTable.opts.table_name#>.lang_id=${ args.push(await get_lang_id()) }<#
   }
   #>`;<#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -1146,6 +1156,32 @@ export async function findAll(
       #><#
       }
       #><#
+      }
+      #><#
+      const excludeArr = [
+        "id",
+        "lang_id",
+        "create_usr_id",
+        "create_usr_id_lbl",
+        "create_time",
+        "update_usr_id",
+        "update_usr_id_lbl",
+        "update_time",
+        "is_deleted",
+        "tenant_id",
+        "deleted_usr_id",
+        "deleted_usr_id_lbl",
+        "deleted_time",
+      ];
+      excludeArr.push(`${ table }_id`);
+      for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
+        const record = opts.langTable.records[i];
+        const column_name = record.COLUMN_NAME;
+        if (
+          excludeArr.includes(column_name)
+        ) continue;
+      #>
+      ,<#=opts.langTable.opts.table_name#>.<#=column_name#> <#=column_name#>_lang<#
       }
       #>
     from
@@ -1553,6 +1589,21 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];<#
+    for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
+      const record = opts.langTable.records[i];
+      const column_name = record.COLUMN_NAME;
+      if (excludeArr.includes(column_name)) continue;
+    #>
+    
+    // deno-lint-ignore no-explicit-any
+    if ((model as any).<#=column_name#>_lang) {
+      // deno-lint-ignore no-explicit-any
+      model.<#=column_name#> = (model as any).<#=column_name#>_lang;
+      // deno-lint-ignore no-explicit-any
+      (model as any).<#=column_name#>_lang = undefined;
+    }<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;

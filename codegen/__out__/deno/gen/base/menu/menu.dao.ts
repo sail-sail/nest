@@ -3,6 +3,7 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
+  get_lang_id,
 } from "/lib/context.ts";
 
 import {
@@ -178,7 +179,6 @@ async function getWhereQuery(
   return whereQuery;
 }
 
-// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: Readonly<MenuSearch>,
@@ -186,7 +186,8 @@ async function getFromQuery(
   },
 ) {
   let fromQuery = `base_menu t
-  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id`;
+  left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id
+  left join base_menu_lang on base_menu_lang.menu_id=t.id and base_menu_lang.lang_id=${ args.push(await get_lang_id()) }`;
   return fromQuery;
 }
 
@@ -340,6 +341,8 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
       ,parent_id_lbl.lbl parent_id_lbl
+      ,base_menu_lang.lbl lbl_lang
+      ,base_menu_lang.rem rem_lang
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -413,6 +416,22 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // deno-lint-ignore no-explicit-any
+    if ((model as any).lbl_lang) {
+      // deno-lint-ignore no-explicit-any
+      model.lbl = (model as any).lbl_lang;
+      // deno-lint-ignore no-explicit-any
+      (model as any).lbl_lang = undefined;
+    }
+    
+    // deno-lint-ignore no-explicit-any
+    if ((model as any).rem_lang) {
+      // deno-lint-ignore no-explicit-any
+      model.rem = (model as any).rem_lang;
+      // deno-lint-ignore no-explicit-any
+      (model as any).rem_lang = undefined;
+    }
     
     // 父菜单
     model.parent_id_lbl = model.parent_id_lbl || "";

@@ -991,6 +991,22 @@ export async function getSchema(
     }
   }
   
+  // langTable
+  if (!tables[table_name].opts.langTable) {
+    const all_table_names = await getAllTables(context);
+    for (let i = 0; i < all_table_names.length; i++) {
+      const table_name2 = all_table_names[i].TABLE_NAME;
+      if (table_name2 === `${ mod }_${ table }_lang`) {
+        (tables[table_name].opts.langTable as any) = tables[table_name].opts.langTable || { };
+        (tables[table_name].opts.langTable.opts as any) = tables[table_name].opts.langTable.opts || { };
+        tables[table_name].opts.langTable.opts.mod = mod;
+        tables[table_name].opts.langTable.opts.table = `${ table }_lang`;
+        tables[table_name].opts.langTable.opts.table_name = table_name2;
+        tables[table_name].opts.langTable.records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name2);
+      }
+    }
+  }
+  
   tablesConfigItemMap[table_name] = tables[table_name];
   return tablesConfigItemMap[table_name];
 }
