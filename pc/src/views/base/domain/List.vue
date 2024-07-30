@@ -1273,7 +1273,7 @@ async function openAdd() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("新增") + await nsAsync("域名"),
+    title: await nsAsync("新增") + " " + await nsAsync("域名"),
     action: "add",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1309,7 +1309,7 @@ async function openCopy() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("复制") + await nsAsync("域名"),
+    title: await nsAsync("复制") + " " + await nsAsync("域名"),
     action: "copy",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1507,7 +1507,7 @@ async function openEdit() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("编辑") + await nsAsync("域名"),
+    title: await nsAsync("编辑") + " " + await nsAsync("域名"),
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1574,7 +1574,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + await nsAsync("域名"),
+    title: await nsAsync("查看") + " " + await nsAsync("域名"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),

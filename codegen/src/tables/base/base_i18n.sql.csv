@@ -1,8 +1,8 @@
 id,lang_id,menu_id,code,lbl
 UgWZtV+cR4SlheYM38Cy5A,MGExYjJhODVkY2FlNDI4OW,,新增,新增
-w3ilTmPzTE+n/+YhyrjEnw,MGExYjJhODVkY2FlNDI4OW,,请选择需要 复制 的数据,请选择需要 复制 的数据
+w3ilTmPzTE+n/+YhyrjEnw,MGExYjJhODVkY2FlNDI4OW,,请选择需要 复制 的 {0},请选择需要 复制 的 {0}
 ED51CozhSxaduDt2GihRdQ,MGExYjJhODVkY2FlNDI4OW,,复制,复制
-yNynpzj0Q7OXabid6MQoew,MGExYjJhODVkY2FlNDI4OW,,请选择需要修改的数据,请选择需要修改的数据
+yNynpzj0Q7OXabid6MQoew,MGExYjJhODVkY2FlNDI4OW,,请选择需要 编辑 的 {0},请选择需要 编辑 的 {0}
 jJWm7f4HR2OhQRJEdfyXtw,MGExYjJhODVkY2FlNDI4OW,,修改,修改
 0h43sKetTFKNa+P5YdbbpQ,MGExYjJhODVkY2FlNDI4OW,,查询,查询
 MDkMZilsRx6snpWzKnLoUA,MGExYjJhODVkY2FlNDI4OW,,重置,重置
@@ -36,14 +36,8 @@ elL3TrHUSQmtf9ViuH9JFA,MGExYjJhODVkY2FlNDI4OW,,加载中...,加载中...
 esLkX5UsSUCZjX6Aux/7MA,MGExYjJhODVkY2FlNDI4OW,,页面不存在,页面不存在
 SNhuz2/ESYePt7ZYnc/Stw,MGExYjJhODVkY2FlNDI4OW,,返回,返回
 9uXn+3aBRW+bKPpNBGk/1A,MGExYjJhODVkY2FlNDI4OW,,菜单导航,菜单导航
-8//HoJnwSmumcuO+yF2gCQ,MGExYjJhODVkY2FlNDI4OW,,请选择需要删除的数据,请选择需要删除的数据
-E+PSos6/QAe+TjFZJdyI/A,MGExYjJhODVkY2FlNDI4OW,,确定删除已选择的 {0} 条数据,确定删除已选择的 {0} 条数据
 UooBwSqHSequWKHArP/1qQ,MGExYjJhODVkY2FlNDI4OW,,确定,确定
 RfswGVmiTdi501RrRHRNkw,MGExYjJhODVkY2FlNDI4OW,,取消,取消
-ElDexdF5QZewJDjN4gD0yA,MGExYjJhODVkY2FlNDI4OW,,删除 {0} 条数据成功,删除 {0} 条数据成功
-tBoPBn9xSUGuvZBVtrcpYw,MGExYjJhODVkY2FlNDI4OW,,请选择需要 彻底删除 的数据,请选择需要 彻底删除 的数据
-la3VGdqVR1aZKAv4Pl7pPQ,MGExYjJhODVkY2FlNDI4OW,,确定 彻底删除 已选择的 {0} 条数据,确定 彻底删除 已选择的 {0} 条数据
-0eZFxjpxSVuguNiCLgOwgw,MGExYjJhODVkY2FlNDI4OW,,彻底删除 {0} 条数据成功,彻底删除 {0} 条数据成功
 dORs/VYFT8C3H12cs22asQ,MGExYjJhODVkY2FlNDI4OW,,锁定,锁定
 oJsHDHvhSAaPxIX0/QebFQ,MGExYjJhODVkY2FlNDI4OW,,解锁,解锁
 oiqtiX+XTg+gLoKGhNjk9Q,MGExYjJhODVkY2FlNDI4OW,,请选择需要 锁定 的数据,请选择需要 锁定 的数据
@@ -52,14 +46,11 @@ iiGbznXQTgCPsFB9XFxPXg,MGExYjJhODVkY2FlNDI4OW,,锁定 {0} 条数据成功,锁定
 kKigJ268QEKonRJrM9uhoQ,MGExYjJhODVkY2FlNDI4OW,,解锁 {0} 条数据成功,解锁 {0} 条数据成功
 /g6Al3DSTROqlTGRvJWqGA,MGExYjJhODVkY2FlNDI4OW,,启用,启用
 Z1DAknztT2SrfAFYoIEQNA,MGExYjJhODVkY2FlNDI4OW,,禁用,禁用
-1SJuHrw+TqmkYivmVr2x4A,MGExYjJhODVkY2FlNDI4OW,,请选择需要 启用 的数据,请选择需要 启用 的数据
-iCXq1PaBScCNZb47LO0QaQ,MGExYjJhODVkY2FlNDI4OW,,请选择需要 禁用 的数据,请选择需要 禁用 的数据
+1SJuHrw+TqmkYivmVr2x4A,MGExYjJhODVkY2FlNDI4OW,,请选择需要 启用 的 {0},请选择需要 启用 的 {0}
+iCXq1PaBScCNZb47LO0QaQ,MGExYjJhODVkY2FlNDI4OW,,请选择需要 禁用 的 {0},请选择需要 禁用 的 {0}
 HjjnHxKXQkKiN9OY/BnT/Q,MGExYjJhODVkY2FlNDI4OW,,启用 {0} 条数据成功,启用 {0} 条数据成功
 xGcTriG2Qzqw5uc2lbn4XA,MGExYjJhODVkY2FlNDI4OW,,禁用 {0} 条数据成功,解锁 {0} 条数据成功
-P4Rj7h39S7iwavk+E7WoTw,MGExYjJhODVkY2FlNDI4OW,,请选择需要还原的数据,请选择需要还原的数据
-f++hFl8CQiGSxFqj4XjCOA,MGExYjJhODVkY2FlNDI4OW,,确定还原已选择的 {0} 条数据,确定还原已选择的 {0} 条数据
-Te6qPR8rRiCMG33Twuk6LQ,MGExYjJhODVkY2FlNDI4OW,,还原 {0} 条数据成功,还原 {0} 条数据成功
-UeKxBE/PQDGVsastfXIc4Q,MGExYjJhODVkY2FlNDI4OW,,还原 {0} 条数据成功,还原 {0} 条数据成功
+Te6qPR8rRiCMG33Twuk6LQ,MGExYjJhODVkY2FlNDI4OW,,还原 {0} {1} 成功,还原 {0} {1} 成功
 j8Dqo5DjQNGA8Q/0gm3qlQ,MGExYjJhODVkY2FlNDI4OW,,请输入,请输入
 jbRypV7LTyad+CY8sRM0Cg,MGExYjJhODVkY2FlNDI4OW,,请选择,请选择
 UhYlzE4lTeiiMIwiHFybpQ,MGExYjJhODVkY2FlNDI4OW,,批量导入,批量导入

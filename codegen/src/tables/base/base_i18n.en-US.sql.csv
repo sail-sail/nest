@@ -1,8 +1,8 @@
 id,lang_id,menu_id,code,lbl
 fZ27Q16tTveXV6HvKNRQ7w,eYHRCo6WQFm4TBWYzAdERg,,新增,Add
-kO9HdH0pTNSQNMQfr9bRWA,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 复制 的数据,Please select the data to be copied
+kO9HdH0pTNSQNMQfr9bRWA,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 复制 的 {0},Please select the {0} to be copied
 7rn6J85YQNmTN5N5quMBlQ,eYHRCo6WQFm4TBWYzAdERg,,复制,Copy
-vrNmFTvnSY2+uWNMC8y3iw,eYHRCo6WQFm4TBWYzAdERg,,请选择需要修改的数据,Please select the data to be modified
+vrNmFTvnSY2+uWNMC8y3iw,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 编辑 的 {0},Please select the {0} to be edited
 ew9eZD8CSQK++Gle8Hixuw,eYHRCo6WQFm4TBWYzAdERg,,修改,Edit
 D0S3CGgkTiKnwQTvPNfQjA,eYHRCo6WQFm4TBWYzAdERg,,查询,Query
 5XtJyEEVRva0Ocml9tUhPg,eYHRCo6WQFm4TBWYzAdERg,,重置,Reset
@@ -20,46 +20,37 @@ GCBs6skUQ3GexqpWaDu9GQ,eYHRCo6WQFm4TBWYzAdERg,,回收站,Recycle Bin
 StE2amFsSJiElbM7PxnwVg,eYHRCo6WQFm4TBWYzAdERg,,已选择,Selected
 6KZKnzQtTsa8FZ0fdWHnBA,eYHRCo6WQFm4TBWYzAdERg,,关闭,Close
 IJPZm2VfSqqG19Z9ZYWxYQ,eYHRCo6WQFm4TBWYzAdERg,,保存并继续,Save and Continue
-VqqkyIB1Re21lVhuvRsihw,eYHRCo6WQFm4TBWYzAdERg,,确定要重置表单吗,Are you sure you want to reset the form?
-mbEJzZ9cTrmBjbzEKnfg8g,eYHRCo6WQFm4TBWYzAdERg,,确定删除已选择的 {0} {1},Are you sure you want to delete the selected {0} {1}?
+VqqkyIB1Re21lVhuvRsihw,eYHRCo6WQFm4TBWYzAdERg,,确定要重置表单吗,Are you sure to reset the form
+mbEJzZ9cTrmBjbzEKnfg8g,eYHRCo6WQFm4TBWYzAdERg,,确定删除已选择的 {0} {1},Are you sure to delete the {0} selected {1}
 HXFOFaPORbGSpz7sr/HCfQ,eYHRCo6WQFm4TBWYzAdERg,,请选择需要删除的 {0},Please select the {0} to be deleted
 XnNZCoA4SNWRxmn8lSxqjQ,eYHRCo6WQFm4TBWYzAdERg,,无权限,Unauthorized
 6UlLyJULTUGhnwLGl8JWiw,eYHRCo6WQFm4TBWYzAdERg,,删除 {0} {1} 成功,Delete {0} {1} successfully
 5Up5WozrQdqYGKBpnPU2eQ,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 彻底删除 的 {0},Please select the {0} to be completely deleted
-XWNj4QGQSvq/XDcZBTWC+A,eYHRCo6WQFm4TBWYzAdERg,,确定 彻底删除 已选择的 {0} {1},Confirm to completely delete the selected {0} {1}
+XWNj4QGQSvq/XDcZBTWC+A,eYHRCo6WQFm4TBWYzAdERg,,确定 彻底删除 已选择的 {0} {1},Confirm to completely delete the {0} selected {1}
 eV7MehtaQeGRDiw9BGYsfA,eYHRCo6WQFm4TBWYzAdERg,,彻底删除 {0} {1} 成功,Completely delete {0} {1} successfully
 r3RnSlUORpm/WtAQp0vCyg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要还原的 {0},Please select the {0} to be restored
-mIUhD5roTOG3xXYR9ESTAA,eYHRCo6WQFm4TBWYzAdERg,,确定还原已选择的 {0} {1},Confirm to restore the selected {0} {1}
-2KP/vPmjRv6EPd75rvL7Gg,eYHRCo6WQFm4TBWYzAdERg,,还原 {0} {1} 成功,Restore {0} {1} successfully
+mIUhD5roTOG3xXYR9ESTAA,eYHRCo6WQFm4TBWYzAdERg,,确定还原已选择的 {0} {1},Confirm to restore the {0} selected {1}
+2KP/vPmjRv6EPd75rvL7Gg,eYHRCo6WQFm4TBWYzAdERg,,还原 {0} {1} 成功,Successfully restored {0} {1}
 sefsRmhfStma5j9MdOEwJg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要查看的 {0},Please select the {0} to be viewed
 PWdm/EMmRPiZlksqHSRDSQ,eYHRCo6WQFm4TBWYzAdERg,,加载中...,Loading...
 s/qvBvhPT1GI5qHYAM+GxA,eYHRCo6WQFm4TBWYzAdERg,,页面不存在,Page not found
 x5IqSxyhSX22u/k2VKq2Cw,eYHRCo6WQFm4TBWYzAdERg,,返回,Return
 Muax5v/uR5GM83WxU1qiQQ,eYHRCo6WQFm4TBWYzAdERg,,菜单导航,Menu Navigation
-wUtPZhnBR86AMKJ62McpaQ,eYHRCo6WQFm4TBWYzAdERg,,请选择需要删除的数据,Please select the data to be deleted
-A9Vm/OxxTJe1kI7D0toUqg,eYHRCo6WQFm4TBWYzAdERg,,确定删除已选择的 {0} 条数据,Confirm to delete the selected {0} pieces of data
 YmjmzT5DTQW0Fnub85cCzQ,eYHRCo6WQFm4TBWYzAdERg,,确定,Confirm
 e3FmYcfiRd+z/ZzZylpL2Q,eYHRCo6WQFm4TBWYzAdERg,,取消,Cancel
-Q3wF6s7zToeP1Ec1dPT8hA,eYHRCo6WQFm4TBWYzAdERg,,删除 {0} 条数据成功,Delete {0} pieces of data successfully
-RDilrZWZQ0mFZyFw1+wpow,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 彻底删除 的数据,Please select the data to be completely deleted
-uqOx78z9S5SIHYQ7SP6Q8w,eYHRCo6WQFm4TBWYzAdERg,,确定 彻底删除 已选择的 {0} 条数据,Confirm to completely delete the selected {0} pieces of data
-qzuXvYyVTvGuLbHuU+pv1g,eYHRCo6WQFm4TBWYzAdERg,,彻底删除 {0} 条数据成功,Completely delete {0} pieces of data successfully
 AKrVZI1QRM27oK3W2IHFuw,eYHRCo6WQFm4TBWYzAdERg,,锁定,Lock
 LTC+KNAjRe+usenZJpq7aA,eYHRCo6WQFm4TBWYzAdERg,,解锁,Unlock
-BvK1jCQXS8iFkXTNw2baRg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 锁定 的数据,Please select the data to be locked
-ZQzdh2afTpOgw6RnWPsr6A,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 解锁 的数据,Please select the data to be unlocked
+BvK1jCQXS8iFkXTNw2baRg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 锁定 的 {0},Please select the {0} to be locked
+ZQzdh2afTpOgw6RnWPsr6A,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 解锁 的 {0},Please select the {0} to be unlocked
 AOcCPjhwRHOVOSEtocA8Sg,eYHRCo6WQFm4TBWYzAdERg,,锁定 {0} 条数据成功,Lock {0} pieces of data successfully
 Y4diBPPWT6iYiJ80K/BsNA,eYHRCo6WQFm4TBWYzAdERg,,解锁 {0} 条数据成功,Unlock {0} pieces of data successfully
 Fa/M4Hm+TzeSbxNgswDLxA,eYHRCo6WQFm4TBWYzAdERg,,启用,Enable
 5cdJHes9SVORXOO78XrD2g,eYHRCo6WQFm4TBWYzAdERg,,禁用,Disable
-K7T6R6BUTOmIPaAJcigjow,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 启用 的数据,Please select the data to be enabled
-Vqkxp3edR4qWlBEd+j5lqw,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 禁用 的数据,Please select the data to be disabled
+K7T6R6BUTOmIPaAJcigjow,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 启用 的 {0},Please select the {0} to be enabled
+Vqkxp3edR4qWlBEd+j5lqw,eYHRCo6WQFm4TBWYzAdERg,,请选择需要 禁用 的 {0},Please select the {0} to be disabled
 veXuk6hkQwSpeCOdeq647A,eYHRCo6WQFm4TBWYzAdERg,,启用 {0} 条数据成功,Enable {0} pieces of data successfully
 i4rpKYiKSUm8+XQjG7CreA,eYHRCo6WQFm4TBWYzAdERg,,禁用 {0} 条数据成功,Disable {0} pieces of data successfully
-ocqOoTC4RTqIt5acqytNOg,eYHRCo6WQFm4TBWYzAdERg,,请选择需要还原的数据,Please select the data to restore
-eUqQOAY8RVy3czS/1/xN8w,eYHRCo6WQFm4TBWYzAdERg,,确定还原已选择的 {0} 条数据,Confirm to restore the selected {0} pieces of data
-vi091MmERpaIolbY0wurxQ,eYHRCo6WQFm4TBWYzAdERg,,还原 {0} 条数据成功,Restore {0} pieces of data successfully
-c9XnVIP1QlWVH4lvIIsRRg,eYHRCo6WQFm4TBWYzAdERg,,还原 {0} 条数据成功,Restore {0} pieces of data successfully
+vi091MmERpaIolbY0wurxQ,eYHRCo6WQFm4TBWYzAdERg,,还原 {0} {1} 成功,Restore {0} pieces of {1} successfully
 0LrK+P3jSQ+qM+tF6AQjzg,eYHRCo6WQFm4TBWYzAdERg,,请输入,Please enter
 PoSjTPGDTKeBfyCMIV7BlA,eYHRCo6WQFm4TBWYzAdERg,,请选择,Please select
 X4iqaZHZQWqYymzn+6jR3A,eYHRCo6WQFm4TBWYzAdERg,,批量导入,Batch Import

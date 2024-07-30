@@ -135,6 +135,10 @@ import {
 #>
 
 import {
+  getPagePath,
+} from "./Api";
+
+import {
   findTree,<#
   if (mod === "base" && table === "data_permit") {
   #>

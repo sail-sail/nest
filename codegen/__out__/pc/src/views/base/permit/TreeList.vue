@@ -81,6 +81,10 @@
 import List from "./List.vue";
 
 import {
+  getPagePath,
+} from "./Api";
+
+import {
   findTree,
 } from "@/views/base/menu/Api";
 
