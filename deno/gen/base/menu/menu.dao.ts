@@ -3,7 +3,6 @@ import {
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
-  get_lang_id,
 } from "/lib/context.ts";
 
 import {
@@ -57,6 +56,7 @@ import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
   get_usr_id,
+  get_lang_id,
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -341,6 +341,7 @@ export async function findAll(
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
       ,parent_id_lbl.lbl parent_id_lbl
+      ,base_menu_lang.parent_id_lbl parent_id_lbl_lang
       ,base_menu_lang.lbl lbl_lang
       ,base_menu_lang.rem rem_lang
     from
@@ -416,6 +417,14 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
+    
+    // deno-lint-ignore no-explicit-any
+    if ((model as any).parent_id_lbl_lang) {
+      // deno-lint-ignore no-explicit-any
+      model.parent_id_lbl = (model as any).parent_id_lbl_lang;
+      // deno-lint-ignore no-explicit-any
+      (model as any).parent_id_lbl_lang = undefined;
+    }
     
     // deno-lint-ignore no-explicit-any
     if ((model as any).lbl_lang) {

@@ -137,12 +137,7 @@ if (!(hasDataPermit() && hasCreateUsrId)) {
 import {
   get_is_debug,
   get_is_silent_mode,
-  get_is_creating,<#
-  if (opts.langTable) {
-  #>
-  get_lang_id,<#
-  }
-  #>
+  get_is_creating,
 } from "/lib/context.ts";
 
 import {
@@ -268,6 +263,11 @@ import {
   if (hasPassword) {
   #>
   getPassword,<#
+  }
+  #><#
+  if (opts.langTable) {
+  #>
+  get_lang_id,<#
   }
   #>
 } from "/lib/auth/auth.dao.ts";<#

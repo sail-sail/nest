@@ -661,23 +661,6 @@ export function getNow() {
   return context.reqDate;
 }
 
-/** 获取当前语言ID */
-export async function get_lang_id() {
-  const context = useMaybeContext();
-  if (context?.lang_id) {
-    return context?.lang_id;
-  }
-  const lang = context?.lang;
-  if (lang) {
-    type Result = {
-      id: LangId;
-    }
-    const res = await queryOne<Result>(`select id from base_lang where code=?`, [ lang ]);
-    context.lang_id = res?.id;
-    return context.lang_id;
-  }
-}
-
 export async function getCache(
   cacheKey1: string | undefined,
   cacheKey2: string | undefined,
