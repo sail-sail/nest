@@ -98,9 +98,11 @@ const props = defineProps<{
   showBuildIn?: string;
 }>();
 
+const pagePath = getPagePath();
+
 const {
   ns,
-} = useI18n("/base/i18n");
+} = useI18n(pagePath);
 
 let inited = $ref(false);
 

@@ -126,6 +126,7 @@ if (list_tree === true) {
 
 import {
   findTree,
+  getPagePath,
 } from "./Api";<#
 } else {
   Table_Up = list_treeForeignKey.table.split("_").map(function(item) {
@@ -158,9 +159,11 @@ const props = defineProps<{
   showBuildIn?: string;
 }>();
 
+const pagePath = getPagePath();
+
 const {
   ns,
-} = useI18n("/<#=mod#>/<#=table#>");
+} = useI18n(pagePath);
 
 let inited = $ref(false);
 
