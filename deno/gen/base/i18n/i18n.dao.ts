@@ -443,6 +443,17 @@ export async function setIdByLbl(
     if (langModel) {
       input.lang_id = langModel.id;
     }
+  } else if (isEmpty(input.lang_id_lbl) && input.lang_id != null) {
+    const lang_model = await findOneLang(
+      {
+        id: input.lang_id,
+      },
+      undefined,
+      options,
+    );
+    if (lang_model) {
+      input.lang_id_lbl = lang_model.lbl;
+    }
   }
   
   // 菜单
@@ -457,6 +468,17 @@ export async function setIdByLbl(
     );
     if (menuModel) {
       input.menu_id = menuModel.id;
+    }
+  } else if (isEmpty(input.menu_id_lbl) && input.menu_id != null) {
+    const menu_model = await findOneMenu(
+      {
+        id: input.menu_id,
+      },
+      undefined,
+      options,
+    );
+    if (menu_model) {
+      input.menu_id_lbl = menu_model.lbl;
     }
   }
 }
@@ -1073,6 +1095,10 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  await delCache();
+  
   const args = new QueryArgs();
   let sql = "insert into base_i18n(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lang_id,menu_id,code,lbl,rem)values";
   
@@ -1190,10 +1216,6 @@ async function _creates(
       }
     }
   }
-  
-  await delCache();
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,

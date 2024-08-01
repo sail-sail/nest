@@ -441,6 +441,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.type = val as LoginLogType;
     }
+  } else if (isEmpty(input.type_lbl) && input.type != null) {
+    const lbl = typeDict.find((itemTmp) => itemTmp.val === input.type)?.lbl || "";
+    input.type_lbl = lbl;
   }
   
   // 登录成功
@@ -449,6 +452,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_succ = Number(val);
     }
+  } else if (isEmpty(input.is_succ_lbl) && input.is_succ != null) {
+    const lbl = is_succDict.find((itemTmp) => itemTmp.val === String(input.is_succ))?.lbl || "";
+    input.is_succ_lbl = lbl;
   }
 }
 
@@ -984,6 +990,8 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   const args = new QueryArgs();
   let sql = "insert into base_login_log(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,type,username,is_succ,ip)values";
   
@@ -1109,8 +1117,6 @@ async function _creates(
       }
     }
   }
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,

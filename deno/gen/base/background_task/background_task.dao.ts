@@ -536,6 +536,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.state = val as BackgroundTaskState;
     }
+  } else if (isEmpty(input.state_lbl) && input.state != null) {
+    const lbl = stateDict.find((itemTmp) => itemTmp.val === input.state)?.lbl || "";
+    input.state_lbl = lbl;
   }
   
   // 类型
@@ -544,6 +547,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.type = val as BackgroundTaskType;
     }
+  } else if (isEmpty(input.type_lbl) && input.type != null) {
+    const lbl = typeDict.find((itemTmp) => itemTmp.val === input.type)?.lbl || "";
+    input.type_lbl = lbl;
   }
   
   // 开始时间
@@ -1132,6 +1138,8 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   const args = new QueryArgs();
   let sql = "insert into base_background_task(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,state,type,result,err_msg,begin_time,end_time,rem)values";
   
@@ -1277,8 +1285,6 @@ async function _creates(
       }
     }
   }
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,
