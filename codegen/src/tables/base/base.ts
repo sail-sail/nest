@@ -106,6 +106,10 @@ export default defineConfig({
         },
       },
       {
+        COLUMN_NAME: "lang_id",
+        align: "center",
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {

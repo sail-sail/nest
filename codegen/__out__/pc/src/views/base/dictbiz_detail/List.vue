@@ -29,7 +29,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.dictbiz_id == null">
         <el-form-item
-          label="业务字典"
+          :label="n('业务字典')"
           prop="dictbiz_id"
         >
           <CustomSelect

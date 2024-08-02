@@ -23,6 +23,16 @@ import {
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
+  findById as findByIdTenant,
+  validateOption as validateOptionTenant,
+  validateIsEnabled as validateIsEnabledTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
+
+import {
+  findById as findByIdLang,
+} from "/gen/base/lang/lang.dao.ts";
+
+import {
   findAll as findAllOrg,
 } from "/gen/base/org/org.dao.ts";
 
@@ -55,7 +65,6 @@ import {
  *  password 密码,传递进来的密码已经被前端md5加密过一次
  *  tenant_id 租户id
  *  org_id 组织id
- *  lang 语言编码
  */
 export async function login(
   ip: string,
@@ -63,15 +72,33 @@ export async function login(
 ): Promise<LoginModel> {
   const username = input.username;
   const password = input.password;
-  const tenant_id: TenantId = input.tenant_id;
+  const tenant_id = input.tenant_id;
   let org_id: OrgId | null | undefined = input.org_id;
-  const lang = input.lang;
   if (isEmpty(username) || isEmpty(password)) {
     throw await ns("用户名或密码不能为空");
   }
   if (isEmpty(tenant_id)) {
     throw await ns("请选择租户");
   }
+  // 获取租户
+  const tenant_model = await validateOptionTenant(
+    await findByIdTenant(
+      tenant_id,
+    ),
+  );
+  await validateIsEnabledTenant(tenant_model);
+  
+  const lang_id = tenant_model.lang_id;
+  let lang = "zh-CN";
+  
+  // 获取语言
+  const lang_model = await findByIdLang(
+    lang_id,
+  );
+  if (lang_model && lang_model.code) {
+    lang = lang_model.code;
+  }
+  
   // 最近10分钟内密码错误6次, 此用户名锁定10分钟
   const now = dayjs();
   const begin = now.subtract(10, "minute").format("YYYY-MM-DD HH:mm:ss");

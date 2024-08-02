@@ -29,7 +29,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.lang_id == null">
         <el-form-item
-          label="语言"
+          :label="n('语言')"
           prop="lang_id"
         >
           <CustomSelect
@@ -50,7 +50,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.menu_id == null">
         <el-form-item
-          label="菜单"
+          :label="n('菜单')"
           prop="menu_id"
         >
           <CustomTreeSelect

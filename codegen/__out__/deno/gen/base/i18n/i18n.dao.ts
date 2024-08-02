@@ -146,6 +146,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -162,6 +165,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {

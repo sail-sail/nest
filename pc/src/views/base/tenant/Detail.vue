@@ -63,7 +63,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -128,6 +128,26 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.lang_id == null)">
+          <el-form-item
+            :label="n('语言')"
+            prop="lang_id"
+          >
+            <CustomSelect
+              v-model="dialogModel.lang_id"
+              :method="getLangList"
+              :options-map="((item: LangModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              :placeholder="`${ ns('请选择') } ${ n('语言') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -145,6 +165,7 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
+            un-grid="col-span-full"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -279,6 +300,7 @@ import {
 
 import {
   getDomainList,
+  getLangList,
 } from "./Api";
 
 // 域名
@@ -358,6 +380,13 @@ watchEffect(async () => {
       {
         required: true,
         message: `${ await nsAsync("请选择") } ${ n("所属域名") }`,
+      },
+    ],
+    // 语言
+    lang_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("语言") }`,
       },
     ],
     // 排序
@@ -738,6 +767,7 @@ watch(
   () => [
     dialogModel.domain_ids,
     dialogModel.menu_ids,
+    dialogModel.lang_id,
   ],
   () => {
     if (!inited) {
@@ -748,6 +778,9 @@ watch(
     }
     if (!dialogModel.menu_ids || dialogModel.menu_ids.length === 0) {
       dialogModel.menu_ids_lbl = [ ];
+    }
+    if (!dialogModel.lang_id) {
+      dialogModel.lang_id_lbl = "";
     }
   },
 );
@@ -918,6 +951,7 @@ async function onInitI18ns() {
     "名称",
     "所属域名",
     "菜单权限",
+    "语言",
     "锁定",
     "启用",
     "排序",

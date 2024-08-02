@@ -55,7 +55,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.role_ids == null">
         <el-form-item
-          label="所属角色"
+          :label="n('所属角色')"
           prop="role_ids"
         >
           <CustomSelect
@@ -76,7 +76,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.dept_ids == null">
         <el-form-item
-          label="所属部门"
+          :label="n('所属部门')"
           prop="dept_ids"
         >
           <CustomTreeSelect
@@ -97,7 +97,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.org_ids == null">
         <el-form-item
-          label="所属组织"
+          :label="n('所属组织')"
           prop="org_ids"
         >
           <CustomSelect

@@ -51,51 +51,6 @@
         </el-select>
       </el-form-item>
       
-      <el-form-item
-        v-if="VITE_SERVER_I18N_ENABLE !== 'false'"
-        prop="lang"
-      >
-        <CustomSelect
-          v-model="model.lang"
-          :method="getLoginLangs"
-          :placeholder="`${ ns('请选择') } ${ n('语言') }`"
-          :pinyin-filterable="false"
-          :options4-select-v2="[
-            {
-              label: '中文',
-              value: 'zh-CN',
-            },
-            {
-              label: 'English',
-              value: 'en-US',
-            },
-          ]"
-          :options-map="(item: LangModel) => {
-            return {
-              label: item.lbl,
-              value: item.code,
-            };
-          }"
-          un-w="full"
-          class="from_input"
-          @change="langChg"
-        >
-          <template #prefix>
-            <div
-              un-w="3.5"
-              un-h="3.5"
-              un-text-gray
-              un-m="l-2"
-              un-self-stretch
-              un-flex
-              un-place-content-center
-            >
-              <ElIconUser />
-            </div>
-          </template>
-        </CustomSelect>
-      </el-form-item>
-      
       <el-form-item prop="username">
         <el-input
           v-model="model.username"
@@ -160,12 +115,10 @@ import {
 import {
   login,
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
-  getLoginLangs,
   clearCache,
 } from "./Api";
 
 import type {
-  LangModel,
   LoginModel,
   MutationLoginArgs,
 } from "#/types";
@@ -193,13 +146,8 @@ let model = $ref<MutationLoginArgs["input"]>({
   password: "",
   tenant_id: "" as unknown as TenantId,
   org_id: undefined,
-  lang,
 });
 
-const VITE_SERVER_I18N_ENABLE = import.meta.env.VITE_SERVER_I18N_ENABLE;
-if (import.meta.env.VITE_SERVER_I18N_ENABLE === "false") {
-  model.lang = "zh-CN";
-}
 const app_title = import.meta.env.VITE_APP_TITLE;
 
 let loginRef = $ref<InstanceType<typeof HTMLDivElement>>();
@@ -222,35 +170,44 @@ watchEffect(() => {
   };
 });
 
-/**
- * 语言切换
- */
-async function langChg() {
-  if (!model.lang) {
-    return;
-  }
-  if (model.lang === usrStore.lang) {
-    return;
-  }
-  usrStore.setLang(model.lang);
-  await initI18nEfc();
-}
-
 let oldLoginModelKey = "oldLoginModelPc";
 
-function removeTabs() {
-  for (const tab of tabsStore.tabs) {
-    if (
-      [
-        "/",
-        "/index",
-      ].includes(tab.path)
-    ) {
-      continue;
-    }
-    tabsStore.removeTab(tab);
-  }
+let tenants = $ref<{
+  id: TenantId;
+  lbl: string;
+  lang: string;
+}[]>([ ]);
+
+try {
+  tenants = JSON.parse(localStorage.getItem("login/tenants") || "[]");
+} catch (err) {
+  tenants = [ ];
 }
+
+if (!model.tenant_id && tenants.length > 0) {
+  let tenant_id = tenants[0].id;
+  for (let item of tenants) {
+    if (item.lang === lang) {
+      tenant_id = item.id;
+      break;
+    }
+  }
+  model.tenant_id = tenant_id;
+}
+
+watch(
+  () => model.tenant_id,
+  async () => {
+    usrStore.lang = tenants.find(item => item.id === model.tenant_id)?.lang || "zh-CN";
+  },
+);
+
+watch(
+  () => usrStore.lang,
+  async () => {
+    window.history.go(0);
+  },
+);
 
 /**
  * 登录
@@ -267,7 +224,6 @@ async function onLogin() {
   } catch (err) {
     return;
   }
-  // removeTabs();
   usrStore.isLogining = false;
   let loginModel: LoginModel | undefined;
   try {
@@ -298,9 +254,9 @@ async function onLogin() {
   }
   usrStore.authorization = loginModel.authorization;
   usrStore.usr_id = loginModel.usr_id;
-  usrStore.username = model.username;
-  usrStore.tenant_id = model.tenant_id;
-  usrStore.lang = model.lang;
+  usrStore.username = loginModel.username;
+  usrStore.tenant_id = loginModel.tenant_id;
+  usrStore.lang = loginModel.lang;
   tabsStore.clearKeepAliveNames();
   await Promise.all([
     indexStore.initI18nVersion(),
@@ -313,28 +269,20 @@ async function onLogin() {
   }
 }
 
-let tenants = $ref<{
-  id: TenantId;
-  lbl: string;
-}[]>([ ]);
-
-try {
-  tenants = JSON.parse(localStorage.getItem("login/tenants") || "[]");
-} catch (err) {
-  tenants = [ ];
-}
-
-if (!model.tenant_id && tenants.length > 0) {
-  model.tenant_id = tenants[0].id;
-}
-
 /**
  * 获取租户列表
  */
 async function getLoginTenantsEfc() {
   tenants = await getLoginTenants({ domain: window.location.host });
   if (!model.tenant_id && tenants.length > 0) {
-    model.tenant_id = tenants[0].id;
+    let tenant_id = tenants[0].id;
+    for (let item of tenants) {
+      if (item.lang === lang) {
+        tenant_id = item.id;
+        break;
+      }
+    }
+    model.tenant_id = tenant_id;
   }
   localStorage.setItem("login/tenants", JSON.stringify(tenants));
 }

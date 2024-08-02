@@ -126,7 +126,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
-          label="<#=column_comment#>"
+          :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
           <CustomTreeSelect
@@ -152,7 +152,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
-          label="<#=column_comment#>"
+          :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
           <CustomTreeSelect
@@ -174,7 +174,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
-          label="<#=column_comment#>"
+          :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
           <CustomSelect
@@ -196,7 +196,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
-          label="<#=column_comment#>"
+          :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
           <CustomInput
@@ -210,7 +210,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
-          label="<#=column_comment#>"
+          :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
           <CustomSelect
@@ -489,8 +489,8 @@ const hasAtt = columns.some((item) => item.isAtt);
             un-overflow-hidden
             @click="isSearchExpand = !isSearchExpand"
           >
-            <span v-if="isSearchExpand">收起</span>
-            <span v-else>展开</span>
+            <span v-if="isSearchExpand">{{ ns('收起') }}</span>
+            <span v-else>{{ ns('展开') }}</span>
           </div><#
           }
           #>
@@ -3591,7 +3591,7 @@ async function onOpenForeignTabs(
     return;
   }
   if (selectedIds.length > 1) {
-    ElMessage.warning(await nsAsync("只能选择一{0}", await nsAsync("<#=table_comment#>")));
+    ElMessage.warning(await nsAsync("只能选择 1 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const id = selectedIds[0];

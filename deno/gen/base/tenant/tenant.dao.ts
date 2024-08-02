@@ -73,6 +73,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  findOne as findOneLang,
+} from "/gen/base/lang/lang.dao.ts";
+
+import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
@@ -113,6 +117,18 @@ async function getWhereQuery(
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
+  if (search?.lang_id != null) {
+    whereQuery += ` and t.lang_id in ${ args.push(search.lang_id) }`;
+  }
+  if (search?.lang_id_is_null) {
+    whereQuery += ` and t.lang_id is null`;
+  }
+  if (search?.lang_id_lbl != null) {
+    whereQuery += ` and lang_id_lbl.lbl in ${ args.push(search.lang_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.lang_id_lbl_like)) {
+    whereQuery += ` and lang_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.lang_id_lbl_like) + "%") }`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
@@ -142,6 +158,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -158,6 +177,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -209,7 +231,8 @@ async function getFromQuery(
   inner join base_menu on base_menu.id=base_tenant_menu.menu_id
   inner join base_tenant on base_tenant.id=base_tenant_menu.tenant_id
   where base_tenant_menu.is_deleted=${ args.push(is_deleted) }
-  group by tenant_id) _menu on _menu.tenant_id=t.id`;
+  group by tenant_id) _menu on _menu.tenant_id=t.id
+  left join base_lang lang_id_lbl on lang_id_lbl.id=t.lang_id`;
   return fromQuery;
 }
 
@@ -326,6 +349,17 @@ export async function findAll(
       throw new Error(`search.menu_ids.length > ${ ids_limit }`);
     }
   }
+  // 语言
+  if (search && search.lang_id != null) {
+    const len = search.lang_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.lang_id.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -377,6 +411,7 @@ export async function findAll(
       ,max(domain_ids_lbl) domain_ids_lbl
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
+      ,lang_id_lbl.lbl lang_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -501,6 +536,9 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
+    // 语言
+    model.lang_id_lbl = model.lang_id_lbl || "";
+    
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
     if (model.is_locked != null) {
@@ -610,6 +648,32 @@ export async function setIdByLbl(
     }
   }
   
+  // 语言
+  if (isNotEmpty(input.lang_id_lbl) && input.lang_id == null) {
+    input.lang_id_lbl = String(input.lang_id_lbl).trim();
+    const langModel = await findOneLang(
+      {
+        lbl: input.lang_id_lbl,
+      },
+      undefined,
+      options,
+    );
+    if (langModel) {
+      input.lang_id = langModel.id;
+    }
+  } else if (isEmpty(input.lang_id_lbl) && input.lang_id != null) {
+    const lang_model = await findOneLang(
+      {
+        id: input.lang_id,
+      },
+      undefined,
+      options,
+    );
+    if (lang_model) {
+      input.lang_id_lbl = lang_model.lbl;
+    }
+  }
+  
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
@@ -645,6 +709,8 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
     domain_ids_lbl: await n("所属域名"),
     menu_ids: await n("菜单权限"),
     menu_ids_lbl: await n("菜单权限"),
+    lang_id: await n("语言"),
+    lang_id_lbl: await n("语言"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -1059,6 +1125,13 @@ export async function validate(
     fieldComments.lbl,
   );
   
+  // 语言
+  await validators.chars_max_length(
+    input.lang_id,
+    22,
+    fieldComments.lang_id,
+  );
+  
   // 备注
   await validators.chars_max_length(
     input.rem,
@@ -1220,7 +1293,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,is_locked,is_enabled,order_by,rem,is_sys)values";
+  let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1307,6 +1380,11 @@ async function _creates(
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.lang_id != null) {
+        sql += `,${ args.push(input.lang_id) }`;
       } else {
         sql += ",default";
       }
@@ -1462,6 +1540,12 @@ export async function updateById(
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl=${ args.push(input.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.lang_id != null) {
+    if (input.lang_id != oldModel.lang_id) {
+      sql += `lang_id=${ args.push(input.lang_id) },`;
       updateFldNum++;
     }
   }

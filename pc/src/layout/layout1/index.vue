@@ -184,44 +184,6 @@
           </el-dropdown>
         </template>
         <div
-          v-if="locales.length > 1"
-          un-flex="~"
-          un-items-center
-          un-h="full"
-        >
-          <el-dropdown
-            trigger="click"
-          >
-            <IconFontLocales
-              un-w="3.5"
-              un-h="3.5"
-              un-pos-relative
-              un-top="0.5"
-              un-text="white hover:[var(--el-color-primary)]"
-              un-cursor-pointer
-            ></IconFontLocales>
-            <template #dropdown>
-              <el-dropdown-menu
-                un-whitespace-nowrap
-              >
-                <el-dropdown-item
-                  v-for="item of locales"
-                  :key="item.code"
-                  @click="selectLangClk(item.code)"
-                >
-                  <span
-                    :style="{
-                      color: item.code === loginInfo?.lang ? 'var(--el-color-primary)' : ''
-                    }"
-                  >
-                    {{ item.lbl }}
-                  </span>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-        <div
           un-pos-relative
           un-top="[1px]"
           un-border-1px
@@ -380,10 +342,6 @@ import {
   getUsrPermits,
 } from "./Api";
 
-import {
-  getLoginLangs,
-} from "../Api";
-
 import config from "@/utils/config";
 
 const router = useRouter();
@@ -401,13 +359,6 @@ const tabsStore = useTabsStore();
 const permitStore = usePermitStore();
 const usrStore = useUsrStore();
 const menuStore = useMenuStore();
-
-let locales = $ref([
-  {
-    code: "zh-CN",
-    lbl: "简体中文",
-  },
-]);
 
 // 黑暗模式
 const isDark = useDark();
@@ -654,18 +605,12 @@ async function initFrame() {
       const [
         loginInfoTmp,
         _,
-        langModels,
       ] = await Promise.all([
         getLoginInfo({ notLoading: true }),
         getUsrPermitsEfc(),
-        getLoginLangs(),
       ]);
       loginInfo = loginInfoTmp;
       usrStore.loginInfo = loginInfo;
-      locales = langModels.map(item => ({
-        code: item.code,
-        lbl: item.lbl,
-      }));
     } else {
       const [
         loginInfoTmp,
@@ -676,6 +621,8 @@ async function initFrame() {
       ]);
       loginInfo = loginInfoTmp;
       usrStore.loginInfo = loginInfo;
+      usrStore.lang = loginInfo.lang;
+      usrStore.username = loginInfo.username;
     }
   }
   inited = true;

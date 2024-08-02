@@ -42,7 +42,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.menu_ids == null">
         <el-form-item
-          label="菜单权限"
+          :label="n('菜单权限')"
           prop="menu_ids"
         >
           <CustomTreeSelect

@@ -29,7 +29,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.parent_id == null">
         <el-form-item
-          label="父菜单"
+          :label="n('父菜单')"
           prop="parent_id"
         >
           <CustomTreeSelect

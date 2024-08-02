@@ -42,7 +42,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.menu_ids == null">
         <el-form-item
-          label="菜单权限"
+          :label="n('菜单权限')"
           prop="menu_ids"
         >
           <CustomTreeSelect
@@ -557,6 +557,15 @@
             </el-table-column>
           </template>
           
+          <!-- 语言 -->
+          <template v-else-if="'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
@@ -804,6 +813,8 @@ const props = defineProps<{
   domain_ids_lbl?: string[]; // 所属域名
   menu_ids?: string|string[]; // 菜单权限
   menu_ids_lbl?: string[]; // 菜单权限
+  lang_id?: string|string[]; // 语言
+  lang_id_lbl?: string; // 语言
   is_enabled?: string|string[]; // 启用
 }>();
 
@@ -819,6 +830,8 @@ const builtInSearchType: { [key: string]: string } = {
   domain_ids_lbl: "string[]",
   menu_ids: "string[]",
   menu_ids_lbl: "string[]",
+  lang_id: "string[]",
+  lang_id_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
@@ -1082,6 +1095,15 @@ function getTableColumns(): ColumnType[] {
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
+    },
+    {
+      label: "语言",
+      prop: "lang_id_lbl",
+      sortBy: "lang_id_lbl",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "锁定",
@@ -1431,6 +1453,7 @@ async function onImportExcel() {
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("所属域名") ]: "domain_ids_lbl",
     [ await nAsync("菜单权限") ]: "menu_ids_lbl",
+    [ await nAsync("语言") ]: "lang_id_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
@@ -1459,6 +1482,7 @@ async function onImportExcel() {
           "lbl": "string",
           "domain_ids_lbl": "string[]",
           "menu_ids_lbl": "string[]",
+          "lang_id_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
@@ -1814,6 +1838,7 @@ async function initI18nsEfc() {
     "名称",
     "所属域名",
     "菜单权限",
+    "语言",
     "锁定",
     "启用",
     "排序",

@@ -802,6 +802,16 @@ async function getWhereQuery(
     whereQuery += ` and (t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) })`;<#
     }
     #>
+  }
+  if (isNotEmpty(search?.<#=modelLabel#>_like)) {<#
+    if (!langTableRecords.some((record) => record.COLUMN_NAME === modelLabel)) {
+    #>
+    whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;<#
+    } else {
+    #>
+    whereQuery += ` and (t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") })`;<#
+    }
+    #>
   }<#
     } else if (foreignKey.lbl) {
   #>
@@ -1220,7 +1230,6 @@ export async function findAll(
         const column_name = column.COLUMN_NAME;
         if (column.isVirtual) continue;
         const foreignKey = column.foreignKey;
-        let data_type = column.DATA_TYPE;
         if (!foreignKey) continue;
         const foreignTable = foreignKey.table;
         const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -3650,6 +3659,8 @@ for (const key of redundLblKeys) {
       }<#
         }
       #><#
+      }
+      #><#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
@@ -3675,8 +3686,6 @@ for (const key of redundLblKeys) {
         sql += ",default";
       }<#
         }
-      #><#
-      }
       #><#
       }
       #>
@@ -4060,12 +4069,98 @@ if (opts.langTable) {
 #>
 
 async function refreshLangByInput(
-  input: Readonly<MenuInput>,
+  input: Readonly<<#=inputName#>>,
 ) {
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   if (!server_i18n_enable) {
     return;
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
+    const is_nullable = column.IS_NULLABLE === "YES";
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const ForeighTableUp = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const modelLabel = column.modelLabel;
+    if (!modelLabel) continue;
+    if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
+      continue;
+    }
+    let foreignSchema = undefined;
+    const foreignLangTableRecords = [ ];
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      for (let i = 0; i < (foreignSchema.opts.langTable?.records?.length || 0); i++) {
+        const record = foreignSchema.opts.langTable.records[i];
+        const column_name = record.COLUMN_NAME;
+        if (
+          langTableExcludeArr.includes(column_name)
+        ) continue;
+        foreignLangTableRecords.push(record);
+      }
+    }
+  #>
+  
+  // <#=column_comment#>
+  {
+    const sql = "select lang_id,<#=foreignKey.lbl#> from <#=foreignSchema.opts.langTable.opts.table_name#> where <#=foreignTable#>_id=?";
+    const args = new QueryArgs();
+    args.push(input.<#=column_name#>);
+    const models = await query<{
+      lang_id: LangId;
+      <#=foreignKey.lbl#>: string;
+    }>(
+      sql,
+      args,
+    );
+    for (const model of models) {
+      const sql = "select id,<#=modelLabel#> from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
+      const args = new QueryArgs();
+      args.push(model.lang_id);
+      args.push(input.id);
+      const lang_model = await queryOne<{
+        id: string;
+        <#=modelLabel#>: string;
+      }>(
+        sql,
+        args,
+      );
+      const lang_id = lang_model?.id;
+      if (!lang_id) {
+        const lang_sql = "insert into <#=opts.langTable.opts.table_name#>(id,lang_id,<#=table#>_id,<#=modelLabel#>)values(?,?,?,?)";
+        const lang_args = new QueryArgs();
+        lang_args.push(shortUuidV4());
+        lang_args.push(model.lang_id);
+        lang_args.push(input.id);
+        lang_args.push(model.<#=foreignKey.lbl#>);
+        await execute(lang_sql, lang_args);
+        continue;
+      }
+      if (lang_model.<#=modelLabel#> !== model.<#=foreignKey.lbl#>) {
+        const lang_sql = "update <#=opts.langTable.opts.table_name#> set <#=modelLabel#>=? where id=?";
+        const lang_args = new QueryArgs();
+        lang_args.push(model.<#=foreignKey.lbl#>);
+        lang_args.push(lang_id);
+        await execute(lang_sql, lang_args);
+      }
+    }
+  }<#
   }
+  #>
   const lang_sql = "select id from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
   const lang_args = new QueryArgs();
   lang_args.push(await get_lang_id());
