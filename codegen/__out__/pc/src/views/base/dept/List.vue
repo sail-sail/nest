@@ -698,6 +698,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -715,7 +716,7 @@ defineOptions({
   name: "部门List",
 });
 
-const pagePath = "/base/dept";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

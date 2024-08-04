@@ -1586,6 +1586,7 @@ import <#=Foreign_Table_Up#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.v
 #>
 
 import {
+  getPagePath,
   findAll,
   findCount,<#
     if (opts.noRevert !== true) {
@@ -1776,7 +1777,7 @@ if (list_tree) {
   name: "<#=optionsName#>",
 });
 
-const pagePath = "/<#=mod#>/<#=table#>";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

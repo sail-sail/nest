@@ -616,6 +616,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -635,7 +636,7 @@ defineOptions({
   name: "按钮权限List",
 });
 
-const pagePath = "/base/permit";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

@@ -449,6 +449,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -460,7 +461,7 @@ defineOptions({
   name: "登录日志",
 });
 
-const pagePath = "/base/login_log";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

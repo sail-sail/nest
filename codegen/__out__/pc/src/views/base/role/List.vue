@@ -796,6 +796,7 @@ import PermitTreeList from "../permit/TreeList.vue";
 import DataPermitTreeList from "../data_permit/TreeList.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -817,7 +818,7 @@ defineOptions({
   name: "角色",
 });
 
-const pagePath = "/base/role";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

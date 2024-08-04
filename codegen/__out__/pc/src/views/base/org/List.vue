@@ -666,6 +666,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -683,7 +684,7 @@ defineOptions({
   name: "组织",
 });
 
-const pagePath = "/base/org";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

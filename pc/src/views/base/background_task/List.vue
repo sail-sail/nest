@@ -499,6 +499,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -510,7 +511,7 @@ defineOptions({
   name: "后台任务",
 });
 
-const pagePath = "/base/background_task";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

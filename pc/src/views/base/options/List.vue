@@ -698,6 +698,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -719,7 +720,7 @@ defineOptions({
   name: "系统选项",
 });
 
-const pagePath = "/base/options";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

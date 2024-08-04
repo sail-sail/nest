@@ -692,6 +692,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -710,7 +711,7 @@ defineOptions({
   name: "域名",
 });
 
-const pagePath = "/base/domain";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

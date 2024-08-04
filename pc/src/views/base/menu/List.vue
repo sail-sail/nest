@@ -714,6 +714,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -735,7 +736,7 @@ defineOptions({
   name: "菜单List",
 });
 
-const pagePath = "/base/menu";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

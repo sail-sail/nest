@@ -718,6 +718,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -739,7 +740,7 @@ defineOptions({
   name: "业务字典明细",
 });
 
-const pagePath = "/base/dictbiz_detail";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 

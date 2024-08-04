@@ -743,6 +743,7 @@ import Detail from "./Detail.vue";
 import MenuTreeList from "../menu/TreeList.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -764,7 +765,7 @@ defineOptions({
   name: "租户",
 });
 
-const pagePath = "/base/tenant";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
