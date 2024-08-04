@@ -79,6 +79,8 @@ async function goBack() {
 
 async function initI18nsEfc() {
   const codes: string[] = [
+    "(无)",
+    "全选",
   ];
   await initSysI18ns(codes);
 }
