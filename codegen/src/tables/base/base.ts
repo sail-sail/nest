@@ -258,7 +258,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "default_org_id",
         require: false,
-        width: 140,
+        width: 240,
         foreignKey: {
           table: "org",
           column: "id",

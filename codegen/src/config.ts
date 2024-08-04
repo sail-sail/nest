@@ -806,6 +806,9 @@ export interface TablesConfigItem {
     /** Detail.vue 中表单文本框的宽度, 默认为: 380px */
     detailFormWidth?: string;
     
+    /** List.vue 中表单中表单文本框的宽度, 默认为: 280px */
+    searchFormWidth?: string;
+    
     /** 国际化多语言对应的表, [模块]_[表名]_lang 代表相关表的相同字段需要做国际化翻译, 例如: base_menu_lang */
     langTable?: {
       opts: {

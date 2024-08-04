@@ -184,6 +184,22 @@ try {
   tenants = [ ];
 }
 
+const oldLoginModelStr = localStorage.getItem(oldLoginModelKey);
+let oldLoginModel: any = undefined;
+if (oldLoginModelStr) {
+  try {
+    oldLoginModel = JSON.parse(oldLoginModelStr);
+  } catch (err) {
+    localStorage.removeItem(oldLoginModelKey);
+  }
+}
+if (oldLoginModel) {
+  model = {
+    ...model,
+    ...oldLoginModel,
+  };
+}
+
 if (!model.tenant_id && tenants.length > 0) {
   let tenant_id = tenants[0].id;
   for (let item of tenants) {
@@ -198,16 +214,32 @@ if (!model.tenant_id && tenants.length > 0) {
 watch(
   () => model.tenant_id,
   async () => {
+    localStorage.setItem(
+      oldLoginModelKey,
+      JSON.stringify({
+        username: model.username,
+        tenant_id: model.tenant_id,
+        org_id: model.org_id,
+      }),
+    );
+    const old_lang = usrStore.lang;
     usrStore.lang = tenants.find(item => item.id === model.tenant_id)?.lang || "zh-CN";
+    if (old_lang !== usrStore.lang) {
+      await nextTick();
+      await initI18nEfc();
+      window.history.go(0);
+    }
   },
 );
 
-watch(
-  () => usrStore.lang,
-  async () => {
-    window.history.go(0);
-  },
-);
+// watch(
+//   () => usrStore.lang,
+//   async () => {
+//     await nextTick();
+//     await initI18nEfc();
+//     window.history.go(0);
+//   },
+// );
 
 /**
  * 登录
@@ -293,8 +325,12 @@ async function initI18nEfc() {
   n = i18n.n;
   await Promise.all([
     i18n.initSysI18ns([
+      app_title,
+      "清空缓存",
       "请选择",
       "请输入",
+      "登 录",
+      "正在登录",
     ]),
     i18n.initI18ns([
       "租户",
@@ -313,21 +349,6 @@ async function clearCacheClk() {
 }
 
 async function initFrame() {
-  const oldLoginModelStr = localStorage.getItem(oldLoginModelKey);
-  let oldLoginModel: any = undefined;
-  if (oldLoginModelStr) {
-    try {
-      oldLoginModel = JSON.parse(oldLoginModelStr);
-    } catch (err) {
-      localStorage.removeItem(oldLoginModelKey);
-    }
-  }
-  if (oldLoginModel) {
-    model = {
-      ...model,
-      ...oldLoginModel,
-    };
-  }
   await Promise.all([
     initI18nEfc(),
     getLoginTenantsEfc(),

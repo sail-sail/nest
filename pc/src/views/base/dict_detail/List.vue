@@ -12,6 +12,8 @@
     un-overflow-auto
   >
     <el-form
+      v-search-form-item-width-auto="inited"
+      
       ref="searchFormRef"
       size="default"
       :model="search"
@@ -90,18 +92,19 @@
       </template>
       
       <el-form-item
-        label=" "
+        label=""
         prop="idsChecked"
       >
         <div
           un-flex="~ nowrap"
-          un-justify-between
+          un-justify-evenly
           un-w="full"
         >
           <div
             un-flex="~ nowrap"
             un-items-center
             un-gap="x-1.5"
+            un-min="w-31.5"
           >
             <el-checkbox
               v-model="idsChecked"
@@ -144,10 +147,11 @@
       </el-form-item>
       
       <el-form-item
-        label=" "
+        label=""
       >
         
         <el-button
+          un-m="l-3"
           plain
           type="primary"
           @click="onSearch(true)"
@@ -1069,7 +1073,7 @@ function getTableColumns(): ColumnType[] {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
-      width: 60,
+      width: 85,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1078,7 +1082,7 @@ function getTableColumns(): ColumnType[] {
       label: "启用",
       prop: "is_enabled_lbl",
       sortBy: "is_enabled",
-      width: 60,
+      width: 85,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,

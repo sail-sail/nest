@@ -332,7 +332,7 @@ async function getSchema0(
         item.require = true;
       }
       if (item.width == null) {
-        item.width = 60;
+        item.width = 85;
       }
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
@@ -349,7 +349,7 @@ async function getSchema0(
         item.require = true;
       }
       if (item.width == null) {
-        item.width = 60;
+        item.width = 85;
       }
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
@@ -366,7 +366,7 @@ async function getSchema0(
       || record?.COLUMN_TYPE.toLowerCase() === "tinyint unsigned"
     ) {
       if (item.width == null) {
-        item.width = 60;
+        item.width = 85;
       }
       if (item.isSwitch == null) {
         item.isSwitch = true;
@@ -626,9 +626,15 @@ async function getSchema0(
       }
     }
   }
+  // Detail.vue 中表单文本框的宽度, 默认为: 380px
   if (tables[table_name]?.opts?.detailFormWidth == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.detailFormWidth = "380px";
+  }
+  // List.vue 中表单中表单文本框的宽度, 默认为: 280px
+  if (tables[table_name]?.opts?.searchFormWidth == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.searchFormWidth = "280px";
   }
   return records2;
 }
