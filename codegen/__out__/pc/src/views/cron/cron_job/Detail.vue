@@ -184,7 +184,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('关闭') }}</span>
+        <span>{{ ns('关闭') }}</span>
       </el-button>
       
       <el-button
@@ -196,7 +196,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存并继续') }}</span>
+        <span>{{ ns('保存并继续') }}</span>
       </el-button>
       
       <el-button
@@ -208,7 +208,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ ns('保存') }}</span>
       </el-button>
       
       <el-button
@@ -220,7 +220,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ ns('保存') }}</span>
       </el-button>
       
       <div
@@ -280,6 +280,7 @@ import {
   findLastOrderBy,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -288,14 +289,6 @@ import {
 
 import cronstrue from "cronstrue/i18n";
 import { lang } from "@/locales/index";
-
-let locale = $computed(() => {
-  if (lang === "zh-cn") {
-    return "zh_CN";
-  } else if (lang === "zh-tw") {
-    return "zh_TW";
-  }
-});
 
 const emit = defineEmits<{
   nextId: [
@@ -306,7 +299,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/cron/cron_job";
+const pagePath = getPagePath();
 
 const {
   n,
@@ -578,11 +571,7 @@ let job_lbl = $ref<string>("");
 
 // 任务
 function onJobId(jobModel?: JobModel) {
-  if (!jobModel) {
-    job_lbl = "";
-    return;
-  }
-  job_lbl = jobModel.lbl;
+  job_lbl = jobModel?.lbl || "";
 }
 
 let cron_lbl = $computed(() => {
@@ -591,8 +580,10 @@ let cron_lbl = $computed(() => {
   }
   try {
     return cronstrue.toString(
-      dialogModel.cron, {
-        locale,
+      dialogModel.cron,
+      {
+        use24HourTimeFormat: true,
+        locale: lang.replace("-", "_"),
       },
     );
   } catch (err) {
