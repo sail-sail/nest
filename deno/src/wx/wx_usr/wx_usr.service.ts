@@ -32,6 +32,16 @@ import {
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
+  findById as findByIdTenant,
+  validateOption as validateOptionTenant,
+  validateIsEnabled as validateIsEnabledTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
+
+import {
+  findById as findByIdLang,
+} from "/gen/base/lang/lang.dao.ts";
+
+import {
   ns,
 } from "/src/base/i18n/i18n.ts";
 
@@ -239,13 +249,32 @@ export async function bindWxUsr(
   const password = input.password;
   const tenant_id = input.tenant_id;
   let org_id = input.org_id;
-  const lang = input.lang;
   if (isEmpty(username) || isEmpty(password)) {
     throw await ns("用户名或密码不能为空");
   }
   if (isEmpty(tenant_id)) {
     throw await ns("请选择租户");
   }
+  
+  // 获取租户
+  const tenant_model = await validateOptionTenant(
+    await findByIdTenant(
+      tenant_id,
+    ),
+  );
+  await validateIsEnabledTenant(tenant_model);
+  
+  const lang_id = tenant_model.lang_id;
+  let lang = "zh-CN";
+  
+  // 获取语言
+  const lang_model = await findByIdLang(
+    lang_id,
+  );
+  if (lang_model && lang_model.code) {
+    lang = lang_model.code;
+  }
+  
   const password2 = await getPassword(password);
   let model = await findLoginUsr(
     username,
