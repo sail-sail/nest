@@ -163,7 +163,9 @@ declare global {
       if (modelLabel) {
     #>
     /** <#=column_comment#> */
-    <#=modelLabel#>?: string[];<#
+    <#=modelLabel#>?: string[];
+    /** <#=column_comment#> */
+    <#=column_name#>_<#=foreignKey.lbl#>_like?: string;<#
       } else if (foreignKey.lbl) {
     #>
     /** <#=column_comment#> */

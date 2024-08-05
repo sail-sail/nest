@@ -9,6 +9,7 @@ import {
 } from "/gen/base/domain/domain.dao.ts";
 
 import type {
+  GetLoginTenants,
   SetTenantAdminPwdInput,
 } from "/gen/types.ts";
 
@@ -18,6 +19,10 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
+  findById as findByIdLang,
+} from "/gen/base/lang/lang.dao.ts";
+
+import {
   findOne as findOneUsr,
   create as createUsr,
   updateById as updateByIdUsr,
@@ -25,36 +30,42 @@ import {
 
 export async function getLoginTenants(
   domain: string,
-): Promise<{ id: TenantId, lbl: string }[]> {
-  let domainModels = await findAllDomain({
+): Promise<GetLoginTenants[]> {
+  let domain_models = await findAllDomain({
     lbl: domain,
     is_enabled: [ 1 ],
   });
-  if (domainModels.length === 0) {
+  if (domain_models.length === 0) {
     await delCacheDomain();
-    domainModels = await findAllDomain({
+    domain_models = await findAllDomain({
       lbl: domain,
       is_enabled: [ 1 ],
     });
   }
-  let res: { id: TenantId, lbl: string }[] = [ ];
-  if (domainModels.length > 0) {
-    const domain_ids: DomainId[] = domainModels.map((item) => item.id);
-    let tenantModels = await findAllTenant({
+  const res: GetLoginTenants[] = [ ];
+  if (domain_models.length > 0) {
+    const domain_ids: DomainId[] = domain_models.map((item) => item.id);
+    let tenant_models = await findAllTenant({
       domain_ids,
       is_enabled: [ 1 ],
     });
-    if (tenantModels.length === 0) {
+    if (tenant_models.length === 0) {
       await delCacheTenant();
-      tenantModels = await findAllTenant({
+      tenant_models = await findAllTenant({
         domain_ids,
         is_enabled: [ 1 ],
       });
     }
-    res = tenantModels.map((item) => ({
-      id: item.id,
-      lbl: item.lbl,
-    }));
+    for (const tenant_model of tenant_models) {
+      const lang_id = tenant_model.lang_id;
+      const lang_model = await findByIdLang(lang_id);
+      const lang = lang_model?.code || "zh-CN";
+      res.push({
+        id: tenant_model.id,
+        lbl: tenant_model.lbl,
+        lang,
+      });
+    }
   }
   return res;
 }

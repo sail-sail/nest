@@ -3,12 +3,14 @@ import { defineGraphql } from "/lib/context.ts";
 import * as resolver from "./tenant.resolver.ts";
 
 defineGraphql(resolver, /* GraphQL */`
-  
+
 type GetLoginTenants {
   "ID"
   id: TenantId!
   "名称"
   lbl: String!
+  "语言"
+  lang: String!
 }
 
 input SetTenantAdminPwdInput {
@@ -35,5 +37,4 @@ type Mutation {
   setTenantAdminPwd(input: SetTenantAdminPwdInput!): Boolean!
   
 }
-  
 `);

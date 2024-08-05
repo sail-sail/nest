@@ -115,6 +115,31 @@ const hasEncrypt = columns.some((column) => {
   }
   return !!column.isEncrypt;
 });
+const langTableExcludeArr = [
+  "id",
+  "lang_id",
+  "create_usr_id",
+  "create_usr_id_lbl",
+  "create_time",
+  "update_usr_id",
+  "update_usr_id_lbl",
+  "update_time",
+  "is_deleted",
+  "tenant_id",
+  "deleted_usr_id",
+  "deleted_usr_id_lbl",
+  "deleted_time",
+];
+langTableExcludeArr.push(`${ table }_id`);
+const langTableRecords = [ ];
+for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
+  const record = opts.langTable.records[i];
+  const column_name = record.COLUMN_NAME;
+  if (
+    langTableExcludeArr.includes(column_name)
+  ) continue;
+  langTableRecords.push(record);
+}
 const findByIdTableUps = [ ];
 const findOneTableUps = [ ];
 const findAllTableUps = [ ];
@@ -263,6 +288,11 @@ import {
   if (hasPassword) {
   #>
   getPassword,<#
+  }
+  #><#
+  if (opts.langTable) {
+  #>
+  get_lang_id,<#
   }
   #>
 } from "/lib/auth/auth.dao.ts";<#
@@ -738,6 +768,19 @@ async function getWhereQuery(
     const foreignTable = foreignKey && foreignKey.table;
     const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
     const modelLabel = column.modelLabel;
+    let foreignSchema = undefined;
+    const foreignLangTableRecords = [ ];
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      for (let i = 0; i < (foreignSchema.opts.langTable?.records?.length || 0); i++) {
+        const record = foreignSchema.opts.langTable.records[i];
+        const column_name = record.COLUMN_NAME;
+        if (
+          langTableExcludeArr.includes(column_name)
+        ) continue;
+        foreignLangTableRecords.push(record);
+      }
+    }
   #><#
     if (foreignKey) {
       if (foreignKey.type !== "many2many") {
@@ -750,16 +793,47 @@ async function getWhereQuery(
   }<#
     if (modelLabel) {
   #>
-  if (search?.<#=modelLabel#> != null) {
-    whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;
+  if (search?.<#=modelLabel#> != null) {<#
+    if (!langTableRecords.some((record) => record.COLUMN_NAME === modelLabel)) {
+    #>
+    whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;<#
+    } else {
+    #>
+    whereQuery += ` and (t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) })`;<#
+    }
+    #>
+  }
+  if (isNotEmpty(search?.<#=modelLabel#>_like)) {<#
+    if (!langTableRecords.some((record) => record.COLUMN_NAME === modelLabel)) {
+    #>
+    whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;<#
+    } else {
+    #>
+    whereQuery += ` and (t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") })`;<#
+    }
+    #>
   }<#
     } else if (foreignKey.lbl) {
   #>
-  if (search?.<#=column_name#>_<#=foreignKey.lbl#> != null) {
-    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }`;
+  if (search?.<#=column_name#>_<#=foreignKey.lbl#> != null) {<#
+    if (!foreignLangTableRecords.some((record) => record.COLUMN_NAME === column_name+"_"+foreignKey.lbl)) {
+    #>
+    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }`;<#
+    } else {
+    #>
+    whereQuery += ` and (<#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) } or <#=foreignSchema.opts.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) })`;<#
+    }
+    #>
   }
-  if (isNotEmpty(search?.<#=column_name#>_<#=foreignKey.lbl#>_like)) {
-    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") }`;
+  if (isNotEmpty(search?.<#=column_name#>_<#=foreignKey.lbl#>_like)) {<#
+    if (!foreignLangTableRecords.some((record) => record.COLUMN_NAME === column_name+"_"+foreignKey.lbl)) {
+    #>
+    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") }`;<#
+    } else {
+    #>
+    whereQuery += ` and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") } or <#=foreignSchema.opts.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_<#=foreignKey.lbl#>_like) + "%") })`;<#
+    }
+    #>
   }<#
     }
   #><#
@@ -808,11 +882,25 @@ async function getWhereQuery(
   }<#
   } else if (!column.isEncrypt) {
   #>
-  if (search?.<#=column_name#> != null) {
-    whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;
+  if (search?.<#=column_name#> != null) {<#
+    if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
+    #>
+    whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;<#
+    } else {
+    #>
+    whereQuery += ` and (t.<#=column_name#>=${ args.push(search.<#=column_name#>) } or <#=opts.langTable.opts.table_name#>.<#=column_name#>=${ args.push(search.<#=column_name#>) })`;<#
+    }
+    #>
   }
-  if (isNotEmpty(search?.<#=column_name#>_like)) {
-    whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;
+  if (isNotEmpty(search?.<#=column_name#>_like)) {<#
+    if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
+    #>
+    whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;<#
+    } else {
+    #>
+    whereQuery += ` and (t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") })`;<#
+    }
+    #>
   }<#
   }
   #><#
@@ -822,7 +910,7 @@ async function getWhereQuery(
 }
 <#
 if (
-  !(hasDataPermit() && hasCreateUsrId)
+  !(hasDataPermit() && hasCreateUsrId) && !opts.langTable
 ) {
 #>
 // deno-lint-ignore require-await<#
@@ -843,6 +931,12 @@ async function getFromQuery(
   #>
   
   const is_deleted = search?.is_deleted ?? 0;<#
+  }
+  #><#
+  if (opts.langTable) {
+  #>
+  
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
   }
   #><#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -922,6 +1016,14 @@ async function getFromQuery(
   #><#
   }
   #>`;<#
+  if (opts.langTable) {
+  #>
+  
+  if (server_i18n_enable) {
+    fromQuery += ` left join <#=opts.langTable.opts.table_name#> on <#=opts.langTable.opts.table_name#>.<#=table#>_id=t.id and <#=opts.langTable.opts.table_name#>.lang_id=${ args.push(await get_lang_id()) }`;
+  }<#
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   if (!hasTenantPermit && hasDeptPermit) {
@@ -1044,6 +1146,12 @@ export async function findAll(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }<#
+  if (opts.langTable) {
+  #>
+  
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
+  }
+  #><#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -1096,6 +1204,22 @@ export async function findAll(
     }
   #><#
   }
+  #><#
+  if (opts.langTable) {
+  #>
+  
+  let lang_sql = "";
+  
+  if (server_i18n_enable) {<#
+    for (let i = 0; i < langTableRecords.length; i++) {
+      const record = langTableRecords[i];
+      const column_name = record.COLUMN_NAME;
+    #>
+    lang_sql += ",<#=opts.langTable.opts.table_name#>.<#=column_name#> <#=column_name#>_lang";<#
+    }
+    #>
+  }<#
+  }
   #>
   
   const args = new QueryArgs();
@@ -1106,7 +1230,6 @@ export async function findAll(
         const column_name = column.COLUMN_NAME;
         if (column.isVirtual) continue;
         const foreignKey = column.foreignKey;
-        let data_type = column.DATA_TYPE;
         if (!foreignKey) continue;
         const foreignTable = foreignKey.table;
         const foreignTableUp = foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -1146,6 +1269,11 @@ export async function findAll(
       #><#
       }
       #><#
+      }
+      #><#
+      if (opts.langTable) {
+      #>
+      ${ lang_sql }<#
       }
       #>
     from
@@ -1553,6 +1681,27 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];<#
+    if (opts.langTable) {
+    #>
+    
+    if (server_i18n_enable) {<#
+      for (let i = 0; i < langTableRecords.length; i++) {
+        const record = langTableRecords[i];
+        const column_name = record.COLUMN_NAME;
+      #>
+      
+      // deno-lint-ignore no-explicit-any
+      if ((model as any).<#=column_name#>_lang) {
+        // deno-lint-ignore no-explicit-any
+        model.<#=column_name#> = (model as any).<#=column_name#>_lang;
+        // deno-lint-ignore no-explicit-any
+        (model as any).<#=column_name#>_lang = undefined;
+      }<#
+      }
+      #>
+    }<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -2006,6 +2155,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.<#=column_name#> = val as <#=Table_Up#><#=Column_Up#>;
     }
+  } else if (isEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> != null) {
+    const lbl = <#=column_name#>Dict.find((itemTmp) => itemTmp.val === input.<#=column_name#>)?.lbl || "";
+    input.<#=column_name#>_lbl = lbl;
   }<#
       } else {
   #>
@@ -2016,6 +2168,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.<#=column_name#> = val;
     }
+  } else if (isEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> != null) {
+    const lbl = <#=column_name#>Dict.find((itemTmp) => itemTmp.val === input.<#=column_name#>)?.lbl || "";
+    input.<#=column_name#>_lbl = lbl;
   }<#
       }
   #><#
@@ -2028,6 +2183,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.<#=column_name#> = Number(val);
     }
+  } else if (isEmpty(input.<#=column_name#>_lbl) && input.<#=column_name#> != null) {
+    const lbl = <#=column_name#>Dict.find((itemTmp) => itemTmp.val === String(input.<#=column_name#>))?.lbl || "";
+    input.<#=column_name#>_lbl = lbl;
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
   #>
@@ -2049,6 +2207,17 @@ export async function setIdByLbl(
     );
     if (<#=foreignTable#>Model) {
       input.<#=column_name#> = <#=foreignTable#>Model.id;
+    }
+  } else if (isEmpty(input.<#=column_name#>_<#=foreignKey.lbl#>) && input.<#=column_name#> != null) {
+    const <#=foreignTable#>_model = await findOne<#=foreignTable_UpTmp#>(
+      {
+        id: input.<#=column_name#>,
+      },
+      undefined,
+      options,
+    );
+    if (<#=foreignTable#>_model) {
+      input.<#=column_name#>_<#=foreignKey.lbl#> = <#=foreignTable#>_model.<#=foreignKey.lbl#>;
     }
   }<#
     } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl) {
@@ -3164,6 +3333,14 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";<#
+  if (cache) {
+  #>
+  
+  await delCache();<#
+  }
+  #>
+  
   const args = new QueryArgs();
   let sql = "insert into <#=mod#>_<#=table#>(id<#
 if (hasCreateTime) {
@@ -3482,6 +3659,8 @@ for (const key of redundLblKeys) {
       }<#
         }
       #><#
+      }
+      #><#
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
@@ -3509,23 +3688,13 @@ for (const key of redundLblKeys) {
         }
       #><#
       }
-      #><#
-      }
       #>
       sql += ")";
       if (i !== inputs2.length - 1) {
         sql += ",";
       }
     }
-  }<#
-  if (cache) {
-  #>
-  
-  await delCache();<#
   }
-  #>
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,
@@ -3535,6 +3704,14 @@ for (const key of redundLblKeys) {
   if (affectedRows !== inputs2.length) {
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }<#
+  if (opts.langTable) {
+  #>
+  
+  for (const input of inputs) {
+    await refreshLangByInput(input);
+  }<#
+  }
+  #><#
   let hasMany2manyInputs2 = false;
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -3887,6 +4064,164 @@ export async function getEditableDataPermitsByIds(
   return dataPermits;
 }<#
 }
+#><#
+if (opts.langTable) {
+#>
+
+async function refreshLangByInput(
+  input: Readonly<<#=inputName#>>,
+) {
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
+  if (!server_i18n_enable) {
+    return;
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
+    const is_nullable = column.IS_NULLABLE === "YES";
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const ForeighTableUp = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const modelLabel = column.modelLabel;
+    if (!modelLabel) continue;
+    if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
+      continue;
+    }
+    let foreignSchema = undefined;
+    const foreignLangTableRecords = [ ];
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      for (let i = 0; i < (foreignSchema.opts.langTable?.records?.length || 0); i++) {
+        const record = foreignSchema.opts.langTable.records[i];
+        const column_name = record.COLUMN_NAME;
+        if (
+          langTableExcludeArr.includes(column_name)
+        ) continue;
+        foreignLangTableRecords.push(record);
+      }
+    }
+  #>
+  
+  // <#=column_comment#>
+  {
+    const sql = "select lang_id,<#=foreignKey.lbl#> from <#=foreignSchema.opts.langTable.opts.table_name#> where <#=foreignTable#>_id=?";
+    const args = new QueryArgs();
+    args.push(input.<#=column_name#>);
+    const models = await query<{
+      lang_id: LangId;
+      <#=foreignKey.lbl#>: string;
+    }>(
+      sql,
+      args,
+    );
+    for (const model of models) {
+      const sql = "select id,<#=modelLabel#> from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
+      const args = new QueryArgs();
+      args.push(model.lang_id);
+      args.push(input.id);
+      const lang_model = await queryOne<{
+        id: string;
+        <#=modelLabel#>: string;
+      }>(
+        sql,
+        args,
+      );
+      const lang_id = lang_model?.id;
+      if (!lang_id) {
+        const lang_sql = "insert into <#=opts.langTable.opts.table_name#>(id,lang_id,<#=table#>_id,<#=modelLabel#>)values(?,?,?,?)";
+        const lang_args = new QueryArgs();
+        lang_args.push(shortUuidV4());
+        lang_args.push(model.lang_id);
+        lang_args.push(input.id);
+        lang_args.push(model.<#=foreignKey.lbl#>);
+        await execute(lang_sql, lang_args);
+        continue;
+      }
+      if (lang_model.<#=modelLabel#> !== model.<#=foreignKey.lbl#>) {
+        const lang_sql = "update <#=opts.langTable.opts.table_name#> set <#=modelLabel#>=? where id=?";
+        const lang_args = new QueryArgs();
+        lang_args.push(model.<#=foreignKey.lbl#>);
+        lang_args.push(lang_id);
+        await execute(lang_sql, lang_args);
+      }
+    }
+  }<#
+  }
+  #>
+  const lang_sql = "select id from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
+  const lang_args = new QueryArgs();
+  lang_args.push(await get_lang_id());
+  lang_args.push(input.id);
+  const model = await queryOne<{ id: string }>(
+    lang_sql,
+    lang_args,
+  );
+  const lang_id = model?.id;
+  if (lang_id) {
+    let lang_sql = "update <#=opts.langTable.opts.table_name#> set ";
+    const lang_args = new QueryArgs();<#
+    for (let i = 0; i < langTableRecords.length; i++) {
+      const record = langTableRecords[i];
+      const column_name = record.COLUMN_NAME;
+      const column_comment = record.COLUMN_COMMENT || "";
+    #>
+    // <#=column_comment#>
+    if (input.<#=column_name#> != null) {
+      lang_sql += "<#=column_name#>=?,";
+      lang_args.push(input.<#=column_name#>);
+    }<#
+    }
+    #>
+    if (lang_sql.endsWith(",")) {
+      lang_sql = lang_sql.substring(0, lang_sql.length - 1);
+    }
+    lang_sql += " where id=?";
+    lang_args.push(lang_id);
+    await execute(lang_sql, lang_args);
+  } else {
+    const sql_fields: string[] = [ ];
+    const lang_args = new QueryArgs();
+    lang_args.push(shortUuidV4());
+    lang_args.push(await get_lang_id());
+    lang_args.push(input.id);<#
+    for (let i = 0; i < langTableRecords.length; i++) {
+      const record = langTableRecords[i];
+      const column_name = record.COLUMN_NAME;
+      const column_comment = record.COLUMN_COMMENT || "";
+    #>
+    // <#=column_comment#>
+    if (input.<#=column_name#> != null) {
+      sql_fields.push("<#=column_name#>");
+      lang_args.push(input.<#=column_name#>);
+    }<#
+    }
+    #>
+    let lang_sql = "insert into <#=opts.langTable.opts.table_name#>(id,lang_id,<#=table#>_id";
+    for (const sql_field of sql_fields) {
+      lang_sql += "," + sql_field;
+    }
+    lang_sql += ")values(?,?,?";
+    for (let i = 0; i < sql_fields.length; i++) {
+      lang_sql += ",?";
+    }
+    lang_sql += ")";
+    await execute(lang_sql, lang_args);
+  }
+}<#
+}
 #>
 
 /** 根据 id 修改 <#=table_comment#> */
@@ -3911,7 +4246,13 @@ export async function updateById(
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
-  const is_creating = get_is_creating(options?.is_creating);
+  const is_creating = get_is_creating(options?.is_creating);<#
+  if (opts.langTable) {
+  #>
+  
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
+  }
+  #>
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -4051,9 +4392,19 @@ export async function updateById(
   #><#
     if (modelLabel) {
   #>
-  if (isNotEmpty(input.<#=modelLabel#>)) {
+  if (isNotEmpty(input.<#=modelLabel#>)) {<#
+    if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
+    #>
     sql += `<#=modelLabel#>=?,`;
-    args.push(input.<#=modelLabel#>);
+    args.push(input.<#=modelLabel#>);<#
+    } else {
+    #>
+    if (!server_i18n_enable) {
+      sql += `<#=modelLabel#>=?,`;
+      args.push(input.<#=modelLabel#>);
+    }<#
+    }
+    #>
     updateFldNum++;
   }<#
     }
@@ -4086,8 +4437,17 @@ export async function updateById(
       #>
       sql += `<#=column_name_mysql#>=${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else {
+      #><#
+        if (!langTableRecords.some((item) => item.COLUMN_NAME === column_name)) {
       #>
       sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
+        } else {
+      #>
+      if (!server_i18n_enable) {
+        sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;
+      }<#
+        }
+      #><#
       }
       #>
       updateFldNum++;
@@ -4108,8 +4468,17 @@ export async function updateById(
       #>
       sql += `<#=column_name_mysql#>=${ args.push(await encrypt(input.<#=column_name#>.toString())) },`;<#
       } else {
+      #><#
+        if (!langTableRecords.some((item) => item.COLUMN_NAME === column_name)) {
       #>
       sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
+        } else {
+      #>
+      if (!server_i18n_enable) {
+        sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;
+      }<#
+        }
+      #><#
       }
       #>
       updateFldNum++;
@@ -4140,8 +4509,17 @@ export async function updateById(
       const val_mysql = mysqlKeyEscape(val);
   #>
   if (input.<#=val#> != null) {
-    if (input.<#=val#> != oldModel.<#=val#>) {
-      sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;
+    if (input.<#=val#> != oldModel.<#=val#>) {<#
+        if (!langTableRecords.some((item) => item.COLUMN_NAME === val)) {
+      #>
+      sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;<#
+        } else {
+      #>
+      if (!server_i18n_enable) {
+        sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;
+      }<#
+        }
+      #>
       updateFldNum++;
     }
   }<#
@@ -4483,7 +4861,7 @@ export async function updateById(
       if (input.version != null) {
         const version = await getVersionById(id);
         if (version && version > input.version) {
-          throw await ns("此 {0} 已被修改，请刷新后重试", await ns("会员卡"));
+          throw await ns("此 {0} 已被修改，请刷新后重试", await ns("<#=table_comment#>"));
         }
         sql += `version=${ args.push(version + 1) },`;
         sqlSetFldNum++;
@@ -4519,7 +4897,17 @@ export async function updateById(
     #>
     
     if (sqlSetFldNum > 0) {
-      await execute(sql, args);
+      await execute(sql, args);<#
+      if (opts.langTable) {
+      #>
+      if (server_i18n_enable) {
+        await refreshLangByInput({
+          ...input,
+          id,
+        });
+      }<#
+      }
+      #>
     }
   }<#
   if (cache) {
@@ -4587,7 +4975,12 @@ export async function deleteByIds(
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
-  const is_creating = get_is_creating(options?.is_creating);
+  const is_creating = get_is_creating(options?.is_creating);<#
+  if (opts.langTable) {
+  #>
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
+  }
+  #>
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -4715,6 +5108,23 @@ export async function deleteByIds(
     #>
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;<#
+    if (opts.langTable) {
+    #>
+    if (server_i18n_enable) {<#
+      if (hasIsDeleted) {
+      #>
+      const sql = "update <#=opts.langTable.opts.table_name#> set is_deleted=1 where <#=table#>_id=?";<#
+      } else {
+      #>
+      const sql = "delete from <#=opts.langTable.opts.table_name#> where <#=table#>_id=?";<#
+      }
+      #>
+      const args = new QueryArgs();
+      args.push(id);
+      await execute(sql, args);
+    }<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -5125,7 +5535,12 @@ export async function revertByIds(
   const table = "<#=mod#>_<#=table#>";
   const method = "revertByIds";
   
-  const is_debug = get_is_debug(options?.is_debug);
+  const is_debug = get_is_debug(options?.is_debug);<#
+  if (opts.langTable) {
+  #>
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
+  }
+  #>
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -5191,6 +5606,16 @@ export async function revertByIds(
     const sql = `update <#=mod#>_<#=table#> set is_deleted=0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;<#
+    if (opts.langTable) {
+    #>
+    if (server_i18n_enable) {
+      const sql = "update <#=opts.langTable.opts.table_name#> set is_deleted=0 where <#=table#>_id=?";
+      const args = new QueryArgs();
+      args.push(id);
+      await execute(sql, args);
+    }<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -5358,7 +5783,12 @@ export async function forceDeleteByIds(
   const method = "forceDeleteByIds";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
-  const is_debug = get_is_debug(options?.is_debug);
+  const is_debug = get_is_debug(options?.is_debug);<#
+  if (opts.langTable) {
+  #>
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
+  }
+  #>
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -5409,6 +5839,16 @@ export async function forceDeleteByIds(
     #> limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;<#
+    if (opts.langTable) {
+    #>
+    if (server_i18n_enable) {
+      const sql = "delete from <#=opts.langTable.opts.table_name#> where <#=table#>_id=?";
+      const args = new QueryArgs();
+      args.push(id);
+      await execute(sql, args);
+    }<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -5560,10 +6000,7 @@ export async function forceDeleteByIds(
 if (hasOrderBy) {
 #>
   
-/**
- * 查找 <#=table_comment#> order_by 字段的最大值
- * @return {Promise<number>}
- */
+/** 查找 <#=table_comment#> order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
     is_debug?: boolean;
