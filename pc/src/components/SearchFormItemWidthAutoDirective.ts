@@ -7,7 +7,6 @@ export function searchFormItemWidthAuto(el: HTMLElement, binding: DirectiveBindi
   if (!inited) {
     return;
   }
-  console.log("searchFormItemWidthAuto", binding.value);
   const formEl = el as HTMLFormElement | null;
   if (!formEl) {
     return;
