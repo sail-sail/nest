@@ -171,6 +171,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
+  }
   if (search?.update_usr_id != null) {
     whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
   }
@@ -179,6 +182,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -528,6 +534,17 @@ export async function setIdByLbl(
     if (cron_jobModel) {
       input.cron_job_id = cron_jobModel.id;
     }
+  } else if (isEmpty(input.cron_job_id_lbl) && input.cron_job_id != null) {
+    const cron_job_model = await findOneCronJob(
+      {
+        id: input.cron_job_id,
+      },
+      undefined,
+      options,
+    );
+    if (cron_job_model) {
+      input.cron_job_id_lbl = cron_job_model.lbl;
+    }
   }
   
   // 执行状态
@@ -536,6 +553,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.exec_state = val as CronJobLogExecState;
     }
+  } else if (isEmpty(input.exec_state_lbl) && input.exec_state != null) {
+    const lbl = exec_stateDict.find((itemTmp) => itemTmp.val === input.exec_state)?.lbl || "";
+    input.exec_state_lbl = lbl;
   }
   
   // 开始时间
@@ -1087,6 +1107,8 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   const args = new QueryArgs();
   let sql = "insert into cron_cron_job_log(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,cron_job_id,exec_state,exec_result,begin_time,end_time,rem)values";
   
@@ -1222,8 +1244,6 @@ async function _creates(
       }
     }
   }
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,
