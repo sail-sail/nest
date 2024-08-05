@@ -155,6 +155,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -171,6 +174,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -441,6 +447,17 @@ export async function setIdByLbl(
     );
     if (companyModel) {
       input.company_id = companyModel.id;
+    }
+  } else if (isEmpty(input.company_id_lbl) && input.company_id != null) {
+    const company_model = await findOneCompany(
+      {
+        id: input.company_id,
+      },
+      undefined,
+      options,
+    );
+    if (company_model) {
+      input.company_id_lbl = company_model.lbl;
     }
   }
 }
@@ -1047,6 +1064,10 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  await delCache();
+  
   const args = new QueryArgs();
   let sql = "insert into eams_archive(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,company_id,order_by,rem)values";
   
@@ -1177,10 +1198,6 @@ async function _creates(
       }
     }
   }
-  
-  await delCache();
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,
@@ -1655,10 +1672,7 @@ export async function forceDeleteByIds(
   return num;
 }
   
-/**
- * 查找 全宗设置 order_by 字段的最大值
- * @return {Promise<number>}
- */
+/** 查找 全宗设置 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
     is_debug?: boolean;
