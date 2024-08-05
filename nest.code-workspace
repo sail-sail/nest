@@ -41,6 +41,12 @@
     "editor.formatOnSave": false,
     "deno.codeLens.references": false,
     "deno.codeLens.referencesAllFunctions": false,
-    "git.timeline.showUncommitted": true
+    "git.timeline.showUncommitted": true,
+    "scm.defaultViewMode": "tree",
+    "scm.diffDecorationsGutterPattern": {
+      "added": true
+    },
+    "scm.diffDecorationsIgnoreTrimWhitespace": "true",
+    "scm.showHistoryGraph": false
   }
 }

@@ -12,6 +12,8 @@
     un-overflow-auto
   >
     <el-form
+      v-search-form-item-width-auto="inited"
+      
       ref="searchFormRef"
       size="default"
       :model="search"
@@ -55,7 +57,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.role_ids == null">
         <el-form-item
-          label="所属角色"
+          :label="n('所属角色')"
           prop="role_ids"
         >
           <CustomSelect
@@ -76,7 +78,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.dept_ids == null">
         <el-form-item
-          label="所属部门"
+          :label="n('所属部门')"
           prop="dept_ids"
         >
           <CustomTreeSelect
@@ -97,7 +99,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.org_ids == null">
         <el-form-item
-          label="所属组织"
+          :label="n('所属组织')"
           prop="org_ids"
         >
           <CustomSelect
@@ -132,18 +134,19 @@
       </template>
       
       <el-form-item
-        label=" "
+        label=""
         prop="idsChecked"
       >
         <div
           un-flex="~ nowrap"
-          un-justify-between
+          un-justify-evenly
           un-w="full"
         >
           <div
             un-flex="~ nowrap"
             un-items-center
             un-gap="x-1.5"
+            un-min="w-31.5"
           >
             <el-checkbox
               v-model="idsChecked"
@@ -186,10 +189,11 @@
       </el-form-item>
       
       <el-form-item
-        label=" "
+        label=""
       >
         
         <el-button
+          un-m="l-3"
           plain
           type="primary"
           @click="onSearch(true)"
@@ -813,6 +817,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -839,7 +844,7 @@ defineOptions({
   name: "用户",
 });
 
-const pagePath = "/base/usr";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
@@ -1239,7 +1244,7 @@ function getTableColumns(): ColumnType[] {
       label: "默认组织",
       prop: "default_org_id_lbl",
       sortBy: "default_org_id_lbl",
-      width: 140,
+      width: 240,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1248,7 +1253,7 @@ function getTableColumns(): ColumnType[] {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
-      width: 60,
+      width: 85,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1257,7 +1262,7 @@ function getTableColumns(): ColumnType[] {
       label: "启用",
       prop: "is_enabled_lbl",
       sortBy: "is_enabled",
-      width: 60,
+      width: 85,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1501,7 +1506,7 @@ async function openAdd() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("新增") + await nsAsync("用户"),
+    title: await nsAsync("新增") + " " + await nsAsync("用户"),
     action: "add",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1537,7 +1542,7 @@ async function openCopy() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("复制") + await nsAsync("用户"),
+    title: await nsAsync("复制") + " " + await nsAsync("用户"),
     action: "copy",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1724,7 +1729,7 @@ async function openEdit() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("编辑") + await nsAsync("用户"),
+    title: await nsAsync("编辑") + " " + await nsAsync("用户"),
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1791,7 +1796,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + await nsAsync("用户"),
+    title: await nsAsync("查看") + " " + await nsAsync("用户"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),

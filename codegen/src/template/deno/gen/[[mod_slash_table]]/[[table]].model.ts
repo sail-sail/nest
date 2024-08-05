@@ -159,7 +159,9 @@ declare global {
     /** <#=column_comment#> */
     <#=column_name#>?: <#=data_type#>;
     /** <#=column_comment#> */
-    <#=column_name#>_is_null?: boolean;<#
+    <#=column_name#>_is_null?: boolean;
+    /** <#=column_comment#> */
+    <#=column_name#>_<#=foreignKey.lbl#>_like?: string;<#
       if (modelLabel) {
     #>
     /** <#=column_comment#> */
