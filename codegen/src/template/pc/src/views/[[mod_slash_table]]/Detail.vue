@@ -398,6 +398,7 @@ const old_table = table;
               readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #>
+              @validate-field="() => formRef?.validateField('<#=column_name#>')"
             ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (foreignSchema && foreignSchema.opts?.list_tree
               && !foreignSchema.opts?.ignoreCodegen
@@ -842,6 +843,7 @@ const old_table = table;
                       readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #>
+                      @validate-field="() => formRef?.validateField('<#=column_name#>')"
                     >
                     </SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree
@@ -1410,6 +1412,7 @@ const old_table = table;
                     readonly-placeholder="<#=readonlyPlaceholder#>"<#
                     }
                     #>
+                    @validate-field="() => formRef?.validateField('<#=column_name#>')"
                   ></SelectInput<#=Foreign_Table_Up#>><#
                   } else if (foreignSchema && foreignSchema.opts?.list_tree
                     && !foreignSchema.opts?.ignoreCodegen
@@ -1886,6 +1889,7 @@ const old_table = table;
                       readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #>
+                      @validate-field="() => formRef?.validateField('<#=column_name#>')"
                     >
                     </SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree
@@ -2199,7 +2203,7 @@ const old_table = table;
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('关闭') }}</span>
+        <span>{{ ns('关闭') }}</span>
       </el-button><#
       if (!opts.noAdd) {
       #>
@@ -2213,7 +2217,7 @@ const old_table = table;
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存并继续') }}</span>
+        <span>{{ ns('保存并继续') }}</span>
       </el-button><#
       }
       #><#
@@ -2229,7 +2233,7 @@ const old_table = table;
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ ns('保存') }}</span>
       </el-button><#
       }
       #><#
@@ -2245,7 +2249,7 @@ const old_table = table;
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ ns('保存') }}</span>
       </el-button><#
       }
       #>
@@ -2410,6 +2414,7 @@ import {<#
   getEditableDataPermitsByIds,<#
   }
   #>
+  getPagePath,
 } from "./Api";<#
 const foreignTableArr2 = [];
 const foreignTableArr3 = [];
@@ -2916,15 +2921,7 @@ if (mod === "cron" && table === "cron_job") {
 #>
 
 import cronstrue from "cronstrue/i18n";
-import { lang } from "@/locales/index";
-
-let locale = $computed(() => {
-  if (lang === "zh-cn") {
-    return "zh_CN";
-  } else if (lang === "zh-tw") {
-    return "zh_TW";
-  }
-});<#
+import { lang } from "@/locales/index";<#
 }
 #>
 
@@ -2937,7 +2934,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/<#=mod#>/<#=table#>";
+const pagePath = getPagePath();
 
 const {
   n,
@@ -4121,11 +4118,7 @@ let job_lbl = $ref<string>("");
 
 // 任务
 function onJobId(jobModel?: JobModel) {
-  if (!jobModel) {
-    job_lbl = "";
-    return;
-  }
-  job_lbl = jobModel.lbl;
+  job_lbl = jobModel?.lbl || "";
 }
 
 let cron_lbl = $computed(() => {
@@ -4134,8 +4127,10 @@ let cron_lbl = $computed(() => {
   }
   try {
     return cronstrue.toString(
-      dialogModel.cron, {
-        locale,
+      dialogModel.cron,
+      {
+        use24HourTimeFormat: true,
+        locale: lang.replace("-", "_"),
       },
     );
   } catch (err) {

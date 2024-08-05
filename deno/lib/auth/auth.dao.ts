@@ -7,13 +7,15 @@ import {
 import { ServiceException } from "/lib/exceptions/service.exception.ts";
 export { getPassword } from "./auth.constants.ts";
 
-import {
-  type JWTPayload,
+import type {
+  JWTPayload,
 } from "jose/index.ts";
 
 import {
   getAuthorization,
+  queryOne,
   useContext,
+  useMaybeContext,
 } from "/lib/context.ts";
 
 import {
@@ -112,6 +114,30 @@ export async function get_org_id(
     return;
   }
   return authModel.org_id;
+}
+
+export async function get_lang_code() {
+  const authModel = await getAuthModel(true);
+  if (!authModel) {
+    const context = useMaybeContext();
+    return context?.lang || "zh-CN";
+  }
+  return authModel.lang || "zh-CN";
+}
+
+/** 获取当前语言ID */
+export async function get_lang_id() {
+  const lang = await get_lang_code();
+  type Result = {
+    id: LangId;
+  }
+  const res = await queryOne<Result>("select id from base_lang where code=?", [ lang ]);
+  const context = useMaybeContext();
+  if (!context) {
+    return res?.id;
+  }
+  context.lang_id = res?.id;
+  return context.lang_id;
 }
 
 /**

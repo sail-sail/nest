@@ -561,6 +561,10 @@ export async function importModels(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
+export function getPagePath() {
+  return "/base/permit";
+}
+
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: PermitInput = {
