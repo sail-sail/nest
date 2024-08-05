@@ -60,8 +60,6 @@ declare global {
     /** 组织 */
     org_id_is_null?: boolean;
     /** 组织 */
-    org_id_lbl_like?: string;
-    /** 组织 */
     org_id_lbl?: string[];
     /** 组织 */
     org_id_lbl_like?: string;
