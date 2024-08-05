@@ -136,12 +136,16 @@ input WxAppSearch {
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
+  "创建人"
+  create_usr_id_lbl_like: String
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
+  "更新人"
+  update_usr_id_lbl_like: String
 }
 type Query {
   "根据条件查找小程序设置总数"

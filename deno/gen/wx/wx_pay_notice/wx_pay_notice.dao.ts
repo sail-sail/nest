@@ -225,6 +225,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -241,6 +244,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -646,6 +652,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.trade_type = val as WxPayNoticeTradeType;
     }
+  } else if (isEmpty(input.trade_type_lbl) && input.trade_type != null) {
+    const lbl = trade_typeDict.find((itemTmp) => itemTmp.val === input.trade_type)?.lbl || "";
+    input.trade_type_lbl = lbl;
   }
   
   // 交易状态
@@ -654,6 +663,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.trade_state = val as WxPayNoticeTradeState;
     }
+  } else if (isEmpty(input.trade_state_lbl) && input.trade_state != null) {
+    const lbl = trade_stateDict.find((itemTmp) => itemTmp.val === input.trade_state)?.lbl || "";
+    input.trade_state_lbl = lbl;
   }
   
   // 支付完成时间
@@ -668,6 +680,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.currency = val as WxPayNoticeCurrency;
     }
+  } else if (isEmpty(input.currency_lbl) && input.currency != null) {
+    const lbl = currencyDict.find((itemTmp) => itemTmp.val === input.currency)?.lbl || "";
+    input.currency_lbl = lbl;
   }
   
   // 用户支付币种
@@ -676,6 +691,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.payer_currency = val as WxPayNoticePayerCurrency;
     }
+  } else if (isEmpty(input.payer_currency_lbl) && input.payer_currency != null) {
+    const lbl = payer_currencyDict.find((itemTmp) => itemTmp.val === input.payer_currency)?.lbl || "";
+    input.payer_currency_lbl = lbl;
   }
   
   // 组织
@@ -690,6 +708,17 @@ export async function setIdByLbl(
     );
     if (orgModel) {
       input.org_id = orgModel.id;
+    }
+  } else if (isEmpty(input.org_id_lbl) && input.org_id != null) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      options,
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
     }
   }
 }
@@ -1336,6 +1365,8 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   const args = new QueryArgs();
   let sql = "insert into wx_wx_pay_notice(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,appid,mchid,openid,out_trade_no,transaction_id,trade_type,trade_state,trade_state_desc,bank_type,attach,success_time,total,payer_total,currency,payer_currency,device_id,rem,raw,org_id)values";
   
@@ -1536,8 +1567,6 @@ async function _creates(
       }
     }
   }
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,
