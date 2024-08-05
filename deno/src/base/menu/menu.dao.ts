@@ -4,6 +4,7 @@ import {
 } from "/lib/context.ts";
 
 import {
+  get_lang_id,
   get_usr_id,
 } from "/lib/auth/auth.dao.ts";
 
@@ -20,31 +21,35 @@ async function _getMenus(
   parent_id?: MenuId,
 ) {
   const args = new QueryArgs();
-  let sql = /*sql*/ `
+  let sql = `
     select distinct
       t.id,
       t.parent_id,
       t.lbl,
       t.route_path,
       t.route_query,
-      t.order_by
+      t.order_by,
+      base_menu_lang.lbl as lbl_lang
     from base_menu t
     inner join base_tenant_menu
       on t.id = base_tenant_menu.menu_id
-      and base_tenant_menu.is_deleted = 0
+      and base_tenant_menu.is_deleted=0
     inner join base_tenant
       on base_tenant_menu.tenant_id = base_tenant.id
-      and base_tenant.is_deleted = 0
-      and base_tenant.is_enabled = 1
+      and base_tenant.is_deleted=0
+      and base_tenant.is_enabled=1
     inner join base_role_menu
       on t.id = base_role_menu.menu_id
-      and base_role_menu.is_deleted = 0
+      and base_role_menu.is_deleted=0
     inner join base_usr_role
-      on base_role_menu.role_id = base_usr_role.role_id
-      and base_usr_role.is_deleted = 0
+      on base_role_menu.role_id=base_usr_role.role_id
+      and base_usr_role.is_deleted=0
+    left join base_menu_lang
+      on t.id = base_menu_lang.menu_id
+      and base_menu_lang.lang_id = ${ args.push(await get_lang_id()) }
     where
-      t.is_deleted = 0
-      and t.is_enabled = 1
+      t.is_deleted=0
+      and t.is_enabled=1
   `;
   const usr_id = await get_usr_id();
   if (!usr_id) {
@@ -52,10 +57,10 @@ async function _getMenus(
   }
   const tenant_id = await getTenant_id(usr_id);
   if (tenant_id) {
-    sql += ` and base_tenant_menu.tenant_id = ${ args.push(tenant_id) }`;
+    sql += ` and base_tenant_menu.tenant_id=${ args.push(tenant_id) }`;
   }
   if (parent_id != null) {
-    sql += ` and t.parent_id = ${ args.push(parent_id) }`;
+    sql += ` and t.parent_id=${ args.push(parent_id) }`;
   }
   const usr_model = await validateOptionUsr(
     await findByIdUsr(
@@ -67,7 +72,7 @@ async function _getMenus(
   );
   const username = usr_model.username;
   if (username !== "admin") {
-    sql += ` and base_usr_role.usr_id = ${ args.push(usr_id) }`;
+    sql += ` and base_usr_role.usr_id=${ args.push(usr_id) }`;
   }
   
   const table = "base_menu";
@@ -79,6 +84,7 @@ async function _getMenus(
     id: MenuId,
     parent_id: string,
     lbl: string,
+    lbl_lang: string,
     route_path: string,
     route_query: string,
     order_by: number,
@@ -101,6 +107,13 @@ async function _getMenus(
   
   if (server_i18n_enable === "false") {
     models = models.filter((item) => item.route_path !== "/base/i18n" && item.route_path !== "/base/lang");
+  } else {
+    for (let i = 0; i < models.length; i++) {
+      const model = models[i];
+      if (model.lbl_lang) {
+        model.lbl = model.lbl_lang;
+      }
+    }
   }
   
   models.sort((a, b) => a.order_by - b.order_by);

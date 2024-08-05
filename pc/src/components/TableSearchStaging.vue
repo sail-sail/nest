@@ -17,7 +17,7 @@
         un-cursor-pointer
         @click="onOpenAdd"
       >
-        暂存
+        {{ ns("暂存") }}
       </span>
       <el-icon
         un-h="full"
@@ -56,7 +56,7 @@
       un-cursor-pointer
       @click="onOpenAdd"
     >
-      暂存
+      {{ ns("暂存") }}
     </span>
   </div>
   <TableSearchStagingDialog

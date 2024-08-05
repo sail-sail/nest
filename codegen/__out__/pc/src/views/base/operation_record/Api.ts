@@ -361,6 +361,10 @@ export function useExportExcel(routePath: string) {
   };
 }
 
+export function getPagePath() {
+  return "/base/operation_record";
+}
+
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: OperationRecordInput = {
