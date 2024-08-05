@@ -27,76 +27,69 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
   }"
+  @mouseenter="onMouseEnter"
+  @mouseleave="onMouseLeave"
 >
-  <el-tooltip
-    :content="inputValue"
-    :disabled="!inputValue || !props.labelReadonly"
+  <CustomInput
+    v-bind="$attrs"
+    ref="inputRef"
+    @click="onInput('input')"
+    v-model="inputValue"
+    @clear="(onClear as any)"
+    :readonly="props.labelReadonly"
+    :clearable="false"
+    class="select_input"
+    :placeholder="props.placeholder"
+    @keydown.enter="onEnter"
   >
-    <CustomInput
-      v-bind="$attrs"
-      ref="inputRef"
-      @click="onInput('input')"
-      v-model="inputValue"
-      @clear="(onClear as any)"
-      :readonly="props.labelReadonly"
-      :clearable="false"
-      class="select_input"
-      :placeholder="props.placeholder"
-      @mouseenter="mouseEnter"
-      @mouseleave="mouseLeave"
-      @keydown.enter="onEnter"
+    <template
+      v-for="(item, key, index) in $slots"
+      :key="index"
+      #[key]
+    >
+      <slot
+        :name="key"
+      ></slot>
+    </template>
+    <template
+      #suffix
+      v-if="!$slots.suffix"
     >
       <template
-        v-for="(item, key, index) in $slots"
-        :key="index"
-        #[key]
-      >
-        <slot
-          :name="key"
-        ></slot>
-      </template>
-      <template
-        #suffix
-        v-if="!$slots.suffix"
+        v-if="!props.disabled"
       >
         <template
-          v-if="!props.disabled"
+          v-if="modelValue && modelValue.length > 0 && props.labelReadonly"
         >
-          <template
-            v-if="modelValue && modelValue.length > 0 && props.labelReadonly"
+          <el-icon
+            @click="onClear"
+            un-cursor-pointer
+            un-m="r-0.5"
+            size="14"
           >
-            <el-icon
-              @click="onClear"
-              un-cursor-pointer
-              un-text="hover:red-500"
-              un-m="r-0.5"
-              size="14"
-            >
-              <ElIconCircleClose
-                v-if="isHover"
-              />
-              <ElIconArrowDown
-                v-else
-              />
-            </el-icon>
-          </template>
-          <template
-            v-else
+            <ElIconCircleClose
+              v-if="isHover"
+            />
+            <ElIconArrowDown
+              v-else
+            />
+          </el-icon>
+        </template>
+        <template
+          v-else
+        >
+          <el-icon
+            @click="onInput('icon')"
+            un-cursor-pointer
+            un-m="r-0.5"
+            size="14"
           >
-            <el-icon
-              @click="onInput('icon')"
-              un-cursor-pointer
-              un-text="hover:blue-500"
-              un-m="r-0.5"
-              size="14"
-            >
-              <ElIconArrowDown />
-            </el-icon>
-          </template>
+            <ElIconArrowDown />
+          </el-icon>
         </template>
       </template>
-    </CustomInput>
-  </el-tooltip>
+    </template>
+  </CustomInput>
   <SelectList
     v-bind="$attrs"
     ref="selectListRef"
@@ -115,7 +108,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     un-min="h-8"
     un-line-height="normal"
     un-break-words
-    class="custom_select_readonly"
+    class="custom_select_readonly select_input_readonly"
     v-bind="$attrs"
   >
     {{ inputValue ?? "" }}
@@ -128,21 +121,25 @@ import SelectList from "./SelectList.vue";
 
 import {
   findAll,
+  getPagePath,
 } from "./Api";
 
 let emit = defineEmits<{
   (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
+  (e: "validateField"): void,
   (e: "clear"): void,
 }>();
+
+const pagePath = getPagePath();
 
 const {
   n,
   ns,
   nAsync,
   nsAsync,
-} = useI18n("/<#=mod#>/<#=table#>");
+} = useI18n(pagePath);
 
 const props = withDefaults(
   defineProps<{
@@ -164,6 +161,7 @@ const props = withDefaults(
 );
 
 let inputValue = $ref("");
+let oldInputValue = $ref("");
 
 watch(
   () => inputValue,
@@ -173,6 +171,7 @@ watch(
 );
 
 let modelValue = $ref(props.modelValue);
+let selectedValue: <#=modelName#> | (<#=modelName#> | undefined)[] | null | undefined = undefined;
 
 watch(
   () => props.modelValue,
@@ -196,11 +195,11 @@ watch(
 
 let isHover = $ref(false);
 
-function mouseEnter() {
+function onMouseEnter() {
   isHover = true;
 }
 
-function mouseLeave() {
+function onMouseLeave() {
   isHover = false;
 }
 
@@ -237,19 +236,30 @@ async function refreshInputValue() {
   const modelValueArr = getModelValueArr();
   if (modelValueArr.length === 0) {
     inputValue = "";
+    oldInputValue = inputValue;
     return;
   }
-  const models = await getModelsByIds(modelValueArr);
+  let models: CardModel[];
+  if (selectedValue && Array.isArray(selectedValue)) {
+    models = selectedValue.filter((item) => item != null);
+  } else if (selectedValue) {
+    models = [ selectedValue ];
+  } else {
+    models = await getModelsByIds(modelValueArr);
+  }
   inputValue = models.map((item) => item?.<#=opts?.lbl_field || "lbl"#> || "").join(", ");
+  oldInputValue = inputValue;
 }
 
 function onClear(e?: PointerEvent) {
   e?.stopPropagation();
   modelValue = undefined;
   inputValue = "";
+  oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
   emit("change");
   emit("clear");
+  emit("validateField");
 }
 
 
@@ -308,16 +318,36 @@ function blur() {
   inputRef.blur();
 }
 
-function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
+async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
+  selectedValue = value;
+  await nextTick();
   if (props.multiple) {
     emit("change", value);
+    await nextTick();
+    await nextTick();
+    emit("validateField");
+    if (oldInputValue !== inputValue) {
+      await refreshInputValue();
+    }
     return;
   }
   if (!Array.isArray(value)) {
     emit("change", value);
+    await nextTick();
+    await nextTick();
+    emit("validateField");
+    if (oldInputValue !== inputValue) {
+      await refreshInputValue();
+    }
     return;
   }
   emit("change", value[0]);
+  await nextTick();
+  await nextTick();
+  emit("validateField");
+  if (oldInputValue !== inputValue) {
+    await refreshInputValue();
+  }
 }
 
 defineExpose({

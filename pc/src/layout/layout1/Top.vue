@@ -13,7 +13,7 @@
   <div
     v-if="!menuStore.isCollapse"
   >
-    {{ ns(app_title) }}
+    {{ app_title }}
   </div>
 </div>
 </template>
@@ -23,10 +23,17 @@ const menuStore = useMenuStore();
 
 const {
   ns,
+  nsAsync,
 } = useI18n();
 
-const app_title = import.meta.env.VITE_APP_TITLE;
+let app_title = $ref(import.meta.env.VITE_APP_TITLE);
 
+async function initFrame() {
+  app_title = await nsAsync(import.meta.env.VITE_APP_TITLE);
+  document.title = app_title;
+}
+
+initFrame();
 </script>
 
 <style lang="scss" scoped>

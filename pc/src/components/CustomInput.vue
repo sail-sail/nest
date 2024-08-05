@@ -12,7 +12,7 @@
     v-bind="$attrs"
     v-model="modelValue"
     class="flex-[1_0_0] overflow-hidden"
-    :clearable="!props.disabled"
+    :clearable="props.disabled === true ? false : props.clearable"
     :disabled="props.disabled"
     :placeholder="props.placeholder"
     @change="onChange"
@@ -72,7 +72,16 @@
         {{ modelValue ?? "" }}
       </template>
     </div>
-    <slot name="suffix"></slot>
+    <div
+      un-flex="~"
+      un-overflow-hidden
+      un-p="x-2.5 y-1.25"
+      un-box-border
+      un-min="h-7.5"
+      un-items="center"
+    >
+      <slot name="suffix"></slot>
+    </div>
   </div>
 </template>
 </template>
@@ -88,6 +97,7 @@ const props = withDefaults(
   defineProps<{
     modelValue?: any;
     type?: string;
+    clearable?: boolean;
     disabled?: boolean;
     readonly?: boolean;
     placeholder?: string;
@@ -97,6 +107,7 @@ const props = withDefaults(
   {
     modelValue: undefined,
     type: "text",
+    clearable: undefined,
     disabled: undefined,
     readonly: undefined,
     placeholder: undefined,

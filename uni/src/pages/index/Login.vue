@@ -119,10 +119,6 @@ import type {
   LoginInput,
 } from "@/typings/types";
 
-import {
-  lang,
-} from "@/locales/index";
-
 const usrStore = useUsrStore(cfg.pinia);
 
 let formRef = $ref<InstanceType<typeof TmForm>>();
@@ -133,7 +129,6 @@ let model: LoginInput = $ref<LoginInput>({
   username: "admin",
   password: "a",
   tenant_id: "" as unknown as TenantId,
-  lang,
 });
 
 let redirect_uri = cfg.homePage;
@@ -161,9 +156,9 @@ async function onLogin() {
   }
   usrStore.setAuthorization(loginModel.authorization);
   usrStore.setUsrId(loginModel.usr_id);
-  usrStore.setUsername(model.username);
-  usrStore.setTenantId(model.tenant_id);
-  usrStore.setLang(model.lang);
+  usrStore.setUsername(loginModel.username);
+  usrStore.setTenantId(loginModel.tenant_id);
+  usrStore.setLang(loginModel.lang);
   await uni.reLaunch({
     url: redirect_uri,
   });
