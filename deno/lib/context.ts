@@ -235,6 +235,8 @@ export class Context {
   /** 当前请求的语言 */
   lang = "zh-CN";
   
+  lang_id: LangId | undefined;
+  
   /** token */
   authorization: string | null | undefined;
   
