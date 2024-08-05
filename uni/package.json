@@ -70,10 +70,10 @@
     "@dcloudio/uni-cli-shared": "3.0.0-4020420240722002",
     "@dcloudio/uni-stacktracey": "3.0.0-4020420240722002",
     "@dcloudio/vite-plugin-uni": "3.0.0-4020420240722002",
-    "@types/node": "22.0.2",
-    "@uni-helper/uni-app-types": "0.5.13",
+    "@types/node": "22.1.0",
+    "@uni-helper/uni-app-types": "1.0.0-alpha.1",
     "@unocss/preset-attributify": "0.61.9",
-    "@vue-macros/reactivity-transform": "1.0.0",
+    "@vue-macros/reactivity-transform": "1.0.3",
     "cross-env": "7.0.3",
     "husky": "9.1.4",
     "less": "4.2.0",
@@ -93,7 +93,7 @@
     "vite-plugin-inspect": "0.8.5",
     "vite-plugin-vue-inspector": "5.1.3",
     "vitest": "2.0.5",
-    "vue-router": "4.4.1",
+    "vue-router": "4.4.2",
     "vue-tsc": "2.0.29"
   }
 }
