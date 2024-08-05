@@ -31,7 +31,6 @@ defineGraphql(usrResolver, /* GraphQL */`
     password: String!
     tenant_id: TenantId!
     org_id: OrgId
-    lang: String!
   }
   
   input ChangePasswordInput {

@@ -542,6 +542,10 @@ export async function findLastOrderBy(
   return res;
 }
 
+export function getPagePath() {
+  return "/base/lang";
+}
+
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: LangInput = {

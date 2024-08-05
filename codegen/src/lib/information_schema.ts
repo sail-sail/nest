@@ -332,7 +332,7 @@ async function getSchema0(
         item.require = true;
       }
       if (item.width == null) {
-        item.width = 60;
+        item.width = 85;
       }
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
@@ -349,7 +349,7 @@ async function getSchema0(
         item.require = true;
       }
       if (item.width == null) {
-        item.width = 60;
+        item.width = 85;
       }
       if (item.showOverflowTooltip == null) {
         item.showOverflowTooltip = false;
@@ -366,7 +366,7 @@ async function getSchema0(
       || record?.COLUMN_TYPE.toLowerCase() === "tinyint unsigned"
     ) {
       if (item.width == null) {
-        item.width = 60;
+        item.width = 85;
       }
       if (item.isSwitch == null) {
         item.isSwitch = true;
@@ -626,9 +626,15 @@ async function getSchema0(
       }
     }
   }
+  // Detail.vue 中表单文本框的宽度, 默认为: 380px
   if (tables[table_name]?.opts?.detailFormWidth == null) {
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.detailFormWidth = "380px";
+  }
+  // List.vue 中表单中表单文本框的宽度, 默认为: 280px
+  if (tables[table_name]?.opts?.searchFormWidth == null) {
+    tables[table_name].opts = tables[table_name].opts || { };
+    tables[table_name].opts.searchFormWidth = "280px";
   }
   return records2;
 }
@@ -988,6 +994,22 @@ export async function getSchema(
     const column = tables[table_name].columns[i];
     if (column.canSortInApi == null && column.sortable) {
       column.canSortInApi = true;
+    }
+  }
+  
+  // langTable
+  if (!tables[table_name].opts.langTable) {
+    const all_table_names = await getAllTables(context);
+    for (let i = 0; i < all_table_names.length; i++) {
+      const table_name2 = all_table_names[i].TABLE_NAME;
+      if (table_name2 === `${ mod }_${ table }_lang`) {
+        (tables[table_name].opts.langTable as any) = tables[table_name].opts.langTable || { };
+        (tables[table_name].opts.langTable.opts as any) = tables[table_name].opts.langTable.opts || { };
+        tables[table_name].opts.langTable.opts.mod = mod;
+        tables[table_name].opts.langTable.opts.table = `${ table }_lang`;
+        tables[table_name].opts.langTable.opts.table_name = table_name2;
+        tables[table_name].opts.langTable.records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name2);
+      }
     }
   }
   

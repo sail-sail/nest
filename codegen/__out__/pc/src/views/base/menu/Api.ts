@@ -686,6 +686,10 @@ export async function findLastOrderBy(
   return res;
 }
 
+export function getPagePath() {
+  return "/base/menu";
+}
+
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: MenuInput = {

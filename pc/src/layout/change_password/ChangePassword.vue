@@ -98,7 +98,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('关闭') }}</span>
+        <span>{{ ns('关闭') }}</span>
       </el-button>
       
       <el-button
@@ -109,7 +109,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('确定') }}</span>
+        <span>{{ ns('确定') }}</span>
       </el-button>
     </div>
   </div>
@@ -266,8 +266,6 @@ watchEffect(() => {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "关闭",
-    "确定",
     "用户",
     "新密码",
     "旧密码",

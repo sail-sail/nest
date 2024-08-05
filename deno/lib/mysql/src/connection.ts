@@ -379,6 +379,8 @@ export class Connection {
         iterator: this.buildIterator(fields),
       };
     } catch (error) {
+      console.error(sql);
+      console.error(params);
       if (error instanceof ConnnectionError) {
         this.close();
       }

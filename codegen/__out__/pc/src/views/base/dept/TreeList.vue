@@ -83,6 +83,7 @@ import List from "./List.vue";
 
 import {
   findTree,
+  getPagePath,
 } from "./Api";
 
 import type {
@@ -99,9 +100,11 @@ const props = defineProps<{
   showBuildIn?: string;
 }>();
 
+const pagePath = getPagePath();
+
 const {
   ns,
-} = useI18n("/base/dept");
+} = useI18n(pagePath);
 
 let inited = $ref(false);
 
