@@ -38,9 +38,9 @@ declare global {
     /** 更新人 */
     update_usr_id_is_null?: boolean;
     /** 更新人 */
-    update_usr_id_lbl_like?: string;
-    /** 更新人 */
     update_usr_id_lbl?: string[];
+    /** 更新人 */
+    update_usr_id_lbl_like?: string;
     /** 更新时间 */
     update_time?: [(string|undefined|null), (string|undefined|null)];
     tenant_id?: TenantId | null;
