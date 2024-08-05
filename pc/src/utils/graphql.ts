@@ -158,6 +158,9 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
           (alias as any).value = `${ queryInfo.hash! }_${ alias.value || selection.name.value }`;
           if (selection.arguments) {
             for (const arg of selection.arguments) {
+              if (!(arg.value as any).name) {
+                continue;
+              }
               (arg.value as any).name.value = `${ (arg.value as any).name.value }${ i }`;
             }
           }

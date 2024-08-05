@@ -9,7 +9,7 @@ export async function initDetailI18ns() {
   const codes = [
     "请输入",
     "请选择",
-    "增加成功",
+    "新增成功",
     "编辑成功",
     "取消",
     "保存",

@@ -27,7 +27,7 @@ export function wrap(callback: () => Promise<void>) {
           throw err;
         } finally {
           await commit();
-          await close();
+          await close(context);
         }
       },
     );
