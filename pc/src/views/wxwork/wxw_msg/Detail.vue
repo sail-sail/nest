@@ -186,7 +186,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('关闭') }}</span>
+        <span>{{ ns('关闭') }}</span>
       </el-button>
       
       <div
@@ -243,6 +243,7 @@ import type {
 import {
   findOne,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -258,7 +259,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wxwork/wxw_msg";
+const pagePath = getPagePath();
 
 const {
   n,
