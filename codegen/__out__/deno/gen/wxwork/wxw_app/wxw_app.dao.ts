@@ -176,6 +176,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -192,6 +195,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -525,6 +531,17 @@ export async function setIdByLbl(
     if (domainModel) {
       input.domain_id = domainModel.id;
     }
+  } else if (isEmpty(input.domain_id_lbl) && input.domain_id != null) {
+    const domain_model = await findOneDomain(
+      {
+        id: input.domain_id,
+      },
+      undefined,
+      options,
+    );
+    if (domain_model) {
+      input.domain_id_lbl = domain_model.lbl;
+    }
   }
   
   // 锁定
@@ -533,6 +550,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_locked = Number(val);
     }
+  } else if (isEmpty(input.is_locked_lbl) && input.is_locked != null) {
+    const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
+    input.is_locked_lbl = lbl;
   }
   
   // 启用
@@ -541,6 +561,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_enabled = Number(val);
     }
+  } else if (isEmpty(input.is_enabled_lbl) && input.is_enabled != null) {
+    const lbl = is_enabledDict.find((itemTmp) => itemTmp.val === String(input.is_enabled))?.lbl || "";
+    input.is_enabled_lbl = lbl;
   }
 }
 
@@ -1200,6 +1223,10 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  await delCache();
+  
   const args = new QueryArgs();
   let sql = "insert into wxwork_wxw_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,corpid,agentid,domain_id,corpsecret,contactsecret,is_locked,is_enabled,order_by,rem)values";
   
@@ -1355,10 +1382,6 @@ async function _creates(
       }
     }
   }
-  
-  await delCache();
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,
@@ -1997,10 +2020,7 @@ export async function forceDeleteByIds(
   return num;
 }
   
-/**
- * 查找 企微应用 order_by 字段的最大值
- * @return {Promise<number>}
- */
+/** 查找 企微应用 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
     is_debug?: boolean;
