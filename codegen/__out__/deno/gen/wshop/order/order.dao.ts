@@ -714,6 +714,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.status = val as OrderStatus;
     }
+  } else if (isEmpty(input.status_lbl) && input.status != null) {
+    const lbl = statusDict.find((itemTmp) => itemTmp.val === input.status)?.lbl || "";
+    input.status_lbl = lbl;
   }
   
   // 用户
@@ -728,6 +731,17 @@ export async function setIdByLbl(
     );
     if (usrModel) {
       input.usr_id = usrModel.id;
+    }
+  } else if (isEmpty(input.usr_id_lbl) && input.usr_id != null) {
+    const usr_model = await findOneUsr(
+      {
+        id: input.usr_id,
+      },
+      undefined,
+      options,
+    );
+    if (usr_model) {
+      input.usr_id_lbl = usr_model.lbl;
     }
   }
   
@@ -744,6 +758,17 @@ export async function setIdByLbl(
     if (cardModel) {
       input.card_id = cardModel.id;
     }
+  } else if (isEmpty(input.card_id_lbl) && input.card_id != null) {
+    const card_model = await findOneCard(
+      {
+        id: input.card_id,
+      },
+      undefined,
+      options,
+    );
+    if (card_model) {
+      input.card_id_lbl = card_model.lbl;
+    }
   }
   
   // 订单类别
@@ -752,6 +777,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.type = val as OrderType;
     }
+  } else if (isEmpty(input.type_lbl) && input.type != null) {
+    const lbl = typeDict.find((itemTmp) => itemTmp.val === input.type)?.lbl || "";
+    input.type_lbl = lbl;
   }
   
   // 锁定
@@ -760,6 +788,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_locked = Number(val);
     }
+  } else if (isEmpty(input.is_locked_lbl) && input.is_locked != null) {
+    const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
+    input.is_locked_lbl = lbl;
   }
   
   // 启用
@@ -768,6 +799,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_enabled = Number(val);
     }
+  } else if (isEmpty(input.is_enabled_lbl) && input.is_enabled != null) {
+    const lbl = is_enabledDict.find((itemTmp) => itemTmp.val === String(input.is_enabled))?.lbl || "";
+    input.is_enabled_lbl = lbl;
   }
   
   // 组织
@@ -782,6 +816,17 @@ export async function setIdByLbl(
     );
     if (orgModel) {
       input.org_id = orgModel.id;
+    }
+  } else if (isEmpty(input.org_id_lbl) && input.org_id != null) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      options,
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
     }
   }
 }
@@ -1417,6 +1462,8 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   const args = new QueryArgs();
   let sql = "insert into wshop_order(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,lbl_seq,lbl_date_seq,lbl,company,phone,status,usr_id,card_id,price,type,amt,give_amt,integral,balance,give_balance,is_locked,is_enabled,rem,org_id)values";
   
@@ -1582,8 +1629,6 @@ async function _creates(
       }
     }
   }
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,

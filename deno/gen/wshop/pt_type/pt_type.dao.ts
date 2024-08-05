@@ -571,6 +571,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_home = Number(val);
     }
+  } else if (isEmpty(input.is_home_lbl) && input.is_home != null) {
+    const lbl = is_homeDict.find((itemTmp) => itemTmp.val === String(input.is_home))?.lbl || "";
+    input.is_home_lbl = lbl;
   }
   
   // 推荐
@@ -579,6 +582,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_recommend = Number(val);
     }
+  } else if (isEmpty(input.is_recommend_lbl) && input.is_recommend != null) {
+    const lbl = is_recommendDict.find((itemTmp) => itemTmp.val === String(input.is_recommend))?.lbl || "";
+    input.is_recommend_lbl = lbl;
   }
   
   // 锁定
@@ -587,6 +593,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_locked = Number(val);
     }
+  } else if (isEmpty(input.is_locked_lbl) && input.is_locked != null) {
+    const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
+    input.is_locked_lbl = lbl;
   }
   
   // 启用
@@ -595,6 +604,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_enabled = Number(val);
     }
+  } else if (isEmpty(input.is_enabled_lbl) && input.is_enabled != null) {
+    const lbl = is_enabledDict.find((itemTmp) => itemTmp.val === String(input.is_enabled))?.lbl || "";
+    input.is_enabled_lbl = lbl;
   }
   
   // 组织
@@ -609,6 +621,17 @@ export async function setIdByLbl(
     );
     if (orgModel) {
       input.org_id = orgModel.id;
+    }
+  } else if (isEmpty(input.org_id_lbl) && input.org_id != null) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      options,
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
     }
   }
 }
@@ -1205,6 +1228,10 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  await delCache();
+  
   const args = new QueryArgs();
   let sql = "insert into wshop_pt_type(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,img,lbl,is_home,is_recommend,is_locked,is_enabled,order_by,rem,org_id)values";
   
@@ -1320,10 +1347,6 @@ async function _creates(
       }
     }
   }
-  
-  await delCache();
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,
@@ -1915,10 +1938,7 @@ export async function forceDeleteByIds(
   return num;
 }
   
-/**
- * 查找 产品类别 order_by 字段的最大值
- * @return {Promise<number>}
- */
+/** 查找 产品类别 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
     is_debug?: boolean;

@@ -507,6 +507,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_locked = Number(val);
     }
+  } else if (isEmpty(input.is_locked_lbl) && input.is_locked != null) {
+    const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
+    input.is_locked_lbl = lbl;
   }
   
   // 启用
@@ -515,6 +518,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_enabled = Number(val);
     }
+  } else if (isEmpty(input.is_enabled_lbl) && input.is_enabled != null) {
+    const lbl = is_enabledDict.find((itemTmp) => itemTmp.val === String(input.is_enabled))?.lbl || "";
+    input.is_enabled_lbl = lbl;
   }
   
   // 组织
@@ -529,6 +535,17 @@ export async function setIdByLbl(
     );
     if (orgModel) {
       input.org_id = orgModel.id;
+    }
+  } else if (isEmpty(input.org_id_lbl) && input.org_id != null) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      options,
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
     }
   }
 }
@@ -1128,6 +1145,10 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  await delCache();
+  
   const args = new QueryArgs();
   let sql = "insert into wshop_wxapp_config(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,img,lbl,val,is_locked,is_enabled,rem,is_sys,org_id)values";
   
@@ -1238,10 +1259,6 @@ async function _creates(
       }
     }
   }
-  
-  await delCache();
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,

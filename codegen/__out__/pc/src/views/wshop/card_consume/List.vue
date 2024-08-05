@@ -12,6 +12,8 @@
     un-overflow-auto
   >
     <el-form
+      v-search-form-item-width-auto="inited"
+      
       ref="searchFormRef"
       size="default"
       :model="search"
@@ -29,7 +31,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.card_id == null">
         <el-form-item
-          label="卡号"
+          :label="n('卡号')"
           prop="card_id"
         >
           <CustomSelect
@@ -50,7 +52,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.usr_id == null">
         <el-form-item
-          label="用户"
+          :label="n('用户')"
           prop="usr_id"
         >
           <CustomSelect
@@ -70,18 +72,19 @@
       </template>
       
       <el-form-item
-        label=" "
+        label=""
         prop="idsChecked"
       >
         <div
           un-flex="~ nowrap"
-          un-justify-between
+          un-justify-evenly
           un-w="full"
         >
           <div
             un-flex="~ nowrap"
             un-items-center
             un-gap="x-1.5"
+            un-min="w-31.5"
           >
             <el-checkbox
               v-model="idsChecked"
@@ -124,10 +127,11 @@
       </el-form-item>
       
       <el-form-item
-        label=" "
+        label=""
       >
         
         <el-button
+          un-m="l-3"
           plain
           type="primary"
           @click="onSearch(true)"
@@ -587,6 +591,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -604,7 +609,7 @@ defineOptions({
   name: "会员卡消费记录",
 });
 
-const pagePath = "/wshop/card_consume";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
@@ -1225,7 +1230,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + await nsAsync("会员卡消费记录"),
+    title: await nsAsync("查看") + " " + await nsAsync("会员卡消费记录"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),

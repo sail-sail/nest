@@ -529,6 +529,17 @@ export async function setIdByLbl(
     if (cardModel) {
       input.card_id = cardModel.id;
     }
+  } else if (isEmpty(input.card_id_lbl) && input.card_id != null) {
+    const card_model = await findOneCard(
+      {
+        id: input.card_id,
+      },
+      undefined,
+      options,
+    );
+    if (card_model) {
+      input.card_id_lbl = card_model.lbl;
+    }
   }
   
   // 用户
@@ -544,6 +555,17 @@ export async function setIdByLbl(
     if (usrModel) {
       input.usr_id = usrModel.id;
     }
+  } else if (isEmpty(input.usr_id_lbl) && input.usr_id != null) {
+    const usr_model = await findOneUsr(
+      {
+        id: input.usr_id,
+      },
+      undefined,
+      options,
+    );
+    if (usr_model) {
+      input.usr_id_lbl = usr_model.lbl;
+    }
   }
   
   // 组织
@@ -558,6 +580,17 @@ export async function setIdByLbl(
     );
     if (orgModel) {
       input.org_id = orgModel.id;
+    }
+  } else if (isEmpty(input.org_id_lbl) && input.org_id != null) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      options,
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
     }
   }
 }
@@ -1122,6 +1155,8 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
   const args = new QueryArgs();
   let sql = "insert into wshop_card_recharge(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,transaction_id,card_id,usr_id,amt,give_amt,balance,give_balance,integral,rem,org_id)values";
   
@@ -1242,8 +1277,6 @@ async function _creates(
       }
     }
   }
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,

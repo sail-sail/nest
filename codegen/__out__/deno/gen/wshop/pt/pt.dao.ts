@@ -679,6 +679,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_new = Number(val);
     }
+  } else if (isEmpty(input.is_new_lbl) && input.is_new != null) {
+    const lbl = is_newDict.find((itemTmp) => itemTmp.val === String(input.is_new))?.lbl || "";
+    input.is_new_lbl = lbl;
   }
   
   // 锁定
@@ -687,6 +690,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_locked = Number(val);
     }
+  } else if (isEmpty(input.is_locked_lbl) && input.is_locked != null) {
+    const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
+    input.is_locked_lbl = lbl;
   }
   
   // 启用
@@ -695,6 +701,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.is_enabled = Number(val);
     }
+  } else if (isEmpty(input.is_enabled_lbl) && input.is_enabled != null) {
+    const lbl = is_enabledDict.find((itemTmp) => itemTmp.val === String(input.is_enabled))?.lbl || "";
+    input.is_enabled_lbl = lbl;
   }
   
   // 组织
@@ -709,6 +718,17 @@ export async function setIdByLbl(
     );
     if (orgModel) {
       input.org_id = orgModel.id;
+    }
+  } else if (isEmpty(input.org_id_lbl) && input.org_id != null) {
+    const org_model = await findOneOrg(
+      {
+        id: input.org_id,
+      },
+      undefined,
+      options,
+    );
+    if (org_model) {
+      input.org_id_lbl = org_model.lbl;
     }
   }
 }
@@ -1347,6 +1367,10 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  await delCache();
+  
   const args = new QueryArgs();
   let sql = "insert into wshop_pt(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,img,lbl,price,original_price,unit,is_new,introduct,is_locked,is_enabled,order_by,detail,detail_top_img,detail_bottom_img,rem,org_id)values";
   
@@ -1492,10 +1516,6 @@ async function _creates(
       }
     }
   }
-  
-  await delCache();
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,
@@ -2170,10 +2190,7 @@ export async function forceDeleteByIds(
   return num;
 }
   
-/**
- * 查找 产品 order_by 字段的最大值
- * @return {Promise<number>}
- */
+/** 查找 产品 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
     is_debug?: boolean;
