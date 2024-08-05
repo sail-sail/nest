@@ -151,6 +151,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -167,6 +170,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -461,6 +467,17 @@ export async function setIdByLbl(
     );
     if (baidu_appModel) {
       input.baidu_app_id = baidu_appModel.id;
+    }
+  } else if (isEmpty(input.baidu_app_id_lbl) && input.baidu_app_id != null) {
+    const baidu_app_model = await findOneBaiduApp(
+      {
+        id: input.baidu_app_id,
+      },
+      undefined,
+      options,
+    );
+    if (baidu_app_model) {
+      input.baidu_app_id_lbl = baidu_app_model.lbl;
     }
   }
   
@@ -1030,6 +1047,10 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  await delCache();
+  
   const args = new QueryArgs();
   let sql = "insert into baidu_baidu_app_token(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,baidu_app_id,access_token,token_time,expires_in)values";
   
@@ -1155,10 +1176,6 @@ async function _creates(
       }
     }
   }
-  
-  await delCache();
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,
