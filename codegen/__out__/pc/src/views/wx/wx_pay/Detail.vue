@@ -199,7 +199,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('关闭') }}</span>
+        <span>{{ ns('关闭') }}</span>
       </el-button>
       
       <el-button
@@ -211,7 +211,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存并继续') }}</span>
+        <span>{{ ns('保存并继续') }}</span>
       </el-button>
       
       <el-button
@@ -223,7 +223,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ ns('保存') }}</span>
       </el-button>
       
       <el-button
@@ -235,7 +235,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ ns('保存') }}</span>
       </el-button>
       
       <div
@@ -295,6 +295,7 @@ import {
   findLastOrderBy,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -306,7 +307,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wx/wx_pay";
+const pagePath = getPagePath();
 
 const {
   n,
