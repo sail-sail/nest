@@ -54,8 +54,8 @@ const props = withDefaults(
     modelValue: undefined,
     disabled: undefined,
     readonly: undefined,
-    trueReadonlyLabel: "是",
-    falseReadonlyLabel: "否",
+    trueReadonlyLabel: undefined,
+    falseReadonlyLabel: undefined,
   },
 );
 

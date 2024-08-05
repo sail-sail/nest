@@ -50,7 +50,7 @@ export async function ns(
 
 export async function nLang(
   langCode: string,
-  routePath: string | null,
+  route_path: string | null,
   code: string,
   // deno-lint-ignore no-explicit-any
   ...args: any[]
@@ -101,11 +101,12 @@ export async function nLang(
       is_debug: false,
     },
   );
-  let menu_id: MenuId | undefined;
-  if (routePath != null) {
-    const menu_model = await findOneMenu(
+  route_path = route_path ?? "";
+  let menu_model: MenuModel | undefined;
+  if (route_path) {
+    menu_model = await findOneMenu(
       {
-        route_path: routePath,
+        route_path,
         is_enabled: [ 1 ],
       },
       undefined,
@@ -113,35 +114,20 @@ export async function nLang(
         is_debug: false,
       },
     );
-    menu_id = menu_model?.id;
   }
+  const menu_id = menu_model?.id ?? "" as MenuId;
   if (lang_model) {
-    let i18n_model: I18nModel | undefined
-    if (menu_id) {
-      i18n_model = await findOneI18n(
-        {
-          lang_id: [ lang_model.id ],
-          menu_id: [ menu_id ],
-          code,
-        },
-        undefined,
-        {
-          is_debug: false,
-        },
-      );
-    } else {
-      i18n_model = await findOneI18n(
-        {
-          lang_id: [ lang_model.id ],
-          menu_id: [ "" as MenuId ],
-          code,
-        },
-        undefined,
-        {
-          is_debug: false,
-        },
-      );
-    }
+    const i18n_model = await findOneI18n(
+      {
+        lang_id: [ lang_model.id ],
+        menu_id: [ menu_id ],
+        code,
+      },
+      undefined,
+      {
+        is_debug: false,
+      },
+    );
     if (i18n_model) {
       i18n_lbl = i18n_model.lbl;
     }

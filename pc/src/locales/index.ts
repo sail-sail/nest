@@ -7,7 +7,7 @@ import zhLocale from "./zh-cn";
 const messages = {
   [elementEnLocale.name]: {
     ...enLocale,
-    ...elementZhLocale,
+    ...elementEnLocale,
   },
   [elementZhLocale.name]: {
     ...zhLocale,
@@ -40,4 +40,14 @@ export function getLocale(): string {
 
 export const lang = getLocale();
 
-export default messages[lang.toLowerCase()] || messages["zh-cn"];
+let key = lang.toLowerCase();
+
+if (key === "en-us") {
+  key = "en";
+}
+
+if (!messages[key]) {
+  key = "zh-cn";
+}
+
+export default messages[key];

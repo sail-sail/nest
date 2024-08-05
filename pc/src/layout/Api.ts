@@ -24,35 +24,13 @@ export async function getLoginTenants(
         getLoginTenants(domain: $domain) {
           id
           lbl
+          lang
         }
       }
     `,
     variables,
   },opt);
   return data.getLoginTenants;
-}
-
-/**
- * 获取语言列表
- */
-export async function getLoginLangs(
-  opt?: GqlOpt,
-) {
-  const res: {
-    getLoginLangs: Query["getLoginLangs"],
-  } = await query({
-    query: /* GraphQL */ `
-      query {
-        getLoginLangs {
-          id
-          code
-          lbl
-        }
-      }
-    `,
-  }, opt);
-  const data = res.getLoginLangs;
-  return data;
 }
 
 export async function login(
@@ -65,8 +43,12 @@ export async function login(
     query: /* GraphQL */ `
       mutation($input: LoginInput!) {
         login(input: $input) {
-          authorization
+          usr_id
+          username
+          tenant_id
           org_id
+          authorization
+          lang
         }
       }
     `,
