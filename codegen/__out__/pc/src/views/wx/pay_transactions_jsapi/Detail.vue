@@ -316,7 +316,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('关闭') }}</span>
+        <span>{{ ns('关闭') }}</span>
       </el-button>
       
       <div
@@ -373,6 +373,7 @@ import type {
 import {
   findOne,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -384,7 +385,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/wx/pay_transactions_jsapi";
+const pagePath = getPagePath();
 
 const {
   n,

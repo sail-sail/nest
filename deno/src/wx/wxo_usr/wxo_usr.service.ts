@@ -34,6 +34,16 @@ import {
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
+  findById as findByIdTenant,
+  validateOption as validateOptionTenant,
+  validateIsEnabled as validateIsEnabledTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
+
+import {
+  findById as findByIdLang,
+} from "/gen/base/lang/lang.dao.ts";
+
+import {
   fetchOpenid as fetchOpenidWxoUsr,
 } from "./wxo_usr.dao.ts";
 
@@ -227,7 +237,7 @@ export async function wxoLoginByCode(
  */
 export async function checkBindWxoUsr() {
   const authModel = await getAuthModel();
-  const wxo_usr_id = authModel?.wxo_usr_id;
+  const wxo_usr_id = authModel?.wxo_usr_id as WxoUsrId;
   if (!wxo_usr_id) {
     return false;
   }
@@ -255,6 +265,10 @@ export async function bindWxoUsr(
 ): Promise<LoginModel> {
   const authModel = await getAuthModel();
   
+  if (!authModel) {
+    throw await ns("未登录");
+  }
+  
   const authUsrModel = await validateOptionUsr(
     await findByIdUsr(authModel?.id),
   );
@@ -262,7 +276,7 @@ export async function bindWxoUsr(
     throw await ns("此微信已被其它用户绑定");
   }
   
-  const wxo_usr_id = authModel?.wxo_usr_id;
+  const wxo_usr_id = authModel?.wxo_usr_id as WxoUsrId;
   if (!wxo_usr_id) {
     throw "wx_usr_id can not be null";
   }
@@ -271,13 +285,32 @@ export async function bindWxoUsr(
   const password = input.password;
   const tenant_id = input.tenant_id;
   let org_id = input.org_id;
-  const lang = input.lang;
   if (isEmpty(username) || isEmpty(password)) {
     throw await ns("用户名或密码不能为空");
   }
   if (isEmpty(tenant_id)) {
     throw await ns("请选择租户");
   }
+  
+  // 获取租户
+  const tenant_model = await validateOptionTenant(
+    await findByIdTenant(
+      tenant_id,
+    ),
+  );
+  await validateIsEnabledTenant(tenant_model);
+  
+  const lang_id = tenant_model.lang_id;
+  let lang = "zh-CN";
+  
+  // 获取语言
+  const lang_model = await findByIdLang(
+    lang_id,
+  );
+  if (lang_model && lang_model.code) {
+    lang = lang_model.code;
+  }
+  
   const password2 = await getPassword(password);
   let model = await findLoginUsr(
     username,
@@ -367,7 +400,7 @@ export async function bindWxoUsr(
 /** 公众号用户解除绑定 */
 export async function unBindWxoUsr() {
   const authModel = await getAuthModel();
-  const wxo_usr_id = authModel?.wxo_usr_id;
+  const wxo_usr_id = authModel?.wxo_usr_id as WxoUsrId;
   if (!wxo_usr_id) {
     throw "wxo_usr_id can not be null";
   }
