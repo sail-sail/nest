@@ -252,7 +252,7 @@ async function confirmClk() {
 async function cancelClk() {
   if (fileObj && fileInfo.name) {
     try {
-      await ElMessageBox.confirm(await nsAsync(`文件 {0} 尚未上传, 确定取消? `, fileInfo.name), {
+      await ElMessageBox.confirm(await nsAsync(`文件 {0} 尚未上传, 确定取消?`, fileInfo.name), {
         confirmButtonText: await nsAsync("取消"),
         cancelButtonText: await nsAsync("我再想想"),
         type: "warning",
@@ -268,7 +268,7 @@ async function cancelClk() {
 async function beforeClose(done: (cancel: boolean) => void) {
   if (fileObj && fileInfo.name) {
     try {
-      await ElMessageBox.confirm(await nsAsync(`文件 {0} 尚未上传, 确定取消? `, fileInfo.name), {
+      await ElMessageBox.confirm(await nsAsync(`文件 {0} 尚未上传, 确定取消?`, fileInfo.name), {
         confirmButtonText: await nsAsync("取消"),
         cancelButtonText: await nsAsync("我再想想"),
         type: "warning",

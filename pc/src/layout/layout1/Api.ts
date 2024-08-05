@@ -73,7 +73,7 @@ export async function getLoginInfo(
   opt?: GqlOpt,
 ) {
   const data: {
-    getLoginInfo?: GetLoginInfo;
+    getLoginInfo: GetLoginInfo;
   } = await query({
     query: /* GraphQL */ `
       query {
@@ -89,7 +89,7 @@ export async function getLoginInfo(
       }
     `,
   }, opt);
-  return data?.getLoginInfo;
+  return data.getLoginInfo;
 }
 
 /** 获取当前用户的权限列表 */

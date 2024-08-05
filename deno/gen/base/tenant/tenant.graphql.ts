@@ -19,6 +19,10 @@ type TenantModel {
   menu_ids: [MenuId!]!
   "菜单权限"
   menu_ids_lbl: [String!]!
+  "语言"
+  lang_id: LangId!
+  "语言"
+  lang_id_lbl: String!
   "锁定"
   is_locked: Int!
   "锁定"
@@ -63,6 +67,10 @@ type TenantFieldComment {
   menu_ids: String!
   "菜单权限"
   menu_ids_lbl: String!
+  "语言"
+  lang_id: String!
+  "语言"
+  lang_id_lbl: String!
   "锁定"
   is_locked: String!
   "锁定"
@@ -105,6 +113,10 @@ input TenantInput {
   menu_ids: [MenuId!]
   "菜单权限"
   menu_ids_lbl: [String!]
+  "语言"
+  lang_id: LangId
+  "语言"
+  lang_id_lbl: String
   "锁定"
   is_locked: Int
   "锁定"
@@ -144,6 +156,14 @@ input TenantSearch {
   menu_ids_lbl: [String!]
   "菜单权限"
   menu_ids_lbl_like: String
+  "语言"
+  lang_id: [LangId!]
+  "语言"
+  lang_id_is_null: Boolean
+  "语言"
+  lang_id_lbl: [String!]
+  "语言"
+  lang_id_lbl_like: String
   "启用"
   is_enabled: [Int!]
   "创建人"
@@ -152,12 +172,16 @@ input TenantSearch {
   create_usr_id_is_null: Boolean
   "创建人"
   create_usr_id_lbl: [String!]
+  "创建人"
+  create_usr_id_lbl_like: String
   "更新人"
   update_usr_id: [UsrId!]
   "更新人"
   update_usr_id_is_null: Boolean
   "更新人"
   update_usr_id_lbl: [String!]
+  "更新人"
+  update_usr_id_lbl_like: String
 }
 type Query {
   "根据条件查找租户总数"

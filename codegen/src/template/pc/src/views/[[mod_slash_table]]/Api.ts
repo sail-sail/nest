@@ -1970,6 +1970,10 @@ export async function findLastOrderBy(
 }
 #>
 
+export function getPagePath() {
+  return "/<#=mod#>/<#=table#>";
+}
+
 /** 新增时的默认值 */
 export async function getDefaultInput() {<#
   let hasUsrStore = false;
