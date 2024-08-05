@@ -159,13 +159,13 @@ declare global {
     /** <#=column_comment#> */
     <#=column_name#>?: <#=data_type#>;
     /** <#=column_comment#> */
-    <#=column_name#>_is_null?: boolean;
-    /** <#=column_comment#> */
-    <#=column_name#>_<#=foreignKey.lbl#>_like?: string;<#
+    <#=column_name#>_is_null?: boolean;<#
       if (modelLabel) {
     #>
     /** <#=column_comment#> */
-    <#=modelLabel#>?: string[];<#
+    <#=modelLabel#>?: string[];
+    /** <#=column_comment#> */
+    <#=column_name#>_<#=foreignKey.lbl#>_like?: string;<#
       } else if (foreignKey.lbl) {
     #>
     /** <#=column_comment#> */
