@@ -12,6 +12,8 @@
     un-overflow-auto
   >
     <el-form
+      v-search-form-item-width-auto="inited"
+      
       ref="searchFormRef"
       size="default"
       :model="search"
@@ -100,18 +102,19 @@
       </template>
       
       <el-form-item
-        label=" "
+        label=""
         prop="idsChecked"
       >
         <div
           un-flex="~ nowrap"
-          un-justify-between
+          un-justify-evenly
           un-w="full"
         >
           <div
             un-flex="~ nowrap"
             un-items-center
             un-gap="x-1.5"
+            un-min="w-31.5"
           >
             <el-checkbox
               v-model="idsChecked"
@@ -154,10 +157,11 @@
       </el-form-item>
       
       <el-form-item
-        label=" "
+        label=""
       >
         
         <el-button
+          un-m="l-3"
           plain
           type="primary"
           @click="onSearch(true)"
@@ -445,6 +449,7 @@
 import Detail from "./Detail.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -456,7 +461,7 @@ defineOptions({
   name: "登录日志",
 });
 
-const pagePath = "/base/login_log";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
@@ -1013,7 +1018,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + await nsAsync("登录日志"),
+    title: await nsAsync("查看") + " " + await nsAsync("登录日志"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),

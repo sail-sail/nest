@@ -69,7 +69,7 @@
     un-flex="~ gap-1 wrap"
     un-items-center
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.5 y-1.25"
+    un-p="x-1"
     un-box-border
     un-rounded
     un-w="full"
@@ -111,8 +111,8 @@
       <div
         v-else
         un-flex="~ wrap"
-        un-gap="x-1 y-1"
-        un-m="y-1"
+        un-gap="x-1 y-.5"
+        un-m="y-.5"
       >
         <template
           v-if="readonlyCollapseTags"
