@@ -618,6 +618,10 @@ export async function importModels(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
+export function getPagePath() {
+  return "/base/i18n";
+}
+
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: I18nInput = {

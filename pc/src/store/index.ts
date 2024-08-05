@@ -29,7 +29,7 @@ export default defineStore("index", function() {
       return;
     }
     const options = await getOptionsByLbl({
-      lbl: "国际化版本号",
+      lbl: "i18n_version",
     });
     const lbl = options.find((item) => item.ky === "i18n_version")?.val;
     i18n_version = lbl ?? version;

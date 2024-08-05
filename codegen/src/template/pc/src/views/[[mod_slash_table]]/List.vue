@@ -50,6 +50,8 @@ const hasForeignTabsMore = columns.some((item) => {
 });
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
+
+const searchFormWidth = opts.searchFormWidth;
 #><template>
 <div
   un-flex="~ [1_0_0] col"
@@ -64,13 +66,15 @@ const hasAtt = columns.some((item) => item.isAtt);
     un-overflow-auto
   >
     <el-form
+      v-search-form-item-width-auto="inited"
+      
       ref="searchFormRef"
       size="default"
       :model="search"
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-grid="~ cols-[repeat(auto-fill,<#=searchFormWidth#>)]"
       un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
@@ -126,7 +130,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
-          label="<#=column_comment#>"
+          :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
           <CustomTreeSelect
@@ -152,7 +156,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
-          label="<#=column_comment#>"
+          :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
           <CustomTreeSelect
@@ -174,7 +178,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
-          label="<#=column_comment#>"
+          :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
           <CustomSelect
@@ -196,7 +200,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
-          label="<#=column_comment#>"
+          :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
           <CustomInput
@@ -210,7 +214,7 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       <template v-if="showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>">
         <el-form-item
-          label="<#=column_comment#>"
+          :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
           <CustomSelect
@@ -388,18 +392,19 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-form-item
-        label=" "
+        label=""
         prop="idsChecked"
       >
         <div
           un-flex="~ nowrap"
-          un-justify-between
+          un-justify-evenly
           un-w="full"
         >
           <div
             un-flex="~ nowrap"
             un-items-center
             un-gap="x-1.5"
+            un-min="w-31.5"
           >
             <el-checkbox
               v-model="idsChecked"
@@ -446,10 +451,11 @@ const hasAtt = columns.some((item) => item.isAtt);
       </el-form-item>
       
       <el-form-item
-        label=" "
+        label=""
       >
         
         <el-button
+          un-m="l-3"
           plain
           type="primary"
           @click="onSearch(true)"
@@ -489,8 +495,8 @@ const hasAtt = columns.some((item) => item.isAtt);
             un-overflow-hidden
             @click="isSearchExpand = !isSearchExpand"
           >
-            <span v-if="isSearchExpand">收起</span>
-            <span v-else>展开</span>
+            <span v-if="isSearchExpand">{{ ns('收起') }}</span>
+            <span v-else>{{ ns('展开') }}</span>
           </div><#
           }
           #>
@@ -1580,6 +1586,7 @@ import <#=Foreign_Table_Up#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.v
 #>
 
 import {
+  getPagePath,
   findAll,
   findCount,<#
     if (opts.noRevert !== true) {
@@ -1770,7 +1777,7 @@ if (list_tree) {
   name: "<#=optionsName#>",
 });
 
-const pagePath = "/<#=mod#>/<#=table#>";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
@@ -2846,7 +2853,7 @@ async function openAdd() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("新增") + await nsAsync("<#=table_comment#>"),
+    title: await nsAsync("新增") + " " + await nsAsync("<#=table_comment#>"),
     action: "add",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -2882,7 +2889,7 @@ async function openCopy() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("复制") + await nsAsync("<#=table_comment#>"),
+    title: await nsAsync("复制") + " " + await nsAsync("<#=table_comment#>"),
     action: "copy",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -3222,7 +3229,7 @@ async function openEdit() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("编辑") + await nsAsync("<#=table_comment#>"),
+    title: await nsAsync("编辑") + " " + await nsAsync("<#=table_comment#>"),
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -3303,7 +3310,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + await nsAsync("<#=table_comment#>"),
+    title: await nsAsync("查看") + " " + await nsAsync("<#=table_comment#>"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -3591,7 +3598,7 @@ async function onOpenForeignTabs(
     return;
   }
   if (selectedIds.length > 1) {
-    ElMessage.warning(await nsAsync("只能选择一{0}", await nsAsync("<#=table_comment#>")));
+    ElMessage.warning(await nsAsync("只能选择 1 {0}", await nsAsync("<#=table_comment#>")));
     return;
   }
   const id = selectedIds[0];

@@ -19,12 +19,12 @@
         v-if="!dialogModel.readonly && urlList.length > 0"
         plain
         type="primary"
-        @click="uploadClk"
+        @click="onUpload"
       >
         <template #icon>
           <ElIconUpload />
         </template>
-        <span>上传</span>
+        <span>{{ ns("上传") }}</span>
       </el-button>
       
       <el-button
@@ -36,7 +36,7 @@
         <template #icon>
           <ElIconDelete />
         </template>
-        <span>删除</span>
+        <span>{{ ns("删除") }}</span>
       </el-button>
       
       <el-button
@@ -47,7 +47,7 @@
         <template #icon>
           <ElIconDownload />
         </template>
-        <span>下载</span>
+        <span>{{ ns("下载") }}</span>
       </el-button>
       
       <el-button
@@ -57,7 +57,7 @@
         <template #icon>
           <ElIconPrinter />
         </template>
-        <span>打印</span>
+        <span>{{ ns("打印") }}</span>
       </el-button>
       
       <a
@@ -68,7 +68,7 @@
         
         un-no-underline
       >
-        网页中打开
+        {{ ns("网页中打开") }}
       </a>
       
       <el-button
@@ -79,7 +79,7 @@
         <template #icon>
           <ElIconArrowLeft />
         </template>
-        <span>前移</span>
+        <span>{{ ns("前移") }}</span>
       </el-button>
       
       <el-button
@@ -90,7 +90,7 @@
         <template #icon>
           <ElIconArrowRight />
         </template>
-        <span>后移</span>
+        <span>{{ ns("后移") }}</span>
       </el-button>
       
       <div
@@ -204,12 +204,12 @@
           v-if="!dialogModel.readonly && urlList.length === 0"
           plain
           type="primary"
-          @click="uploadClk"
+          @click="onUpload"
         >
           <template #icon>
             <ElIconUpload />
           </template>
-          <span>上传</span>
+          <span>{{ ns("上传") }}</span>
         </el-button>
         
         <div
@@ -220,7 +220,7 @@
           un-items-center
           un-text="var(--el-text-color-regular) 5"
         >
-          <span>(暂无附件)</span>
+          <span>{{ ns("(暂无附件)") }}</span>
         </div>
         
       </div>
@@ -235,7 +235,7 @@
         un-inset-0
         un-bg="[#FFF]"
       >
-        加载中, 请稍后...
+        {{ ns("加载中, 请稍后...") }}
       </div>
     </div>
     <div
@@ -612,12 +612,12 @@ async function inputChg() {
 }
 
 // 点击上传附件
-function uploadClk() {
+async function onUpload() {
   if (!fileRef) return;
   const ids = modelValue?.split(",").filter((x) => x) || [];
   if (dialogModel.maxSize && ids.length >= dialogModel.maxSize) {
     fileRef.value = "";
-    ElMessage.error(`最多只能上传 ${ dialogModel.maxSize } 个附件!`);
+    ElMessage.error(await nsAsync(`最多只能上传 {0} 个附件`, dialogModel.maxSize));
     return;
   }
   fileRef.click();
@@ -626,7 +626,7 @@ function uploadClk() {
 // 删除附件
 async function deleteClk() {
   try {
-    await ElMessageBox.confirm("确定删除当前附件吗？");
+    await ElMessageBox.confirm(await nsAsync("确定删除当前附件吗？"));
   } catch (err) {
     return;
   }
@@ -643,7 +643,7 @@ async function deleteClk() {
     nowIndex = ids2.length - 1;
     await afterNextIframe();
   }
-  ElMessage.success(ns("删除成功"));
+  ElMessage.success(await nsAsync("删除成功"));
   emit("change", modelValue);
 }
 
