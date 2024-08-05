@@ -106,6 +106,10 @@ export default defineConfig({
         },
       },
       {
+        COLUMN_NAME: "lang_id",
+        align: "center",
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
@@ -254,7 +258,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "default_org_id",
         require: false,
-        width: 140,
+        width: 240,
         foreignKey: {
           table: "org",
           column: "id",

@@ -446,8 +446,10 @@ html:is(.dark) {
   color: red;
 }
 
-.el-form-item--default .el-form-item__content {
+.el-form-item .el-form-item__content {
   line-height: unset;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .inlineMany2manyTab_table {

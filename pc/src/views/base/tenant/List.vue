@@ -12,6 +12,8 @@
     un-overflow-auto
   >
     <el-form
+      v-search-form-item-width-auto="inited"
+      
       ref="searchFormRef"
       size="default"
       :model="search"
@@ -42,7 +44,7 @@
       
       <template v-if="showBuildIn || builtInSearch?.menu_ids == null">
         <el-form-item
-          label="菜单权限"
+          :label="n('菜单权限')"
           prop="menu_ids"
         >
           <CustomTreeSelect
@@ -77,18 +79,19 @@
       </template>
       
       <el-form-item
-        label=" "
+        label=""
         prop="idsChecked"
       >
         <div
           un-flex="~ nowrap"
-          un-justify-between
+          un-justify-evenly
           un-w="full"
         >
           <div
             un-flex="~ nowrap"
             un-items-center
             un-gap="x-1.5"
+            un-min="w-31.5"
           >
             <el-checkbox
               v-model="idsChecked"
@@ -131,10 +134,11 @@
       </el-form-item>
       
       <el-form-item
-        label=" "
+        label=""
       >
         
         <el-button
+          un-m="l-3"
           plain
           type="primary"
           @click="onSearch(true)"
@@ -569,6 +573,15 @@
             </el-table-column>
           </template>
           
+          <!-- 语言 -->
+          <template v-else-if="'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
@@ -750,6 +763,7 @@ import PwdDialog from "./PwdDialog.vue";
 import MenuTreeList from "../menu/TreeList.vue";
 
 import {
+  getPagePath,
   findAll,
   findCount,
   revertByIds,
@@ -771,7 +785,7 @@ defineOptions({
   name: "租户",
 });
 
-const pagePath = "/base/tenant";
+const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
@@ -824,6 +838,8 @@ const props = defineProps<{
   domain_ids_lbl?: string[]; // 所属域名
   menu_ids?: string|string[]; // 菜单权限
   menu_ids_lbl?: string[]; // 菜单权限
+  lang_id?: string|string[]; // 语言
+  lang_id_lbl?: string; // 语言
   is_enabled?: string|string[]; // 启用
 }>();
 
@@ -839,6 +855,8 @@ const builtInSearchType: { [key: string]: string } = {
   domain_ids_lbl: "string[]",
   menu_ids: "string[]",
   menu_ids_lbl: "string[]",
+  lang_id: "string[]",
+  lang_id_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
@@ -1104,10 +1122,19 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
+      label: "语言",
+      prop: "lang_id_lbl",
+      sortBy: "lang_id_lbl",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
-      width: 60,
+      width: 85,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1116,7 +1143,7 @@ function getTableColumns(): ColumnType[] {
       label: "启用",
       prop: "is_enabled_lbl",
       sortBy: "is_enabled",
-      width: 60,
+      width: 85,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
@@ -1363,7 +1390,7 @@ async function openAdd() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("新增") + await nsAsync("租户"),
+    title: await nsAsync("新增") + " " + await nsAsync("租户"),
     action: "add",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1399,7 +1426,7 @@ async function openCopy() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("复制") + await nsAsync("租户"),
+    title: await nsAsync("复制") + " " + await nsAsync("租户"),
     action: "copy",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1454,6 +1481,7 @@ async function onImportExcel() {
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("所属域名") ]: "domain_ids_lbl",
     [ await nAsync("菜单权限") ]: "menu_ids_lbl",
+    [ await nAsync("语言") ]: "lang_id_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
@@ -1482,6 +1510,7 @@ async function onImportExcel() {
           "lbl": "string",
           "domain_ids_lbl": "string[]",
           "menu_ids_lbl": "string[]",
+          "lang_id_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
@@ -1578,7 +1607,7 @@ async function openEdit() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("编辑") + await nsAsync("租户"),
+    title: await nsAsync("编辑") + " " + await nsAsync("租户"),
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1676,7 +1705,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + await nsAsync("租户"),
+    title: await nsAsync("查看") + " " + await nsAsync("租户"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1868,6 +1897,7 @@ async function initI18nsEfc() {
     "名称",
     "所属域名",
     "菜单权限",
+    "语言",
     "锁定",
     "启用",
     "排序",

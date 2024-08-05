@@ -2203,7 +2203,7 @@ const old_table = table;
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('关闭') }}</span>
+        <span>{{ ns('关闭') }}</span>
       </el-button><#
       if (!opts.noAdd) {
       #>
@@ -2217,7 +2217,7 @@ const old_table = table;
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存并继续') }}</span>
+        <span>{{ ns('保存并继续') }}</span>
       </el-button><#
       }
       #><#
@@ -2233,7 +2233,7 @@ const old_table = table;
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ ns('保存') }}</span>
       </el-button><#
       }
       #><#
@@ -2249,7 +2249,7 @@ const old_table = table;
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ ns('保存') }}</span>
       </el-button><#
       }
       #>

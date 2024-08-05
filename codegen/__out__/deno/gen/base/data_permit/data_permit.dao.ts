@@ -130,6 +130,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -146,6 +149,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -469,6 +475,17 @@ export async function setIdByLbl(
     if (menuModel) {
       input.menu_id = menuModel.id;
     }
+  } else if (isEmpty(input.menu_id_lbl) && input.menu_id != null) {
+    const menu_model = await findOneMenu(
+      {
+        id: input.menu_id,
+      },
+      undefined,
+      options,
+    );
+    if (menu_model) {
+      input.menu_id_lbl = menu_model.lbl;
+    }
   }
   
   // 范围
@@ -477,6 +494,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.scope = val as DataPermitScope;
     }
+  } else if (isEmpty(input.scope_lbl) && input.scope != null) {
+    const lbl = scopeDict.find((itemTmp) => itemTmp.val === input.scope)?.lbl || "";
+    input.scope_lbl = lbl;
   }
   
   // 类型
@@ -485,6 +505,9 @@ export async function setIdByLbl(
     if (val != null) {
       input.type = val as DataPermitType;
     }
+  } else if (isEmpty(input.type_lbl) && input.type != null) {
+    const lbl = typeDict.find((itemTmp) => itemTmp.val === input.type)?.lbl || "";
+    input.type_lbl = lbl;
   }
 }
 
@@ -1087,6 +1110,10 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  await delCache();
+  
   const args = new QueryArgs();
   let sql = "insert into base_data_permit(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,menu_id,scope,type,rem,is_sys)values";
   
@@ -1204,10 +1231,6 @@ async function _creates(
       }
     }
   }
-  
-  await delCache();
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,

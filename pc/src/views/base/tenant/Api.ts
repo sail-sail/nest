@@ -41,6 +41,9 @@ export function intoInput(
     // 菜单权限
     menu_ids: model?.menu_ids,
     menu_ids_lbl: model?.menu_ids_lbl,
+    // 语言
+    lang_id: model?.lang_id,
+    lang_id_lbl: model?.lang_id_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -477,6 +480,52 @@ export async function getMenuList() {
   return data;
 }
 
+export async function findAllLang(
+  search?: LangSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllLang: LangModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: LangSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllLang(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllLang;
+  return res;
+}
+
+export async function getLangList() {
+  const data = await findAllLang(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function getMenuTree() {
   const data = await findMenuTree(
     undefined,
@@ -513,6 +562,7 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             domain_ids_lbl
             menu_ids_lbl
+            lang_id_lbl
             order_by
             rem
           }
@@ -521,6 +571,10 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
           }
           findAllMenu {
+            id
+            lbl
+          }
+          findAllLang {
             id
             lbl
           }
@@ -587,6 +641,9 @@ export function useExportExcel(routePath: string) {
               lbl
             }
             findAllMenu {
+              lbl
+            }
+            findAllLang {
               lbl
             }
             getDict(codes: [
