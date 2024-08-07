@@ -81,6 +81,10 @@
 import List from "./List.vue";
 
 import {
+  getPagePath,
+} from "./Api";
+
+import {
   findTree,
   useMenuTreeFilter,
 } from "@/views/base/menu/Api";
@@ -99,9 +103,11 @@ const props = defineProps<{
   showBuildIn?: string;
 }>();
 
+const pagePath = getPagePath();
+
 const {
   ns,
-} = useI18n("/base/data_permit");
+} = useI18n(pagePath);
 
 let inited = $ref(false);
 

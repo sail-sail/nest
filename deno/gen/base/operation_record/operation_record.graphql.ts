@@ -114,6 +114,8 @@ input OperationRecordSearch {
   create_usr_id_is_null: Boolean
   "操作人"
   create_usr_id_lbl: [String!]
+  "操作人"
+  create_usr_id_lbl_like: String
   "操作时间"
   create_time: [NaiveDateTime]
 }

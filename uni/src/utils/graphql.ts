@@ -292,14 +292,16 @@ export async function gqlQuery(
     rvData = await request(config);
   } catch (err) {
     if (err && (!config || config.showErrMsg !== false)) {
-      let errMsg = (err as any).errMsg || err.toString();
-      uni.showToast({
-        title: errMsg,
-        icon: "none",
-        duration: 3000,
-        mask: true,
-        position: "center",
-      });
+      const errMsg = (err as any).errMsg || err.toString() || "";
+      if (errMsg) {
+        uni.showToast({
+          title: errMsg,
+          icon: "none",
+          duration: 3000,
+          mask: true,
+          position: "center",
+        });
+      }
     }
     throw err;
   }
@@ -330,12 +332,10 @@ export async function gqlQuery(
   if (errors && errors.length > 0) {
     for (let i = 0; i < errors.length; i++) {
       const item = errors[i];
-      errMsg += item.message;
-      if (i !== errors.length - 1) {
-        errMsg += "\n";
-      }
+      errMsg += item.message + "\n";
     }
   }
+  errMsg = errMsg.trim();
   if (errMsg) {
     if (!config || config.showErrMsg !== false) {
       uni.showToast({

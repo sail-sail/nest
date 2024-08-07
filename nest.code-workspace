@@ -48,6 +48,12 @@
     "deno.codeLens.referencesAllFunctions": false,
     "git.timeline.showUncommitted": true,
     "rust-analyzer.imports.group.enable": false,
-    "rust-analyzer.imports.merge.glob": false
+    "rust-analyzer.imports.merge.glob": false,
+    "scm.defaultViewMode": "tree",
+    "scm.diffDecorationsGutterPattern": {
+      "added": true
+    },
+    "scm.diffDecorationsIgnoreTrimWhitespace": "true",
+    "scm.showHistoryGraph": false
   }
 }

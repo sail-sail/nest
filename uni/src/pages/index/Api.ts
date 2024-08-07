@@ -38,8 +38,12 @@ export async function login(
     query: /* GraphQL */ `
       mutation($input: LoginInput!) {
         login(input: $input) {
-          authorization
+          usr_id
+          username
+          tenant_id
           org_id
+          authorization
+          lang
         }
       }
     `,
