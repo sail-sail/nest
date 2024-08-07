@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "scripts": {
     "start": "vite",
-    "preview": "vite build --emptyOutDir && node src/utils/postbuild.js && vite preview",
+    "preview": "set NODE_OPTIONS='--max-old-space-size=4096' && vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "build-prod": "vite build --emptyOutDir && node src/utils/postbuild.js",
-    "build-test": "vite build --mode test --emptyOutDir && node src/utils/postbuild.js",
+    "build-prod": "set NODE_OPTIONS='--max-old-space-size=4096' && vite build --emptyOutDir && node src/utils/postbuild.js",
+    "build-test": "set NODE_OPTIONS='--max-old-space-size=4096' && vite build --mode test --emptyOutDir && node src/utils/postbuild.js",
     "permit": "node src/utils/permit_scan.js",
     "rsw:build": "rsw && npm run build",
-    "typecheck": "vue-tsc --noEmit --skipLibCheck",
+    "typecheck": "set NODE_OPTIONS='--max-old-space-size=4096' && vue-tsc --noEmit --skipLibCheck",
     "codegen": "cd .. && npm run codegen",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "node src/utils/postinstall.js"
