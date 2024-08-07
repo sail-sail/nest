@@ -44,8 +44,8 @@
       </template>
       <template #error>
         <div
-          un-w="full"
           un-h="full"
+          un-aspect-ratio="1"
           un-flex="~ [1_0_0] col"
           un-overflow-hidden
           un-justify-center
@@ -72,12 +72,13 @@
     un-items-center
     un-cursor-default
   >
-    (无)
+    {{ ns("(无)") }}
   </div>
 </div>
 </template>
 
 <script lang="ts" setup>
+
 const props = withDefaults(
   defineProps<{
     modelValue: string | null;
@@ -93,6 +94,10 @@ const props = withDefaults(
     quality: 60,
   },
 );
+
+const {
+  ns,
+} = useI18n();
 
 let urlList = $computed(() => {
   const list: string[] = [];

@@ -88,9 +88,9 @@
               :props="{
                 label: 'lbl',
                 children: 'children',
-                disabled: (function(item: MenuModel) {
+                disabled: function(item: TreeNodeData) {
                   return !item.route_path;
-                } as any),
+                },
               }"
               :filter-node-method="useMenuTreeFilter"
             ></CustomTreeSelect>
@@ -159,7 +159,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n('关闭') }}</span>
+        <span>{{ ns('关闭') }}</span>
       </el-button>
       
       <el-button
@@ -171,7 +171,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存并继续') }}</span>
+        <span>{{ ns('保存并继续') }}</span>
       </el-button>
       
       <el-button
@@ -183,7 +183,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ ns('保存') }}</span>
       </el-button>
       
       <el-button
@@ -195,7 +195,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ n('保存') }}</span>
+        <span>{{ ns('保存') }}</span>
       </el-button>
       
       <div
@@ -254,6 +254,7 @@ import {
   findOne,
   updateById,
   getDefaultInput,
+  getPagePath,
 } from "./Api";
 
 import {
@@ -270,7 +271,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = "/base/data_permit";
+const pagePath = getPagePath();
 
 const {
   n,
