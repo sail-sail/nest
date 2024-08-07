@@ -272,7 +272,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #>
               :inited
@@ -337,7 +337,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #><#
               if (mod === "cron" && table === "cron_job" && column_name === "job_id") {
@@ -395,7 +395,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #>
               @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -437,7 +437,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #><#
               if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
@@ -475,7 +475,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #>
             ></DictSelect><#
@@ -501,7 +501,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #>
             ></DictbizSelect><#
@@ -537,7 +537,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #>
             ></CustomDatePicker><#
@@ -557,7 +557,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #>
             >
@@ -578,7 +578,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #>
             ></CustomInputNumber><#
@@ -616,7 +616,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #>
             ></CustomInputNumber><#
@@ -648,7 +648,7 @@ const old_table = table;
               #><#
               if (readonlyPlaceholder) {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
               }
               #><#
               if (mod === "cron" && table === "cron_job" && column_name === "cron") {
@@ -808,7 +808,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomSelect><#
@@ -840,7 +840,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                       @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -883,7 +883,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomTreeSelect><#
@@ -909,7 +909,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></DictSelect><#
@@ -935,7 +935,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></DictbizSelect><#
@@ -971,7 +971,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomDatePicker><#
@@ -991,7 +991,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     >
@@ -1013,7 +1013,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -1051,7 +1051,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -1076,7 +1076,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInput><#
@@ -1286,7 +1286,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                     :inited
@@ -1351,7 +1351,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #><#
                     if (mod === "cron" && table === "cron_job" && column_name === "job_id") {
@@ -1409,7 +1409,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                     @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -1451,7 +1451,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #><#
                     if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
@@ -1489,7 +1489,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   ></DictSelect><#
@@ -1515,7 +1515,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   ></DictbizSelect><#
@@ -1551,7 +1551,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   ></CustomDatePicker><#
@@ -1571,7 +1571,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   >
@@ -1592,7 +1592,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   ></CustomInputNumber><#
@@ -1630,7 +1630,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   ></CustomInputNumber><#
@@ -1662,7 +1662,7 @@ const old_table = table;
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                     }
                     #><#
                     if (mod === "cron" && table === "cron_job" && column_name === "cron") {
@@ -1854,7 +1854,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomSelect><#
@@ -1886,7 +1886,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                       @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -1929,7 +1929,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomTreeSelect><#
@@ -1955,7 +1955,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></DictSelect><#
@@ -1981,7 +1981,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></DictbizSelect><#
@@ -2017,7 +2017,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomDatePicker><#
@@ -2037,7 +2037,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     >
@@ -2059,7 +2059,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -2097,7 +2097,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -2122,7 +2122,7 @@ const old_table = table;
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInput><#
@@ -3439,14 +3439,21 @@ async function <#=column_name#>OpenAddDialog() {
     title: await nsAsync("新增") + await nsAsync("<#=foreignSchema.opts.table_comment#>"),
     action: "add",
   });
-  if (changedIds.length > 0) {
+  if (changedIds.length > 0) {<#
+    if (foreignKey.multiple) {
+    #>
     dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || [ ];
     for (const id of changedIds) {
       if (dialogModel.<#=column_name#>.includes(id)) {
         continue;
       }
       dialogModel.<#=column_name#>.push(id);
+    }<#
+    } else {
+    #>
+    dialogModel.<#=column_name#> = changedIds[0];<#
     }
+    #>
     await <#=column_name#>Ref.refresh();
   }
   <#=column_name#>Ref.focus();
