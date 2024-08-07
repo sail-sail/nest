@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use std::io::Cursor;
-use image::io::Reader as ImageReader;
+use image::ImageReader;
 use image::ImageFormat;
 use image::imageops::FilterType;
 use image::GenericImageView;
