@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -41,6 +43,7 @@ use crate::common::gql::model::{
   PageInput,
   SortInput,
 };
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::wxw_usr_model::*;
 
@@ -121,7 +124,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query.push_str(" and t.lbl = ?");
+      where_query.push_str(" and t.lbl=?");
       args.push(lbl.into());
     }
     let lbl_like = match search {
@@ -140,7 +143,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(userid) = userid {
-      where_query.push_str(" and t.userid = ?");
+      where_query.push_str(" and t.userid=?");
       args.push(userid.into());
     }
     let userid_like = match search {
@@ -159,7 +162,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(mobile) = mobile {
-      where_query.push_str(" and t.mobile = ?");
+      where_query.push_str(" and t.mobile=?");
       args.push(mobile.into());
     }
     let mobile_like = match search {
@@ -178,7 +181,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(gender) = gender {
-      where_query.push_str(" and t.gender = ?");
+      where_query.push_str(" and t.gender=?");
       args.push(gender.into());
     }
     let gender_like = match search {
@@ -197,7 +200,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(email) = email {
-      where_query.push_str(" and t.email = ?");
+      where_query.push_str(" and t.email=?");
       args.push(email.into());
     }
     let email_like = match search {
@@ -216,7 +219,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(biz_email) = biz_email {
-      where_query.push_str(" and t.biz_email = ?");
+      where_query.push_str(" and t.biz_email=?");
       args.push(biz_email.into());
     }
     let biz_email_like = match search {
@@ -235,7 +238,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(direct_leader) = direct_leader {
-      where_query.push_str(" and t.direct_leader = ?");
+      where_query.push_str(" and t.direct_leader=?");
       args.push(direct_leader.into());
     }
     let direct_leader_like = match search {
@@ -254,7 +257,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(position) = position {
-      where_query.push_str(" and t.position = ?");
+      where_query.push_str(" and t.position=?");
       args.push(position.into());
     }
     let position_like = match search {
@@ -273,7 +276,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(avatar) = avatar {
-      where_query.push_str(" and t.avatar = ?");
+      where_query.push_str(" and t.avatar=?");
       args.push(avatar.into());
     }
     let avatar_like = match search {
@@ -292,7 +295,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(thumb_avatar) = thumb_avatar {
-      where_query.push_str(" and t.thumb_avatar = ?");
+      where_query.push_str(" and t.thumb_avatar=?");
       args.push(thumb_avatar.into());
     }
     let thumb_avatar_like = match search {
@@ -311,7 +314,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(qr_code) = qr_code {
-      where_query.push_str(" and t.qr_code = ?");
+      where_query.push_str(" and t.qr_code=?");
       args.push(qr_code.into());
     }
     let qr_code_like = match search {
@@ -330,7 +333,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      where_query.push_str(" and t.rem = ?");
+      where_query.push_str(" and t.rem=?");
       args.push(rem.into());
     }
     let rem_like = match search {
@@ -396,6 +399,16 @@ async fn get_where_query(
       where_query.push_str(" and t.create_usr_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
     }
   }
   // 创建时间
@@ -470,6 +483,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -497,6 +520,9 @@ async fn get_from_query(
   search: Option<&WxwUsrSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
   let from_query = r#"wxwork_wxw_usr t"#.to_owned();
   Ok(from_query)
 }
