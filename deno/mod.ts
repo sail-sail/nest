@@ -10,6 +10,7 @@ import "/lib/graphql.ts";
 if ((globalThis as any).process.env.NODE_ENV === "production") {
   logInit({
     path: await getEnv("log_path"),
+    expire_day: parseInt(await getEnv("log_expire_day")),
   });
 }
 

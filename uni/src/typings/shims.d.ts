@@ -44,10 +44,6 @@ type AttributifyAttributes2 = AttributifyAttributes & {
   type?: string;
 }
 
-declare module '@vue/runtime-dom' {
-  interface HTMLAttributes extends AttributifyAttributes2 { }
-}
-
 declare module 'vue' {
   interface ComponentCustomProps extends AttributifyAttributes2 { }
   interface CSSProperties {

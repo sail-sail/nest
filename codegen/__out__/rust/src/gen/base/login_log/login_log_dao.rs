@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -43,6 +45,7 @@ use crate::common::gql::model::{
 };
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::login_log_model::*;
 
@@ -147,7 +150,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(username) = username {
-      where_query.push_str(" and t.username = ?");
+      where_query.push_str(" and t.username=?");
       args.push(username.into());
     }
     let username_like = match search {
@@ -190,7 +193,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(ip) = ip {
-      where_query.push_str(" and t.ip = ?");
+      where_query.push_str(" and t.ip=?");
       args.push(ip.into());
     }
     let ip_like = match search {
@@ -274,6 +277,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新人
   {
@@ -330,6 +343,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -357,6 +380,9 @@ async fn get_from_query(
   search: Option<&LoginLogSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
   let from_query = r#"base_login_log t"#.to_owned();
   Ok(from_query)
 }
@@ -1087,6 +1113,56 @@ pub async fn set_id_by_lbl(
           item.val.parse().unwrap_or_default()
         });
     }
+  }
+  
+  // 类型
+  if
+    input.type_lbl.is_some() && !input.type_lbl.as_ref().unwrap().is_empty()
+    && input.r#type.is_none()
+  {
+    let type_dict = &dict_vec[0];
+    let dict_model = type_dict.iter().find(|item| {
+      item.lbl == input.type_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.r#type = val.parse::<LoginLogType>()?.into();
+    }
+  } else if
+    (input.type_lbl.is_none() || input.type_lbl.as_ref().unwrap().is_empty())
+    && input.r#type.is_some()
+  {
+    let type_dict = &dict_vec[0];
+    let dict_model = type_dict.iter().find(|item| {
+      item.val == input.r#type.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.type_lbl = lbl;
+  }
+  
+  // 登录成功
+  if
+    input.is_succ_lbl.is_some() && !input.is_succ_lbl.as_ref().unwrap().is_empty()
+    && input.is_succ.is_none()
+  {
+    let is_succ_dict = &dict_vec[1];
+    let dict_model = is_succ_dict.iter().find(|item| {
+      item.lbl == input.is_succ_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_succ = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_succ_lbl.is_none() || input.is_succ_lbl.as_ref().unwrap().is_empty())
+    && input.is_succ.is_some()
+  {
+    let is_succ_dict = &dict_vec[1];
+    let dict_model = is_succ_dict.iter().find(|item| {
+      item.val == input.is_succ.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_succ_lbl = lbl;
   }
   
   Ok(input)

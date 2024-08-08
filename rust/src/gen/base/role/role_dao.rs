@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -49,6 +51,7 @@ use crate::common::gql::model::{
 };
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::role_model::*;
 
@@ -132,7 +135,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query.push_str(" and t.lbl = ?");
+      where_query.push_str(" and t.lbl=?");
       args.push(lbl.into());
     }
     let lbl_like = match search {
@@ -151,7 +154,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(home_url) = home_url {
-      where_query.push_str(" and t.home_url = ?");
+      where_query.push_str(" and t.home_url=?");
       args.push(home_url.into());
     }
     let home_url_like = match search {
@@ -334,7 +337,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      where_query.push_str(" and t.rem = ?");
+      where_query.push_str(" and t.rem=?");
       args.push(rem.into());
     }
     let rem_like = match search {
@@ -400,6 +403,16 @@ async fn get_where_query(
       where_query.push_str(" and t.create_usr_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
     }
   }
   // 创建时间
@@ -474,6 +487,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -501,9 +524,13 @@ async fn get_from_query(
   search: Option<&RoleSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
+  
   let from_query = r#"base_role t
   left join base_role_menu on base_role_menu.role_id=t.id and base_role_menu.is_deleted=?
   left join base_menu on base_role_menu.menu_id=base_menu.id and base_menu.is_deleted=?
@@ -528,15 +555,9 @@ async fn get_from_query(
   inner join base_data_permit on base_data_permit.id=base_role_data_permit.data_permit_id
   inner join base_role on base_role.id=base_role_data_permit.role_id where base_role_data_permit.is_deleted=?
   group by role_id) _data_permit on _data_permit.role_id=t.id"#.to_owned();
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
+  for _ in 0..9 {
+    args.push(is_deleted.into());
+  }
   Ok(from_query)
 }
 
@@ -1447,6 +1468,56 @@ pub async fn set_id_by_lbl(
       .map(|item| item.id)
       .collect::<Vec<PermitId>>()
       .into();
+  }
+  
+  // 锁定
+  if
+    input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
+    && input.is_locked.is_none()
+  {
+    let is_locked_dict = &dict_vec[0];
+    let dict_model = is_locked_dict.iter().find(|item| {
+      item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_locked = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
+    && input.is_locked.is_some()
+  {
+    let is_locked_dict = &dict_vec[0];
+    let dict_model = is_locked_dict.iter().find(|item| {
+      item.val == input.is_locked.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_locked_lbl = lbl;
+  }
+  
+  // 启用
+  if
+    input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
+    && input.is_enabled.is_none()
+  {
+    let is_enabled_dict = &dict_vec[1];
+    let dict_model = is_enabled_dict.iter().find(|item| {
+      item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_enabled = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
+    && input.is_enabled.is_some()
+  {
+    let is_enabled_dict = &dict_vec[1];
+    let dict_model = is_enabled_dict.iter().find(|item| {
+      item.val == input.is_enabled.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_enabled_lbl = lbl;
   }
   
   Ok(input)

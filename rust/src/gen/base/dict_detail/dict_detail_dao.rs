@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -44,6 +46,10 @@ use crate::common::gql::model::{
 };
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
+
+use crate::src::base::lang::lang_dao::get_lang_id;
+use crate::gen::base::lang::lang_model::LangId;
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::dict_detail_model::*;
 use crate::gen::base::dict::dict_model::DictId;
@@ -169,16 +175,19 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query.push_str(" and t.lbl = ?");
-      args.push(lbl.into());
+      where_query.push_str(" and (t.lbl=? or base_dict_detail_lang.lbl=?)");
+      args.push(lbl.as_str().into());
+      args.push(lbl.as_str().into());
     }
     let lbl_like = match search {
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
-      where_query.push_str(" and t.lbl like ?");
-      args.push(format!("%{}%", sql_like(&lbl_like)).into());
+      where_query.push_str(" and (t.lbl like ? or base_dict_detail_lang.lbl like ?)");
+      let like_str = format!("%{}%", sql_like(&lbl_like));
+      args.push(like_str.as_str().into());
+      args.push(like_str.as_str().into());
     }
   }
   // 值
@@ -188,7 +197,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(val) = val {
-      where_query.push_str(" and t.val = ?");
+      where_query.push_str(" and t.val=?");
       args.push(val.into());
     }
     let val_like = match search {
@@ -272,16 +281,19 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      where_query.push_str(" and t.rem = ?");
-      args.push(rem.into());
+      where_query.push_str(" and (t.rem=? or base_dict_detail_lang.rem=?)");
+      args.push(rem.as_str().into());
+      args.push(rem.as_str().into());
     }
     let rem_like = match search {
       Some(item) => item.rem_like.clone(),
       None => None,
     };
     if let Some(rem_like) = rem_like {
-      where_query.push_str(" and t.rem like ?");
-      args.push(format!("%{}%", sql_like(&rem_like)).into());
+      where_query.push_str(" and (t.rem like ? or base_dict_detail_lang.rem like ?)");
+      let like_str = format!("%{}%", sql_like(&rem_like));
+      args.push(like_str.as_str().into());
+      args.push(like_str.as_str().into());
     }
   }
   // 创建人
@@ -338,6 +350,16 @@ async fn get_where_query(
       where_query.push_str(" and t.create_usr_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
     }
   }
   // 创建时间
@@ -412,6 +434,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -439,8 +471,15 @@ async fn get_from_query(
   search: Option<&DictDetailSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
-  let from_query = r#"base_dict_detail t
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
+  let mut from_query = r#"base_dict_detail t
   left join base_dict dict_id_lbl on dict_id_lbl.id=t.dict_id"#.to_owned();
+  if server_i18n_enable {
+    from_query += " left join base_dict_detail_lang on base_dict_detail_lang.dict_detail_id=t.id and base_dict_detail_lang.lang_id=?";
+    args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
+  }
   Ok(from_query)
 }
 
@@ -455,6 +494,8 @@ pub async fn find_all(
   
   let table = "base_dict_detail";
   let method = "find_all";
+  
+  let server_i18n_enable= get_server_i18n_enable();
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -567,6 +608,15 @@ pub async fn find_all(
     }
   }
   
+  let lang_sql = {
+    let mut lang_sql = String::new();
+    if server_i18n_enable {
+      lang_sql += ",base_dict_detail_lang.lbl lbl_lang";
+      lang_sql += ",base_dict_detail_lang.rem rem_lang";
+    }
+    lang_sql
+  };
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
@@ -603,6 +653,7 @@ pub async fn find_all(
   
   let sql = format!(r#"select f.* from (select t.*
   ,dict_id_lbl.lbl dict_id_lbl
+  {lang_sql}
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -1263,6 +1314,71 @@ pub async fn set_id_by_lbl(
     if let Some(model) = model {
       input.dict_id = model.id.into();
     }
+  } else if
+    (input.dict_id_lbl.is_none() || input.dict_id_lbl.as_ref().unwrap().is_empty())
+    && input.dict_id.is_some()
+  {
+    let dict_model = crate::gen::base::dict::dict_dao::find_one(
+      crate::gen::base::dict::dict_model::DictSearch {
+        id: input.dict_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(dict_model) = dict_model {
+      input.dict_id_lbl = dict_model.lbl.into();
+    }
+  }
+  
+  // 锁定
+  if
+    input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
+    && input.is_locked.is_none()
+  {
+    let is_locked_dict = &dict_vec[0];
+    let dict_model = is_locked_dict.iter().find(|item| {
+      item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_locked = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
+    && input.is_locked.is_some()
+  {
+    let is_locked_dict = &dict_vec[0];
+    let dict_model = is_locked_dict.iter().find(|item| {
+      item.val == input.is_locked.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_locked_lbl = lbl;
+  }
+  
+  // 启用
+  if
+    input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
+    && input.is_enabled.is_none()
+  {
+    let is_enabled_dict = &dict_vec[1];
+    let dict_model = is_enabled_dict.iter().find(|item| {
+      item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_enabled = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
+    && input.is_enabled.is_some()
+  {
+    let is_enabled_dict = &dict_vec[1];
+    let dict_model = is_enabled_dict.iter().find(|item| {
+      item.val == input.is_enabled.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_enabled_lbl = lbl;
   }
   
   Ok(input)
@@ -1319,7 +1435,7 @@ async fn _creates(
   let mut ids2: Vec<DictDetailId> = vec![];
   let mut inputs2: Vec<DictDetailInput> = vec![];
   
-  for input in inputs {
+  for input in inputs.clone() {
   
     if input.id.is_some() {
       return Err(anyhow!("Can not set id when create in dao: {table}"));
@@ -1590,6 +1706,9 @@ async fn _creates(
   if affected_rows != inputs2_len as u64 {
     return Err(anyhow!("affectedRows: {affected_rows} != {inputs2_len}"));
   }
+  for input in inputs.iter() {
+    refresh_lang_by_input(input, options.clone()).await?;
+  }
   
   Ok(ids2)
 }
@@ -1632,6 +1751,94 @@ pub async fn create(
   Ok(id)
 }
 
+#[allow(unused_variables)]
+async fn refresh_lang_by_input(
+  input: &DictDetailInput,
+  options: Option<Options>,
+) -> Result<()> {
+  
+  if input.id.is_none() || input.id.as_ref().unwrap().is_empty() {
+    return Err(anyhow!("refresh_lang_by_input: input.id is empty"));
+  }
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
+  if !server_i18n_enable {
+    return Ok(());
+  }
+  #[derive(Serialize, Deserialize, sqlx::FromRow)]
+  struct ResultTmp {
+    id: String,
+  }
+  let lang_sql = "select id from base_dict_detail_lang where lang_id=? and dict_detail_id=?".to_owned();
+  let mut lang_args = QueryArgs::new();
+  lang_args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
+  lang_args.push(input.id.clone().unwrap_or_default().clone().into());
+  let model = query_one::<ResultTmp>(
+    lang_sql,
+    lang_args.into(),
+    options.clone(),
+  ).await?;
+  let lang_id: Option<LangId> = model.map(|item| item.id).map(|item| item.into());
+  if let Some(lang_id) = lang_id {
+    let mut lang_sql = "update base_dict_detail_lang set ".to_owned();
+    let mut lang_args = QueryArgs::new();
+    // 名称
+    if input.lbl.is_some() {
+      lang_sql += "{column_name}=?,";
+      lang_args.push(input.lbl.clone().unwrap_or_default().into());
+    }
+    // 备注
+    if input.rem.is_some() {
+      lang_sql += "{column_name}=?,";
+      lang_args.push(input.rem.clone().unwrap_or_default().into());
+    }
+    lang_sql.pop();
+    lang_sql += " where id=?";
+    lang_args.push(lang_id.into());
+    execute(
+      lang_sql,
+      lang_args.into(),
+      options.clone(),
+    ).await?;
+  } else {
+    let mut sql_fields: Vec<String> = vec![];
+    let mut lang_args = QueryArgs::new();
+    let id: LangId = get_short_uuid().into();
+    lang_args.push(id.into());
+    lang_args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
+    lang_args.push(input.id.clone().unwrap_or_default().clone().into());
+    // 名称
+    if input.lbl.is_some() {
+      sql_fields.push("lbl".to_owned());
+      lang_args.push(input.lbl.clone().unwrap_or_default().into());
+    }
+    // 备注
+    if input.rem.is_some() {
+      sql_fields.push("rem".to_owned());
+      lang_args.push(input.rem.clone().unwrap_or_default().into());
+    }
+    let mut lang_sql = "insert into base_dict_detail_lang(id,lang_id,dict_detail_id".to_owned();
+    let sql_fields_len = sql_fields.len();
+    for sql_field in sql_fields {
+      lang_sql += ",";
+      lang_sql += sql_field.as_str();
+    }
+    lang_sql += ")values(?,?,?";
+    for _ in 0..sql_fields_len {
+      lang_sql += ",?";
+    }
+    lang_sql += ")";
+    execute(
+      lang_sql,
+      lang_args.into(),
+      options.clone(),
+    ).await?;
+  }
+  
+  Ok(())
+}
+
 /// 根据 id 修改系统字典明细
 #[allow(unused_mut)]
 pub async fn update_by_id(
@@ -1647,6 +1854,8 @@ pub async fn update_by_id(
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   let is_creating = get_is_creating(options.as_ref());
+  
+  let server_i18n_enable = get_server_i18n_enable();
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -1694,6 +1903,15 @@ pub async fn update_by_id(
       method,
       serde_json::to_string(&old_model)?,
     );
+  }
+  
+  if server_i18n_enable {
+    let mut input = input.clone();
+    input.id = Some(id.clone());
+    refresh_lang_by_input(
+      &input,
+      options.clone(),
+    ).await?;
   }
   
   {
@@ -1750,8 +1968,10 @@ pub async fn update_by_id(
   // 名称
   if let Some(lbl) = input.lbl {
     field_num += 1;
-    sql_fields += "lbl=?,";
-    args.push(lbl.into());
+    if !server_i18n_enable {
+      sql_fields += "lbl=?,";
+      args.push(lbl.into());
+    }
   }
   // 值
   if let Some(val) = input.val {
@@ -1780,8 +2000,10 @@ pub async fn update_by_id(
   // 备注
   if let Some(rem) = input.rem {
     field_num += 1;
-    sql_fields += "rem=?,";
-    args.push(rem.into());
+    if !server_i18n_enable {
+      sql_fields += "rem=?,";
+      args.push(rem.into());
+    }
   }
   // 系统字段
   if let Some(is_sys) = input.is_sys {
@@ -1936,6 +2158,7 @@ pub async fn delete_by_ids(
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   let is_creating = get_is_creating(options.as_ref());
+  let server_i18n_enable = get_server_i18n_enable();
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -2039,6 +2262,17 @@ pub async fn delete_by_ids(
       args,
       options.clone(),
     ).await?;
+    
+    if server_i18n_enable {
+      let sql = "update base_dict_detail_lang set is_deleted=1 where dict_detail_id=?".to_owned();
+      let mut args = QueryArgs::new();
+      args.push(id.clone().into());
+      execute(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+    }
   }
   
   if num > MAX_SAFE_INTEGER {
@@ -2226,6 +2460,7 @@ pub async fn revert_by_ids(
   let method = "revert_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());
+  let server_i18n_enable = get_server_i18n_enable();
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -2319,6 +2554,17 @@ pub async fn revert_by_ids(
       options.clone(),
     ).await?;
     
+    if server_i18n_enable {
+      let sql = "update base_dict_detail_lang set is_deleted=0 where dict_detail_id=?".to_owned();
+      let mut args = QueryArgs::new();
+      args.push(id.clone().into());
+      execute(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+    }
+    
   }
   
   Ok(num)
@@ -2337,6 +2583,7 @@ pub async fn force_delete_by_ids(
   let is_debug = get_is_debug(options.as_ref());
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
+  let server_i18n_enable = get_server_i18n_enable();
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -2406,6 +2653,17 @@ pub async fn force_delete_by_ids(
       args,
       options.clone(),
     ).await?;
+    
+    if server_i18n_enable {
+      let sql = "delete from base_dict_detail_lang where dict_detail_id=?".to_owned();
+      let mut args = QueryArgs::new();
+      args.push(id.clone().into());
+      execute(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+    }
   }
   
   Ok(num)
