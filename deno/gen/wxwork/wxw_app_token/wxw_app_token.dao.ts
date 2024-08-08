@@ -201,6 +201,9 @@ async function getWhereQuery(
   if (search?.create_usr_id_lbl != null) {
     whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
   }
+  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
+    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
+  }
   if (search?.create_time != null) {
     if (search.create_time[0] != null) {
       whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
@@ -217,6 +220,9 @@ async function getWhereQuery(
   }
   if (search?.update_usr_id_lbl != null) {
     whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+  }
+  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
+    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_time != null) {
     if (search.update_time[0] != null) {
@@ -571,6 +577,17 @@ export async function setIdByLbl(
     );
     if (wxw_appModel) {
       input.wxw_app_id = wxw_appModel.id;
+    }
+  } else if (isEmpty(input.wxw_app_id_lbl) && input.wxw_app_id != null) {
+    const wxw_app_model = await findOneWxwApp(
+      {
+        id: input.wxw_app_id,
+      },
+      undefined,
+      options,
+    );
+    if (wxw_app_model) {
+      input.wxw_app_id_lbl = wxw_app_model.lbl;
     }
   }
   
@@ -1208,6 +1225,10 @@ async function _creates(
     return ids2;
   }
   
+  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+  
+  await delCache();
+  
   const args = new QueryArgs();
   let sql = "insert into wxwork_wxw_app_token(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,wxw_app_id,type,access_token,token_time,expires_in,jsapi_ticket,jsapi_ticket_time,jsapi_ticket_expires_in,jsapi_ticket_agent_config,jsapi_ticket_agent_config_time,jsapi_ticket_agent_config_expires_in)values";
   
@@ -1368,10 +1389,6 @@ async function _creates(
       }
     }
   }
-  
-  await delCache();
-  
-  const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const res = await execute(sql, args, {
     debug: is_debug_sql,
