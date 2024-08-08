@@ -15,6 +15,9 @@ use crate::gen::base::usr::usr_dao::{
   validate_is_enabled as validate_is_enabled_usr,
 };
 
+use crate::src::base::lang::lang_dao::get_lang_id;
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
+
 async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let usr_id = get_auth_id();
@@ -59,26 +62,31 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
       t.lbl,
       t.route_path,
       t.route_query,
-      t.order_by
+      t.order_by,
+      base_menu_lang.lbl as lbl_lang
     from base_menu t
     inner join base_tenant_menu
       on t.id = base_tenant_menu.menu_id
-      and base_tenant_menu.is_deleted = 0
+      and base_tenant_menu.is_deleted=0
     inner join base_tenant
-      on base_tenant_menu.tenant_id = base_tenant.id
-      and base_tenant.is_deleted = 0
-      and base_tenant.is_enabled = 1
+      on base_tenant_menu.tenant_id=base_tenant.id
+      and base_tenant.is_deleted=0
+      and base_tenant.is_enabled=1
     inner join base_role_menu
-      on t.id = base_role_menu.menu_id
-      and base_role_menu.is_deleted = 0
+      on t.id=base_role_menu.menu_id
+      and base_role_menu.is_deleted=0
     inner join base_usr_role
-      on base_role_menu.role_id = base_usr_role.role_id
-      and base_usr_role.is_deleted = 0
+      on base_role_menu.role_id=base_usr_role.role_id
+      and base_usr_role.is_deleted=0
+    left join base_menu_lang
+      on t.id = base_menu_lang.menu_id
+      and base_menu_lang.lang_id=?
     where
-      t.is_deleted = 0
-      and t.is_enabled = 1
+      t.is_deleted=0
+      and t.is_enabled=1
       {where_query}"#,
   );
+  args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
   
   let args = args.into();
   
@@ -88,7 +96,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let options = options.set_cache_key("base_menu._getMenus", &sql, &args);
   
-  let options = options.into();
+  let options = Some(options);
   
   let mut res: Vec<GetMenus> = query(
     sql,
@@ -97,6 +105,14 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   ).await?;
   
   res.sort_by(|a, b| a.order_by.cmp(&b.order_by));
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
+  if server_i18n_enable {
+    for item in &mut res {
+      item.lbl = item.lbl_lang.clone();
+    }
+  }
   
   Ok(res)
 }

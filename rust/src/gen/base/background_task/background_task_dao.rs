@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -43,6 +45,7 @@ use crate::common::gql::model::{
 };
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::background_task_model::*;
 
@@ -123,7 +126,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query.push_str(" and t.lbl = ?");
+      where_query.push_str(" and t.lbl=?");
       args.push(lbl.into());
     }
     let lbl_like = match search {
@@ -190,7 +193,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(result) = result {
-      where_query.push_str(" and t.result = ?");
+      where_query.push_str(" and t.result=?");
       args.push(result.into());
     }
     let result_like = match search {
@@ -209,7 +212,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(err_msg) = err_msg {
-      where_query.push_str(" and t.err_msg = ?");
+      where_query.push_str(" and t.err_msg=?");
       args.push(err_msg.into());
     }
     let err_msg_like = match search {
@@ -262,7 +265,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      where_query.push_str(" and t.rem = ?");
+      where_query.push_str(" and t.rem=?");
       args.push(rem.into());
     }
     let rem_like = match search {
@@ -328,6 +331,16 @@ async fn get_where_query(
       where_query.push_str(" and t.create_usr_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
     }
   }
   // 创建时间
@@ -402,6 +415,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -429,6 +452,9 @@ async fn get_from_query(
   search: Option<&BackgroundTaskSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
   let from_query = r#"base_background_task t"#.to_owned();
   Ok(from_query)
 }
@@ -1222,6 +1248,56 @@ pub async fn set_id_by_lbl(
           item.val.parse().unwrap_or_default()
         });
     }
+  }
+  
+  // 状态
+  if
+    input.state_lbl.is_some() && !input.state_lbl.as_ref().unwrap().is_empty()
+    && input.state.is_none()
+  {
+    let state_dict = &dict_vec[0];
+    let dict_model = state_dict.iter().find(|item| {
+      item.lbl == input.state_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.state = val.parse::<BackgroundTaskState>()?.into();
+    }
+  } else if
+    (input.state_lbl.is_none() || input.state_lbl.as_ref().unwrap().is_empty())
+    && input.state.is_some()
+  {
+    let state_dict = &dict_vec[0];
+    let dict_model = state_dict.iter().find(|item| {
+      item.val == input.state.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.state_lbl = lbl;
+  }
+  
+  // 类型
+  if
+    input.type_lbl.is_some() && !input.type_lbl.as_ref().unwrap().is_empty()
+    && input.r#type.is_none()
+  {
+    let type_dict = &dict_vec[1];
+    let dict_model = type_dict.iter().find(|item| {
+      item.lbl == input.type_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.r#type = val.parse::<BackgroundTaskType>()?.into();
+    }
+  } else if
+    (input.type_lbl.is_none() || input.type_lbl.as_ref().unwrap().is_empty())
+    && input.r#type.is_some()
+  {
+    let type_dict = &dict_vec[1];
+    let dict_model = type_dict.iter().find(|item| {
+      item.val == input.r#type.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.type_lbl = lbl;
   }
   
   Ok(input)

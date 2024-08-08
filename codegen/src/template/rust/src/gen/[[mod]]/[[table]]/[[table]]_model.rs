@@ -33,6 +33,31 @@ for (let i = 0; i < columns.length; i++) {
   hasDecimal = true;
   break;
 }
+const langTableExcludeArr = [
+  "id",
+  "lang_id",
+  "create_usr_id",
+  "create_usr_id_lbl",
+  "create_time",
+  "update_usr_id",
+  "update_usr_id_lbl",
+  "update_time",
+  "is_deleted",
+  "tenant_id",
+  "deleted_usr_id",
+  "deleted_usr_id_lbl",
+  "deleted_time",
+];
+langTableExcludeArr.push(`${ table }_id`);
+const langTableRecords = [ ];
+for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
+  const record = opts.langTable.records[i];
+  const column_name = record.COLUMN_NAME;
+  if (
+    langTableExcludeArr.includes(column_name)
+  ) continue;
+  langTableRecords.push(record);
+}
 #>
 use std::fmt;
 use std::ops::Deref;
@@ -71,6 +96,12 @@ use crate::common::gql::model::SortInput;<#
 if (hasEncrypt) {
 #>
 use crate::common::util::dao::decrypt;<#
+}
+#><#
+if (opts.langTable) {
+#>
+
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;<#
 }
 #><#
 const foreignTableArr = [];
@@ -753,6 +784,12 @@ pub struct <#=tableUP#>Model {<#
 
 impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {<#
+    if (opts.langTable) {
+    #>
+    
+    let server_i18n_enable = get_server_i18n_enable();<#
+    }
+    #><#
     if (hasTenantId) {
     #>
     // 租户ID
@@ -1207,6 +1244,25 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         }
     #><#
       }
+    #><#
+    }
+    #><#
+    if (opts.langTable) {
+    #><#
+    for (let i = 0; i < langTableRecords.length; i++) {
+      const record = langTableRecords[i];
+      const column_name = record.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(record.COLUMN_NAME);
+      const column_comment = record.COLUMN_COMMENT || "";
+    #>
+    
+    // <#=column_comment#>
+    let <#=column_name_rust#> = if server_i18n_enable {
+      row.try_get("<#=column_name#>")?
+    } else {
+      <#=column_name_rust#>
+    };<#
+    }
     #><#
     }
     #><#
@@ -1669,7 +1725,17 @@ pub struct <#=tableUP#>Search {
   #[graphql(name = "<#=modelLabel#>")]<#
   }
   #>
-  pub <#=modelLabel_rust#>: Option<Vec<String>>,<#
+  pub <#=modelLabel_rust#>: Option<Vec<String>>,
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno || !canSearch) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_<#=foreignKey.lbl#>_like")]<#
+  }
+  #>
+  pub <#=column_name#>_<#=foreignKey.lbl#>_like: Option<String>,<#
     } else if (foreignKey.lbl) {
   #>
   /// <#=column_comment#><#

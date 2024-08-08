@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -49,6 +51,7 @@ use crate::common::gql::model::{
 };
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::dept_model::*;
 
@@ -196,7 +199,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query.push_str(" and t.lbl = ?");
+      where_query.push_str(" and t.lbl=?");
       args.push(lbl.into());
     }
     let lbl_like = match search {
@@ -361,6 +364,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let org_id_lbl_like = match search {
+        Some(item) => item.org_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(org_id_lbl_like) = org_id_lbl_like {
+        where_query.push_str(" and org_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&org_id_lbl_like)).into());
+      }
+    }
   }
   // 备注
   {
@@ -369,7 +382,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      where_query.push_str(" and t.rem = ?");
+      where_query.push_str(" and t.rem=?");
       args.push(rem.into());
     }
     let rem_like = match search {
@@ -435,6 +448,16 @@ async fn get_where_query(
       where_query.push_str(" and t.create_usr_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
     }
   }
   // 创建时间
@@ -509,6 +532,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -536,9 +569,13 @@ async fn get_from_query(
   search: Option<&DeptSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
+  
   let from_query = r#"base_dept t
   left join base_dept parent_id_lbl on parent_id_lbl.id=t.parent_id
   left join base_dept_usr on base_dept_usr.dept_id=t.id and base_dept_usr.is_deleted=?
@@ -549,9 +586,9 @@ async fn get_from_query(
   inner join base_usr on base_usr.id=base_dept_usr.usr_id
   inner join base_dept on base_dept.id=base_dept_usr.dept_id where base_dept_usr.is_deleted=?
   group by dept_id) _usr on _usr.dept_id=t.id"#.to_owned();
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
+  for _ in 0..3 {
+    args.push(is_deleted.into());
+  }
   Ok(from_query)
 }
 
@@ -1414,6 +1451,21 @@ pub async fn set_id_by_lbl(
     if let Some(model) = model {
       input.parent_id = model.id.into();
     }
+  } else if
+    (input.parent_id_lbl.is_none() || input.parent_id_lbl.as_ref().unwrap().is_empty())
+    && input.parent_id.is_some()
+  {
+    let dept_model = find_one(
+      DeptSearch {
+        id: input.parent_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(dept_model) = dept_model {
+      input.parent_id_lbl = dept_model.lbl.into();
+    }
   }
   
   // 部门负责人
@@ -1450,6 +1502,56 @@ pub async fn set_id_by_lbl(
       .into();
   }
   
+  // 锁定
+  if
+    input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
+    && input.is_locked.is_none()
+  {
+    let is_locked_dict = &dict_vec[0];
+    let dict_model = is_locked_dict.iter().find(|item| {
+      item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_locked = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
+    && input.is_locked.is_some()
+  {
+    let is_locked_dict = &dict_vec[0];
+    let dict_model = is_locked_dict.iter().find(|item| {
+      item.val == input.is_locked.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_locked_lbl = lbl;
+  }
+  
+  // 启用
+  if
+    input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
+    && input.is_enabled.is_none()
+  {
+    let is_enabled_dict = &dict_vec[1];
+    let dict_model = is_enabled_dict.iter().find(|item| {
+      item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_enabled = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
+    && input.is_enabled.is_some()
+  {
+    let is_enabled_dict = &dict_vec[1];
+    let dict_model = is_enabled_dict.iter().find(|item| {
+      item.val == input.is_enabled.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_enabled_lbl = lbl;
+  }
+  
   // 组织
   if input.org_id_lbl.is_some()
     && !input.org_id_lbl.as_ref().unwrap().is_empty()
@@ -1468,6 +1570,21 @@ pub async fn set_id_by_lbl(
     ).await?;
     if let Some(model) = model {
       input.org_id = model.id.into();
+    }
+  } else if
+    (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
+    && input.org_id.is_some()
+  {
+    let org_model = crate::gen::base::org::org_dao::find_one(
+      crate::gen::base::org::org_model::OrgSearch {
+        id: input.org_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(org_model) = org_model {
+      input.org_id_lbl = org_model.lbl.into();
     }
   }
   
