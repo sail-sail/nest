@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -41,6 +43,7 @@ use crate::common::gql::model::{
   PageInput,
   SortInput,
 };
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::wxw_app_token_model::*;
 
@@ -188,7 +191,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(r#type) = r#type {
-      where_query.push_str(" and t.type = ?");
+      where_query.push_str(" and t.type=?");
       args.push(r#type.into());
     }
     let type_like = match search {
@@ -207,7 +210,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(access_token) = access_token {
-      where_query.push_str(" and t.access_token = ?");
+      where_query.push_str(" and t.access_token=?");
       args.push(access_token.into());
     }
     let access_token_like = match search {
@@ -260,7 +263,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(jsapi_ticket) = jsapi_ticket {
-      where_query.push_str(" and t.jsapi_ticket = ?");
+      where_query.push_str(" and t.jsapi_ticket=?");
       args.push(jsapi_ticket.into());
     }
     let jsapi_ticket_like = match search {
@@ -313,7 +316,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(jsapi_ticket_agent_config) = jsapi_ticket_agent_config {
-      where_query.push_str(" and t.jsapi_ticket_agent_config = ?");
+      where_query.push_str(" and t.jsapi_ticket_agent_config=?");
       args.push(jsapi_ticket_agent_config.into());
     }
     let jsapi_ticket_agent_config_like = match search {
@@ -414,6 +417,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 创建时间
   {
@@ -487,6 +500,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -514,6 +537,9 @@ async fn get_from_query(
   search: Option<&WxwAppTokenSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
   let from_query = r#"wxwork_wxw_app_token t
   left join wxwork_wxw_app wxw_app_id_lbl on wxw_app_id_lbl.id=t.wxw_app_id"#.to_owned();
   Ok(from_query)
@@ -1337,6 +1363,21 @@ pub async fn set_id_by_lbl(
     ).await?;
     if let Some(model) = model {
       input.wxw_app_id = model.id.into();
+    }
+  } else if
+    (input.wxw_app_id_lbl.is_none() || input.wxw_app_id_lbl.as_ref().unwrap().is_empty())
+    && input.wxw_app_id.is_some()
+  {
+    let wxw_app_model = crate::gen::wxwork::wxw_app::wxw_app_dao::find_one(
+      crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch {
+        id: input.wxw_app_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(wxw_app_model) = wxw_app_model {
+      input.wxw_app_id_lbl = wxw_app_model.lbl.into();
     }
   }
   

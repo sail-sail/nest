@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -43,6 +45,7 @@ use crate::common::gql::model::{
 };
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::wxw_msg_model::*;
 
@@ -214,7 +217,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(touser) = touser {
-      where_query.push_str(" and t.touser = ?");
+      where_query.push_str(" and t.touser=?");
       args.push(touser.into());
     }
     let touser_like = match search {
@@ -233,7 +236,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(title) = title {
-      where_query.push_str(" and t.title = ?");
+      where_query.push_str(" and t.title=?");
       args.push(title.into());
     }
     let title_like = match search {
@@ -252,7 +255,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(description) = description {
-      where_query.push_str(" and t.description = ?");
+      where_query.push_str(" and t.description=?");
       args.push(description.into());
     }
     let description_like = match search {
@@ -271,7 +274,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(url) = url {
-      where_query.push_str(" and t.url = ?");
+      where_query.push_str(" and t.url=?");
       args.push(url.into());
     }
     let url_like = match search {
@@ -290,7 +293,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(btntxt) = btntxt {
-      where_query.push_str(" and t.btntxt = ?");
+      where_query.push_str(" and t.btntxt=?");
       args.push(btntxt.into());
     }
     let btntxt_like = match search {
@@ -326,7 +329,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(errmsg) = errmsg {
-      where_query.push_str(" and t.errmsg = ?");
+      where_query.push_str(" and t.errmsg=?");
       args.push(errmsg.into());
     }
     let errmsg_like = match search {
@@ -345,7 +348,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(msgid) = msgid {
-      where_query.push_str(" and t.msgid = ?");
+      where_query.push_str(" and t.msgid=?");
       args.push(msgid.into());
     }
     let msgid_like = match search {
@@ -412,6 +415,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新人
   {
@@ -468,6 +481,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -495,6 +518,9 @@ async fn get_from_query(
   search: Option<&WxwMsgSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
   let from_query = r#"wxwork_wxw_msg t
   left join wxwork_wxw_app wxw_app_id_lbl on wxw_app_id_lbl.id=t.wxw_app_id"#.to_owned();
   Ok(from_query)
@@ -1231,6 +1257,46 @@ pub async fn set_id_by_lbl(
     if let Some(model) = model {
       input.wxw_app_id = model.id.into();
     }
+  } else if
+    (input.wxw_app_id_lbl.is_none() || input.wxw_app_id_lbl.as_ref().unwrap().is_empty())
+    && input.wxw_app_id.is_some()
+  {
+    let wxw_app_model = crate::gen::wxwork::wxw_app::wxw_app_dao::find_one(
+      crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch {
+        id: input.wxw_app_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(wxw_app_model) = wxw_app_model {
+      input.wxw_app_id_lbl = wxw_app_model.lbl.into();
+    }
+  }
+  
+  // 发送状态
+  if
+    input.errcode_lbl.is_some() && !input.errcode_lbl.as_ref().unwrap().is_empty()
+    && input.errcode.is_none()
+  {
+    let errcode_dict = &dict_vec[0];
+    let dict_model = errcode_dict.iter().find(|item| {
+      item.lbl == input.errcode_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.errcode = val.into();
+    }
+  } else if
+    (input.errcode_lbl.is_none() || input.errcode_lbl.as_ref().unwrap().is_empty())
+    && input.errcode.is_some()
+  {
+    let errcode_dict = &dict_vec[0];
+    let dict_model = errcode_dict.iter().find(|item| {
+      item.val == input.errcode.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.errcode_lbl = lbl;
   }
   
   Ok(input)
