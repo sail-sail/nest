@@ -11,9 +11,10 @@ use regex::{Regex, Captures};
 use crate::gen::base::lang::lang_dao::find_one as find_one_lang;
 use crate::gen::base::lang::lang_model::LangSearch;
 use crate::gen::base::i18n::i18n_dao::find_one as find_one_i18n;
-use crate::gen::base::i18n::i18n_model::{I18nSearch, I18nModel};
+use crate::gen::base::i18n::i18n_model::I18nSearch;
 use crate::gen::base::menu::menu_dao::find_one as find_one_menu;
-use crate::gen::base::menu::menu_model::{MenuSearch, MenuId};
+use crate::gen::base::menu::menu_model::MenuSearch;
+use crate::r#gen::base::menu::menu_model::MenuModel;
 
 lazy_static! {
   static ref REG: Regex = Regex::new(r"\{([\s\S]*?)\}").unwrap();
@@ -192,9 +193,9 @@ pub async fn n_lang(
     None,
     options.clone(),
   ).await?;
-  let mut menu_id: Option<MenuId> = None;
+  let mut menu_model: Option<MenuModel> = None;
   if let Some(route_path) = route_path {
-    let menu_model = find_one_menu(
+    menu_model = find_one_menu(
       MenuSearch {
         route_path: route_path.into(),
         is_enabled: vec![1].into(),
@@ -203,49 +204,20 @@ pub async fn n_lang(
       None,
       options.clone(),
     ).await?;
-    if let Some(menu_model) = menu_model {
-      menu_id = menu_model.id.into();
-    }
   }
+  let menu_id = menu_model.map(|m| m.id).unwrap_or_default();
   if let Some(lang_model) = lang_model {
     let lang_id = lang_model.id;
-    #[allow(unused_assignments)]
-    let mut i18n_model: Option<I18nModel> = None;
-    if let Some(menu_id) = menu_id {
-      i18n_model = find_one_i18n(
-        I18nSearch {
-          lang_id: vec![lang_id.clone()].into(),
-          menu_id: vec![menu_id].into(),
-          code: code.clone().into(),
-          ..Default::default()
-        }.into(),
-        None,
-        options.clone(),
-      ).await?;
-      if i18n_model.is_none() {
-        i18n_model = find_one_i18n(
-          I18nSearch {
-            lang_id: vec![lang_id.clone()].into(),
-            menu_id_is_null: true.into(),
-            code: code.into(),
-            ..Default::default()
-          }.into(),
-          None,
-          options.clone(),
-        ).await?;
-      }
-    } else {
-      i18n_model = find_one_i18n(
-        I18nSearch {
-          lang_id: vec![lang_id].into(),
-          menu_id_is_null: true.into(),
-          code: code.into(),
-          ..Default::default()
-        }.into(),
-        None,
-        options,
-      ).await?;
-    }
+    let i18n_model = find_one_i18n(
+      I18nSearch {
+        lang_id: vec![lang_id.clone()].into(),
+        menu_id: vec![menu_id].into(),
+        code: code.clone().into(),
+        ..Default::default()
+      }.into(),
+      None,
+      options.clone(),
+    ).await?;
     if let Some(i18n_model) = i18n_model {
       i18n_lbl = i18n_model.lbl;
     }
@@ -259,6 +231,10 @@ pub async fn n_lang(
     i18n_lbl = res.to_string();
   }
   Ok(i18n_lbl)
+}
+
+pub fn get_server_i18n_enable() -> bool {
+  *SERVER_I18N_ENABLE
 }
 
 #[test]

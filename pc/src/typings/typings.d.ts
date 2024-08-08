@@ -13,6 +13,10 @@ import type {
   SortableEvent as SortableEvent2,
 } from "sortablejs";
 
+import type {
+  TreeNodeData as TreeNodeData2,
+} from "element-plus/es/components/tree/src/tree.type";
+
 declare module 'vue-router' {
   interface RouteMeta {
     
@@ -69,6 +73,9 @@ declare global {
   }
   
   interface SortableEvent extends SortableEvent2 {
+  }
+  
+  interface TreeNodeData extends TreeNodeData2 {
   }
   
 }

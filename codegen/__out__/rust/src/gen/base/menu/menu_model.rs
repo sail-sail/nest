@@ -28,6 +28,8 @@ use async_graphql::{
 
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
+
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 use crate::gen::base::usr::usr_model::UsrId;
 
 lazy_static! {
@@ -101,6 +103,8 @@ pub struct MenuModel {
 
 impl FromRow<'_, MySqlRow> for MenuModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    
+    let server_i18n_enable = get_server_i18n_enable();
     // ID
     let id: MenuId = row.try_get("id")?;
     // 父菜单
@@ -123,6 +127,27 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
+    
+    // 父菜单
+    let parent_id_lbl = if server_i18n_enable {
+      row.try_get("parent_id_lbl")?
+    } else {
+      parent_id_lbl
+    };
+    
+    // 名称
+    let lbl = if server_i18n_enable {
+      row.try_get("lbl")?
+    } else {
+      lbl
+    };
+    
+    // 备注
+    let rem = if server_i18n_enable {
+      row.try_get("rem")?
+    } else {
+      rem
+    };
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -303,6 +328,9 @@ pub struct MenuSearch {
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: Option<Vec<String>>,
+  /// 创建人
+  #[graphql(name = "create_usr_id_lbl_like")]
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -315,6 +343,9 @@ pub struct MenuSearch {
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: Option<Vec<String>>,
+  /// 更新人
+  #[graphql(name = "update_usr_id_lbl_like")]
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,

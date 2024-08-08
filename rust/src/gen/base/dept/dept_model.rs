@@ -356,6 +356,9 @@ pub struct DeptSearch {
   /// 组织
   #[graphql(name = "org_id_lbl")]
   pub org_id_lbl: Option<Vec<String>>,
+  /// 组织
+  #[graphql(name = "org_id_lbl_like")]
+  pub org_id_lbl_like: Option<String>,
   /// 备注
   #[graphql(skip)]
   pub rem: Option<String>,
@@ -371,6 +374,9 @@ pub struct DeptSearch {
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: Option<Vec<String>>,
+  /// 创建人
+  #[graphql(name = "create_usr_id_lbl_like")]
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -383,6 +389,9 @@ pub struct DeptSearch {
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: Option<Vec<String>>,
+  /// 更新人
+  #[graphql(name = "update_usr_id_lbl_like")]
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,

@@ -784,7 +784,9 @@ input <#=searchName#> {<#
     if (modelLabel) {
   #>
   "<#=column_comment#>"
-  <#=modelLabel#>: [String!]<#
+  <#=modelLabel#>: [String!]
+  "<#=column_comment#>"
+  <#=column_name#>_<#=foreignKey.lbl#>_like: String<#
     } else if (foreignKey.lbl) {
   #>
   "<#=column_comment#>"

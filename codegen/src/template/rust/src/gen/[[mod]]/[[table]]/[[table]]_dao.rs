@@ -96,7 +96,34 @@ const hasEncrypt = columns.some((column) => {
   }
   return !!column.isEncrypt;
 });
+const langTableExcludeArr = [
+  "id",
+  "lang_id",
+  "create_usr_id",
+  "create_usr_id_lbl",
+  "create_time",
+  "update_usr_id",
+  "update_usr_id_lbl",
+  "update_time",
+  "is_deleted",
+  "tenant_id",
+  "deleted_usr_id",
+  "deleted_usr_id_lbl",
+  "deleted_time",
+];
+langTableExcludeArr.push(`${ table }_id`);
+const langTableRecords = [ ];
+for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
+  const record = opts.langTable.records[i];
+  const column_name = record.COLUMN_NAME;
+  if (
+    langTableExcludeArr.includes(column_name)
+  ) continue;
+  langTableRecords.push(record);
+}
 #>#[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -203,7 +230,15 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;<#
 
 use crate::src::base::dictbiz_detail::dictbiz_detail_dao::get_dictbiz;<#
   }
+#><#
+if (opts.langTable) {
 #>
+
+use crate::src::base::lang::lang_dao::get_lang_id;
+use crate::gen::base::lang::lang_model::LangId;<#
+}
+#>
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::<#=table#>_model::*;<#
 const findByIdTableUps = [ ];
@@ -752,6 +787,19 @@ async fn get_where_query(
     } else if (data_type === 'decimal') {
       _data_type = "rust_decimal::Decimal";
     }
+    let foreignSchema = undefined;
+    const foreignLangTableRecords = [ ];
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      for (let i = 0; i < (foreignSchema.opts.langTable?.records?.length || 0); i++) {
+        const record = foreignSchema.opts.langTable.records[i];
+        const column_name = record.COLUMN_NAME;
+        if (
+          langTableExcludeArr.includes(column_name)
+        ) continue;
+        foreignLangTableRecords.push(record);
+      }
+    }
   #><#
     if ([
       "is_hidden",
@@ -819,7 +867,9 @@ async fn get_where_query(
   }<#
     if (modelLabel) {
   #>
-  {
+  {<#
+    if (!langTableRecords.some((record) => record.COLUMN_NAME === modelLabel)) {
+    #>
     let <#=modelLabel_rust#>: Option<Vec<String>> = match search {
       Some(item) => item.<#=modelLabel_rust#>.clone(),
       None => None,
@@ -840,6 +890,56 @@ async fn get_where_query(
       where_query.push_str(" and t.<#=modelLabel#> in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }<#
+    } else {
+    #>
+    let <#=modelLabel_rust#>: Option<Vec<String>> = match search {
+      Some(item) => item.<#=modelLabel_rust#>.clone(),
+      None => None,
+    };
+    if let Some(<#=modelLabel_rust#>) = <#=modelLabel_rust#> {
+      let arg = {
+        if <#=modelLabel_rust#>.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(<#=modelLabel_rust#>.len());
+          for item in <#=modelLabel_rust#> {
+            args.push(item.into());
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and (t.<#=modelLabel#> in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+      where_query.push_str(" or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+      where_query.push(')');
+    }<#
+    }
+    #>
+    {
+      let <#=modelLabel#>_like = match search {
+        Some(item) => item.<#=modelLabel#>_like.clone(),
+        None => None,
+      };
+      if let Some(<#=modelLabel#>_like) = <#=modelLabel#>_like {<#
+        if (!langTableRecords.some((record) => record.COLUMN_NAME === modelLabel)) {
+        #>
+        where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
+        args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());<#
+        } else {
+        #>
+        where_query.push_str(" and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ? or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ?)");
+        let like_str = format!("%{}%", sql_like(&<#=modelLabel#>_like));
+        args.push(like_str.as_str().into());
+        args.push(like_str.as_str().into());<#
+        }
+        #>
+      }
     }
   }<#
     } else if (foreignKey.lbl) {
@@ -872,9 +972,19 @@ async fn get_where_query(
       Some(item) => item.<#=column_name#>_<#=foreignKey.lbl#>_like.clone(),
       None => None,
     };
-    if let Some(<#=column_name#>_<#=foreignKey.lbl#>_like) = <#=column_name#>_<#=foreignKey.lbl#>_like {
+    if let Some(<#=column_name#>_<#=foreignKey.lbl#>_like) = <#=column_name#>_<#=foreignKey.lbl#>_like {<#
+      if (!foreignLangTableRecords.some((record) => record.COLUMN_NAME === column_name+"_"+foreignKey.lbl)) {
+      #>
       where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
-      args.push(format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like)).into());
+      args.push(format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like)).into());<#
+      } else {
+      #>
+      where_query.push_str(" and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ? or <#=foreignSchema.opts.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> like ?)");
+      let like_str = format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like));
+      args.push(like_str.as_str().into());
+      args.push(like_str.as_str().into());<#
+      }
+      #>
     }
   }<#
     }
@@ -994,7 +1104,7 @@ async fn get_where_query(
   {
     let <#=column_name_rust#> = search.<#=column_name_rust#>;
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
-      where_query.push_str(" and t.<#=column_name#> = ?");
+      where_query.push_str(" and t.<#=column_name#>=?");
       args.push(<#=column_name_rust#>.into());
     }
   }<#
@@ -1006,20 +1116,39 @@ async fn get_where_query(
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
-    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
-      where_query.push_str(" and t.<#=column_name#> = ?");
-      args.push(<#=column_name_rust#>.into());
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {<#
+      if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
+      #>
+      where_query.push_str(" and t.<#=column_name#>=?");
+      args.push(<#=column_name_rust#>.into());<#
+      } else {
+      #>
+      where_query.push_str(" and (t.<#=column_name#>=? or <#=opts.langTable.opts.table_name#>.<#=column_name#>=?)");
+      args.push(<#=column_name_rust#>.as_str().into());
+      args.push(<#=column_name_rust#>.as_str().into());<#
+      }
+      #>
     }
     let <#=column_name#>_like = match search {
       Some(item) => item.<#=column_name#>_like.clone(),
       None => None,
     };
-    if let Some(<#=column_name#>_like) = <#=column_name#>_like {
+    if let Some(<#=column_name#>_like) = <#=column_name#>_like {<#
+      if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
+      #>
       where_query.push_str(" and t.<#=column_name#> like ?");
-      args.push(format!("%{}%", sql_like(&<#=column_name#>_like)).into());
+      args.push(format!("%{}%", sql_like(&<#=column_name#>_like)).into());<#
+      } else {
+      #>
+      where_query.push_str(" and (t.<#=column_name#> like ? or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ?)");
+      let like_str = format!("%{}%", sql_like(&<#=column_name#>_like));
+      args.push(like_str.as_str().into());
+      args.push(like_str.as_str().into());<#
+      }
+      #>
     }
   }<#
-    } else {
+    } else if (!column.isEncrypt) {
   #>
   // <#=column_comment#>
   {
@@ -1027,9 +1156,18 @@ async fn get_where_query(
       Some(item) => item.<#=column_name_rust#>.clone(),
       None => None,
     };
-    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
-      where_query.push_str(" and t.<#=column_name#> = ?");
-      args.push(<#=column_name_rust#>.into());
+    if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {<#
+      if (!langTableRecords.some((record) => record.COLUMN_NAME === column_name)) {
+      #>
+      where_query.push_str(" and t.<#=column_name#>=?");
+      args.push(<#=column_name_rust#>.into());<#
+      } else {
+      #>
+      where_query.push_str(" and (t.<#=column_name#>=? or <#=opts.langTable.opts.table_name#>.<#=column_name#>=?)");
+      args.push(<#=column_name_rust#>.as_str().into());
+      args.push(<#=column_name_rust#>.as_str().into());<#
+      }
+      #>
     }
   }<#
     }
@@ -1044,9 +1182,12 @@ async fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&<#=tableUP#>Search>,
   options: Option<&Options>,
-) -> Result<String> {<#
+) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();<#
   if (hasIsDeleted && hasMany2many) {
   #>
+  
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);<#
@@ -1054,6 +1195,7 @@ async fn get_from_query(
   #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
+  
   let data_permit_models = get_data_permits(
     get_route_path_<#=table#>(),
     options,
@@ -1068,8 +1210,12 @@ async fn get_from_query(
     .any(|item| item.scope == DataPermitScope::Tenant);<#
   }
   #>
+  
   let<#
-  if (hasDataPermit() && hasCreateUsrId) {
+  if (
+    (hasDataPermit() && hasCreateUsrId)
+    || opts.langTable
+  ) {
   #> mut<#
   }
   #> from_query = r#"<#=mod#>_<#=table#> t<#
@@ -1137,10 +1283,18 @@ async fn get_from_query(
   }
   #>"#.to_owned();<#
   if (hasIsDeleted && hasMany2many) {
-    for (let i = 0; i < fromQueryIsDeletedNum; i++) {
   #>
-  args.push(is_deleted.into());<#
-    }
+  for _ in 0..<#=fromQueryIsDeletedNum#> {
+    args.push(is_deleted.into());
+  }<#
+  }
+  #><#
+  if (opts.langTable) {
+  #>
+  if server_i18n_enable {
+    from_query += " left join <#=opts.langTable.opts.table_name#> on <#=opts.langTable.opts.table_name#>.<#=table#>_id=t.id and <#=opts.langTable.opts.table_name#>.lang_id=?";
+    args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
+  }<#
   }
   #><#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -1166,7 +1320,13 @@ pub async fn find_all(
 ) -> Result<Vec<<#=tableUP#>Model>> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "find_all";
+  let method = "find_all";<#
+  if (opts.langTable) {
+  #>
+  
+  let server_i18n_enable= get_server_i18n_enable();<#
+  }
+  #>
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1254,6 +1414,24 @@ pub async fn find_all(
   }<#
     }
   #><#
+  }
+  #><#
+  if (opts.langTable) {
+  #>
+  
+  let lang_sql = {
+    let mut lang_sql = String::new();
+    if server_i18n_enable {<#
+      for (let i = 0; i < langTableRecords.length; i++) {
+        const record = langTableRecords[i];
+        const column_name = record.COLUMN_NAME;
+      #>
+      lang_sql += ",<#=opts.langTable.opts.table_name#>.<#=column_name#> <#=column_name#>_lang";<#
+      }
+      #>
+    }
+    lang_sql
+  };<#
   }
   #>
   
@@ -1378,6 +1556,11 @@ pub async fn find_all(
   #><#
   }
   #><#
+  }
+  #><#
+  if (opts.langTable) {
+  #>
+  {lang_sql}<#
   }
   #>
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
@@ -2673,7 +2856,57 @@ pub async fn set_id_by_lbl(
       }
     }
   #><#
-    if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
+    if (column.dict || column.dictbiz) {
+      let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+      Column_Up = Column_Up.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const enumColumnName = Table_Up + Column_Up;
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dict;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
+  #>
+  
+  // <#=column_comment#>
+  if
+    input.<#=column_name#>_lbl.is_some() && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty()
+    && input.<#=column_name_rust#>.is_none()
+  {
+    let <#=column_name#>_dict = &dict_vec[<#=dictNumMap[column_name]#>];
+    let dict_model = <#=column_name#>_dict.iter().find(|item| {
+      item.lbl == input.<#=column_name#>_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.<#=column_name_rust#> = val<#
+        if (columnDictModels.length > 0 && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+      #>.parse::<<#=enumColumnName#>>()?<#
+        } else if ([ "int" ].includes(data_type)) {
+      #>.parse::<u32>()?<#
+        } else if ([ "decimal" ].includes(data_type)) {
+      #>.parse::<rust_decimal::Decimal>()?<#
+        } else if ([ "tinyint" ].includes(data_type)) {
+      #>.parse::<u8>()?<#
+        }
+      #>.into();
+    }
+  } else if
+    (input.<#=column_name#>_lbl.is_none() || input.<#=column_name#>_lbl.as_ref().unwrap().is_empty())
+    && input.<#=column_name_rust#>.is_some()
+  {
+    let <#=column_name#>_dict = &dict_vec[<#=dictNumMap[column_name]#>];
+    let dict_model = <#=column_name#>_dict.iter().find(|item| {
+      item.val == input.<#=column_name_rust#>.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.<#=column_name#>_lbl = lbl;
+  }<#
+    } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
   #>
   
   // <#=column_comment#>
@@ -2708,6 +2941,35 @@ pub async fn set_id_by_lbl(
     #>
     if let Some(model) = model {
       input.<#=column_name_rust#> = model.id.into();
+    }
+  } else if
+    (input.<#=column_name#>_<#=foreignKey.lbl#>.is_none() || input.<#=column_name#>_<#=foreignKey.lbl#>.as_ref().unwrap().is_empty())
+    && input.<#=column_name_rust#>.is_some()
+  {<#
+    if (foreignTableUp !== tableUP) {
+    #>
+    let <#=foreignTable#>_model = <#=daoStr#>find_one(
+      crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
+        id: input.<#=column_name_rust#>.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;<#
+    } else {
+    #>
+    let <#=foreignTable#>_model = <#=daoStr#>find_one(
+      <#=tableUP#>Search {
+        id: input.<#=column_name_rust#>.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;<#
+    }
+    #>
+    if let Some(<#=foreignTable#>_model) = <#=foreignTable#>_model {
+      input.<#=column_name#>_<#=foreignKey.lbl#> = <#=foreignTable#>_model.<#=rustKeyEscape(foreignKey.lbl)#>.into();
     }
   }<#
     } else if (foreignKey && (foreignKey.type === "many2many" || foreignKey.multiple) && foreignKey.lbl && !foreignKey.notSetIdByLbl) {
@@ -2908,7 +3170,11 @@ async fn _creates(
   let mut ids2: Vec<<#=Table_Up#>Id> = vec![];
   let mut inputs2: Vec<<#=tableUP#>Input> = vec![];
   
-  for input in inputs {
+  for input in inputs<#
+  if (opts.langTable) {
+  #>.clone()<#
+  }
+  #> {
   
     if input.id.is_some() {
       return Err(anyhow!("Can not set id when create in dao: {table}"));
@@ -3462,6 +3728,13 @@ async fn _creates(
   if affected_rows != inputs2_len as u64 {
     return Err(anyhow!("affectedRows: {affected_rows} != {inputs2_len}"));
   }<#
+  if (opts.langTable) {
+  #>
+  for input in inputs.iter() {
+    refresh_lang_by_input(input, options.clone()).await?;
+  }<#
+  }
+  #><#
   let hasMany2manyInputs2 = false;
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -3846,6 +4119,205 @@ pub async fn get_editable_data_permits_by_ids(
   Ok(editable_data_permits)
 }<#
 }
+#><#
+if (opts.langTable) {
+#>
+
+#[allow(unused_variables)]
+async fn refresh_lang_by_input(
+  input: &<#=tableUP#>Input,
+  options: Option<Options>,
+) -> Result<()> {
+  
+  if input.id.is_none() || input.id.as_ref().unwrap().is_empty() {
+    return Err(anyhow!("refresh_lang_by_input: input.id is empty"));
+  }
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
+  if !server_i18n_enable {
+    return Ok(());
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
+    const is_nullable = column.IS_NULLABLE === "YES";
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const ForeighTableUp = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    const modelLabel = column.modelLabel;
+    if (!modelLabel) continue;
+    if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
+      continue;
+    }
+    let foreignSchema = undefined;
+    const foreignLangTableRecords = [ ];
+    if (foreignKey) {
+      foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
+      for (let i = 0; i < (foreignSchema.opts.langTable?.records?.length || 0); i++) {
+        const record = foreignSchema.opts.langTable.records[i];
+        const column_name = record.COLUMN_NAME;
+        if (
+          langTableExcludeArr.includes(column_name)
+        ) continue;
+        foreignLangTableRecords.push(record);
+      }
+    }
+  #>
+  
+  // <#=column_comment#>
+  {
+    #[derive(Serialize, Deserialize, sqlx::FromRow)]
+    struct ResultTmp {
+      lang_id: String,
+      <#=foreignKey.lbl#>: String,
+    }
+    #[derive(Serialize, Deserialize, sqlx::FromRow)]
+    struct ResultTmp2 {
+      lang_id: String,
+      <#=modelLabel#>: String,
+    }
+    let sql = "select lang_id,<#=foreignKey.lbl#> from <#=foreignSchema.opts.langTable.opts.table_name#> where <#=foreignTable#>_id=?".to_owned();
+    let mut args = QueryArgs::new();
+    args.push(input.<#=column_name#>.clone().into());
+    let models = query::<ResultTmp>(
+      sql,
+      args.into(),
+      options.clone(),
+    ).await?;
+    for model in models {
+      let sql = "select id,<#=modelLabel#> from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?";
+      let mut args = QueryArgs::new();
+      args.push(model.lang_id.into());
+      args.push(input.id.clone().unwrap_or_default().into());
+      let lang_model = query_one::<ResultTmp2>(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+      let lang_id: Option<LangId> = lang_model.map(|item| item.lang_id.unwrap_or_default()).into();
+      if lang_id.is_none() {
+        let lang_sql = "insert into <#=opts.langTable.opts.table_name#>(id,lang_id,<#=table#>_id,<#=modelLabel#>)values(?,?,?,?)".to_owned();
+        let mut lang_args = QueryArgs::new();
+        let id: LangId = get_short_uuid().into();
+        lang_args.push(id.into());
+        lang_args.push(model.lang_id.into());
+        lang_args.push(input.id.clone().unwrap_or_default().into());
+        lang_args.push(model.<#=foreignKey.lbl#>.into());
+        execute(
+          lang_sql,
+          lang_args.into(),
+          options.clone(),
+        ).await?;
+        continue;
+      }
+      let lang_id = lang_id.unwrap();
+      let lang_model = lang_model.unwrap();
+      if lang_model.<#=modelLabel#> != model.<#=foreignKey.lbl#> {
+        let lang_sql = "update <#=opts.langTable.opts.table_name#> set <#=modelLabel#>=? where id=?";
+        let mut lang_args = QueryArgs::new();
+        lang_args.push(model.<#=foreignKey.lbl#>.into());
+        lang_args.push(lang_id.into());
+        execute(
+          lang_sql,
+          lang_args.into(),
+          options.clone(),
+        ).await?;
+      }
+    }
+  }<#
+  }
+  #>
+  #[derive(Serialize, Deserialize, sqlx::FromRow)]
+  struct ResultTmp {
+    id: String,
+  }
+  let lang_sql = "select id from <#=opts.langTable.opts.table_name#> where lang_id=? and <#=table#>_id=?".to_owned();
+  let mut lang_args = QueryArgs::new();
+  lang_args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
+  lang_args.push(input.id.clone().unwrap_or_default().clone().into());
+  let model = query_one::<ResultTmp>(
+    lang_sql,
+    lang_args.into(),
+    options.clone(),
+  ).await?;
+  let lang_id: Option<LangId> = model.map(|item| item.id).map(|item| item.into());
+  if let Some(lang_id) = lang_id {
+    let mut lang_sql = "update <#=opts.langTable.opts.table_name#> set ".to_owned();
+    let mut lang_args = QueryArgs::new();<#
+    for (let i = 0; i < langTableRecords.length; i++) {
+      const record = langTableRecords[i];
+      const column_name = record.COLUMN_NAME;
+      const column_comment = record.COLUMN_COMMENT || "";
+    #>
+    // <#=column_comment#>
+    if input.<#=column_name#>.is_some() {
+      lang_sql += "{column_name}=?,";
+      lang_args.push(input.<#=column_name#>.clone().unwrap_or_default().into());
+    }<#
+    }
+    #>
+    lang_sql.pop();
+    lang_sql += " where id=?";
+    lang_args.push(lang_id.into());
+    execute(
+      lang_sql,
+      lang_args.into(),
+      options.clone(),
+    ).await?;
+  } else {
+    let mut sql_fields: Vec<String> = vec![];
+    let mut lang_args = QueryArgs::new();
+    let id: LangId = get_short_uuid().into();
+    lang_args.push(id.into());
+    lang_args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
+    lang_args.push(input.id.clone().unwrap_or_default().clone().into());<#
+    for (let i = 0; i < langTableRecords.length; i++) {
+      const record = langTableRecords[i];
+      const column_name = record.COLUMN_NAME;
+      const column_comment = record.COLUMN_COMMENT || "";
+    #>
+    // <#=column_comment#>
+    if input.<#=column_name#>.is_some() {
+      sql_fields.push("<#=column_name#>".to_owned());
+      lang_args.push(input.<#=column_name#>.clone().unwrap_or_default().into());
+    }<#
+    }
+    #>
+    let mut lang_sql = "insert into <#=opts.langTable.opts.table_name#>(id,lang_id,<#=table#>_id".to_owned();
+    let sql_fields_len = sql_fields.len();
+    for sql_field in sql_fields {
+      lang_sql += ",";
+      lang_sql += sql_field.as_str();
+    }
+    lang_sql += ")values(?,?,?";
+    for _ in 0..sql_fields_len {
+      lang_sql += ",?";
+    }
+    lang_sql += ")";
+    execute(
+      lang_sql,
+      lang_args.into(),
+      options.clone(),
+    ).await?;
+  }
+  
+  Ok(())
+}<#
+}
 #>
 
 /// 根据 id 修改<#=table_comment#>
@@ -3866,7 +4338,13 @@ pub async fn update_by_id(
   let is_silent_mode = get_is_silent_mode(options.as_ref());<#
   }
   #>
-  let is_creating = get_is_creating(options.as_ref());
+  let is_creating = get_is_creating(options.as_ref());<#
+  if (opts.langTable) {
+  #>
+  
+  let server_i18n_enable = get_server_i18n_enable();<#
+  }
+  #>
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -3997,6 +4475,19 @@ pub async fn update_by_id(
     &input,
   )?;<#
   }
+  #><#
+  if (opts.langTable) {
+  #>
+  
+  if server_i18n_enable {
+    let mut input = input.clone();
+    input.id = Some(id.clone());
+    refresh_lang_by_input(
+      &input,
+      options.clone(),
+    ).await?;
+  }<#
+  }
   #>
   
   {
@@ -4081,9 +4572,19 @@ pub async fn update_by_id(
   // <#=column_comment#>
   if let Some(<#=modelLabel#>) = input.<#=modelLabel#> {
     if !<#=modelLabel#>.is_empty() {
-      field_num += 1;
+      field_num += 1;<#
+      if (!langTableRecords.some((item) => item.COLUMN_NAME === modelLabel)) {
+      #>
       sql_fields += "<#=modelLabel#>=?,";
-      args.push(<#=modelLabel#>.into());
+      args.push(<#=modelLabel#>.into());<#
+      } else {
+      #>
+      if !server_i18n_enable {
+        sql_fields += "<#=modelLabel#>=?,";
+        args.push(<#=modelLabel#>.into());
+      }<#
+      }
+      #>
     }
   }<#
     }
@@ -4139,9 +4640,19 @@ pub async fn update_by_id(
   #>
   // <#=column_comment#>
   if let Some(<#=column_name_rust#>) = input.<#=column_name_rust#> {
-    field_num += 1;
+    field_num += 1;<#
+      if (!langTableRecords.some((item) => item.COLUMN_NAME === column_name)) {
+    #>
     sql_fields += "<#=column_name_mysql#>=?,";
-    args.push(<#=column_name_rust#>.into());
+    args.push(<#=column_name_rust#>.into());<#
+      } else {
+    #>
+    if !server_i18n_enable {
+      sql_fields += "<#=column_name_mysql#>=?,";
+      args.push(<#=column_name_rust#>.into());
+    }<#
+      }
+    #>
   }<#
   }
   #><#
@@ -4168,9 +4679,19 @@ pub async fn update_by_id(
   #>
   // <#=column_comment#>
   if let Some(<#=rustKeyEscape(val)#>) = input.<#=rustKeyEscape(val)#> {
-    field_num += 1;
+    field_num += 1;<#
+      if (!langTableRecords.some((item) => item.COLUMN_NAME === val)) {
+    #>
     sql_fields += "<#=val_mysql#>=?,";
-    args.push(<#=rustKeyEscape(val)#>.into());
+    args.push(<#=rustKeyEscape(val)#>.into());<#
+      } else {
+    #>
+    if !server_i18n_enable {
+      sql_fields += "<#=val_mysql#>=?,";
+      args.push(<#=rustKeyEscape(val)#>.into());
+    }<#
+      }
+    #>
   }<#
     }
   #><#
@@ -4765,7 +5286,12 @@ pub async fn delete_by_ids(
   let is_debug = get_is_debug(options.as_ref());
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
-  let is_creating = get_is_creating(options.as_ref());
+  let is_creating = get_is_creating(options.as_ref());<#
+  if (opts.langTable) {
+  #>
+  let server_i18n_enable = get_server_i18n_enable();<#
+  }
+  #>
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -4987,6 +5513,28 @@ pub async fn delete_by_ids(
       args,
       options.clone(),
     ).await?;<#
+    if (opts.langTable) {
+    #>
+    
+    if server_i18n_enable {<#
+      if (hasIsDeleted) {
+      #>
+      let sql = "update <#=opts.langTable.opts.table_name#> set is_deleted=1 where <#=table#>_id=?".to_owned();<#
+      } else {
+      #>
+      let sql = "delete from <#=opts.langTable.opts.table_name#> where <#=table#>_id=?".to_owned();<#
+      }
+      #>
+      let mut args = QueryArgs::new();
+      args.push(id.clone().into());
+      execute(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+    }<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -5620,7 +6168,12 @@ pub async fn revert_by_ids(
   let table = "<#=mod#>_<#=table#>";
   let method = "revert_by_ids";
   
-  let is_debug = get_is_debug(options.as_ref());
+  let is_debug = get_is_debug(options.as_ref());<#
+  if (opts.langTable) {
+  #>
+  let server_i18n_enable = get_server_i18n_enable();<#
+  }
+  #>
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -5731,6 +6284,21 @@ pub async fn revert_by_ids(
       args,
       options.clone(),
     ).await?;<#
+    if (opts.langTable) {
+    #>
+    
+    if server_i18n_enable {
+      let sql = "update <#=opts.langTable.opts.table_name#> set is_deleted=0 where <#=table#>_id=?".to_owned();
+      let mut args = QueryArgs::new();
+      args.push(id.clone().into());
+      execute(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+    }<#
+    }
+    #><#
     let has_many2many_no_cascade_delete_revert = false;
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -5964,7 +6532,12 @@ pub async fn force_delete_by_ids(
   
   let is_debug = get_is_debug(options.as_ref());
   
-  let is_silent_mode = get_is_silent_mode(options.as_ref());
+  let is_silent_mode = get_is_silent_mode(options.as_ref());<#
+  if (opts.langTable) {
+  #>
+  let server_i18n_enable = get_server_i18n_enable();<#
+  }
+  #>
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -6060,6 +6633,21 @@ pub async fn force_delete_by_ids(
       args,
       options.clone(),
     ).await?;<#
+    if (opts.langTable) {
+    #>
+    
+    if server_i18n_enable {
+      let sql = "delete from <#=opts.langTable.opts.table_name#> where <#=table#>_id=?".to_owned();
+      let mut args = QueryArgs::new();
+      args.push(id.clone().into());
+      execute(
+        sql,
+        args.into(),
+        options.clone(),
+      ).await?;
+    }<#
+    }
+    #><#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
