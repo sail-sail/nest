@@ -248,6 +248,9 @@ pub struct LoginLogSearch {
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id_lbl: Option<Vec<String>>,
+  /// 创建人
+  #[graphql(skip)]
+  pub create_usr_id_lbl_like: Option<String>,
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id: Option<Vec<UsrId>>,
@@ -257,6 +260,9 @@ pub struct LoginLogSearch {
   /// 更新人
   #[graphql(skip)]
   pub update_usr_id_lbl: Option<Vec<String>>,
+  /// 更新人
+  #[graphql(skip)]
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,

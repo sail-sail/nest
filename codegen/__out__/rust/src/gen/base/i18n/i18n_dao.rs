@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -41,6 +43,7 @@ use crate::common::gql::model::{
   PageInput,
   SortInput,
 };
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::i18n_model::*;
 use crate::gen::base::lang::lang_model::LangId;
@@ -233,7 +236,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(code) = code {
-      where_query.push_str(" and t.code = ?");
+      where_query.push_str(" and t.code=?");
       args.push(code.into());
     }
     let code_like = match search {
@@ -252,7 +255,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query.push_str(" and t.lbl = ?");
+      where_query.push_str(" and t.lbl=?");
       args.push(lbl.into());
     }
     let lbl_like = match search {
@@ -271,7 +274,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      where_query.push_str(" and t.rem = ?");
+      where_query.push_str(" and t.rem=?");
       args.push(rem.into());
     }
     let rem_like = match search {
@@ -337,6 +340,16 @@ async fn get_where_query(
       where_query.push_str(" and t.create_usr_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
     }
   }
   // 创建时间
@@ -411,6 +424,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -438,6 +461,9 @@ async fn get_from_query(
   search: Option<&I18nSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
   let from_query = r#"base_i18n t
   left join base_lang lang_id_lbl on lang_id_lbl.id=t.lang_id
   left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id"#.to_owned();
@@ -1174,6 +1200,21 @@ pub async fn set_id_by_lbl(
     if let Some(model) = model {
       input.lang_id = model.id.into();
     }
+  } else if
+    (input.lang_id_lbl.is_none() || input.lang_id_lbl.as_ref().unwrap().is_empty())
+    && input.lang_id.is_some()
+  {
+    let lang_model = crate::gen::base::lang::lang_dao::find_one(
+      crate::gen::base::lang::lang_model::LangSearch {
+        id: input.lang_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(lang_model) = lang_model {
+      input.lang_id_lbl = lang_model.lbl.into();
+    }
   }
   
   // 菜单
@@ -1194,6 +1235,21 @@ pub async fn set_id_by_lbl(
     ).await?;
     if let Some(model) = model {
       input.menu_id = model.id.into();
+    }
+  } else if
+    (input.menu_id_lbl.is_none() || input.menu_id_lbl.as_ref().unwrap().is_empty())
+    && input.menu_id.is_some()
+  {
+    let menu_model = crate::gen::base::menu::menu_dao::find_one(
+      crate::gen::base::menu::menu_model::MenuSearch {
+        id: input.menu_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(menu_model) = menu_model {
+      input.menu_id_lbl = menu_model.lbl.into();
     }
   }
   

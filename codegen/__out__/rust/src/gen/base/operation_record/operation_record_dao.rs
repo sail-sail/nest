@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -41,6 +43,7 @@ use crate::common::gql::model::{
   PageInput,
   SortInput,
 };
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::operation_record_model::*;
 
@@ -121,7 +124,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(module) = module {
-      where_query.push_str(" and t.module = ?");
+      where_query.push_str(" and t.module=?");
       args.push(module.into());
     }
     let module_like = match search {
@@ -140,7 +143,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(module_lbl) = module_lbl {
-      where_query.push_str(" and t.module_lbl = ?");
+      where_query.push_str(" and t.module_lbl=?");
       args.push(module_lbl.into());
     }
     let module_lbl_like = match search {
@@ -159,7 +162,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(method) = method {
-      where_query.push_str(" and t.method = ?");
+      where_query.push_str(" and t.method=?");
       args.push(method.into());
     }
     let method_like = match search {
@@ -178,7 +181,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(method_lbl) = method_lbl {
-      where_query.push_str(" and t.method_lbl = ?");
+      where_query.push_str(" and t.method_lbl=?");
       args.push(method_lbl.into());
     }
     let method_lbl_like = match search {
@@ -197,7 +200,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query.push_str(" and t.lbl = ?");
+      where_query.push_str(" and t.lbl=?");
       args.push(lbl.into());
     }
     let lbl_like = match search {
@@ -233,7 +236,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(old_data) = old_data {
-      where_query.push_str(" and t.old_data = ?");
+      where_query.push_str(" and t.old_data=?");
       args.push(old_data.into());
     }
     let old_data_like = match search {
@@ -252,7 +255,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(new_data) = new_data {
-      where_query.push_str(" and t.new_data = ?");
+      where_query.push_str(" and t.new_data=?");
       args.push(new_data.into());
     }
     let new_data_like = match search {
@@ -318,6 +321,16 @@ async fn get_where_query(
       where_query.push_str(" and t.create_usr_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
     }
   }
   // 操作时间
@@ -392,6 +405,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -419,6 +442,9 @@ async fn get_from_query(
   search: Option<&OperationRecordSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
   let from_query = r#"base_operation_record t"#.to_owned();
   Ok(from_query)
 }

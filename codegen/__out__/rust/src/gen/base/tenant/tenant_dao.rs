@@ -1,4 +1,6 @@
 #[allow(unused_imports)]
+use serde::{Serialize, Deserialize};
+#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
@@ -49,10 +51,12 @@ use crate::common::gql::model::{
 };
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::tenant_model::*;
 use crate::gen::base::domain::domain_model::DomainId;
 use crate::gen::base::menu::menu_model::MenuId;
+use crate::gen::base::lang::lang_model::LangId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
@@ -66,7 +70,7 @@ async fn get_where_query(
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
-  let mut where_query = String::with_capacity(80 * 14 * 2);
+  let mut where_query = String::with_capacity(80 * 15 * 2);
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
   {
@@ -109,7 +113,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query.push_str(" and t.lbl = ?");
+      where_query.push_str(" and t.lbl=?");
       args.push(lbl.into());
     }
     let lbl_like = match search {
@@ -187,6 +191,72 @@ async fn get_where_query(
       where_query.push_str(" and t.menu_ids is null");
     }
   }
+  // 语言
+  {
+    let lang_id: Option<Vec<LangId>> = match search {
+      Some(item) => item.lang_id.clone(),
+      None => None,
+    };
+    if let Some(lang_id) = lang_id {
+      let arg = {
+        if lang_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(lang_id.len());
+          for item in lang_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.lang_id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let lang_id_is_null: bool = match search {
+      Some(item) => item.lang_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if lang_id_is_null {
+      where_query.push_str(" and t.lang_id is null");
+    }
+  }
+  {
+    let lang_id_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.lang_id_lbl.clone(),
+      None => None,
+    };
+    if let Some(lang_id_lbl) = lang_id_lbl {
+      let arg = {
+        if lang_id_lbl.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(lang_id_lbl.len());
+          for item in lang_id_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and lang_id_lbl.lbl in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let lang_id_lbl_like = match search {
+      Some(item) => item.lang_id_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(lang_id_lbl_like) = lang_id_lbl_like {
+      where_query.push_str(" and lang_id_lbl.lbl like ?");
+      args.push(format!("%{}%", sql_like(&lang_id_lbl_like)).into());
+    }
+  }
   // 锁定
   {
     let is_locked: Option<Vec<u8>> = match search {
@@ -259,7 +329,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      where_query.push_str(" and t.rem = ?");
+      where_query.push_str(" and t.rem=?");
       args.push(rem.into());
     }
     let rem_like = match search {
@@ -325,6 +395,16 @@ async fn get_where_query(
       where_query.push_str(" and t.create_usr_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+    {
+      let create_usr_id_lbl_like = match search {
+        Some(item) => item.create_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
+        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+      }
     }
   }
   // 创建时间
@@ -399,6 +479,16 @@ async fn get_where_query(
       where_query.push_str(&arg);
       where_query.push(')');
     }
+    {
+      let update_usr_id_lbl_like = match search {
+        Some(item) => item.update_usr_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
+        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+      }
+    }
   }
   // 更新时间
   {
@@ -426,9 +516,13 @@ async fn get_from_query(
   search: Option<&TenantSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
+  
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
+  
   let from_query = r#"base_tenant t
   left join base_tenant_domain on base_tenant_domain.tenant_id=t.id and base_tenant_domain.is_deleted=?
   left join base_domain on base_tenant_domain.domain_id=base_domain.id and base_domain.is_deleted=?
@@ -445,13 +539,11 @@ async fn get_from_query(
   base_tenant.id tenant_id from base_tenant_menu
   inner join base_menu on base_menu.id=base_tenant_menu.menu_id
   inner join base_tenant on base_tenant.id=base_tenant_menu.tenant_id where base_tenant_menu.is_deleted=?
-  group by tenant_id) _menu on _menu.tenant_id=t.id"#.to_owned();
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
-  args.push(is_deleted.into());
+  group by tenant_id) _menu on _menu.tenant_id=t.id
+  left join base_lang lang_id_lbl on lang_id_lbl.id=t.lang_id"#.to_owned();
+  for _ in 0..6 {
+    args.push(is_deleted.into());
+  }
   Ok(from_query)
 }
 
@@ -526,6 +618,22 @@ pub async fn find_all(
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
         return Err(anyhow!("search.menu_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 语言
+  if let Some(search) = &search {
+    if search.lang_id.is_some() {
+      let len = search.lang_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.lang_id.length > {ids_limit}"));
       }
     }
   }
@@ -633,6 +741,7 @@ pub async fn find_all(
   ,max(domain_ids_lbl) domain_ids_lbl
   ,max(menu_ids) menu_ids
   ,max(menu_ids_lbl) menu_ids_lbl
+  ,lang_id_lbl.lbl lang_id_lbl
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -771,6 +880,8 @@ pub async fn get_field_comments(
     "所属域名".into(),
     "菜单权限".into(),
     "菜单权限".into(),
+    "语言".into(),
+    "语言".into(),
     "锁定".into(),
     "锁定".into(),
     "启用".into(),
@@ -806,20 +917,22 @@ pub async fn get_field_comments(
     domain_ids_lbl: vec[3].to_owned(),
     menu_ids: vec[4].to_owned(),
     menu_ids_lbl: vec[5].to_owned(),
-    is_locked: vec[6].to_owned(),
-    is_locked_lbl: vec[7].to_owned(),
-    is_enabled: vec[8].to_owned(),
-    is_enabled_lbl: vec[9].to_owned(),
-    order_by: vec[10].to_owned(),
-    rem: vec[11].to_owned(),
-    create_usr_id: vec[12].to_owned(),
-    create_usr_id_lbl: vec[13].to_owned(),
-    create_time: vec[14].to_owned(),
-    create_time_lbl: vec[15].to_owned(),
-    update_usr_id: vec[16].to_owned(),
-    update_usr_id_lbl: vec[17].to_owned(),
-    update_time: vec[18].to_owned(),
-    update_time_lbl: vec[19].to_owned(),
+    lang_id: vec[6].to_owned(),
+    lang_id_lbl: vec[7].to_owned(),
+    is_locked: vec[8].to_owned(),
+    is_locked_lbl: vec[9].to_owned(),
+    is_enabled: vec[10].to_owned(),
+    is_enabled_lbl: vec[11].to_owned(),
+    order_by: vec[12].to_owned(),
+    rem: vec[13].to_owned(),
+    create_usr_id: vec[14].to_owned(),
+    create_usr_id_lbl: vec[15].to_owned(),
+    create_time: vec[16].to_owned(),
+    create_time_lbl: vec[17].to_owned(),
+    update_usr_id: vec[18].to_owned(),
+    update_usr_id_lbl: vec[19].to_owned(),
+    update_time: vec[20].to_owned(),
+    update_time_lbl: vec[21].to_owned(),
   };
   Ok(field_comments)
 }
@@ -1341,6 +1454,92 @@ pub async fn set_id_by_lbl(
       .into();
   }
   
+  // 语言
+  if input.lang_id_lbl.is_some()
+    && !input.lang_id_lbl.as_ref().unwrap().is_empty()
+    && input.lang_id.is_none()
+  {
+    input.lang_id_lbl = input.lang_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = crate::gen::base::lang::lang_dao::find_one(
+      crate::gen::base::lang::lang_model::LangSearch {
+        lbl: input.lang_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(model) = model {
+      input.lang_id = model.id.into();
+    }
+  } else if
+    (input.lang_id_lbl.is_none() || input.lang_id_lbl.as_ref().unwrap().is_empty())
+    && input.lang_id.is_some()
+  {
+    let lang_model = crate::gen::base::lang::lang_dao::find_one(
+      crate::gen::base::lang::lang_model::LangSearch {
+        id: input.lang_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(lang_model) = lang_model {
+      input.lang_id_lbl = lang_model.lbl.into();
+    }
+  }
+  
+  // 锁定
+  if
+    input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
+    && input.is_locked.is_none()
+  {
+    let is_locked_dict = &dict_vec[0];
+    let dict_model = is_locked_dict.iter().find(|item| {
+      item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_locked = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
+    && input.is_locked.is_some()
+  {
+    let is_locked_dict = &dict_vec[0];
+    let dict_model = is_locked_dict.iter().find(|item| {
+      item.val == input.is_locked.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_locked_lbl = lbl;
+  }
+  
+  // 启用
+  if
+    input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
+    && input.is_enabled.is_none()
+  {
+    let is_enabled_dict = &dict_vec[1];
+    let dict_model = is_enabled_dict.iter().find(|item| {
+      item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_enabled = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
+    && input.is_enabled.is_some()
+  {
+    let is_enabled_dict = &dict_vec[1];
+    let dict_model = is_enabled_dict.iter().find(|item| {
+      item.val == input.is_enabled.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_enabled_lbl = lbl;
+  }
+  
   Ok(input)
 }
 
@@ -1440,7 +1639,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1451,6 +1650,8 @@ async fn _creates(
   sql_fields += ",update_usr_id_lbl";
   // 名称
   sql_fields += ",lbl";
+  // 语言
+  sql_fields += ",lang_id";
   // 锁定
   sql_fields += ",is_locked";
   // 启用
@@ -1463,7 +1664,7 @@ async fn _creates(
   sql_fields += ",is_sys";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 14 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 15 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1583,6 +1784,13 @@ async fn _creates(
     if let Some(lbl) = input.lbl {
       sql_values += ",?";
       args.push(lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 语言
+    if let Some(lang_id) = input.lang_id {
+      sql_values += ",?";
+      args.push(lang_id.into());
     } else {
       sql_values += ",default";
     }
@@ -1845,7 +2053,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   let mut field_num: usize = 0;
   // 名称
@@ -1853,6 +2061,12 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
+  }
+  // 语言
+  if let Some(lang_id) = input.lang_id {
+    field_num += 1;
+    sql_fields += "lang_id=?,";
+    args.push(lang_id.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {

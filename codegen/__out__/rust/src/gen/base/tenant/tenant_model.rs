@@ -30,6 +30,7 @@ use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 use crate::gen::base::domain::domain_model::DomainId;
 use crate::gen::base::menu::menu_model::MenuId;
+use crate::gen::base::lang::lang_model::LangId;
 use crate::gen::base::usr::usr_model::UsrId;
 
 lazy_static! {
@@ -65,6 +66,12 @@ pub struct TenantModel {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: Vec<String>,
+  /// 语言
+  #[graphql(name = "lang_id")]
+  pub lang_id: LangId,
+  /// 语言
+  #[graphql(name = "lang_id_lbl")]
+  pub lang_id_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -193,6 +200,10 @@ impl FromRow<'_, MySqlRow> for TenantModel {
         )
         .collect::<Vec<String>>()
     };
+    // 语言
+    let lang_id: LangId = row.try_get("lang_id")?;
+    let lang_id_lbl: Option<String> = row.try_get("lang_id_lbl")?;
+    let lang_id_lbl = lang_id_lbl.unwrap_or_default();
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -235,6 +246,8 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       domain_ids_lbl,
       menu_ids,
       menu_ids_lbl,
+      lang_id,
+      lang_id_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -277,6 +290,12 @@ pub struct TenantFieldComment {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: String,
+  /// 语言
+  #[graphql(name = "lang_id")]
+  pub lang_id: String,
+  /// 语言
+  #[graphql(name = "lang_id_lbl")]
+  pub lang_id_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: String,
@@ -348,6 +367,18 @@ pub struct TenantSearch {
   /// 菜单权限
   #[graphql(name = "menu_ids_save_null")]
   pub menu_ids_is_null: Option<bool>,
+  /// 语言
+  #[graphql(name = "lang_id")]
+  pub lang_id: Option<Vec<LangId>>,
+  /// 语言
+  #[graphql(name = "lang_id_save_null")]
+  pub lang_id_is_null: Option<bool>,
+  /// 语言
+  #[graphql(name = "lang_id_lbl")]
+  pub lang_id_lbl: Option<Vec<String>>,
+  /// 语言
+  #[graphql(name = "lang_id_lbl_like")]
+  pub lang_id_lbl_like: Option<String>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -372,6 +403,9 @@ pub struct TenantSearch {
   /// 创建人
   #[graphql(name = "create_usr_id_lbl")]
   pub create_usr_id_lbl: Option<Vec<String>>,
+  /// 创建人
+  #[graphql(name = "create_usr_id_lbl_like")]
+  pub create_usr_id_lbl_like: Option<String>,
   /// 创建时间
   #[graphql(skip)]
   pub create_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -384,6 +418,9 @@ pub struct TenantSearch {
   /// 更新人
   #[graphql(name = "update_usr_id_lbl")]
   pub update_usr_id_lbl: Option<Vec<String>>,
+  /// 更新人
+  #[graphql(name = "update_usr_id_lbl_like")]
+  pub update_usr_id_lbl_like: Option<String>,
   /// 更新时间
   #[graphql(skip)]
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
@@ -417,6 +454,13 @@ impl std::fmt::Debug for TenantSearch {
     // 菜单权限
     if let Some(ref menu_ids) = self.menu_ids {
       item = item.field("menu_ids", menu_ids);
+    }
+    // 语言
+    if let Some(ref lang_id) = self.lang_id {
+      item = item.field("lang_id", lang_id);
+    }
+    if let Some(ref lang_id_is_null) = self.lang_id_is_null {
+      item = item.field("lang_id_is_null", lang_id_is_null);
     }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
@@ -490,6 +534,12 @@ pub struct TenantInput {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: Option<Vec<String>>,
+  /// 语言
+  #[graphql(name = "lang_id")]
+  pub lang_id: Option<LangId>,
+  /// 语言
+  #[graphql(name = "lang_id_lbl")]
+  pub lang_id_lbl: Option<String>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -554,6 +604,9 @@ impl From<TenantModel> for TenantInput {
       // 菜单权限
       menu_ids: model.menu_ids.into(),
       menu_ids_lbl: model.menu_ids_lbl.into(),
+      // 语言
+      lang_id: model.lang_id.into(),
+      lang_id_lbl: model.lang_id_lbl.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -594,6 +647,8 @@ impl From<TenantInput> for TenantSearch {
       domain_ids: input.domain_ids,
       // 菜单权限
       menu_ids: input.menu_ids,
+      // 语言
+      lang_id: input.lang_id.map(|x| vec![x]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用

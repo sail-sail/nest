@@ -127,12 +127,15 @@ export async function get_lang_code() {
 
 /** 获取当前语言ID */
 export async function get_lang_id() {
+  const context = useMaybeContext();
+  if (context?.lang_id) {
+    return context.lang_id;
+  }
   const lang = await get_lang_code();
   type Result = {
     id: LangId;
   }
   const res = await queryOne<Result>("select id from base_lang where code=?", [ lang ]);
-  const context = useMaybeContext();
   if (!context) {
     return res?.id;
   }
