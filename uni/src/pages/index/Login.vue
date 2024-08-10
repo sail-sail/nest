@@ -191,7 +191,6 @@ async function setOldLoginModel() {
         }
       }
       model = res.data;
-      model.lang = model.lang || lang;
       if (!tenants.some((item) => item.id === model.tenant_id)) {
         model.tenant_id = tenants[0]?.id;
       }

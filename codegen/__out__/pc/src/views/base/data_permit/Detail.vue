@@ -88,7 +88,7 @@
               :props="{
                 label: 'lbl',
                 children: 'children',
-                disabled: function(item: MenuModel) {
+                disabled: function(item: TreeNodeData) {
                   return !item.route_path;
                 },
               }"
