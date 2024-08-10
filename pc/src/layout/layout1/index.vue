@@ -355,6 +355,7 @@ const {
 
 const route = useRoute();
 
+const indexStore = useIndexStore();
 const tabsStore = useTabsStore();
 const permitStore = usePermitStore();
 const usrStore = useUsrStore();
@@ -527,6 +528,9 @@ async function onClearCache() {
   } catch (err) {
     return;
   }
+  indexStore.i18n_version = null;
+  localStorage.removeItem("__i18n_version");
+  localStorage.removeItem("i18nLblsLang");
   await clearCache();
   window.location.reload();
 }
