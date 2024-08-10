@@ -9,7 +9,7 @@
     un-top="0"
     un-right="0"
     un-text="transparent"
-    @click="clearCacheClk"
+    @click="onClearCache"
   >
     {{ ns("清空缓存") }}
   </div>
@@ -340,7 +340,10 @@ async function initI18nEfc() {
   ]);
 }
 
-async function clearCacheClk() {
+async function onClearCache() {
+  indexStore.i18n_version = null;
+  localStorage.removeItem("__i18n_version");
+  localStorage.removeItem("i18nLblsLang");
   await clearCache();
   ElMessage.success({
     message: "清空缓存成功",
