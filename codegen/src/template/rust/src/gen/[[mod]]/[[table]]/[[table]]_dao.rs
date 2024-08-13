@@ -576,11 +576,16 @@ async fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&<#=tableUP#>Search>,
   options: Option<&Options>,
-) -> Result<String> {
+) -> Result<String> {<#
+  if (opts.langTable) {
+  #>
   
   let server_i18n_enable = get_server_i18n_enable();<#
+  }
+  #><#
   if (hasIsDeleted) {
   #>
+  
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);<#
@@ -605,9 +610,11 @@ async fn get_where_query(
     .any(|item| item.scope == DataPermitScope::Tenant);<#
   }
   #>
+  
   let mut where_query = String::with_capacity(80 * <#=columns.length#> * 2);<#
   if (hasIsDeleted) {
   #>
+  
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());<#
   }
