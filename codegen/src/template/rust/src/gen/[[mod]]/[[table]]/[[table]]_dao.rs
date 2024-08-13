@@ -576,7 +576,9 @@ async fn get_where_query(
   args: &mut QueryArgs,
   search: Option<&<#=tableUP#>Search>,
   options: Option<&Options>,
-) -> Result<String> {<#
+) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();<#
   if (hasIsDeleted) {
   #>
   let is_deleted = search
@@ -914,9 +916,11 @@ async fn get_where_query(
       where_query.push_str(" and (t.<#=modelLabel#> in (");
       where_query.push_str(&arg);
       where_query.push(')');
-      where_query.push_str(" or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
+      if server_i18n_enable {
+        where_query.push_str(" or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in (");
+        where_query.push_str(&arg);
+        where_query.push(')');
+      }
       where_query.push(')');
     }<#
     }
@@ -933,10 +937,15 @@ async fn get_where_query(
         args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());<#
         } else {
         #>
-        where_query.push_str(" and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ? or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ?)");
-        let like_str = format!("%{}%", sql_like(&<#=modelLabel#>_like));
-        args.push(like_str.as_str().into());
-        args.push(like_str.as_str().into());<#
+        if server_i18n_enable {
+          where_query.push_str(" and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ? or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ?)");
+          let like_str = format!("%{}%", sql_like(&<#=modelLabel#>_like));
+          args.push(like_str.as_str().into());
+          args.push(like_str.as_str().into());
+        } else {
+          where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
+          args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());
+        }<#
         }
         #>
       }
@@ -1123,9 +1132,14 @@ async fn get_where_query(
       args.push(<#=column_name_rust#>.into());<#
       } else {
       #>
-      where_query.push_str(" and (t.<#=column_name#>=? or <#=opts.langTable.opts.table_name#>.<#=column_name#>=?)");
-      args.push(<#=column_name_rust#>.as_str().into());
-      args.push(<#=column_name_rust#>.as_str().into());<#
+      if server_i18n_enable {
+        where_query.push_str(" and (t.<#=column_name#>=? or <#=opts.langTable.opts.table_name#>.<#=column_name#>=?)");
+        args.push(<#=column_name_rust#>.as_str().into());
+        args.push(<#=column_name_rust#>.as_str().into());
+      } else {
+        where_query.push_str(" and t.<#=column_name#>=?");
+        args.push(<#=column_name_rust#>.into());
+      }<#
       }
       #>
     }
@@ -1140,10 +1154,15 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&<#=column_name#>_like)).into());<#
       } else {
       #>
-      where_query.push_str(" and (t.<#=column_name#> like ? or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ?)");
-      let like_str = format!("%{}%", sql_like(&<#=column_name#>_like));
-      args.push(like_str.as_str().into());
-      args.push(like_str.as_str().into());<#
+      if server_i18n_enable {
+        where_query.push_str(" and (t.<#=column_name#> like ? or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ?)");
+        let like_str = format!("%{}%", sql_like(&<#=column_name#>_like));
+        args.push(like_str.as_str().into());
+        args.push(like_str.as_str().into());
+      } else {
+        where_query.push_str(" and t.<#=column_name#> like ?");
+        args.push(format!("%{}%", sql_like(&<#=column_name#>_like)).into());
+      }<#
       }
       #>
     }
@@ -1163,9 +1182,14 @@ async fn get_where_query(
       args.push(<#=column_name_rust#>.into());<#
       } else {
       #>
-      where_query.push_str(" and (t.<#=column_name#>=? or <#=opts.langTable.opts.table_name#>.<#=column_name#>=?)");
-      args.push(<#=column_name_rust#>.as_str().into());
-      args.push(<#=column_name_rust#>.as_str().into());<#
+      if server_i18n_enable {
+        where_query.push_str(" and (t.<#=column_name#>=? or <#=opts.langTable.opts.table_name#>.<#=column_name#>=?)");
+        args.push(<#=column_name_rust#>.as_str().into());
+        args.push(<#=column_name_rust#>.as_str().into());
+      } else {
+        where_query.push_str(" and t.<#=column_name#>=?");
+        args.push(<#=column_name_rust#>.into());
+      }<#
       }
       #>
     }

@@ -62,6 +62,8 @@ async fn get_where_query(
   search: Option<&MenuSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
@@ -176,19 +178,29 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      where_query.push_str(" and (t.lbl=? or base_menu_lang.lbl=?)");
-      args.push(lbl.as_str().into());
-      args.push(lbl.as_str().into());
+      if server_i18n_enable {
+        where_query.push_str(" and (t.lbl=? or base_menu_lang.lbl=?)");
+        args.push(lbl.as_str().into());
+        args.push(lbl.as_str().into());
+      } else {
+        where_query.push_str(" and t.lbl=?");
+        args.push(lbl.into());
+      }
     }
     let lbl_like = match search {
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
-      where_query.push_str(" and (t.lbl like ? or base_menu_lang.lbl like ?)");
-      let like_str = format!("%{}%", sql_like(&lbl_like));
-      args.push(like_str.as_str().into());
-      args.push(like_str.as_str().into());
+      if server_i18n_enable {
+        where_query.push_str(" and (t.lbl like ? or base_menu_lang.lbl like ?)");
+        let like_str = format!("%{}%", sql_like(&lbl_like));
+        args.push(like_str.as_str().into());
+        args.push(like_str.as_str().into());
+      } else {
+        where_query.push_str(" and t.lbl like ?");
+        args.push(format!("%{}%", sql_like(&lbl_like)).into());
+      }
     }
   }
   // 路由
@@ -301,19 +313,29 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      where_query.push_str(" and (t.rem=? or base_menu_lang.rem=?)");
-      args.push(rem.as_str().into());
-      args.push(rem.as_str().into());
+      if server_i18n_enable {
+        where_query.push_str(" and (t.rem=? or base_menu_lang.rem=?)");
+        args.push(rem.as_str().into());
+        args.push(rem.as_str().into());
+      } else {
+        where_query.push_str(" and t.rem=?");
+        args.push(rem.into());
+      }
     }
     let rem_like = match search {
       Some(item) => item.rem_like.clone(),
       None => None,
     };
     if let Some(rem_like) = rem_like {
-      where_query.push_str(" and (t.rem like ? or base_menu_lang.rem like ?)");
-      let like_str = format!("%{}%", sql_like(&rem_like));
-      args.push(like_str.as_str().into());
-      args.push(like_str.as_str().into());
+      if server_i18n_enable {
+        where_query.push_str(" and (t.rem like ? or base_menu_lang.rem like ?)");
+        let like_str = format!("%{}%", sql_like(&rem_like));
+        args.push(like_str.as_str().into());
+        args.push(like_str.as_str().into());
+      } else {
+        where_query.push_str(" and t.rem like ?");
+        args.push(format!("%{}%", sql_like(&rem_like)).into());
+      }
     }
   }
   // 创建人

@@ -11,6 +11,8 @@ pub struct GetLoginTenants {
   pub id: TenantId,
   /// 名称
   pub lbl: String,
+  /// 语言
+  pub lang: String,
 }
 
 /// 设置租户管理员密码
