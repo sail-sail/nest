@@ -1295,7 +1295,7 @@ pub async fn set_id_by_lbl(
   {
     let errcode_dict = &dict_vec[0];
     let dict_model = errcode_dict.iter().find(|item| {
-      item.val == input.errcode.unwrap_or_default().to_string()
+      item.val == input.errcode.clone().unwrap_or_default()
     });
     let lbl = dict_model.map(|item| item.lbl.to_string());
     input.errcode_lbl = lbl;
