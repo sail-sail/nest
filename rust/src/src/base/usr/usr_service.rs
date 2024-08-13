@@ -30,6 +30,16 @@ use crate::gen::base::usr::usr_model::{
   UsrSearch,
 };
 
+// 租户
+use crate::gen::base::tenant::tenant_dao::{
+  find_by_id as find_by_id_tenant,
+  validate_option as validate_option_tenant,
+  validate_is_enabled as validate_is_enabled_tenant,
+};
+
+// 语言
+use crate::gen::base::lang::lang_dao::find_by_id as find_by_id_lang;
+
 use super::usr_model::{
   LoginInput,
   GetLoginInfo,
@@ -64,7 +74,6 @@ pub async fn login(
     password,
     tenant_id,
     org_id,
-    lang,
   } = input;
   if username.is_empty() || password.is_empty() {
     let err_msg = n_route.n(
@@ -80,6 +89,32 @@ pub async fn login(
     ).await?;
     return Err(anyhow::anyhow!(err_msg));
   }
+  
+  // 获取租户
+  let tenant_model = validate_option_tenant(
+    find_by_id_tenant(
+      tenant_id.clone(),
+      None,
+    ).await?
+  ).await?;
+  
+  validate_is_enabled_tenant(
+    &tenant_model,
+  ).await?;
+  
+  let lang_id = tenant_model.lang_id;
+  
+  // 获取语言
+  let lang_model = find_by_id_lang(
+    lang_id.clone(),
+    None,
+  ).await?;
+  
+  let lang = lang_model.map_or(
+    "zh-CN".to_owned(),
+    |lang_model| lang_model.code,
+  );
+  
   // 最近10分钟内密码错误6次, 此用户名锁定10分钟
   let now = get_now();
   let begin: NaiveDateTime = now - Duration::minutes(10);

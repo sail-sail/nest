@@ -28,6 +28,8 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   let mut args = QueryArgs::new();
   
+  args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
+  
   let mut where_query = String::new();
   
   let tenant_id = get_auth_tenant_id();
@@ -86,7 +88,6 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
       and t.is_enabled=1
       {where_query}"#,
   );
-  args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
   
   let args = args.into();
   

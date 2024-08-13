@@ -59,6 +59,8 @@ async fn get_where_query(
   search: Option<&OptionsSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
+  
+  let server_i18n_enable = get_server_i18n_enable();
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);

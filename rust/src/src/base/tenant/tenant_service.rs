@@ -25,6 +25,9 @@ use crate::gen::base::tenant::tenant_dao::{
   validate_option as validate_option_tenant,
 };
 
+// 语言
+use crate::gen::base::lang::lang_dao::find_by_id as find_by_id_lang;
+
 // 用户
 use crate::gen::base::usr::usr_dao::{
   find_one as find_one_usr,
@@ -133,13 +136,26 @@ pub async fn get_login_tenants(
     ).await?;
   }
   
-  let res: Vec<GetLoginTenants> = tenant_models
-    .into_iter()
-    .map(|item| GetLoginTenants {
-      id: item.id,
-      lbl: item.lbl,
-    })
-    .collect();
+  let mut res: Vec<GetLoginTenants> = vec![];
+  
+  for tenant_model in tenant_models {
+    
+    let lang_model = find_by_id_lang(
+      tenant_model.lang_id.clone(),
+      None,
+    ).await?;
+    
+    let lang = lang_model
+      .map(|x| x.code)
+      .unwrap_or_else(|| "zh-CN".to_owned());
+    
+    res.push(GetLoginTenants {
+      id: tenant_model.id,
+      lbl: tenant_model.lbl,
+      lang,
+    });
+    
+  }
   
   Ok(res)
 }

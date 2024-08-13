@@ -22,7 +22,8 @@ impl FromRow<'_, MySqlRow> for GetMenus {
     let parent_id: String = row.try_get("parent_id")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    let lbl_lang: String = row.try_get("lbl_lang")?;
+    let lbl_lang: Option<String> = row.try_get("lbl_lang")?;
+    let lbl_lang = lbl_lang.unwrap_or_default();
     let route_path: String = row.try_get("route_path")?;
     let route_query: String = row.try_get("route_query")?;
     let order_by: u32 = row.try_get("order_by")?;
