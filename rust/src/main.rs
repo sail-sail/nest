@@ -117,9 +117,20 @@ async fn main() -> Result<(), std::io::Error> {
     let file_path = "src/common/gql/schema.graphql";
     let schema = schema.sdl();
     let mut is_equal = true;
-    let file = std::fs::File::open(file_path).unwrap();
-    let metadata = file.metadata().unwrap();
-    let size = metadata.len();
+    let file = std::fs::File::open(file_path).ok();
+    let size = {
+      if file.is_none() {
+        0
+      } else {
+        let file = file.unwrap();
+        let metadata = file.metadata().ok();
+        if metadata.is_none() {
+          0
+        } else {
+          metadata.unwrap().len()
+        }
+      }
+    };
     if size != schema.len() as u64 {
       is_equal = false;
     } else {
