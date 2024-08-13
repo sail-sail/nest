@@ -47,6 +47,8 @@
     "**/.eslintrc-auto-import.json": true,
     "**/.npmrc": true
   },
+  "git.timeline.showUncommitted": true,
+  "scm.showHistoryGraph": false,
   "typescript.inlayHints.parameterTypes.enabled": false,
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
