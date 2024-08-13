@@ -2925,7 +2925,15 @@ pub async fn set_id_by_lbl(
   {
     let <#=column_name#>_dict = &dict_vec[<#=dictNumMap[column_name]#>];
     let dict_model = <#=column_name#>_dict.iter().find(|item| {
-      item.val == input.<#=column_name_rust#>.unwrap_or_default().to_string()
+      item.val == input.<#=column_name_rust#><#
+        if (columnDictModels.length === 0 && [ "varchar", "char", "text" ].includes(data_type)) {
+      #>.clone()<#
+        }
+      #>.unwrap_or_default()<#
+        if (columnDictModels.length > 0 || ![ "varchar", "char", "text" ].includes(data_type)) {
+      #>.to_string()<#
+        }
+      #>
     });
     let lbl = dict_model.map(|item| item.lbl.to_string());
     input.<#=column_name#>_lbl = lbl;
