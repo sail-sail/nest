@@ -23,8 +23,6 @@ pub struct LoginInput {
   pub tenant_id: TenantId,
   /// 组织ID
   pub org_id: Option<OrgId>,
-  /// 语言
-  pub lang: String,
 }
 
 #[derive(InputObject, Clone, Default, Serialize, Deserialize, Debug)]

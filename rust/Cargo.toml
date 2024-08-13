@@ -19,13 +19,13 @@ futures-util = "0.3"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
-tokio = { version = "1.38", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
-poem = { version = "3.0.1", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "tokio-metrics", "websocket"], default-features = false }
+tokio = { version = "1.39", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
+poem = { version = "3.0.4", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "tokio-metrics", "websocket"], default-features = false }
 async-graphql = { version = "7.0.7", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str"] }
 smol_str = { version = "0.2", features = ["serde"] }
 slab = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
-lazy_static = "1.4"
+lazy_static = "1.5"
 anyhow = "1.0"
 sqlx = { version = "0.7.4", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15"
@@ -49,8 +49,8 @@ smallvec = { version = "1.13", features = ["union", "serde"] }
 # downcast-rs = "1.2"
 uuid = { version = "1.10", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12"
-deadpool-redis = "0.15"
-redis = { version = "0.25", features = ["tokio-comp"], default-features = false }
+deadpool-redis = "0.16"
+redis = { version = "0.26", features = ["tokio-comp"], default-features = false }
 # pin-project = "1.1"
 bigdecimal = "0.4"
 time = "0.3"
@@ -61,8 +61,7 @@ rust_decimal_macros = "1.34"
 # rayon = "1.10"
 regex = "1.10"
 # yarte = "0.15"
-image = { version = "0.25.1", features = ["webp"] }
-# o2o = "0.4"
+image = { version = "0.25.2", features = ["webp"] }
 delay_timer = "0.11.6"
 num-traits = "0.2"
 fast_chemail = "0.9"
