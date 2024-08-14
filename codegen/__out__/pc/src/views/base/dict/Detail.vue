@@ -156,9 +156,6 @@
           v-model="inlineForeignTabLabel"
           class="el-flex-tabs"
           type="card"
-          un-flex="~ [1_0_0] col"
-          un-overflow-hidden
-          un-w="full"
         >
           
           <el-tab-pane

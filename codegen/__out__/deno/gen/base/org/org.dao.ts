@@ -90,6 +90,7 @@ async function getWhereQuery(
   options?: {
   },
 ): Promise<string> {
+  
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   
