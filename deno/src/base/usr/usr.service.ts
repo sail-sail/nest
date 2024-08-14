@@ -198,7 +198,14 @@ export async function getLoginInfo() {
     throw await ns("用户不存在");
   }
   const org_ids = usr_model.org_ids || [ ];
-  const orgModels = await findAllOrg();
+  const orgModels = await findAllOrg(
+    undefined,
+    undefined,
+    undefined,
+    {
+      is_debug: false,
+    },
+  );
   const org_id_models: { id: OrgId, lbl: string }[] = [ ];
   for (let i = 0; i < orgModels.length; i++) {
     const orgModel = orgModels[i];
