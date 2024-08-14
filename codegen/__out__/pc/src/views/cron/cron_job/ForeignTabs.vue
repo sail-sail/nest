@@ -19,13 +19,11 @@
         v-model="tabName"
         type="card"
         class="el-flex-tabs"
-        un-flex="~ [1_0_0] col"
-        un-w="full"
       >
       
-      <template
-        v-if="tabGroup === 'lbl'"
-      >
+        <template
+          v-if="tabGroup === 'lbl'"
+        >
         
           <el-tab-pane
             :label="'任务执行日志' + (cron_job_log_total != null ? ` (${ cron_job_log_total })` : '')"
