@@ -19,13 +19,11 @@
         v-model="tabName"
         type="card"
         class="el-flex-tabs"
-        un-flex="~ [1_0_0] col"
-        un-w="full"
       >
       
-      <template
-        v-if="tabGroup === 'exec_state'"
-      >
+        <template
+          v-if="tabGroup === 'exec_state'"
+        >
         
           <el-tab-pane
             :label="'任务执行日志明细' + (cron_job_log_detail_total != null ? ` (${ cron_job_log_detail_total })` : '')"
