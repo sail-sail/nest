@@ -41,6 +41,8 @@
     "**/.npmrc": true,
     "cache": true
   },
+  "git.timeline.showUncommitted": true,
+  "scm.showHistoryGraph": false,
   "deno.enable": false,
   "css.validate": false,
   "less.validate": false,

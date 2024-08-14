@@ -94,6 +94,9 @@ async function getWhereQuery(
   options?: {
   },
 ): Promise<string> {
+  
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
+  
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
@@ -109,10 +112,18 @@ async function getWhereQuery(
     whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
   }
   if (search?.lbl != null) {
-    whereQuery += ` and (t.lbl=${ args.push(search.lbl) } or base_dict_lang.lbl=${ args.push(search.lbl) })`;
+    if (server_i18n_enable) {
+      whereQuery += ` and (t.lbl=${ args.push(search.lbl) } or base_dict_lang.lbl=${ args.push(search.lbl) })`;
+    } else {
+      whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
+    }
   }
   if (isNotEmpty(search?.lbl_like)) {
-    whereQuery += ` and (t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") } or base_dict_lang.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") })`;
+    if (server_i18n_enable) {
+      whereQuery += ` and (t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") } or base_dict_lang.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") })`;
+    } else {
+      whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
+    }
   }
   if (search?.type != null) {
     whereQuery += ` and t.type in ${ args.push(search.type) }`;
@@ -132,10 +143,18 @@ async function getWhereQuery(
     }
   }
   if (search?.rem != null) {
-    whereQuery += ` and (t.rem=${ args.push(search.rem) } or base_dict_lang.rem=${ args.push(search.rem) })`;
+    if (server_i18n_enable) {
+      whereQuery += ` and (t.rem=${ args.push(search.rem) } or base_dict_lang.rem=${ args.push(search.rem) })`;
+    } else {
+      whereQuery += ` and t.rem=${ args.push(search.rem) }`;
+    }
   }
   if (isNotEmpty(search?.rem_like)) {
-    whereQuery += ` and (t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") } or base_dict_lang.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") })`;
+    if (server_i18n_enable) {
+      whereQuery += ` and (t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") } or base_dict_lang.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") })`;
+    } else {
+      whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
+    }
   }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;

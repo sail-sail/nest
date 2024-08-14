@@ -676,9 +676,6 @@ const old_table = table;
           v-model="inlineForeignTabLabel"
           class="el-flex-tabs"
           type="card"
-          un-flex="~ [1_0_0] col"
-          un-overflow-hidden
-          un-w="full"
         ><#
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
@@ -1701,9 +1698,6 @@ const old_table = table;
           v-model="inlineMany2manyTabLabel"
           class="el-flex-tabs"
           type="card"
-          un-flex="~ [1_0_0] col"
-          un-overflow-hidden
-          un-w="full"
         ><#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
