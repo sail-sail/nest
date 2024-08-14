@@ -318,13 +318,15 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 // flex布局的el-tabs
 .el-tabs.el-flex-tabs.el-tabs {
-  display: flex;
-  flex-direction: column;
+  flex: 1 0 0;
+  overflow: hidden;
+  width: 100%;
   .el-tabs__header {
     margin: 0;
   }
   .el-tabs__content, .el-tab-pane {
     flex: 1 0 0;
+    overflow: auto;
     display: flex;
     flex-direction: column;
   }

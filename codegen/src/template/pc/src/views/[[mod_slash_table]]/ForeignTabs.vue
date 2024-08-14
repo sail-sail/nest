@@ -25,8 +25,6 @@ const foreignTabsDialogType = columns.find((item) => item.foreignTabs?.length > 
         v-model="tabName"
         type="card"
         class="el-flex-tabs"
-        un-flex="~ [1_0_0] col"
-        un-w="full"
       ><#
       for (let ic = 0; ic < columns.length; ic++) {
         const column = columns[ic];
@@ -35,9 +33,9 @@ const foreignTabsDialogType = columns.find((item) => item.foreignTabs?.length > 
         const column_name = column.COLUMN_NAME;
       #>
       
-      <template
-        v-if="tabGroup === '<#=column_name#>'"
-      ><#
+        <template
+          v-if="tabGroup === '<#=column_name#>'"
+        ><#
         for (let im = 0; im < foreignTabs.length; im++) {
           const item = foreignTabs[im];
           const itemTable = item.table;
