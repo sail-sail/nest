@@ -80,6 +80,7 @@ export async function getLoginInfo(
         getLoginInfo {
           lbl
           lang
+          username
           org_id
           org_id_models {
             id
