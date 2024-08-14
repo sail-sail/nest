@@ -45,6 +45,8 @@
     "**/.npmrc": true,
     "public/ejsexcel.min.js": true
   },
+  "git.timeline.showUncommitted": true,
+  "scm.showHistoryGraph": false,
   "deno.enable": false,
   "css.validate": false,
   "less.validate": false,
@@ -57,5 +59,8 @@
   "typescript.updateImportsOnFileMove.enabled": "never",
   "unocss.root": "",
   "unocss.colorPreview": false,
+  "terminal.integrated.env.windows": {
+    "VUE_EDITOR": "code"
+  },
   "files.eol": "\n"
 }
