@@ -19,13 +19,11 @@
         v-model="tabName"
         type="card"
         class="el-flex-tabs"
-        un-flex="~ [1_0_0] col"
-        un-w="full"
       >
       
-      <template
-        v-if="tabGroup === 'code'"
-      >
+        <template
+          v-if="tabGroup === 'code'"
+        >
         
           <el-tab-pane
             :label="'系统字典明细' + (dict_detail_total != null ? ` (${ dict_detail_total })` : '')"
