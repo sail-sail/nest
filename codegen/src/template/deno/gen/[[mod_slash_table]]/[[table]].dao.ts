@@ -694,7 +694,14 @@ async function getWhereQuery(
     }
     #>
   },
-): Promise<string> {
+): Promise<string> {<#
+  if (opts.langTable) {
+  #>
+  
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
+  }
+  #>
+  
   let whereQuery = "";<#
   if (hasIsDeleted) {
   #>
@@ -799,7 +806,11 @@ async function getWhereQuery(
     whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;<#
     } else {
     #>
-    whereQuery += ` and (t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) })`;<#
+    if (server_i18n_enable) {
+      whereQuery += ` and (t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) })`;
+    } else {
+      whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;
+    }<#
     }
     #>
   }
@@ -809,7 +820,11 @@ async function getWhereQuery(
     whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;<#
     } else {
     #>
-    whereQuery += ` and (t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") })`;<#
+    if (server_i18n_enable) {
+      whereQuery += ` and (t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") })`;
+    } else {
+      whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;
+    }<#
     }
     #>
   }<#
@@ -888,7 +903,11 @@ async function getWhereQuery(
     whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;<#
     } else {
     #>
-    whereQuery += ` and (t.<#=column_name#>=${ args.push(search.<#=column_name#>) } or <#=opts.langTable.opts.table_name#>.<#=column_name#>=${ args.push(search.<#=column_name#>) })`;<#
+    if (server_i18n_enable) {
+      whereQuery += ` and (t.<#=column_name#>=${ args.push(search.<#=column_name#>) } or <#=opts.langTable.opts.table_name#>.<#=column_name#>=${ args.push(search.<#=column_name#>) })`;
+    } else {
+      whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;
+    }<#
     }
     #>
   }
@@ -898,7 +917,11 @@ async function getWhereQuery(
     whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;<#
     } else {
     #>
-    whereQuery += ` and (t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") })`;<#
+    if (server_i18n_enable) {
+      whereQuery += ` and (t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") })`;
+    } else {
+      whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;
+    }<#
     }
     #>
   }<#
