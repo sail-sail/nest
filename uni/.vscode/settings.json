@@ -47,12 +47,17 @@
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true
   },
+  "git.timeline.showUncommitted": true,
+  "scm.showHistoryGraph": false,
   "deno.enable": false,
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
   "unocss.root": "",
   "unocss.colorPreview": false,
+  "terminal.integrated.env.windows": {
+    "VUE_EDITOR": "code"
+  },
   "npm.registry": "https://registry.npmmirror.com",
   "npm.updateStrategy": "LATEST",
   "editor.quickSuggestionsDelay": 0,
