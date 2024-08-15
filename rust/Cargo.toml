@@ -29,7 +29,7 @@ lazy_static = "1.5"
 anyhow = "1.0"
 sqlx = { version = "0.8.0", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15"
-rust-s3 = { version = "0.35.0-alpha.3" }
+rust-s3 = { version = "0.35.0-alpha.3", features = ["tokio-rustls-tls"], default-features = false }
 imstr = { version = "0.2", features = ["serde"] }
 jwt = "0.16"
 sha2 = "0.10"
