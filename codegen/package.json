@@ -13,6 +13,7 @@
     "pwd": "ts-node src/util/npmPassword.ts",
     "permit": "cd ../pc && node src/utils/permit_scan.js",
     "upgrade": "ts-node src/util/npmUpgrade.ts",
+    "db_charset": "ts-node src/util/npmDbCharset.ts",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
