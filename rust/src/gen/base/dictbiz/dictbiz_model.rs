@@ -10,7 +10,9 @@ use serde::{Serialize, Deserialize};
 use anyhow::{Result,anyhow};
 
 use sqlx::encode::{Encode, IsNull};
+use sqlx::error::BoxDynError;
 use sqlx::MySql;
+use sqlx::mysql::MySqlValueRef;
 use smol_str::SmolStr;
 
 use sqlx::{
@@ -645,7 +647,7 @@ impl Deref for DictbizId {
 }
 
 impl Encode<'_, MySql> for DictbizId {
-  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> IsNull {
+  fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
     <&str as Encode<MySql>>::encode(self.as_str(), buf)
   }
   
@@ -666,8 +668,8 @@ impl sqlx::Type<MySql> for DictbizId {
 
 impl<'r> sqlx::Decode<'r, MySql> for DictbizId {
   fn decode(
-    value: <MySql as sqlx::database::HasValueRef>::ValueRef,
-  ) -> Result<Self, sqlx::error::BoxDynError> {
+    value: MySqlValueRef<'r>,
+  ) -> Result<Self, BoxDynError> {
     <&str as sqlx::Decode<MySql>>::decode(value).map(Self::from)
   }
 }
