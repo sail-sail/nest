@@ -85,8 +85,8 @@
     <div
       v-if="!props.readonly"
       un-absolute
-      un-right="-2"
-      un-top="-2"
+      un-right="0"
+      un-top="0"
       un-flex="~"
       un-justify-center
       un-items-center
