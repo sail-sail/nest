@@ -488,11 +488,11 @@ export function useSelect<T = any, Id = string>(
     if (!data || data.length === 0) {
       return;
     }
-    let idx = 0;
+    let idx = -1;
     if (selectedIds.length > 0) {
       idx = data.findIndex((item) => item.id === selectedIds[ selectedIds.length - 1 ]);
       if (idx === -1) {
-        idx = 0;
+        idx = -1;
       }
     }
     const hasMoveMap = new Map<Id, boolean>();
