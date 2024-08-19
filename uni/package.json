@@ -70,7 +70,7 @@
     "@dcloudio/uni-cli-shared": "3.0.0-4020420240722002",
     "@dcloudio/uni-stacktracey": "3.0.0-4020420240722002",
     "@dcloudio/vite-plugin-uni": "3.0.0-4020420240722002",
-    "@types/node": "22.3.0",
+    "@types/node": "22.4.0",
     "@uni-helper/uni-app-types": "1.0.0-alpha.3",
     "@unocss/preset-attributify": "0.62.2",
     "@vue-macros/reactivity-transform": "1.0.3",
