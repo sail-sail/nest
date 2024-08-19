@@ -18,7 +18,13 @@ const env = argv.env || "prod";
 
 const projectDir = `${ __dirname }/../../../../`;
 const buildDir = process.cwd() + "/../build/";
+// nr build-test -- --command uni
 const commands = (argv.command || "").split(",").filter((v) => v);
+
+if (commands.length > 0) {
+  console.log("commands", commands);
+}
+
 const projectName = ecosystem.apps[0].script.replace("./", "");
 
 const rustDir = projectDir + "/rust";
@@ -68,7 +74,7 @@ async function pc() {
 
 async function uni() {
   console.log("uni");
-  child_process.execSync("npm run build:h5", {
+  child_process.execSync(`npm run build:h5-${ env }`, {
     cwd: uniDir,
     stdio: "inherit",
   });
@@ -105,20 +111,30 @@ async function compile() {
   await copy(`${ cwd }/target/x86_64-unknown-linux-musl/release/${ projectName }`, `${ buildDir }/rust/${ projectName }`);
 }
 
-if (commands.length > 0) {
-  console.log("commands", commands);
+async function publish() {
+  console.log("publish");
+  child_process.execSync(`npm run publish --env=${ env } --command=${ commands.join(",") }`, {
+    cwd: `${ projectDir }/`,
+    stdio: "inherit",
+  });
+}
+
+await remove(buildDir);
+await mkdir(buildDir, { recursive: true });
+try {
+  await remove(buildDir + "/deno");
+} catch (err) {
 }
 
 (async function() {
+  
+  await codegen();
+  await gqlgen();
+  
   for (let i = 0; i < commands.length; i++) {
     const command = commands[i].trim();
-    if (command === "copyEnv") {
+    if (command === "rust") {
       await copyEnv();
-    } else if (command === "codegen") {
-      await codegen();
-    } else if (command === "gqlgen") {
-      await gqlgen();
-    } else if (command === "compile") {
       await compile();
     } else if (command === "pc") {
       await pc();
@@ -129,12 +145,6 @@ if (commands.length > 0) {
     }
   }
   if (commands.length === 0) {
-    await remove(buildDir);
-    await mkdir(buildDir, { recursive: true });
-    try {
-      await remove(buildDir + "/deno");
-    } catch (err) {
-    }
     await copyEnv();
     await codegen();
     await gqlgen();
@@ -144,5 +154,6 @@ if (commands.length > 0) {
     // await docs();
     process.exit(0);
   }
+  await publish();
 })();
 
