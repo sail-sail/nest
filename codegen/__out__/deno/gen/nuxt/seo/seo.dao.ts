@@ -219,6 +219,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找SEO优化总数 */
 export async function findCount(
   search?: Readonly<SeoSearch>,
@@ -265,11 +266,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找SEO优化列表
- * @param {SeoSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找SEO优化列表 */
 export async function findAll(
   search?: Readonly<SeoSearch>,
   page?: Readonly<PageInput>,
@@ -479,6 +477,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: SeoInput,
@@ -519,9 +518,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取SEO优化字段注释
- */
+// MARK: getFieldComments
+/** 获取SEO优化字段注释 */
 export async function getFieldComments(): Promise<SeoFieldComment> {
   const n = initN(route_path);
   const fieldComments: SeoFieldComment = {
@@ -550,10 +548,8 @@ export async function getFieldComments(): Promise<SeoFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得SEO优化列表
- * @param {SeoInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得SEO优化列表 */
 export async function findByUnique(
   search0: Readonly<SeoInput>,
   options?: {
@@ -609,6 +605,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 SEO优化 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<SeoInput>,
@@ -646,10 +643,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个SEO优化
- * @param {SeoSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一SEO优化 */
 export async function findOne(
   search?: Readonly<SeoSearch>,
   sort?: SortInput | SortInput[],
@@ -696,10 +691,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找SEO优化
- * @param {SeoId} id
- */
+// MARK: findById
+/** 根据 id 查找SEO优化 */
 export async function findById(
   id?: SeoId | null,
   options?: {
@@ -740,6 +733,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找SEO优化 */
 export async function findByIds(
   ids: SeoId[],
@@ -794,10 +788,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断SEO优化是否存在
- * @param {SeoSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断SEO优化是否存在 */
 export async function exist(
   search?: Readonly<SeoSearch>,
   options?: {
@@ -828,10 +820,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断SEO优化是否存在
- * @param {SeoId} id
- */
+// MARK: existById
+/** 根据id判断SEO优化是否存在 */
 export async function existById(
   id?: Readonly<SeoId | null>,
   options?: {
@@ -882,6 +872,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateOption
 /** 校验SEO优化是否存在 */
 export async function validateOption(
   model?: SeoModel,
@@ -894,10 +885,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * SEO优化增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** SEO优化增加和修改时校验输入 */
 export async function validate(
   input: Readonly<SeoInput>,
 ) {
@@ -975,6 +964,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 SEO优化 */
 export async function create(
   input: Readonly<SeoInput>,
@@ -1015,6 +1005,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 SEO优化 */
 export async function creates(
   inputs: SeoInput[],
@@ -1282,13 +1273,13 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.nuxt_seo`);
 }
 
+// MARK: updateTenantById
 /** SEO优化 根据 id 修改 租户id */
 export async function updateTenantById(
   id: SeoId,
@@ -1333,6 +1324,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
+// MARK: updateById
 /** 根据 id 修改 SEO优化 */
 export async function updateById(
   id: SeoId,
@@ -1559,6 +1551,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 SEO优化 */
 export async function deleteByIds(
   ids: SeoId[],
@@ -1636,6 +1629,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: defaultById
 /** 根据 id 设置默认SEO优化 */
 export async function defaultById(
   id: SeoId,
@@ -1668,6 +1662,7 @@ export async function defaultById(
   return num;
 }
 
+// MARK: getIsLockedById
 /** 根据 id 查找 SEO优化 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: SeoId,
@@ -1688,6 +1683,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 SEO优化 */
 export async function lockByIds(
   ids: SeoId[],
@@ -1734,6 +1730,7 @@ export async function lockByIds(
   return num;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 SEO优化 */
 export async function revertByIds(
   ids: SeoId[],
@@ -1810,6 +1807,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 SEO优化 */
 export async function forceDeleteByIds(
   ids: SeoId[],
@@ -1868,7 +1866,8 @@ export async function forceDeleteByIds(
   
   return num;
 }
-  
+
+// MARK: findLastOrderBy
 /** 查找 SEO优化 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
