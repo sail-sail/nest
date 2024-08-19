@@ -113,6 +113,15 @@ console.log(publishPath);
       cmd += ` ; rm -rf ${ publishPathTmp }`;
       cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
       cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
+      let data;
+      try {
+        data = await ssh.exec(cmd);
+      } catch (err) {
+        console.error(err);
+      }
+      if (data) {
+        console.log(data);
+      }
       continue;
     }
     if (cmd === "docs") {
@@ -120,6 +129,15 @@ console.log(publishPath);
       cmd += ` ; rm -rf ${ publishPath }/docs`;
       cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
       cmd += ` ; rm -rf ${ publishPathTmp }`;
+      let data;
+      try {
+        data = await ssh.exec(cmd);
+      } catch (err) {
+        console.error(err);
+      }
+      if (data) {
+        console.log(data);
+      }
       continue;
     }
     if (cmd === "pc") {
@@ -127,6 +145,15 @@ console.log(publishPath);
       cmd += ` ; rm -rf ${ publishPath }/pc`;
       cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
       cmd += ` ; rm -rf ${ publishPathTmp }`;
+      let data;
+      try {
+        data = await ssh.exec(cmd);
+      } catch (err) {
+        console.error(err);
+      }
+      if (data) {
+        console.log(data);
+      }
       continue;
     }
     if (cmd === "uni") {
@@ -134,6 +161,15 @@ console.log(publishPath);
       cmd += ` ; rm -rf ${ publishPath }/uni`;
       cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
       cmd += ` ; rm -rf ${ publishPathTmp }`;
+      let data;
+      try {
+        data = await ssh.exec(cmd);
+      } catch (err) {
+        console.error(err);
+      }
+      if (data) {
+        console.log(data);
+      }
       continue;
     }
     console.error(`未知命令: ${ cmd }`);
