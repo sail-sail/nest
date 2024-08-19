@@ -14,7 +14,12 @@ program
   .parse(envArgs);
 
 const options = program.opts();
-const env = options.env || "prod";
+const env = options.env;
+
+if (!env) {
+  console.error("请指定环境参数 --env dev, test, prod");
+  process.exit(1);
+}
 
 const commands = (options.command || "").split(",").filter((item) => item);
 
