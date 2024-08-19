@@ -548,6 +548,7 @@ async fn get_from_query(
   Ok(from_query)
 }
 
+// MARK: find_all
 /// 根据搜索条件和分页查找企微应用接口凭据列表
 #[allow(unused_mut)]
 pub async fn find_all(
@@ -690,6 +691,7 @@ pub async fn find_all(
   Ok(res)
 }
 
+// MARK: find_count
 /// 根据条件查找企微应用接口凭据总数
 pub async fn find_count(
   search: Option<WxwAppTokenSearch>,
@@ -763,6 +765,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
   }
 }
 
+// MARK: get_field_comments
 /// 获取企微应用接口凭据字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
@@ -838,6 +841,7 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
+// MARK: find_one
 /// 根据条件查找第一个企微应用接口凭据
 pub async fn find_one(
   search: Option<WxwAppTokenSearch>,
@@ -894,6 +898,7 @@ pub async fn find_one(
   Ok(model)
 }
 
+// MARK: find_by_id
 /// 根据 id 查找企微应用接口凭据
 pub async fn find_by_id(
   id: WxwAppTokenId,
@@ -939,6 +944,7 @@ pub async fn find_by_id(
   Ok(res)
 }
 
+// MARK: find_by_ids
 /// 根据 ids 查找企微应用接口凭据
 #[allow(dead_code)]
 pub async fn find_by_ids(
@@ -1009,6 +1015,7 @@ pub async fn find_by_ids(
   Ok(models)
 }
 
+// MARK: exists
 /// 根据搜索条件判断企微应用接口凭据是否存在
 #[allow(dead_code)]
 pub async fn exists(
@@ -1047,6 +1054,7 @@ pub async fn exists(
   Ok(total > 0)
 }
 
+// MARK: exists_by_id
 /// 根据 id 判断企微应用接口凭据是否存在
 #[allow(dead_code)]
 pub async fn exists_by_id(
@@ -1088,6 +1096,7 @@ pub async fn exists_by_id(
   Ok(res)
 }
 
+// MARK: find_by_unique
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
 pub async fn find_by_unique(
@@ -1202,6 +1211,7 @@ pub fn equals_by_unique(
   false
 }
 
+// MARK: check_by_unique
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
 pub async fn check_by_unique(
@@ -1273,6 +1283,7 @@ pub async fn check_by_unique(
   Ok(None)
 }
 
+// MARK: set_id_by_lbl
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl(
@@ -1387,6 +1398,7 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
+// MARK: creates
 /// 批量创建企微应用接口凭据
 pub async fn creates(
   inputs: Vec<WxwAppTokenInput>,
@@ -1757,6 +1769,7 @@ async fn _creates(
   Ok(ids2)
 }
 
+// MARK: create
 /// 创建企微应用接口凭据
 #[allow(dead_code)]
 pub async fn create(
@@ -1795,6 +1808,7 @@ pub async fn create(
   Ok(id)
 }
 
+// MARK: update_tenant_by_id
 /// 企微应用接口凭据根据id修改租户id
 pub async fn update_tenant_by_id(
   id: WxwAppTokenId,
@@ -1840,6 +1854,7 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
+// MARK: update_by_id
 /// 根据 id 修改企微应用接口凭据
 #[allow(unused_mut)]
 pub async fn update_by_id(
@@ -2153,6 +2168,7 @@ fn get_cache_tables() -> Vec<&'static str> {
   ]
 }
 
+// MARK: del_cache
 /// 清空缓存
 #[allow(dead_code)]
 pub async fn del_cache() -> Result<()> {
@@ -2163,6 +2179,7 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
+// MARK: delete_by_ids
 /// 根据 ids 删除企微应用接口凭据
 #[allow(unused_variables)]
 pub async fn delete_by_ids(
@@ -2289,6 +2306,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
+// MARK: revert_by_ids
 /// 根据 ids 还原企微应用接口凭据
 pub async fn revert_by_ids(
   ids: Vec<WxwAppTokenId>,
@@ -2397,6 +2415,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
+// MARK: force_delete_by_ids
 /// 根据 ids 彻底删除企微应用接口凭据
 #[allow(unused_variables)]
 pub async fn force_delete_by_ids(
@@ -2484,6 +2503,7 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
+// MARK: validate_option
 /// 校验企微应用接口凭据是否存在
 #[allow(dead_code)]
 pub async fn validate_option<T>(
