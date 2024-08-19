@@ -10,10 +10,17 @@ const envArgs = process.argv;
 const program = new Command();
 program
   .option('--env [value]', '执行环境dev, test, prod')
+  .option('--command [value]', '执行命令 deno,nuxt,docs,pc,uni')
   .parse(envArgs);
 
 const options = program.opts();
 const env = options.env || "prod";
+
+const commands = (options.command || "").split(",").filter((item) => item);
+
+if (commands.length > 0) {
+  console.log("publish-commands: ", commands);
+}
 
 const projectName = ecosystem.apps[0].name.replaceAll("{env}", env);
 console.log("projectName: " + projectName);
@@ -55,6 +62,8 @@ console.log(publishPath);
     console.error(err);
   }
   
+  let num = 0;
+  console.log("已上传文件数: ");
   const treeDir = async function(dir) {
     const files = await fs.readdir(`${ buildPath }/${ dir }`);
     for (let i = 0; i < files.length; i++) {
@@ -68,32 +77,114 @@ console.log(publishPath);
         }
         await treeDir(`/${ dir }/${ file }`);
       } else {
+        num++;
         await sftp.fastPut(`${ buildPath }/${ dir }/${ file }`, `${ publishPathTmp }/${ dir }/${ file }`);
+        if (num % 20 === 0) {
+          console.log(num);
+        }
       }
     }
   };
   await treeDir("");
   
-  try {
-    let cmd = "";
-    cmd += `rm -rf ${ publishPath }/docs`;
-    cmd += ` ; pm2 stop ${ projectName }`;
-    cmd += ` ; rm -rf ${ publishPath }/pc`
-    cmd += ` ; rm -rf ${ publishPath }/deno`
-    cmd += ` ; rm -rf ${ publishPath }/uni`
-    cmd += ` ; mkdir -p ${ publishPath }`;
-    cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
-    cmd += ` ; rm -rf ${ publishPathTmp }`;
-    cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
-    cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
-    data = await ssh.exec(cmd);
-  } catch (err) {
-    console.error(err);
+  if (commands.length === 0) {
+    try {
+      let cmd = "";
+      cmd += `rm -rf ${ publishPath }/docs`;
+      cmd += ` ; pm2 stop ${ projectName }`;
+      cmd += ` ; rm -rf ${ publishPath }/pc`
+      cmd += ` ; rm -rf ${ publishPath }/deno`
+      cmd += ` ; rm -rf ${ publishPath }/uni`
+      cmd += ` ; mkdir -p ${ publishPath }`;
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
+      cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
+      data = await ssh.exec(cmd);
+    } catch (err) {
+      console.error(err);
+    }
+    
+    if (data) {
+      console.log(data);
+    }
   }
   
-  if (data) {
-    console.log(data);
+  for (let i = 0; i < commands.length; i++) {
+    const cmd = commands[i];
+    if (cmd === "deno") {
+      let cmd = "echo 'deno'";
+      cmd += ` ; pm2 stop ${ projectName }`;
+      cmd += ` ; rm -rf ${ publishPath }/deno`
+      cmd += ` ; mkdir -p ${ publishPath }`;
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
+      cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
+      let data;
+      try {
+        data = await ssh.exec(cmd);
+      } catch (err) {
+        console.error(err);
+      }
+      if (data) {
+        console.log(data);
+      }
+      continue;
+    }
+    if (cmd === "docs") {
+      let cmd = "echo 'docs'";
+      cmd += ` ; rm -rf ${ publishPath }/docs`;
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      let data;
+      try {
+        data = await ssh.exec(cmd);
+      } catch (err) {
+        console.error(err);
+      }
+      if (data) {
+        console.log(data);
+      }
+      continue;
+    }
+    if (cmd === "pc") {
+      let cmd = "echo 'pc'";
+      cmd += ` ; rm -rf ${ publishPath }/pc`;
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      let data;
+      try {
+        data = await ssh.exec(cmd);
+      } catch (err) {
+        console.error(err);
+      }
+      if (data) {
+        console.log(data);
+      }
+      continue;
+    }
+    if (cmd === "uni") {
+      let cmd = "echo 'uni'";
+      cmd += ` ; rm -rf ${ publishPath }/uni`;
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      let data;
+      try {
+        data = await ssh.exec(cmd);
+      } catch (err) {
+        console.error(err);
+      }
+      if (data) {
+        console.log(data);
+      }
+      continue;
+    }
+    console.error(`未知命令: ${ cmd }`);
   }
   
   await ssh.close();
+  
+  console.log("");
+  console.log("发布完成");
 })();

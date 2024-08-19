@@ -1060,6 +1060,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找<#=table_comment#>总数 */
 export async function findCount(
   search?: Readonly<<#=searchName#>>,
@@ -1119,11 +1120,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找<#=table_comment#>列表
- * @param {<#=searchName#>} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找<#=table_comment#>列表 */
 export async function findAll(
   search?: Readonly<<#=searchName#>>,
   page?: Readonly<PageInput>,
@@ -1947,6 +1945,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: <#=inputName#>,
@@ -2392,9 +2391,8 @@ export async function setIdByLbl(
   #>
 }
 
-/**
- * 获取<#=table_comment#>字段注释
- */
+// MARK: getFieldComments
+/** 获取<#=table_comment#>字段注释 */
 export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
   const n = initN(route_path);
   const fieldComments: <#=fieldCommentName#> = {<#
@@ -2442,10 +2440,8 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得<#=table_comment#>列表
- * @param {<#=inputName#>} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得<#=table_comment#>列表 */
 export async function findByUnique(
   search0: Readonly<<#=inputName#>>,
   options?: {
@@ -2638,6 +2634,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 <#=table_comment#> 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<<#=inputName#>>,
@@ -2677,6 +2674,7 @@ export async function checkByUnique(
 if (hasSummary) {
 #>
 
+// MARK: findSummary
 /** 根据搜索条件查找 <#=table_comment#> 合计 */
 export async function findSummary(
   search?: Readonly<<#=searchName#>>,
@@ -2743,10 +2741,8 @@ export async function findSummary(
 }
 #>
 
-/**
- * 根据条件查找第一个<#=table_comment#>
- * @param {<#=searchName#>} search?
- */
+// MARK: findOne
+/** 根据条件查找第一<#=table_comment#> */
 export async function findOne(
   search?: Readonly<<#=searchName#>>,
   sort?: SortInput | SortInput[],
@@ -2798,10 +2794,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找<#=table_comment#>
- * @param {<#=Table_Up#>Id} id
- */
+// MARK: findById
+/** 根据 id 查找<#=table_comment#> */
 export async function findById(
   id?: <#=Table_Up#>Id | null,
   options?: {
@@ -2847,6 +2841,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找<#=table_comment#> */
 export async function findByIds(
   ids: <#=Table_Up#>Id[],
@@ -2906,10 +2901,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断<#=table_comment#>是否存在
- * @param {<#=searchName#>} search?
- */
+// MARK: exist
+/** 根据搜索条件判断<#=table_comment#>是否存在 */
 export async function exist(
   search?: Readonly<<#=searchName#>>,
   options?: {
@@ -2945,10 +2938,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断<#=table_comment#>是否存在
- * @param {<#=Table_Up#>Id} id
- */
+// MARK: existById
+/** 根据id判断<#=table_comment#>是否存在 */
 export async function existById(
   id?: Readonly<<#=Table_Up#>Id | null>,
   options?: {
@@ -3018,6 +3009,7 @@ export async function existById(
 if (hasEnabled) {
 #>
 
+// MARK: validateIsEnabled
 /** 校验<#=table_comment#>是否启用 */
 export async function validateIsEnabled(
   model: Readonly<<#=modelName#>>,
@@ -3029,6 +3021,7 @@ export async function validateIsEnabled(
 }
 #>
 
+// MARK: validateOption
 /** 校验<#=table_comment#>是否存在 */
 export async function validateOption(
   model?: <#=modelName#>,
@@ -3041,10 +3034,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * <#=table_comment#>增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** <#=table_comment#>增加和修改时校验输入 */
 export async function validate(
   input: Readonly<<#=inputName#>>,
 ) {
@@ -3211,6 +3202,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 <#=table_comment#> */
 export async function create(
   input: Readonly<<#=inputName#>>,
@@ -3251,6 +3243,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 <#=table_comment#> */
 export async function creates(
   inputs: <#=inputName#>[],
@@ -3903,9 +3896,8 @@ for (const key of redundLblKeys) {
 if (cache) {
 #>
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);<#
   if (
@@ -3924,6 +3916,7 @@ export async function delCache() {
 if (hasTenant_id) {
 #>
 
+// MARK: updateTenantById
 /** <#=table_comment#> 根据 id 修改 租户id */
 export async function updateTenantById(
   id: <#=Table_Up#>Id,
@@ -3982,9 +3975,8 @@ export async function updateTenantById(
 if (hasVersion) {
 #>
 
-/**
- * 根据 id 获取<#=table_comment#>版本号
- */
+// MARK: getVersionById
+/** 根据 id 获取<#=table_comment#>版本号 */
 export async function getVersionById(
   id: <#=Table_Up#>Id,
 ): Promise<number> {
@@ -4007,6 +3999,7 @@ export async function getVersionById(
 if (hasDataPermit() && hasCreateUsrId) {
 #>
 
+// MARK: getEditableDataPermitsByIds
 /** 根据 ids 获取<#=table_comment#>是否可编辑数据权限 */
 export async function getEditableDataPermitsByIds(
   ids: <#=Table_Up#>Id[],
@@ -4247,6 +4240,7 @@ async function refreshLangByInput(
 }
 #>
 
+// MARK: updateById
 /** 根据 id 修改 <#=table_comment#> */
 export async function updateById(
   id: <#=Table_Up#>Id,
@@ -4978,6 +4972,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 <#=table_comment#> */
 export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
@@ -5339,6 +5334,7 @@ export async function deleteByIds(
 if (hasDefault) {
 #>
 
+// MARK: defaultById
 /** 根据 id 设置默认<#=table_comment#> */
 export async function defaultById(
   id: <#=Table_Up#>Id,
@@ -5383,6 +5379,7 @@ export async function defaultById(
 if (hasEnabled) {
 #>
 
+// MARK: getIsEnabledById
 /** 根据 id 查找 <#=table_comment#> 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: <#=Table_Up#>Id,
@@ -5403,6 +5400,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
+// MARK: enableByIds
 /** 根据 ids 启用或者禁用 <#=table_comment#> */
 export async function enableByIds(
   ids: <#=Table_Up#>Id[],
@@ -5469,6 +5467,7 @@ export async function enableByIds(
 if (hasLocked) {
 #>
 
+// MARK: getIsLockedById
 /** 根据 id 查找 <#=table_comment#> 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: <#=Table_Up#>Id,
@@ -5489,6 +5488,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 <#=table_comment#> */
 export async function lockByIds(
   ids: <#=Table_Up#>Id[],
@@ -5547,6 +5547,7 @@ export async function lockByIds(
 if (hasIsDeleted) {
 #>
 
+// MARK: revertByIds
 /** 根据 ids 还原 <#=table_comment#> */
 export async function revertByIds(
   ids: <#=Table_Up#>Id[],
@@ -5793,6 +5794,7 @@ export async function revertByIds(
 if (hasIsDeleted) {
 #>
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 <#=table_comment#> */
 export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
@@ -6022,7 +6024,8 @@ export async function forceDeleteByIds(
 #><#
 if (hasOrderBy) {
 #>
-  
+
+// MARK: findLastOrderBy
 /** 查找 <#=table_comment#> order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
