@@ -16,7 +16,7 @@ program
 const options = program.opts();
 const env = options.env || "prod";
 
-const commands = (options.command || "").split(",");
+const commands = (options.command || "").split(",").filter((item) => item);
 
 const projectName = ecosystem.apps[0].name.replaceAll("{env}", env);
 console.log("projectName: " + projectName);
