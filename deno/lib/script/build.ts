@@ -331,7 +331,6 @@ if (commands.length === 0) {
   await pc();
   await uni();
   // await docs();
-  await publish();
 }
 
 await publish();
