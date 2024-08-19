@@ -18,8 +18,8 @@ const env = argv.env || "prod";
 
 const projectDir = `${ __dirname }/../../../../`;
 const buildDir = process.cwd() + "/../build/";
-// nr build-test -- --command uni
-const commands = (argv.command || "").split(",").filter((v) => v);
+// nr build-test --command uni
+const commands = (argv.command || argv.c || "").split(",").filter((v) => v);
 
 if (commands.length > 0) {
   console.log("commands", commands);
@@ -113,20 +113,20 @@ async function compile() {
 
 async function publish() {
   console.log("publish");
-  child_process.execSync(`npm run publish --env=${ env } --command=${ commands.join(",") }`, {
-    cwd: `${ projectDir }/`,
+  child_process.execSync(`npm run publish -- --env=${ env } --command=${ commands.join(",") }`, {
+    cwd: `${ rustDir }/`,
     stdio: "inherit",
   });
 }
 
-await remove(buildDir);
-await mkdir(buildDir, { recursive: true });
-try {
-  await remove(buildDir + "/deno");
-} catch (err) {
-}
-
 (async function() {
+
+  await remove(buildDir);
+  await mkdir(buildDir, { recursive: true });
+  try {
+    await remove(buildDir + "/deno");
+  } catch (err) {
+  }
   
   await codegen();
   await gqlgen();
@@ -146,13 +146,10 @@ try {
   }
   if (commands.length === 0) {
     await copyEnv();
-    await codegen();
-    await gqlgen();
     await compile();
     await pc();
     await uni();
     // await docs();
-    process.exit(0);
   }
   await publish();
 })();
