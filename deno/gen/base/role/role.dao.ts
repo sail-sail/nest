@@ -263,6 +263,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找角色总数 */
 export async function findCount(
   search?: Readonly<RoleSearch>,
@@ -309,11 +310,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找角色列表
- * @param {RoleSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找角色列表 */
 export async function findAll(
   search?: Readonly<RoleSearch>,
   page?: Readonly<PageInput>,
@@ -624,6 +622,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: RoleInput,
@@ -708,9 +707,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取角色字段注释
- */
+// MARK: getFieldComments
+/** 获取角色字段注释 */
 export async function getFieldComments(): Promise<RoleFieldComment> {
   const n = initN(route_path);
   const fieldComments: RoleFieldComment = {
@@ -741,10 +739,8 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得角色列表
- * @param {RoleInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得角色列表 */
 export async function findByUnique(
   search0: Readonly<RoleInput>,
   options?: {
@@ -820,6 +816,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 角色 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<RoleInput>,
@@ -857,10 +854,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个角色
- * @param {RoleSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一角色 */
 export async function findOne(
   search?: Readonly<RoleSearch>,
   sort?: SortInput | SortInput[],
@@ -907,10 +902,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找角色
- * @param {RoleId} id
- */
+// MARK: findById
+/** 根据 id 查找角色 */
 export async function findById(
   id?: RoleId | null,
   options?: {
@@ -951,6 +944,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找角色 */
 export async function findByIds(
   ids: RoleId[],
@@ -1005,10 +999,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断角色是否存在
- * @param {RoleSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断角色是否存在 */
 export async function exist(
   search?: Readonly<RoleSearch>,
   options?: {
@@ -1039,10 +1031,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断角色是否存在
- * @param {RoleId} id
- */
+// MARK: existById
+/** 根据id判断角色是否存在 */
 export async function existById(
   id?: Readonly<RoleId | null>,
   options?: {
@@ -1093,6 +1083,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateIsEnabled
 /** 校验角色是否启用 */
 export async function validateIsEnabled(
   model: Readonly<RoleModel>,
@@ -1102,6 +1093,7 @@ export async function validateIsEnabled(
   }
 }
 
+// MARK: validateOption
 /** 校验角色是否存在 */
 export async function validateOption(
   model?: RoleModel,
@@ -1114,10 +1106,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 角色增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 角色增加和修改时校验输入 */
 export async function validate(
   input: Readonly<RoleInput>,
 ) {
@@ -1167,6 +1157,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 角色 */
 export async function create(
   input: Readonly<RoleInput>,
@@ -1207,6 +1198,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 角色 */
 export async function creates(
   inputs: RoleInput[],
@@ -1502,14 +1494,14 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.base_role`);
   await delCacheCtx(`dao.sql.base_menu._getMenus`);
 }
 
+// MARK: updateTenantById
 /** 角色 根据 id 修改 租户id */
 export async function updateTenantById(
   id: RoleId,
@@ -1554,6 +1546,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
+// MARK: updateById
 /** 根据 id 修改 角色 */
 export async function updateById(
   id: RoleId,
@@ -1815,6 +1808,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 角色 */
 export async function deleteByIds(
   ids: RoleId[],
@@ -1921,6 +1915,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: getIsEnabledById
 /** 根据 id 查找 角色 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: RoleId,
@@ -1941,6 +1936,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
+// MARK: enableByIds
 /** 根据 ids 启用或者禁用 角色 */
 export async function enableByIds(
   ids: RoleId[],
@@ -1989,6 +1985,7 @@ export async function enableByIds(
   return num;
 }
 
+// MARK: getIsLockedById
 /** 根据 id 查找 角色 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: RoleId,
@@ -2009,6 +2006,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 角色 */
 export async function lockByIds(
   ids: RoleId[],
@@ -2055,6 +2053,7 @@ export async function lockByIds(
   return num;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 角色 */
 export async function revertByIds(
   ids: RoleId[],
@@ -2155,6 +2154,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 角色 */
 export async function forceDeleteByIds(
   ids: RoleId[],
@@ -2242,7 +2242,8 @@ export async function forceDeleteByIds(
   
   return num;
 }
-  
+
+// MARK: findLastOrderBy
 /** 查找 角色 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
