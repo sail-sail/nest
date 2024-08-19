@@ -134,6 +134,15 @@ console.log(publishPath);
       cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
       cmd += ` ; rm -rf ${ publishPathTmp }`;
       cmd += ` ; cd ${ publishPath }/nuxt/ && pm2 start`;
+      let data;
+      try {
+        data = await ssh.exec(cmd);
+      } catch (err) {
+        console.error(err);
+      }
+      if (data) {
+        console.log(data);
+      }
       continue;
     }
     if (cmd === "docs") {
