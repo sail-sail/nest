@@ -284,14 +284,18 @@ async function docs() {
 
 async function publish() {
   console.log("publish");
+  const args = [
+    "run",
+    "publish",
+  ];
+  if (pnpmCmd === "npm") {
+    args.push("--");
+  }
+  args.push(`--env=${ env }`);
+  args.push(`--command=${ commands.join(",") }`);
   const command = new Deno.Command(pnpmCmd, {
     cwd: denoDir,
-    args: [
-      "run",
-      "publish",
-      `--env=${ env }`,
-      `--command=${ commands.join(",") }`,
-    ],
+    args,
     stderr: "inherit",
     stdout: "inherit",
   });
