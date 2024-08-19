@@ -18,6 +18,10 @@ const env = options.env || "prod";
 
 const commands = (options.command || "").split(",").filter((item) => item);
 
+if (commands.length > 0) {
+  console.log("publish-commands: ", commands);
+}
+
 const projectName = ecosystem.apps[0].name.replaceAll("{env}", env);
 console.log("projectName: " + projectName);
 console.log("");
@@ -58,6 +62,8 @@ console.log(publishPath);
     console.error(err);
   }
   
+  let num = 0;
+  console.log("已上传文件数: ");
   const treeDir = async function(dir) {
     const files = await fs.readdir(`${ buildPath }/${ dir }`);
     for (let i = 0; i < files.length; i++) {
@@ -71,13 +77,16 @@ console.log(publishPath);
         }
         await treeDir(`/${ dir }/${ file }`);
       } else {
+        num++;
         await sftp.fastPut(`${ buildPath }/${ dir }/${ file }`, `${ publishPathTmp }/${ dir }/${ file }`);
+        if (num % 20 === 0) {
+          console.log(num);
+        }
       }
     }
   };
   await treeDir("");
-  
-  console.log("publish-commands: ", commands);
+  console.log("上传完成");
   
   if (commands.length === 0) {
     try {
@@ -176,4 +185,7 @@ console.log(publishPath);
   }
   
   await ssh.close();
+  
+  console.log("");
+  console.log("发布完成");
 })();
