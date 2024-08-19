@@ -33,7 +33,10 @@ const pcDir = denoDir + "/../pc";
 const uniDir = denoDir + "/../uni";
 const nuxtDir = denoDir + "/../nuxt";
 const buildDir = getArg("--build-dir") || `${ denoDir }/../build/deno`;
-const commands = (getArg("--command") || "").split(",").filter((v) => v);
+// nr build-test -- --command uni
+// nr build-test -- --c uni
+const commands = (getArg("--command") || getArg("--c") || "").split(",").filter((v) => v);
+
 let target = getArg("--target") || "";
 if (target === "linux") {
   target = "x86_64-unknown-linux-gnu";
@@ -251,7 +254,7 @@ async function uni() {
     cwd: uniDir,
     args: [
       "run",
-      "build:h5",
+      `build:h5-${ env }`,
     ],
     stderr: "inherit",
     stdout: "inherit",
@@ -333,6 +336,7 @@ async function publish() {
       "run",
       "publish",
       `--env=${ env }`,
+      `--command=${ commands.join(",") }`,
     ],
     stderr: "inherit",
     stdout: "inherit",
@@ -343,15 +347,20 @@ async function publish() {
   }
 }
 
+try {
+  await Deno.remove(`${ buildDir }/../`, { recursive: true });
+} catch (err) {
+  console.error(err);
+}
+await Deno.mkdir(`${ buildDir }/../`, { recursive: true });
+
+await codegen();
+await gqlgen();
+
 for (let i = 0; i < commands.length; i++) {
   const command = commands[i].trim();
-  if (command === "copyEnv") {
+  if (command === "deno") {
     await copyEnv();
-  } else if (command === "codegen") {
-    await codegen();
-  } else if (command === "gqlgen") {
-    await gqlgen();
-  } else if (command === "compile") {
     await compile();
   } else if (command === "pc") {
     await pc();
@@ -361,21 +370,11 @@ for (let i = 0; i < commands.length; i++) {
     await nuxt();
   } else if (command === "docs") {
     await docs();
-  } else if (command === "publish") {
-    await publish();
   }
 }
 
 if (commands.length === 0) {
-  try {
-    await Deno.remove(`${ buildDir }/../`, { recursive: true });
-  } catch (err) {
-    console.error(err);
-  }
-  await Deno.mkdir(`${ buildDir }/../`, { recursive: true });
   await copyEnv();
-  await codegen();
-  await gqlgen();
   await compile();
   await pc();
   await uni();
@@ -383,3 +382,5 @@ if (commands.length === 0) {
   // await docs();
   await publish();
 }
+
+await publish();
