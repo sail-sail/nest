@@ -508,6 +508,7 @@ async fn get_from_query(
   Ok(from_query)
 }
 
+// MARK: find_all
 /// 根据搜索条件和分页查找系统字典明细列表
 #[allow(unused_mut)]
 pub async fn find_all(
@@ -730,6 +731,7 @@ pub async fn find_all(
   Ok(res)
 }
 
+// MARK: find_count
 /// 根据条件查找系统字典明细总数
 pub async fn find_count(
   search: Option<DictDetailSearch>,
@@ -803,6 +805,7 @@ pub fn get_n_route() -> i18n_dao::NRoute {
   }
 }
 
+// MARK: get_field_comments
 /// 获取系统字典明细字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
@@ -868,6 +871,7 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
+// MARK: find_one
 /// 根据条件查找第一个系统字典明细
 pub async fn find_one(
   search: Option<DictDetailSearch>,
@@ -924,6 +928,7 @@ pub async fn find_one(
   Ok(model)
 }
 
+// MARK: find_by_id
 /// 根据 id 查找系统字典明细
 pub async fn find_by_id(
   id: DictDetailId,
@@ -969,6 +974,7 @@ pub async fn find_by_id(
   Ok(res)
 }
 
+// MARK: find_by_ids
 /// 根据 ids 查找系统字典明细
 #[allow(dead_code)]
 pub async fn find_by_ids(
@@ -1039,6 +1045,7 @@ pub async fn find_by_ids(
   Ok(models)
 }
 
+// MARK: exists
 /// 根据搜索条件判断系统字典明细是否存在
 #[allow(dead_code)]
 pub async fn exists(
@@ -1077,6 +1084,7 @@ pub async fn exists(
   Ok(total > 0)
 }
 
+// MARK: exists_by_id
 /// 根据 id 判断系统字典明细是否存在
 #[allow(dead_code)]
 pub async fn exists_by_id(
@@ -1118,6 +1126,7 @@ pub async fn exists_by_id(
   Ok(res)
 }
 
+// MARK: find_by_unique
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
 pub async fn find_by_unique(
@@ -1205,6 +1214,7 @@ pub fn equals_by_unique(
   false
 }
 
+// MARK: check_by_unique
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
 pub async fn check_by_unique(
@@ -1276,6 +1286,7 @@ pub async fn check_by_unique(
   Ok(None)
 }
 
+// MARK: set_id_by_lbl
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl(
@@ -1409,6 +1420,7 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
+// MARK: creates
 /// 批量创建系统字典明细
 pub async fn creates(
   inputs: Vec<DictDetailInput>,
@@ -1738,6 +1750,7 @@ async fn _creates(
   Ok(ids2)
 }
 
+// MARK: create
 /// 创建系统字典明细
 #[allow(dead_code)]
 pub async fn create(
@@ -1864,6 +1877,7 @@ async fn refresh_lang_by_input(
   Ok(())
 }
 
+// MARK: update_by_id
 /// 根据 id 修改系统字典明细
 #[allow(unused_mut)]
 pub async fn update_by_id(
@@ -2159,6 +2173,7 @@ fn get_cache_tables() -> Vec<&'static str> {
   ]
 }
 
+// MARK: del_cache
 /// 清空缓存
 #[allow(dead_code)]
 pub async fn del_cache() -> Result<()> {
@@ -2169,6 +2184,7 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
+// MARK: delete_by_ids
 /// 根据 ids 删除系统字典明细
 #[allow(unused_variables)]
 pub async fn delete_by_ids(
@@ -2307,6 +2323,7 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
+// MARK: get_is_enabled_by_id
 /// 根据 id 查找系统字典明细是否已启用
 /// 记录不存在则返回 false
 pub async fn get_is_enabled_by_id(
@@ -2334,6 +2351,7 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
+// MARK: enable_by_ids
 /// 根据 ids 启用或者禁用系统字典明细
 pub async fn enable_by_ids(
   ids: Vec<DictDetailId>,
@@ -2391,6 +2409,7 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
+// MARK: get_is_locked_by_id
 /// 根据 id 查找系统字典明细是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
@@ -2419,6 +2438,7 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
+// MARK: lock_by_ids
 /// 根据 ids 锁定或者解锁系统字典明细
 pub async fn lock_by_ids(
   ids: Vec<DictDetailId>,
@@ -2475,6 +2495,7 @@ pub async fn lock_by_ids(
   Ok(num)
 }
 
+// MARK: revert_by_ids
 /// 根据 ids 还原系统字典明细
 pub async fn revert_by_ids(
   ids: Vec<DictDetailId>,
@@ -2595,6 +2616,7 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
+// MARK: force_delete_by_ids
 /// 根据 ids 彻底删除系统字典明细
 #[allow(unused_variables)]
 pub async fn force_delete_by_ids(
@@ -2694,6 +2716,7 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
+// MARK: find_last_order_by
 /// 查找 系统字典明细 order_by 字段的最大值
 pub async fn find_last_order_by(
   options: Option<Options>,
@@ -2750,6 +2773,7 @@ pub async fn find_last_order_by(
   Ok(order_by)
 }
 
+// MARK: validate_is_enabled
 /// 校验系统字典明细是否启用
 #[allow(dead_code)]
 pub async fn validate_is_enabled(
@@ -2770,6 +2794,7 @@ pub async fn validate_is_enabled(
   Ok(())
 }
 
+// MARK: validate_option
 /// 校验系统字典明细是否存在
 #[allow(dead_code)]
 pub async fn validate_option<T>(
