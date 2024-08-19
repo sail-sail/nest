@@ -86,7 +86,6 @@ console.log(publishPath);
     }
   };
   await treeDir("");
-  console.log("上传完成");
   
   if (commands.length === 0) {
     try {
