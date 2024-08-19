@@ -181,6 +181,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找域名总数 */
 export async function findCount(
   search?: Readonly<DomainSearch>,
@@ -227,11 +228,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找域名列表
- * @param {DomainSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找域名列表 */
 export async function findAll(
   search?: Readonly<DomainSearch>,
   page?: Readonly<PageInput>,
@@ -464,6 +462,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: DomainInput,
@@ -517,9 +516,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取域名字段注释
- */
+// MARK: getFieldComments
+/** 获取域名字段注释 */
 export async function getFieldComments(): Promise<DomainFieldComment> {
   const n = initN(route_path);
   const fieldComments: DomainFieldComment = {
@@ -546,10 +544,8 @@ export async function getFieldComments(): Promise<DomainFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得域名列表
- * @param {DomainInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得域名列表 */
 export async function findByUnique(
   search0: Readonly<DomainInput>,
   options?: {
@@ -625,6 +621,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 域名 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<DomainInput>,
@@ -662,10 +659,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个域名
- * @param {DomainSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一域名 */
 export async function findOne(
   search?: Readonly<DomainSearch>,
   sort?: SortInput | SortInput[],
@@ -712,10 +707,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找域名
- * @param {DomainId} id
- */
+// MARK: findById
+/** 根据 id 查找域名 */
 export async function findById(
   id?: DomainId | null,
   options?: {
@@ -756,6 +749,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找域名 */
 export async function findByIds(
   ids: DomainId[],
@@ -810,10 +804,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断域名是否存在
- * @param {DomainSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断域名是否存在 */
 export async function exist(
   search?: Readonly<DomainSearch>,
   options?: {
@@ -844,10 +836,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断域名是否存在
- * @param {DomainId} id
- */
+// MARK: existById
+/** 根据id判断域名是否存在 */
 export async function existById(
   id?: Readonly<DomainId | null>,
   options?: {
@@ -898,6 +888,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateIsEnabled
 /** 校验域名是否启用 */
 export async function validateIsEnabled(
   model: Readonly<DomainModel>,
@@ -907,6 +898,7 @@ export async function validateIsEnabled(
   }
 }
 
+// MARK: validateOption
 /** 校验域名是否存在 */
 export async function validateOption(
   model?: DomainModel,
@@ -919,10 +911,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 域名增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 域名增加和修改时校验输入 */
 export async function validate(
   input: Readonly<DomainInput>,
 ) {
@@ -972,6 +962,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 域名 */
 export async function create(
   input: Readonly<DomainInput>,
@@ -1012,6 +1003,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 域名 */
 export async function creates(
   inputs: DomainInput[],
@@ -1251,13 +1243,13 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.base_domain`);
 }
 
+// MARK: updateById
 /** 根据 id 修改 域名 */
 export async function updateById(
   id: DomainId,
@@ -1461,6 +1453,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 域名 */
 export async function deleteByIds(
   ids: DomainId[],
@@ -1543,6 +1536,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: defaultById
 /** 根据 id 设置默认域名 */
 export async function defaultById(
   id: DomainId,
@@ -1575,6 +1569,7 @@ export async function defaultById(
   return num;
 }
 
+// MARK: getIsEnabledById
 /** 根据 id 查找 域名 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: DomainId,
@@ -1595,6 +1590,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
+// MARK: enableByIds
 /** 根据 ids 启用或者禁用 域名 */
 export async function enableByIds(
   ids: DomainId[],
@@ -1643,6 +1639,7 @@ export async function enableByIds(
   return num;
 }
 
+// MARK: getIsLockedById
 /** 根据 id 查找 域名 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: DomainId,
@@ -1663,6 +1660,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 域名 */
 export async function lockByIds(
   ids: DomainId[],
@@ -1709,6 +1707,7 @@ export async function lockByIds(
   return num;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 域名 */
 export async function revertByIds(
   ids: DomainId[],
@@ -1785,6 +1784,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 域名 */
 export async function forceDeleteByIds(
   ids: DomainId[],
@@ -1848,7 +1848,8 @@ export async function forceDeleteByIds(
   
   return num;
 }
-  
+
+// MARK: findLastOrderBy
 /** 查找 域名 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {

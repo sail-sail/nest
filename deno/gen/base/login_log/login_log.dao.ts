@@ -180,6 +180,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找登录日志总数 */
 export async function findCount(
   search?: Readonly<LoginLogSearch>,
@@ -223,11 +224,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找登录日志列表
- * @param {LoginLogSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找登录日志列表 */
 export async function findAll(
   search?: Readonly<LoginLogSearch>,
   page?: Readonly<PageInput>,
@@ -425,6 +423,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: LoginLogInput,
@@ -465,9 +464,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取登录日志字段注释
- */
+// MARK: getFieldComments
+/** 获取登录日志字段注释 */
 export async function getFieldComments(): Promise<LoginLogFieldComment> {
   const n = initN(route_path);
   const fieldComments: LoginLogFieldComment = {
@@ -490,10 +488,8 @@ export async function getFieldComments(): Promise<LoginLogFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得登录日志列表
- * @param {LoginLogInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得登录日志列表 */
 export async function findByUnique(
   search0: Readonly<LoginLogInput>,
   options?: {
@@ -549,6 +545,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 登录日志 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<LoginLogInput>,
@@ -586,10 +583,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个登录日志
- * @param {LoginLogSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一登录日志 */
 export async function findOne(
   search?: Readonly<LoginLogSearch>,
   sort?: SortInput | SortInput[],
@@ -636,10 +631,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找登录日志
- * @param {LoginLogId} id
- */
+// MARK: findById
+/** 根据 id 查找登录日志 */
 export async function findById(
   id?: LoginLogId | null,
   options?: {
@@ -680,6 +673,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找登录日志 */
 export async function findByIds(
   ids: LoginLogId[],
@@ -734,10 +728,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断登录日志是否存在
- * @param {LoginLogSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断登录日志是否存在 */
 export async function exist(
   search?: Readonly<LoginLogSearch>,
   options?: {
@@ -768,10 +760,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断登录日志是否存在
- * @param {LoginLogId} id
- */
+// MARK: existById
+/** 根据id判断登录日志是否存在 */
 export async function existById(
   id?: Readonly<LoginLogId | null>,
   options?: {
@@ -813,6 +803,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateOption
 /** 校验登录日志是否存在 */
 export async function validateOption(
   model?: LoginLogModel,
@@ -825,10 +816,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 登录日志增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 登录日志增加和修改时校验输入 */
 export async function validate(
   input: Readonly<LoginLogInput>,
 ) {
@@ -864,6 +853,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 登录日志 */
 export async function create(
   input: Readonly<LoginLogInput>,
@@ -904,6 +894,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 登录日志 */
 export async function creates(
   inputs: LoginLogInput[],
@@ -1137,6 +1128,7 @@ async function _creates(
   return ids2;
 }
 
+// MARK: updateTenantById
 /** 登录日志 根据 id 修改 租户id */
 export async function updateTenantById(
   id: LoginLogId,
@@ -1179,6 +1171,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
+// MARK: updateById
 /** 根据 id 修改 登录日志 */
 export async function updateById(
   id: LoginLogId,
@@ -1363,6 +1356,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 登录日志 */
 export async function deleteByIds(
   ids: LoginLogId[],
@@ -1436,6 +1430,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 登录日志 */
 export async function revertByIds(
   ids: LoginLogId[],
@@ -1508,6 +1503,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 登录日志 */
 export async function forceDeleteByIds(
   ids: LoginLogId[],
