@@ -10,10 +10,13 @@ const envArgs = process.argv;
 const program = new Command();
 program
   .option('--env [value]', '执行环境dev, test, prod')
+  .option('--command [value]', '执行命令 deno,nuxt,docs,pc,uni')
   .parse(envArgs);
 
 const options = program.opts();
 const env = options.env || "prod";
+
+const commands = (options.command || "").split(",");
 
 const projectName = ecosystem.apps[0].name.replaceAll("{env}", env);
 console.log("projectName: " + projectName);
@@ -74,25 +77,66 @@ console.log(publishPath);
   };
   await treeDir("");
   
-  try {
-    let cmd = "";
-    cmd += `rm -rf ${ publishPath }/docs`;
-    cmd += ` ; pm2 stop ${ projectName }`;
-    cmd += ` ; rm -rf ${ publishPath }/pc`
-    cmd += ` ; rm -rf ${ publishPath }/deno`
-    cmd += ` ; rm -rf ${ publishPath }/uni`
-    cmd += ` ; mkdir -p ${ publishPath }`;
-    cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
-    cmd += ` ; rm -rf ${ publishPathTmp }`;
-    cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
-    cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
-    data = await ssh.exec(cmd);
-  } catch (err) {
-    console.error(err);
+  console.log("publish-commands: ", commands);
+  
+  if (commands.length === 0) {
+    try {
+      let cmd = "";
+      cmd += `rm -rf ${ publishPath }/docs`;
+      cmd += ` ; pm2 stop ${ projectName }`;
+      cmd += ` ; rm -rf ${ publishPath }/pc`
+      cmd += ` ; rm -rf ${ publishPath }/deno`
+      cmd += ` ; rm -rf ${ publishPath }/uni`
+      cmd += ` ; mkdir -p ${ publishPath }`;
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
+      cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
+      data = await ssh.exec(cmd);
+    } catch (err) {
+      console.error(err);
+    }
+    
+    if (data) {
+      console.log(data);
+    }
   }
   
-  if (data) {
-    console.log(data);
+  for (let i = 0; i < commands.length; i++) {
+    const cmd = commands[i];
+    if (cmd === "deno") {
+      let cmd = "echo 'deno'";
+      cmd += ` ; pm2 stop ${ projectName }`;
+      cmd += ` ; rm -rf ${ publishPath }/deno`
+      cmd += ` ; mkdir -p ${ publishPath }`;
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
+      cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;
+      continue;
+    }
+    if (cmd === "docs") {
+      let cmd = "echo 'docs'";
+      cmd += ` ; rm -rf ${ publishPath }/docs`;
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      continue;
+    }
+    if (cmd === "pc") {
+      let cmd = "echo 'pc'";
+      cmd += ` ; rm -rf ${ publishPath }/pc`;
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      continue;
+    }
+    if (cmd === "uni") {
+      let cmd = "echo 'uni'";
+      cmd += ` ; rm -rf ${ publishPath }/uni`;
+      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
+      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      continue;
+    }
+    console.error(`未知命令: ${ cmd }`);
   }
   
   await ssh.close();
