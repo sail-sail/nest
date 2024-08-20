@@ -3,6 +3,7 @@
   v-bind="$attrs"
   un-w="full"
   un-flex="~ [1_0_0] row wrap"
+  un-items="center"
   un-gap="2"
   un-m="l-1px"
   :style="{
@@ -108,8 +109,8 @@
   <div
     v-if="inited && !props.readonly && thumbList.length < props.maxSize"
     :style="{
-      height: `${ props.itemHeight }px`,
-      width: `${ props.itemHeight }px`,
+      height: `${ (props.itemHeight + 4) }px`,
+      width: `${ (props.itemHeight + 4) }px`,
     }"
     un-p="0.75"
     un-box-border
