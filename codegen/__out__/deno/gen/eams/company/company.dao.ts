@@ -195,6 +195,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找单位总数 */
 export async function findCount(
   search?: Readonly<CompanySearch>,
@@ -241,11 +242,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找单位列表
- * @param {CompanySearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找单位列表 */
 export async function findAll(
   search?: Readonly<CompanySearch>,
   page?: Readonly<PageInput>,
@@ -455,6 +453,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: CompanyInput,
@@ -495,9 +494,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取单位字段注释
- */
+// MARK: getFieldComments
+/** 获取单位字段注释 */
 export async function getFieldComments(): Promise<CompanyFieldComment> {
   const n = initN(route_path);
   const fieldComments: CompanyFieldComment = {
@@ -522,10 +520,8 @@ export async function getFieldComments(): Promise<CompanyFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得单位列表
- * @param {CompanyInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得单位列表 */
 export async function findByUnique(
   search0: Readonly<CompanyInput>,
   options?: {
@@ -621,6 +617,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 单位 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<CompanyInput>,
@@ -658,10 +655,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个单位
- * @param {CompanySearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一单位 */
 export async function findOne(
   search?: Readonly<CompanySearch>,
   sort?: SortInput | SortInput[],
@@ -708,10 +703,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找单位
- * @param {CompanyId} id
- */
+// MARK: findById
+/** 根据 id 查找单位 */
 export async function findById(
   id?: CompanyId | null,
   options?: {
@@ -752,6 +745,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找单位 */
 export async function findByIds(
   ids: CompanyId[],
@@ -806,10 +800,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断单位是否存在
- * @param {CompanySearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断单位是否存在 */
 export async function exist(
   search?: Readonly<CompanySearch>,
   options?: {
@@ -840,10 +832,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断单位是否存在
- * @param {CompanyId} id
- */
+// MARK: existById
+/** 根据id判断单位是否存在 */
 export async function existById(
   id?: Readonly<CompanyId | null>,
   options?: {
@@ -894,6 +884,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateIsEnabled
 /** 校验单位是否启用 */
 export async function validateIsEnabled(
   model: Readonly<CompanyModel>,
@@ -903,6 +894,7 @@ export async function validateIsEnabled(
   }
 }
 
+// MARK: validateOption
 /** 校验单位是否存在 */
 export async function validateOption(
   model?: CompanyModel,
@@ -915,10 +907,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 单位增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 单位增加和修改时校验输入 */
 export async function validate(
   input: Readonly<CompanyInput>,
 ) {
@@ -968,6 +958,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 单位 */
 export async function create(
   input: Readonly<CompanyInput>,
@@ -1008,6 +999,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 单位 */
 export async function creates(
   inputs: CompanyInput[],
@@ -1255,13 +1247,13 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.eams_company`);
 }
 
+// MARK: updateTenantById
 /** 单位 根据 id 修改 租户id */
 export async function updateTenantById(
   id: CompanyId,
@@ -1306,6 +1298,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
+// MARK: updateById
 /** 根据 id 修改 单位 */
 export async function updateById(
   id: CompanyId,
@@ -1508,6 +1501,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 单位 */
 export async function deleteByIds(
   ids: CompanyId[],
@@ -1585,6 +1579,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: getIsEnabledById
 /** 根据 id 查找 单位 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: CompanyId,
@@ -1605,6 +1600,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
+// MARK: enableByIds
 /** 根据 ids 启用或者禁用 单位 */
 export async function enableByIds(
   ids: CompanyId[],
@@ -1653,6 +1649,7 @@ export async function enableByIds(
   return num;
 }
 
+// MARK: getIsLockedById
 /** 根据 id 查找 单位 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: CompanyId,
@@ -1673,6 +1670,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 单位 */
 export async function lockByIds(
   ids: CompanyId[],
@@ -1719,6 +1717,7 @@ export async function lockByIds(
   return num;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 单位 */
 export async function revertByIds(
   ids: CompanyId[],
@@ -1795,6 +1794,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 单位 */
 export async function forceDeleteByIds(
   ids: CompanyId[],
@@ -1853,7 +1853,8 @@ export async function forceDeleteByIds(
   
   return num;
 }
-  
+
+// MARK: findLastOrderBy
 /** 查找 单位 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
