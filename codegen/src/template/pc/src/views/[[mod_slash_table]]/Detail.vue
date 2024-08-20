@@ -236,7 +236,7 @@ const old_table = table;
             prop="<#=column_name#>"<#
             if (
               (column.isTextarea && detailFormCols > 1) ||
-              (column.isImg && detailFormCols > 1 && column.maxFileSize > 1)
+              (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
             ) {
             #>
             un-grid="col-span-full"<#
@@ -1247,7 +1247,7 @@ const old_table = table;
                   prop="<#=inline_column_name#>.<#=column_name#>"<#
                   if (
                     (column.isTextarea && detailFormCols > 1) ||
-                    (column.isImg && detailFormCols > 1 && column.maxFileSize > 1)
+                    (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
                   ) {
                   #>
                   un-grid="col-span-full"<#

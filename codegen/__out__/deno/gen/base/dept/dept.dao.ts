@@ -245,6 +245,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找部门总数 */
 export async function findCount(
   search?: Readonly<DeptSearch>,
@@ -291,11 +292,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找部门列表
- * @param {DeptSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找部门列表 */
 export async function findAll(
   search?: Readonly<DeptSearch>,
   page?: Readonly<PageInput>,
@@ -570,6 +568,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: DeptInput,
@@ -684,9 +683,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取部门字段注释
- */
+// MARK: getFieldComments
+/** 获取部门字段注释 */
 export async function getFieldComments(): Promise<DeptFieldComment> {
   const n = initN(route_path);
   const fieldComments: DeptFieldComment = {
@@ -716,10 +714,8 @@ export async function getFieldComments(): Promise<DeptFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得部门列表
- * @param {DeptInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得部门列表 */
 export async function findByUnique(
   search0: Readonly<DeptInput>,
   options?: {
@@ -806,6 +802,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 部门 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<DeptInput>,
@@ -843,10 +840,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个部门
- * @param {DeptSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一部门 */
 export async function findOne(
   search?: Readonly<DeptSearch>,
   sort?: SortInput | SortInput[],
@@ -893,10 +888,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找部门
- * @param {DeptId} id
- */
+// MARK: findById
+/** 根据 id 查找部门 */
 export async function findById(
   id?: DeptId | null,
   options?: {
@@ -937,6 +930,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找部门 */
 export async function findByIds(
   ids: DeptId[],
@@ -991,10 +985,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断部门是否存在
- * @param {DeptSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断部门是否存在 */
 export async function exist(
   search?: Readonly<DeptSearch>,
   options?: {
@@ -1025,10 +1017,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断部门是否存在
- * @param {DeptId} id
- */
+// MARK: existById
+/** 根据id判断部门是否存在 */
 export async function existById(
   id?: Readonly<DeptId | null>,
   options?: {
@@ -1079,6 +1069,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateIsEnabled
 /** 校验部门是否启用 */
 export async function validateIsEnabled(
   model: Readonly<DeptModel>,
@@ -1088,6 +1079,7 @@ export async function validateIsEnabled(
   }
 }
 
+// MARK: validateOption
 /** 校验部门是否存在 */
 export async function validateOption(
   model?: DeptModel,
@@ -1100,10 +1092,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 部门增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 部门增加和修改时校验输入 */
 export async function validate(
   input: Readonly<DeptInput>,
 ) {
@@ -1160,6 +1150,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 部门 */
 export async function create(
   input: Readonly<DeptInput>,
@@ -1200,6 +1191,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 部门 */
 export async function creates(
   inputs: DeptInput[],
@@ -1473,13 +1465,13 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.base_dept`);
 }
 
+// MARK: updateTenantById
 /** 部门 根据 id 修改 租户id */
 export async function updateTenantById(
   id: DeptId,
@@ -1524,6 +1516,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
+// MARK: updateById
 /** 根据 id 修改 部门 */
 export async function updateById(
   id: DeptId,
@@ -1754,6 +1747,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 部门 */
 export async function deleteByIds(
   ids: DeptId[],
@@ -1844,6 +1838,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: getIsEnabledById
 /** 根据 id 查找 部门 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: DeptId,
@@ -1864,6 +1859,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
+// MARK: enableByIds
 /** 根据 ids 启用或者禁用 部门 */
 export async function enableByIds(
   ids: DeptId[],
@@ -1912,6 +1908,7 @@ export async function enableByIds(
   return num;
 }
 
+// MARK: getIsLockedById
 /** 根据 id 查找 部门 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: DeptId,
@@ -1932,6 +1929,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 部门 */
 export async function lockByIds(
   ids: DeptId[],
@@ -1978,6 +1976,7 @@ export async function lockByIds(
   return num;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 部门 */
 export async function revertByIds(
   ids: DeptId[],
@@ -2062,6 +2061,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 部门 */
 export async function forceDeleteByIds(
   ids: DeptId[],
@@ -2133,7 +2133,8 @@ export async function forceDeleteByIds(
   
   return num;
 }
-  
+
+// MARK: findLastOrderBy
 /** 查找 部门 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
