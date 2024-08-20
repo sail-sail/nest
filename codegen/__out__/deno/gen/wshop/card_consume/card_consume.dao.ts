@@ -260,6 +260,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找会员卡消费记录总数 */
 export async function findCount(
   search?: Readonly<CardConsumeSearch>,
@@ -303,11 +304,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找会员卡消费记录列表
- * @param {CardConsumeSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找会员卡消费记录列表 */
 export async function findAll(
   search?: Readonly<CardConsumeSearch>,
   page?: Readonly<PageInput>,
@@ -508,6 +506,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: CardConsumeInput,
@@ -596,9 +595,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取会员卡消费记录字段注释
- */
+// MARK: getFieldComments
+/** 获取会员卡消费记录字段注释 */
 export async function getFieldComments(): Promise<CardConsumeFieldComment> {
   const n = initN(route_path);
   const fieldComments: CardConsumeFieldComment = {
@@ -628,10 +626,8 @@ export async function getFieldComments(): Promise<CardConsumeFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得会员卡消费记录列表
- * @param {CardConsumeInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得会员卡消费记录列表 */
 export async function findByUnique(
   search0: Readonly<CardConsumeInput>,
   options?: {
@@ -687,6 +683,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 会员卡消费记录 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<CardConsumeInput>,
@@ -724,10 +721,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个会员卡消费记录
- * @param {CardConsumeSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一会员卡消费记录 */
 export async function findOne(
   search?: Readonly<CardConsumeSearch>,
   sort?: SortInput | SortInput[],
@@ -774,10 +769,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找会员卡消费记录
- * @param {CardConsumeId} id
- */
+// MARK: findById
+/** 根据 id 查找会员卡消费记录 */
 export async function findById(
   id?: CardConsumeId | null,
   options?: {
@@ -818,6 +811,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找会员卡消费记录 */
 export async function findByIds(
   ids: CardConsumeId[],
@@ -872,10 +866,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断会员卡消费记录是否存在
- * @param {CardConsumeSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断会员卡消费记录是否存在 */
 export async function exist(
   search?: Readonly<CardConsumeSearch>,
   options?: {
@@ -906,10 +898,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断会员卡消费记录是否存在
- * @param {CardConsumeId} id
- */
+// MARK: existById
+/** 根据id判断会员卡消费记录是否存在 */
 export async function existById(
   id?: Readonly<CardConsumeId | null>,
   options?: {
@@ -951,6 +941,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateOption
 /** 校验会员卡消费记录是否存在 */
 export async function validateOption(
   model?: CardConsumeModel,
@@ -963,10 +954,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 会员卡消费记录增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 会员卡消费记录增加和修改时校验输入 */
 export async function validate(
   input: Readonly<CardConsumeInput>,
 ) {
@@ -1023,6 +1012,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 会员卡消费记录 */
 export async function create(
   input: Readonly<CardConsumeInput>,
@@ -1063,6 +1053,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 会员卡消费记录 */
 export async function creates(
   inputs: CardConsumeInput[],
@@ -1291,6 +1282,7 @@ async function _creates(
   return ids2;
 }
 
+// MARK: updateTenantById
 /** 会员卡消费记录 根据 id 修改 租户id */
 export async function updateTenantById(
   id: CardConsumeId,
@@ -1333,6 +1325,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
+// MARK: updateById
 /** 根据 id 修改 会员卡消费记录 */
 export async function updateById(
   id: CardConsumeId,
@@ -1518,6 +1511,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 会员卡消费记录 */
 export async function deleteByIds(
   ids: CardConsumeId[],
@@ -1575,6 +1569,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 会员卡消费记录 */
 export async function revertByIds(
   ids: CardConsumeId[],
@@ -1647,6 +1642,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 会员卡消费记录 */
 export async function forceDeleteByIds(
   ids: CardConsumeId[],
