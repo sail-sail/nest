@@ -1,4 +1,5 @@
 pub mod base;
+pub mod cron;
 
 
 use async_graphql::MergedObject;
@@ -25,6 +26,10 @@ pub struct GenQuery(
   crate::gen::base::role::role_graphql::RoleGenQuery,
   crate::gen::base::tenant::tenant_graphql::TenantGenQuery,
   crate::gen::base::usr::usr_graphql::UsrGenQuery,
+  crate::gen::cron::cron_job::cron_job_graphql::CronJobGenQuery,
+  crate::gen::cron::cron_job_log::cron_job_log_graphql::CronJobLogGenQuery,
+  crate::gen::cron::cron_job_log_detail::cron_job_log_detail_graphql::CronJobLogDetailGenQuery,
+  crate::gen::cron::job::job_graphql::JobGenQuery,
 );
 
 #[derive(MergedObject, Default)]
@@ -49,4 +54,8 @@ pub struct GenMutation(
   crate::gen::base::role::role_graphql::RoleGenMutation,
   crate::gen::base::tenant::tenant_graphql::TenantGenMutation,
   crate::gen::base::usr::usr_graphql::UsrGenMutation,
+  crate::gen::cron::cron_job::cron_job_graphql::CronJobGenMutation,
+  crate::gen::cron::cron_job_log::cron_job_log_graphql::CronJobLogGenMutation,
+  crate::gen::cron::cron_job_log_detail::cron_job_log_detail_graphql::CronJobLogDetailGenMutation,
+  crate::gen::cron::job::job_graphql::JobGenMutation,
 );

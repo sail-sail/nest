@@ -122,6 +122,30 @@ export function getScalars() {
       "output": "UsrId",
     },
     
+    // 定时任务
+    "CronJobId": {
+      "input": "CronJobId",
+      "output": "CronJobId",
+    },
+    
+    // 定时任务日志
+    "CronJobLogId": {
+      "input": "CronJobLogId",
+      "output": "CronJobLogId",
+    },
+    
+    // 定时任务日志明细
+    "CronJobLogDetailId": {
+      "input": "CronJobLogDetailId",
+      "output": "CronJobLogDetailId",
+    },
+    
+    // 任务
+    "JobId": {
+      "input": "JobId",
+      "output": "JobId",
+    },
+    
   };
   return scalars;
 }
