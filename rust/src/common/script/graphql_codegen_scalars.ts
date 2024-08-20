@@ -121,6 +121,30 @@ export function getScalars() {
       "output": `import("/gen/base/usr/usr.model.ts").UsrId`,
     },
     
+    // 定时任务
+    "CronJobId": {
+      "input": `import("/gen/cron/cron_job/cron_job.model.ts").CronJobId`,
+      "output": `import("/gen/cron/cron_job/cron_job.model.ts").CronJobId`,
+    },
+    
+    // 定时任务日志
+    "CronJobLogId": {
+      "input": `import("/gen/cron/cron_job_log/cron_job_log.model.ts").CronJobLogId`,
+      "output": `import("/gen/cron/cron_job_log/cron_job_log.model.ts").CronJobLogId`,
+    },
+    
+    // 定时任务日志明细
+    "CronJobLogDetailId": {
+      "input": `import("/gen/cron/cron_job_log_detail/cron_job_log_detail.model.ts").CronJobLogDetailId`,
+      "output": `import("/gen/cron/cron_job_log_detail/cron_job_log_detail.model.ts").CronJobLogDetailId`,
+    },
+    
+    // 任务
+    "JobId": {
+      "input": `import("/gen/cron/job/job.model.ts").JobId`,
+      "output": `import("/gen/cron/job/job.model.ts").JobId`,
+    },
+    
   };
   return scalars;
 }
