@@ -27,7 +27,7 @@ CREATE TABLE if not exists `wshop_card` (
   INDEX(`lbl_seq`, `org_id`, `tenant_id`),
   INDEX(`lbl`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='会员卡';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='会员卡';
  
 ------------------------------------------------------------------ 会员卡充值记录
 drop table if exists `wshop_card_recharge`;
@@ -52,7 +52,7 @@ CREATE TABLE if not exists `wshop_card_recharge` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`transaction_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='会员卡充值记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='会员卡充值记录';
 
 ------------------------------------------------------------------ 充值赠送规则
 drop table if exists `wshop_recharge_rule`;
@@ -75,7 +75,7 @@ CREATE TABLE if not exists `wshop_recharge_rule` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='充值赠送规则';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='充值赠送规则';
 
 ------------------------------------------------------------------ 会员卡消费记录
 drop table if exists `wshop_card_consume`;
@@ -100,7 +100,7 @@ CREATE TABLE if not exists `wshop_card_consume` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`transaction_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='会员卡消费记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='会员卡消费记录';
 
 ------------------------------------------------------------------ 产品类别
 drop table if exists `wshop_pt_type`;
@@ -124,7 +124,7 @@ CREATE TABLE if not exists `wshop_pt_type` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='产品类别';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='产品类别';
 
 ------------------------------------------------------------------ 产品
 drop table if exists `wshop_pt`;
@@ -154,7 +154,7 @@ CREATE TABLE if not exists `wshop_pt` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='产品';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='产品';
 
 ------------------------------------------------------------------ 产品产品类别
 drop table if exists `wshop_pt_pt_type`;
@@ -173,7 +173,7 @@ CREATE TABLE if not exists `wshop_pt_pt_type` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`pt_id`, `pt_type_id`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='产品产品类别';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='产品产品类别';
 
 ------------------------------------------------------------------ 订单
 drop table if exists `wshop_order`;
@@ -207,7 +207,7 @@ CREATE TABLE if not exists `wshop_order` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='订单';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='订单';
 
 ------------------------------------------------------------------ 小程序配置
 drop table if exists `wshop_wxapp_config`;
@@ -230,4 +230,4 @@ CREATE TABLE if not exists `wshop_wxapp_config` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`lbl`, `org_id`, `tenant_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='小程序配置';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='小程序配置';

@@ -208,6 +208,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找小程序配置总数 */
 export async function findCount(
   search?: Readonly<WxappConfigSearch>,
@@ -254,11 +255,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找小程序配置列表
- * @param {WxappConfigSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找小程序配置列表 */
 export async function findAll(
   search?: Readonly<WxappConfigSearch>,
   page?: Readonly<PageInput>,
@@ -485,6 +483,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: WxappConfigInput,
@@ -551,9 +550,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取小程序配置字段注释
- */
+// MARK: getFieldComments
+/** 获取小程序配置字段注释 */
 export async function getFieldComments(): Promise<WxappConfigFieldComment> {
   const n = initN(route_path);
   const fieldComments: WxappConfigFieldComment = {
@@ -580,10 +578,8 @@ export async function getFieldComments(): Promise<WxappConfigFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得小程序配置列表
- * @param {WxappConfigInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得小程序配置列表 */
 export async function findByUnique(
   search0: Readonly<WxappConfigInput>,
   options?: {
@@ -659,6 +655,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 小程序配置 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<WxappConfigInput>,
@@ -696,10 +693,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个小程序配置
- * @param {WxappConfigSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一小程序配置 */
 export async function findOne(
   search?: Readonly<WxappConfigSearch>,
   sort?: SortInput | SortInput[],
@@ -746,10 +741,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找小程序配置
- * @param {WxappConfigId} id
- */
+// MARK: findById
+/** 根据 id 查找小程序配置 */
 export async function findById(
   id?: WxappConfigId | null,
   options?: {
@@ -790,6 +783,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找小程序配置 */
 export async function findByIds(
   ids: WxappConfigId[],
@@ -844,10 +838,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断小程序配置是否存在
- * @param {WxappConfigSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断小程序配置是否存在 */
 export async function exist(
   search?: Readonly<WxappConfigSearch>,
   options?: {
@@ -878,10 +870,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断小程序配置是否存在
- * @param {WxappConfigId} id
- */
+// MARK: existById
+/** 根据id判断小程序配置是否存在 */
 export async function existById(
   id?: Readonly<WxappConfigId | null>,
   options?: {
@@ -932,6 +922,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateIsEnabled
 /** 校验小程序配置是否启用 */
 export async function validateIsEnabled(
   model: Readonly<WxappConfigModel>,
@@ -941,6 +932,7 @@ export async function validateIsEnabled(
   }
 }
 
+// MARK: validateOption
 /** 校验小程序配置是否存在 */
 export async function validateOption(
   model?: WxappConfigModel,
@@ -953,10 +945,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 小程序配置增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 小程序配置增加和修改时校验输入 */
 export async function validate(
   input: Readonly<WxappConfigInput>,
 ) {
@@ -1013,6 +1003,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 小程序配置 */
 export async function create(
   input: Readonly<WxappConfigInput>,
@@ -1053,6 +1044,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 小程序配置 */
 export async function creates(
   inputs: WxappConfigInput[],
@@ -1275,13 +1267,13 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.wshop_wxapp_config`);
 }
 
+// MARK: updateTenantById
 /** 小程序配置 根据 id 修改 租户id */
 export async function updateTenantById(
   id: WxappConfigId,
@@ -1326,6 +1318,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
+// MARK: updateById
 /** 根据 id 修改 小程序配置 */
 export async function updateById(
   id: WxappConfigId,
@@ -1505,6 +1498,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 小程序配置 */
 export async function deleteByIds(
   ids: WxappConfigId[],
@@ -1566,6 +1560,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: getIsEnabledById
 /** 根据 id 查找 小程序配置 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: WxappConfigId,
@@ -1586,6 +1581,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
+// MARK: enableByIds
 /** 根据 ids 启用或者禁用 小程序配置 */
 export async function enableByIds(
   ids: WxappConfigId[],
@@ -1634,6 +1630,7 @@ export async function enableByIds(
   return num;
 }
 
+// MARK: getIsLockedById
 /** 根据 id 查找 小程序配置 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: WxappConfigId,
@@ -1654,6 +1651,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 小程序配置 */
 export async function lockByIds(
   ids: WxappConfigId[],
@@ -1700,6 +1698,7 @@ export async function lockByIds(
   return num;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 小程序配置 */
 export async function revertByIds(
   ids: WxappConfigId[],
@@ -1776,6 +1775,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 小程序配置 */
 export async function forceDeleteByIds(
   ids: WxappConfigId[],
