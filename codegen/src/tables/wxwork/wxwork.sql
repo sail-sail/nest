@@ -27,7 +27,7 @@ CREATE TABLE if not exists `wxwork_wxw_app` (
   INDEX (`corpid`, `agentid`),
   INDEX (`domain_id`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='企微应用';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='企微应用';
 
 ------------------------------------------------------------------------ 企微应用接口凭据
 drop table if exists `wxwork_wxw_app_token`;
@@ -58,7 +58,7 @@ CREATE TABLE `wxwork_wxw_app_token` (
   INDEX (`wxw_app_id`),
   INDEX (`access_token`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='企微应用接口凭据';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='企微应用接口凭据';
 
 ------------------------------------------------------------------------ 企微用户
 drop table if exists `wxwork_wxw_usr`;
@@ -90,7 +90,7 @@ CREATE TABLE `wxwork_wxw_usr` (
   INDEX (`userid`),
   INDEX (`lbl`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='企微用户';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='企微用户';
 
 ------------------------------------------------------------------------ 企微消息
 drop table if exists `wxwork_wxw_msg`;
@@ -117,4 +117,4 @@ CREATE TABLE `wxwork_wxw_msg` (
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='企微消息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='企微消息';
