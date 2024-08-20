@@ -215,6 +215,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找系统字典总数 */
 export async function findCount(
   search?: Readonly<DictSearch>,
@@ -261,11 +262,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找系统字典列表
- * @param {DictSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找系统字典列表 */
 export async function findAll(
   search?: Readonly<DictSearch>,
   page?: Readonly<PageInput>,
@@ -542,6 +540,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: DictInput,
@@ -595,9 +594,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取系统字典字段注释
- */
+// MARK: getFieldComments
+/** 获取系统字典字段注释 */
 export async function getFieldComments(): Promise<DictFieldComment> {
   const n = initN(route_path);
   const fieldComments: DictFieldComment = {
@@ -624,10 +622,8 @@ export async function getFieldComments(): Promise<DictFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得系统字典列表
- * @param {DictInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得系统字典列表 */
 export async function findByUnique(
   search0: Readonly<DictInput>,
   options?: {
@@ -723,6 +719,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 系统字典 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<DictInput>,
@@ -760,10 +757,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个系统字典
- * @param {DictSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一系统字典 */
 export async function findOne(
   search?: Readonly<DictSearch>,
   sort?: SortInput | SortInput[],
@@ -810,10 +805,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找系统字典
- * @param {DictId} id
- */
+// MARK: findById
+/** 根据 id 查找系统字典 */
 export async function findById(
   id?: DictId | null,
   options?: {
@@ -854,6 +847,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找系统字典 */
 export async function findByIds(
   ids: DictId[],
@@ -908,10 +902,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断系统字典是否存在
- * @param {DictSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断系统字典是否存在 */
 export async function exist(
   search?: Readonly<DictSearch>,
   options?: {
@@ -942,10 +934,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断系统字典是否存在
- * @param {DictId} id
- */
+// MARK: existById
+/** 根据id判断系统字典是否存在 */
 export async function existById(
   id?: Readonly<DictId | null>,
   options?: {
@@ -996,6 +986,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateIsEnabled
 /** 校验系统字典是否启用 */
 export async function validateIsEnabled(
   model: Readonly<DictModel>,
@@ -1005,6 +996,7 @@ export async function validateIsEnabled(
   }
 }
 
+// MARK: validateOption
 /** 校验系统字典是否存在 */
 export async function validateOption(
   model?: DictModel,
@@ -1017,10 +1009,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 系统字典增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 系统字典增加和修改时校验输入 */
 export async function validate(
   input: Readonly<DictInput>,
 ) {
@@ -1077,6 +1067,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 系统字典 */
 export async function create(
   input: Readonly<DictInput>,
@@ -1117,6 +1108,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 系统字典 */
 export async function creates(
   inputs: DictInput[],
@@ -1379,9 +1371,8 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.base_dict`);
 }
@@ -1450,6 +1441,7 @@ async function refreshLangByInput(
   }
 }
 
+// MARK: updateById
 /** 根据 id 修改 系统字典 */
 export async function updateById(
   id: DictId,
@@ -1722,6 +1714,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 系统字典 */
 export async function deleteByIds(
   ids: DictId[],
@@ -1820,6 +1813,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: getIsEnabledById
 /** 根据 id 查找 系统字典 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: DictId,
@@ -1840,6 +1834,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
+// MARK: enableByIds
 /** 根据 ids 启用或者禁用 系统字典 */
 export async function enableByIds(
   ids: DictId[],
@@ -1888,6 +1883,7 @@ export async function enableByIds(
   return num;
 }
 
+// MARK: getIsLockedById
 /** 根据 id 查找 系统字典 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: DictId,
@@ -1908,6 +1904,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 系统字典 */
 export async function lockByIds(
   ids: DictId[],
@@ -1954,6 +1951,7 @@ export async function lockByIds(
   return num;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 系统字典 */
 export async function revertByIds(
   ids: DictId[],
@@ -2052,6 +2050,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 系统字典 */
 export async function forceDeleteByIds(
   ids: DictId[],
@@ -2132,7 +2131,8 @@ export async function forceDeleteByIds(
   
   return num;
 }
-  
+
+// MARK: findLastOrderBy
 /** 查找 系统字典 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
