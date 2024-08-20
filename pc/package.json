@@ -24,7 +24,7 @@
     "@vue/reactivity": "3.4.38",
     "@vue/runtime-dom": "3.4.38",
     "@vue/shared": "3.4.38",
-    "@vueuse/core": "11.0.0",
+    "@vueuse/core": "11.0.1",
     "cronstrue": "2.50.0",
     "dayjs": "1.11.12",
     "decimal.js-light": "2.5.1",
@@ -50,7 +50,7 @@
   "devDependencies": {
     "@plugin-web-update-notification/vite": "1.7.1",
     "@types/file-saver": "2.0.7",
-    "@types/node": "22.4.0",
+    "@types/node": "22.4.1",
     "@types/sortablejs": "1.15.8",
     "@unocss/preset-rem-to-px": "0.62.2",
     "@vitejs/plugin-vue": "5.1.2",
