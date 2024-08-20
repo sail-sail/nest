@@ -78,3 +78,19 @@ type TenantId = Distinct<string, typeof tenantId>;
 declare const usrId: unique symbol;
 /** 用户 */
 type UsrId = Distinct<string, typeof usrId>;
+
+declare const cron_jobId: unique symbol;
+/** 定时任务 */
+type CronJobId = Distinct<string, typeof cron_jobId>;
+
+declare const cron_job_logId: unique symbol;
+/** 定时任务日志 */
+type CronJobLogId = Distinct<string, typeof cron_job_logId>;
+
+declare const cron_job_log_detailId: unique symbol;
+/** 定时任务日志明细 */
+type CronJobLogDetailId = Distinct<string, typeof cron_job_log_detailId>;
+
+declare const jobId: unique symbol;
+/** 任务 */
+type JobId = Distinct<string, typeof jobId>;
