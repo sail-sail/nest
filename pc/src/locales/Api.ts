@@ -25,6 +25,6 @@ export async function n0(
       code,
     },
   }, opt);
-  const data = res.n;
+  const data = res?.n ?? code;
   return data;
 }
