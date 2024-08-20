@@ -212,6 +212,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找业务字典明细总数 */
 export async function findCount(
   search?: Readonly<DictbizDetailSearch>,
@@ -258,11 +259,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找业务字典明细列表
- * @param {DictbizDetailSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找业务字典明细列表 */
 export async function findAll(
   search?: Readonly<DictbizDetailSearch>,
   page?: Readonly<PageInput>,
@@ -487,6 +485,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: DictbizDetailInput,
@@ -553,9 +552,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取业务字典明细字段注释
- */
+// MARK: getFieldComments
+/** 获取业务字典明细字段注释 */
 export async function getFieldComments(): Promise<DictbizDetailFieldComment> {
   const n = initN(route_path);
   const fieldComments: DictbizDetailFieldComment = {
@@ -582,10 +580,8 @@ export async function getFieldComments(): Promise<DictbizDetailFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得业务字典明细列表
- * @param {DictbizDetailInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得业务字典明细列表 */
 export async function findByUnique(
   search0: Readonly<DictbizDetailInput>,
   options?: {
@@ -672,6 +668,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 业务字典明细 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<DictbizDetailInput>,
@@ -709,10 +706,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个业务字典明细
- * @param {DictbizDetailSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一业务字典明细 */
 export async function findOne(
   search?: Readonly<DictbizDetailSearch>,
   sort?: SortInput | SortInput[],
@@ -759,10 +754,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找业务字典明细
- * @param {DictbizDetailId} id
- */
+// MARK: findById
+/** 根据 id 查找业务字典明细 */
 export async function findById(
   id?: DictbizDetailId | null,
   options?: {
@@ -803,6 +796,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找业务字典明细 */
 export async function findByIds(
   ids: DictbizDetailId[],
@@ -857,10 +851,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断业务字典明细是否存在
- * @param {DictbizDetailSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断业务字典明细是否存在 */
 export async function exist(
   search?: Readonly<DictbizDetailSearch>,
   options?: {
@@ -891,10 +883,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断业务字典明细是否存在
- * @param {DictbizDetailId} id
- */
+// MARK: existById
+/** 根据id判断业务字典明细是否存在 */
 export async function existById(
   id?: Readonly<DictbizDetailId | null>,
   options?: {
@@ -945,6 +935,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateIsEnabled
 /** 校验业务字典明细是否启用 */
 export async function validateIsEnabled(
   model: Readonly<DictbizDetailModel>,
@@ -954,6 +945,7 @@ export async function validateIsEnabled(
   }
 }
 
+// MARK: validateOption
 /** 校验业务字典明细是否存在 */
 export async function validateOption(
   model?: DictbizDetailModel,
@@ -966,10 +958,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 业务字典明细增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 业务字典明细增加和修改时校验输入 */
 export async function validate(
   input: Readonly<DictbizDetailInput>,
 ) {
@@ -1026,6 +1016,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 业务字典明细 */
 export async function create(
   input: Readonly<DictbizDetailInput>,
@@ -1066,6 +1057,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 业务字典明细 */
 export async function creates(
   inputs: DictbizDetailInput[],
@@ -1323,13 +1315,13 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.base_dictbiz_detail`);
 }
 
+// MARK: updateTenantById
 /** 业务字典明细 根据 id 修改 租户id */
 export async function updateTenantById(
   id: DictbizDetailId,
@@ -1374,6 +1366,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
+// MARK: updateById
 /** 根据 id 修改 业务字典明细 */
 export async function updateById(
   id: DictbizDetailId,
@@ -1588,6 +1581,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 业务字典明细 */
 export async function deleteByIds(
   ids: DictbizDetailId[],
@@ -1665,6 +1659,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: getIsEnabledById
 /** 根据 id 查找 业务字典明细 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: DictbizDetailId,
@@ -1685,6 +1680,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
+// MARK: enableByIds
 /** 根据 ids 启用或者禁用 业务字典明细 */
 export async function enableByIds(
   ids: DictbizDetailId[],
@@ -1733,6 +1729,7 @@ export async function enableByIds(
   return num;
 }
 
+// MARK: getIsLockedById
 /** 根据 id 查找 业务字典明细 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: DictbizDetailId,
@@ -1753,6 +1750,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 业务字典明细 */
 export async function lockByIds(
   ids: DictbizDetailId[],
@@ -1799,6 +1797,7 @@ export async function lockByIds(
   return num;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 业务字典明细 */
 export async function revertByIds(
   ids: DictbizDetailId[],
@@ -1875,6 +1874,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 业务字典明细 */
 export async function forceDeleteByIds(
   ids: DictbizDetailId[],
@@ -1933,7 +1933,8 @@ export async function forceDeleteByIds(
   
   return num;
 }
-  
+
+// MARK: findLastOrderBy
 /** 查找 业务字典明细 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {

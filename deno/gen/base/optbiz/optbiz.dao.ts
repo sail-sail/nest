@@ -201,6 +201,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找业务选项总数 */
 export async function findCount(
   search?: Readonly<OptbizSearch>,
@@ -247,11 +248,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找业务选项列表
- * @param {OptbizSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找业务选项列表 */
 export async function findAll(
   search?: Readonly<OptbizSearch>,
   page?: Readonly<PageInput>,
@@ -461,6 +459,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: OptbizInput,
@@ -501,9 +500,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取业务选项字段注释
- */
+// MARK: getFieldComments
+/** 获取业务选项字段注释 */
 export async function getFieldComments(): Promise<OptbizFieldComment> {
   const n = initN(route_path);
   const fieldComments: OptbizFieldComment = {
@@ -529,10 +527,8 @@ export async function getFieldComments(): Promise<OptbizFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得业务选项列表
- * @param {OptbizInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得业务选项列表 */
 export async function findByUnique(
   search0: Readonly<OptbizInput>,
   options?: {
@@ -614,6 +610,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 业务选项 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<OptbizInput>,
@@ -651,10 +648,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个业务选项
- * @param {OptbizSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一业务选项 */
 export async function findOne(
   search?: Readonly<OptbizSearch>,
   sort?: SortInput | SortInput[],
@@ -701,10 +696,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找业务选项
- * @param {OptbizId} id
- */
+// MARK: findById
+/** 根据 id 查找业务选项 */
 export async function findById(
   id?: OptbizId | null,
   options?: {
@@ -745,6 +738,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找业务选项 */
 export async function findByIds(
   ids: OptbizId[],
@@ -799,10 +793,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断业务选项是否存在
- * @param {OptbizSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断业务选项是否存在 */
 export async function exist(
   search?: Readonly<OptbizSearch>,
   options?: {
@@ -833,10 +825,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断业务选项是否存在
- * @param {OptbizId} id
- */
+// MARK: existById
+/** 根据id判断业务选项是否存在 */
 export async function existById(
   id?: Readonly<OptbizId | null>,
   options?: {
@@ -887,6 +877,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateIsEnabled
 /** 校验业务选项是否启用 */
 export async function validateIsEnabled(
   model: Readonly<OptbizModel>,
@@ -896,6 +887,7 @@ export async function validateIsEnabled(
   }
 }
 
+// MARK: validateOption
 /** 校验业务选项是否存在 */
 export async function validateOption(
   model?: OptbizModel,
@@ -908,10 +900,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 业务选项增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 业务选项增加和修改时校验输入 */
 export async function validate(
   input: Readonly<OptbizInput>,
 ) {
@@ -968,6 +958,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 业务选项 */
 export async function create(
   input: Readonly<OptbizInput>,
@@ -1008,6 +999,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 业务选项 */
 export async function creates(
   inputs: OptbizInput[],
@@ -1265,13 +1257,13 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.base_optbiz`);
 }
 
+// MARK: updateTenantById
 /** 业务选项 根据 id 修改 租户id */
 export async function updateTenantById(
   id: OptbizId,
@@ -1316,9 +1308,8 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-/**
- * 根据 id 获取业务选项版本号
- */
+// MARK: getVersionById
+/** 根据 id 获取业务选项版本号 */
 export async function getVersionById(
   id: OptbizId,
 ): Promise<number> {
@@ -1337,6 +1328,7 @@ export async function getVersionById(
   return version;
 }
 
+// MARK: updateById
 /** 根据 id 修改 业务选项 */
 export async function updateById(
   id: OptbizId,
@@ -1564,6 +1556,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 业务选项 */
 export async function deleteByIds(
   ids: OptbizId[],
@@ -1641,6 +1634,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: getIsEnabledById
 /** 根据 id 查找 业务选项 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: OptbizId,
@@ -1661,6 +1655,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
+// MARK: enableByIds
 /** 根据 ids 启用或者禁用 业务选项 */
 export async function enableByIds(
   ids: OptbizId[],
@@ -1709,6 +1704,7 @@ export async function enableByIds(
   return num;
 }
 
+// MARK: getIsLockedById
 /** 根据 id 查找 业务选项 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: OptbizId,
@@ -1729,6 +1725,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 业务选项 */
 export async function lockByIds(
   ids: OptbizId[],
@@ -1775,6 +1772,7 @@ export async function lockByIds(
   return num;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 业务选项 */
 export async function revertByIds(
   ids: OptbizId[],
@@ -1851,6 +1849,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 业务选项 */
 export async function forceDeleteByIds(
   ids: OptbizId[],
@@ -1909,7 +1908,8 @@ export async function forceDeleteByIds(
   
   return num;
 }
-  
+
+// MARK: findLastOrderBy
 /** 查找 业务选项 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
