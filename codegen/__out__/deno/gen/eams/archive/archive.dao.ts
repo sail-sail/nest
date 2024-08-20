@@ -202,6 +202,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找全宗设置总数 */
 export async function findCount(
   search?: Readonly<ArchiveSearch>,
@@ -248,11 +249,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找全宗设置列表
- * @param {ArchiveSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找全宗设置列表 */
 export async function findAll(
   search?: Readonly<ArchiveSearch>,
   page?: Readonly<PageInput>,
@@ -427,6 +425,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: ArchiveInput,
@@ -463,9 +462,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取全宗设置字段注释
- */
+// MARK: getFieldComments
+/** 获取全宗设置字段注释 */
 export async function getFieldComments(): Promise<ArchiveFieldComment> {
   const n = initN(route_path);
   const fieldComments: ArchiveFieldComment = {
@@ -488,10 +486,8 @@ export async function getFieldComments(): Promise<ArchiveFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得全宗设置列表
- * @param {ArchiveInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得全宗设置列表 */
 export async function findByUnique(
   search0: Readonly<ArchiveInput>,
   options?: {
@@ -587,6 +583,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 全宗设置 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<ArchiveInput>,
@@ -624,10 +621,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个全宗设置
- * @param {ArchiveSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一全宗设置 */
 export async function findOne(
   search?: Readonly<ArchiveSearch>,
   sort?: SortInput | SortInput[],
@@ -674,10 +669,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找全宗设置
- * @param {ArchiveId} id
- */
+// MARK: findById
+/** 根据 id 查找全宗设置 */
 export async function findById(
   id?: ArchiveId | null,
   options?: {
@@ -718,6 +711,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找全宗设置 */
 export async function findByIds(
   ids: ArchiveId[],
@@ -772,10 +766,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断全宗设置是否存在
- * @param {ArchiveSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断全宗设置是否存在 */
 export async function exist(
   search?: Readonly<ArchiveSearch>,
   options?: {
@@ -806,10 +798,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断全宗设置是否存在
- * @param {ArchiveId} id
- */
+// MARK: existById
+/** 根据id判断全宗设置是否存在 */
 export async function existById(
   id?: Readonly<ArchiveId | null>,
   options?: {
@@ -860,6 +850,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateOption
 /** 校验全宗设置是否存在 */
 export async function validateOption(
   model?: ArchiveModel,
@@ -872,10 +863,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 全宗设置增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 全宗设置增加和修改时校验输入 */
 export async function validate(
   input: Readonly<ArchiveInput>,
 ) {
@@ -932,6 +921,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 全宗设置 */
 export async function create(
   input: Readonly<ArchiveInput>,
@@ -972,6 +962,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 全宗设置 */
 export async function creates(
   inputs: ArchiveInput[],
@@ -1214,13 +1205,13 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.eams_archive`);
 }
 
+// MARK: updateTenantById
 /** 全宗设置 根据 id 修改 租户id */
 export async function updateTenantById(
   id: ArchiveId,
@@ -1265,6 +1256,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
+// MARK: updateById
 /** 根据 id 修改 全宗设置 */
 export async function updateById(
   id: ArchiveId,
@@ -1461,6 +1453,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 全宗设置 */
 export async function deleteByIds(
   ids: ArchiveId[],
@@ -1538,6 +1531,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 全宗设置 */
 export async function revertByIds(
   ids: ArchiveId[],
@@ -1614,6 +1608,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 全宗设置 */
 export async function forceDeleteByIds(
   ids: ArchiveId[],
@@ -1672,7 +1667,8 @@ export async function forceDeleteByIds(
   
   return num;
 }
-  
+
+// MARK: findLastOrderBy
 /** 查找 全宗设置 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
