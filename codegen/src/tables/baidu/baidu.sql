@@ -25,7 +25,7 @@ CREATE TABLE `baidu_baidu_app` (
   INDEX (`lbl`, `tenant_id`, `is_deleted`),
   INDEX (`appid`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='百度应用';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='百度应用';
 
 ------------------------------------------------------------------------ 百度接口凭据
 drop table if exists `baidu_baidu_app_token`;
@@ -48,4 +48,4 @@ CREATE TABLE `baidu_baidu_app_token` (
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`baidu_app_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='百度接口凭据';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='百度接口凭据';

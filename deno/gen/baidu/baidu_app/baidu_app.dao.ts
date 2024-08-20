@@ -213,6 +213,7 @@ async function getFromQuery(
   return fromQuery;
 }
 
+// MARK: findCount
 /** 根据条件查找百度应用总数 */
 export async function findCount(
   search?: Readonly<BaiduAppSearch>,
@@ -259,11 +260,8 @@ export async function findCount(
   return result;
 }
 
-/**
- * 根据搜索条件和分页查找百度应用列表
- * @param {BaiduAppSearch} search? 搜索条件
- * @param {SortInput|SortInput[]} sort? 排序
- */
+// MARK: findAll
+/** 根据搜索条件和分页查找百度应用列表 */
 export async function findAll(
   search?: Readonly<BaiduAppSearch>,
   page?: Readonly<PageInput>,
@@ -473,6 +471,7 @@ export async function findAll(
   return result;
 }
 
+// MARK: setIdByLbl
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
 export async function setIdByLbl(
   input: BaiduAppInput,
@@ -513,9 +512,8 @@ export async function setIdByLbl(
   }
 }
 
-/**
- * 获取百度应用字段注释
- */
+// MARK: getFieldComments
+/** 获取百度应用字段注释 */
 export async function getFieldComments(): Promise<BaiduAppFieldComment> {
   const n = initN(route_path);
   const fieldComments: BaiduAppFieldComment = {
@@ -543,10 +541,8 @@ export async function getFieldComments(): Promise<BaiduAppFieldComment> {
   return fieldComments;
 }
 
-/**
- * 通过唯一约束获得百度应用列表
- * @param {BaiduAppInput} search0
- */
+// MARK: findByUnique
+/** 通过唯一约束获得百度应用列表 */
 export async function findByUnique(
   search0: Readonly<BaiduAppInput>,
   options?: {
@@ -642,6 +638,7 @@ export function equalsByUnique(
   return false;
 }
 
+// MARK: checkByUnique
 /** 通过唯一约束检查 百度应用 是否已经存在 */
 export async function checkByUnique(
   input: Readonly<BaiduAppInput>,
@@ -679,10 +676,8 @@ export async function checkByUnique(
   return;
 }
 
-/**
- * 根据条件查找第一个百度应用
- * @param {BaiduAppSearch} search?
- */
+// MARK: findOne
+/** 根据条件查找第一百度应用 */
 export async function findOne(
   search?: Readonly<BaiduAppSearch>,
   sort?: SortInput | SortInput[],
@@ -729,10 +724,8 @@ export async function findOne(
   return model;
 }
 
-/**
- * 根据 id 查找百度应用
- * @param {BaiduAppId} id
- */
+// MARK: findById
+/** 根据 id 查找百度应用 */
 export async function findById(
   id?: BaiduAppId | null,
   options?: {
@@ -773,6 +766,7 @@ export async function findById(
   return model;
 }
 
+// MARK: findByIds
 /** 根据 ids 查找百度应用 */
 export async function findByIds(
   ids: BaiduAppId[],
@@ -827,10 +821,8 @@ export async function findByIds(
   return models2;
 }
 
-/**
- * 根据搜索条件判断百度应用是否存在
- * @param {BaiduAppSearch} search?
- */
+// MARK: exist
+/** 根据搜索条件判断百度应用是否存在 */
 export async function exist(
   search?: Readonly<BaiduAppSearch>,
   options?: {
@@ -861,10 +853,8 @@ export async function exist(
   return exist;
 }
 
-/**
- * 根据id判断百度应用是否存在
- * @param {BaiduAppId} id
- */
+// MARK: existById
+/** 根据id判断百度应用是否存在 */
 export async function existById(
   id?: Readonly<BaiduAppId | null>,
   options?: {
@@ -915,6 +905,7 @@ export async function existById(
   return result;
 }
 
+// MARK: validateIsEnabled
 /** 校验百度应用是否启用 */
 export async function validateIsEnabled(
   model: Readonly<BaiduAppModel>,
@@ -924,6 +915,7 @@ export async function validateIsEnabled(
   }
 }
 
+// MARK: validateOption
 /** 校验百度应用是否存在 */
 export async function validateOption(
   model?: BaiduAppModel,
@@ -936,10 +928,8 @@ export async function validateOption(
   return model;
 }
 
-/**
- * 百度应用增加和修改时校验输入
- * @param input 
- */
+// MARK: validate
+/** 百度应用增加和修改时校验输入 */
 export async function validate(
   input: Readonly<BaiduAppInput>,
 ) {
@@ -1010,6 +1000,7 @@ export async function validate(
   
 }
 
+// MARK: create
 /** 创建 百度应用 */
 export async function create(
   input: Readonly<BaiduAppInput>,
@@ -1050,6 +1041,7 @@ export async function create(
   return id;
 }
 
+// MARK: creates
 /** 批量创建 百度应用 */
 export async function creates(
   inputs: BaiduAppInput[],
@@ -1312,13 +1304,13 @@ async function _creates(
   return ids2;
 }
 
-/**
- * 删除缓存
- */
+// MARK: delCache
+/** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.baidu_baidu_app`);
 }
 
+// MARK: updateTenantById
 /** 百度应用 根据 id 修改 租户id */
 export async function updateTenantById(
   id: BaiduAppId,
@@ -1363,6 +1355,7 @@ export async function updateTenantById(
   return affectedRows;
 }
 
+// MARK: updateById
 /** 根据 id 修改 百度应用 */
 export async function updateById(
   id: BaiduAppId,
@@ -1583,6 +1576,7 @@ export async function updateById(
   return id;
 }
 
+// MARK: deleteByIds
 /** 根据 ids 删除 百度应用 */
 export async function deleteByIds(
   ids: BaiduAppId[],
@@ -1660,6 +1654,7 @@ export async function deleteByIds(
   return affectedRows;
 }
 
+// MARK: getIsEnabledById
 /** 根据 id 查找 百度应用 是否已启用, 不存在则返回 undefined */
 export async function getIsEnabledById(
   id: BaiduAppId,
@@ -1680,6 +1675,7 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
+// MARK: enableByIds
 /** 根据 ids 启用或者禁用 百度应用 */
 export async function enableByIds(
   ids: BaiduAppId[],
@@ -1728,6 +1724,7 @@ export async function enableByIds(
   return num;
 }
 
+// MARK: getIsLockedById
 /** 根据 id 查找 百度应用 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
 export async function getIsLockedById(
   id: BaiduAppId,
@@ -1748,6 +1745,7 @@ export async function getIsLockedById(
   return is_locked;
 }
 
+// MARK: lockByIds
 /** 根据 ids 锁定或者解锁 百度应用 */
 export async function lockByIds(
   ids: BaiduAppId[],
@@ -1794,6 +1792,7 @@ export async function lockByIds(
   return num;
 }
 
+// MARK: revertByIds
 /** 根据 ids 还原 百度应用 */
 export async function revertByIds(
   ids: BaiduAppId[],
@@ -1870,6 +1869,7 @@ export async function revertByIds(
   return num;
 }
 
+// MARK: forceDeleteByIds
 /** 根据 ids 彻底删除 百度应用 */
 export async function forceDeleteByIds(
   ids: BaiduAppId[],
@@ -1928,7 +1928,8 @@ export async function forceDeleteByIds(
   
   return num;
 }
-  
+
+// MARK: findLastOrderBy
 /** 查找 百度应用 order_by 字段的最大值 */
 export async function findLastOrderBy(
   options?: {
