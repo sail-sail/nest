@@ -1632,7 +1632,7 @@ pub struct CtxBuilder<'a> {
 
 impl <'a> CtxBuilder<'a> {
   
-  fn new(
+  pub fn new(
     gql_ctx: Option<&'a async_graphql::Context<'a>>,
   ) -> CtxBuilder<'a> {
     let now = Local::now().naive_local();
