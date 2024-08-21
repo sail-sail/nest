@@ -182,7 +182,7 @@ pub async fn update_by_id(
   ).await?;
   
   let cron = input.cron.clone();
-  let is_enabled = input.is_enabled.clone();
+  let is_enabled = input.is_enabled;
   
   let cron_job_id = cron_job_dao::update_by_id(
     id,

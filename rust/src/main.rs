@@ -112,7 +112,7 @@ async fn main() -> Result<(), std::io::Error> {
         crate::common::context::CtxBuilder::new(None)
           .build()
           .scope({
-            src::cron::cron_job::cron_job_dao::init_cron_jobs()
+            crate::src::cron::cron_job::cron_job_dao::init_cron_jobs()
           }).await.unwrap();
       });
     }
