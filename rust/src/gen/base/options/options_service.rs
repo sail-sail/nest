@@ -256,13 +256,13 @@ pub async fn get_is_enabled_by_id(
 #[allow(dead_code)]
 pub async fn enable_by_ids(
   ids: Vec<OptionsId>,
-  is_locked: u8,
+  is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = options_dao::enable_by_ids(
     ids,
-    is_locked,
+    is_enabled,
     options,
   ).await?;
   
