@@ -126,6 +126,14 @@ async function getWhereQuery(
   if (search?.ids != null) {
     whereQuery += ` and t.id in ${ args.push(search.ids) }`;
   }
+  if (search?.seq != null) {
+    if (search.seq[0] != null) {
+      whereQuery += ` and t.seq>=${ args.push(search.seq[0]) }`;
+    }
+    if (search.seq[1] != null) {
+      whereQuery += ` and t.seq<=${ args.push(search.seq[1]) }`;
+    }
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
@@ -610,6 +618,7 @@ export async function getFieldComments(): Promise<CronJobFieldComment> {
   const n = initN(route_path);
   const fieldComments: CronJobFieldComment = {
     id: await n("ID"),
+    seq: await n("序号"),
     lbl: await n("名称"),
     job_id: await n("任务"),
     job_id_lbl: await n("任务"),
@@ -1217,7 +1226,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into cron_cron_job(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,job_id,cron,timezone,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into cron_cron_job(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,seq,lbl,job_id,cron,timezone,is_locked,is_enabled,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1312,6 +1321,11 @@ async function _creates(
       }
       if (input.update_usr_id_lbl != null) {
         sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.seq != null) {
+        sql += `,${ args.push(input.seq) }`;
       } else {
         sql += ",default";
       }
@@ -1504,6 +1518,12 @@ export async function updateById(
   const args = new QueryArgs();
   let sql = `update cron_cron_job set `;
   let updateFldNum = 0;
+  if (input.seq != null) {
+    if (input.seq != oldModel.seq) {
+      sql += `seq=${ args.push(input.seq) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl=${ args.push(input.lbl) },`;
