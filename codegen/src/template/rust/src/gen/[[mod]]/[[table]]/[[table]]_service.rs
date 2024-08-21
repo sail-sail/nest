@@ -573,7 +573,7 @@ pub async fn get_is_enabled_by_id(
 #[allow(dead_code)]
 pub async fn enable_by_ids(
   ids: Vec<<#=Table_Up#>Id>,
-  is_locked: u8,
+  is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {<#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -587,7 +587,7 @@ pub async fn enable_by_ids(
   
   let num = <#=table#>_dao::enable_by_ids(
     ids,
-    is_locked,
+    is_enabled,
     options,
   ).await?;<#
   if (mod === "base" && table === "i18n") {
