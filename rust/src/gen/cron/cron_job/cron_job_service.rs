@@ -276,7 +276,7 @@ pub async fn get_is_enabled_by_id(
 #[allow(dead_code)]
 pub async fn enable_by_ids(
   ids: Vec<CronJobId>,
-  is_locked: u8,
+  is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
@@ -292,16 +292,16 @@ pub async fn enable_by_ids(
   
   let num = cron_job_dao::enable_by_ids(
     ids,
-    is_locked,
+    is_enabled,
     options,
   ).await?;
   
   for model in models {
-    if model.is_enabled == 1 && is_locked == 0 {
+    if model.is_enabled == 1 && is_enabled == 0 {
       crate::src::cron::cron_job::cron_job_dao::remove_task(
         model.id.clone(),
       ).await?;
-    } else if model.is_enabled == 0 && is_locked == 1 {
+    } else if model.is_enabled == 0 && is_enabled == 1 {
       crate::src::cron::cron_job::cron_job_dao::add_task(
         model.id.clone(),
       ).await?;
