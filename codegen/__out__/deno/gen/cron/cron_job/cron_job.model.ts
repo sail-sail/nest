@@ -19,6 +19,8 @@ declare global {
   type CronJobId = Distinct<string, typeof cronJobId>;
 
   interface CronJobSearch extends CronJobSearchType {
+    /** 序号 */
+    seq?: [(number|undefined|null), (number|undefined|null)];
     /** Cron表达式 */
     cron?: string;
     cron_like?: string;
@@ -39,6 +41,8 @@ declare global {
   }
 
   interface CronJobModel extends CronJobModelType {
+    /** 序号 */
+    seq: number;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -51,6 +55,8 @@ declare global {
   }
 
   interface CronJobInput extends CronJobInputType {
+    /** 序号 */
+    seq?: number | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
