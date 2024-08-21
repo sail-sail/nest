@@ -60,6 +60,10 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "seq",
+        onlyCodegenDeno: true,
+      },
+      {
         COLUMN_NAME: "lbl",
         width: 320,
         foreignTabs: [

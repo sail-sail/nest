@@ -4,7 +4,7 @@ CREATE TABLE if not exists `cron_job` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `code` varchar(100) NOT NULL DEFAULT '' COMMENT '编码',
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
-  `is_locked` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '锁定,dict:is_locked',
+  `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
@@ -29,11 +29,12 @@ CREATE TABLE if not exists `cron_job` (
 drop table if exists `cron_cron_job`;
 CREATE TABLE if not exists `cron_cron_job` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `seq` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '序号',
   `lbl` varchar(50) NOT NULL DEFAULT '' COMMENT '名称',
   `job_id` varchar(22) NOT NULL DEFAULT '' COMMENT '任务',
   `cron` varchar(50) NOT NULL DEFAULT '' COMMENT 'Cron表达式',
   `timezone` varchar(20) NOT NULL DEFAULT 'Asia/Shanghai' COMMENT '时区,dict:cron_job_timezone',
-  `is_locked` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '锁定,dict:is_locked',
+  `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
@@ -49,6 +50,7 @@ CREATE TABLE if not exists `cron_cron_job` (
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX(`job_id`, `cron`, `tenant_id`, `is_deleted`),
+  UNIQUE KEY (`seq`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='定时任务';
 
