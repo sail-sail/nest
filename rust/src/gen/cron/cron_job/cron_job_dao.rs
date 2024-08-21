@@ -67,7 +67,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 15 * 2);
+  let mut where_query = String::with_capacity(80 * 16 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -122,6 +122,23 @@ async fn get_where_query(
     if let Some(tenant_id) = tenant_id {
       where_query.push_str(" and t.tenant_id=?");
       args.push(tenant_id.into());
+    }
+  }
+  // 序号
+  {
+    let mut seq = match search {
+      Some(item) => item.seq.unwrap_or_default(),
+      None => Default::default(),
+    };
+    let seq_gt = seq[0].take();
+    let seq_lt = seq[1].take();
+    if let Some(seq_gt) = seq_gt {
+      where_query.push_str(" and t.seq >= ?");
+      args.push(seq_gt.into());
+    }
+    if let Some(seq_lt) = seq_lt {
+      where_query.push_str(" and t.seq <= ?");
+      args.push(seq_lt.into());
     }
   }
   // 名称
@@ -841,6 +858,7 @@ pub async fn get_field_comments(
   
   let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
     "ID".into(),
+    "序号".into(),
     "名称".into(),
     "任务".into(),
     "任务".into(),
@@ -877,26 +895,27 @@ pub async fn get_field_comments(
   
   let field_comments = CronJobFieldComment {
     id: vec[0].to_owned(),
-    lbl: vec[1].to_owned(),
-    job_id: vec[2].to_owned(),
-    job_id_lbl: vec[3].to_owned(),
-    cron: vec[4].to_owned(),
-    timezone: vec[5].to_owned(),
-    timezone_lbl: vec[6].to_owned(),
-    is_locked: vec[7].to_owned(),
-    is_locked_lbl: vec[8].to_owned(),
-    is_enabled: vec[9].to_owned(),
-    is_enabled_lbl: vec[10].to_owned(),
-    order_by: vec[11].to_owned(),
-    rem: vec[12].to_owned(),
-    create_usr_id: vec[13].to_owned(),
-    create_usr_id_lbl: vec[14].to_owned(),
-    create_time: vec[15].to_owned(),
-    create_time_lbl: vec[16].to_owned(),
-    update_usr_id: vec[17].to_owned(),
-    update_usr_id_lbl: vec[18].to_owned(),
-    update_time: vec[19].to_owned(),
-    update_time_lbl: vec[20].to_owned(),
+    seq: vec[1].to_owned(),
+    lbl: vec[2].to_owned(),
+    job_id: vec[3].to_owned(),
+    job_id_lbl: vec[4].to_owned(),
+    cron: vec[5].to_owned(),
+    timezone: vec[6].to_owned(),
+    timezone_lbl: vec[7].to_owned(),
+    is_locked: vec[8].to_owned(),
+    is_locked_lbl: vec[9].to_owned(),
+    is_enabled: vec[10].to_owned(),
+    is_enabled_lbl: vec[11].to_owned(),
+    order_by: vec[12].to_owned(),
+    rem: vec[13].to_owned(),
+    create_usr_id: vec[14].to_owned(),
+    create_usr_id_lbl: vec[15].to_owned(),
+    create_time: vec[16].to_owned(),
+    create_time_lbl: vec[17].to_owned(),
+    update_usr_id: vec[18].to_owned(),
+    update_usr_id_lbl: vec[19].to_owned(),
+    update_time: vec[20].to_owned(),
+    update_time_lbl: vec[21].to_owned(),
   };
   Ok(field_comments)
 }
@@ -1588,7 +1607,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 15 + 20);
+  let mut sql_fields = String::with_capacity(80 * 16 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1598,6 +1617,8 @@ async fn _creates(
   sql_fields += ",update_usr_id";
   sql_fields += ",update_usr_id_lbl";
   sql_fields += ",tenant_id";
+  // 序号
+  sql_fields += ",seq";
   // 名称
   sql_fields += ",lbl";
   // 任务
@@ -1616,7 +1637,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 15 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 16 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1739,6 +1760,13 @@ async fn _creates(
     } else if let Some(tenant_id) = get_auth_tenant_id() {
       sql_values += ",?";
       args.push(tenant_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 序号
+    if let Some(seq) = input.seq {
+      sql_values += ",?";
+      args.push(seq.into());
     } else {
       sql_values += ",default";
     }
@@ -2021,7 +2049,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 15 + 20);
+  let mut sql_fields = String::with_capacity(80 * 16 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2029,6 +2057,12 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "tenant_id=?,";
     args.push(tenant_id.into());
+  }
+  // 序号
+  if let Some(seq) = input.seq {
+    field_num += 1;
+    sql_fields += "seq=?,";
+    args.push(seq.into());
   }
   // 名称
   if let Some(lbl) = input.lbl {
