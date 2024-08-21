@@ -122,6 +122,7 @@ async fn new_task(
   Ok(())
 }
 
+#[allow(dead_code)]
 pub async fn init_cron_jobs() -> Result<()> {
   
   let cron_job_models = find_all_cron_job(
