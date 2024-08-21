@@ -53,6 +53,9 @@ pub struct CronJobModel {
   pub tenant_id: TenantId,
   /// ID
   pub id: CronJobId,
+  /// 序号
+  #[graphql(skip)]
+  pub seq: u32,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
@@ -115,6 +118,8 @@ impl FromRow<'_, MySqlRow> for CronJobModel {
     let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: CronJobId = row.try_get("id")?;
+    // 序号
+    let seq: u32 = row.try_get("seq")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 任务
@@ -163,6 +168,7 @@ impl FromRow<'_, MySqlRow> for CronJobModel {
       tenant_id,
       is_deleted,
       id,
+      seq,
       lbl,
       job_id,
       job_id_lbl,
@@ -196,6 +202,9 @@ pub struct CronJobFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
+  /// 序号
+  #[graphql(skip)]
+  pub seq: String,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
@@ -269,6 +278,9 @@ pub struct CronJobSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
+  /// 序号
+  #[graphql(skip)]
+  pub seq: Option<[Option<u32>; 2]>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -360,6 +372,10 @@ impl std::fmt::Debug for CronJobSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
+    // 序号
+    if let Some(ref seq) = self.seq {
+      item = item.field("seq", seq);
+    }
     // 名称
     if let Some(ref lbl) = self.lbl {
       item = item.field("lbl", lbl);
@@ -442,6 +458,9 @@ pub struct CronJobInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
+  /// 序号
+  #[graphql(skip)]
+  pub seq: Option<u32>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -516,6 +535,8 @@ impl From<CronJobModel> for CronJobInput {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
+      // 序号
+      seq: model.seq.into(),
       // 名称
       lbl: model.lbl.into(),
       // 任务
@@ -562,6 +583,8 @@ impl From<CronJobInput> for CronJobSearch {
       // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
+      // 序号
+      seq: input.seq.map(|x| [Some(x), Some(x)]),
       // 名称
       lbl: input.lbl,
       // 任务

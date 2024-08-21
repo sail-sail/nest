@@ -103,6 +103,21 @@ async fn main() -> Result<(), std::io::Error> {
     }
   });
   
+  // 定时任务
+  let cron_startup = std::env::var_os("cron_startup");
+  if let Some(cron_startup) = cron_startup {
+    let cron_startup = cron_startup.to_str().unwrap();
+    if cron_startup == "true" {
+      tokio::spawn(async move {
+        crate::common::context::CtxBuilder::new(None)
+          .build()
+          .scope({
+            src::cron::cron_job::cron_job_dao::init_cron_jobs()
+          }).await.unwrap();
+      });
+    }
+  }
+  
   color_backtrace::install();
   
   let schema: QuerySchema = Schema::build(

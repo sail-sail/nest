@@ -174,11 +174,34 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
+  let cron_job_old_model = cron_job_dao::validate_option(
+    cron_job_dao::find_by_id(
+      id.clone(),
+      None,
+    ).await?
+  ).await?;
+  
+  let cron = input.cron.clone();
+  let is_enabled = input.is_enabled.clone();
+  
   let cron_job_id = cron_job_dao::update_by_id(
     id,
     input,
     options,
   ).await?;
+  
+  // 如果 cron 或者 is_enabled 发生变化, 则重新添加定时任务
+  if (cron.is_some() && cron_job_old_model.cron != cron.unwrap()) ||
+    (is_enabled.is_some() && is_enabled.unwrap() == 0 && cron_job_old_model.is_enabled == 1)
+  {
+    crate::src::cron::cron_job::cron_job_dao::remove_task(
+      cron_job_id.clone(),
+    ).await?;
+    
+    crate::src::cron::cron_job::cron_job_dao::add_task(
+      cron_job_id.clone(),
+    ).await?;
+  }
   
   Ok(cron_job_id)
 }
@@ -216,10 +239,19 @@ pub async fn delete_by_ids(
     }
   }
   
+  let cron_job_ids = ids.clone();
+  
   let num = cron_job_dao::delete_by_ids(
     ids,
     options,
   ).await?;
+  
+  // 删除定时任务
+  for cron_job_id in cron_job_ids {
+    crate::src::cron::cron_job::cron_job_dao::remove_task(
+      cron_job_id,
+    ).await?;
+  }
   
   Ok(num)
 }
@@ -248,11 +280,33 @@ pub async fn enable_by_ids(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  let models = cron_job_dao::find_all(
+    Some(CronJobSearch {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }),
+    None,
+    None,
+    options.clone(),
+  ).await?;
+  
   let num = cron_job_dao::enable_by_ids(
     ids,
     is_locked,
     options,
   ).await?;
+  
+  for model in models {
+    if model.is_enabled == 1 && is_locked == 0 {
+      crate::src::cron::cron_job::cron_job_dao::remove_task(
+        model.id.clone(),
+      ).await?;
+    } else if model.is_enabled == 0 && is_locked == 1 {
+      crate::src::cron::cron_job::cron_job_dao::add_task(
+        model.id.clone(),
+      ).await?;
+    }
+  }
   
   Ok(num)
 }
@@ -310,10 +364,19 @@ pub async fn revert_by_ids(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  let cron_job_ids = ids.clone();
+  
   let num = cron_job_dao::revert_by_ids(
     ids,
     options,
   ).await?;
+  
+  // 添加定时任务
+  for cron_job_id in cron_job_ids {
+    crate::src::cron::cron_job::cron_job_dao::add_task(
+      cron_job_id,
+    ).await?;
+  }
   
   Ok(num)
 }
