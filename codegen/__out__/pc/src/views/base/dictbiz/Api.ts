@@ -55,7 +55,7 @@ export function intoInput(
     // 备注
     rem: model?.rem,
     // 业务字典明细
-    dictbiz_detail: (model?.dictbiz_detail ?? [ ]).map(intoInputDictbizDetail),
+    dictbiz_detail: model?.dictbiz_detail?.map(intoInputDictbizDetail),
   };
   return input;
 }
