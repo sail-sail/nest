@@ -14,7 +14,7 @@ let agentid = "";
 
 const homePage = `/${pages.pages[0]?.path}`;
 
-if(import.meta.env.MODE === "development") {
+if (import.meta.env.MODE === "development") {
   // #ifndef H5
   host = "localhost";
   port = "4001";
@@ -34,7 +34,7 @@ if(import.meta.env.MODE === "development") {
   }
   // #endif
   domain = "localhost:4000";
-} else if(import.meta.env.MODE === "test") {
+} else if (import.meta.env.MODE === "test") {
   // #ifndef H5
   host = "localhost";
   port = "4001";
