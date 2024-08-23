@@ -107,7 +107,7 @@ const props = withDefaults(
   {
     modelValue: undefined,
     type: "text",
-    clearable: undefined,
+    clearable: true,
     disabled: undefined,
     readonly: undefined,
     placeholder: undefined,

@@ -48,7 +48,8 @@ export default defineStore("index", function() {
     }
   }
   
-  function minusLoading() {
+  async function minusLoading() {
+    await new Promise((resolve) => setTimeout(resolve, 0));
     loading -= 1;
     if (loading < 0) {
       loading = 0;
