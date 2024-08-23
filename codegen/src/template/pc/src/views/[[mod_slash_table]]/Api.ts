@@ -540,7 +540,7 @@ export function intoInput(
       if (inline_foreign_type === "one2many") {
     #>
     // <#=inlineForeignTab.label#>
-    <#=inline_column_name#>: (model?.<#=inline_column_name#> ?? [ ]).map(intoInput<#=Table_Up#>),<#
+    <#=inline_column_name#>: model?.<#=inline_column_name#>?.map(intoInput<#=Table_Up#>),<#
       } else if (inline_foreign_type === "one2one") {
     #>
     // <#=inlineForeignTab.label#>
@@ -579,7 +579,7 @@ export function intoInput(
       }).join("");
       const inlineMany2manyColumns = inlineMany2manySchema.columns;
     #>
-    <#=column_name#>_<#=table#>_models: (model?.<#=column_name#>_<#=table#>_models ?? [ ]).map(intoInput<#=Table_Up#>),<#
+    <#=column_name#>_<#=table#>_models: model?.<#=column_name#>_<#=table#>_models?.map(intoInput<#=Table_Up#>),<#
     }
     #>
   };
