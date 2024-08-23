@@ -34,8 +34,7 @@ if(import.meta.env.MODE === "development") {
   }
   // #endif
   domain = "localhost:4000";
-}
-if (import.meta.env.MODE === "production") {
+} else if (import.meta.env.MODE === "production") {
   // #ifndef H5
   host = "localhost";
   port = undefined;
@@ -54,6 +53,11 @@ if (import.meta.env.MODE === "production") {
     wsProt = "ws:";
   }
   // #endif
+} else {
+  uni.showModal({
+    title: "错误",
+    content: `Unknown import.meta.env.MODE: ${ import.meta.env.MODE }`,
+  });
 }
 
 let urlBase = `${protocol}//${host}`;
