@@ -9,26 +9,26 @@ use crate::common::context::{
 
 use crate::src::base::i18n::i18n_dao::ns;
 
-use crate::gen::base::menu::menu_dao::{
+use crate::r#gen::base::menu::menu_dao::{
   find_by_id as find_by_id_menu,
   find_one as find_one_menu,
 };
-use crate::gen::base::menu::menu_model::{MenuSearch, MenuId};
+use crate::r#gen::base::menu::menu_model::{MenuSearch, MenuId};
 
 use super::permit_model::GetUsrPermits;
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
-use crate::gen::base::role::role_dao::find_all as find_all_role;
-use crate::gen::base::role::role_model::RoleSearch;
+use crate::r#gen::base::role::role_dao::find_all as find_all_role;
+use crate::r#gen::base::role::role_model::RoleSearch;
 
-use crate::gen::base::permit::permit_dao::{
+use crate::r#gen::base::permit::permit_dao::{
   find_all as find_all_permit,
   find_one as find_one_permit,
 };
-use crate::gen::base::permit::permit_model::PermitSearch;
-use crate::gen::base::permit::permit_model::PermitModel;
-use crate::gen::base::permit::permit_model::PermitId;
+use crate::r#gen::base::permit::permit_model::PermitSearch;
+use crate::r#gen::base::permit::permit_model::PermitModel;
+use crate::r#gen::base::permit::permit_model::PermitId;
 
 /// 根据当前用户获取权限列表
 pub async fn get_usr_permits() -> Result<Vec<GetUsrPermits>> {

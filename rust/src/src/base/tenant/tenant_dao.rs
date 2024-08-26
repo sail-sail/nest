@@ -2,9 +2,9 @@ use anyhow::Result;
 
 use crate::common::context::get_auth_tenant_id;
 
-use crate::gen::base::tenant::tenant_dao;
+use crate::r#gen::base::tenant::tenant_dao;
 
-use crate::gen::base::menu::menu_model::MenuId;
+use crate::r#gen::base::menu::menu_model::MenuId;
 
 /// 当前租户拥有的菜单
 pub async fn get_menu_ids_by_tenant() -> Result<Vec<MenuId>> {
