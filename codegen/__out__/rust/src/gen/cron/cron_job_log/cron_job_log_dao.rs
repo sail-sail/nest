@@ -49,11 +49,11 @@ use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::cron_job_log_model::*;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::cron::cron_job::cron_job_model::CronJobId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::cron::cron_job::cron_job_model::CronJobId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -1241,8 +1241,8 @@ pub async fn set_id_by_lbl(
     input.cron_job_id_lbl = input.cron_job_id_lbl.map(|item| 
       item.trim().to_owned()
     );
-    let model = crate::gen::cron::cron_job::cron_job_dao::find_one(
-      crate::gen::cron::cron_job::cron_job_model::CronJobSearch {
+    let model = crate::r#gen::cron::cron_job::cron_job_dao::find_one(
+      crate::r#gen::cron::cron_job::cron_job_model::CronJobSearch {
         lbl: input.cron_job_id_lbl.clone(),
         ..Default::default()
       }.into(),
@@ -1256,8 +1256,8 @@ pub async fn set_id_by_lbl(
     (input.cron_job_id_lbl.is_none() || input.cron_job_id_lbl.as_ref().unwrap().is_empty())
     && input.cron_job_id.is_some()
   {
-    let cron_job_model = crate::gen::cron::cron_job::cron_job_dao::find_one(
-      crate::gen::cron::cron_job::cron_job_model::CronJobSearch {
+    let cron_job_model = crate::r#gen::cron::cron_job::cron_job_dao::find_one(
+      crate::r#gen::cron::cron_job::cron_job_model::CronJobSearch {
         id: input.cron_job_id.clone(),
         ..Default::default()
       }.into(),

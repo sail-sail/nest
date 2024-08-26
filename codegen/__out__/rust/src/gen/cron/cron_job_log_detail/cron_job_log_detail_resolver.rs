@@ -10,7 +10,7 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::cron_job_log_detail_model::*;
 use super::cron_job_log_detail_service;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找定时任务日志明细列表
 pub async fn find_all(

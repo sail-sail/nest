@@ -16,7 +16,7 @@ use crate::common::gql::model::{
 use super::cron_job_log_model::*;
 use super::cron_job_log_resolver;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct CronJobLogGenQuery;
