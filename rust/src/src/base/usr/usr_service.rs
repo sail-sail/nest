@@ -18,27 +18,27 @@ use crate::common::auth::auth_dao::{
 
 use crate::common::auth::auth_model::AuthModel;
 
-use crate::gen::base::usr::usr_dao::{
+use crate::r#gen::base::usr::usr_dao::{
   find_by_id as find_by_id_usr,
   find_one as find_one_usr,
   validate_option as validate_option_usr,
   validate_is_enabled as validate_is_enabled_usr,
   update_by_id as update_by_id_usr,
 };
-use crate::gen::base::usr::usr_model::{
+use crate::r#gen::base::usr::usr_model::{
   UsrInput,
   UsrSearch,
 };
 
 // 租户
-use crate::gen::base::tenant::tenant_dao::{
+use crate::r#gen::base::tenant::tenant_dao::{
   find_by_id as find_by_id_tenant,
   validate_option as validate_option_tenant,
   validate_is_enabled as validate_is_enabled_tenant,
 };
 
 // 语言
-use crate::gen::base::lang::lang_dao::find_by_id as find_by_id_lang;
+use crate::r#gen::base::lang::lang_dao::find_by_id as find_by_id_lang;
 
 use super::usr_model::{
   LoginInput,
@@ -47,11 +47,11 @@ use super::usr_model::{
   ChangePasswordInput,
 };
 
-use crate::gen::base::login_log::login_log_dao::{
+use crate::r#gen::base::login_log::login_log_dao::{
   create as create_login_log,
   find_count as find_count_login_log,
 };
-use crate::gen::base::login_log::login_log_model::{
+use crate::r#gen::base::login_log::login_log_model::{
   LoginLogInput,
   LoginLogSearch,
 };

@@ -31,9 +31,9 @@ use async_graphql::{
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::usr::usr_model::UsrId;
-use crate::gen::base::org::org_model::OrgId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::org::org_model::OrgId;
 
 lazy_static! {
   /// 部门 前端允许排序的字段

@@ -4,7 +4,7 @@ use async_graphql::{Context, Object};
 use crate::common::context::Ctx;
 
 use super::lang_resolver;
-use crate::gen::base::lang::lang_model::LangModel;
+use crate::r#gen::base::lang::lang_model::LangModel;
 
 #[derive(Default)]
 pub struct LangQuery;

@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::gen::base::lang::lang_model::LangModel;
+use crate::r#gen::base::lang::lang_model::LangModel;
 
 use super::lang_dao;
 

@@ -56,12 +56,12 @@ use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::usr_model::*;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::role::role_model::RoleId;
-use crate::gen::base::dept::dept_model::DeptId;
-use crate::gen::base::org::org_model::OrgId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::role::role_model::RoleId;
+use crate::r#gen::base::dept::dept_model::DeptId;
+use crate::r#gen::base::org::org_model::OrgId;
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -1611,8 +1611,8 @@ pub async fn set_id_by_lbl(
     });
     let mut models = vec![];
     for lbl in input.role_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::role::role_dao::find_one(
-        crate::gen::base::role::role_model::RoleSearch {
+      let model = crate::r#gen::base::role::role_dao::find_one(
+        crate::r#gen::base::role::role_model::RoleSearch {
           lbl: lbl.into(),
           ..Default::default()
         }.into(),
@@ -1645,8 +1645,8 @@ pub async fn set_id_by_lbl(
     });
     let mut models = vec![];
     for lbl in input.dept_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::dept::dept_dao::find_one(
-        crate::gen::base::dept::dept_model::DeptSearch {
+      let model = crate::r#gen::base::dept::dept_dao::find_one(
+        crate::r#gen::base::dept::dept_model::DeptSearch {
           lbl: lbl.into(),
           ..Default::default()
         }.into(),
@@ -1679,8 +1679,8 @@ pub async fn set_id_by_lbl(
     });
     let mut models = vec![];
     for lbl in input.org_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::org::org_dao::find_one(
-        crate::gen::base::org::org_model::OrgSearch {
+      let model = crate::r#gen::base::org::org_dao::find_one(
+        crate::r#gen::base::org::org_model::OrgSearch {
           lbl: lbl.into(),
           ..Default::default()
         }.into(),
@@ -1705,8 +1705,8 @@ pub async fn set_id_by_lbl(
     input.default_org_id_lbl = input.default_org_id_lbl.map(|item| 
       item.trim().to_owned()
     );
-    let model = crate::gen::base::org::org_dao::find_one(
-      crate::gen::base::org::org_model::OrgSearch {
+    let model = crate::r#gen::base::org::org_dao::find_one(
+      crate::r#gen::base::org::org_model::OrgSearch {
         lbl: input.default_org_id_lbl.clone(),
         ..Default::default()
       }.into(),
@@ -1720,8 +1720,8 @@ pub async fn set_id_by_lbl(
     (input.default_org_id_lbl.is_none() || input.default_org_id_lbl.as_ref().unwrap().is_empty())
     && input.default_org_id.is_some()
   {
-    let org_model = crate::gen::base::org::org_dao::find_one(
-      crate::gen::base::org::org_model::OrgSearch {
+    let org_model = crate::r#gen::base::org::org_dao::find_one(
+      crate::r#gen::base::org::org_model::OrgSearch {
         id: input.default_org_id.clone(),
         ..Default::default()
       }.into(),

@@ -10,7 +10,7 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::usr_model::*;
 use super::usr_service;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找用户列表
 pub async fn find_all(

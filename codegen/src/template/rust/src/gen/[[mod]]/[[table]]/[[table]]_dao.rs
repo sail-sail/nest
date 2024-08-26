@@ -164,7 +164,7 @@ if (hasDataPermit()) {
 #>
 
 #[allow(unused_imports)]
-use crate::gen::base::data_permit::data_permit_model::{
+use crate::r#gen::base::data_permit::data_permit_model::{
   DataPermitType,
   DataPermitScope,
 };
@@ -235,7 +235,7 @@ if (opts.langTable) {
 #>
 
 use crate::src::base::lang::lang_dao::get_lang_id;
-use crate::gen::base::lang::lang_model::LangId;<#
+use crate::r#gen::base::lang::lang_model::LangId;<#
 }
 #>
 use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
@@ -294,7 +294,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 // <#=inlineForeignTab.label#>
-use crate::gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
+use crate::r#gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
   if (!hasFindAllTableUps) {
   #>
   find_all as find_all_<#=table#>,<#
@@ -397,7 +397,7 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 // <#=table_comment#>
-use crate::gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
+use crate::r#gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
   if (!hasFindAllTableUps) {
   #>
   find_all as find_all_<#=table#>,<#
@@ -464,7 +464,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 // <#=inlineForeignTab.label#>
-use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::*;<#
+use crate::r#gen::<#=mod#>::<#=table#>::<#=table#>_model::*;<#
 }
 #><#
 for (let i = 0; i < columns.length; i++) {
@@ -504,13 +504,13 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 // <#=table_comment#>
-use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::*;<#
+use crate::r#gen::<#=mod#>::<#=table#>::<#=table#>_model::*;<#
 }
 #><#
 if (hasTenantId && !modelIds.includes("TenantId")) {
 #>
 
-use crate::gen::base::tenant::tenant_model::TenantId;<#
+use crate::r#gen::base::tenant::tenant_model::TenantId;<#
 modelIds.push("TenantId");
 #><#
 }
@@ -551,7 +551,7 @@ for (let i = 0; i < columns.length; i++) {
   }
   modelIds.push(modelId);
 #>
-use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=modelId#>;<#
+use crate::r#gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=modelId#>;<#
 }
 #><#
 if (
@@ -567,7 +567,7 @@ if (
   }
 #>
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;<#
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;<#
 }
 #>
 
@@ -2894,7 +2894,7 @@ pub async fn set_id_by_lbl(
     let daoStr = "";
     if (foreignKey && foreignTable) {
       if (foreignTable !== table) {
-        daoStr = `crate::gen::${ foreignKey.mod }::${ foreignTable }::${ foreignTable }_dao::`;
+        daoStr = `crate::r#gen::${ foreignKey.mod }::${ foreignTable }::${ foreignTable }_dao::`;
       }
     }
   #><#
@@ -2970,7 +2970,7 @@ pub async fn set_id_by_lbl(
     if (foreignTableUp !== tableUP) {
     #>
     let model = <#=daoStr#>find_one(
-      crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
+      crate::r#gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
         <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
         ..Default::default()
       }.into(),
@@ -2999,7 +2999,7 @@ pub async fn set_id_by_lbl(
     if (foreignTableUp !== tableUP) {
     #>
     let <#=foreignTable#>_model = <#=daoStr#>find_one(
-      crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
+      crate::r#gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
         id: input.<#=column_name_rust#>.clone(),
         ..Default::default()
       }.into(),
@@ -3042,7 +3042,7 @@ pub async fn set_id_by_lbl(
     let mut models = vec![];
     for lbl in input.<#=column_name_rust#>_<#=foreignKey.lbl#>.clone().unwrap_or_default() {
       let model = <#=daoStr#>find_one(
-        crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
+        crate::r#gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
           <#=foreignKey.lbl#>: lbl.into(),
           ..Default::default()
         }.into(),
@@ -3148,7 +3148,7 @@ pub async fn set_id_by_lbl(
   if input.<#=column_name#>.is_some()
     && !input.<#=column_name#>.as_ref().unwrap().is_empty()
   {
-    let find_by_id_<#=foreignTable#> = crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_dao::find_by_id;
+    let find_by_id_<#=foreignTable#> = crate::r#gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_dao::find_by_id;
     let <#=foreignTable#>_model = find_by_id_<#=foreignTable#>(
       input.<#=column_name#>.clone().unwrap(),
       Some(Options::new().set_is_debug(Some(false))),
@@ -5299,7 +5299,7 @@ pub async fn update_by_id(
   
   if field_num > 0 {
     let old_model = old_model.unwrap();
-    crate::gen::<#=mod#>::<#=historyTable#>::<#=historyTable#>_dao::create(
+    crate::r#gen::<#=mod#>::<#=historyTable#>::<#=historyTable#>_dao::create(
       old_model.into(),
       None,
     ).await?;

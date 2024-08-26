@@ -51,7 +51,7 @@ use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 use super::dictbiz_model::*;
 
 // 业务字典明细
-use crate::gen::base::dictbiz_detail::dictbiz_detail_dao::{
+use crate::r#gen::base::dictbiz_detail::dictbiz_detail_dao::{
   find_all as find_all_dictbiz_detail,
   create as create_dictbiz_detail,
   delete_by_ids as delete_by_ids_dictbiz_detail,
@@ -61,12 +61,12 @@ use crate::gen::base::dictbiz_detail::dictbiz_detail_dao::{
 };
 
 // 业务字典明细
-use crate::gen::base::dictbiz_detail::dictbiz_detail_model::*;
+use crate::r#gen::base::dictbiz_detail::dictbiz_detail_model::*;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(

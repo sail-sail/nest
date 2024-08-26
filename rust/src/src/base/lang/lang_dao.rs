@@ -9,8 +9,8 @@ use crate::common::context::{
   get_auth_lang,
 };
 
-use crate::gen::base::lang::lang_dao;
-use crate::gen::base::lang::lang_model::{
+use crate::r#gen::base::lang::lang_dao;
+use crate::r#gen::base::lang::lang_model::{
   LangId,
   LangModel,
 };

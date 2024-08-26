@@ -56,19 +56,19 @@ use crate::src::base::i18n::i18n_dao::ns;<#
 if (hasTenant_id) {
 #>
 
-use crate::gen::base::tenant::tenant_model::TenantId;<#
+use crate::r#gen::base::tenant::tenant_model::TenantId;<#
 }
 #><#
 if (hasOrgId) {
 #>
 
-use crate::gen::base::org::org_model::OrgId;<#
+use crate::r#gen::base::org::org_model::OrgId;<#
 }
 #><#
 if (opts.filterDataByCreateUsr || hasOrgId) {
 #>
 
-use crate::gen::base::usr::usr_dao::{
+use crate::r#gen::base::usr::usr_dao::{
   find_by_id as find_by_id_usr,
   validate_option as validate_option_usr,
 };<#
