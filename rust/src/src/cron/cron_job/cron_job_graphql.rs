@@ -3,7 +3,7 @@ use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;
 
-use crate::gen::cron::cron_job::cron_job_model::*;
+use crate::r#gen::cron::cron_job::cron_job_model::*;
 use super::cron_job_resolver;
 
 #[derive(Default)]

@@ -1,40 +1,40 @@
 use anyhow::Result;
 // use crate::common::context::get_auth_tenant_id;
 
-use crate::gen::base::tenant::tenant_dao::{
+use crate::r#gen::base::tenant::tenant_dao::{
   find_all as find_all_tenant,
   del_cache as del_cache_tenant,
 };
-use crate::gen::base::tenant::tenant_model::TenantSearch;
+use crate::r#gen::base::tenant::tenant_model::TenantSearch;
 
 use super::tenant_model::GetLoginTenants;
 
-use crate::gen::base::domain::domain_dao::{
+use crate::r#gen::base::domain::domain_dao::{
   find_all as find_all_domain,
   del_cache as del_cache_domain,
 };
-use crate::gen::base::domain::domain_model::{
+use crate::r#gen::base::domain::domain_model::{
   DomainSearch,
   DomainModel,
   DomainId,
 };
 
 // 租户
-use crate::gen::base::tenant::tenant_dao::{
+use crate::r#gen::base::tenant::tenant_dao::{
   find_by_id as find_by_id_tenant,
   validate_option as validate_option_tenant,
 };
 
 // 语言
-use crate::gen::base::lang::lang_dao::find_by_id as find_by_id_lang;
+use crate::r#gen::base::lang::lang_dao::find_by_id as find_by_id_lang;
 
 // 用户
-use crate::gen::base::usr::usr_dao::{
+use crate::r#gen::base::usr::usr_dao::{
   find_one as find_one_usr,
   update_by_id as update_by_id_usr,
   create as create_usr,
 };
-use crate::gen::base::usr::usr_model::{
+use crate::r#gen::base::usr::usr_model::{
   UsrInput,
   UsrSearch,
 };

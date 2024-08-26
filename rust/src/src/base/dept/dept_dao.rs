@@ -1,13 +1,13 @@
 use anyhow::Result;
 use crate::common::context::{get_auth_model, Options};
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
-use crate::gen::base::dept::dept_dao::find_all as find_all_dept;
-use crate::gen::base::dept::dept_model::{DeptSearch, DeptId};
+use crate::r#gen::base::dept::dept_dao::find_all as find_all_dept;
+use crate::r#gen::base::dept::dept_model::{DeptSearch, DeptId};
 
 use crate::common::auth::auth_model::AuthModel;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
 /// 获取当前登录用户的部门id列表
 #[allow(dead_code)]

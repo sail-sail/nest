@@ -1,8 +1,8 @@
 use serde::{Serialize, Deserialize};
 use async_graphql::SimpleObject;
 
-use crate::gen::base::permit::permit_model::PermitId;
-use crate::gen::base::menu::menu_model::MenuId;
+use crate::r#gen::base::permit::permit_model::PermitId;
+use crate::r#gen::base::menu::menu_model::MenuId;
 
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]

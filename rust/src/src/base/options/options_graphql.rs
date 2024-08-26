@@ -4,7 +4,7 @@ use async_graphql::{Context, Object};
 use crate::common::context::Ctx;
 
 use super::options_resolver;
-use crate::gen::base::options::options_model::OptionsModel;
+use crate::r#gen::base::options::options_model::OptionsModel;
 
 #[derive(Default)]
 pub struct OptionsQuery;

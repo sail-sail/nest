@@ -48,10 +48,10 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::data_permit_model::*;
-use crate::gen::base::menu::menu_model::MenuId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::menu::menu_model::MenuId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -1223,8 +1223,8 @@ pub async fn set_id_by_lbl(
     input.menu_id_lbl = input.menu_id_lbl.map(|item| 
       item.trim().to_owned()
     );
-    let model = crate::gen::base::menu::menu_dao::find_one(
-      crate::gen::base::menu::menu_model::MenuSearch {
+    let model = crate::r#gen::base::menu::menu_dao::find_one(
+      crate::r#gen::base::menu::menu_model::MenuSearch {
         lbl: input.menu_id_lbl.clone(),
         ..Default::default()
       }.into(),
@@ -1238,8 +1238,8 @@ pub async fn set_id_by_lbl(
     (input.menu_id_lbl.is_none() || input.menu_id_lbl.as_ref().unwrap().is_empty())
     && input.menu_id.is_some()
   {
-    let menu_model = crate::gen::base::menu::menu_dao::find_one(
-      crate::gen::base::menu::menu_model::MenuSearch {
+    let menu_model = crate::r#gen::base::menu::menu_dao::find_one(
+      crate::r#gen::base::menu::menu_model::MenuSearch {
         id: input.menu_id.clone(),
         ..Default::default()
       }.into(),

@@ -1,6 +1,6 @@
 use anyhow::Result;
 
-use crate::gen::cron::cron_job::cron_job_model::CronJobId;
+use crate::r#gen::cron::cron_job::cron_job_model::CronJobId;
 
 use super::cron_job_service;
 

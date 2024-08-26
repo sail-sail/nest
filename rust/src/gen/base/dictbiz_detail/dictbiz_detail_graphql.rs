@@ -16,7 +16,7 @@ use crate::common::gql::model::{
 use super::dictbiz_detail_model::*;
 use super::dictbiz_detail_resolver;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct DictbizDetailGenQuery;

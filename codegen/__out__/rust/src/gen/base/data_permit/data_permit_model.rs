@@ -30,8 +30,8 @@ use async_graphql::{
 
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-use crate::gen::base::menu::menu_model::MenuId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::menu::menu_model::MenuId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
 lazy_static! {
   /// 数据权限 前端允许排序的字段

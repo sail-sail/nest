@@ -55,13 +55,13 @@ use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::role_model::*;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::menu::menu_model::MenuId;
-use crate::gen::base::permit::permit_model::PermitId;
-use crate::gen::base::data_permit::data_permit_model::DataPermitId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::menu::menu_model::MenuId;
+use crate::r#gen::base::permit::permit_model::PermitId;
+use crate::r#gen::base::data_permit::data_permit_model::DataPermitId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -1432,8 +1432,8 @@ pub async fn set_id_by_lbl(
     });
     let mut models = vec![];
     for lbl in input.menu_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::menu::menu_dao::find_one(
-        crate::gen::base::menu::menu_model::MenuSearch {
+      let model = crate::r#gen::base::menu::menu_dao::find_one(
+        crate::r#gen::base::menu::menu_model::MenuSearch {
           lbl: lbl.into(),
           ..Default::default()
         }.into(),
@@ -1466,8 +1466,8 @@ pub async fn set_id_by_lbl(
     });
     let mut models = vec![];
     for lbl in input.permit_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::gen::base::permit::permit_dao::find_one(
-        crate::gen::base::permit::permit_model::PermitSearch {
+      let model = crate::r#gen::base::permit::permit_dao::find_one(
+        crate::r#gen::base::permit::permit_model::PermitSearch {
           lbl: lbl.into(),
           ..Default::default()
         }.into(),
