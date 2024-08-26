@@ -1,14 +1,16 @@
 <template>
 <div
-  v-bind="$attrs"
   un-w="full"
   un-flex="~ [1_0_0] row wrap"
+  un-overflow="auto"
+  un-max="h-59"
   un-items="center"
   un-gap="2"
   un-m="l-1px"
   :style="{
     'min-height': `${ (props.itemHeight + 4) }px`,
   }"
+  v-bind="$attrs"
   ref="uploadImageRef"
 >
   <div
