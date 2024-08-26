@@ -32,9 +32,9 @@ use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 use crate::common::util::dao::decrypt;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::domain::domain_model::DomainId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::domain::domain_model::DomainId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
 lazy_static! {
   /// 企微应用 前端允许排序的字段

@@ -10,7 +10,7 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::wxw_app_token_model::*;
 use super::wxw_app_token_service;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找企微应用接口凭据列表
 pub async fn find_all(

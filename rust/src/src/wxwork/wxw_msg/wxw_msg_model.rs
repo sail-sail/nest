@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
+use crate::r#gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct SendCardMsgInput {

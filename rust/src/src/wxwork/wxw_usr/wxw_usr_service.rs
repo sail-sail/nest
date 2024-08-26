@@ -14,7 +14,7 @@ use super::wxw_usr_model::{
   WxwLoginByCode,
 };
 
-use crate::gen::wxwork::wxw_usr::wxw_usr_model::WxwUsrInput;
+use crate::r#gen::wxwork::wxw_usr::wxw_usr_model::WxwUsrInput;
 
 use crate::src::wxwork::wxw_app_token::wxw_app_token_dao::{
   getuserinfo_by_code,
@@ -26,7 +26,7 @@ use crate::src::wxwork::wxw_app_token::wxw_app_token_model::{
   GetuserinfoModel,
 };
 
-use crate::gen::base::usr::usr_dao::{
+use crate::r#gen::base::usr::usr_dao::{
   find_one as find_one_usr,
   find_by_id as find_by_id_usr,
   create as create_usr,
@@ -34,38 +34,38 @@ use crate::gen::base::usr::usr_dao::{
   validate_option as validate_option_usr,
   validate_is_enabled as validate_is_enabled_usr,
 };
-use crate::gen::base::usr::usr_model::{
+use crate::r#gen::base::usr::usr_model::{
   UsrSearch,
   UsrInput,
 };
 
-use crate::gen::wxwork::wxw_usr::wxw_usr_dao::{
+use crate::r#gen::wxwork::wxw_usr::wxw_usr_dao::{
   find_all as find_all_wxw_usr,
   find_one as find_one_wxw_usr,
   create as create_wxw_usr,
   update_by_id as update_by_id_wxw_usr,
 };
-use crate::gen::wxwork::wxw_usr::wxw_usr_model::WxwUsrSearch;
+use crate::r#gen::wxwork::wxw_usr::wxw_usr_model::WxwUsrSearch;
 
-use crate::gen::wxwork::wxw_app::wxw_app_dao::{
+use crate::r#gen::wxwork::wxw_app::wxw_app_dao::{
   find_one as find_one_wxw_app,
   validate_option as validate_option_wxw_app,
   validate_is_enabled as validate_is_enabled_wxw_app,
 };
-use crate::gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch;
+use crate::r#gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch;
 
 use crate::common::auth::auth_dao::get_token_by_auth_model;
 
 use crate::common::auth::auth_model::AuthModel;
 
-use crate::gen::base::domain::domain_dao::{
+use crate::r#gen::base::domain::domain_dao::{
   find_one as find_one_domain,
   validate_option as validate_option_domain,
   validate_is_enabled as validate_is_enabled_domain,
 };
-use crate::gen::base::domain::domain_model::DomainSearch;
+use crate::r#gen::base::domain::domain_model::DomainSearch;
 
-use crate::gen::base::org::org_model::OrgId;
+use crate::r#gen::base::org::org_model::OrgId;
 
 /// 通过host获取appid, agentid
 pub async fn wxw_get_appid(
