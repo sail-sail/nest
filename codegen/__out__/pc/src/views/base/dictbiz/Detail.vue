@@ -151,6 +151,7 @@
         un-w="full"
         un-flex="~ [1_0_0] col"
         un-overflow-hidden
+        un-min="h-100"
       >
         <el-tabs
           v-model="inlineForeignTabLabel"
