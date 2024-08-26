@@ -10,7 +10,7 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::role_model::*;
 use super::role_service;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找角色列表
 pub async fn find_all(

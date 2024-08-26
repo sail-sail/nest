@@ -50,11 +50,11 @@ use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::dictbiz_detail_model::*;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::dictbiz::dictbiz_model::DictbizId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::dictbiz::dictbiz_model::DictbizId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -1314,8 +1314,8 @@ pub async fn set_id_by_lbl(
     input.dictbiz_id_lbl = input.dictbiz_id_lbl.map(|item| 
       item.trim().to_owned()
     );
-    let model = crate::gen::base::dictbiz::dictbiz_dao::find_one(
-      crate::gen::base::dictbiz::dictbiz_model::DictbizSearch {
+    let model = crate::r#gen::base::dictbiz::dictbiz_dao::find_one(
+      crate::r#gen::base::dictbiz::dictbiz_model::DictbizSearch {
         lbl: input.dictbiz_id_lbl.clone(),
         ..Default::default()
       }.into(),
@@ -1329,8 +1329,8 @@ pub async fn set_id_by_lbl(
     (input.dictbiz_id_lbl.is_none() || input.dictbiz_id_lbl.as_ref().unwrap().is_empty())
     && input.dictbiz_id.is_some()
   {
-    let dictbiz_model = crate::gen::base::dictbiz::dictbiz_dao::find_one(
-      crate::gen::base::dictbiz::dictbiz_model::DictbizSearch {
+    let dictbiz_model = crate::r#gen::base::dictbiz::dictbiz_dao::find_one(
+      crate::r#gen::base::dictbiz::dictbiz_model::DictbizSearch {
         id: input.dictbiz_id.clone(),
         ..Default::default()
       }.into(),

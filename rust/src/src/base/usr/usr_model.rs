@@ -8,9 +8,9 @@ use async_graphql::{
   SimpleObject,
 };
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::org::org_model::OrgId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::org::org_model::OrgId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
 #[derive(InputObject, Clone, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]

@@ -8,9 +8,9 @@ use crate::common::context::{
   get_auth_org_id,
 };
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
-use crate::gen::base::org::org_model::OrgId;
+use crate::r#gen::base::org::org_model::OrgId;
 
 pub async fn org_login_select(
   ctx: &mut Ctx,

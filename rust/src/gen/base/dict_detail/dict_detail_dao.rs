@@ -48,14 +48,14 @@ use crate::common::gql::model::{
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
 use crate::src::base::lang::lang_dao::get_lang_id;
-use crate::gen::base::lang::lang_model::LangId;
+use crate::r#gen::base::lang::lang_model::LangId;
 use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::dict_detail_model::*;
-use crate::gen::base::dict::dict_model::DictId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::dict::dict_model::DictId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -1339,8 +1339,8 @@ pub async fn set_id_by_lbl(
     input.dict_id_lbl = input.dict_id_lbl.map(|item| 
       item.trim().to_owned()
     );
-    let model = crate::gen::base::dict::dict_dao::find_one(
-      crate::gen::base::dict::dict_model::DictSearch {
+    let model = crate::r#gen::base::dict::dict_dao::find_one(
+      crate::r#gen::base::dict::dict_model::DictSearch {
         lbl: input.dict_id_lbl.clone(),
         ..Default::default()
       }.into(),
@@ -1354,8 +1354,8 @@ pub async fn set_id_by_lbl(
     (input.dict_id_lbl.is_none() || input.dict_id_lbl.as_ref().unwrap().is_empty())
     && input.dict_id.is_some()
   {
-    let dict_model = crate::gen::base::dict::dict_dao::find_one(
-      crate::gen::base::dict::dict_model::DictSearch {
+    let dict_model = crate::r#gen::base::dict::dict_dao::find_one(
+      crate::r#gen::base::dict::dict_model::DictSearch {
         id: input.dict_id.clone(),
         ..Default::default()
       }.into(),

@@ -2,7 +2,7 @@ use async_graphql::SimpleObject;
 use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
 
-use crate::gen::base::dictbiz_detail::dictbiz_detail_model::DictbizDetailId;
+use crate::r#gen::base::dictbiz_detail::dictbiz_detail_model::DictbizDetailId;
 
 #[derive(
   FromRow,

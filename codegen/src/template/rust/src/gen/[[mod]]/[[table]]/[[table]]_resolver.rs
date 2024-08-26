@@ -76,13 +76,13 @@ if (log) {
 
 use crate::src::base::i18n::i18n_service::ns;
 use crate::src::base::operation_record::operation_record_service::log;
-use crate::gen::base::operation_record::operation_record_model::OperationRecordInput;<#
+use crate::r#gen::base::operation_record::operation_record_model::OperationRecordInput;<#
 }
 #><#
 if (hasTenant_id) {
 #>
 
-use crate::gen::base::tenant::tenant_model::TenantId;<#
+use crate::r#gen::base::tenant::tenant_model::TenantId;<#
 }
 #>
 
