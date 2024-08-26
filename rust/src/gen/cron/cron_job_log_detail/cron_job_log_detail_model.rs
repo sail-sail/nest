@@ -31,9 +31,9 @@ use async_graphql::{
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::cron::cron_job_log::cron_job_log_model::CronJobLogId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::cron::cron_job_log::cron_job_log_model::CronJobLogId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
 lazy_static! {
   /// 定时任务日志明细 前端允许排序的字段
