@@ -16,7 +16,7 @@ use crate::common::gql::model::{
 use super::wxw_usr_model::*;
 use super::wxw_usr_resolver;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct WxwUsrGenQuery;

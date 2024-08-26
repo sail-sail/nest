@@ -8,8 +8,8 @@ use async_graphql::{
   SimpleObject,
 };
 
-use crate::gen::base::org::org_model::OrgId;
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::org::org_model::OrgId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 通过host获取appid, agentid
 #[derive(SimpleObject, Clone, Debug, Default, Serialize, Deserialize)]

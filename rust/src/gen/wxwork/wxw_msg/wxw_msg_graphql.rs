@@ -16,7 +16,7 @@ use crate::common::gql::model::{
 use super::wxw_msg_model::*;
 use super::wxw_msg_resolver;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct WxwMsgGenQuery;

@@ -16,7 +16,7 @@ use crate::common::gql::model::{
 use super::wxw_app_token_model::*;
 use super::wxw_app_token_resolver;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct WxwAppTokenGenQuery;
