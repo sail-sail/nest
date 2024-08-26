@@ -5,7 +5,7 @@ use crate::common::context::Ctx;
 
 use super::org_resolver;
 
-use crate::gen::base::org::org_model::OrgId;
+use crate::r#gen::base::org::org_model::OrgId;
 
 #[derive(Default)]
 pub struct OrgMutation;

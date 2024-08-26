@@ -1,10 +1,10 @@
 use anyhow::Result;
 use crate::common::context::{get_auth_model, Options};
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
-use crate::gen::base::role::role_model::RoleId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::role::role_model::RoleId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
 /// 获取当前用户拥有的角色ID列表
 #[allow(dead_code)]

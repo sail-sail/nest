@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use super::options_service;
-use crate::gen::base::options::options_model::OptionsModel;
+use crate::r#gen::base::options::options_model::OptionsModel;
 
 pub async fn get_options_by_lbl(
   lbl: String,

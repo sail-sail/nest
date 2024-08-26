@@ -15,11 +15,11 @@ use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::src::base::i18n::i18n_dao::ns;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
-use crate::gen::base::org::org_model::OrgId;
+use crate::r#gen::base::org::org_model::OrgId;
 
-use crate::gen::base::usr::usr_dao::{
+use crate::r#gen::base::usr::usr_dao::{
   find_by_id as find_by_id_usr,
   validate_option as validate_option_usr,
 };
@@ -273,13 +273,13 @@ pub async fn get_is_enabled_by_id(
 #[allow(dead_code)]
 pub async fn enable_by_ids(
   ids: Vec<DeptId>,
-  is_locked: u8,
+  is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = dept_dao::enable_by_ids(
     ids,
-    is_locked,
+    is_enabled,
     options,
   ).await?;
   

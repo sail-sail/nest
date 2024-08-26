@@ -10,7 +10,7 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::dictbiz_model::*;
 use super::dictbiz_service;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找业务字典列表
 pub async fn find_all(
