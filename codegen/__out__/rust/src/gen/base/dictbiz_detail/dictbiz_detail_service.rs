@@ -15,7 +15,7 @@ use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::src::base::i18n::i18n_dao::ns;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 use super::dictbiz_detail_model::*;
 use super::dictbiz_detail_dao;

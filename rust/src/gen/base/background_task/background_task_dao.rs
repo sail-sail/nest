@@ -49,10 +49,10 @@ use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::background_task_model::*;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(

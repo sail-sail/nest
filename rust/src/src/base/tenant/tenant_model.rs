@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 use async_graphql::{SimpleObject, InputObject};
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 租户
 #[derive(SimpleObject, Clone, Default, Serialize, Deserialize, Debug)]

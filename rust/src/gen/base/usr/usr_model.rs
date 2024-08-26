@@ -31,10 +31,10 @@ use async_graphql::{
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::role::role_model::RoleId;
-use crate::gen::base::dept::dept_model::DeptId;
-use crate::gen::base::org::org_model::OrgId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::role::role_model::RoleId;
+use crate::r#gen::base::dept::dept_model::DeptId;
+use crate::r#gen::base::org::org_model::OrgId;
 
 lazy_static! {
   /// 用户 前端允许排序的字段

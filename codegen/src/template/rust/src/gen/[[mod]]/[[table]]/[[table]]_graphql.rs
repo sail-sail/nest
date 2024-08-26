@@ -52,7 +52,7 @@ use super::<#=table#>_resolver;<#
 if (hasTenant_id) {
 #>
 
-use crate::gen::base::tenant::tenant_model::TenantId;<#
+use crate::r#gen::base::tenant::tenant_model::TenantId;<#
 }
 #>
 

@@ -123,7 +123,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
   foreignTableArr.push(table);
 #>
 
-use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::{
+use crate::r#gen::<#=mod#>::<#=table#>::<#=table#>_model::{
   <#=Table_Up#>Model,
   <#=Table_Up#>Input,
 };<#
@@ -162,7 +162,7 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 // <#=table_comment#>
-use crate::gen::<#=mod#>::<#=table#>::<#=table#>_model::{
+use crate::r#gen::<#=mod#>::<#=table#>::<#=table#>_model::{
   <#=Table_Up#>Model,
   <#=Table_Up#>Input,
 };<#
@@ -176,7 +176,7 @@ modelIds.push(Table_Up + "Id");
 if (hasTenantId && !modelIds.includes("TenantId")) {
 #>
 
-use crate::gen::base::tenant::tenant_model::TenantId;<#
+use crate::r#gen::base::tenant::tenant_model::TenantId;<#
 modelIds.push("TenantId");
 #><#
 }
@@ -217,7 +217,7 @@ for (let i = 0; i < columns.length; i++) {
   }
   modelIds.push(modelId);
 #>
-use crate::gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=modelId#>;<#
+use crate::r#gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=modelId#>;<#
 }
 #>
 
@@ -2658,7 +2658,7 @@ if (opts?.history_table) {
   }).join("");
 #>
 
-impl From<<#=tableUP#>Model> for crate::gen::<#=mod#>::<#=historyTable#>::<#=historyTable#>_model::<#=historyTableUp#>Input {
+impl From<<#=tableUP#>Model> for crate::r#gen::<#=mod#>::<#=historyTable#>::<#=historyTable#>_model::<#=historyTableUp#>Input {
   fn from(model: <#=tableUP#>Model) -> Self {
     Self {<#
       if (hasTenantId) {

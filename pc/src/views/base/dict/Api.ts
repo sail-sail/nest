@@ -55,7 +55,7 @@ export function intoInput(
     // 备注
     rem: model?.rem,
     // 系统字典明细
-    dict_detail: (model?.dict_detail ?? [ ]).map(intoInputDictDetail),
+    dict_detail: model?.dict_detail?.map(intoInputDictDetail),
   };
   return input;
 }

@@ -33,11 +33,11 @@ use crate::common::gql::model::SortInput;
 
 use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
-use crate::gen::base::dict_detail::dict_detail_model::{
+use crate::r#gen::base::dict_detail::dict_detail_model::{
   DictDetailModel,
   DictDetailInput,
 };
-use crate::gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::usr::usr_model::UsrId;
 
 lazy_static! {
   /// 系统字典 前端允许排序的字段
