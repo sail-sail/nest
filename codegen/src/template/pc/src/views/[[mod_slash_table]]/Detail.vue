@@ -230,7 +230,7 @@ const old_table = table;
           form_item_index++;
         #>
         
-        <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
+        <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
@@ -2941,8 +2941,10 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
-const permit = permitStore.getPermit(pagePath);<#
+const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
