@@ -730,7 +730,7 @@ const old_table = table;
                 if (column_name === "order_by") continue;
                 if (column_name === "tenant_id") continue;
                 const data_type = column.DATA_TYPE;
-                const column_type = column.COLUMN_TYPE;
+                let column_type = column.COLUMN_TYPE;
                 const column_comment = column.COLUMN_COMMENT || "";
                 let require = column.require;
                 const foreignKey = column.foreignKey;
