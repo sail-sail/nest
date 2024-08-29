@@ -137,14 +137,24 @@ impl FromRow<'_, MySqlRow> for DictModel {
     
     // 名称
     let lbl = if server_i18n_enable {
-      row.try_get("lbl")?
+      let lbl_lang: Option<String> = row.try_get("lbl_lang")?;
+      if lbl_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
+        lbl
+      } else {
+        lbl_lang.unwrap()
+      }
     } else {
       lbl
     };
     
     // 备注
     let rem = if server_i18n_enable {
-      row.try_get("rem")?
+      let rem_lang: Option<String> = row.try_get("rem_lang")?;
+      if rem_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
+        rem
+      } else {
+        rem_lang.unwrap()
+      }
     } else {
       rem
     };

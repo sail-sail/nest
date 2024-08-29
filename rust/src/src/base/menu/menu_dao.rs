@@ -111,7 +111,9 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   
   if server_i18n_enable {
     for item in &mut res {
-      item.lbl = item.lbl_lang.clone();
+      if !item.lbl_lang.is_empty() {
+        item.lbl = item.lbl_lang.clone();
+      }
     }
   }
   
