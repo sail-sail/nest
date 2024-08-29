@@ -16,6 +16,8 @@ use crate::common::gql::model::{
 use super::data_permit_model::*;
 use super::data_permit_resolver;
 
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+
 #[derive(Default)]
 pub struct DataPermitGenQuery;
 
@@ -138,6 +140,26 @@ impl DataPermitGenMutation {
         data_permit_resolver::creates(
           inputs,
           options.into(),
+        )
+      }).await
+  }
+  
+  /// 数据权限根据id修改租户id
+  async fn update_tenant_by_id_data_permit(
+    &self,
+    ctx: &Context<'_>,
+    id: DataPermitId,
+    tenant_id: TenantId,
+  ) -> Result<u64> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        data_permit_resolver::update_tenant_by_id(
+          id,
+          tenant_id,
+          None,
         )
       }).await
   }

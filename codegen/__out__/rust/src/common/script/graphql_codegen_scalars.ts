@@ -49,6 +49,12 @@ export function getScalars() {
       "output": `import("/gen/base/domain/domain.model.ts").DomainId`,
     },
     
+    // 字段权限
+    "FieldPermitId": {
+      "input": `import("/gen/base/field_permit/field_permit.model.ts").FieldPermitId`,
+      "output": `import("/gen/base/field_permit/field_permit.model.ts").FieldPermitId`,
+    },
+    
     // 国际化
     "I18nId": {
       "input": `import("/gen/base/i18n/i18n.model.ts").I18nId`,

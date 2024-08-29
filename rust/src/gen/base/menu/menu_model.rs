@@ -132,21 +132,36 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     
     // 父菜单
     let parent_id_lbl = if server_i18n_enable {
-      row.try_get("parent_id_lbl")?
+      let parent_id_lbl_lang: Option<String> = row.try_get("parent_id_lbl_lang")?;
+      if parent_id_lbl_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
+        parent_id_lbl
+      } else {
+        parent_id_lbl_lang.unwrap()
+      }
     } else {
       parent_id_lbl
     };
     
     // 名称
     let lbl = if server_i18n_enable {
-      row.try_get("lbl")?
+      let lbl_lang: Option<String> = row.try_get("lbl_lang")?;
+      if lbl_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
+        lbl
+      } else {
+        lbl_lang.unwrap()
+      }
     } else {
       lbl
     };
     
     // 备注
     let rem = if server_i18n_enable {
-      row.try_get("rem")?
+      let rem_lang: Option<String> = row.try_get("rem_lang")?;
+      if rem_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
+        rem
+      } else {
+        rem_lang.unwrap()
+      }
     } else {
       rem
     };

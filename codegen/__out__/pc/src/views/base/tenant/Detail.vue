@@ -75,7 +75,7 @@
         @submit.prevent
       >
         
-        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
+        <template v-if="field_permit('lbl') && (showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -88,7 +88,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.domain_ids == null)">
+        <template v-if="field_permit('domain_ids') && (showBuildIn || builtInModel?.domain_ids == null)">
           <el-form-item
             :label="n('所属域名')"
             prop="domain_ids"
@@ -128,7 +128,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.lang_id == null)">
+        <template v-if="field_permit('lang_id') && (showBuildIn || builtInModel?.lang_id == null)">
           <el-form-item
             :label="n('语言')"
             prop="lang_id"
@@ -148,7 +148,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
+        <template v-if="field_permit('order_by') && (showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
             prop="order_by"
@@ -161,7 +161,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
+        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -326,8 +326,10 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 // 域名
 const domainPermit = permitStore.getPermit("/base/domain");

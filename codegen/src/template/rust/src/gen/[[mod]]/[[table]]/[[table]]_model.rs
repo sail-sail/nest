@@ -1260,7 +1260,12 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     
     // <#=column_comment#>
     let <#=column_name_rust#> = if server_i18n_enable {
-      row.try_get("<#=column_name#>")?
+      let <#=column_name#>_lang: Option<String> = row.try_get("<#=column_name#>_lang")?;
+      if <#=column_name#>_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
+        <#=column_name_rust#>
+      } else {
+        <#=column_name#>_lang.unwrap()
+      }
     } else {
       <#=column_name_rust#>
     };<#

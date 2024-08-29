@@ -10,6 +10,8 @@ use crate::src::base::permit::permit_service::use_permit;
 use super::data_permit_model::*;
 use super::data_permit_service;
 
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+
 /// 根据搜索条件和分页查找数据权限列表
 pub async fn find_all(
   search: Option<DataPermitSearch>,
@@ -109,6 +111,23 @@ pub async fn creates(
   ).await?;
   
   Ok(ids)
+}
+
+/// 数据权限根据id修改租户id
+#[allow(dead_code)]
+pub async fn update_tenant_by_id(
+  id: DataPermitId,
+  tenant_id: TenantId,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = data_permit_service::update_tenant_by_id(
+    id,
+    tenant_id,
+    options,
+  ).await?;
+  
+  Ok(num)
 }
 
 /// 根据 id 修改数据权限
