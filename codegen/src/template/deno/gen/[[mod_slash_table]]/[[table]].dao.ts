@@ -1236,7 +1236,7 @@ export async function findAll(
       const record = langTableRecords[i];
       const column_name = record.COLUMN_NAME;
     #>
-    lang_sql += ",<#=opts.langTable.opts.table_name#>.<#=column_name#> <#=column_name#>_lang";<#
+    lang_sql += ",max(<#=opts.langTable.opts.table_name#>.<#=column_name#>) <#=column_name#>_lang";<#
     }
     #>
   }<#

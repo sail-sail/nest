@@ -5,7 +5,7 @@
   un-box-border
   un-rounded
   un-cursor-pointer
-  un-justify-center
+  un-justify-safe-center
   un-items-center
 >
   <template
@@ -16,10 +16,12 @@
       v-bind="$attrs"
       :key="url"
       :src="url"
-      fit="contain"
+      fit="cover"
+      un-aspect="4/3"
+      un-min="w-fit"
+      style="min-width: fit-content;"
       loading="lazy"
       un-rounded
-      un-object-contain
       :preview-src-list="originalUrlList"
       :initial-index="i"
       :preview-teleported="true"
@@ -89,7 +91,6 @@ const props = withDefaults(
   {
     modelValue: "",
     format: "webp",
-    width: 32,
     height: 32,
     quality: 60,
   },
