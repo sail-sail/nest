@@ -13,7 +13,27 @@ let appid = "wwa41c5d81c7ecd8ef";
 
 const homePage = `/${pages.pages[0]?.path}`;
 
-if(import.meta.env.MODE === "development") {
+if (import.meta.env.MODE === "development") {
+  // #ifndef H5
+  host = "localhost";
+  port = "4001";
+  domain = `${ host }${ port ? `:${ port }` : "" }`;
+  protocol = "http:";
+  wsProt = "ws:";
+  // #endif
+  // #ifdef H5
+  host = location.hostname;
+  port = location.port;
+  domain = location.host;
+  protocol = location.protocol;
+  if(protocol === "https:") {
+    wsProt = "wss:";
+  } else {
+    wsProt = "ws:";
+  }
+  // #endif
+  domain = "localhost:4000";
+} else if (import.meta.env.MODE === "test") {
   // #ifndef H5
   host = "localhost";
   port = "4001";

@@ -45,6 +45,9 @@ export function intoInput(
     permit_ids_lbl: model?.permit_ids_lbl,
     // 数据权限
     data_permit_ids: model?.data_permit_ids,
+    // 字段权限
+    field_permit_ids: model?.field_permit_ids,
+    field_permit_ids_lbl: model?.field_permit_ids_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -468,7 +471,7 @@ export async function getPermitList() {
     undefined,
     [
       {
-        prop: "",
+        prop: "create_time",
         order: "ascending",
       },
     ],
@@ -523,6 +526,50 @@ export async function getDataPermitList() {
   return data;
 }
 
+export async function findAllFieldPermit(
+  search?: FieldPermitSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllFieldPermit: FieldPermitModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: FieldPermitSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllFieldPermit(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllFieldPermit;
+  return res;
+}
+
+export async function getFieldPermitList() {
+  const data = await findAllFieldPermit(
+    undefined,
+    undefined,
+    [
+      {
+        prop: "create_time",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 export async function getMenuTree() {
   const data = await findMenuTree(
     undefined,
@@ -561,6 +608,7 @@ export function useDownloadImportTemplate(routePath: string) {
             menu_ids_lbl
             permit_ids_lbl
             data_permit_ids_lbl
+            field_permit_ids_lbl
             order_by
             rem
           }
@@ -575,6 +623,10 @@ export function useDownloadImportTemplate(routePath: string) {
           findAllDataPermit {
             id
             
+          }
+          findAllFieldPermit {
+            id
+            lbl
           }
         }
       `,
@@ -639,6 +691,9 @@ export function useExportExcel(routePath: string) {
               lbl
             }
             findAllPermit {
+              lbl
+            }
+            findAllFieldPermit {
               lbl
             }
             getDict(codes: [
