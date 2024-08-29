@@ -29,7 +29,7 @@
       @keydown.enter="onSearch(true)"
     >
       
-      <template v-if="builtInSearch?.openid == null && (showBuildIn || builtInSearch?.openid_like == null)">
+      <template v-if="field_permit('openid') && (builtInSearch?.openid == null && (showBuildIn || builtInSearch?.openid_like == null))">
         <el-form-item
           :label="n('用户标识')"
           prop="openid_like"
@@ -42,7 +42,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.transaction_id == null && (showBuildIn || builtInSearch?.transaction_id_like == null)">
+      <template v-if="field_permit('transaction_id') && (builtInSearch?.transaction_id == null && (showBuildIn || builtInSearch?.transaction_id_like == null))">
         <el-form-item
           :label="n('微信支付订单号')"
           prop="transaction_id_like"
@@ -653,11 +653,13 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1101,7 +1103,8 @@ let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列标签国际化 */
 watchEffect(() => {
-  const tableColumns2 = getTableColumns();
+  let tableColumns2 = getTableColumns();
+  tableColumns2 = fieldPermitStore.useTableColumnsFieldPermit(tableColumns2);
   for (let i = 0; i < tableColumns2.length; i++) {
     const column2 = tableColumns2[i];
     const column = tableColumns.find((item) => item.prop === column2.prop);
