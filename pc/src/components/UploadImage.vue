@@ -24,6 +24,7 @@
       un-cursor-pointer
       un-rounded
       un-b="1 solid transparent hover:gray-700 hover:dark:gray-300"
+      un-transition="border-color"
       un-p="0.25"
       un-box-border
       un-text="0"
