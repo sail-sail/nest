@@ -606,8 +606,8 @@ pub async fn find_all(
   let lang_sql = {
     let mut lang_sql = String::new();
     if server_i18n_enable {
-      lang_sql += ",base_dict_lang.lbl lbl_lang";
-      lang_sql += ",base_dict_lang.rem rem_lang";
+      lang_sql += ",max(base_dict_lang.lbl) lbl_lang";
+      lang_sql += ",max(base_dict_lang.rem) rem_lang";
     }
     lang_sql
   };
@@ -1874,12 +1874,12 @@ async fn refresh_lang_by_input(
     let mut lang_args = QueryArgs::new();
     // 名称
     if input.lbl.is_some() {
-      lang_sql += "{column_name}=?,";
+      lang_sql += "lbl=?,";
       lang_args.push(input.lbl.clone().unwrap_or_default().into());
     }
     // 备注
     if input.rem.is_some() {
-      lang_sql += "{column_name}=?,";
+      lang_sql += "rem=?,";
       lang_args.push(input.rem.clone().unwrap_or_default().into());
     }
     lang_sql.pop();
@@ -1891,7 +1891,7 @@ async fn refresh_lang_by_input(
       options.clone(),
     ).await?;
   } else {
-    let mut sql_fields: Vec<String> = vec![];
+    let mut sql_fields: Vec<&'static str> = vec![];
     let mut lang_args = QueryArgs::new();
     let id: LangId = get_short_uuid().into();
     lang_args.push(id.into());
@@ -1899,19 +1899,19 @@ async fn refresh_lang_by_input(
     lang_args.push(input.id.clone().unwrap_or_default().clone().into());
     // 名称
     if input.lbl.is_some() {
-      sql_fields.push("lbl".to_owned());
+      sql_fields.push("lbl");
       lang_args.push(input.lbl.clone().unwrap_or_default().into());
     }
     // 备注
     if input.rem.is_some() {
-      sql_fields.push("rem".to_owned());
+      sql_fields.push("rem");
       lang_args.push(input.rem.clone().unwrap_or_default().into());
     }
     let mut lang_sql = "insert into base_dict_lang(id,lang_id,dict_id".to_owned();
     let sql_fields_len = sql_fields.len();
     for sql_field in sql_fields {
       lang_sql += ",";
-      lang_sql += sql_field.as_str();
+      lang_sql += sql_field;
     }
     lang_sql += ")values(?,?,?";
     for _ in 0..sql_fields_len {

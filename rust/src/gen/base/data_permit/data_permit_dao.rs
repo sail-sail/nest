@@ -48,6 +48,8 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::data_permit_model::*;
+
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::menu::menu_model::MenuId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
@@ -64,7 +66,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 11 * 2);
+  let mut where_query = String::with_capacity(80 * 12 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -99,6 +101,26 @@ async fn get_where_query(
       where_query.push_str(" and t.id in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+  }
+  {
+    let tenant_id = {
+      let tenant_id = match search {
+        Some(item) => item.tenant_id.clone(),
+        None => None,
+      };
+      let tenant_id = match tenant_id {
+        None => get_auth_tenant_id(),
+        Some(item) => match item.as_str() {
+          "-" => None,
+          _ => item.into(),
+        },
+      };
+      tenant_id
+    };
+    if let Some(tenant_id) = tenant_id {
+      where_query.push_str(" and t.tenant_id=?");
+      args.push(tenant_id.into());
     }
   }
   // 菜单
@@ -1401,7 +1423,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 11 + 20);
+  let mut sql_fields = String::with_capacity(80 * 12 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1410,6 +1432,7 @@ async fn _creates(
   sql_fields += ",create_usr_id_lbl";
   sql_fields += ",update_usr_id";
   sql_fields += ",update_usr_id_lbl";
+  sql_fields += ",tenant_id";
   // 菜单
   sql_fields += ",menu_id";
   // 范围
@@ -1422,7 +1445,7 @@ async fn _creates(
   sql_fields += ",is_sys";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 11 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 12 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1538,6 +1561,16 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
+    
+    if let Some(tenant_id) = input.tenant_id {
+      sql_values += ",?";
+      args.push(tenant_id.into());
+    } else if let Some(tenant_id) = get_auth_tenant_id() {
+      sql_values += ",?";
+      args.push(tenant_id.into());
+    } else {
+      sql_values += ",default";
+    }
     // 菜单
     if let Some(menu_id) = input.menu_id {
       sql_values += ",?";
@@ -1641,6 +1674,52 @@ pub async fn create(
   let id = ids[0].clone();
   
   Ok(id)
+}
+
+// MARK: update_tenant_by_id
+/// 数据权限根据id修改租户id
+pub async fn update_tenant_by_id(
+  id: DataPermitId,
+  tenant_id: TenantId,
+  options: Option<Options>,
+) -> Result<u64> {
+  let table = "base_data_permit";
+  let method = "update_tenant_by_id";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    msg += &format!(" tenant_id: {:?}", &tenant_id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  
+  let mut args = QueryArgs::new();
+  
+  args.push(tenant_id.into());
+  args.push(id.into());
+  
+  let sql = format!("update {table} set tenant_id=? where id=?");
+  
+  let args: Vec<_> = args.into();
+  
+  let num = execute(
+    sql,
+    args,
+    Some(options.clone()),
+  ).await?;
+  
+  Ok(num)
 }
 
 // MARK: update_by_id
@@ -1750,9 +1829,15 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 11 + 20);
+  let mut sql_fields = String::with_capacity(80 * 12 + 20);
   
   let mut field_num: usize = 0;
+  
+  if let Some(tenant_id) = input.tenant_id {
+    field_num += 1;
+    sql_fields += "tenant_id=?,";
+    args.push(tenant_id.into());
+  }
   // 菜单
   if let Some(menu_id) = input.menu_id {
     field_num += 1;

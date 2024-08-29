@@ -48,7 +48,7 @@ use crate::src::base::lang::lang_dao::get_lang_id;
 use crate::r#gen::base::lang::lang_model::LangId;
 use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
-use super::permit_model::*;
+use super::field_permit_model::*;
 use crate::r#gen::base::menu::menu_model::MenuId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
@@ -57,7 +57,7 @@ use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
-  search: Option<&PermitSearch>,
+  search: Option<&FieldPermitSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
   
@@ -82,7 +82,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Option<Vec<PermitId>> = match search {
+    let ids: Option<Vec<FieldPermitId>> = match search {
       Some(item) => item.ids.clone(),
       None => None,
     };
@@ -197,7 +197,7 @@ async fn get_where_query(
     };
     if let Some(lbl) = lbl {
       if server_i18n_enable {
-        where_query.push_str(" and (t.lbl=? or base_permit_lang.lbl=?)");
+        where_query.push_str(" and (t.lbl=? or base_field_permit_lang.lbl=?)");
         args.push(lbl.as_str().into());
         args.push(lbl.as_str().into());
       } else {
@@ -211,7 +211,7 @@ async fn get_where_query(
     };
     if let Some(lbl_like) = lbl_like {
       if server_i18n_enable {
-        where_query.push_str(" and (t.lbl like ? or base_permit_lang.lbl like ?)");
+        where_query.push_str(" and (t.lbl like ? or base_field_permit_lang.lbl like ?)");
         let like_str = format!("%{}%", sql_like(&lbl_like));
         args.push(like_str.as_str().into());
         args.push(like_str.as_str().into());
@@ -229,7 +229,7 @@ async fn get_where_query(
     };
     if let Some(rem) = rem {
       if server_i18n_enable {
-        where_query.push_str(" and (t.rem=? or base_permit_lang.rem=?)");
+        where_query.push_str(" and (t.rem=? or base_field_permit_lang.rem=?)");
         args.push(rem.as_str().into());
         args.push(rem.as_str().into());
       } else {
@@ -243,7 +243,7 @@ async fn get_where_query(
     };
     if let Some(rem_like) = rem_like {
       if server_i18n_enable {
-        where_query.push_str(" and (t.rem like ? or base_permit_lang.rem like ?)");
+        where_query.push_str(" and (t.rem like ? or base_field_permit_lang.rem like ?)");
         let like_str = format!("%{}%", sql_like(&rem_like));
         args.push(like_str.as_str().into());
         args.push(like_str.as_str().into());
@@ -425,32 +425,32 @@ async fn get_where_query(
 #[allow(unused_variables)]
 async fn get_from_query(
   args: &mut QueryArgs,
-  search: Option<&PermitSearch>,
+  search: Option<&FieldPermitSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
   
   let server_i18n_enable = get_server_i18n_enable();
   
-  let mut from_query = r#"base_permit t
+  let mut from_query = r#"base_field_permit t
   left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id"#.to_owned();
   if server_i18n_enable {
-    from_query += " left join base_permit_lang on base_permit_lang.permit_id=t.id and base_permit_lang.lang_id=?";
+    from_query += " left join base_field_permit_lang on base_field_permit_lang.field_permit_id=t.id and base_field_permit_lang.lang_id=?";
     args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
   }
   Ok(from_query)
 }
 
 // MARK: find_all
-/// 根据搜索条件和分页查找按钮权限列表
+/// 根据搜索条件和分页查找字段权限列表
 #[allow(unused_mut)]
 pub async fn find_all(
-  search: Option<PermitSearch>,
+  search: Option<FieldPermitSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<PermitModel>> {
+) -> Result<Vec<FieldPermitModel>> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "find_all";
   
   let server_i18n_enable= get_server_i18n_enable();
@@ -537,8 +537,8 @@ pub async fn find_all(
   let lang_sql = {
     let mut lang_sql = String::new();
     if server_i18n_enable {
-      lang_sql += ",max(base_permit_lang.lbl) lbl_lang";
-      lang_sql += ",max(base_permit_lang.rem) rem_lang";
+      lang_sql += ",max(base_field_permit_lang.lbl) lbl_lang";
+      lang_sql += ",max(base_field_permit_lang.rem) rem_lang";
     }
     lang_sql
   };
@@ -581,7 +581,7 @@ pub async fn find_all(
   
   let options = options.set_cache_key(table, &sql, &args);
   
-  let mut res: Vec<PermitModel> = query(
+  let mut res: Vec<FieldPermitModel> = query(
     sql,
     args,
     Some(options),
@@ -596,13 +596,13 @@ pub async fn find_all(
 }
 
 // MARK: find_count
-/// 根据条件查找按钮权限总数
+/// 根据条件查找字段权限总数
 pub async fn find_count(
-  search: Option<PermitSearch>,
+  search: Option<FieldPermitSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "find_count";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -665,15 +665,15 @@ pub async fn find_count(
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
   i18n_dao::NRoute {
-    route_path: get_route_path_permit().into(),
+    route_path: get_route_path_field_permit().into(),
   }
 }
 
 // MARK: get_field_comments
-/// 获取按钮权限字段注释
+/// 获取字段权限字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
-) -> Result<PermitFieldComment> {
+) -> Result<FieldPermitFieldComment> {
   
   let n_route = get_n_route();
   
@@ -706,7 +706,7 @@ pub async fn get_field_comments(
     )
     .collect::<Vec<String>>();
   
-  let field_comments = PermitFieldComment {
+  let field_comments = FieldPermitFieldComment {
     id: vec[0].to_owned(),
     menu_id: vec[1].to_owned(),
     menu_id_lbl: vec[2].to_owned(),
@@ -726,14 +726,14 @@ pub async fn get_field_comments(
 }
 
 // MARK: find_one
-/// 根据条件查找第一个按钮权限
+/// 根据条件查找第一个字段权限
 pub async fn find_one(
-  search: Option<PermitSearch>,
+  search: Option<FieldPermitSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<PermitModel>> {
+) -> Result<Option<FieldPermitModel>> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "find_one";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -777,19 +777,19 @@ pub async fn find_one(
     options,
   ).await?;
   
-  let model: Option<PermitModel> = res.into_iter().next();
+  let model: Option<FieldPermitModel> = res.into_iter().next();
   
   Ok(model)
 }
 
 // MARK: find_by_id
-/// 根据 id 查找按钮权限
+/// 根据 id 查找字段权限
 pub async fn find_by_id(
-  id: PermitId,
+  id: FieldPermitId,
   options: Option<Options>,
-) -> Result<Option<PermitModel>> {
+) -> Result<Option<FieldPermitModel>> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "find_by_id";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -814,7 +814,7 @@ pub async fn find_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let search = PermitSearch {
+  let search = FieldPermitSearch {
     id: Some(id),
     ..Default::default()
   }.into();
@@ -829,14 +829,14 @@ pub async fn find_by_id(
 }
 
 // MARK: find_by_ids
-/// 根据 ids 查找按钮权限
+/// 根据 ids 查找字段权限
 #[allow(dead_code)]
 pub async fn find_by_ids(
-  ids: Vec<PermitId>,
+  ids: Vec<FieldPermitId>,
   options: Option<Options>,
-) -> Result<Vec<PermitModel>> {
+) -> Result<Vec<FieldPermitModel>> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "find_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -867,7 +867,7 @@ pub async fn find_by_ids(
     return Err(anyhow!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
   }
   
-  let search = PermitSearch {
+  let search = FieldPermitSearch {
     ids: Some(ids.clone()),
     ..Default::default()
   }.into();
@@ -894,20 +894,20 @@ pub async fn find_by_ids(
       }
       Err(anyhow!("find_by_ids: id: {id} not found"))
     })
-    .collect::<Result<Vec<PermitModel>>>()?;
+    .collect::<Result<Vec<FieldPermitModel>>>()?;
   
   Ok(models)
 }
 
 // MARK: exists
-/// 根据搜索条件判断按钮权限是否存在
+/// 根据搜索条件判断字段权限是否存在
 #[allow(dead_code)]
 pub async fn exists(
-  search: Option<PermitSearch>,
+  search: Option<FieldPermitSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "exists";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -939,14 +939,14 @@ pub async fn exists(
 }
 
 // MARK: exists_by_id
-/// 根据 id 判断按钮权限是否存在
+/// 根据 id 判断字段权限是否存在
 #[allow(dead_code)]
 pub async fn exists_by_id(
-  id: PermitId,
+  id: FieldPermitId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "exists_by_id";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -967,7 +967,7 @@ pub async fn exists_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let search = PermitSearch {
+  let search = FieldPermitSearch {
     id: Some(id),
     ..Default::default()
   }.into();
@@ -984,12 +984,12 @@ pub async fn exists_by_id(
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
 pub async fn find_by_unique(
-  search: PermitSearch,
+  search: FieldPermitSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<PermitModel>> {
+) -> Result<Vec<FieldPermitModel>> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "find_by_unique";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1021,7 +1021,7 @@ pub async fn find_by_unique(
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
   
-  let mut models: Vec<PermitModel> = vec![];
+  let mut models: Vec<FieldPermitModel> = vec![];
   
   let mut models_tmp = {
     if
@@ -1031,7 +1031,7 @@ pub async fn find_by_unique(
       return Ok(vec![]);
     }
     
-    let search = PermitSearch {
+    let search = FieldPermitSearch {
       menu_id: search.menu_id.clone(),
       code: search.code.clone(),
       ..Default::default()
@@ -1052,8 +1052,8 @@ pub async fn find_by_unique(
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
 pub fn equals_by_unique(
-  input: &PermitInput,
-  model: &PermitModel,
+  input: &FieldPermitInput,
+  model: &FieldPermitModel,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
@@ -1072,12 +1072,12 @@ pub fn equals_by_unique(
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
 pub async fn check_by_unique(
-  input: PermitInput,
-  model: PermitModel,
+  input: FieldPermitInput,
+  model: FieldPermitModel,
   options: Option<Options>,
-) -> Result<Option<PermitId>> {
+) -> Result<Option<FieldPermitId>> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "check_by_unique";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1125,7 +1125,7 @@ pub async fn check_by_unique(
   }
   if unique_type == UniqueType::Throw {
     let table_comment = i18n_dao::ns(
-      "按钮权限".to_owned(),
+      "字段权限".to_owned(),
       None,
     ).await?;
     let map = HashMap::from([
@@ -1144,8 +1144,8 @@ pub async fn check_by_unique(
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables)]
 pub async fn set_id_by_lbl(
-  input: PermitInput,
-) -> Result<PermitInput> {
+  input: FieldPermitInput,
+) -> Result<FieldPermitInput> {
   
   #[allow(unused_mut)]
   let mut input = input;
@@ -1190,13 +1190,13 @@ pub async fn set_id_by_lbl(
 }
 
 // MARK: creates
-/// 批量创建按钮权限
+/// 批量创建字段权限
 pub async fn creates(
-  inputs: Vec<PermitInput>,
+  inputs: Vec<FieldPermitInput>,
   options: Option<Options>,
-) -> Result<Vec<PermitId>> {
+) -> Result<Vec<FieldPermitId>> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "creates";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1221,14 +1221,14 @@ pub async fn creates(
   Ok(ids)
 }
 
-/// 批量创建按钮权限
+/// 批量创建字段权限
 #[allow(unused_variables)]
 async fn _creates(
-  inputs: Vec<PermitInput>,
+  inputs: Vec<FieldPermitInput>,
   options: Option<Options>,
-) -> Result<Vec<PermitId>> {
+) -> Result<Vec<FieldPermitId>> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1238,8 +1238,8 @@ async fn _creates(
     )
     .unwrap_or_default();
   
-  let mut ids2: Vec<PermitId> = vec![];
-  let mut inputs2: Vec<PermitInput> = vec![];
+  let mut ids2: Vec<FieldPermitId> = vec![];
+  let mut inputs2: Vec<FieldPermitInput> = vec![];
   
   for input in inputs.clone() {
   
@@ -1254,7 +1254,7 @@ async fn _creates(
     ).await?;
     
     if !old_models.is_empty() {
-      let mut id: Option<PermitId> = None;
+      let mut id: Option<FieldPermitId> = None;
       
       for old_model in old_models {
         let options = Options::from(options.clone())
@@ -1316,7 +1316,7 @@ async fn _creates(
     .enumerate()
   {
     
-    let id: PermitId = get_short_uuid().into();
+    let id: FieldPermitId = get_short_uuid().into();
     ids2.push(id.clone());
     
     inputs2_ids.push(id.clone());
@@ -1493,15 +1493,15 @@ async fn _creates(
 }
 
 // MARK: create
-/// 创建按钮权限
+/// 创建字段权限
 #[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
-  mut input: PermitInput,
+  mut input: FieldPermitInput,
   options: Option<Options>,
-) -> Result<PermitId> {
+) -> Result<FieldPermitId> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "create";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1533,7 +1533,7 @@ pub async fn create(
 
 #[allow(unused_variables)]
 async fn refresh_lang_by_input(
-  input: &PermitInput,
+  input: &FieldPermitInput,
   options: Option<Options>,
 ) -> Result<()> {
   
@@ -1550,7 +1550,7 @@ async fn refresh_lang_by_input(
   struct ResultTmp {
     id: String,
   }
-  let lang_sql = "select id from base_permit_lang where lang_id=? and permit_id=?".to_owned();
+  let lang_sql = "select id from base_field_permit_lang where lang_id=? and field_permit_id=?".to_owned();
   let mut lang_args = QueryArgs::new();
   lang_args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
   lang_args.push(input.id.clone().unwrap_or_default().clone().into());
@@ -1561,7 +1561,7 @@ async fn refresh_lang_by_input(
   ).await?;
   let lang_id: Option<LangId> = model.map(|item| item.id).map(|item| item.into());
   if let Some(lang_id) = lang_id {
-    let mut lang_sql = "update base_permit_lang set ".to_owned();
+    let mut lang_sql = "update base_field_permit_lang set ".to_owned();
     let mut lang_args = QueryArgs::new();
     // 名称
     if input.lbl.is_some() {
@@ -1598,7 +1598,7 @@ async fn refresh_lang_by_input(
       sql_fields.push("rem");
       lang_args.push(input.rem.clone().unwrap_or_default().into());
     }
-    let mut lang_sql = "insert into base_permit_lang(id,lang_id,permit_id".to_owned();
+    let mut lang_sql = "insert into base_field_permit_lang(id,lang_id,field_permit_id".to_owned();
     let sql_fields_len = sql_fields.len();
     for sql_field in sql_fields {
       lang_sql += ",";
@@ -1620,15 +1620,15 @@ async fn refresh_lang_by_input(
 }
 
 // MARK: update_by_id
-/// 根据 id 修改按钮权限
+/// 根据 id 修改字段权限
 #[allow(unused_mut)]
 pub async fn update_by_id(
-  id: PermitId,
-  mut input: PermitInput,
+  id: FieldPermitId,
+  mut input: FieldPermitInput,
   options: Option<Options>,
-) -> Result<PermitId> {
+) -> Result<FieldPermitId> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "update_by_id";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1662,7 +1662,7 @@ pub async fn update_by_id(
   
   if old_model.is_none() {
     let table_comment = i18n_dao::ns(
-      "按钮权限".to_owned(),
+      "字段权限".to_owned(),
       None,
     ).await?;
     let map = HashMap::from([
@@ -1709,7 +1709,7 @@ pub async fn update_by_id(
       .filter(|item| 
         item.id != id
       )
-      .collect::<Vec<PermitModel>>();
+      .collect::<Vec<FieldPermitModel>>();
     
     if !models.is_empty() {
       let unique_type = options
@@ -1718,7 +1718,7 @@ pub async fn update_by_id(
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
         let table_comment = i18n_dao::ns(
-          "按钮权限".to_owned(),
+          "字段权限".to_owned(),
           None,
         ).await?;
         let map = HashMap::from([
@@ -1891,7 +1891,7 @@ pub async fn update_by_id(
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_permit";
+  let table = "base_field_permit";
   vec![
     table,
   ]
@@ -1909,14 +1909,14 @@ pub async fn del_cache() -> Result<()> {
 }
 
 // MARK: delete_by_ids
-/// 根据 ids 删除按钮权限
+/// 根据 ids 删除字段权限
 #[allow(unused_variables)]
 pub async fn delete_by_ids(
-  ids: Vec<PermitId>,
+  ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "delete_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2029,7 +2029,7 @@ pub async fn delete_by_ids(
     ).await?;
     
     if server_i18n_enable {
-      let sql = "update base_permit_lang set is_deleted=1 where permit_id=?".to_owned();
+      let sql = "update base_field_permit_lang set is_deleted=1 where field_permit_id=?".to_owned();
       let mut args = QueryArgs::new();
       args.push(id.clone().into());
       execute(
@@ -2040,7 +2040,7 @@ pub async fn delete_by_ids(
     }
     {
       let mut args = QueryArgs::new();
-      let sql = "update base_role_permit set is_deleted=1 where permit_id=? and is_deleted=0".to_owned();
+      let sql = "update base_role_field_permit set is_deleted=1 where field_permit_id=? and is_deleted=0".to_owned();
       args.push(id.as_ref().into());
       let args: Vec<_> = args.into();
       execute(
@@ -2059,13 +2059,13 @@ pub async fn delete_by_ids(
 }
 
 // MARK: revert_by_ids
-/// 根据 ids 还原按钮权限
+/// 根据 ids 还原字段权限
 pub async fn revert_by_ids(
-  ids: Vec<PermitId>,
+  ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "revert_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2103,7 +2103,7 @@ pub async fn revert_by_ids(
     let args: Vec<_> = args.into();
     
     let mut old_model = find_one(
-      PermitSearch {
+      FieldPermitSearch {
         id: Some(id.clone()),
         is_deleted: Some(1),
         ..Default::default()
@@ -2125,7 +2125,7 @@ pub async fn revert_by_ids(
     let old_model = old_model.unwrap();
     
     {
-      let mut input: PermitInput = old_model.clone().into();
+      let mut input: FieldPermitInput = old_model.clone().into();
       input.id = None;
       
       let models = find_by_unique(
@@ -2134,7 +2134,7 @@ pub async fn revert_by_ids(
         options.clone(),
       ).await?;
       
-      let models: Vec<PermitModel> = models
+      let models: Vec<FieldPermitModel> = models
         .into_iter()
         .filter(|item| 
           item.id != id
@@ -2143,7 +2143,7 @@ pub async fn revert_by_ids(
       
       if !models.is_empty() {
         let table_comment = i18n_dao::ns(
-          "按钮权限".to_owned(),
+          "字段权限".to_owned(),
           None,
         ).await?;
         let map = HashMap::from([
@@ -2164,7 +2164,7 @@ pub async fn revert_by_ids(
     ).await?;
     
     if server_i18n_enable {
-      let sql = "update base_permit_lang set is_deleted=0 where permit_id=?".to_owned();
+      let sql = "update base_field_permit_lang set is_deleted=0 where field_permit_id=?".to_owned();
       let mut args = QueryArgs::new();
       args.push(id.clone().into());
       execute(
@@ -2180,14 +2180,14 @@ pub async fn revert_by_ids(
 }
 
 // MARK: force_delete_by_ids
-/// 根据 ids 彻底删除按钮权限
+/// 根据 ids 彻底删除字段权限
 #[allow(unused_variables)]
 pub async fn force_delete_by_ids(
-  ids: Vec<PermitId>,
+  ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_permit";
+  let table = "base_field_permit";
   let method = "force_delete_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2219,7 +2219,7 @@ pub async fn force_delete_by_ids(
   for id in ids.clone() {
     
     let old_model = find_all(
-      PermitSearch {
+      FieldPermitSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
         ..Default::default()
@@ -2265,7 +2265,7 @@ pub async fn force_delete_by_ids(
     ).await?;
     
     if server_i18n_enable {
-      let sql = "delete from base_permit_lang where permit_id=?".to_owned();
+      let sql = "delete from base_field_permit_lang where field_permit_id=?".to_owned();
       let mut args = QueryArgs::new();
       args.push(id.clone().into());
       execute(
@@ -2276,7 +2276,7 @@ pub async fn force_delete_by_ids(
     }
     {
       let mut args = QueryArgs::new();
-      let sql = "delete from base_role_permit where permit_id=?".to_owned();
+      let sql = "delete from base_role_field_permit where field_permit_id=?".to_owned();
       args.push(id.as_ref().into());
       let args: Vec<_> = args.into();
       execute(
@@ -2291,14 +2291,14 @@ pub async fn force_delete_by_ids(
 }
 
 // MARK: validate_option
-/// 校验按钮权限是否存在
+/// 校验字段权限是否存在
 #[allow(dead_code)]
 pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
     let table_comment = i18n_dao::ns(
-      "按钮权限".to_owned(),
+      "字段权限".to_owned(),
       None,
     ).await?;
     let msg1 = i18n_dao::ns(

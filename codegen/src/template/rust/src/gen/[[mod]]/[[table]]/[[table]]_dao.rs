@@ -1458,7 +1458,7 @@ pub async fn find_all(
         const record = langTableRecords[i];
         const column_name = record.COLUMN_NAME;
       #>
-      lang_sql += ",<#=opts.langTable.opts.table_name#>.<#=column_name#> <#=column_name#>_lang";<#
+      lang_sql += ",max(<#=opts.langTable.opts.table_name#>.<#=column_name#>) <#=column_name#>_lang";<#
       }
       #>
     }
@@ -4316,12 +4316,14 @@ async fn refresh_lang_by_input(
     for (let i = 0; i < langTableRecords.length; i++) {
       const record = langTableRecords[i];
       const column_name = record.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column_name);
+      const column_name_mysql = mysqlKeyEscape(column_name);
       const column_comment = record.COLUMN_COMMENT || "";
     #>
     // <#=column_comment#>
-    if input.<#=column_name#>.is_some() {
-      lang_sql += "{column_name}=?,";
-      lang_args.push(input.<#=column_name#>.clone().unwrap_or_default().into());
+    if input.<#=column_name_rust#>.is_some() {
+      lang_sql += "<#=column_name_mysql#>=?,";
+      lang_args.push(input.<#=column_name_rust#>.clone().unwrap_or_default().into());
     }<#
     }
     #>
@@ -4334,7 +4336,7 @@ async fn refresh_lang_by_input(
       options.clone(),
     ).await?;
   } else {
-    let mut sql_fields: Vec<String> = vec![];
+    let mut sql_fields: Vec<&'static str> = vec![];
     let mut lang_args = QueryArgs::new();
     let id: LangId = get_short_uuid().into();
     lang_args.push(id.into());
@@ -4343,12 +4345,14 @@ async fn refresh_lang_by_input(
     for (let i = 0; i < langTableRecords.length; i++) {
       const record = langTableRecords[i];
       const column_name = record.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column_name);
+      const column_name_mysql = mysqlKeyEscape(column_name);
       const column_comment = record.COLUMN_COMMENT || "";
     #>
     // <#=column_comment#>
-    if input.<#=column_name#>.is_some() {
-      sql_fields.push("<#=column_name#>".to_owned());
-      lang_args.push(input.<#=column_name#>.clone().unwrap_or_default().into());
+    if input.<#=column_name_rust#>.is_some() {
+      sql_fields.push("<#=column_name_mysql#>");
+      lang_args.push(input.<#=column_name_rust#>.clone().unwrap_or_default().into());
     }<#
     }
     #>
@@ -4356,7 +4360,7 @@ async fn refresh_lang_by_input(
     let sql_fields_len = sql_fields.len();
     for sql_field in sql_fields {
       lang_sql += ",";
-      lang_sql += sql_field.as_str();
+      lang_sql += sql_field;
     }
     lang_sql += ")values(?,?,?";
     for _ in 0..sql_fields_len {

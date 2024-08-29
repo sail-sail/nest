@@ -30,6 +30,8 @@ use async_graphql::{
 
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
+
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::menu::menu_model::MenuId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
@@ -45,6 +47,9 @@ lazy_static! {
 #[graphql(rename_fields = "snake_case", name = "DataPermitModel")]
 #[allow(dead_code)]
 pub struct DataPermitModel {
+  /// 租户ID
+  #[graphql(skip)]
+  pub tenant_id: TenantId,
   /// 系统字段
   #[graphql(skip)]
   pub is_sys: u8,
@@ -93,6 +98,8 @@ pub struct DataPermitModel {
 
 impl FromRow<'_, MySqlRow> for DataPermitModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
+    // 租户ID
+    let tenant_id = row.try_get("tenant_id")?;
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
     // ID
@@ -133,6 +140,7 @@ impl FromRow<'_, MySqlRow> for DataPermitModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      tenant_id,
       is_sys,
       is_deleted,
       id,
@@ -219,6 +227,8 @@ pub struct DataPermitSearch {
   pub id: Option<DataPermitId>,
   /// ID列表
   pub ids: Option<Vec<DataPermitId>>,
+  #[graphql(skip)]
+  pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
   /// 菜单
   #[graphql(name = "menu_id")]
@@ -285,6 +295,9 @@ impl std::fmt::Debug for DataPermitSearch {
     if let Some(ref ids) = self.ids {
       item = item.field("ids", ids);
     }
+    if let Some(ref tenant_id) = self.tenant_id {
+      item = item.field("tenant_id", tenant_id);
+    }
     if let Some(ref is_deleted) = self.is_deleted {
       if *is_deleted == 1 {
         item = item.field("is_deleted", is_deleted);
@@ -347,6 +360,9 @@ pub struct DataPermitInput {
   /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
+  /// 租户ID
+  #[graphql(skip)]
+  pub tenant_id: Option<TenantId>,
   /// 系统记录
   #[graphql(skip)]
   pub is_sys: Option<u8>,
@@ -408,6 +424,7 @@ impl From<DataPermitModel> for DataPermitInput {
     Self {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
+      tenant_id: model.tenant_id.into(),
       is_sys: model.is_sys.into(),
       // 菜单
       menu_id: model.menu_id.into(),
@@ -443,6 +460,8 @@ impl From<DataPermitInput> for DataPermitSearch {
     Self {
       id: input.id,
       ids: None,
+      // 租户ID
+      tenant_id: input.tenant_id,
       is_deleted: None,
       // 菜单
       menu_id: input.menu_id.map(|x| vec![x]),
