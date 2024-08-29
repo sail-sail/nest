@@ -70,7 +70,7 @@
         @submit.prevent
       >
         
-        <template v-if="(showBuildIn || builtInModel?.exec_state == null)">
+        <template v-if="field_permit('exec_state') && (showBuildIn || builtInModel?.exec_state == null)">
           <el-form-item
             :label="n('执行状态')"
             prop="exec_state"
@@ -85,7 +85,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.exec_result == null)">
+        <template v-if="field_permit('exec_result') && (showBuildIn || builtInModel?.exec_result == null)">
           <el-form-item
             :label="n('执行结果')"
             prop="exec_result"
@@ -98,7 +98,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.begin_time == null)">
+        <template v-if="field_permit('begin_time') && (showBuildIn || builtInModel?.begin_time == null)">
           <el-form-item
             :label="n('开始时间')"
             prop="begin_time"
@@ -114,7 +114,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.end_time == null)">
+        <template v-if="field_permit('end_time') && (showBuildIn || builtInModel?.end_time == null)">
           <el-form-item
             :label="n('结束时间')"
             prop="end_time"
@@ -130,7 +130,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
+        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -243,8 +243,10 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
