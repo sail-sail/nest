@@ -143,6 +143,12 @@ async function getWhereQuery(
   if (search?.data_permit_ids_is_null) {
     whereQuery += ` and base_data_permit.id is null`;
   }
+  if (search?.field_permit_ids != null) {
+    whereQuery += ` and base_field_permit.id in ${ args.push(search.field_permit_ids) }`;
+  }
+  if (search?.field_permit_ids_is_null) {
+    whereQuery += ` and base_field_permit.id is null`;
+  }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
   }
@@ -259,7 +265,22 @@ async function getFromQuery(
   inner join base_data_permit on base_data_permit.id=base_role_data_permit.data_permit_id
   inner join base_role on base_role.id=base_role_data_permit.role_id
   where base_role_data_permit.is_deleted=${ args.push(is_deleted) }
-  group by role_id) _data_permit on _data_permit.role_id=t.id`;
+  group by role_id) _data_permit on _data_permit.role_id=t.id
+  left join base_role_field_permit
+    on base_role_field_permit.role_id=t.id
+    and base_role_field_permit.is_deleted=${ args.push(is_deleted) }
+  left join base_field_permit
+    on base_role_field_permit.field_permit_id=base_field_permit.id
+    and base_field_permit.is_deleted=${ args.push(is_deleted) }
+  left join(select
+  json_objectagg(base_role_field_permit.order_by,base_field_permit.id) field_permit_ids,
+  json_objectagg(base_role_field_permit.order_by,base_field_permit.lbl) field_permit_ids_lbl,
+  base_role.id role_id
+  from base_role_field_permit
+  inner join base_field_permit on base_field_permit.id=base_role_field_permit.field_permit_id
+  inner join base_role on base_role.id=base_role_field_permit.role_id
+  where base_role_field_permit.is_deleted=${ args.push(is_deleted) }
+  group by role_id) _field_permit on _field_permit.role_id=t.id`;
   return fromQuery;
 }
 
@@ -385,6 +406,17 @@ export async function findAll(
       throw new Error(`search.data_permit_ids.length > ${ ids_limit }`);
     }
   }
+  // 字段权限
+  if (search && search.field_permit_ids != null) {
+    const len = search.field_permit_ids.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.field_permit_ids.length > ${ ids_limit }`);
+    }
+  }
   // 锁定
   if (search && search.is_locked != null) {
     const len = search.is_locked.length;
@@ -437,6 +469,8 @@ export async function findAll(
       ,max(permit_ids) permit_ids
       ,max(permit_ids_lbl) permit_ids_lbl
       ,max(data_permit_ids) data_permit_ids
+      ,max(field_permit_ids) field_permit_ids
+      ,max(field_permit_ids_lbl) field_permit_ids_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -561,6 +595,30 @@ export async function findAll(
     } else {
       item.data_permit_ids = [ ];
     }
+    
+    // 字段权限
+    if (item.field_permit_ids) {
+      const obj = item.field_permit_ids;
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.field_permit_ids = keys.map((key) => obj[key]);
+    } else {
+      item.field_permit_ids = [ ];
+    }
+    if (item.field_permit_ids_lbl) {
+      const obj = item.field_permit_ids_lbl;
+      const keys = Object.keys(obj)
+        .map((key) => Number(key))
+        .sort((a, b) => {
+          return a - b ? 1 : -1;
+        });
+      item.field_permit_ids_lbl = keys.map((key) => obj[key]);
+    } else {
+      item.field_permit_ids_lbl = [ ];
+    }
   }
   
   const [
@@ -684,6 +742,28 @@ export async function setIdByLbl(
     }
   }
   
+  // 字段权限
+  if (!input.field_permit_ids && input.field_permit_ids_lbl) {
+    input.field_permit_ids_lbl = input.field_permit_ids_lbl
+      .map((item: string) => item.trim())
+      .filter((item: string) => item);
+    input.field_permit_ids_lbl = Array.from(new Set(input.field_permit_ids_lbl));
+    if (input.field_permit_ids_lbl.length === 0) {
+      input.field_permit_ids = [ ];
+    } else {
+      const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
+      const args = new QueryArgs();
+      const sql = `select t.id from base_field_permit t where t.lbl in ${ args.push(input.field_permit_ids_lbl) }`;
+      interface Result {
+        id: FieldPermitId;
+      }
+      const models = await query<Result>(sql, args, {
+        debug: is_debug_sql,
+      });
+      input.field_permit_ids = models.map((item: { id: FieldPermitId }) => item.id);
+    }
+  }
+  
   // 锁定
   if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
     const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
@@ -721,6 +801,8 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
     permit_ids_lbl: await n("按钮权限"),
     data_permit_ids: await n("数据权限"),
     data_permit_ids_lbl: await n("数据权限"),
+    field_permit_ids: await n("字段权限"),
+    field_permit_ids_lbl: await n("字段权限"),
     is_locked: await n("锁定"),
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
@@ -1487,6 +1569,18 @@ async function _creates(
         column2: "data_permit_id",
       },
     );
+    
+    // 字段权限
+    await many2manyUpdate(
+      input,
+      "field_permit_ids",
+      {
+        mod: "base",
+        table: "role_field_permit",
+        column1: "role_id",
+        column2: "field_permit_id",
+      },
+    );
   }
   
   await delCache();
@@ -1733,6 +1827,23 @@ export async function updateById(
     },
   );
   
+  updateFldNum++;
+  
+  // 字段权限
+  await many2manyUpdate(
+    {
+      ...input,
+      id: id as unknown as string,
+    },
+    "field_permit_ids",
+    {
+      mod: "base",
+      table: "role_field_permit",
+      column1: "role_id",
+      column2: "field_permit_id",
+    },
+  );
+  
   if (updateFldNum > 0) {
     if (!is_silent_mode && !is_creating) {
       if (input.update_usr_id == null) {
@@ -1900,6 +2011,14 @@ export async function deleteByIds(
       if (data_permit_ids && data_permit_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `update base_role_data_permit set is_deleted=1 where role_id=${ args.push(id) } and data_permit_id in ${ args.push(data_permit_ids) } and is_deleted=0`;
+        await execute(sql, args);
+      }
+    }
+    {
+      const field_permit_ids = oldModel.field_permit_ids;
+      if (field_permit_ids && field_permit_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_role_field_permit set is_deleted=1 where role_id=${ args.push(id) } and field_permit_id in ${ args.push(field_permit_ids) } and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -2147,6 +2266,14 @@ export async function revertByIds(
         await execute(sql, args);
       }
     }
+    {
+      const field_permit_ids = old_model.field_permit_ids;
+      if (field_permit_ids && field_permit_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `update base_role_field_permit set is_deleted=0 where role_id=${ args.push(id) } and field_permit_id in ${ args.push(field_permit_ids) } and is_deleted=1`;
+        await execute(sql, args);
+      }
+    }
   }
   
   await delCache();
@@ -2228,6 +2355,14 @@ export async function forceDeleteByIds(
       if (data_permit_ids && data_permit_ids.length > 0) {
         const args = new QueryArgs();
         const sql = `delete from base_role_data_permit where role_id=${ args.push(id) } and data_permit_id in ${ args.push(data_permit_ids) }`;
+        await execute(sql, args);
+      }
+    }
+    if (oldModel) {
+      const field_permit_ids = oldModel.field_permit_ids;
+      if (field_permit_ids && field_permit_ids.length > 0) {
+        const args = new QueryArgs();
+        const sql = `delete from base_role_field_permit where role_id=${ args.push(id) } and field_permit_id in ${ args.push(field_permit_ids) }`;
         await execute(sql, args);
       }
     }

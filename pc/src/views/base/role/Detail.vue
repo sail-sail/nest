@@ -75,7 +75,7 @@
         @submit.prevent
       >
         
-        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
+        <template v-if="field_permit('lbl') && (showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -88,7 +88,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.home_url == null)">
+        <template v-if="field_permit('home_url') && (showBuildIn || builtInModel?.home_url == null)">
           <el-form-item
             :label="n('首页')"
             prop="home_url"
@@ -102,7 +102,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
+        <template v-if="field_permit('order_by') && (showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
             prop="order_by"
@@ -115,7 +115,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
+        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -270,8 +270,10 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -287,6 +289,7 @@ let dialogModel: RoleInput = $ref({
   menu_ids: [ ],
   permit_ids: [ ],
   data_permit_ids: [ ],
+  field_permit_ids: [ ],
 } as RoleInput);
 
 let ids = $ref<RoleId[]>([ ]);
@@ -668,6 +671,7 @@ watch(
     dialogModel.menu_ids,
     dialogModel.permit_ids,
     dialogModel.data_permit_ids,
+    dialogModel.field_permit_ids,
   ],
   () => {
     if (!inited) {
@@ -678,6 +682,9 @@ watch(
     }
     if (!dialogModel.permit_ids || dialogModel.permit_ids.length === 0) {
       dialogModel.permit_ids_lbl = [ ];
+    }
+    if (!dialogModel.field_permit_ids || dialogModel.field_permit_ids.length === 0) {
+      dialogModel.field_permit_ids_lbl = [ ];
     }
   },
 );
@@ -850,6 +857,7 @@ async function onInitI18ns() {
     "菜单权限",
     "按钮权限",
     "数据权限",
+    "字段权限",
     "锁定",
     "启用",
     "排序",
