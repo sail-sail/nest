@@ -29,7 +29,7 @@
       @keydown.enter="onSearch(true)"
     >
       
-      <template v-if="showBuildIn || builtInSearch?.cron_job_id == null">
+      <template v-if="field_permit('cron_job_id') && (showBuildIn || builtInSearch?.cron_job_id == null)">
         <el-form-item
           :label="n('定时任务')"
           prop="cron_job_id"
@@ -50,7 +50,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.exec_state == null">
+      <template v-if="field_permit('exec_state') && (showBuildIn || builtInSearch?.exec_state == null)">
         <el-form-item
           :label="n('执行状态')"
           prop="exec_state"
@@ -65,7 +65,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.begin_time == null">
+      <template v-if="field_permit('begin_time') && (showBuildIn || builtInSearch?.begin_time == null)">
         <el-form-item
           :label="n('开始时间')"
           prop="begin_time"
@@ -602,11 +602,13 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -970,7 +972,8 @@ let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列标签国际化 */
 watchEffect(() => {
-  const tableColumns2 = getTableColumns();
+  let tableColumns2 = getTableColumns();
+  tableColumns2 = fieldPermitStore.useTableColumnsFieldPermit(tableColumns2);
   for (let i = 0; i < tableColumns2.length; i++) {
     const column2 = tableColumns2[i];
     const column = tableColumns.find((item) => item.prop === column2.prop);
