@@ -75,7 +75,7 @@
         @submit.prevent
       >
         
-        <template v-if="(showBuildIn || builtInModel?.img == null)">
+        <template v-if="field_permit('img') && (showBuildIn || builtInModel?.img == null)">
           <el-form-item
             :label="n('图标')"
             prop="img"
@@ -90,7 +90,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
+        <template v-if="field_permit('lbl') && (showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -103,7 +103,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.pt_type_ids == null)">
+        <template v-if="field_permit('pt_type_ids') && (showBuildIn || builtInModel?.pt_type_ids == null)">
           <el-form-item
             :label="n('产品类别')"
             prop="pt_type_ids"
@@ -125,7 +125,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.price == null)">
+        <template v-if="field_permit('price') && (showBuildIn || builtInModel?.price == null)">
           <el-form-item
             :label="n('价格')"
             prop="price"
@@ -140,7 +140,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.original_price == null)">
+        <template v-if="field_permit('original_price') && (showBuildIn || builtInModel?.original_price == null)">
           <el-form-item
             :label="n('原价')"
             prop="original_price"
@@ -155,7 +155,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.unit == null)">
+        <template v-if="field_permit('unit') && (showBuildIn || builtInModel?.unit == null)">
           <el-form-item
             :label="n('单位')"
             prop="unit"
@@ -168,7 +168,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.is_new == null)">
+        <template v-if="field_permit('is_new') && (showBuildIn || builtInModel?.is_new == null)">
           <el-form-item
             :label="n('新品')"
             prop="is_new"
@@ -183,7 +183,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.introduct == null)">
+        <template v-if="field_permit('introduct') && (showBuildIn || builtInModel?.introduct == null)">
           <el-form-item
             :label="n('简介')"
             prop="introduct"
@@ -196,7 +196,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
+        <template v-if="field_permit('order_by') && (showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
             prop="order_by"
@@ -209,7 +209,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.detail == null)">
+        <template v-if="field_permit('detail') && (showBuildIn || builtInModel?.detail == null)">
           <el-form-item
             :label="n('详情')"
             prop="detail"
@@ -226,7 +226,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.detail_top_img == null)">
+        <template v-if="field_permit('detail_top_img') && (showBuildIn || builtInModel?.detail_top_img == null)">
           <el-form-item
             :label="n('详情顶部图片')"
             prop="detail_top_img"
@@ -241,7 +241,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.detail_bottom_img == null)">
+        <template v-if="field_permit('detail_bottom_img') && (showBuildIn || builtInModel?.detail_bottom_img == null)">
           <el-form-item
             :label="n('详情底部图片')"
             prop="detail_bottom_img"
@@ -256,7 +256,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
+        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -412,8 +412,10 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
