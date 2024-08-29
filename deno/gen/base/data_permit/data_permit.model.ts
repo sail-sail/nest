@@ -30,6 +30,7 @@ declare global {
     create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
     update_time?: [(string|undefined|null), (string|undefined|null)];
+    tenant_id?: TenantId | null;
   }
 
   interface DataPermitModel extends DataPermitModelType {
@@ -43,6 +44,7 @@ declare global {
     update_usr_id_lbl: string;
     update_time?: string | null;
     update_time_lbl: string;
+    tenant_id: TenantId;
   }
 
   interface DataPermitInput extends DataPermitInputType {
@@ -59,6 +61,7 @@ declare global {
     update_time_lbl?: string | null;
     update_time_save_null?: boolean | null;
     is_deleted?: number | null;
+    tenant_id?: TenantId | null;
   }
 
   interface DataPermitFieldComment extends DataPermitFieldCommentType {

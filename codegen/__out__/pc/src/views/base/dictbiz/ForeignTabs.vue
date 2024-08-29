@@ -57,7 +57,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ n("关闭") }}</span>
+        <span>{{ ns("关闭") }}</span>
       </el-button>
       
     </div>
@@ -75,6 +75,7 @@ import {
 
 const {
   n,
+  ns,
   initI18ns,
 } = useI18n("/base/dictbiz");
 

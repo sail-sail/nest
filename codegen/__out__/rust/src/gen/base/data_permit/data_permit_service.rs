@@ -15,6 +15,8 @@ use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
 use crate::src::base::i18n::i18n_dao::ns;
 
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+
 use super::data_permit_model::*;
 use super::data_permit_dao;
 
@@ -124,6 +126,23 @@ pub async fn creates(
   ).await?;
   
   Ok(data_permit_ids)
+}
+
+/// 数据权限根据id修改租户id
+#[allow(dead_code)]
+pub async fn update_tenant_by_id(
+  id: DataPermitId,
+  tenant_id: TenantId,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let num = data_permit_dao::update_tenant_by_id(
+    id,
+    tenant_id,
+    options,
+  ).await?;
+  
+  Ok(num)
 }
 
 /// 根据 id 修改数据权限
