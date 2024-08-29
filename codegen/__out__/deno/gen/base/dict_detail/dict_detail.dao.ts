@@ -369,8 +369,8 @@ export async function findAll(
   let lang_sql = "";
   
   if (server_i18n_enable) {
-    lang_sql += ",base_dict_detail_lang.lbl lbl_lang";
-    lang_sql += ",base_dict_detail_lang.rem rem_lang";
+    lang_sql += ",max(base_dict_detail_lang.lbl) lbl_lang";
+    lang_sql += ",max(base_dict_detail_lang.rem) rem_lang";
   }
   
   const args = new QueryArgs();

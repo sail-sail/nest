@@ -75,7 +75,7 @@
         @submit.prevent
       >
         
-        <template v-if="(showBuildIn || builtInModel?.menu_id == null)">
+        <template v-if="field_permit('menu_id') && (showBuildIn || builtInModel?.menu_id == null)">
           <el-form-item
             :label="n('菜单')"
             prop="menu_id"
@@ -97,7 +97,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.scope == null)">
+        <template v-if="field_permit('scope') && (showBuildIn || builtInModel?.scope == null)">
           <el-form-item
             :label="n('范围')"
             prop="scope"
@@ -112,7 +112,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.type == null)">
+        <template v-if="field_permit('type') && (showBuildIn || builtInModel?.type == null)">
           <el-form-item
             :label="n('类型')"
             prop="type"
@@ -127,7 +127,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
+        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -282,8 +282,10 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
