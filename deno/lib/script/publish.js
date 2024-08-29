@@ -40,6 +40,7 @@ const sshConfig = {
   host: publish_cnf[projectName].host,
   username: publish_cnf[projectName].username,
   password: publish_cnf[projectName].password,
+  identity: publish_cnf[projectName].identity,
 };
 
 console.log({ ...sshConfig, password: "" });

@@ -29,7 +29,7 @@
       @keydown.enter="onSearch(true)"
     >
       
-      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
+      <template v-if="field_permit('lbl') && (builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -42,7 +42,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.username == null && (showBuildIn || builtInSearch?.username_like == null)">
+      <template v-if="field_permit('username') && (builtInSearch?.username == null && (showBuildIn || builtInSearch?.username_like == null))">
         <el-form-item
           :label="n('用户名')"
           prop="username_like"
@@ -55,7 +55,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.role_ids == null">
+      <template v-if="field_permit('role_ids') && (showBuildIn || builtInSearch?.role_ids == null)">
         <el-form-item
           :label="n('所属角色')"
           prop="role_ids"
@@ -76,7 +76,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.dept_ids == null">
+      <template v-if="field_permit('dept_ids') && (showBuildIn || builtInSearch?.dept_ids == null)">
         <el-form-item
           :label="n('所属部门')"
           prop="dept_ids"
@@ -97,7 +97,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.org_ids == null">
+      <template v-if="field_permit('org_ids') && (showBuildIn || builtInSearch?.org_ids == null)">
         <el-form-item
           :label="n('所属组织')"
           prop="org_ids"
@@ -118,7 +118,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.is_enabled == null">
+      <template v-if="field_permit('is_enabled') && (showBuildIn || builtInSearch?.is_enabled == null)">
         <el-form-item
           :label="n('启用')"
           prop="is_enabled"
@@ -859,11 +859,13 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1330,7 +1332,8 @@ let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列标签国际化 */
 watchEffect(() => {
-  const tableColumns2 = getTableColumns();
+  let tableColumns2 = getTableColumns();
+  tableColumns2 = fieldPermitStore.useTableColumnsFieldPermit(tableColumns2);
   for (let i = 0; i < tableColumns2.length; i++) {
     const column2 = tableColumns2[i];
     const column = tableColumns.find((item) => item.prop === column2.prop);
