@@ -70,7 +70,7 @@
         @submit.prevent
       >
         
-        <template v-if="(showBuildIn || builtInModel?.wxw_app_id == null)">
+        <template v-if="field_permit('wxw_app_id') && (showBuildIn || builtInModel?.wxw_app_id == null)">
           <el-form-item
             :label="n('企微应用')"
             prop="wxw_app_id"
@@ -90,7 +90,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.errcode == null)">
+        <template v-if="field_permit('errcode') && (showBuildIn || builtInModel?.errcode == null)">
           <el-form-item
             :label="n('发送状态')"
             prop="errcode"
@@ -105,7 +105,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.touser == null)">
+        <template v-if="field_permit('touser') && (showBuildIn || builtInModel?.touser == null)">
           <el-form-item
             :label="n('成员ID')"
             prop="touser"
@@ -118,7 +118,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.title == null)">
+        <template v-if="field_permit('title') && (showBuildIn || builtInModel?.title == null)">
           <el-form-item
             :label="n('标题')"
             prop="title"
@@ -131,7 +131,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.description == null)">
+        <template v-if="field_permit('description') && (showBuildIn || builtInModel?.description == null)">
           <el-form-item
             :label="n('描述')"
             prop="description"
@@ -144,7 +144,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.btntxt == null)">
+        <template v-if="field_permit('btntxt') && (showBuildIn || builtInModel?.btntxt == null)">
           <el-form-item
             :label="n('按钮文字')"
             prop="btntxt"
@@ -157,7 +157,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.errmsg == null)">
+        <template v-if="field_permit('errmsg') && (showBuildIn || builtInModel?.errmsg == null)">
           <el-form-item
             :label="n('错误信息')"
             prop="errmsg"
@@ -270,8 +270,10 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
