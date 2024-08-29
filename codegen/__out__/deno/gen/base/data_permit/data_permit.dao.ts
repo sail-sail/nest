@@ -59,6 +59,14 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
+  getTenant_id,
+} from "/src/base/usr/usr.dao.ts";
+
+import {
+  existById as existByIdTenant,
+} from "/gen/base/tenant/tenant.dao.ts";
+
+import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -82,7 +90,6 @@ import {
   route_path,
 } from "./data_permit.model.ts";
 
-// deno-lint-ignore require-await
 async function getWhereQuery(
   args: QueryArgs,
   search?: Readonly<DataPermitSearch>,
@@ -92,6 +99,16 @@ async function getWhereQuery(
   
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  
+  if (search?.tenant_id == null) {
+    const usr_id = await get_usr_id();
+    const tenant_id = await getTenant_id(usr_id);
+    if (tenant_id) {
+      whereQuery += ` and t.tenant_id=${ args.push(tenant_id) }`;
+    }
+  } else if (search?.tenant_id != null && search?.tenant_id !== "-") {
+    whereQuery += ` and t.tenant_id=${ args.push(search.tenant_id) }`;
+  }
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
@@ -1107,7 +1124,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_data_permit(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,menu_id,scope,type,rem,is_sys)values";
+  let sql = "insert into base_data_permit(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,menu_id,scope,type,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1131,6 +1148,19 @@ async function _creates(
         sql += `,${ args.push(input.update_time) }`;
       } else {
         sql += `,null`;
+      }
+      if (input.tenant_id == null) {
+        const usr_id = await get_usr_id();
+        const tenant_id = await getTenant_id(usr_id);
+        if (tenant_id) {
+          sql += `,${ args.push(tenant_id) }`;
+        } else {
+          sql += ",default";
+        }
+      } else if (input.tenant_id as unknown as string === "-") {
+        sql += ",default";
+      } else {
+        sql += `,${ args.push(input.tenant_id) }`;
       }
       if (!is_silent_mode) {
         if (input.create_usr_id == null) {
@@ -1244,6 +1274,51 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.base_data_permit`);
 }
 
+// MARK: updateTenantById
+/** 数据权限 根据 id 修改 租户id */
+export async function updateTenantById(
+  id: DataPermitId,
+  tenant_id: Readonly<TenantId>,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<number> {
+  
+  const table = "base_data_permit";
+  const method = "updateTenantById";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id } `;
+    }
+    if (tenant_id) {
+      msg += ` tenant_id:${ tenant_id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const tenantExist = await existByIdTenant(tenant_id, options);
+  if (!tenantExist) {
+    return 0;
+  }
+  
+  const args = new QueryArgs();
+  const sql = `update base_data_permit set tenant_id=${ args.push(tenant_id) } where id=${ args.push(id) }`;
+  const res = await execute(sql, args);
+  const affectedRows = res.affectedRows;
+  
+  await delCache();
+  return affectedRows;
+}
+
 // MARK: updateById
 /** 根据 id 修改 数据权限 */
 export async function updateById(
@@ -1285,6 +1360,11 @@ export async function updateById(
   }
   if (!input) {
     throw new Error("updateById: input cannot be null");
+  }
+  
+  // 修改租户id
+  if (isNotEmpty(input.tenant_id)) {
+    await updateTenantById(id, input.tenant_id, options);
   }
   
   {

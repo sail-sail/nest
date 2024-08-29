@@ -31,6 +31,10 @@ declare const domainId: unique symbol;
 /** 域名 */
 type DomainId = Distinct<string, typeof domainId>;
 
+declare const field_permitId: unique symbol;
+/** 字段权限 */
+type FieldPermitId = Distinct<string, typeof field_permitId>;
+
 declare const i18nId: unique symbol;
 /** 国际化 */
 type I18nId = Distinct<string, typeof i18nId>;
