@@ -230,7 +230,7 @@ const old_table = table;
           form_item_index++;
         #>
         
-        <template v-if="(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
+        <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
@@ -671,6 +671,7 @@ const old_table = table;
         un-w="full"
         un-flex="~ [1_0_0] col"
         un-overflow-hidden
+        un-min="h-100"
       >
         <el-tabs
           v-model="inlineForeignTabLabel"
@@ -729,7 +730,7 @@ const old_table = table;
                 if (column_name === "order_by") continue;
                 if (column_name === "tenant_id") continue;
                 const data_type = column.DATA_TYPE;
-                const column_type = column.COLUMN_TYPE;
+                let column_type = column.COLUMN_TYPE;
                 const column_comment = column.COLUMN_COMMENT || "";
                 let require = column.require;
                 const foreignKey = column.foreignKey;
@@ -1693,6 +1694,7 @@ const old_table = table;
         un-w="full"
         un-flex="~ [1_0_0] col"
         un-overflow-hidden
+        un-min="h-100"
       >
         <el-tabs
           v-model="inlineMany2manyTabLabel"
@@ -2939,8 +2941,10 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
-const permit = permitStore.getPermit(pagePath);<#
+const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
