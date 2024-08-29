@@ -75,7 +75,7 @@
         @submit.prevent
       >
         
-        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
+        <template v-if="field_permit('lbl') && (showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -88,7 +88,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.job_id == null)">
+        <template v-if="field_permit('job_id') && (showBuildIn || builtInModel?.job_id == null)">
           <el-form-item
             :label="n('任务')"
             prop="job_id"
@@ -109,7 +109,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.cron == null)">
+        <template v-if="field_permit('cron') && (showBuildIn || builtInModel?.cron == null)">
           <el-form-item
             :label="n('Cron表达式')"
             prop="cron"
@@ -123,7 +123,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.timezone == null)">
+        <template v-if="field_permit('timezone') && (showBuildIn || builtInModel?.timezone == null)">
           <el-form-item
             :label="n('时区')"
             prop="timezone"
@@ -138,7 +138,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
+        <template v-if="field_permit('order_by') && (showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
             prop="order_by"
@@ -151,7 +151,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
+        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -310,8 +310,10 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
