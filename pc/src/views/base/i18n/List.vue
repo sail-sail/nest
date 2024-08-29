@@ -29,7 +29,7 @@
       @keydown.enter="onSearch(true)"
     >
       
-      <template v-if="showBuildIn || builtInSearch?.lang_id == null">
+      <template v-if="field_permit('lang_id') && (showBuildIn || builtInSearch?.lang_id == null)">
         <el-form-item
           :label="n('语言')"
           prop="lang_id"
@@ -50,7 +50,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="showBuildIn || builtInSearch?.menu_id == null">
+      <template v-if="field_permit('menu_id') && (showBuildIn || builtInSearch?.menu_id == null)">
         <el-form-item
           :label="n('菜单')"
           prop="menu_id"
@@ -71,7 +71,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null)">
+      <template v-if="field_permit('code') && (builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null))">
         <el-form-item
           :label="n('编码')"
           prop="code_like"
@@ -84,7 +84,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null)">
+      <template v-if="field_permit('lbl') && (builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
         <el-form-item
           :label="n('名称')"
           prop="lbl_like"
@@ -685,11 +685,13 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1064,7 +1066,8 @@ let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列标签国际化 */
 watchEffect(() => {
-  const tableColumns2 = getTableColumns();
+  let tableColumns2 = getTableColumns();
+  tableColumns2 = fieldPermitStore.useTableColumnsFieldPermit(tableColumns2);
   for (let i = 0; i < tableColumns2.length; i++) {
     const column2 = tableColumns2[i];
     const column = tableColumns.find((item) => item.prop === column2.prop);
