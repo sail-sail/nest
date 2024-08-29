@@ -13,30 +13,28 @@ use crate::common::gql::model::{
   SortInput,
 };
 
-use super::data_permit_model::*;
-use super::data_permit_resolver;
-
-use crate::r#gen::base::tenant::tenant_model::TenantId;
+use super::field_permit_model::*;
+use super::field_permit_resolver;
 
 #[derive(Default)]
-pub struct DataPermitGenQuery;
+pub struct FieldPermitGenQuery;
 
 #[Object(rename_args = "snake_case")]
-impl DataPermitGenQuery {
+impl FieldPermitGenQuery {
   
-  /// 根据搜索条件和分页查找数据权限列表
-  async fn find_all_data_permit(
+  /// 根据搜索条件和分页查找字段权限列表
+  async fn find_all_field_permit(
     &self,
     ctx: &Context<'_>,
-    search: Option<DataPermitSearch>,
+    search: Option<FieldPermitSearch>,
     page: Option<PageInput>,
     sort: Option<Vec<SortInput>>,
-  ) -> Result<Vec<DataPermitModel>> {
+  ) -> Result<Vec<FieldPermitModel>> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
-        data_permit_resolver::find_all(
+        field_permit_resolver::find_all(
           search,
           page,
           sort,
@@ -45,35 +43,35 @@ impl DataPermitGenQuery {
       }).await
   }
   
-  /// 根据条件查找数据权限总数
-  async fn find_count_data_permit(
+  /// 根据条件查找字段权限总数
+  async fn find_count_field_permit(
     &self,
     ctx: &Context<'_>,
-    search: Option<DataPermitSearch>,
+    search: Option<FieldPermitSearch>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
-        data_permit_resolver::find_count(
+        field_permit_resolver::find_count(
           search,
           None,
         )
       }).await
   }
   
-  /// 根据条件查找第一个数据权限
-  async fn find_one_data_permit(
+  /// 根据条件查找第一个字段权限
+  async fn find_one_field_permit(
     &self,
     ctx: &Context<'_>,
-    search: Option<DataPermitSearch>,
+    search: Option<FieldPermitSearch>,
     sort: Option<Vec<SortInput>>,
-  ) -> Result<Option<DataPermitModel>> {
+  ) -> Result<Option<FieldPermitModel>> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
-        data_permit_resolver::find_one(
+        field_permit_resolver::find_one(
           search,
           sort,
           None,
@@ -81,32 +79,32 @@ impl DataPermitGenQuery {
       }).await
   }
   
-  /// 根据 id 查找数据权限
-  async fn find_by_id_data_permit(
+  /// 根据 id 查找字段权限
+  async fn find_by_id_field_permit(
     &self,
     ctx: &Context<'_>,
-    id: DataPermitId,
-  ) -> Result<Option<DataPermitModel>> {
+    id: FieldPermitId,
+  ) -> Result<Option<FieldPermitModel>> {
     Ctx::builder(ctx)
       .with_auth()?
       .build()
       .scope({
-        data_permit_resolver::find_by_id(
+        field_permit_resolver::find_by_id(
           id,
           None,
         )
       }).await
   }
   
-  /// 获取数据权限字段注释
-  async fn get_field_comments_data_permit(
+  /// 获取字段权限字段注释
+  async fn get_field_comments_field_permit(
     &self,
     ctx: &Context<'_>,
-  ) -> Result<DataPermitFieldComment> {
+  ) -> Result<FieldPermitFieldComment> {
     Ctx::builder(ctx)
       .build()
       .scope({
-        data_permit_resolver::get_field_comments(
+        field_permit_resolver::get_field_comments(
           None,
         )
       }).await
@@ -115,18 +113,18 @@ impl DataPermitGenQuery {
 }
 
 #[derive(Default)]
-pub struct DataPermitGenMutation;
+pub struct FieldPermitGenMutation;
 
 #[Object(rename_args = "snake_case")]
-impl DataPermitGenMutation {
+impl FieldPermitGenMutation {
   
-  /// 创建数据权限
-  async fn creates_data_permit(
+  /// 创建字段权限
+  async fn creates_field_permit(
     &self,
     ctx: &Context<'_>,
-    inputs: Vec<DataPermitInput>,
+    inputs: Vec<FieldPermitInput>,
     unique_type: Option<UniqueType>,
-  ) -> Result<Vec<DataPermitId>> {
+  ) -> Result<Vec<FieldPermitId>> {
     let mut options = Options::new();
     if let Some(unique_type) = unique_type {
       options = options.set_unique_type(unique_type);
@@ -137,46 +135,26 @@ impl DataPermitGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        data_permit_resolver::creates(
+        field_permit_resolver::creates(
           inputs,
           options.into(),
         )
       }).await
   }
   
-  /// 数据权限根据id修改租户id
-  async fn update_tenant_by_id_data_permit(
+  /// 根据 id 修改字段权限
+  async fn update_by_id_field_permit(
     &self,
     ctx: &Context<'_>,
-    id: DataPermitId,
-    tenant_id: TenantId,
-  ) -> Result<u64> {
+    id: FieldPermitId,
+    input: FieldPermitInput,
+  ) -> Result<FieldPermitId> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
       .build()
       .scope({
-        data_permit_resolver::update_tenant_by_id(
-          id,
-          tenant_id,
-          None,
-        )
-      }).await
-  }
-  
-  /// 根据 id 修改数据权限
-  async fn update_by_id_data_permit(
-    &self,
-    ctx: &Context<'_>,
-    id: DataPermitId,
-    input: DataPermitInput,
-  ) -> Result<DataPermitId> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        data_permit_resolver::update_by_id(
+        field_permit_resolver::update_by_id(
           id,
           input,
           None,
@@ -184,54 +162,54 @@ impl DataPermitGenMutation {
       }).await
   }
   
-  /// 根据 ids 删除数据权限
-  async fn delete_by_ids_data_permit(
+  /// 根据 ids 删除字段权限
+  async fn delete_by_ids_field_permit(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<DataPermitId>,
+    ids: Vec<FieldPermitId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
       .build()
       .scope({
-        data_permit_resolver::delete_by_ids(
+        field_permit_resolver::delete_by_ids(
           ids,
           None,
         )
       }).await
   }
   
-  /// 根据 ids 还原数据权限
-  async fn revert_by_ids_data_permit(
+  /// 根据 ids 还原字段权限
+  async fn revert_by_ids_field_permit(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<DataPermitId>,
+    ids: Vec<FieldPermitId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
       .build()
       .scope({
-        data_permit_resolver::revert_by_ids(
+        field_permit_resolver::revert_by_ids(
           ids,
           None,
         )
       }).await
   }
   
-  /// 根据 ids 彻底删除数据权限
-  async fn force_delete_by_ids_data_permit(
+  /// 根据 ids 彻底删除字段权限
+  async fn force_delete_by_ids_field_permit(
     &self,
     ctx: &Context<'_>,
-    ids: Vec<DataPermitId>,
+    ids: Vec<FieldPermitId>,
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
       .with_tran()?
       .build()
       .scope({
-        data_permit_resolver::force_delete_by_ids(
+        field_permit_resolver::force_delete_by_ids(
           ids,
           None,
         )

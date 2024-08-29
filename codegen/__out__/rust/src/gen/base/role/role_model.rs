@@ -35,6 +35,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::menu::menu_model::MenuId;
 use crate::r#gen::base::permit::permit_model::PermitId;
 use crate::r#gen::base::data_permit::data_permit_model::DataPermitId;
+use crate::r#gen::base::field_permit::field_permit_model::FieldPermitId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
 lazy_static! {
@@ -76,6 +77,12 @@ pub struct RoleModel {
   /// 数据权限
   #[graphql(name = "data_permit_ids")]
   pub data_permit_ids: Vec<DataPermitId>,
+  /// 字段权限
+  #[graphql(name = "field_permit_ids")]
+  pub field_permit_ids: Vec<FieldPermitId>,
+  /// 字段权限
+  #[graphql(name = "field_permit_ids_lbl")]
+  pub field_permit_ids_lbl: Vec<String>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -224,6 +231,47 @@ impl FromRow<'_, MySqlRow> for RoleModel {
         )
         .collect::<Vec<DataPermitId>>()
     };
+    // 字段权限
+    let field_permit_ids: Option<sqlx::types::Json<HashMap<String, FieldPermitId>>> = row.try_get("field_permit_ids")?;
+    let field_permit_ids = field_permit_ids.unwrap_or_default().0;
+    let field_permit_ids = {
+      let mut keys: Vec<u32> = field_permit_ids.keys()
+        .map(|x| 
+          x.parse::<u32>().unwrap_or_default()
+        )
+        .collect();
+      keys.sort();
+      keys.into_iter()
+        .map(|x| 
+          field_permit_ids.get(&x.to_string())
+            .unwrap_or(&FieldPermitId::default())
+            .to_owned()
+        )
+        .collect::<Vec<FieldPermitId>>()
+    };
+    let field_permit_ids_lbl: Option<sqlx::types::Json<HashMap<String, String>>> = row.try_get("field_permit_ids_lbl")?;
+    let field_permit_ids_lbl = field_permit_ids_lbl.unwrap_or_default().0;
+    let field_permit_ids_lbl = {
+      let mut keys: Vec<u32> = field_permit_ids_lbl.keys()
+        .map(|x| 
+          x.parse::<u32>()
+            .map_err(|_| sqlx::Error::Decode(
+              Box::new(sqlx::error::Error::Protocol(
+                "field_permit_ids_lbl order_by Invalid u32".to_string()
+              ))
+            ))
+        )
+        .collect::<Result<_, _>>()?;
+      keys.sort();
+      keys
+        .into_iter()
+        .map(|x| 
+          field_permit_ids_lbl.get(&x.to_string())
+            .map(|x| x.to_owned())
+            .unwrap_or_default()
+        )
+        .collect::<Vec<String>>()
+    };
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -268,6 +316,8 @@ impl FromRow<'_, MySqlRow> for RoleModel {
       permit_ids,
       permit_ids_lbl,
       data_permit_ids,
+      field_permit_ids,
+      field_permit_ids_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -319,6 +369,12 @@ pub struct RoleFieldComment {
   /// 数据权限
   #[graphql(name = "data_permit_ids_lbl")]
   pub data_permit_ids_lbl: String,
+  /// 字段权限
+  #[graphql(name = "field_permit_ids")]
+  pub field_permit_ids: String,
+  /// 字段权限
+  #[graphql(name = "field_permit_ids_lbl")]
+  pub field_permit_ids_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: String,
@@ -404,6 +460,12 @@ pub struct RoleSearch {
   /// 数据权限
   #[graphql(name = "data_permit_ids_save_null")]
   pub data_permit_ids_is_null: Option<bool>,
+  /// 字段权限
+  #[graphql(name = "field_permit_ids")]
+  pub field_permit_ids: Option<Vec<FieldPermitId>>,
+  /// 字段权限
+  #[graphql(name = "field_permit_ids_save_null")]
+  pub field_permit_ids_is_null: Option<bool>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -494,6 +556,10 @@ impl std::fmt::Debug for RoleSearch {
     if let Some(ref data_permit_ids) = self.data_permit_ids {
       item = item.field("data_permit_ids", data_permit_ids);
     }
+    // 字段权限
+    if let Some(ref field_permit_ids) = self.field_permit_ids {
+      item = item.field("field_permit_ids", field_permit_ids);
+    }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
@@ -572,6 +638,12 @@ pub struct RoleInput {
   /// 数据权限
   #[graphql(name = "data_permit_ids")]
   pub data_permit_ids: Option<Vec<DataPermitId>>,
+  /// 字段权限
+  #[graphql(name = "field_permit_ids")]
+  pub field_permit_ids: Option<Vec<FieldPermitId>>,
+  /// 字段权限
+  #[graphql(name = "field_permit_ids_lbl")]
+  pub field_permit_ids_lbl: Option<Vec<String>>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -640,6 +712,9 @@ impl From<RoleModel> for RoleInput {
       permit_ids_lbl: model.permit_ids_lbl.into(),
       // 数据权限
       data_permit_ids: model.data_permit_ids.into(),
+      // 字段权限
+      field_permit_ids: model.field_permit_ids.into(),
+      field_permit_ids_lbl: model.field_permit_ids_lbl.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -686,6 +761,8 @@ impl From<RoleInput> for RoleSearch {
       permit_ids: input.permit_ids,
       // 数据权限
       data_permit_ids: input.data_permit_ids,
+      // 字段权限
+      field_permit_ids: input.field_permit_ids,
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用

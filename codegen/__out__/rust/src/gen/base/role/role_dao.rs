@@ -59,6 +59,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::menu::menu_model::MenuId;
 use crate::r#gen::base::permit::permit_model::PermitId;
 use crate::r#gen::base::data_permit::data_permit_model::DataPermitId;
+use crate::r#gen::base::field_permit::field_permit_model::FieldPermitId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
 use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
@@ -74,7 +75,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 16 * 2);
+  let mut where_query = String::with_capacity(80 * 17 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -266,6 +267,39 @@ async fn get_where_query(
     };
     if data_permit_ids_is_null {
       where_query.push_str(" and t.data_permit_ids is null");
+    }
+  }
+  // 字段权限
+  {
+    let field_permit_ids: Option<Vec<FieldPermitId>> = match search {
+      Some(item) => item.field_permit_ids.clone(),
+      None => None,
+    };
+    if let Some(field_permit_ids) = field_permit_ids {
+      let arg = {
+        if field_permit_ids.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(field_permit_ids.len());
+          for item in field_permit_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and base_field_permit.id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let field_permit_ids_is_null: bool = match search {
+      Some(item) => item.field_permit_ids_is_null.unwrap_or(false),
+      None => false,
+    };
+    if field_permit_ids_is_null {
+      where_query.push_str(" and t.field_permit_ids is null");
     }
   }
   // 锁定
@@ -557,8 +591,16 @@ async fn get_from_query(
   base_role.id role_id from base_role_data_permit
   inner join base_data_permit on base_data_permit.id=base_role_data_permit.data_permit_id
   inner join base_role on base_role.id=base_role_data_permit.role_id where base_role_data_permit.is_deleted=?
-  group by role_id) _data_permit on _data_permit.role_id=t.id"#.to_owned();
-  for _ in 0..9 {
+  group by role_id) _data_permit on _data_permit.role_id=t.id
+  left join base_role_field_permit on base_role_field_permit.role_id=t.id and base_role_field_permit.is_deleted=?
+  left join base_field_permit on base_role_field_permit.field_permit_id=base_field_permit.id and base_field_permit.is_deleted=?
+  left join (select json_objectagg(base_role_field_permit.order_by,base_field_permit.id) field_permit_ids,
+  json_objectagg(base_role_field_permit.order_by,base_field_permit.lbl) field_permit_ids_lbl,
+  base_role.id role_id from base_role_field_permit
+  inner join base_field_permit on base_field_permit.id=base_role_field_permit.field_permit_id
+  inner join base_role on base_role.id=base_role_field_permit.role_id where base_role_field_permit.is_deleted=?
+  group by role_id) _field_permit on _field_permit.role_id=t.id"#.to_owned();
+  for _ in 0..12 {
     args.push(is_deleted.into());
   }
   Ok(from_query)
@@ -652,6 +694,22 @@ pub async fn find_all(
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
         return Err(anyhow!("search.data_permit_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 字段权限
+  if let Some(search) = &search {
+    if search.field_permit_ids.is_some() {
+      let len = search.field_permit_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.field_permit_ids.length > {ids_limit}"));
       }
     }
   }
@@ -760,6 +818,8 @@ pub async fn find_all(
   ,max(permit_ids) permit_ids
   ,max(permit_ids_lbl) permit_ids_lbl
   ,max(data_permit_ids) data_permit_ids
+  ,max(field_permit_ids) field_permit_ids
+  ,max(field_permit_ids_lbl) field_permit_ids_lbl
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -903,6 +963,8 @@ pub async fn get_field_comments(
     "按钮权限".into(),
     "数据权限".into(),
     "数据权限".into(),
+    "字段权限".into(),
+    "字段权限".into(),
     "锁定".into(),
     "锁定".into(),
     "启用".into(),
@@ -941,20 +1003,22 @@ pub async fn get_field_comments(
     permit_ids_lbl: vec[6].to_owned(),
     data_permit_ids: vec[7].to_owned(),
     data_permit_ids_lbl: vec[8].to_owned(),
-    is_locked: vec[9].to_owned(),
-    is_locked_lbl: vec[10].to_owned(),
-    is_enabled: vec[11].to_owned(),
-    is_enabled_lbl: vec[12].to_owned(),
-    order_by: vec[13].to_owned(),
-    rem: vec[14].to_owned(),
-    create_usr_id: vec[15].to_owned(),
-    create_usr_id_lbl: vec[16].to_owned(),
-    create_time: vec[17].to_owned(),
-    create_time_lbl: vec[18].to_owned(),
-    update_usr_id: vec[19].to_owned(),
-    update_usr_id_lbl: vec[20].to_owned(),
-    update_time: vec[21].to_owned(),
-    update_time_lbl: vec[22].to_owned(),
+    field_permit_ids: vec[9].to_owned(),
+    field_permit_ids_lbl: vec[10].to_owned(),
+    is_locked: vec[11].to_owned(),
+    is_locked_lbl: vec[12].to_owned(),
+    is_enabled: vec[13].to_owned(),
+    is_enabled_lbl: vec[14].to_owned(),
+    order_by: vec[15].to_owned(),
+    rem: vec[16].to_owned(),
+    create_usr_id: vec[17].to_owned(),
+    create_usr_id_lbl: vec[18].to_owned(),
+    create_time: vec[19].to_owned(),
+    create_time_lbl: vec[20].to_owned(),
+    update_usr_id: vec[21].to_owned(),
+    update_usr_id_lbl: vec[22].to_owned(),
+    update_time: vec[23].to_owned(),
+    update_time_lbl: vec[24].to_owned(),
   };
   Ok(field_comments)
 }
@@ -1484,6 +1548,40 @@ pub async fn set_id_by_lbl(
       .into();
   }
   
+  // 字段权限
+  if input.field_permit_ids_lbl.is_some() && input.field_permit_ids.is_none() {
+    input.field_permit_ids_lbl = input.field_permit_ids_lbl.map(|item| 
+      item.into_iter()
+        .map(|item| item.trim().to_owned())
+        .filter(|item| !item.is_empty())
+        .collect::<Vec<String>>()
+    );
+    input.field_permit_ids_lbl = input.field_permit_ids_lbl.map(|item| {
+      let mut set = HashSet::new();
+      item.into_iter()
+        .filter(|item| set.insert(item.clone()))
+        .collect::<Vec<String>>()
+    });
+    let mut models = vec![];
+    for lbl in input.field_permit_ids_lbl.clone().unwrap_or_default() {
+      let model = crate::r#gen::base::field_permit::field_permit_dao::find_one(
+        crate::r#gen::base::field_permit::field_permit_model::FieldPermitSearch {
+          lbl: lbl.into(),
+          ..Default::default()
+        }.into(),
+        None,
+        Some(Options::new().set_is_debug(Some(false))),
+      ).await?;
+      if let Some(model) = model {
+        models.push(model);
+      }
+    }
+    input.field_permit_ids = models.into_iter()
+      .map(|item| item.id)
+      .collect::<Vec<FieldPermitId>>()
+      .into();
+  }
+  
   // 锁定
   if
     input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
@@ -1642,7 +1740,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 16 + 20);
+  let mut sql_fields = String::with_capacity(80 * 17 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1666,7 +1764,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 16 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 17 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1926,6 +2024,23 @@ async fn _creates(
         },
       ).await?;
     }
+    
+    // 字段权限
+    if let Some(field_permit_ids) = input.field_permit_ids {
+      many2many_update(
+        id.clone().into(),
+        field_permit_ids
+          .iter()
+          .map(|item| item.clone().into())
+          .collect(),
+        ManyOpts {
+          r#mod: "base",
+          table: "role_field_permit",
+          column1: "role_id",
+          column2: "field_permit_id",
+        },
+      ).await?;
+    }
   }
   
   Ok(ids2)
@@ -2129,7 +2244,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 16 + 20);
+  let mut sql_fields = String::with_capacity(80 * 17 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2187,6 +2302,11 @@ pub async fn update_by_id(
   
   // 数据权限
   if input.data_permit_ids.is_some() {
+    field_num += 1;
+  }
+  
+  // 字段权限
+  if input.field_permit_ids.is_some() {
     field_num += 1;
   }
   
@@ -2341,6 +2461,23 @@ pub async fn update_by_id(
         table: "role_data_permit",
         column1: "role_id",
         column2: "data_permit_id",
+      },
+    ).await?;
+  }
+  
+  // 字段权限
+  if let Some(field_permit_ids) = input.field_permit_ids {
+    many2many_update(
+      id.clone().into(),
+      field_permit_ids
+        .iter()
+        .map(|item| item.clone().into())
+        .collect(),
+      ManyOpts {
+        r#mod: "base",
+        table: "role_field_permit",
+        column1: "role_id",
+        column2: "field_permit_id",
       },
     ).await?;
   }
@@ -2573,6 +2710,33 @@ pub async fn delete_by_ids(
           items.join(",")
         };
         sql.push_str(" data_permit_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=0");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let field_permit_ids = old_model.field_permit_ids.clone();
+      if !field_permit_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_role_field_permit set is_deleted=1 where role_id=? and".to_owned();
+        args.push(id.as_ref().into());
+        let arg = {
+          let mut items = Vec::with_capacity(field_permit_ids.len());
+          for item in field_permit_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" field_permit_id in (");
         sql.push_str(&arg);
         sql.push(')');
         sql.push_str(" and is_deleted=0");
@@ -2985,6 +3149,33 @@ pub async fn revert_by_ids(
         ).await?;
       }
     }
+    {
+      let field_permit_ids = old_model.field_permit_ids.clone();
+      if !field_permit_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "update base_role_field_permit set is_deleted=0 where role_id=? and".to_owned();
+        args.push(id.as_ref().into());
+        let arg = {
+          let mut items = Vec::with_capacity(field_permit_ids.len());
+          for item in field_permit_ids {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        };
+        sql.push_str(" field_permit_id in (");
+        sql.push_str(&arg);
+        sql.push(')');
+        sql.push_str(" and is_deleted=1");
+        let sql = sql;
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
     
   }
   
@@ -3138,6 +3329,28 @@ pub async fn force_delete_by_ids(
           args.push(item.as_ref().into());
         }
         sql.push_str(" data_permit_id in (");
+        sql.push_str(&items.join(","));
+        sql.push(')');
+        let args: Vec<_> = args.into();
+        execute(
+          sql,
+          args,
+          options.clone(),
+        ).await?;
+      }
+    }
+    {
+      let field_permit_ids = old_model.field_permit_ids.clone();
+      if !field_permit_ids.is_empty() {
+        let mut args = QueryArgs::new();
+        let mut sql = "delete from base_role_field_permit where role_id=? and".to_owned();
+        args.push(id.as_ref().into());
+        let mut items = Vec::with_capacity(field_permit_ids.len());
+        for item in field_permit_ids {
+          items.push("?");
+          args.push(item.as_ref().into());
+        }
+        sql.push_str(" field_permit_id in (");
         sql.push_str(&items.join(","));
         sql.push(')');
         let args: Vec<_> = args.into();

@@ -32,54 +32,38 @@ use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 
 use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
-use crate::r#gen::base::dict::dict_model::DictId;
+use crate::r#gen::base::menu::menu_model::MenuId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
 lazy_static! {
-  /// 系统字典明细 前端允许排序的字段
-  static ref CAN_SORT_IN_API_DICT_DETAIL: [&'static str; 3] = [
-    "order_by",
+  /// 字段权限 前端允许排序的字段
+  static ref CAN_SORT_IN_API_FIELD_PERMIT: [&'static str; 2] = [
     "create_time",
     "update_time",
   ];
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
-#[graphql(rename_fields = "snake_case", name = "DictDetailModel")]
+#[graphql(rename_fields = "snake_case", name = "FieldPermitModel")]
 #[allow(dead_code)]
-pub struct DictDetailModel {
+pub struct FieldPermitModel {
   /// 系统字段
   #[graphql(skip)]
   pub is_sys: u8,
   /// ID
-  pub id: DictDetailId,
-  /// 系统字典
-  #[graphql(name = "dict_id")]
-  pub dict_id: DictId,
-  /// 系统字典
-  #[graphql(name = "dict_id_lbl")]
-  pub dict_id_lbl: String,
+  pub id: FieldPermitId,
+  /// 菜单
+  #[graphql(name = "menu_id")]
+  pub menu_id: MenuId,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl")]
+  pub menu_id_lbl: String,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
-  /// 值
-  #[graphql(name = "val")]
-  pub val: String,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: u8,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
-  /// 启用
-  #[graphql(name = "is_enabled")]
-  pub is_enabled: u8,
-  /// 启用
-  #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: String,
-  /// 排序
-  #[graphql(name = "order_by")]
-  pub order_by: u32,
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
@@ -103,30 +87,22 @@ pub struct DictDetailModel {
   pub update_time_lbl: String,
 }
 
-impl FromRow<'_, MySqlRow> for DictDetailModel {
+impl FromRow<'_, MySqlRow> for FieldPermitModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     
     let server_i18n_enable = get_server_i18n_enable();
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
     // ID
-    let id: DictDetailId = row.try_get("id")?;
-    // 系统字典
-    let dict_id: DictId = row.try_get("dict_id")?;
-    let dict_id_lbl: Option<String> = row.try_get("dict_id_lbl")?;
-    let dict_id_lbl = dict_id_lbl.unwrap_or_default();
+    let id: FieldPermitId = row.try_get("id")?;
+    // 菜单
+    let menu_id: MenuId = row.try_get("menu_id")?;
+    let menu_id_lbl: Option<String> = row.try_get("menu_id_lbl")?;
+    let menu_id_lbl = menu_id_lbl.unwrap_or_default();
+    // 编码
+    let code: String = row.try_get("code")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
-    // 值
-    let val: String = row.try_get("val")?;
-    // 锁定
-    let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
-    // 启用
-    let is_enabled: u8 = row.try_get("is_enabled")?;
-    let is_enabled_lbl: String = is_enabled.to_string();
-    // 排序
-    let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
     
@@ -180,15 +156,10 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
       is_sys,
       is_deleted,
       id,
-      dict_id,
-      dict_id_lbl,
+      menu_id,
+      menu_id_lbl,
+      code,
       lbl,
-      val,
-      is_locked,
-      is_locked_lbl,
-      is_enabled,
-      is_enabled_lbl,
-      order_by,
       rem,
       create_usr_id,
       create_usr_id_lbl,
@@ -207,37 +178,22 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
 #[graphql(rename_fields = "snake_case")]
 #[allow(dead_code)]
-pub struct DictDetailFieldComment {
+pub struct FieldPermitFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 系统字典
-  #[graphql(name = "dict_id")]
-  pub dict_id: String,
-  /// 系统字典
-  #[graphql(name = "dict_id_lbl")]
-  pub dict_id_lbl: String,
+  /// 菜单
+  #[graphql(name = "menu_id")]
+  pub menu_id: String,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl")]
+  pub menu_id_lbl: String,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
-  /// 值
-  #[graphql(name = "val")]
-  pub val: String,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: String,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
-  /// 启用
-  #[graphql(name = "is_enabled")]
-  pub is_enabled: String,
-  /// 启用
-  #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: String,
-  /// 排序
-  #[graphql(name = "order_by")]
-  pub order_by: String,
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
@@ -270,45 +226,36 @@ pub struct DictDetailFieldComment {
 #[derive(InputObject, Default)]
 #[graphql(rename_fields = "snake_case")]
 #[allow(dead_code)]
-pub struct DictDetailSearch {
+pub struct FieldPermitSearch {
   /// ID
-  pub id: Option<DictDetailId>,
+  pub id: Option<FieldPermitId>,
   /// ID列表
-  pub ids: Option<Vec<DictDetailId>>,
+  pub ids: Option<Vec<FieldPermitId>>,
   pub is_deleted: Option<u8>,
-  /// 系统字典
-  #[graphql(name = "dict_id")]
-  pub dict_id: Option<Vec<DictId>>,
-  /// 系统字典
-  #[graphql(name = "dict_id_save_null")]
-  pub dict_id_is_null: Option<bool>,
-  /// 系统字典
-  #[graphql(name = "dict_id_lbl")]
-  pub dict_id_lbl: Option<Vec<String>>,
-  /// 系统字典
-  #[graphql(name = "dict_id_lbl_like")]
-  pub dict_id_lbl_like: Option<String>,
+  /// 菜单
+  #[graphql(name = "menu_id")]
+  pub menu_id: Option<Vec<MenuId>>,
+  /// 菜单
+  #[graphql(name = "menu_id_save_null")]
+  pub menu_id_is_null: Option<bool>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl")]
+  pub menu_id_lbl: Option<Vec<String>>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl_like")]
+  pub menu_id_lbl_like: Option<String>,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: Option<String>,
+  /// 编码
+  #[graphql(name = "code_like")]
+  pub code_like: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
   /// 名称
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
-  /// 值
-  #[graphql(name = "val")]
-  pub val: Option<String>,
-  /// 值
-  #[graphql(name = "val_like")]
-  pub val_like: Option<String>,
-  /// 锁定
-  #[graphql(skip)]
-  pub is_locked: Option<Vec<u8>>,
-  /// 启用
-  #[graphql(name = "is_enabled")]
-  pub is_enabled: Option<Vec<u8>>,
-  /// 排序
-  #[graphql(skip)]
-  pub order_by: Option<[Option<u32>; 2]>,
   /// 备注
   #[graphql(skip)]
   pub rem: Option<String>,
@@ -347,9 +294,9 @@ pub struct DictDetailSearch {
   pub update_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
 }
 
-impl std::fmt::Debug for DictDetailSearch {
+impl std::fmt::Debug for FieldPermitSearch {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    let mut item = &mut f.debug_struct("DictDetailSearch");
+    let mut item = &mut f.debug_struct("FieldPermitSearch");
     if let Some(ref id) = self.id {
       item = item.field("id", id);
     }
@@ -361,12 +308,19 @@ impl std::fmt::Debug for DictDetailSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
-    // 系统字典
-    if let Some(ref dict_id) = self.dict_id {
-      item = item.field("dict_id", dict_id);
+    // 菜单
+    if let Some(ref menu_id) = self.menu_id {
+      item = item.field("menu_id", menu_id);
     }
-    if let Some(ref dict_id_is_null) = self.dict_id_is_null {
-      item = item.field("dict_id_is_null", dict_id_is_null);
+    if let Some(ref menu_id_is_null) = self.menu_id_is_null {
+      item = item.field("menu_id_is_null", menu_id_is_null);
+    }
+    // 编码
+    if let Some(ref code) = self.code {
+      item = item.field("code", code);
+    }
+    if let Some(ref code_like) = self.code_like {
+      item = item.field("code_like", code_like);
     }
     // 名称
     if let Some(ref lbl) = self.lbl {
@@ -374,25 +328,6 @@ impl std::fmt::Debug for DictDetailSearch {
     }
     if let Some(ref lbl_like) = self.lbl_like {
       item = item.field("lbl_like", lbl_like);
-    }
-    // 值
-    if let Some(ref val) = self.val {
-      item = item.field("val", val);
-    }
-    if let Some(ref val_like) = self.val_like {
-      item = item.field("val_like", val_like);
-    }
-    // 锁定
-    if let Some(ref is_locked) = self.is_locked {
-      item = item.field("is_locked", is_locked);
-    }
-    // 启用
-    if let Some(ref is_enabled) = self.is_enabled {
-      item = item.field("is_enabled", is_enabled);
-    }
-    // 排序
-    if let Some(ref order_by) = self.order_by {
-      item = item.field("order_by", order_by);
     }
     // 备注
     if let Some(ref rem) = self.rem {
@@ -428,44 +363,29 @@ impl std::fmt::Debug for DictDetailSearch {
 }
 
 #[derive(InputObject, Default, Clone, Debug)]
-#[graphql(rename_fields = "snake_case", name = "DictDetailInput")]
+#[graphql(rename_fields = "snake_case", name = "FieldPermitInput")]
 #[allow(dead_code)]
-pub struct DictDetailInput {
+pub struct FieldPermitInput {
   /// ID
-  pub id: Option<DictDetailId>,
+  pub id: Option<FieldPermitId>,
   /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
   #[graphql(skip)]
   pub is_sys: Option<u8>,
-  /// 系统字典
-  #[graphql(name = "dict_id")]
-  pub dict_id: Option<DictId>,
-  /// 系统字典
-  #[graphql(name = "dict_id_lbl")]
-  pub dict_id_lbl: Option<String>,
+  /// 菜单
+  #[graphql(name = "menu_id")]
+  pub menu_id: Option<MenuId>,
+  /// 菜单
+  #[graphql(name = "menu_id_lbl")]
+  pub menu_id_lbl: Option<String>,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
-  /// 值
-  #[graphql(name = "val")]
-  pub val: Option<String>,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: Option<u8>,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<String>,
-  /// 启用
-  #[graphql(name = "is_enabled")]
-  pub is_enabled: Option<u8>,
-  /// 启用
-  #[graphql(name = "is_enabled_lbl")]
-  pub is_enabled_lbl: Option<String>,
-  /// 排序
-  #[graphql(name = "order_by")]
-  pub order_by: Option<u32>,
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<String>,
@@ -501,27 +421,19 @@ pub struct DictDetailInput {
   pub update_time_save_null: Option<bool>,
 }
 
-impl From<DictDetailModel> for DictDetailInput {
-  fn from(model: DictDetailModel) -> Self {
+impl From<FieldPermitModel> for FieldPermitInput {
+  fn from(model: FieldPermitModel) -> Self {
     Self {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       is_sys: model.is_sys.into(),
-      // 系统字典
-      dict_id: model.dict_id.into(),
-      dict_id_lbl: model.dict_id_lbl.into(),
+      // 菜单
+      menu_id: model.menu_id.into(),
+      menu_id_lbl: model.menu_id_lbl.into(),
+      // 编码
+      code: model.code.into(),
       // 名称
       lbl: model.lbl.into(),
-      // 值
-      val: model.val.into(),
-      // 锁定
-      is_locked: model.is_locked.into(),
-      is_locked_lbl: model.is_locked_lbl.into(),
-      // 启用
-      is_enabled: model.is_enabled.into(),
-      is_enabled_lbl: model.is_enabled_lbl.into(),
-      // 排序
-      order_by: model.order_by.into(),
       // 备注
       rem: model.rem.into(),
       // 创建人
@@ -542,24 +454,18 @@ impl From<DictDetailModel> for DictDetailInput {
   }
 }
 
-impl From<DictDetailInput> for DictDetailSearch {
-  fn from(input: DictDetailInput) -> Self {
+impl From<FieldPermitInput> for FieldPermitSearch {
+  fn from(input: FieldPermitInput) -> Self {
     Self {
       id: input.id,
       ids: None,
       is_deleted: None,
-      // 系统字典
-      dict_id: input.dict_id.map(|x| vec![x]),
+      // 菜单
+      menu_id: input.menu_id.map(|x| vec![x]),
+      // 编码
+      code: input.code,
       // 名称
       lbl: input.lbl,
-      // 值
-      val: input.val,
-      // 锁定
-      is_locked: input.is_locked.map(|x| vec![x]),
-      // 启用
-      is_enabled: input.is_enabled.map(|x| vec![x]),
-      // 排序
-      order_by: input.order_by.map(|x| [Some(x), Some(x)]),
       // 备注
       rem: input.rem,
       // 创建人
@@ -580,16 +486,16 @@ impl From<DictDetailInput> for DictDetailSearch {
 }
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct DictDetailId(SmolStr);
+pub struct FieldPermitId(SmolStr);
 
-impl fmt::Display for DictDetailId {
+impl fmt::Display for FieldPermitId {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     write!(f, "{}", self.0)
   }
 }
 
-#[async_graphql::Scalar(name = "DictDetailId")]
-impl async_graphql::ScalarType for DictDetailId {
+#[async_graphql::Scalar(name = "FieldPermitId")]
+impl async_graphql::ScalarType for FieldPermitId {
   fn parse(value: async_graphql::Value) -> async_graphql::InputValueResult<Self> {
     match value {
       async_graphql::Value::String(s) => Ok(Self(s.into())),
@@ -602,49 +508,49 @@ impl async_graphql::ScalarType for DictDetailId {
   }
 }
 
-impl From<DictDetailId> for ArgType {
-  fn from(value: DictDetailId) -> Self {
+impl From<FieldPermitId> for ArgType {
+  fn from(value: FieldPermitId) -> Self {
     ArgType::SmolStr(value.into())
   }
 }
 
-impl From<&DictDetailId> for ArgType {
-  fn from(value: &DictDetailId) -> Self {
+impl From<&FieldPermitId> for ArgType {
+  fn from(value: &FieldPermitId) -> Self {
     ArgType::SmolStr(value.clone().into())
   }
 }
 
-impl From<DictDetailId> for SmolStr {
-  fn from(id: DictDetailId) -> Self {
+impl From<FieldPermitId> for SmolStr {
+  fn from(id: FieldPermitId) -> Self {
     id.0
   }
 }
 
-impl From<SmolStr> for DictDetailId {
+impl From<SmolStr> for FieldPermitId {
   fn from(s: SmolStr) -> Self {
     Self(s)
   }
 }
 
-impl From<&SmolStr> for DictDetailId {
+impl From<&SmolStr> for FieldPermitId {
   fn from(s: &SmolStr) -> Self {
     Self(s.clone())
   }
 }
 
-impl From<String> for DictDetailId {
+impl From<String> for FieldPermitId {
   fn from(s: String) -> Self {
     Self(s.into())
   }
 }
 
-impl From<&str> for DictDetailId {
+impl From<&str> for FieldPermitId {
   fn from(s: &str) -> Self {
     Self(s.into())
   }
 }
 
-impl Deref for DictDetailId {
+impl Deref for FieldPermitId {
   type Target = SmolStr;
   
   fn deref(&self) -> &SmolStr {
@@ -652,7 +558,7 @@ impl Deref for DictDetailId {
   }
 }
 
-impl Encode<'_, MySql> for DictDetailId {
+impl Encode<'_, MySql> for FieldPermitId {
   fn encode_by_ref(&self, buf: &mut Vec<u8>) -> sqlx::Result<IsNull, BoxDynError> {
     <&str as Encode<MySql>>::encode(self.as_str(), buf)
   }
@@ -662,7 +568,7 @@ impl Encode<'_, MySql> for DictDetailId {
   }
 }
 
-impl sqlx::Type<MySql> for DictDetailId {
+impl sqlx::Type<MySql> for FieldPermitId {
   fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
     <&str as sqlx::Type<MySql>>::type_info()
   }
@@ -672,7 +578,7 @@ impl sqlx::Type<MySql> for DictDetailId {
   }
 }
 
-impl<'r> sqlx::Decode<'r, MySql> for DictDetailId {
+impl<'r> sqlx::Decode<'r, MySql> for FieldPermitId {
   fn decode(
     value: MySqlValueRef<'r>,
   ) -> Result<Self, BoxDynError> {
@@ -680,14 +586,14 @@ impl<'r> sqlx::Decode<'r, MySql> for DictDetailId {
   }
 }
 
-impl PartialEq<str> for DictDetailId {
+impl PartialEq<str> for FieldPermitId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
   }
 }
 
-/// 系统字典明细 检测字段是否允许前端排序
-pub fn check_sort_dict_detail(
+/// 字段权限 检测字段是否允许前端排序
+pub fn check_sort_field_permit(
   sort: Option<&[SortInput]>,
 ) -> Result<()> {
   
@@ -701,8 +607,8 @@ pub fn check_sort_dict_detail(
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_DICT_DETAIL.contains(&prop) {
-      return Err(anyhow!("check_sort_dict_detail: {}", serde_json::to_string(item)?));
+    if !CAN_SORT_IN_API_FIELD_PERMIT.contains(&prop) {
+      return Err(anyhow!("check_sort_field_permit: {}", serde_json::to_string(item)?));
     }
   }
   
@@ -710,6 +616,6 @@ pub fn check_sort_dict_detail(
 }
 
 /// 获取路由地址
-pub fn get_route_path_dict_detail() -> String {
-  "/base/dict_detail".to_owned()
+pub fn get_route_path_field_permit() -> String {
+  "/base/field_permit".to_owned()
 }
