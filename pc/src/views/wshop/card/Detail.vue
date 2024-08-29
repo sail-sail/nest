@@ -75,7 +75,7 @@
         @submit.prevent
       >
         
-        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
+        <template v-if="field_permit('lbl') && (showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('卡号')"
             prop="lbl"
@@ -89,7 +89,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
+        <template v-if="field_permit('usr_id') && (showBuildIn || builtInModel?.usr_id == null)">
           <el-form-item
             :label="n('绑定用户')"
             prop="usr_id"
@@ -109,7 +109,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.grade == null)">
+        <template v-if="field_permit('grade') && (showBuildIn || builtInModel?.grade == null)">
           <el-form-item
             :label="n('会员等级')"
             prop="grade"
@@ -124,7 +124,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.name == null)">
+        <template v-if="field_permit('name') && (showBuildIn || builtInModel?.name == null)">
           <el-form-item
             :label="n('姓名')"
             prop="name"
@@ -137,7 +137,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.mobile == null)">
+        <template v-if="field_permit('mobile') && (showBuildIn || builtInModel?.mobile == null)">
           <el-form-item
             :label="n('电话')"
             prop="mobile"
@@ -150,7 +150,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.balance == null)">
+        <template v-if="field_permit('balance') && (showBuildIn || builtInModel?.balance == null)">
           <el-form-item
             :label="n('充值余额')"
             prop="balance"
@@ -165,7 +165,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.give_balance == null)">
+        <template v-if="field_permit('give_balance') && (showBuildIn || builtInModel?.give_balance == null)">
           <el-form-item
             :label="n('赠送余额')"
             prop="give_balance"
@@ -180,7 +180,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.integral == null)">
+        <template v-if="field_permit('integral') && (showBuildIn || builtInModel?.integral == null)">
           <el-form-item
             :label="n('积分')"
             prop="integral"
@@ -193,7 +193,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.growth_amt == null)">
+        <template v-if="field_permit('growth_amt') && (showBuildIn || builtInModel?.growth_amt == null)">
           <el-form-item
             :label="n('累计消费')"
             prop="growth_amt"
@@ -208,7 +208,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.is_default_card == null)">
+        <template v-if="field_permit('is_default_card') && (showBuildIn || builtInModel?.is_default_card == null)">
           <el-form-item
             :label="n('默认')"
             prop="is_default_card"
@@ -223,7 +223,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.rem == null)">
+        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -378,8 +378,10 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
+const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
