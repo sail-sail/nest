@@ -167,6 +167,9 @@ export default defineConfig({
           "@/store/permit": [
             [ "default", "usePermitStore" ],
           ],
+          "@/store/field_permit": [
+            [ "default", "useFieldPermitStore" ],
+          ],
           "@/store/tabs": [
             [ "default", "useTabsStore" ],
           ],
