@@ -12,6 +12,7 @@
     "uuid": "ts-node src/util/npmShortUuidV4.ts",
     "pwd": "ts-node src/util/npmPassword.ts",
     "permit": "cd ../pc && node src/utils/permit_scan.js",
+    "field_permit": "ts-node src/util/npmFieldPermit.ts",
     "upgrade": "ts-node src/util/npmUpgrade.ts",
     "db_charset": "ts-node src/util/npmDbCharset.ts",
     "preinstall": "npx only-allow pnpm"
@@ -19,6 +20,7 @@
   "dependencies": {
     "chalk": "4.1.2",
     "commander": "12.1.0",
+    "dayjs": "1.11.13",
     "dotenv": "16.4.5",
     "ejsexcel": "4.2.2",
     "fast-csv": "5.0.1",
