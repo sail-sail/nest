@@ -82,6 +82,7 @@ async function exec() {
       const column = columns[j];
       if (column.isVirtual) continue;
       if (column.onlyCodegenDeno) continue;
+      if (!column.fieldPermit) continue;
       const column_name = column.COLUMN_NAME;
       const column_comment = column.COLUMN_COMMENT;
       
