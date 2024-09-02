@@ -28,6 +28,8 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   searchName = Table_Up + "Search";
 }
 const hasSummary = columns.some((column) => column.showSummary);
+
+const tableFieldPermit = columns.some((item) => item.fieldPermit);
 #>import {
   set_is_tran,<#
   if (opts.noAdd !== true) {
@@ -75,13 +77,19 @@ import type {<#
 } from "/gen/types.ts";
 
 import {
-  checkSort<#=Table_Up#>,
+  checkSort<#=Table_Up#>,<#
+  if (tableFieldPermit) {
+  #>
+  fieldPermitInput<#=Table_Up2#>,
+  fieldPermitModel<#=Table_Up2#>,<#
+  }
+  #>
 } from "./<#=table#>.model.ts";<#
 if (hasSummary) {
 #>
 
 import {
-  <#=Table_Up#>Summary,
+  <#=Table_Up2#>Summary,
 } from "/gen/types.ts";<#
 }
 #>
@@ -118,8 +126,9 @@ export async function findCount<#=Table_Up2#>(
   }
   #>
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -144,11 +153,11 @@ export async function findAll<#=Table_Up2#>(
   
   checkSort<#=Table_Up#>(sort);
   
-  const res = await findAll(search, page, sort);<#
+  const models = await findAll(search, page, sort);<#
   if (hasPassword) {
   #>
   
-  for (const model of res) {<#
+  for (const model of models) {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -167,17 +176,31 @@ export async function findAll<#=Table_Up2#>(
     #>
   }<#
   }
+  #><#
+  if (tableFieldPermit) {
   #>
-  return res;
+  
+  for (const model of models) {
+    await fieldPermitModel<#=Table_Up2#>(model);
+  }<#
+  }
+  #>
+  
+  return models;
 }
 
 /**
  * 获取<#=table_comment#>字段注释
  */
 export async function getFieldComments<#=Table_Up2#>(): Promise<<#=fieldCommentName#>> {
-  const { getFieldComments } = await import("./<#=table#>.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./<#=table#>.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }<#
 if (hasSummary) {
 #>
@@ -188,8 +211,13 @@ if (hasSummary) {
 export async function findSummary<#=Table_Up2#>(
   search?: <#=searchName#>,
 ): Promise<<#=Table_Up#>Summary> {
-  const { findSummary } = await import("./<#=table#>.service.ts");
+  
+  const {
+    findSummary,
+  } = await import("./<#=table#>.service.ts");
+  
   const res = await findSummary(search);
+  
   return res;
 }<#
 }
@@ -214,9 +242,9 @@ export async function findOne<#=Table_Up2#>(
   }
   #>
   
-  checkSort<#=Table_Up#>(sort);
+  checkSort<#=Table_Up2#>(sort);
   
-  const res = await findOne(search, sort);<#
+  const model = await findOne(search, sort);<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -228,15 +256,22 @@ export async function findOne<#=Table_Up2#>(
     if (isPassword) {
   #>
   
-  if (res) {
+  if (model) {
     // <#=column_comment#>
-    res.<#=column_name#> = "";
+    model.<#=column_name#> = "";
   }<#
     }
   #><#
   }
+  #><#
+  if (tableFieldPermit) {
   #>
-  return res;
+  
+  await fieldPermitModel<#=Table_Up2#>(model);<#
+  }
+  #>
+  
+  return model;
 }
 
 /**
@@ -250,7 +285,7 @@ export async function findById<#=Table_Up2#>(
     findById,
   } = await import("./<#=table#>.service.ts");
   
-  const res = await findById(id);<#
+  const model = await findById(id);<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -262,16 +297,22 @@ export async function findById<#=Table_Up2#>(
     if (isPassword) {
   #>
   
-  if (res) {
+  if (model) {
     // <#=column_comment#>
-    res.<#=column_name#> = "";
+    model.<#=column_name#> = "";
   }<#
     }
   #><#
   }
+  #><#
+  if (tableFieldPermit) {
   #>
   
-  return res;
+  await fieldPermitModel<#=Table_Up2#>(model);<#
+  }
+  #>
+  
+  return model;
 }<#
 if (opts.noAdd !== true) {
 #>
@@ -297,6 +338,14 @@ export async function creates<#=Table_Up2#>(
     route_path,
     "add",
   );<#
+  if (tableFieldPermit) {
+  #>
+  
+  for (const input of inputs) {
+    await fieldPermitInput<#=Table_Up2#>(input);
+  }<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -418,6 +467,12 @@ export async function updateById<#=Table_Up2#>(
     route_path,
     "edit",
   );<#
+  if (tableFieldPermit) {
+  #>
+  
+  await fieldPermitInput<#=Table_Up2#>(input);<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -429,6 +484,7 @@ export async function updateById<#=Table_Up2#>(
   const old_data = await findById<#=Table_Up2#>(id);<#
   }
   #>
+  
   const id2: <#=Table_Up#>Id = await updateById(id, input);<#
   if (log) {
   #>
@@ -448,6 +504,7 @@ export async function updateById<#=Table_Up2#>(
   });<#
   }
   #>
+  
   return id2;
 }<#
 }
@@ -480,16 +537,19 @@ export async function deleteByIds<#=Table_Up2#>(
   } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();
+  
   const old_data = await findAll<#=Table_Up2#>({
     ids,
   });<#
   }
   #>
-  const res = await deleteByIds(ids);<#
+  
+  const num = await deleteByIds(ids);<#
   if (log) {
   #>
   
   const end_time = new Date();
+  
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
@@ -501,7 +561,8 @@ export async function deleteByIds<#=Table_Up2#>(
   });<#
   }
   #>
-  return res;
+  
+  return num;
 }<#
 }
 #><#
@@ -535,11 +596,13 @@ export async function defaultById<#=Table_Up2#>(
   const begin_time = new Date();<#
   }
   #>
+  
   const res = await defaultById(id);<#
   if (log) {
   #>
   
   const end_time = new Date();
+  
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
@@ -602,6 +665,7 @@ export async function enableByIds<#=Table_Up2#>(
   }
   
   const end_time = new Date();
+  
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
@@ -613,6 +677,7 @@ export async function enableByIds<#=Table_Up2#>(
   });<#
   }
   #>
+  
   return res;
 }<#
   }
@@ -652,11 +717,13 @@ export async function lockByIds<#=Table_Up2#>(
   const begin_time = new Date();<#
   }
   #>
+  
   const res = await lockByIds(ids, is_locked);<#
   if (log) {
   #>
   
   const end_time = new Date();
+  
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
@@ -668,6 +735,7 @@ export async function lockByIds<#=Table_Up2#>(
   });<#
   }
   #>
+  
   return res;
 }<#
   }
@@ -702,11 +770,13 @@ export async function revertByIds<#=Table_Up2#>(
   const begin_time = new Date();<#
   }
   #>
+  
   const res = await revertByIds(ids);<#
   if (log) {
   #>
   
   const end_time = new Date();
+  
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
@@ -718,6 +788,7 @@ export async function revertByIds<#=Table_Up2#>(
   });<#
   }
   #>
+  
   return res;
 }<#
 }
@@ -750,17 +821,20 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   } = await import("/src/base/operation_record/operation_record.service.ts");
   
   const begin_time = new Date();
+  
   const old_data = await findAll<#=Table_Up2#>({
     ids,
     is_deleted: 1,
   });<#
   }
   #>
+  
   const res = await forceDeleteByIds(ids);<#
   if (log) {
   #>
   
   const end_time = new Date();
+  
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
@@ -772,6 +846,7 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   });<#
   }
   #>
+  
   return res;
 }<#
 }
@@ -785,11 +860,13 @@ if (hasDataPermit() && hasCreateUsrId) {
 export async function getEditableDataPermitsByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ) {
+  
   const {
     getEditableDataPermitsByIds,
   } = await import("./<#=table#>.service.ts");
   
   const data = await getEditableDataPermitsByIds(ids);
+  
   return data;
 }<#
 }
@@ -801,8 +878,13 @@ if (hasOrderBy) {
  * 查找 <#=table_comment#> order_by 字段的最大值
  */
 export async function findLastOrderBy<#=Table_Up2#>(): Promise<number> {
-  const { findLastOrderBy } = await import("./<#=table#>.service.ts");
+  
+  const {
+    findLastOrderBy,
+  } = await import("./<#=table#>.service.ts");
+  
   const res = findLastOrderBy();
+  
   return res;
 }<#
 }
