@@ -720,7 +720,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                 prop="_seq"
                 :label="ns('序号')"
                 align="center"
-                width="50"
+                width="80"
               >
               </el-table-column><#
               for (let i = 0; i < columns.length; i++) {
@@ -1097,7 +1097,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                 v-if="!isLocked && !isReadonly"
                 prop="_operation"
                 :label="ns('操作')"
-                width="70"
+                width="90"
                 align="center"
                 fixed="right"
               >

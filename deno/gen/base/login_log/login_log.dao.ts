@@ -322,18 +322,9 @@ export async function findAll(
   }
   sql += ` group by t.id`;
   
-  // 排序
-  if (!sort) {
-    sort = [
-      {
-        prop: "create_time",
-        order: SortOrderEnum.Desc,
-      },
-    ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
-  }
+  sort = sort ?? [ ];
   sort = sort.filter((item) => item.prop);
+  
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,

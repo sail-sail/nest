@@ -1304,7 +1304,10 @@ export async function findAll(
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
   }
-  sql += ` group by t.id`;<#
+  sql += ` group by t.id`;
+  
+  sort = sort ?? [ ];
+  sort = sort.filter((item) => item.prop);<#
   if (defaultSort) {
     const prop = opts?.defaultSort.prop;
     let order = "asc";
@@ -1320,36 +1323,15 @@ export async function findAll(
     }
   #>
   
-  // 排序
-  if (!sort) {
-    sort = [
-      {
-        prop: "<#=defaultSort.prop#>",
-        order: <#=(defaultSort.order || "asc").startsWith("asc") ? "SortOrderEnum.Asc" : "SortOrderEnum.Desc"#>,
-      },
-    ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
-  }
-  sort = sort.filter((item) => item.prop);
   sort.push({
     prop: "<#=prop#>",
     order: <#=order#>,
   });<#
-  } else {
-  #>
-  
-  // 排序
-  if (!sort) {
-    sort = [ ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
-  }
-  sort = sort.filter((item) => item?.prop);<#
   }
   #><#
   if (hasCreateTime && opts?.defaultSort.prop !== "create_time") {
   #>
+  
   if (!sort.some((item) => item.prop === "create_time")) {
     sort.push({
       prop: "create_time",

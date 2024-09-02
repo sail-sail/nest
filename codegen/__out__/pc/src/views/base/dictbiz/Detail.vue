@@ -178,7 +178,7 @@
                 prop="_seq"
                 :label="ns('序号')"
                 align="center"
-                width="50"
+                width="80"
               >
               </el-table-column>
               
@@ -237,7 +237,7 @@
                 v-if="!isLocked && !isReadonly"
                 prop="_operation"
                 :label="ns('操作')"
-                width="70"
+                width="90"
                 align="center"
                 fixed="right"
               >
