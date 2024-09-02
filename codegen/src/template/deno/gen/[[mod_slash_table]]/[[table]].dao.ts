@@ -1306,21 +1306,6 @@ export async function findAll(
   }
   sql += ` group by t.id`;<#
   if (defaultSort) {
-  #>
-  
-  // 排序
-  if (!sort) {
-    sort = [
-      {
-        prop: "<#=defaultSort.prop#>",
-        order: <#=(defaultSort.order || "asc").startsWith("asc") ? "SortOrderEnum.Asc" : "SortOrderEnum.Desc"#>,
-      },
-    ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
-  }
-  sort = sort.filter((item) => item.prop);<#
-  if (opts?.defaultSort) {
     const prop = opts?.defaultSort.prop;
     let order = "asc";
     if (opts?.defaultSort.order === "ascending") {
@@ -1334,10 +1319,33 @@ export async function findAll(
       order = "SortOrderEnum.Desc";
     }
   #>
+  
+  // 排序
+  if (!sort) {
+    sort = [
+      {
+        prop: "<#=defaultSort.prop#>",
+        order: <#=(defaultSort.order || "asc").startsWith("asc") ? "SortOrderEnum.Asc" : "SortOrderEnum.Desc"#>,
+      },
+    ];
+  } else if (!Array.isArray(sort)) {
+    sort = [ sort ];
+  }
+  sort = sort.filter((item) => item.prop);
   sort.push({
     prop: "<#=prop#>",
     order: <#=order#>,
   });<#
+  } else {
+  #>
+  
+  // 排序
+  if (!sort) {
+    sort = [ ];
+  } else if (!Array.isArray(sort)) {
+    sort = [ sort ];
+  }
+  sort = sort.filter((item) => item?.prop);<#
   }
   #><#
   if (hasCreateTime && opts?.defaultSort.prop !== "create_time") {
@@ -1358,28 +1366,7 @@ export async function findAll(
       sql += `,`;
     }
     sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
-  }<#
-  } else {
-  #>
-  
-  // 排序
-  if (!sort) {
-    sort = [ ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
   }
-  sort = sort.filter((item) => item?.prop);
-  for (let i = 0; i < sort.length; i++) {
-    const item = sort[i];
-    if (i === 0) {
-      sql += ` order by`;
-    } else {
-      sql += `,`;
-    }
-    sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
-  }<#
-  }
-  #>
   sql += `) f`;
   
   // 分页
