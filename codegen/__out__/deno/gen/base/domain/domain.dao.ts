@@ -233,7 +233,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<DomainSearch>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;
@@ -655,7 +655,7 @@ export async function checkByUnique(
 /** 根据条件查找第一域名 */
 export async function findOne(
   search?: Readonly<DomainSearch>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },

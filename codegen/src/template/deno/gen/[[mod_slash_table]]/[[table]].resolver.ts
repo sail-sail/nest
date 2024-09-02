@@ -779,7 +779,9 @@ export async function forceDeleteByIds<#=Table_Up2#>(
 if (hasDataPermit() && hasCreateUsrId) {
 #>
 
-/** 根据 ids 获取<#=table_comment#>是否可编辑数据权限 */
+/**
+ * 根据 ids 获取<#=table_comment#>是否可编辑数据权限
+ */
 export async function getEditableDataPermitsByIds<#=Table_Up2#>(
   ids: <#=Table_Up#>Id[],
 ) {

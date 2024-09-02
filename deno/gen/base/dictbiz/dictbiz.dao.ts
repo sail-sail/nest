@@ -260,7 +260,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<DictbizSearch>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;
@@ -717,7 +717,7 @@ export async function checkByUnique(
 /** 根据条件查找第一业务字典 */
 export async function findOne(
   search?: Readonly<DictbizSearch>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },

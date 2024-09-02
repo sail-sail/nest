@@ -246,7 +246,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<DataPermitSearch>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;
@@ -679,7 +679,7 @@ export async function checkByUnique(
 /** 根据条件查找第一数据权限 */
 export async function findOne(
   search?: Readonly<DataPermitSearch>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },

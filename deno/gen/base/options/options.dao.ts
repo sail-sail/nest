@@ -236,7 +236,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<OptionsSearch>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;
@@ -627,7 +627,7 @@ export async function checkByUnique(
 /** 根据条件查找第一系统选项 */
 export async function findOne(
   search?: Readonly<OptionsSearch>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },

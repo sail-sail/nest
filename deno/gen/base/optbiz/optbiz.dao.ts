@@ -253,7 +253,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<OptbizSearch>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;
@@ -644,7 +644,7 @@ export async function checkByUnique(
 /** 根据条件查找第一业务选项 */
 export async function findOne(
   search?: Readonly<OptbizSearch>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },

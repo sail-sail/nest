@@ -336,7 +336,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<RoleSearch>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;
@@ -932,7 +932,7 @@ export async function checkByUnique(
 /** 根据条件查找第一角色 */
 export async function findOne(
   search?: Readonly<RoleSearch>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },

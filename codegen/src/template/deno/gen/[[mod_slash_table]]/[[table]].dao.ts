@@ -1125,7 +1125,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<<#=searchName#>>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;<#
@@ -2714,7 +2714,7 @@ export async function findSummary(
 /** 根据条件查找第一<#=table_comment#> */
 export async function findOne(
   search?: Readonly<<#=searchName#>>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {

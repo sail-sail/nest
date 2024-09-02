@@ -45,10 +45,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找登录日志列表
- * @param {LoginLogSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: LoginLogSearch,
@@ -82,9 +78,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个登录日志
- * @param {LoginLogSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: LoginLogSearch,
@@ -113,8 +106,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找登录日志总数
- * @param {LoginLogSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: LoginLogSearch,
@@ -138,8 +129,6 @@ export async function findCount(
 
 /**
  * 根据 id 查找登录日志
- * @param {LoginLogId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: LoginLogId,
@@ -166,8 +155,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除登录日志
- * @param {LoginLogId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: LoginLogId[],
@@ -191,8 +178,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原登录日志
- * @param {LoginLogId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: LoginLogId[],
@@ -216,8 +201,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除登录日志
- * @param {LoginLogId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: LoginLogId[],
