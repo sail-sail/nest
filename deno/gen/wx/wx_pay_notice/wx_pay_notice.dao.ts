@@ -113,7 +113,7 @@ async function getWhereQuery(
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null) {
-    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.appid != null) {
     whereQuery += ` and t.appid=${ args.push(search.appid) }`;
@@ -146,10 +146,10 @@ async function getWhereQuery(
     whereQuery += ` and t.transaction_id like ${ args.push("%" + sqlLike(search?.transaction_id_like) + "%") }`;
   }
   if (search?.trade_type != null) {
-    whereQuery += ` and t.trade_type in ${ args.push(search.trade_type) }`;
+    whereQuery += ` and t.trade_type in (${ args.push(search.trade_type) })`;
   }
   if (search?.trade_state != null) {
-    whereQuery += ` and t.trade_state in ${ args.push(search.trade_state) }`;
+    whereQuery += ` and t.trade_state in (${ args.push(search.trade_state) })`;
   }
   if (search?.trade_state_desc != null) {
     whereQuery += ` and t.trade_state_desc=${ args.push(search.trade_state_desc) }`;
@@ -194,10 +194,10 @@ async function getWhereQuery(
     }
   }
   if (search?.currency != null) {
-    whereQuery += ` and t.currency in ${ args.push(search.currency) }`;
+    whereQuery += ` and t.currency in (${ args.push(search.currency) })`;
   }
   if (search?.payer_currency != null) {
-    whereQuery += ` and t.payer_currency in ${ args.push(search.payer_currency) }`;
+    whereQuery += ` and t.payer_currency in (${ args.push(search.payer_currency) })`;
   }
   if (search?.device_id != null) {
     whereQuery += ` and t.device_id=${ args.push(search.device_id) }`;
@@ -218,13 +218,13 @@ async function getWhereQuery(
     whereQuery += ` and t.raw like ${ args.push("%" + sqlLike(search?.raw_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
+    whereQuery += ` and t.create_usr_id_lbl in (${ args.push(search.create_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.create_usr_id_lbl_like)) {
     whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
@@ -238,13 +238,13 @@ async function getWhereQuery(
     }
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+    whereQuery += ` and t.update_usr_id_lbl in (${ args.push(search.update_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.update_usr_id_lbl_like)) {
     whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
@@ -258,13 +258,13 @@ async function getWhereQuery(
     }
   }
   if (search?.org_id != null) {
-    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id in (${ args.push(search.org_id) })`;
   }
   if (search?.org_id_is_null) {
     whereQuery += ` and t.org_id is null`;
   }
   if (search?.org_id_lbl != null) {
-    whereQuery += ` and org_id_lbl.lbl in ${ args.push(search.org_id_lbl) }`;
+    whereQuery += ` and org_id_lbl.lbl in (${ args.push(search.org_id_lbl) })`;
   }
   if (isNotEmpty(search?.org_id_lbl_like)) {
     whereQuery += ` and org_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.org_id_lbl_like) + "%") }`;
