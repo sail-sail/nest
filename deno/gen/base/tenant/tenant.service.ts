@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找租户总数
- * @param {TenantSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: TenantSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找租户列表
- * @param {TenantSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<TenantModel[]>} 
  */
 export async function findAll(
   search?: TenantSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<TenantModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: TenantInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个租户
- * @param {TenantSearch} search? 搜索条件
  */
 export async function findOne(
   search?: TenantSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<TenantModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找租户
- * @param {TenantId} id
  */
 export async function findById(
   id?: TenantId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找租户是否存在
- * @param {TenantSearch} search? 搜索条件
  */
 export async function exist(
   search?: TenantSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找租户是否存在
- * @param {TenantId} id
  */
 export async function existById(
   id?: TenantId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验租户
- * @param input 
  */
 export async function validate(
   input: TenantInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建租户
- * @param {TenantInput[]} inputs
- * @return {Promise<TenantId[]>} ids
  */
 export async function creates(
   inputs: TenantInput[],
@@ -145,9 +134,6 @@ export async function creates(
 
 /**
  * 根据 id 修改租户
- * @param {TenantId} id
- * @param {TenantInput} input
- * @return {Promise<TenantId>}
  */
 export async function updateById(
   id: TenantId,
@@ -170,8 +156,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除租户
- * @param {TenantId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: TenantId[],
@@ -205,9 +189,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用租户
- * @param {TenantId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: TenantId[],
@@ -219,9 +200,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁租户
- * @param {TenantId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: TenantId[],
@@ -233,8 +211,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原租户
- * @param {TenantId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: TenantId[],
@@ -245,8 +221,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除租户
- * @param {TenantId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: TenantId[],
@@ -265,7 +239,6 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
 
 /**
  * 查找 租户 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {

@@ -520,6 +520,11 @@ export interface TableCloumn {
    */
   modelLabel?: string;
   
+  /**
+   * 此字段是否要做字段权限控制, 默认为false
+   */
+  fieldPermit?: boolean;
+  
 }
 
 /**

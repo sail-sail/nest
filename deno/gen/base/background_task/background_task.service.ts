@@ -33,8 +33,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找后台任务总数
- * @param {BackgroundTaskSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: BackgroundTaskSearch,
@@ -50,15 +48,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找后台任务列表
- * @param {BackgroundTaskSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<BackgroundTaskModel[]>} 
  */
 export async function findAll(
   search?: BackgroundTaskSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<BackgroundTaskModel[]> {
   
   search = search || { };
@@ -69,7 +63,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: BackgroundTaskInput,
 ) {
@@ -79,11 +75,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个后台任务
- * @param {BackgroundTaskSearch} search? 搜索条件
  */
 export async function findOne(
   search?: BackgroundTaskSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<BackgroundTaskModel | undefined> {
   
   search = search || { };
@@ -96,7 +91,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找后台任务
- * @param {BackgroundTaskId} id
  */
 export async function findById(
   id?: BackgroundTaskId | null,
@@ -107,7 +101,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找后台任务是否存在
- * @param {BackgroundTaskSearch} search? 搜索条件
  */
 export async function exist(
   search?: BackgroundTaskSearch,
@@ -123,7 +116,6 @@ export async function exist(
 
 /**
  * 根据 id 查找后台任务是否存在
- * @param {BackgroundTaskId} id
  */
 export async function existById(
   id?: BackgroundTaskId | null,
@@ -134,7 +126,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验后台任务
- * @param input 
  */
 export async function validate(
   input: BackgroundTaskInput,
@@ -145,8 +136,6 @@ export async function validate(
 
 /**
  * 批量创建后台任务
- * @param {BackgroundTaskInput[]} inputs
- * @return {Promise<BackgroundTaskId[]>} ids
  */
 export async function creates(
   inputs: BackgroundTaskInput[],
@@ -160,9 +149,6 @@ export async function creates(
 
 /**
  * 根据 id 修改后台任务
- * @param {BackgroundTaskId} id
- * @param {BackgroundTaskInput} input
- * @return {Promise<BackgroundTaskId>}
  */
 export async function updateById(
   id: BackgroundTaskId,
@@ -175,8 +161,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除后台任务
- * @param {BackgroundTaskId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: BackgroundTaskId[],
@@ -188,8 +172,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原后台任务
- * @param {BackgroundTaskId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: BackgroundTaskId[],
@@ -200,8 +182,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除后台任务
- * @param {BackgroundTaskId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: BackgroundTaskId[],
