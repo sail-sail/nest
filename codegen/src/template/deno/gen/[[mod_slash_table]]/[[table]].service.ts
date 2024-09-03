@@ -132,8 +132,6 @@ async function setSearchQuery(<#
 
 /**
  * 根据条件查找<#=table_comment#>总数
- * @param {<#=searchName#>} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: <#=searchName#>,
@@ -159,15 +157,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找<#=table_comment#>列表
- * @param {<#=searchName#>} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<<#=modelName#>[]>} 
  */
 export async function findAll(
   search?: <#=searchName#>,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<<#=modelName#>[]> {
   
   search = search || { };
@@ -188,7 +182,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: <#=inputName#>,
 ) {
@@ -200,8 +196,6 @@ if (hasSummary) {
 
 /**
  * 根据搜索条件查找<#=table_comment#>合计
- * @param {<#=searchName#>} search? 搜索条件
- * @return {Promise<<#=Table_Up#>Summary>} 
  */
 export async function findSummary(
   search?: <#=searchName#>,
@@ -229,11 +223,10 @@ export async function findSummary(
 
 /**
  * 根据条件查找第一个<#=table_comment#>
- * @param {<#=searchName#>} search? 搜索条件
  */
 export async function findOne(
   search?: <#=searchName#>,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<<#=modelName#> | undefined> {
   
   search = search || { };
@@ -256,7 +249,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找<#=table_comment#>
- * @param {<#=Table_Up#>Id} id
  */
 export async function findById(
   id?: <#=Table_Up#>Id | null,
@@ -277,7 +269,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找<#=table_comment#>是否存在
- * @param {<#=searchName#>} search? 搜索条件
  */
 export async function exist(
   search?: <#=searchName#>,
@@ -303,7 +294,6 @@ export async function exist(
 
 /**
  * 根据 id 查找<#=table_comment#>是否存在
- * @param {<#=Table_Up#>Id} id
  */
 export async function existById(
   id?: <#=Table_Up#>Id | null,
@@ -324,7 +314,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验<#=table_comment#>
- * @param input 
  */
 export async function validate(
   input: <#=inputName#>,
@@ -335,8 +324,6 @@ export async function validate(
 
 /**
  * 批量创建<#=table_comment#>
- * @param {<#=inputName#>[]} inputs
- * @return {Promise<<#=Table_Up#>Id[]>} ids
  */
 export async function creates(
   inputs: <#=inputName#>[],
@@ -368,7 +355,9 @@ export async function getVersionById(id: <#=Table_Up#>Id) {
 if (hasDataPermit() && hasCreateUsrId) {
 #>
 
-/** 根据 ids 获取<#=table_comment#>是否可编辑数据权限 */
+/**
+ * 根据 ids 获取<#=table_comment#>是否可编辑数据权限
+ */
 export async function getEditableDataPermitsByIds(
   ids: <#=Table_Up#>Id[],
 ) {
@@ -380,9 +369,6 @@ export async function getEditableDataPermitsByIds(
 
 /**
  * 根据 id 修改<#=table_comment#>
- * @param {<#=Table_Up#>Id} id
- * @param {<#=inputName#>} input
- * @return {Promise<<#=Table_Up#>Id>}
  */
 export async function updateById(
   id: <#=Table_Up#>Id,
@@ -473,8 +459,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
@@ -534,8 +518,6 @@ export async function deleteByIds(
 
 /**
  * 根据 id 设置默认<#=table_comment#>
- * @param {<#=Table_Up#>Id} id
- * @return {Promise<number>}
  */
 export async function defaultById(
   id: <#=Table_Up#>Id,
@@ -550,9 +532,6 @@ export async function defaultById(
 
 /**
  * 根据 ids 启用或者禁用<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: <#=Table_Up#>Id[],
@@ -568,9 +547,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: <#=Table_Up#>Id[],
@@ -586,8 +562,6 @@ if (hasIsDeleted) {
 
 /**
  * 根据 ids 还原<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: <#=Table_Up#>Id[],
@@ -602,8 +576,6 @@ if (hasIsDeleted) {
 
 /**
  * 根据 ids 彻底删除<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
@@ -626,7 +598,6 @@ if (hasOrderBy) {
 
 /**
  * 查找 <#=table_comment#> order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {
