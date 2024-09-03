@@ -74,10 +74,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找微信JSAPI下单列表
- * @param {PayTransactionsJsapiSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: PayTransactionsJsapiSearch,
@@ -111,9 +107,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个微信JSAPI下单
- * @param {PayTransactionsJsapiSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: PayTransactionsJsapiSearch,
@@ -142,8 +135,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找微信JSAPI下单总数
- * @param {PayTransactionsJsapiSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: PayTransactionsJsapiSearch,
@@ -167,8 +158,6 @@ export async function findCount(
 
 /**
  * 根据 id 查找微信JSAPI下单
- * @param {PayTransactionsJsapiId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: PayTransactionsJsapiId,

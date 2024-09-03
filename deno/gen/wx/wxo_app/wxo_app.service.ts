@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找公众号设置总数
- * @param {WxoAppSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: WxoAppSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找公众号设置列表
- * @param {WxoAppSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<WxoAppModel[]>} 
  */
 export async function findAll(
   search?: WxoAppSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxoAppModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: WxoAppInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个公众号设置
- * @param {WxoAppSearch} search? 搜索条件
  */
 export async function findOne(
   search?: WxoAppSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxoAppModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找公众号设置
- * @param {WxoAppId} id
  */
 export async function findById(
   id?: WxoAppId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找公众号设置是否存在
- * @param {WxoAppSearch} search? 搜索条件
  */
 export async function exist(
   search?: WxoAppSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找公众号设置是否存在
- * @param {WxoAppId} id
  */
 export async function existById(
   id?: WxoAppId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验公众号设置
- * @param input 
  */
 export async function validate(
   input: WxoAppInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建公众号设置
- * @param {WxoAppInput[]} inputs
- * @return {Promise<WxoAppId[]>} ids
  */
 export async function creates(
   inputs: WxoAppInput[],
@@ -145,9 +134,6 @@ export async function creates(
 
 /**
  * 根据 id 修改公众号设置
- * @param {WxoAppId} id
- * @param {WxoAppInput} input
- * @return {Promise<WxoAppId>}
  */
 export async function updateById(
   id: WxoAppId,
@@ -165,8 +151,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除公众号设置
- * @param {WxoAppId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: WxoAppId[],
@@ -189,9 +173,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用公众号设置
- * @param {WxoAppId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: WxoAppId[],
@@ -203,9 +184,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁公众号设置
- * @param {WxoAppId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: WxoAppId[],
@@ -217,8 +195,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原公众号设置
- * @param {WxoAppId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: WxoAppId[],
@@ -229,8 +205,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除公众号设置
- * @param {WxoAppId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: WxoAppId[],
@@ -249,7 +223,6 @@ export async function getFieldComments(): Promise<WxoAppFieldComment> {
 
 /**
  * 查找 公众号设置 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {

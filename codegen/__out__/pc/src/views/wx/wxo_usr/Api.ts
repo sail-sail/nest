@@ -46,10 +46,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找公众号用户列表
- * @param {WxoUsrSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: WxoUsrSearch,
@@ -83,9 +79,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个公众号用户
- * @param {WxoUsrSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: WxoUsrSearch,
@@ -114,8 +107,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找公众号用户总数
- * @param {WxoUsrSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: WxoUsrSearch,
@@ -159,9 +150,6 @@ export async function create(
 
 /**
  * 批量创建公众号用户
- * @param {WxoUsrInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: WxoUsrInput[],
@@ -188,9 +176,6 @@ export async function creates(
 
 /**
  * 根据 id 修改公众号用户
- * @param {WxoUsrId} id
- * @param {WxoUsrInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxoUsrId,
@@ -217,8 +202,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找公众号用户
- * @param {WxoUsrId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: WxoUsrId,
@@ -245,8 +228,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除公众号用户
- * @param {WxoUsrId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: WxoUsrId[],
@@ -270,8 +251,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原公众号用户
- * @param {WxoUsrId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: WxoUsrId[],
@@ -295,8 +274,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除公众号用户
- * @param {WxoUsrId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: WxoUsrId[],
@@ -492,7 +469,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入公众号用户
- * @param {WxoUsrInput[]} inputs
  */
 export async function importModels(
   inputs: WxoUsrInput[],

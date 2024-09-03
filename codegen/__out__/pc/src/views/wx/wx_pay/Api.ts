@@ -61,10 +61,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找微信支付设置列表
- * @param {WxPaySearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: WxPaySearch,
@@ -98,9 +94,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个微信支付设置
- * @param {WxPaySearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: WxPaySearch,
@@ -129,8 +122,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找微信支付设置总数
- * @param {WxPaySearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: WxPaySearch,
@@ -174,9 +165,6 @@ export async function create(
 
 /**
  * 批量创建微信支付设置
- * @param {WxPayInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: WxPayInput[],
@@ -203,9 +191,6 @@ export async function creates(
 
 /**
  * 根据 id 修改微信支付设置
- * @param {WxPayId} id
- * @param {WxPayInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxPayId,
@@ -232,8 +217,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找微信支付设置
- * @param {WxPayId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: WxPayId,
@@ -260,8 +243,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除微信支付设置
- * @param {WxPayId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: WxPayId[],
@@ -285,9 +266,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用微信支付设置
- * @param {WxPayId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: WxPayId[],
@@ -313,9 +291,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁微信支付设置
- * @param {WxPayId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: WxPayId[],
@@ -341,8 +316,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原微信支付设置
- * @param {WxPayId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: WxPayId[],
@@ -366,8 +339,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除微信支付设置
- * @param {WxPayId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: WxPayId[],
@@ -520,7 +491,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入微信支付设置
- * @param {WxPayInput[]} inputs
  */
 export async function importModels(
   inputs: WxPayInput[],
@@ -572,7 +542,6 @@ export async function importModels(
 
 /**
  * 查找 微信支付设置 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

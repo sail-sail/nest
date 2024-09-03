@@ -75,7 +75,7 @@
         @submit.prevent
       >
         
-        <template v-if="field_permit('lbl') && (showBuildIn || builtInModel?.lbl == null)">
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -88,7 +88,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('usr_id') && (showBuildIn || builtInModel?.usr_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
           <el-form-item
             :label="n('用户')"
             prop="usr_id"
@@ -108,7 +108,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('nick_name') && (showBuildIn || builtInModel?.nick_name == null)">
+        <template v-if="(showBuildIn || builtInModel?.nick_name == null)">
           <el-form-item
             :label="n('昵称')"
             prop="nick_name"
@@ -121,7 +121,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('avatar_url') && (showBuildIn || builtInModel?.avatar_url == null)">
+        <template v-if="(showBuildIn || builtInModel?.avatar_url == null)">
           <el-form-item
             :label="n('头像')"
             prop="avatar_url"
@@ -134,7 +134,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('mobile') && (showBuildIn || builtInModel?.mobile == null)">
+        <template v-if="(showBuildIn || builtInModel?.mobile == null)">
           <el-form-item
             :label="n('手机')"
             prop="mobile"
@@ -147,7 +147,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('openid') && (showBuildIn || builtInModel?.openid == null)">
+        <template v-if="(showBuildIn || builtInModel?.openid == null)">
           <el-form-item
             :label="n('小程序用户唯一标识')"
             prop="openid"
@@ -160,7 +160,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('unionid') && (showBuildIn || builtInModel?.unionid == null)">
+        <template v-if="(showBuildIn || builtInModel?.unionid == null)">
           <el-form-item
             :label="n('小程序用户统一标识')"
             prop="unionid"
@@ -173,7 +173,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('gender') && (showBuildIn || builtInModel?.gender == null)">
+        <template v-if="(showBuildIn || builtInModel?.gender == null)">
           <el-form-item
             :label="n('性别')"
             prop="gender"
@@ -188,7 +188,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('city') && (showBuildIn || builtInModel?.city == null)">
+        <template v-if="(showBuildIn || builtInModel?.city == null)">
           <el-form-item
             :label="n('城市')"
             prop="city"
@@ -201,7 +201,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('province') && (showBuildIn || builtInModel?.province == null)">
+        <template v-if="(showBuildIn || builtInModel?.province == null)">
           <el-form-item
             :label="n('省份')"
             prop="province"
@@ -214,7 +214,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('country') && (showBuildIn || builtInModel?.country == null)">
+        <template v-if="(showBuildIn || builtInModel?.country == null)">
           <el-form-item
             :label="n('国家')"
             prop="country"
@@ -227,7 +227,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('language') && (showBuildIn || builtInModel?.language == null)">
+        <template v-if="(showBuildIn || builtInModel?.language == null)">
           <el-form-item
             :label="n('语言')"
             prop="language"
@@ -240,7 +240,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -395,10 +395,8 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
