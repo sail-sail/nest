@@ -318,7 +318,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<WxUsrSearch>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;
@@ -424,18 +424,9 @@ export async function findAll(
   }
   sql += ` group by t.id`;
   
-  // 排序
-  if (!sort) {
-    sort = [
-      {
-        prop: "create_time",
-        order: SortOrderEnum.Desc,
-      },
-    ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
-  }
+  sort = sort ?? [ ];
   sort = sort.filter((item) => item.prop);
+  
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
@@ -759,7 +750,7 @@ export async function checkByUnique(
 /** 根据条件查找第一小程序用户 */
 export async function findOne(
   search?: Readonly<WxUsrSearch>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },

@@ -42,8 +42,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找微信JSAPI下单总数
- * @param {PayTransactionsJsapiSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: PayTransactionsJsapiSearch,
@@ -59,15 +57,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找微信JSAPI下单列表
- * @param {PayTransactionsJsapiSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<PayTransactionsJsapiModel[]>} 
  */
 export async function findAll(
   search?: PayTransactionsJsapiSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<PayTransactionsJsapiModel[]> {
   
   search = search || { };
@@ -78,7 +72,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: PayTransactionsJsapiInput,
 ) {
@@ -88,11 +84,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个微信JSAPI下单
- * @param {PayTransactionsJsapiSearch} search? 搜索条件
  */
 export async function findOne(
   search?: PayTransactionsJsapiSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<PayTransactionsJsapiModel | undefined> {
   
   search = search || { };
@@ -105,7 +100,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找微信JSAPI下单
- * @param {PayTransactionsJsapiId} id
  */
 export async function findById(
   id?: PayTransactionsJsapiId | null,
@@ -116,7 +110,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找微信JSAPI下单是否存在
- * @param {PayTransactionsJsapiSearch} search? 搜索条件
  */
 export async function exist(
   search?: PayTransactionsJsapiSearch,
@@ -132,7 +125,6 @@ export async function exist(
 
 /**
  * 根据 id 查找微信JSAPI下单是否存在
- * @param {PayTransactionsJsapiId} id
  */
 export async function existById(
   id?: PayTransactionsJsapiId | null,
@@ -143,7 +135,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验微信JSAPI下单
- * @param input 
  */
 export async function validate(
   input: PayTransactionsJsapiInput,
@@ -154,8 +145,6 @@ export async function validate(
 
 /**
  * 批量创建微信JSAPI下单
- * @param {PayTransactionsJsapiInput[]} inputs
- * @return {Promise<PayTransactionsJsapiId[]>} ids
  */
 export async function creates(
   inputs: PayTransactionsJsapiInput[],
@@ -169,9 +158,6 @@ export async function creates(
 
 /**
  * 根据 id 修改微信JSAPI下单
- * @param {PayTransactionsJsapiId} id
- * @param {PayTransactionsJsapiInput} input
- * @return {Promise<PayTransactionsJsapiId>}
  */
 export async function updateById(
   id: PayTransactionsJsapiId,
@@ -184,8 +170,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除微信JSAPI下单
- * @param {PayTransactionsJsapiId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: PayTransactionsJsapiId[],
@@ -197,8 +181,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原微信JSAPI下单
- * @param {PayTransactionsJsapiId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: PayTransactionsJsapiId[],
@@ -209,8 +191,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除微信JSAPI下单
- * @param {PayTransactionsJsapiId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: PayTransactionsJsapiId[],
