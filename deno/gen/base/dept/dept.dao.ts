@@ -115,16 +115,16 @@ async function getWhereQuery(
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null) {
-    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.parent_id != null) {
-    whereQuery += ` and t.parent_id in ${ args.push(search.parent_id) }`;
+    whereQuery += ` and t.parent_id in (${ args.push(search.parent_id) })`;
   }
   if (search?.parent_id_is_null) {
     whereQuery += ` and t.parent_id is null`;
   }
   if (search?.parent_id_lbl != null) {
-    whereQuery += ` and parent_id_lbl.lbl in ${ args.push(search.parent_id_lbl) }`;
+    whereQuery += ` and parent_id_lbl.lbl in (${ args.push(search.parent_id_lbl) })`;
   }
   if (isNotEmpty(search?.parent_id_lbl_like)) {
     whereQuery += ` and parent_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.parent_id_lbl_like) + "%") }`;
@@ -136,16 +136,16 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.usr_ids != null) {
-    whereQuery += ` and base_usr.id in ${ args.push(search.usr_ids) }`;
+    whereQuery += ` and base_usr.id in (${ args.push(search.usr_ids) })`;
   }
   if (search?.usr_ids_is_null) {
     whereQuery += ` and base_usr.id is null`;
   }
   if (search?.is_locked != null) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+    whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
   if (search?.is_enabled != null) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+    whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
@@ -156,13 +156,13 @@ async function getWhereQuery(
     }
   }
   if (search?.org_id != null) {
-    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id in (${ args.push(search.org_id) })`;
   }
   if (search?.org_id_is_null) {
     whereQuery += ` and t.org_id is null`;
   }
   if (search?.org_id_lbl != null) {
-    whereQuery += ` and t.org_id_lbl in ${ args.push(search.org_id_lbl) }`;
+    whereQuery += ` and t.org_id_lbl in (${ args.push(search.org_id_lbl) })`;
   }
   if (isNotEmpty(search?.org_id_lbl_like)) {
     whereQuery += ` and t.org_id_lbl like ${ args.push("%" + sqlLike(search.org_id_lbl_like) + "%") }`;
@@ -174,13 +174,13 @@ async function getWhereQuery(
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
+    whereQuery += ` and t.create_usr_id_lbl in (${ args.push(search.create_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.create_usr_id_lbl_like)) {
     whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
@@ -194,13 +194,13 @@ async function getWhereQuery(
     }
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+    whereQuery += ` and t.update_usr_id_lbl in (${ args.push(search.update_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.update_usr_id_lbl_like)) {
     whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
@@ -615,7 +615,7 @@ export async function setIdByLbl(
     } else {
       const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `select t.id from base_usr t where t.lbl in ${ args.push(input.usr_ids_lbl) }`;
+      const sql = `select t.id from base_usr t where t.lbl in (${ args.push(input.usr_ids_lbl) })`;
       interface Result {
         id: UsrId;
       }
@@ -1814,7 +1814,7 @@ export async function deleteByIds(
       const usr_ids = oldModel.usr_ids;
       if (usr_ids && usr_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_dept_usr set is_deleted=1 where dept_id=${ args.push(id) } and usr_id in ${ args.push(usr_ids) } and is_deleted=0`;
+        const sql = `update base_dept_usr set is_deleted=1 where dept_id=${ args.push(id) } and usr_id in (${ args.push(usr_ids) }) and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -1891,7 +1891,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  const sql = `update base_dept set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
+  const sql = `update base_dept set is_enabled=${ args.push(is_enabled) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1959,7 +1959,7 @@ export async function lockByIds(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = `update base_dept set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
+  let sql = `update base_dept set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -2042,7 +2042,7 @@ export async function revertByIds(
       const usr_ids = old_model.usr_ids;
       if (usr_ids && usr_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_dept_usr set is_deleted=0 where dept_id=${ args.push(id) } and usr_id in ${ args.push(usr_ids) } and is_deleted=1`;
+        const sql = `update base_dept_usr set is_deleted=0 where dept_id=${ args.push(id) } and usr_id in (${ args.push(usr_ids) }) and is_deleted=1`;
         await execute(sql, args);
       }
     }
@@ -2110,7 +2110,7 @@ export async function forceDeleteByIds(
       const usr_ids = oldModel.usr_ids;
       if (usr_ids && usr_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_dept_usr where dept_id=${ args.push(id) } and usr_id in ${ args.push(usr_ids) }`;
+        const sql = `delete from base_dept_usr where dept_id=${ args.push(id) } and usr_id in (${ args.push(usr_ids) })`;
         await execute(sql, args);
       }
     }

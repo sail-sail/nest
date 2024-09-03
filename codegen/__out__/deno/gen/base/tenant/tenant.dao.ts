@@ -98,7 +98,7 @@ async function getWhereQuery(
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null) {
-    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
@@ -107,34 +107,34 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.domain_ids != null) {
-    whereQuery += ` and base_domain.id in ${ args.push(search.domain_ids) }`;
+    whereQuery += ` and base_domain.id in (${ args.push(search.domain_ids) })`;
   }
   if (search?.domain_ids_is_null) {
     whereQuery += ` and base_domain.id is null`;
   }
   if (search?.menu_ids != null) {
-    whereQuery += ` and base_menu.id in ${ args.push(search.menu_ids) }`;
+    whereQuery += ` and base_menu.id in (${ args.push(search.menu_ids) })`;
   }
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
   if (search?.lang_id != null) {
-    whereQuery += ` and t.lang_id in ${ args.push(search.lang_id) }`;
+    whereQuery += ` and t.lang_id in (${ args.push(search.lang_id) })`;
   }
   if (search?.lang_id_is_null) {
     whereQuery += ` and t.lang_id is null`;
   }
   if (search?.lang_id_lbl != null) {
-    whereQuery += ` and lang_id_lbl.lbl in ${ args.push(search.lang_id_lbl) }`;
+    whereQuery += ` and lang_id_lbl.lbl in (${ args.push(search.lang_id_lbl) })`;
   }
   if (isNotEmpty(search?.lang_id_lbl_like)) {
     whereQuery += ` and lang_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.lang_id_lbl_like) + "%") }`;
   }
   if (search?.is_locked != null) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+    whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
   if (search?.is_enabled != null) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+    whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
@@ -151,13 +151,13 @@ async function getWhereQuery(
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
+    whereQuery += ` and t.create_usr_id_lbl in (${ args.push(search.create_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.create_usr_id_lbl_like)) {
     whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
@@ -171,13 +171,13 @@ async function getWhereQuery(
     }
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+    whereQuery += ` and t.update_usr_id_lbl in (${ args.push(search.update_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.update_usr_id_lbl_like)) {
     whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
@@ -607,7 +607,7 @@ export async function setIdByLbl(
     } else {
       const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `select t.id from base_domain t where t.lbl in ${ args.push(input.domain_ids_lbl) }`;
+      const sql = `select t.id from base_domain t where t.lbl in (${ args.push(input.domain_ids_lbl) })`;
       interface Result {
         id: DomainId;
       }
@@ -629,7 +629,7 @@ export async function setIdByLbl(
     } else {
       const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `select t.id from base_menu t where t.lbl in ${ args.push(input.menu_ids_lbl) }`;
+      const sql = `select t.id from base_menu t where t.lbl in (${ args.push(input.menu_ids_lbl) })`;
       interface Result {
         id: MenuId;
       }
@@ -1767,7 +1767,7 @@ export async function deleteByIds(
       const domain_ids = oldModel.domain_ids;
       if (domain_ids && domain_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_tenant_domain set is_deleted=1 where tenant_id=${ args.push(id) } and domain_id in ${ args.push(domain_ids) } and is_deleted=0`;
+        const sql = `update base_tenant_domain set is_deleted=1 where tenant_id=${ args.push(id) } and domain_id in (${ args.push(domain_ids) }) and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -1775,7 +1775,7 @@ export async function deleteByIds(
       const menu_ids = oldModel.menu_ids;
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_tenant_menu set is_deleted=1 where tenant_id=${ args.push(id) } and menu_id in ${ args.push(menu_ids) } and is_deleted=0`;
+        const sql = `update base_tenant_menu set is_deleted=1 where tenant_id=${ args.push(id) } and menu_id in (${ args.push(menu_ids) }) and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -1847,7 +1847,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  const sql = `update base_tenant set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
+  const sql = `update base_tenant set is_enabled=${ args.push(is_enabled) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1915,7 +1915,7 @@ export async function lockByIds(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = `update base_tenant set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
+  let sql = `update base_tenant set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1998,7 +1998,7 @@ export async function revertByIds(
       const domain_ids = old_model.domain_ids;
       if (domain_ids && domain_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_tenant_domain set is_deleted=0 where tenant_id=${ args.push(id) } and domain_id in ${ args.push(domain_ids) } and is_deleted=1`;
+        const sql = `update base_tenant_domain set is_deleted=0 where tenant_id=${ args.push(id) } and domain_id in (${ args.push(domain_ids) }) and is_deleted=1`;
         await execute(sql, args);
       }
     }
@@ -2006,7 +2006,7 @@ export async function revertByIds(
       const menu_ids = old_model.menu_ids;
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_tenant_menu set is_deleted=0 where tenant_id=${ args.push(id) } and menu_id in ${ args.push(menu_ids) } and is_deleted=1`;
+        const sql = `update base_tenant_menu set is_deleted=0 where tenant_id=${ args.push(id) } and menu_id in (${ args.push(menu_ids) }) and is_deleted=1`;
         await execute(sql, args);
       }
     }
@@ -2074,7 +2074,7 @@ export async function forceDeleteByIds(
       const domain_ids = oldModel.domain_ids;
       if (domain_ids && domain_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_tenant_domain where tenant_id=${ args.push(id) } and domain_id in ${ args.push(domain_ids) }`;
+        const sql = `delete from base_tenant_domain where tenant_id=${ args.push(id) } and domain_id in (${ args.push(domain_ids) })`;
         await execute(sql, args);
       }
     }
@@ -2082,7 +2082,7 @@ export async function forceDeleteByIds(
       const menu_ids = oldModel.menu_ids;
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_tenant_menu where tenant_id=${ args.push(id) } and menu_id in ${ args.push(menu_ids) }`;
+        const sql = `delete from base_tenant_menu where tenant_id=${ args.push(id) } and menu_id in (${ args.push(menu_ids) })`;
         await execute(sql, args);
       }
     }
