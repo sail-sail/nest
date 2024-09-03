@@ -67,7 +67,7 @@ export async function getDict(
     where
       t.is_deleted=0
       and t.is_enabled=1
-      and base_dict.code in ${ args.push(codes) }
+      and base_dict.code in (${ args.push(codes) })
     order by
       t.order_by asc
   `;
