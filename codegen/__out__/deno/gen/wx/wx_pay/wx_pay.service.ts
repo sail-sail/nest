@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找微信支付设置总数
- * @param {WxPaySearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: WxPaySearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找微信支付设置列表
- * @param {WxPaySearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<WxPayModel[]>} 
  */
 export async function findAll(
   search?: WxPaySearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxPayModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: WxPayInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个微信支付设置
- * @param {WxPaySearch} search? 搜索条件
  */
 export async function findOne(
   search?: WxPaySearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxPayModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找微信支付设置
- * @param {WxPayId} id
  */
 export async function findById(
   id?: WxPayId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找微信支付设置是否存在
- * @param {WxPaySearch} search? 搜索条件
  */
 export async function exist(
   search?: WxPaySearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找微信支付设置是否存在
- * @param {WxPayId} id
  */
 export async function existById(
   id?: WxPayId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验微信支付设置
- * @param input 
  */
 export async function validate(
   input: WxPayInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建微信支付设置
- * @param {WxPayInput[]} inputs
- * @return {Promise<WxPayId[]>} ids
  */
 export async function creates(
   inputs: WxPayInput[],
@@ -145,9 +134,6 @@ export async function creates(
 
 /**
  * 根据 id 修改微信支付设置
- * @param {WxPayId} id
- * @param {WxPayInput} input
- * @return {Promise<WxPayId>}
  */
 export async function updateById(
   id: WxPayId,
@@ -165,8 +151,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除微信支付设置
- * @param {WxPayId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: WxPayId[],
@@ -189,9 +173,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用微信支付设置
- * @param {WxPayId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: WxPayId[],
@@ -203,9 +184,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁微信支付设置
- * @param {WxPayId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: WxPayId[],
@@ -217,8 +195,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原微信支付设置
- * @param {WxPayId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: WxPayId[],
@@ -229,8 +205,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除微信支付设置
- * @param {WxPayId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: WxPayId[],
@@ -249,7 +223,6 @@ export async function getFieldComments(): Promise<WxPayFieldComment> {
 
 /**
  * 查找 微信支付设置 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {

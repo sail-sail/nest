@@ -79,10 +79,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找微信支付通知列表
- * @param {WxPayNoticeSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: WxPayNoticeSearch,
@@ -116,9 +112,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个微信支付通知
- * @param {WxPayNoticeSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: WxPayNoticeSearch,
@@ -147,8 +140,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找微信支付通知总数
- * @param {WxPayNoticeSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: WxPayNoticeSearch,
@@ -172,8 +163,6 @@ export async function findCount(
 
 /**
  * 根据 id 查找微信支付通知
- * @param {WxPayNoticeId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: WxPayNoticeId,

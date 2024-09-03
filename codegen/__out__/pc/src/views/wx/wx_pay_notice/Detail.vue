@@ -70,7 +70,7 @@
         @submit.prevent
       >
         
-        <template v-if="field_permit('appid') && (showBuildIn || builtInModel?.appid == null)">
+        <template v-if="(showBuildIn || builtInModel?.appid == null)">
           <el-form-item
             :label="n('开发者ID')"
             prop="appid"
@@ -83,7 +83,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('mchid') && (showBuildIn || builtInModel?.mchid == null)">
+        <template v-if="(showBuildIn || builtInModel?.mchid == null)">
           <el-form-item
             :label="n('商户号')"
             prop="mchid"
@@ -96,7 +96,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('openid') && (showBuildIn || builtInModel?.openid == null)">
+        <template v-if="(showBuildIn || builtInModel?.openid == null)">
           <el-form-item
             :label="n('用户标识')"
             prop="openid"
@@ -109,7 +109,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('out_trade_no') && (showBuildIn || builtInModel?.out_trade_no == null)">
+        <template v-if="(showBuildIn || builtInModel?.out_trade_no == null)">
           <el-form-item
             :label="n('商户订单号')"
             prop="out_trade_no"
@@ -122,7 +122,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('transaction_id') && (showBuildIn || builtInModel?.transaction_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.transaction_id == null)">
           <el-form-item
             :label="n('微信支付订单号')"
             prop="transaction_id"
@@ -135,7 +135,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('trade_type') && (showBuildIn || builtInModel?.trade_type == null)">
+        <template v-if="(showBuildIn || builtInModel?.trade_type == null)">
           <el-form-item
             :label="n('交易类型')"
             prop="trade_type"
@@ -150,7 +150,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('trade_state') && (showBuildIn || builtInModel?.trade_state == null)">
+        <template v-if="(showBuildIn || builtInModel?.trade_state == null)">
           <el-form-item
             :label="n('交易状态')"
             prop="trade_state"
@@ -165,7 +165,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('trade_state_desc') && (showBuildIn || builtInModel?.trade_state_desc == null)">
+        <template v-if="(showBuildIn || builtInModel?.trade_state_desc == null)">
           <el-form-item
             :label="n('交易状态描述')"
             prop="trade_state_desc"
@@ -178,7 +178,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('bank_type') && (showBuildIn || builtInModel?.bank_type == null)">
+        <template v-if="(showBuildIn || builtInModel?.bank_type == null)">
           <el-form-item
             :label="n('付款银行')"
             prop="bank_type"
@@ -191,7 +191,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('attach') && (showBuildIn || builtInModel?.attach == null)">
+        <template v-if="(showBuildIn || builtInModel?.attach == null)">
           <el-form-item
             :label="n('附加数据')"
             prop="attach"
@@ -204,7 +204,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('success_time') && (showBuildIn || builtInModel?.success_time == null)">
+        <template v-if="(showBuildIn || builtInModel?.success_time == null)">
           <el-form-item
             :label="n('支付完成时间')"
             prop="success_time"
@@ -220,7 +220,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('total') && (showBuildIn || builtInModel?.total == null)">
+        <template v-if="(showBuildIn || builtInModel?.total == null)">
           <el-form-item
             :label="n('总金额')"
             prop="total"
@@ -233,7 +233,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('payer_total') && (showBuildIn || builtInModel?.payer_total == null)">
+        <template v-if="(showBuildIn || builtInModel?.payer_total == null)">
           <el-form-item
             :label="n('用户支付金额')"
             prop="payer_total"
@@ -246,7 +246,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('currency') && (showBuildIn || builtInModel?.currency == null)">
+        <template v-if="(showBuildIn || builtInModel?.currency == null)">
           <el-form-item
             :label="n('货币类型')"
             prop="currency"
@@ -261,7 +261,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('payer_currency') && (showBuildIn || builtInModel?.payer_currency == null)">
+        <template v-if="(showBuildIn || builtInModel?.payer_currency == null)">
           <el-form-item
             :label="n('用户支付币种')"
             prop="payer_currency"
@@ -276,7 +276,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('device_id') && (showBuildIn || builtInModel?.device_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.device_id == null)">
           <el-form-item
             :label="n('商户端设备号')"
             prop="device_id"
@@ -289,7 +289,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -306,7 +306,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('raw') && (showBuildIn || builtInModel?.raw == null)">
+        <template v-if="(showBuildIn || builtInModel?.raw == null)">
           <el-form-item
             :label="n('原始数据')"
             prop="raw"
@@ -415,10 +415,8 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 

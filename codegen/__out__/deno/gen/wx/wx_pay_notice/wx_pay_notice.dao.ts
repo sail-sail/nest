@@ -333,7 +333,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<WxPayNoticeSearch>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;
@@ -460,22 +460,14 @@ export async function findAll(
   }
   sql += ` group by t.id`;
   
-  // 排序
-  if (!sort) {
-    sort = [
-      {
-        prop: "transaction_id",
-        order: SortOrderEnum.Desc,
-      },
-    ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
-  }
+  sort = sort ?? [ ];
   sort = sort.filter((item) => item.prop);
+  
   sort.push({
     prop: "transaction_id",
     order: SortOrderEnum.Desc,
   });
+  
   if (!sort.some((item) => item.prop === "create_time")) {
     sort.push({
       prop: "create_time",
@@ -865,7 +857,7 @@ export async function checkByUnique(
 /** 根据条件查找第一微信支付通知 */
 export async function findOne(
   search?: Readonly<WxPayNoticeSearch>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },
