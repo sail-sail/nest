@@ -32,8 +32,9 @@ export async function findCountSeo(
     findCount,
   } = await import("./seo.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -51,17 +52,23 @@ export async function findAllSeo(
   
   checkSortSeo(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取SEO优化字段注释
  */
 export async function getFieldCommentsSeo(): Promise<SeoFieldComment> {
-  const { getFieldComments } = await import("./seo.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./seo.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -78,8 +85,9 @@ export async function findOneSeo(
   
   checkSortSeo(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -93,9 +101,9 @@ export async function findByIdSeo(
     findById,
   } = await import("./seo.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -155,7 +163,9 @@ export async function updateByIdSeo(
     route_path,
     "edit",
   );
+  
   const id2: SeoId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -176,8 +186,10 @@ export async function deleteByIdsSeo(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -197,6 +209,7 @@ export async function defaultByIdSeo(
     route_path,
     "edit",
   );
+  
   const res = await defaultById(id);
   return res;
 }
@@ -223,7 +236,9 @@ export async function lockByIdsSeo(
     route_path,
     "edit",
   );
+  
   const res = await lockByIds(ids, is_locked);
+  
   return res;
 }
 
@@ -244,7 +259,9 @@ export async function revertByIdsSeo(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -265,7 +282,9 @@ export async function forceDeleteByIdsSeo(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }
 
@@ -273,7 +292,12 @@ export async function forceDeleteByIdsSeo(
  * 查找 SEO优化 order_by 字段的最大值
  */
 export async function findLastOrderBySeo(): Promise<number> {
-  const { findLastOrderBy } = await import("./seo.service.ts");
+  
+  const {
+    findLastOrderBy,
+  } = await import("./seo.service.ts");
+  
   const res = findLastOrderBy();
+  
   return res;
 }

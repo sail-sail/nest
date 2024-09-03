@@ -75,7 +75,7 @@
         @submit.prevent
       >
         
-        <template v-if="field_permit('title') && (showBuildIn || builtInModel?.title == null)">
+        <template v-if="(showBuildIn || builtInModel?.title == null)">
           <el-form-item
             :label="n('标题')"
             prop="title"
@@ -88,7 +88,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('description') && (showBuildIn || builtInModel?.description == null)">
+        <template v-if="(showBuildIn || builtInModel?.description == null)">
           <el-form-item
             :label="n('描述')"
             prop="description"
@@ -101,7 +101,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('keywords') && (showBuildIn || builtInModel?.keywords == null)">
+        <template v-if="(showBuildIn || builtInModel?.keywords == null)">
           <el-form-item
             :label="n('关键词')"
             prop="keywords"
@@ -114,7 +114,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('og_image') && (showBuildIn || builtInModel?.og_image == null)">
+        <template v-if="(showBuildIn || builtInModel?.og_image == null)">
           <el-form-item
             :label="n('分享图片')"
             prop="og_image"
@@ -127,7 +127,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('og_title') && (showBuildIn || builtInModel?.og_title == null)">
+        <template v-if="(showBuildIn || builtInModel?.og_title == null)">
           <el-form-item
             :label="n('分享标题')"
             prop="og_title"
@@ -140,7 +140,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('og_description') && (showBuildIn || builtInModel?.og_description == null)">
+        <template v-if="(showBuildIn || builtInModel?.og_description == null)">
           <el-form-item
             :label="n('分享描述')"
             prop="og_description"
@@ -153,7 +153,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('order_by') && (showBuildIn || builtInModel?.order_by == null)">
+        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
             prop="order_by"
@@ -166,7 +166,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -318,10 +318,8 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 

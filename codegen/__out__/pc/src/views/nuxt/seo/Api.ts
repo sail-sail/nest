@@ -65,10 +65,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找SEO优化列表
- * @param {SeoSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: SeoSearch,
@@ -102,9 +98,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个SEO优化
- * @param {SeoSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: SeoSearch,
@@ -133,8 +126,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找SEO优化总数
- * @param {SeoSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: SeoSearch,
@@ -178,9 +169,6 @@ export async function create(
 
 /**
  * 批量创建SEO优化
- * @param {SeoInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: SeoInput[],
@@ -207,9 +195,6 @@ export async function creates(
 
 /**
  * 根据 id 修改SEO优化
- * @param {SeoId} id
- * @param {SeoInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: SeoId,
@@ -236,8 +221,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找SEO优化
- * @param {SeoId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: SeoId,
@@ -264,8 +247,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除SEO优化
- * @param {SeoId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: SeoId[],
@@ -289,8 +270,6 @@ export async function deleteByIds(
 
 /**
  * 根据 id 设置默认SEO优化
- * @param {SeoId} id
- * @param {GqlOpt} opt?
  */
 export async function defaultById(
   id: SeoId,
@@ -314,9 +293,6 @@ export async function defaultById(
 
 /**
  * 根据 ids 锁定或解锁SEO优化
- * @param {SeoId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: SeoId[],
@@ -342,8 +318,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原SEO优化
- * @param {SeoId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: SeoId[],
@@ -367,8 +341,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除SEO优化
- * @param {SeoId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: SeoId[],
@@ -521,7 +493,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入SEO优化
- * @param {SeoInput[]} inputs
  */
 export async function importModels(
   inputs: SeoInput[],
@@ -573,7 +544,6 @@ export async function importModels(
 
 /**
  * 查找 SEO优化 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,
