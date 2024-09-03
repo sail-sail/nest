@@ -7,18 +7,7 @@ import type {
   RedisConnectOptions,
 } from "redis";
 
-import type {
-  Client,
-  ClientConfig,
-} from "./mysql/mod.ts";
-
-import type {
-  PoolConnection,
-} from "./mysql/src/pool.ts";
-
-import type {
-  FieldInfo,
-} from "./mysql/src/packets/parsers/result.ts";
+import mysql2 from "mysql2/promise";
 
 import { Context as OakContext } from "@oak/oak";
 
@@ -35,10 +24,6 @@ import {
 } from "./exceptions/service.exception.ts";
 
 import {
-  ConnnectionError,
-} from "./mysql/src/constant/errors.ts";
-
-import {
   isEmpty,
 } from "/lib/util/string_util.ts";
 
@@ -52,15 +37,7 @@ declare global {
   }
 }
 
-export type ExecuteResult = {
-  affectedRows: number;
-  lastInsertId: number;
-  fields?: FieldInfo[];
-  // deno-lint-ignore no-explicit-any
-  rows?: any[];
-  // deno-lint-ignore no-explicit-any
-  iterator?: any;
-}
+export type ExecuteResult = mysql2.ResultSetHeader;
 
 /** 临时文件路径 */
 // export const TMP_PATH = `${ Deno.cwd() }/tmp/`;
@@ -114,19 +91,13 @@ export async function redisClient() {
   return _redisClient;
 }
 
-const clientMap = new Map<string, Client | undefined>();
+const mysql2PoolMap = new Map<string, mysql2.Pool | undefined>();
 
-export async function getClient(
+export async function getMysqlPool(
   database_name = "",
-): Promise<Client> {
-  
-  const {
-    Client,
-    configLogger,
-  } = await import("./mysql/mod.ts");
-  
-  let client = clientMap.get(database_name);
-  if (!client) {
+): Promise<mysql2.Pool> {
+  let pool = mysql2PoolMap.get(database_name);
+  if (!pool) {
     let database_username_key = "database";
     if (database_name) {
       database_username_key += "_" + database_name;
@@ -144,12 +115,6 @@ export async function getClient(
       database_database_key += "_" + database_name;
     }
     database_database_key += "_database";
-    
-    let database_socketpath_key = "database";
-    if (database_name) {
-      database_socketpath_key += "_" + database_name;
-    }
-    database_socketpath_key += "_socketpath";
     
     let database_hostname_key = "database";
     if (database_name) {
@@ -169,48 +134,83 @@ export async function getClient(
     }
     database_pool_size_key += "_pool_size";
     
-    const opt: ClientConfig = {
-      username: await getEnv(database_username_key),
-      password: await getEnv(database_password_key),
-      db: await getEnv(database_database_key),
-    };
+    let database_charset_key = "database";
+    if (database_name) {
+      database_charset_key += "_" + database_name;
+    }
+    database_charset_key += "_charset";
+    
+    let database_socketpath_key = "database";
+    if (database_name) {
+      database_socketpath_key += "_" + database_name;
+    }
+    database_socketpath_key += "_socketpath";
+    
+    // timezone
+    let database_timezone_key = "database";
+    if (database_name) {
+      database_timezone_key += "_" + database_name;
+    }
+    database_timezone_key += "_timezone";
+    
+    // debug
+    let database_debug_key = "database";
+    if (database_name) {
+      database_debug_key += "_" + database_name;
+    }
+    database_debug_key += "_debug";
+    
+    const hostname = await getEnv(database_hostname_key);
+    const port = Number(await getEnv(database_port_key)) || 0;
+    const username = await getEnv(database_username_key);
+    const password = await getEnv(database_password_key);
+    const db = await getEnv(database_database_key);
+    const charset = (await getEnv(database_charset_key)) || "utf8mb4";
+    const poolSize = Number(await getEnv(database_pool_size_key)) || 0;
     const socketPath = await getEnv(database_socketpath_key);
+    const timezone = await getEnv(database_timezone_key);
+    
+    const debug = (await getEnv(database_debug_key)) === "true";
+    
+    // mysql2
+    const poolOption: mysql2.PoolOptions = {
+    };
+    if (hostname) {
+      poolOption.host = hostname;
+    }
+    if (port > 0) {
+      poolOption.port = port;
+    }
+    if (username) {
+      poolOption.user = username;
+    }
+    if (password) {
+      poolOption.password = password;
+    }
+    if (db) {
+      poolOption.database = db;
+    }
+    if (poolSize > 0) {
+      poolOption.connectionLimit = poolSize;
+    }
+    if (charset) {
+      poolOption.charset = charset;
+    }
     if (socketPath) {
-      opt.socketPath = socketPath;
-    } else {
-      opt.hostname = await getEnv(database_hostname_key);
-      const portStr = await getEnv(database_port_key);
-      if (portStr) {
-        const port = Number(portStr);
-        if (port > 0) {
-          opt.port = port;
-        }
-      }
+      poolOption.socketPath = socketPath;
     }
-    
-    const debug = await getEnv("database_debug");
-    if (debug === "true") {
-      configLogger({ enable: true });
-    } else {
-      configLogger({ enable: false });
+    if (timezone) {
+      poolOption.timezone = timezone;
     }
-    
-    opt.dateStrings = false;
-    opt.bigNumberStrings = true;
-    // opt.stringifyObjects = true;
-    // console.log(opt);
-    const poolSizeStr = await getEnv(database_pool_size_key);
-    if (poolSizeStr) {
-      const poolSize = Number(poolSizeStr);
-      if (poolSize > 0) {
-        opt.poolSize = poolSize;
-      }
+    poolOption.supportBigNumbers = true;
+    poolOption.bigNumberStrings = true;
+    if (debug) {
+      poolOption.debug = true;
     }
-    opt.charset = opt.charset || "utf8mb4";
-    client = await new Client().connect(opt);
-    clientMap.set(database_name, client);
+    pool = mysql2.createPool(poolOption);
+    mysql2PoolMap.set(database_name, pool);
   }
-  return client;
+  return pool;
 }
 
 let req_id = 0;
@@ -218,7 +218,7 @@ let req_id = 0;
 export class Context {
   
   #is_tran = false;
-  #conn: PoolConnection | undefined;
+  #conn: mysql2.PoolConnection | undefined;
   #req_id = "0";
   
   /** 不校验token是否过期, 默认校验 */
@@ -267,7 +267,7 @@ export class Context {
     return this.#conn;
   }
   
-  set conn(conn: PoolConnection | undefined) {
+  set conn(conn: mysql2.PoolConnection | undefined) {
     this.#conn = conn;
   }
   
@@ -690,36 +690,27 @@ export async function getCache(
 
 /**
  * 开启事务, 如果事务已经开启则直接返回数据库链接
- * @memberof Context
  */
-export async function beginTran(opt?: { debug?: boolean }): Promise<PoolConnection> {
+export async function beginTran(opt?: { debug?: boolean }): Promise<mysql2.PoolConnection> {
   const context = useContext();
   let conn = context.conn;
   if (conn) return conn;
-  const client = await getClient();
-  if (!client.pool) {
-    throw new ServiceException("client pool is empty!");
-  }
-  conn = await client.poolConn?.pop();
+  const pool = await getMysqlPool();
+  conn = await pool.getConnection();
   context.conn = conn;
-  if (!conn) {
-    throw new ServiceException("client pool conn is empty!");
-  }
   if (!opt || opt.debug !== false) {
-    log("beginTran;" + " /* "+ await conn.threadId() +" */");
+    log("beginTran;" + " /* "+ conn.threadId +" */");
   }
   if (conn) {
-    await conn.execute("BEGIN");
+    await conn.beginTransaction();
   }
   return conn;
 }
 
 /**
  * 回滚事务
- * @return {Promise<void>} 
- * @memberof Context
  */
-export async function rollback(conn?: PoolConnection, opt?: { debug?: boolean }): Promise<void> {
+export async function rollback(conn?: mysql2.PoolConnection, opt?: { debug?: boolean }): Promise<void> {
   const context = useContext();
   if (!conn) {
     conn = context.conn;
@@ -729,28 +720,19 @@ export async function rollback(conn?: PoolConnection, opt?: { debug?: boolean })
   }
   context.conn = undefined;
   if (!opt || opt.debug !== false) {
-    log("rollback;" + " /* "+ await conn.threadId() +" */");
+    log("rollback;" + " /* "+ conn.threadId +" */");
   }
   try {
-    await conn.execute("rollback");
-  } catch(err) {
-    if (err instanceof ConnnectionError && err.message === "Connection is closed") {
-      conn.close();
-      context.conn = undefined;
-      conn = undefined;
-    }
-    throw err;
+    await conn.rollback();
   } finally {
-    conn?.returnToPool();
+    conn.release();
   }
 }
 
 /**
  * 提交事务
- * @return {Promise<void>} 
- * @memberof Context
  */
-export async function commit(conn?: PoolConnection, opt?: { debug?: boolean }): Promise<void> {
+export async function commit(conn?: mysql2.PoolConnection, opt?: { debug?: boolean }): Promise<void> {
   const context = useContext();
   if (!conn) {
     conn = context.conn;
@@ -760,12 +742,12 @@ export async function commit(conn?: PoolConnection, opt?: { debug?: boolean }): 
   }
   context.conn = undefined;
   if (!opt || opt.debug !== false) {
-    log("commit;" + " /* "+ await conn.threadId() +" */");
+    log("commit;" + " /* "+ conn.threadId +" */");
   }
   try {
     await conn.execute("commit");
   } finally {
-    conn.returnToPool();
+    conn.release();
   }
 }
 
@@ -776,14 +758,13 @@ export async function close(context: Context) {
   if (context.conn) {
     const conn = context.conn;
     context.conn = undefined;
-    // conn.close();
-    conn.returnToPool();
+    conn.release();
+  }
+  for (const pool of mysql2PoolMap.values()) {
+    await pool?.end();
   }
   const redisCln = await redisClient();
   redisCln?.close();
-  for (const client of clientMap.values()) {
-    await client?.close();
-  }
 }
 
 export function escapeDec(orderDec?: InputMaybe<SortOrderEnum>|"asc"|"desc") {
@@ -921,7 +902,7 @@ export async function query_dw<T = any>(
 export async function query<T = any>(
   sql: string,
   // deno-lint-ignore no-explicit-any
-  args?: any[]|QueryArgs,
+  args?: any[] | QueryArgs,
   opt?: {
     debug?: boolean,
     // logResult?: boolean,
@@ -934,39 +915,28 @@ export async function query<T = any>(
   if (args instanceof QueryArgs) {
     args = args.value;
   }
-  // sql = sql.trim();
-  // if (sql.endsWith(";")) {
-  //   sql = sql.substring(0, sql.length - 1);
-  // }
   let result: T[] = await getCache(opt?.cacheKey1, opt?.cacheKey2);
   if (result != null) {
     return result;
   }
-  // let debugSql = "";
-  try {
-    if (context.is_tran) {
-      const conn = await beginTran();
-      // if (!opt || opt.debug !== false) {
-      //   debugSql = getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */";
-      //   log(debugSql);
-      // }
-      result = (await conn.query(sql, args) as T[]);
-    } else {
-      // if (!opt || opt.debug !== false) {
-      //   debugSql = getDebugQuery(sql, args);
-      //   log(debugSql);
-      // }
-      const pool = await getClient(opt?.database_name);
-      result = await pool.query(sql, args, { debug: opt?.debug });
-    }
-  } catch (err) {
-    if (err.code === "EHOSTUNREACH") {
-      err.message = "连接数据库失败!";
-    }
-    // if (debugSql) {
-    //   error(debugSql);
+  if (context.is_tran) {
+    const conn = await beginTran();
+    // if (!opt || opt.debug !== false) {
+    //   debugSql = getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */";
+    //   log(debugSql);
     // }
-    throw err;
+    const res = await conn.query(sql, args);
+    // deno-lint-ignore no-explicit-any
+    result = res[0] as any[];
+  } else {
+    // if (!opt || opt.debug !== false) {
+    //   debugSql = getDebugQuery(sql, args);
+    //   log(debugSql);
+    // }
+    const pool = await getMysqlPool(opt?.database_name);
+    const res = await pool.query(sql, args);
+    // deno-lint-ignore no-explicit-any
+    result = res[0] as any[];
   }
   await setCache(opt?.cacheKey1, opt?.cacheKey2, result);
   // if ((!opt || opt.logResult !== false) && process.env.NODE_ENV === "production") {
@@ -977,16 +947,11 @@ export async function query<T = any>(
 
 /**
  * 执行sql更新或删除语句
- * @template T
- * @param {string} sql SQL语句
- * @param {any[]|QueryArgs} args? 参数
- * @param {{ debug?: boolean, logResult?: boolean }} opt?
- * @return {Promise<ExecuteResult>}
  */
 export async function execute(
   sql: string,
   // deno-lint-ignore no-explicit-any
-  args?: any[]|QueryArgs,
+  args?: any[] | QueryArgs,
   opt?: {
     debug?: boolean,
     logResult?: boolean,
@@ -998,27 +963,20 @@ export async function execute(
   }
   // deno-lint-ignore no-explicit-any
   let result: any;
-  try {
-    if (context.is_tran) {
-      const conn = await beginTran();
-      if (!opt || opt.debug !== false) {
-        log(getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */");
-      }
-      result = await conn.execute(sql, args);
-    } else {
-      if (!opt || opt.debug !== false) {
-        log(getDebugQuery(sql, args));
-      }
-      const pool = await getClient();
-      result = await pool.execute(sql, args);
+  if (context.is_tran) {
+    const conn = await beginTran();
+    if (!opt || opt.debug !== false) {
+      log(getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
     }
-  } catch (err) {
-    if (err.code === "EHOSTUNREACH") {
-      error(err);
-      throw "连接数据库失败!";
+    result = await conn.execute(sql, args);
+  } else {
+    if (!opt || opt.debug !== false) {
+      log(getDebugQuery(sql, args));
     }
-    throw err;
+    const pool = await getMysqlPool();
+    result = await pool.execute(sql, args);
   }
+  result = result[0];
   if (!opt || opt.logResult !== false) {
     log(result);
   }
