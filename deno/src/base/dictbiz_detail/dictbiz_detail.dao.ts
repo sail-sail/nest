@@ -77,7 +77,7 @@ export async function getDictbiz(
       and t.is_enabled=1
       and t.tenant_id=${ args.push(tenant_id) }
       and base_dictbiz.tenant_id=${ args.push(tenant_id) }
-      and base_dictbiz.code in ${ args.push(codes) }
+      and base_dictbiz.code in (${ args.push(codes) })
     order by
       t.order_by asc
   `;
