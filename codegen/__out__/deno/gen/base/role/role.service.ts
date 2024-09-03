@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找角色总数
- * @param {RoleSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: RoleSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找角色列表
- * @param {RoleSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<RoleModel[]>} 
  */
 export async function findAll(
   search?: RoleSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<RoleModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: RoleInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个角色
- * @param {RoleSearch} search? 搜索条件
  */
 export async function findOne(
   search?: RoleSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<RoleModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找角色
- * @param {RoleId} id
  */
 export async function findById(
   id?: RoleId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找角色是否存在
- * @param {RoleSearch} search? 搜索条件
  */
 export async function exist(
   search?: RoleSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找角色是否存在
- * @param {RoleId} id
  */
 export async function existById(
   id?: RoleId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验角色
- * @param input 
  */
 export async function validate(
   input: RoleInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建角色
- * @param {RoleInput[]} inputs
- * @return {Promise<RoleId[]>} ids
  */
 export async function creates(
   inputs: RoleInput[],
@@ -145,9 +134,6 @@ export async function creates(
 
 /**
  * 根据 id 修改角色
- * @param {RoleId} id
- * @param {RoleInput} input
- * @return {Promise<RoleId>}
  */
 export async function updateById(
   id: RoleId,
@@ -165,8 +151,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除角色
- * @param {RoleId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: RoleId[],
@@ -189,9 +173,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用角色
- * @param {RoleId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: RoleId[],
@@ -203,9 +184,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁角色
- * @param {RoleId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: RoleId[],
@@ -217,8 +195,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原角色
- * @param {RoleId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: RoleId[],
@@ -229,8 +205,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除角色
- * @param {RoleId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: RoleId[],
@@ -249,7 +223,6 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
 
 /**
  * 查找 角色 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {

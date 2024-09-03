@@ -58,10 +58,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找后台任务列表
- * @param {BackgroundTaskSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: BackgroundTaskSearch,
@@ -95,9 +91,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个后台任务
- * @param {BackgroundTaskSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: BackgroundTaskSearch,
@@ -126,8 +119,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找后台任务总数
- * @param {BackgroundTaskSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: BackgroundTaskSearch,
@@ -151,8 +142,6 @@ export async function findCount(
 
 /**
  * 根据 id 查找后台任务
- * @param {BackgroundTaskId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: BackgroundTaskId,
@@ -179,8 +168,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除后台任务
- * @param {BackgroundTaskId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: BackgroundTaskId[],
@@ -204,8 +191,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原后台任务
- * @param {BackgroundTaskId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: BackgroundTaskId[],
@@ -229,8 +214,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除后台任务
- * @param {BackgroundTaskId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: BackgroundTaskId[],

@@ -52,10 +52,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找域名列表
- * @param {DomainSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: DomainSearch,
@@ -89,9 +85,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个域名
- * @param {DomainSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: DomainSearch,
@@ -120,8 +113,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找域名总数
- * @param {DomainSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: DomainSearch,
@@ -165,9 +156,6 @@ export async function create(
 
 /**
  * 批量创建域名
- * @param {DomainInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: DomainInput[],
@@ -194,9 +182,6 @@ export async function creates(
 
 /**
  * 根据 id 修改域名
- * @param {DomainId} id
- * @param {DomainInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DomainId,
@@ -223,8 +208,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找域名
- * @param {DomainId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: DomainId,
@@ -251,8 +234,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除域名
- * @param {DomainId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: DomainId[],
@@ -276,8 +257,6 @@ export async function deleteByIds(
 
 /**
  * 根据 id 设置默认域名
- * @param {DomainId} id
- * @param {GqlOpt} opt?
  */
 export async function defaultById(
   id: DomainId,
@@ -301,9 +280,6 @@ export async function defaultById(
 
 /**
  * 根据 ids 启用或禁用域名
- * @param {DomainId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: DomainId[],
@@ -329,9 +305,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁域名
- * @param {DomainId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: DomainId[],
@@ -357,8 +330,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原域名
- * @param {DomainId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: DomainId[],
@@ -382,8 +353,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除域名
- * @param {DomainId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: DomainId[],
@@ -533,7 +502,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入域名
- * @param {DomainInput[]} inputs
  */
 export async function importModels(
   inputs: DomainInput[],
@@ -585,7 +553,6 @@ export async function importModels(
 
 /**
  * 查找 域名 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,
