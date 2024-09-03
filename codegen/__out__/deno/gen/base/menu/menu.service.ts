@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找菜单总数
- * @param {MenuSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: MenuSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找菜单列表
- * @param {MenuSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<MenuModel[]>} 
  */
 export async function findAll(
   search?: MenuSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<MenuModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: MenuInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个菜单
- * @param {MenuSearch} search? 搜索条件
  */
 export async function findOne(
   search?: MenuSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<MenuModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找菜单
- * @param {MenuId} id
  */
 export async function findById(
   id?: MenuId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找菜单是否存在
- * @param {MenuSearch} search? 搜索条件
  */
 export async function exist(
   search?: MenuSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找菜单是否存在
- * @param {MenuId} id
  */
 export async function existById(
   id?: MenuId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验菜单
- * @param input 
  */
 export async function validate(
   input: MenuInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建菜单
- * @param {MenuInput[]} inputs
- * @return {Promise<MenuId[]>} ids
  */
 export async function creates(
   inputs: MenuInput[],
@@ -145,9 +134,6 @@ export async function creates(
 
 /**
  * 根据 id 修改菜单
- * @param {MenuId} id
- * @param {MenuInput} input
- * @return {Promise<MenuId>}
  */
 export async function updateById(
   id: MenuId,
@@ -165,8 +151,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除菜单
- * @param {MenuId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: MenuId[],
@@ -189,9 +173,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用菜单
- * @param {MenuId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: MenuId[],
@@ -203,9 +184,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁菜单
- * @param {MenuId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: MenuId[],
@@ -217,8 +195,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原菜单
- * @param {MenuId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: MenuId[],
@@ -229,8 +205,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除菜单
- * @param {MenuId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: MenuId[],
@@ -249,7 +223,6 @@ export async function getFieldComments(): Promise<MenuFieldComment> {
 
 /**
  * 查找 菜单 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {
