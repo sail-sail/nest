@@ -48,10 +48,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找字段权限列表
- * @param {FieldPermitSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: FieldPermitSearch,
@@ -85,9 +81,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个字段权限
- * @param {FieldPermitSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: FieldPermitSearch,
@@ -116,8 +109,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找字段权限总数
- * @param {FieldPermitSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: FieldPermitSearch,
@@ -161,9 +152,6 @@ export async function create(
 
 /**
  * 批量创建字段权限
- * @param {FieldPermitInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: FieldPermitInput[],
@@ -190,9 +178,6 @@ export async function creates(
 
 /**
  * 根据 id 修改字段权限
- * @param {FieldPermitId} id
- * @param {FieldPermitInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: FieldPermitId,
@@ -219,8 +204,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找字段权限
- * @param {FieldPermitId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: FieldPermitId,
@@ -247,8 +230,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除字段权限
- * @param {FieldPermitId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: FieldPermitId[],
@@ -272,8 +253,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原字段权限
- * @param {FieldPermitId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: FieldPermitId[],
@@ -297,8 +276,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除字段权限
- * @param {FieldPermitId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: FieldPermitId[],
@@ -511,7 +488,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入字段权限
- * @param {FieldPermitInput[]} inputs
  */
 export async function importModels(
   inputs: FieldPermitInput[],

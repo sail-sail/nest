@@ -75,7 +75,7 @@
         @submit.prevent
       >
         
-        <template v-if="field_permit('lang_id') && (showBuildIn || builtInModel?.lang_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.lang_id == null)">
           <el-form-item
             :label="n('语言')"
             prop="lang_id"
@@ -95,7 +95,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('menu_id') && (showBuildIn || builtInModel?.menu_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.menu_id == null)">
           <el-form-item
             :label="n('菜单')"
             prop="menu_id"
@@ -109,7 +109,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('code') && (showBuildIn || builtInModel?.code == null)">
+        <template v-if="(showBuildIn || builtInModel?.code == null)">
           <el-form-item
             :label="n('编码')"
             prop="code"
@@ -122,7 +122,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('lbl') && (showBuildIn || builtInModel?.lbl == null)">
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -135,7 +135,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -294,10 +294,8 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
