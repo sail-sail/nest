@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找定时任务总数
- * @param {CronJobSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: CronJobSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找定时任务列表
- * @param {CronJobSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<CronJobModel[]>} 
  */
 export async function findAll(
   search?: CronJobSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<CronJobModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: CronJobInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个定时任务
- * @param {CronJobSearch} search? 搜索条件
  */
 export async function findOne(
   search?: CronJobSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<CronJobModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找定时任务
- * @param {CronJobId} id
  */
 export async function findById(
   id?: CronJobId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找定时任务是否存在
- * @param {CronJobSearch} search? 搜索条件
  */
 export async function exist(
   search?: CronJobSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找定时任务是否存在
- * @param {CronJobId} id
  */
 export async function existById(
   id?: CronJobId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验定时任务
- * @param input 
  */
 export async function validate(
   input: CronJobInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建定时任务
- * @param {CronJobInput[]} inputs
- * @return {Promise<CronJobId[]>} ids
  */
 export async function creates(
   inputs: CronJobInput[],
@@ -145,9 +134,6 @@ export async function creates(
 
 /**
  * 根据 id 修改定时任务
- * @param {CronJobId} id
- * @param {CronJobInput} input
- * @return {Promise<CronJobId>}
  */
 export async function updateById(
   id: CronJobId,
@@ -165,8 +151,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除定时任务
- * @param {CronJobId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: CronJobId[],
@@ -189,9 +173,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用定时任务
- * @param {CronJobId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: CronJobId[],
@@ -203,9 +184,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁定时任务
- * @param {CronJobId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: CronJobId[],
@@ -217,8 +195,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原定时任务
- * @param {CronJobId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: CronJobId[],
@@ -229,8 +205,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除定时任务
- * @param {CronJobId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: CronJobId[],
@@ -249,7 +223,6 @@ export async function getFieldComments(): Promise<CronJobFieldComment> {
 
 /**
  * 查找 定时任务 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {

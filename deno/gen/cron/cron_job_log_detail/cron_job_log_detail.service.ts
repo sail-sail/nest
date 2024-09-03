@@ -14,8 +14,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找定时任务日志明细总数
- * @param {CronJobLogDetailSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: CronJobLogDetailSearch,
@@ -31,15 +29,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找定时任务日志明细列表
- * @param {CronJobLogDetailSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<CronJobLogDetailModel[]>} 
  */
 export async function findAll(
   search?: CronJobLogDetailSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<CronJobLogDetailModel[]> {
   
   search = search || { };
@@ -50,7 +44,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: CronJobLogDetailInput,
 ) {
@@ -60,11 +56,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个定时任务日志明细
- * @param {CronJobLogDetailSearch} search? 搜索条件
  */
 export async function findOne(
   search?: CronJobLogDetailSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<CronJobLogDetailModel | undefined> {
   
   search = search || { };
@@ -77,7 +72,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找定时任务日志明细
- * @param {CronJobLogDetailId} id
  */
 export async function findById(
   id?: CronJobLogDetailId | null,
@@ -88,7 +82,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找定时任务日志明细是否存在
- * @param {CronJobLogDetailSearch} search? 搜索条件
  */
 export async function exist(
   search?: CronJobLogDetailSearch,
@@ -104,7 +97,6 @@ export async function exist(
 
 /**
  * 根据 id 查找定时任务日志明细是否存在
- * @param {CronJobLogDetailId} id
  */
 export async function existById(
   id?: CronJobLogDetailId | null,
@@ -115,7 +107,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验定时任务日志明细
- * @param input 
  */
 export async function validate(
   input: CronJobLogDetailInput,
@@ -126,8 +117,6 @@ export async function validate(
 
 /**
  * 批量创建定时任务日志明细
- * @param {CronJobLogDetailInput[]} inputs
- * @return {Promise<CronJobLogDetailId[]>} ids
  */
 export async function creates(
   inputs: CronJobLogDetailInput[],
@@ -141,9 +130,6 @@ export async function creates(
 
 /**
  * 根据 id 修改定时任务日志明细
- * @param {CronJobLogDetailId} id
- * @param {CronJobLogDetailInput} input
- * @return {Promise<CronJobLogDetailId>}
  */
 export async function updateById(
   id: CronJobLogDetailId,
@@ -156,8 +142,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除定时任务日志明细
- * @param {CronJobLogDetailId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: CronJobLogDetailId[],
@@ -169,8 +153,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原定时任务日志明细
- * @param {CronJobLogDetailId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: CronJobLogDetailId[],
@@ -181,8 +163,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除定时任务日志明细
- * @param {CronJobLogDetailId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: CronJobLogDetailId[],
