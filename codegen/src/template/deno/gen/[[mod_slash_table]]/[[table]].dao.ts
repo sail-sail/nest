@@ -180,7 +180,6 @@ let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.noList) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
   if (column_name === "version") continue;
@@ -1840,6 +1839,11 @@ export async function findAll(
     } else {
       model.<#=column_name#>_lbl = "";
     }<#
+      } else if (data_type === "decimal") {
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#> = new Decimal(model.<#=column_name#> ?? 0);<#
       }
     #><#
     }
