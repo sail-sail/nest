@@ -14,8 +14,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找操作记录总数
- * @param {OperationRecordSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: OperationRecordSearch,
@@ -31,15 +29,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找操作记录列表
- * @param {OperationRecordSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<OperationRecordModel[]>} 
  */
 export async function findAll(
   search?: OperationRecordSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<OperationRecordModel[]> {
   
   search = search || { };
@@ -50,7 +44,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: OperationRecordInput,
 ) {
@@ -60,11 +56,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个操作记录
- * @param {OperationRecordSearch} search? 搜索条件
  */
 export async function findOne(
   search?: OperationRecordSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<OperationRecordModel | undefined> {
   
   search = search || { };
@@ -77,7 +72,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找操作记录
- * @param {OperationRecordId} id
  */
 export async function findById(
   id?: OperationRecordId | null,
@@ -88,7 +82,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找操作记录是否存在
- * @param {OperationRecordSearch} search? 搜索条件
  */
 export async function exist(
   search?: OperationRecordSearch,
@@ -104,7 +97,6 @@ export async function exist(
 
 /**
  * 根据 id 查找操作记录是否存在
- * @param {OperationRecordId} id
  */
 export async function existById(
   id?: OperationRecordId | null,
@@ -115,7 +107,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验操作记录
- * @param input 
  */
 export async function validate(
   input: OperationRecordInput,
@@ -126,8 +117,6 @@ export async function validate(
 
 /**
  * 批量创建操作记录
- * @param {OperationRecordInput[]} inputs
- * @return {Promise<OperationRecordId[]>} ids
  */
 export async function creates(
   inputs: OperationRecordInput[],
@@ -141,9 +130,6 @@ export async function creates(
 
 /**
  * 根据 id 修改操作记录
- * @param {OperationRecordId} id
- * @param {OperationRecordInput} input
- * @return {Promise<OperationRecordId>}
  */
 export async function updateById(
   id: OperationRecordId,
@@ -156,8 +142,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除操作记录
- * @param {OperationRecordId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: OperationRecordId[],
@@ -169,8 +153,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原操作记录
- * @param {OperationRecordId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: OperationRecordId[],
@@ -181,8 +163,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除操作记录
- * @param {OperationRecordId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: OperationRecordId[],

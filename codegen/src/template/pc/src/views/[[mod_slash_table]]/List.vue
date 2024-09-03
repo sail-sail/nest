@@ -52,6 +52,8 @@ const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
 
 const searchFormWidth = opts.searchFormWidth;
+
+const tableFieldPermit = columns.some((item) => item.fieldPermit);
 #><template>
 <div
   un-flex="~ [1_0_0] col"
@@ -116,6 +118,7 @@ const searchFormWidth = opts.searchFormWidth;
         if (foreignKey) {
           foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
         }
+        const fieldPermit = column.fieldPermit;
       #><#
         if (search) {
       #>
@@ -128,7 +131,11 @@ const searchFormWidth = opts.searchFormWidth;
         && typeof opts?.list_tree !== "string"
       ) {
       #>
-      <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -154,7 +161,11 @@ const searchFormWidth = opts.searchFormWidth;
         && typeof opts?.list_tree === "string"
       ) {
       #>
-      <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -176,7 +187,11 @@ const searchFormWidth = opts.searchFormWidth;
       </template><#
       } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.isSearchByLbl) {
       #>
-      <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -198,7 +213,11 @@ const searchFormWidth = opts.searchFormWidth;
       </template><#
       } else if (foreignKey && foreignKey.type !== "many2many" && foreignKey.isSearchByLbl) {
       #>
-      <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -212,7 +231,11 @@ const searchFormWidth = opts.searchFormWidth;
       </template><#
       } else if (foreignKey && foreignKey.type === "many2many") {
       #>
-      <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -234,7 +257,11 @@ const searchFormWidth = opts.searchFormWidth;
       </template><#
       } else if (column.dict) {
       #>
-      <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -263,7 +290,11 @@ const searchFormWidth = opts.searchFormWidth;
       </template><#
       } else if (column.dictbiz) {
       #>
-      <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -292,7 +323,11 @@ const searchFormWidth = opts.searchFormWidth;
       </template><#
       } else if (data_type === "datetime" || data_type === "date") {
       #>
-      <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -316,7 +351,11 @@ const searchFormWidth = opts.searchFormWidth;
       </template><#
       } else if (column_type === "int(1)") {
       #>
-      <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -332,7 +371,11 @@ const searchFormWidth = opts.searchFormWidth;
       } else if (column_type.startsWith("int")) {
         searchIntColumns.push(column);
       #>
-      <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
@@ -373,7 +416,11 @@ const searchFormWidth = opts.searchFormWidth;
       </template><#
       } else {
       #>
-      <template v-if="field_permit('<#=column_name#>') && (builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
+      <template v-if="<#
+        if (fieldPermit) {
+      #>field_permit('<#=column_name#>') && <#
+        }
+      #>(builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
         <el-form-item
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>_like"
@@ -1797,8 +1844,12 @@ const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
-const permit = permitStore.getPermit(pagePath);
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);
+const permit = permitStore.getPermit(pagePath);<#
+if (tableFieldPermit) {
+#>
+const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
+}
+#>
 
 let inited = $ref(false);
 
@@ -2576,8 +2627,7 @@ let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列标签国际化 */
 watchEffect(() => {
-  let tableColumns2 = getTableColumns();
-  tableColumns2 = fieldPermitStore.useTableColumnsFieldPermit(tableColumns2);
+  const tableColumns2 = getTableColumns();
   for (let i = 0; i < tableColumns2.length; i++) {
     const column2 = tableColumns2[i];
     const column = tableColumns.find((item) => item.prop === column2.prop);
@@ -2592,6 +2642,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
+  initColumns,
 } = $(useTableColumns<<#=modelName#>>(
   $$(tableColumns),
   {
@@ -3683,7 +3734,13 @@ watch(
   },
 );
 
-async function initFrame() {
+async function initFrame() {<#
+  if (tableFieldPermit) {
+  #>
+  await fieldPermitStore.setTableColumnsFieldPermit($$(tableColumns), pagePath);<#
+  }
+  #>
+  initColumns(tableColumns);
   await Promise.all([
     initI18nsEfc(),
     dataGrid(true),

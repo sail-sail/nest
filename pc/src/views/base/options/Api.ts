@@ -52,10 +52,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找系统选项列表
- * @param {OptionsSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: OptionsSearch,
@@ -89,9 +85,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个系统选项
- * @param {OptionsSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: OptionsSearch,
@@ -120,8 +113,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找系统选项总数
- * @param {OptionsSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: OptionsSearch,
@@ -165,9 +156,6 @@ export async function create(
 
 /**
  * 批量创建系统选项
- * @param {OptionsInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: OptionsInput[],
@@ -194,9 +182,6 @@ export async function creates(
 
 /**
  * 根据 id 修改系统选项
- * @param {OptionsId} id
- * @param {OptionsInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: OptionsId,
@@ -223,8 +208,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找系统选项
- * @param {OptionsId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: OptionsId,
@@ -251,8 +234,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除系统选项
- * @param {OptionsId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: OptionsId[],
@@ -276,9 +257,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用系统选项
- * @param {OptionsId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: OptionsId[],
@@ -304,9 +282,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁系统选项
- * @param {OptionsId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: OptionsId[],
@@ -332,8 +307,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原系统选项
- * @param {OptionsId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: OptionsId[],
@@ -357,8 +330,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除系统选项
- * @param {OptionsId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: OptionsId[],
@@ -508,7 +479,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入系统选项
- * @param {OptionsInput[]} inputs
  */
 export async function importModels(
   inputs: OptionsInput[],
@@ -560,7 +530,6 @@ export async function importModels(
 
 /**
  * 查找 系统选项 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,
