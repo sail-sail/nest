@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找字段权限总数
- * @param {FieldPermitSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: FieldPermitSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找字段权限列表
- * @param {FieldPermitSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<FieldPermitModel[]>} 
  */
 export async function findAll(
   search?: FieldPermitSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<FieldPermitModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: FieldPermitInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个字段权限
- * @param {FieldPermitSearch} search? 搜索条件
  */
 export async function findOne(
   search?: FieldPermitSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<FieldPermitModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找字段权限
- * @param {FieldPermitId} id
  */
 export async function findById(
   id?: FieldPermitId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找字段权限是否存在
- * @param {FieldPermitSearch} search? 搜索条件
  */
 export async function exist(
   search?: FieldPermitSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找字段权限是否存在
- * @param {FieldPermitId} id
  */
 export async function existById(
   id?: FieldPermitId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验字段权限
- * @param input 
  */
 export async function validate(
   input: FieldPermitInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建字段权限
- * @param {FieldPermitInput[]} inputs
- * @return {Promise<FieldPermitId[]>} ids
  */
 export async function creates(
   inputs: FieldPermitInput[],
@@ -145,9 +134,6 @@ export async function creates(
 
 /**
  * 根据 id 修改字段权限
- * @param {FieldPermitId} id
- * @param {FieldPermitInput} input
- * @return {Promise<FieldPermitId>}
  */
 export async function updateById(
   id: FieldPermitId,
@@ -170,8 +156,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除字段权限
- * @param {FieldPermitId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: FieldPermitId[],
@@ -194,8 +178,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原字段权限
- * @param {FieldPermitId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: FieldPermitId[],
@@ -206,8 +188,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除字段权限
- * @param {FieldPermitId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: FieldPermitId[],

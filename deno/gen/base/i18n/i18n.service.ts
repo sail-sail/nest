@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找国际化总数
- * @param {I18nSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: I18nSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找国际化列表
- * @param {I18nSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<I18nModel[]>} 
  */
 export async function findAll(
   search?: I18nSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<I18nModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: I18nInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个国际化
- * @param {I18nSearch} search? 搜索条件
  */
 export async function findOne(
   search?: I18nSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<I18nModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找国际化
- * @param {I18nId} id
  */
 export async function findById(
   id?: I18nId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找国际化是否存在
- * @param {I18nSearch} search? 搜索条件
  */
 export async function exist(
   search?: I18nSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找国际化是否存在
- * @param {I18nId} id
  */
 export async function existById(
   id?: I18nId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验国际化
- * @param input 
  */
 export async function validate(
   input: I18nInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建国际化
- * @param {I18nInput[]} inputs
- * @return {Promise<I18nId[]>} ids
  */
 export async function creates(
   inputs: I18nInput[],
@@ -147,9 +136,6 @@ export async function creates(
 
 /**
  * 根据 id 修改国际化
- * @param {I18nId} id
- * @param {I18nInput} input
- * @return {Promise<I18nId>}
  */
 export async function updateById(
   id: I18nId,
@@ -164,8 +150,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除国际化
- * @param {I18nId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: I18nId[],
@@ -179,8 +163,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原国际化
- * @param {I18nId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: I18nId[],
@@ -191,8 +173,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除国际化
- * @param {I18nId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: I18nId[],
