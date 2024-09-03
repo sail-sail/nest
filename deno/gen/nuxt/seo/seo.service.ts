@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找SEO优化总数
- * @param {SeoSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: SeoSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找SEO优化列表
- * @param {SeoSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<SeoModel[]>} 
  */
 export async function findAll(
   search?: SeoSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<SeoModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: SeoInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个SEO优化
- * @param {SeoSearch} search? 搜索条件
  */
 export async function findOne(
   search?: SeoSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<SeoModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找SEO优化
- * @param {SeoId} id
  */
 export async function findById(
   id?: SeoId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找SEO优化是否存在
- * @param {SeoSearch} search? 搜索条件
  */
 export async function exist(
   search?: SeoSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找SEO优化是否存在
- * @param {SeoId} id
  */
 export async function existById(
   id?: SeoId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验SEO优化
- * @param input 
  */
 export async function validate(
   input: SeoInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建SEO优化
- * @param {SeoInput[]} inputs
- * @return {Promise<SeoId[]>} ids
  */
 export async function creates(
   inputs: SeoInput[],
@@ -145,9 +134,6 @@ export async function creates(
 
 /**
  * 根据 id 修改SEO优化
- * @param {SeoId} id
- * @param {SeoInput} input
- * @return {Promise<SeoId>}
  */
 export async function updateById(
   id: SeoId,
@@ -165,8 +151,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除SEO优化
- * @param {SeoId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: SeoId[],
@@ -189,8 +173,6 @@ export async function deleteByIds(
 
 /**
  * 根据 id 设置默认SEO优化
- * @param {SeoId} id
- * @return {Promise<number>}
  */
 export async function defaultById(
   id: SeoId,
@@ -201,9 +183,6 @@ export async function defaultById(
 
 /**
  * 根据 ids 锁定或者解锁SEO优化
- * @param {SeoId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: SeoId[],
@@ -215,8 +194,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原SEO优化
- * @param {SeoId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: SeoId[],
@@ -227,8 +204,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除SEO优化
- * @param {SeoId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: SeoId[],
@@ -247,7 +222,6 @@ export async function getFieldComments(): Promise<SeoFieldComment> {
 
 /**
  * 查找 SEO优化 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {
