@@ -52,10 +52,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找系统字典明细列表
- * @param {DictDetailSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: DictDetailSearch,
@@ -89,9 +85,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个系统字典明细
- * @param {DictDetailSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: DictDetailSearch,
@@ -120,8 +113,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找系统字典明细总数
- * @param {DictDetailSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: DictDetailSearch,
@@ -165,9 +156,6 @@ export async function create(
 
 /**
  * 批量创建系统字典明细
- * @param {DictDetailInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: DictDetailInput[],
@@ -194,9 +182,6 @@ export async function creates(
 
 /**
  * 根据 id 修改系统字典明细
- * @param {DictDetailId} id
- * @param {DictDetailInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DictDetailId,
@@ -223,8 +208,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找系统字典明细
- * @param {DictDetailId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: DictDetailId,
@@ -251,8 +234,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除系统字典明细
- * @param {DictDetailId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: DictDetailId[],
@@ -276,9 +257,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用系统字典明细
- * @param {DictDetailId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: DictDetailId[],
@@ -304,9 +282,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁系统字典明细
- * @param {DictDetailId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: DictDetailId[],
@@ -332,8 +307,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原系统字典明细
- * @param {DictDetailId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: DictDetailId[],
@@ -357,8 +330,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除系统字典明细
- * @param {DictDetailId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: DictDetailId[],
@@ -561,7 +532,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入系统字典明细
- * @param {DictDetailInput[]} inputs
  */
 export async function importModels(
   inputs: DictDetailInput[],
@@ -613,7 +583,6 @@ export async function importModels(
 
 /**
  * 查找 系统字典明细 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

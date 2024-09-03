@@ -60,10 +60,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找部门列表
- * @param {DeptSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: DeptSearch,
@@ -97,9 +93,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个部门
- * @param {DeptSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: DeptSearch,
@@ -132,9 +125,6 @@ export type DeptModelTree = DeptModel & {
 
 /**
  * 查找部门树形列表
- * @param sort 
- * @param opt 
- * @returns 
  */
 export async function findTree(
   search?: DeptSearch,
@@ -153,8 +143,6 @@ export async function findTree(
 
 /**
  * 根据搜索条件查找部门总数
- * @param {DeptSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: DeptSearch,
@@ -198,9 +186,6 @@ export async function create(
 
 /**
  * 批量创建部门
- * @param {DeptInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: DeptInput[],
@@ -227,9 +212,6 @@ export async function creates(
 
 /**
  * 根据 id 修改部门
- * @param {DeptId} id
- * @param {DeptInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DeptId,
@@ -256,8 +238,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找部门
- * @param {DeptId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: DeptId,
@@ -284,8 +264,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除部门
- * @param {DeptId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: DeptId[],
@@ -309,9 +287,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用部门
- * @param {DeptId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: DeptId[],
@@ -337,9 +312,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁部门
- * @param {DeptId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: DeptId[],
@@ -365,8 +337,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原部门
- * @param {DeptId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: DeptId[],
@@ -390,8 +360,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除部门
- * @param {DeptId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: DeptId[],
@@ -712,7 +680,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入部门
- * @param {DeptInput[]} inputs
  */
 export async function importModels(
   inputs: DeptInput[],
@@ -764,7 +731,6 @@ export async function importModels(
 
 /**
  * 查找 部门 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,
