@@ -400,7 +400,7 @@ export class QueryArgs {
     if (val instanceof Promise) {
       throw new Error(`QueryArgs.push val can not be Promise: ${ val }`);
     }
-    this.value.push(val);
+    this.value.push(val ?? null);
     return `?`;
   }
   
