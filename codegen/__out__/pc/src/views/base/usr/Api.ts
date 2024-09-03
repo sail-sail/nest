@@ -77,10 +77,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找用户列表
- * @param {UsrSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: UsrSearch,
@@ -114,9 +110,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个用户
- * @param {UsrSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: UsrSearch,
@@ -145,8 +138,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找用户总数
- * @param {UsrSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: UsrSearch,
@@ -190,9 +181,6 @@ export async function create(
 
 /**
  * 批量创建用户
- * @param {UsrInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: UsrInput[],
@@ -219,9 +207,6 @@ export async function creates(
 
 /**
  * 根据 id 修改用户
- * @param {UsrId} id
- * @param {UsrInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: UsrId,
@@ -248,8 +233,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找用户
- * @param {UsrId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: UsrId,
@@ -276,8 +259,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除用户
- * @param {UsrId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: UsrId[],
@@ -301,9 +282,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用用户
- * @param {UsrId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: UsrId[],
@@ -329,9 +307,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁用户
- * @param {UsrId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: UsrId[],
@@ -357,8 +332,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原用户
- * @param {UsrId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: UsrId[],
@@ -382,8 +355,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除用户
- * @param {UsrId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: UsrId[],
@@ -712,7 +683,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入用户
- * @param {UsrInput[]} inputs
  */
 export async function importModels(
   inputs: UsrInput[],
@@ -764,7 +734,6 @@ export async function importModels(
 
 /**
  * 查找 用户 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,
