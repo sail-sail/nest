@@ -55,10 +55,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找百度应用列表
- * @param {BaiduAppSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: BaiduAppSearch,
@@ -92,9 +88,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个百度应用
- * @param {BaiduAppSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: BaiduAppSearch,
@@ -123,8 +116,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找百度应用总数
- * @param {BaiduAppSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: BaiduAppSearch,
@@ -168,9 +159,6 @@ export async function create(
 
 /**
  * 批量创建百度应用
- * @param {BaiduAppInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: BaiduAppInput[],
@@ -197,9 +185,6 @@ export async function creates(
 
 /**
  * 根据 id 修改百度应用
- * @param {BaiduAppId} id
- * @param {BaiduAppInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: BaiduAppId,
@@ -226,8 +211,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找百度应用
- * @param {BaiduAppId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: BaiduAppId,
@@ -254,8 +237,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除百度应用
- * @param {BaiduAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: BaiduAppId[],
@@ -279,9 +260,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用百度应用
- * @param {BaiduAppId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: BaiduAppId[],
@@ -307,9 +285,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁百度应用
- * @param {BaiduAppId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: BaiduAppId[],
@@ -335,8 +310,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原百度应用
- * @param {BaiduAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: BaiduAppId[],
@@ -360,8 +333,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除百度应用
- * @param {BaiduAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: BaiduAppId[],
@@ -513,7 +484,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入百度应用
- * @param {BaiduAppInput[]} inputs
  */
 export async function importModels(
   inputs: BaiduAppInput[],
@@ -565,7 +535,6 @@ export async function importModels(
 
 /**
  * 查找 百度应用 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

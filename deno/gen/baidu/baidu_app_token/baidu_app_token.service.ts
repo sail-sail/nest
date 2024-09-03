@@ -14,8 +14,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找百度接口凭据总数
- * @param {BaiduAppTokenSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: BaiduAppTokenSearch,
@@ -31,15 +29,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找百度接口凭据列表
- * @param {BaiduAppTokenSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<BaiduAppTokenModel[]>} 
  */
 export async function findAll(
   search?: BaiduAppTokenSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<BaiduAppTokenModel[]> {
   
   search = search || { };
@@ -50,7 +44,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: BaiduAppTokenInput,
 ) {
@@ -60,11 +56,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个百度接口凭据
- * @param {BaiduAppTokenSearch} search? 搜索条件
  */
 export async function findOne(
   search?: BaiduAppTokenSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<BaiduAppTokenModel | undefined> {
   
   search = search || { };
@@ -77,7 +72,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找百度接口凭据
- * @param {BaiduAppTokenId} id
  */
 export async function findById(
   id?: BaiduAppTokenId | null,
@@ -88,7 +82,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找百度接口凭据是否存在
- * @param {BaiduAppTokenSearch} search? 搜索条件
  */
 export async function exist(
   search?: BaiduAppTokenSearch,
@@ -104,7 +97,6 @@ export async function exist(
 
 /**
  * 根据 id 查找百度接口凭据是否存在
- * @param {BaiduAppTokenId} id
  */
 export async function existById(
   id?: BaiduAppTokenId | null,
@@ -115,7 +107,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验百度接口凭据
- * @param input 
  */
 export async function validate(
   input: BaiduAppTokenInput,
@@ -126,8 +117,6 @@ export async function validate(
 
 /**
  * 批量创建百度接口凭据
- * @param {BaiduAppTokenInput[]} inputs
- * @return {Promise<BaiduAppTokenId[]>} ids
  */
 export async function creates(
   inputs: BaiduAppTokenInput[],
@@ -141,9 +130,6 @@ export async function creates(
 
 /**
  * 根据 id 修改百度接口凭据
- * @param {BaiduAppTokenId} id
- * @param {BaiduAppTokenInput} input
- * @return {Promise<BaiduAppTokenId>}
  */
 export async function updateById(
   id: BaiduAppTokenId,
@@ -156,8 +142,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除百度接口凭据
- * @param {BaiduAppTokenId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: BaiduAppTokenId[],
@@ -169,8 +153,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原百度接口凭据
- * @param {BaiduAppTokenId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: BaiduAppTokenId[],
@@ -181,8 +163,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除百度接口凭据
- * @param {BaiduAppTokenId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: BaiduAppTokenId[],
