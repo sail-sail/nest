@@ -35,8 +35,9 @@ export async function findCountUsr(
   search = search || { };
   search.is_hidden = [ 0 ];
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -57,22 +58,28 @@ export async function findAllUsr(
   
   checkSortUsr(sort);
   
-  const res = await findAll(search, page, sort);
+  const models = await findAll(search, page, sort);
   
-  for (const model of res) {
+  for (const model of models) {
     // 密码
     model.password = "";
   }
-  return res;
+  
+  return models;
 }
 
 /**
  * 获取用户字段注释
  */
 export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
-  const { getFieldComments } = await import("./usr.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./usr.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -92,13 +99,14 @@ export async function findOneUsr(
   
   checkSortUsr(sort);
   
-  const res = await findOne(search, sort);
+  const model = await findOne(search, sort);
   
-  if (res) {
+  if (model) {
     // 密码
-    res.password = "";
+    model.password = "";
   }
-  return res;
+  
+  return model;
 }
 
 /**
@@ -112,14 +120,14 @@ export async function findByIdUsr(
     findById,
   } = await import("./usr.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  if (res) {
+  if (model) {
     // 密码
-    res.password = "";
+    model.password = "";
   }
   
-  return res;
+  return model;
 }
 
 /**
@@ -179,7 +187,9 @@ export async function updateByIdUsr(
     route_path,
     "edit",
   );
+  
   const id2: UsrId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -200,8 +210,10 @@ export async function deleteByIdsUsr(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -227,6 +239,7 @@ export async function enableByIdsUsr(
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
+  
   return res;
 }
 
@@ -252,7 +265,9 @@ export async function lockByIdsUsr(
     route_path,
     "edit",
   );
+  
   const res = await lockByIds(ids, is_locked);
+  
   return res;
 }
 
@@ -273,7 +288,9 @@ export async function revertByIdsUsr(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -294,7 +311,9 @@ export async function forceDeleteByIdsUsr(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }
 
@@ -302,7 +321,12 @@ export async function forceDeleteByIdsUsr(
  * 查找 用户 order_by 字段的最大值
  */
 export async function findLastOrderByUsr(): Promise<number> {
-  const { findLastOrderBy } = await import("./usr.service.ts");
+  
+  const {
+    findLastOrderBy,
+  } = await import("./usr.service.ts");
+  
   const res = findLastOrderBy();
+  
   return res;
 }

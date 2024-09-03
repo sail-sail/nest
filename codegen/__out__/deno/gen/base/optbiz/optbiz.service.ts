@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找业务选项总数
- * @param {OptbizSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: OptbizSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找业务选项列表
- * @param {OptbizSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<OptbizModel[]>} 
  */
 export async function findAll(
   search?: OptbizSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<OptbizModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: OptbizInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个业务选项
- * @param {OptbizSearch} search? 搜索条件
  */
 export async function findOne(
   search?: OptbizSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<OptbizModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找业务选项
- * @param {OptbizId} id
  */
 export async function findById(
   id?: OptbizId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找业务选项是否存在
- * @param {OptbizSearch} search? 搜索条件
  */
 export async function exist(
   search?: OptbizSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找业务选项是否存在
- * @param {OptbizId} id
  */
 export async function existById(
   id?: OptbizId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验业务选项
- * @param input 
  */
 export async function validate(
   input: OptbizInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建业务选项
- * @param {OptbizInput[]} inputs
- * @return {Promise<OptbizId[]>} ids
  */
 export async function creates(
   inputs: OptbizInput[],
@@ -153,9 +142,6 @@ export async function getVersionById(id: OptbizId) {
 
 /**
  * 根据 id 修改业务选项
- * @param {OptbizId} id
- * @param {OptbizInput} input
- * @return {Promise<OptbizId>}
  */
 export async function updateById(
   id: OptbizId,
@@ -182,8 +168,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除业务选项
- * @param {OptbizId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: OptbizId[],
@@ -217,9 +201,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用业务选项
- * @param {OptbizId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: OptbizId[],
@@ -231,9 +212,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁业务选项
- * @param {OptbizId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: OptbizId[],
@@ -245,8 +223,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原业务选项
- * @param {OptbizId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: OptbizId[],
@@ -257,8 +233,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除业务选项
- * @param {OptbizId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: OptbizId[],
@@ -277,7 +251,6 @@ export async function getFieldComments(): Promise<OptbizFieldComment> {
 
 /**
  * 查找 业务选项 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {

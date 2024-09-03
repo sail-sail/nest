@@ -1125,7 +1125,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<<#=searchName#>>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;<#
@@ -1304,23 +1304,11 @@ export async function findAll(
   if (isNotEmpty(whereQuery)) {
     sql += ` where ${ whereQuery }`;
   }
-  sql += ` group by t.id`;<#
-  if (defaultSort) {
-  #>
+  sql += ` group by t.id`;
   
-  // 排序
-  if (!sort) {
-    sort = [
-      {
-        prop: "<#=defaultSort.prop#>",
-        order: <#=(defaultSort.order || "asc").startsWith("asc") ? "SortOrderEnum.Asc" : "SortOrderEnum.Desc"#>,
-      },
-    ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
-  }
+  sort = sort ?? [ ];
   sort = sort.filter((item) => item.prop);<#
-  if (opts?.defaultSort) {
+  if (defaultSort) {
     const prop = opts?.defaultSort.prop;
     let order = "asc";
     if (opts?.defaultSort.order === "ascending") {
@@ -1334,6 +1322,7 @@ export async function findAll(
       order = "SortOrderEnum.Desc";
     }
   #>
+  
   sort.push({
     prop: "<#=prop#>",
     order: <#=order#>,
@@ -1342,6 +1331,7 @@ export async function findAll(
   #><#
   if (hasCreateTime && opts?.defaultSort.prop !== "create_time") {
   #>
+  
   if (!sort.some((item) => item.prop === "create_time")) {
     sort.push({
       prop: "create_time",
@@ -1358,28 +1348,7 @@ export async function findAll(
       sql += `,`;
     }
     sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
-  }<#
-  } else {
-  #>
-  
-  // 排序
-  if (!sort) {
-    sort = [ ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
   }
-  sort = sort.filter((item) => item?.prop);
-  for (let i = 0; i < sort.length; i++) {
-    const item = sort[i];
-    if (i === 0) {
-      sql += ` order by`;
-    } else {
-      sql += `,`;
-    }
-    sql += ` ${ escapeId(item.prop) } ${ escapeDec(item.order) }`;
-  }<#
-  }
-  #>
   sql += `) f`;
   
   // 分页
@@ -2745,7 +2714,7 @@ export async function findSummary(
 /** 根据条件查找第一<#=table_comment#> */
 export async function findOne(
   search?: Readonly<<#=searchName#>>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;<#
     if (hasDataPermit() && hasCreateUsrId) {

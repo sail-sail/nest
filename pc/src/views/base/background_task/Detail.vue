@@ -70,7 +70,7 @@
         @submit.prevent
       >
         
-        <template v-if="field_permit('lbl') && (showBuildIn || builtInModel?.lbl == null)">
+        <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             :label="n('名称')"
             prop="lbl"
@@ -83,7 +83,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('state') && (showBuildIn || builtInModel?.state == null)">
+        <template v-if="(showBuildIn || builtInModel?.state == null)">
           <el-form-item
             :label="n('状态')"
             prop="state"
@@ -98,7 +98,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('type') && (showBuildIn || builtInModel?.type == null)">
+        <template v-if="(showBuildIn || builtInModel?.type == null)">
           <el-form-item
             :label="n('类型')"
             prop="type"
@@ -113,7 +113,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('result') && (showBuildIn || builtInModel?.result == null)">
+        <template v-if="(showBuildIn || builtInModel?.result == null)">
           <el-form-item
             :label="n('执行结果')"
             prop="result"
@@ -126,7 +126,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('err_msg') && (showBuildIn || builtInModel?.err_msg == null)">
+        <template v-if="(showBuildIn || builtInModel?.err_msg == null)">
           <el-form-item
             :label="n('错误信息')"
             prop="err_msg"
@@ -139,7 +139,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('begin_time') && (showBuildIn || builtInModel?.begin_time == null)">
+        <template v-if="(showBuildIn || builtInModel?.begin_time == null)">
           <el-form-item
             :label="n('开始时间')"
             prop="begin_time"
@@ -155,7 +155,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('end_time') && (showBuildIn || builtInModel?.end_time == null)">
+        <template v-if="(showBuildIn || builtInModel?.end_time == null)">
           <el-form-item
             :label="n('结束时间')"
             prop="end_time"
@@ -171,7 +171,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('rem') && (showBuildIn || builtInModel?.rem == null)">
+        <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
@@ -284,10 +284,8 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
