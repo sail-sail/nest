@@ -60,10 +60,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找公众号设置列表
- * @param {WxoAppSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: WxoAppSearch,
@@ -97,9 +93,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个公众号设置
- * @param {WxoAppSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: WxoAppSearch,
@@ -128,8 +121,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找公众号设置总数
- * @param {WxoAppSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: WxoAppSearch,
@@ -173,9 +164,6 @@ export async function create(
 
 /**
  * 批量创建公众号设置
- * @param {WxoAppInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: WxoAppInput[],
@@ -202,9 +190,6 @@ export async function creates(
 
 /**
  * 根据 id 修改公众号设置
- * @param {WxoAppId} id
- * @param {WxoAppInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxoAppId,
@@ -231,8 +216,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找公众号设置
- * @param {WxoAppId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: WxoAppId,
@@ -259,8 +242,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除公众号设置
- * @param {WxoAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: WxoAppId[],
@@ -284,9 +265,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用公众号设置
- * @param {WxoAppId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: WxoAppId[],
@@ -312,9 +290,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁公众号设置
- * @param {WxoAppId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: WxoAppId[],
@@ -340,8 +315,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原公众号设置
- * @param {WxoAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: WxoAppId[],
@@ -365,8 +338,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除公众号设置
- * @param {WxoAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: WxoAppId[],
@@ -573,7 +544,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入公众号设置
- * @param {WxoAppInput[]} inputs
  */
 export async function importModels(
   inputs: WxoAppInput[],
@@ -625,7 +595,6 @@ export async function importModels(
 
 /**
  * 查找 公众号设置 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

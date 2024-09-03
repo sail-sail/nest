@@ -70,7 +70,7 @@
         @submit.prevent
       >
         
-        <template v-if="field_permit('appid') && (showBuildIn || builtInModel?.appid == null)">
+        <template v-if="(showBuildIn || builtInModel?.appid == null)">
           <el-form-item
             :label="n('开发者ID')"
             prop="appid"
@@ -83,7 +83,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('mchid') && (showBuildIn || builtInModel?.mchid == null)">
+        <template v-if="(showBuildIn || builtInModel?.mchid == null)">
           <el-form-item
             :label="n('商户号')"
             prop="mchid"
@@ -96,7 +96,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('description') && (showBuildIn || builtInModel?.description == null)">
+        <template v-if="(showBuildIn || builtInModel?.description == null)">
           <el-form-item
             :label="n('商品描述')"
             prop="description"
@@ -109,7 +109,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('out_trade_no') && (showBuildIn || builtInModel?.out_trade_no == null)">
+        <template v-if="(showBuildIn || builtInModel?.out_trade_no == null)">
           <el-form-item
             :label="n('商户订单号')"
             prop="out_trade_no"
@@ -122,7 +122,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('transaction_id') && (showBuildIn || builtInModel?.transaction_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.transaction_id == null)">
           <el-form-item
             :label="n('微信支付订单号')"
             prop="transaction_id"
@@ -135,7 +135,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('trade_state') && (showBuildIn || builtInModel?.trade_state == null)">
+        <template v-if="(showBuildIn || builtInModel?.trade_state == null)">
           <el-form-item
             :label="n('交易状态')"
             prop="trade_state"
@@ -150,7 +150,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('trade_state_desc') && (showBuildIn || builtInModel?.trade_state_desc == null)">
+        <template v-if="(showBuildIn || builtInModel?.trade_state_desc == null)">
           <el-form-item
             :label="n('交易状态描述')"
             prop="trade_state_desc"
@@ -163,7 +163,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('success_time') && (showBuildIn || builtInModel?.success_time == null)">
+        <template v-if="(showBuildIn || builtInModel?.success_time == null)">
           <el-form-item
             :label="n('支付完成时间')"
             prop="success_time"
@@ -179,7 +179,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('time_expire') && (showBuildIn || builtInModel?.time_expire == null)">
+        <template v-if="(showBuildIn || builtInModel?.time_expire == null)">
           <el-form-item
             :label="n('交易限制时间')"
             prop="time_expire"
@@ -192,7 +192,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('attach') && (showBuildIn || builtInModel?.attach == null)">
+        <template v-if="(showBuildIn || builtInModel?.attach == null)">
           <el-form-item
             :label="n('附加数据')"
             prop="attach"
@@ -205,7 +205,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('attach2') && (showBuildIn || builtInModel?.attach2 == null)">
+        <template v-if="(showBuildIn || builtInModel?.attach2 == null)">
           <el-form-item
             :label="n('附加数据2')"
             prop="attach2"
@@ -218,7 +218,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('notify_url') && (showBuildIn || builtInModel?.notify_url == null)">
+        <template v-if="(showBuildIn || builtInModel?.notify_url == null)">
           <el-form-item
             :label="n('通知地址')"
             prop="notify_url"
@@ -231,7 +231,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('support_fapiao') && (showBuildIn || builtInModel?.support_fapiao == null)">
+        <template v-if="(showBuildIn || builtInModel?.support_fapiao == null)">
           <el-form-item
             :label="n('是否支持发票')"
             prop="support_fapiao"
@@ -246,7 +246,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('total_fee') && (showBuildIn || builtInModel?.total_fee == null)">
+        <template v-if="(showBuildIn || builtInModel?.total_fee == null)">
           <el-form-item
             :label="n('订单金额(分)')"
             prop="total_fee"
@@ -259,7 +259,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('currency') && (showBuildIn || builtInModel?.currency == null)">
+        <template v-if="(showBuildIn || builtInModel?.currency == null)">
           <el-form-item
             :label="n('货币类型')"
             prop="currency"
@@ -274,7 +274,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('openid') && (showBuildIn || builtInModel?.openid == null)">
+        <template v-if="(showBuildIn || builtInModel?.openid == null)">
           <el-form-item
             :label="n('用户标识')"
             prop="openid"
@@ -287,7 +287,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('prepay_id') && (showBuildIn || builtInModel?.prepay_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.prepay_id == null)">
           <el-form-item
             :label="n('预支付交易会话标识')"
             prop="prepay_id"
@@ -396,10 +396,8 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 

@@ -42,8 +42,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找微信支付通知总数
- * @param {WxPayNoticeSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: WxPayNoticeSearch,
@@ -59,15 +57,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找微信支付通知列表
- * @param {WxPayNoticeSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<WxPayNoticeModel[]>} 
  */
 export async function findAll(
   search?: WxPayNoticeSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxPayNoticeModel[]> {
   
   search = search || { };
@@ -78,7 +72,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: WxPayNoticeInput,
 ) {
@@ -88,11 +84,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个微信支付通知
- * @param {WxPayNoticeSearch} search? 搜索条件
  */
 export async function findOne(
   search?: WxPayNoticeSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxPayNoticeModel | undefined> {
   
   search = search || { };
@@ -105,7 +100,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找微信支付通知
- * @param {WxPayNoticeId} id
  */
 export async function findById(
   id?: WxPayNoticeId | null,
@@ -116,7 +110,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找微信支付通知是否存在
- * @param {WxPayNoticeSearch} search? 搜索条件
  */
 export async function exist(
   search?: WxPayNoticeSearch,
@@ -132,7 +125,6 @@ export async function exist(
 
 /**
  * 根据 id 查找微信支付通知是否存在
- * @param {WxPayNoticeId} id
  */
 export async function existById(
   id?: WxPayNoticeId | null,
@@ -143,7 +135,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验微信支付通知
- * @param input 
  */
 export async function validate(
   input: WxPayNoticeInput,
@@ -154,8 +145,6 @@ export async function validate(
 
 /**
  * 批量创建微信支付通知
- * @param {WxPayNoticeInput[]} inputs
- * @return {Promise<WxPayNoticeId[]>} ids
  */
 export async function creates(
   inputs: WxPayNoticeInput[],
@@ -169,9 +158,6 @@ export async function creates(
 
 /**
  * 根据 id 修改微信支付通知
- * @param {WxPayNoticeId} id
- * @param {WxPayNoticeInput} input
- * @return {Promise<WxPayNoticeId>}
  */
 export async function updateById(
   id: WxPayNoticeId,
@@ -184,8 +170,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除微信支付通知
- * @param {WxPayNoticeId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: WxPayNoticeId[],
@@ -197,8 +181,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原微信支付通知
- * @param {WxPayNoticeId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: WxPayNoticeId[],
@@ -209,8 +191,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除微信支付通知
- * @param {WxPayNoticeId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: WxPayNoticeId[],

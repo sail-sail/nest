@@ -53,10 +53,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找小程序设置列表
- * @param {WxAppSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: WxAppSearch,
@@ -90,9 +86,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个小程序设置
- * @param {WxAppSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: WxAppSearch,
@@ -121,8 +114,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找小程序设置总数
- * @param {WxAppSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: WxAppSearch,
@@ -166,9 +157,6 @@ export async function create(
 
 /**
  * 批量创建小程序设置
- * @param {WxAppInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: WxAppInput[],
@@ -195,9 +183,6 @@ export async function creates(
 
 /**
  * 根据 id 修改小程序设置
- * @param {WxAppId} id
- * @param {WxAppInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxAppId,
@@ -224,8 +209,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找小程序设置
- * @param {WxAppId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: WxAppId,
@@ -252,8 +235,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除小程序设置
- * @param {WxAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: WxAppId[],
@@ -277,9 +258,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用小程序设置
- * @param {WxAppId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: WxAppId[],
@@ -305,9 +283,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁小程序设置
- * @param {WxAppId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: WxAppId[],
@@ -333,8 +308,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原小程序设置
- * @param {WxAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: WxAppId[],
@@ -358,8 +331,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除小程序设置
- * @param {WxAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: WxAppId[],
@@ -510,7 +481,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入小程序设置
- * @param {WxAppInput[]} inputs
  */
 export async function importModels(
   inputs: WxAppInput[],
@@ -562,7 +532,6 @@ export async function importModels(
 
 /**
  * 查找 小程序设置 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,
