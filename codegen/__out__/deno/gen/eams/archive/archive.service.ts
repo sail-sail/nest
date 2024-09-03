@@ -14,8 +14,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找全宗设置总数
- * @param {ArchiveSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: ArchiveSearch,
@@ -31,15 +29,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找全宗设置列表
- * @param {ArchiveSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<ArchiveModel[]>} 
  */
 export async function findAll(
   search?: ArchiveSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<ArchiveModel[]> {
   
   search = search || { };
@@ -50,7 +44,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: ArchiveInput,
 ) {
@@ -60,11 +56,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个全宗设置
- * @param {ArchiveSearch} search? 搜索条件
  */
 export async function findOne(
   search?: ArchiveSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<ArchiveModel | undefined> {
   
   search = search || { };
@@ -77,7 +72,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找全宗设置
- * @param {ArchiveId} id
  */
 export async function findById(
   id?: ArchiveId | null,
@@ -88,7 +82,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找全宗设置是否存在
- * @param {ArchiveSearch} search? 搜索条件
  */
 export async function exist(
   search?: ArchiveSearch,
@@ -104,7 +97,6 @@ export async function exist(
 
 /**
  * 根据 id 查找全宗设置是否存在
- * @param {ArchiveId} id
  */
 export async function existById(
   id?: ArchiveId | null,
@@ -115,7 +107,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验全宗设置
- * @param input 
  */
 export async function validate(
   input: ArchiveInput,
@@ -126,8 +117,6 @@ export async function validate(
 
 /**
  * 批量创建全宗设置
- * @param {ArchiveInput[]} inputs
- * @return {Promise<ArchiveId[]>} ids
  */
 export async function creates(
   inputs: ArchiveInput[],
@@ -141,9 +130,6 @@ export async function creates(
 
 /**
  * 根据 id 修改全宗设置
- * @param {ArchiveId} id
- * @param {ArchiveInput} input
- * @return {Promise<ArchiveId>}
  */
 export async function updateById(
   id: ArchiveId,
@@ -156,8 +142,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除全宗设置
- * @param {ArchiveId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: ArchiveId[],
@@ -169,8 +153,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原全宗设置
- * @param {ArchiveId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: ArchiveId[],
@@ -181,8 +163,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除全宗设置
- * @param {ArchiveId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: ArchiveId[],
@@ -201,7 +181,6 @@ export async function getFieldComments(): Promise<ArchiveFieldComment> {
 
 /**
  * 查找 全宗设置 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {
