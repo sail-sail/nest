@@ -58,10 +58,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找企微应用列表
- * @param {WxwAppSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: WxwAppSearch,
@@ -95,9 +91,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个企微应用
- * @param {WxwAppSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: WxwAppSearch,
@@ -126,8 +119,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找企微应用总数
- * @param {WxwAppSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: WxwAppSearch,
@@ -171,9 +162,6 @@ export async function create(
 
 /**
  * 批量创建企微应用
- * @param {WxwAppInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: WxwAppInput[],
@@ -200,9 +188,6 @@ export async function creates(
 
 /**
  * 根据 id 修改企微应用
- * @param {WxwAppId} id
- * @param {WxwAppInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxwAppId,
@@ -229,8 +214,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找企微应用
- * @param {WxwAppId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: WxwAppId,
@@ -257,8 +240,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除企微应用
- * @param {WxwAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: WxwAppId[],
@@ -282,9 +263,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用企微应用
- * @param {WxwAppId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: WxwAppId[],
@@ -310,9 +288,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁企微应用
- * @param {WxwAppId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: WxwAppId[],
@@ -338,8 +313,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原企微应用
- * @param {WxwAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: WxwAppId[],
@@ -363,8 +336,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除企微应用
- * @param {WxwAppId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: WxwAppId[],
@@ -570,7 +541,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入企微应用
- * @param {WxwAppInput[]} inputs
  */
 export async function importModels(
   inputs: WxwAppInput[],
@@ -622,7 +592,6 @@ export async function importModels(
 
 /**
  * 查找 企微应用 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

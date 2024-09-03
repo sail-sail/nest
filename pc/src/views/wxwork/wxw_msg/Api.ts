@@ -47,10 +47,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找企微消息列表
- * @param {WxwMsgSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: WxwMsgSearch,
@@ -84,9 +80,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个企微消息
- * @param {WxwMsgSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: WxwMsgSearch,
@@ -115,8 +108,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找企微消息总数
- * @param {WxwMsgSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: WxwMsgSearch,
@@ -140,8 +131,6 @@ export async function findCount(
 
 /**
  * 根据 id 查找企微消息
- * @param {WxwMsgId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: WxwMsgId,
@@ -168,8 +157,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除企微消息
- * @param {WxwMsgId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: WxwMsgId[],
@@ -193,8 +180,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原企微消息
- * @param {WxwMsgId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: WxwMsgId[],
@@ -218,8 +203,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除企微消息
- * @param {WxwMsgId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: WxwMsgId[],
