@@ -46,8 +46,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找小程序配置总数
- * @param {WxappConfigSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: WxappConfigSearch,
@@ -63,15 +61,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找小程序配置列表
- * @param {WxappConfigSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<WxappConfigModel[]>} 
  */
 export async function findAll(
   search?: WxappConfigSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxappConfigModel[]> {
   
   search = search || { };
@@ -82,7 +76,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: WxappConfigInput,
 ) {
@@ -92,11 +88,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个小程序配置
- * @param {WxappConfigSearch} search? 搜索条件
  */
 export async function findOne(
   search?: WxappConfigSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxappConfigModel | undefined> {
   
   search = search || { };
@@ -109,7 +104,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找小程序配置
- * @param {WxappConfigId} id
  */
 export async function findById(
   id?: WxappConfigId | null,
@@ -120,7 +114,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找小程序配置是否存在
- * @param {WxappConfigSearch} search? 搜索条件
  */
 export async function exist(
   search?: WxappConfigSearch,
@@ -136,7 +129,6 @@ export async function exist(
 
 /**
  * 根据 id 查找小程序配置是否存在
- * @param {WxappConfigId} id
  */
 export async function existById(
   id?: WxappConfigId | null,
@@ -147,7 +139,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验小程序配置
- * @param input 
  */
 export async function validate(
   input: WxappConfigInput,
@@ -158,8 +149,6 @@ export async function validate(
 
 /**
  * 批量创建小程序配置
- * @param {WxappConfigInput[]} inputs
- * @return {Promise<WxappConfigId[]>} ids
  */
 export async function creates(
   inputs: WxappConfigInput[],
@@ -173,9 +162,6 @@ export async function creates(
 
 /**
  * 根据 id 修改小程序配置
- * @param {WxappConfigId} id
- * @param {WxappConfigInput} input
- * @return {Promise<WxappConfigId>}
  */
 export async function updateById(
   id: WxappConfigId,
@@ -200,8 +186,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除小程序配置
- * @param {WxappConfigId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: WxappConfigId[],
@@ -235,9 +219,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用小程序配置
- * @param {WxappConfigId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: WxappConfigId[],
@@ -249,9 +230,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁小程序配置
- * @param {WxappConfigId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: WxappConfigId[],
@@ -263,8 +241,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原小程序配置
- * @param {WxappConfigId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: WxappConfigId[],
@@ -275,8 +251,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除小程序配置
- * @param {WxappConfigId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: WxappConfigId[],

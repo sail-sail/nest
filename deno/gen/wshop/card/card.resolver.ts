@@ -34,8 +34,9 @@ export async function findCountCard(
     findCount,
   } = await import("./card.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -53,17 +54,23 @@ export async function findAllCard(
   
   checkSortCard(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取会员卡字段注释
  */
 export async function getFieldCommentsCard(): Promise<CardFieldComment> {
-  const { getFieldComments } = await import("./card.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./card.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -80,8 +87,9 @@ export async function findOneCard(
   
   checkSortCard(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -95,9 +103,9 @@ export async function findByIdCard(
     findById,
   } = await import("./card.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -187,7 +195,9 @@ export async function updateByIdCard(
     route_path,
     "edit",
   );
+  
   const id2: CardId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -208,8 +218,10 @@ export async function deleteByIdsCard(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -235,6 +247,7 @@ export async function enableByIdsCard(
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
+  
   return res;
 }
 
@@ -260,7 +273,9 @@ export async function lockByIdsCard(
     route_path,
     "edit",
   );
+  
   const res = await lockByIds(ids, is_locked);
+  
   return res;
 }
 
@@ -281,7 +296,9 @@ export async function revertByIdsCard(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -302,6 +319,8 @@ export async function forceDeleteByIdsCard(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }

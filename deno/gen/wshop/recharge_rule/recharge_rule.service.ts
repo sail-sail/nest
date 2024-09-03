@@ -46,8 +46,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找充值赠送规则总数
- * @param {RechargeRuleSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: RechargeRuleSearch,
@@ -63,15 +61,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找充值赠送规则列表
- * @param {RechargeRuleSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<RechargeRuleModel[]>} 
  */
 export async function findAll(
   search?: RechargeRuleSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<RechargeRuleModel[]> {
   
   search = search || { };
@@ -82,7 +76,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: RechargeRuleInput,
 ) {
@@ -92,11 +88,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个充值赠送规则
- * @param {RechargeRuleSearch} search? 搜索条件
  */
 export async function findOne(
   search?: RechargeRuleSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<RechargeRuleModel | undefined> {
   
   search = search || { };
@@ -109,7 +104,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找充值赠送规则
- * @param {RechargeRuleId} id
  */
 export async function findById(
   id?: RechargeRuleId | null,
@@ -120,7 +114,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找充值赠送规则是否存在
- * @param {RechargeRuleSearch} search? 搜索条件
  */
 export async function exist(
   search?: RechargeRuleSearch,
@@ -136,7 +129,6 @@ export async function exist(
 
 /**
  * 根据 id 查找充值赠送规则是否存在
- * @param {RechargeRuleId} id
  */
 export async function existById(
   id?: RechargeRuleId | null,
@@ -147,7 +139,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验充值赠送规则
- * @param input 
  */
 export async function validate(
   input: RechargeRuleInput,
@@ -158,8 +149,6 @@ export async function validate(
 
 /**
  * 批量创建充值赠送规则
- * @param {RechargeRuleInput[]} inputs
- * @return {Promise<RechargeRuleId[]>} ids
  */
 export async function creates(
   inputs: RechargeRuleInput[],
@@ -173,9 +162,6 @@ export async function creates(
 
 /**
  * 根据 id 修改充值赠送规则
- * @param {RechargeRuleId} id
- * @param {RechargeRuleInput} input
- * @return {Promise<RechargeRuleId>}
  */
 export async function updateById(
   id: RechargeRuleId,
@@ -193,8 +179,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: RechargeRuleId[],
@@ -217,9 +201,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: RechargeRuleId[],
@@ -231,9 +212,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: RechargeRuleId[],
@@ -245,8 +223,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: RechargeRuleId[],
@@ -257,8 +233,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: RechargeRuleId[],

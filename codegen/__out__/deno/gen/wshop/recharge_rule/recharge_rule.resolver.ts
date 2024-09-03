@@ -34,8 +34,9 @@ export async function findCountRechargeRule(
     findCount,
   } = await import("./recharge_rule.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -53,17 +54,23 @@ export async function findAllRechargeRule(
   
   checkSortRechargeRule(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取充值赠送规则字段注释
  */
 export async function getFieldCommentsRechargeRule(): Promise<RechargeRuleFieldComment> {
-  const { getFieldComments } = await import("./recharge_rule.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./recharge_rule.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -80,8 +87,9 @@ export async function findOneRechargeRule(
   
   checkSortRechargeRule(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -95,9 +103,9 @@ export async function findByIdRechargeRule(
     findById,
   } = await import("./recharge_rule.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -177,7 +185,9 @@ export async function updateByIdRechargeRule(
     route_path,
     "edit",
   );
+  
   const id2: RechargeRuleId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -198,8 +208,10 @@ export async function deleteByIdsRechargeRule(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -225,6 +237,7 @@ export async function enableByIdsRechargeRule(
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
+  
   return res;
 }
 
@@ -250,7 +263,9 @@ export async function lockByIdsRechargeRule(
     route_path,
     "edit",
   );
+  
   const res = await lockByIds(ids, is_locked);
+  
   return res;
 }
 
@@ -271,7 +286,9 @@ export async function revertByIdsRechargeRule(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -292,6 +309,8 @@ export async function forceDeleteByIdsRechargeRule(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }

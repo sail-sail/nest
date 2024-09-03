@@ -32,8 +32,9 @@ export async function findCountPtType(
     findCount,
   } = await import("./pt_type.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -51,17 +52,23 @@ export async function findAllPtType(
   
   checkSortPtType(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取产品类别字段注释
  */
 export async function getFieldCommentsPtType(): Promise<PtTypeFieldComment> {
-  const { getFieldComments } = await import("./pt_type.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./pt_type.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -78,8 +85,9 @@ export async function findOnePtType(
   
   checkSortPtType(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -93,9 +101,9 @@ export async function findByIdPtType(
     findById,
   } = await import("./pt_type.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -155,7 +163,9 @@ export async function updateByIdPtType(
     route_path,
     "edit",
   );
+  
   const id2: PtTypeId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -176,8 +186,10 @@ export async function deleteByIdsPtType(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -203,6 +215,7 @@ export async function enableByIdsPtType(
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
+  
   return res;
 }
 
@@ -228,7 +241,9 @@ export async function lockByIdsPtType(
     route_path,
     "edit",
   );
+  
   const res = await lockByIds(ids, is_locked);
+  
   return res;
 }
 
@@ -249,7 +264,9 @@ export async function revertByIdsPtType(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -270,7 +287,9 @@ export async function forceDeleteByIdsPtType(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }
 
@@ -278,7 +297,12 @@ export async function forceDeleteByIdsPtType(
  * 查找 产品类别 order_by 字段的最大值
  */
 export async function findLastOrderByPtType(): Promise<number> {
-  const { findLastOrderBy } = await import("./pt_type.service.ts");
+  
+  const {
+    findLastOrderBy,
+  } = await import("./pt_type.service.ts");
+  
   const res = findLastOrderBy();
+  
   return res;
 }

@@ -32,8 +32,9 @@ export async function findCountCardConsume(
     findCount,
   } = await import("./card_consume.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -51,17 +52,23 @@ export async function findAllCardConsume(
   
   checkSortCardConsume(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取会员卡消费记录字段注释
  */
 export async function getFieldCommentsCardConsume(): Promise<CardConsumeFieldComment> {
-  const { getFieldComments } = await import("./card_consume.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./card_consume.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -78,8 +85,9 @@ export async function findOneCardConsume(
   
   checkSortCardConsume(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -93,9 +101,9 @@ export async function findByIdCardConsume(
     findById,
   } = await import("./card_consume.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -115,8 +123,10 @@ export async function deleteByIdsCardConsume(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -136,7 +146,9 @@ export async function revertByIdsCardConsume(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -157,6 +169,8 @@ export async function forceDeleteByIdsCardConsume(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }

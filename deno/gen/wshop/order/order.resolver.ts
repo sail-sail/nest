@@ -34,8 +34,9 @@ export async function findCountOrder(
     findCount,
   } = await import("./order.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -53,17 +54,23 @@ export async function findAllOrder(
   
   checkSortOrder(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取订单字段注释
  */
 export async function getFieldCommentsOrder(): Promise<OrderFieldComment> {
-  const { getFieldComments } = await import("./order.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./order.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -80,8 +87,9 @@ export async function findOneOrder(
   
   checkSortOrder(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -95,9 +103,9 @@ export async function findByIdOrder(
     findById,
   } = await import("./order.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -207,7 +215,9 @@ export async function updateByIdOrder(
     route_path,
     "edit",
   );
+  
   const id2: OrderId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -228,8 +238,10 @@ export async function deleteByIdsOrder(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -255,6 +267,7 @@ export async function enableByIdsOrder(
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
+  
   return res;
 }
 
@@ -280,7 +293,9 @@ export async function lockByIdsOrder(
     route_path,
     "edit",
   );
+  
   const res = await lockByIds(ids, is_locked);
+  
   return res;
 }
 
@@ -301,7 +316,9 @@ export async function revertByIdsOrder(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -322,6 +339,8 @@ export async function forceDeleteByIdsOrder(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }
