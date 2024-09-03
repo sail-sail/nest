@@ -729,14 +729,14 @@ async function getWhereQuery(
     }
   } else if (!hasTenantPermit && hasDeptParentPermit) {
     const dept_ids = await getAuthAndChildrenDeptIds();
-    whereQuery += ` and _permit_usr_dept_.dept_id in ${ args.push(dept_ids) }`;
+    whereQuery += ` and _permit_usr_dept_.dept_id in (${ args.push(dept_ids) })`;
   } else if (!hasTenantPermit && hasDeptPermit) {
     const dept_ids = await getAuthDeptIds();
-    whereQuery += ` and _permit_usr_dept_.dept_id in ${ args.push(dept_ids) }`;
+    whereQuery += ` and _permit_usr_dept_.dept_id in (${ args.push(dept_ids) })`;
   }
   if (!hasTenantPermit && hasRolePermit) {
     const role_ids = await getAuthRoleIds();
-    whereQuery += ` and _permit_usr_role_.role_id in ${ args.push(role_ids) }`;
+    whereQuery += ` and _permit_usr_role_.role_id in (${ args.push(role_ids) })`;
   }<#
   }
   #><#
@@ -793,7 +793,7 @@ async function getWhereQuery(
       if (foreignKey.type !== "many2many") {
   #>
   if (search?.<#=column_name#> != null) {
-    whereQuery += ` and t.<#=column_name#> in ${ args.push(search.<#=column_name#>) }`;
+    whereQuery += ` and t.<#=column_name#> in (${ args.push(search.<#=column_name#>) })`;
   }
   if (search?.<#=column_name#>_is_null) {
     whereQuery += ` and t.<#=column_name#> is null`;
@@ -803,13 +803,13 @@ async function getWhereQuery(
   if (search?.<#=modelLabel#> != null) {<#
     if (!langTableRecords.some((record) => record.COLUMN_NAME === modelLabel)) {
     #>
-    whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;<#
+    whereQuery += ` and t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) })`;<#
     } else {
     #>
     if (server_i18n_enable) {
-      whereQuery += ` and (t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) })`;
+      whereQuery += ` and (t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }) or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) })`;
     } else {
-      whereQuery += ` and t.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) }`;
+      whereQuery += ` and t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) })`;
     }<#
     }
     #>
@@ -833,10 +833,10 @@ async function getWhereQuery(
   if (search?.<#=column_name#>_<#=foreignKey.lbl#> != null) {<#
     if (!foreignLangTableRecords.some((record) => record.COLUMN_NAME === column_name+"_"+foreignKey.lbl)) {
     #>
-    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }`;<#
+    whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) })`;<#
     } else {
     #>
-    whereQuery += ` and (<#=column_name#>_lbl.<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) } or <#=foreignSchema.opts.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) })`;<#
+    whereQuery += ` and (<#=column_name#>_lbl.<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }) or <#=foreignSchema.opts.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) })`;<#
     }
     #>
   }
@@ -855,7 +855,7 @@ async function getWhereQuery(
       } else if (foreignKey.type === "many2many") {
   #>
   if (search?.<#=column_name#> != null) {
-    whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in ${ args.push(search.<#=column_name#>) }`;
+    whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id in (${ args.push(search.<#=column_name#>) })`;
   }
   if (search?.<#=column_name#>_is_null) {
     whereQuery += ` and <#=foreignKey.mod#>_<#=foreignKey.table#>.id is null`;
@@ -865,7 +865,7 @@ async function getWhereQuery(
     } else if (column.dict || column.dictbiz) {
   #>
   if (search?.<#=column_name#> != null) {
-    whereQuery += ` and t.<#=column_name#> in ${ args.push(search.<#=column_name#>) }`;
+    whereQuery += ` and t.<#=column_name#> in (${ args.push(search.<#=column_name#>) })`;
   }<#
   } else if (column_name === "id") {
   #>
@@ -873,12 +873,12 @@ async function getWhereQuery(
     whereQuery += ` and t.<#=column_name#>=${ args.push(search?.<#=column_name#>) }`;
   }
   if (search?.ids != null) {
-    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }<#
   } else if (data_type === "int" && column_name.startsWith("is_")) {
   #>
   if (search?.<#=column_name#> != null) {
-    whereQuery += ` and t.<#=column_name#> in ${ args.push(search?.<#=column_name#>) }`;
+    whereQuery += ` and t.<#=column_name#> in (${ args.push(search?.<#=column_name#>) })`;
   }<#
   } else if (data_type === "int" || data_type === "decimal" || data_type === "double" || data_type === "datetime" || data_type === "date") {
   #>
@@ -893,7 +893,7 @@ async function getWhereQuery(
   } else if (data_type === "tinyint") {
   #>
   if (search?.<#=column_name#> != null) {
-    whereQuery += ` and t.<#=column_name#> in ${ args.push(search?.<#=column_name#>) }`;
+    whereQuery += ` and t.<#=column_name#> in (${ args.push(search?.<#=column_name#>) })`;
   }<#
   } else if (!column.isEncrypt) {
   #>
@@ -2226,7 +2226,7 @@ export async function setIdByLbl(
     } else {
       const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `select t.id from <#=foreignKey.mod#>_<#=foreignTable#> t where t.<#=foreignKey.lbl#> in ${ args.push(input.<#=column_name#>_<#=foreignKey.lbl#>) }`;
+      const sql = `select t.id from <#=foreignKey.mod#>_<#=foreignTable#> t where t.<#=foreignKey.lbl#> in (${ args.push(input.<#=column_name#>_<#=foreignKey.lbl#>) })`;
       interface Result {
         id: <#=foreignTable_Up#>Id;
       }
@@ -5141,16 +5141,16 @@ export async function deleteByIds(
         #><#
         if (hasIsDeleted) {
         #>
-        const sql = `update <#=mod#>_<#=many2many.table#> set is_deleted=1 where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in ${ args.push(<#=column_name#>) } and is_deleted=0`;<#
+        const sql = `update <#=mod#>_<#=many2many.table#> set is_deleted=1 where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in (${ args.push(<#=column_name#>) }) and is_deleted=0`;<#
         } else {
         #>
-        const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in ${ args.push(<#=column_name#>) } and is_deleted=0`;<#
+        const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in (${ args.push(<#=column_name#>) }) and is_deleted=0`;<#
         }
         #>
         await execute(sql, args);<#
         } else {
         #>
-        const sql = `select id from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in ${ args.push(<#=column_name#>) } and is_deleted=0`;
+        const sql = `select id from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in (${ args.push(<#=column_name#>) }) and is_deleted=0`;
         const model = await queryOne(sql, args);
         if (model) {
           throw await ns("请先删除关联数据");
@@ -5413,7 +5413,7 @@ export async function enableByIds(
   #>
   
   const args = new QueryArgs();
-  const sql = `update <#=mod#>_<#=table#> set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
+  const sql = `update <#=mod#>_<#=table#> set is_enabled=${ args.push(is_enabled) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
@@ -5499,7 +5499,7 @@ export async function lockByIds(
   #>
   
   const args = new QueryArgs();
-  let sql = `update <#=mod#>_<#=table#> set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
+  let sql = `update <#=mod#>_<#=table#> set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;<#
   if (cache) {
@@ -5638,7 +5638,7 @@ export async function revertByIds(
         #><#
         if (hasIsDeleted) {
         #>
-        const sql = `update <#=mod#>_<#=many2many.table#> set is_deleted=0 where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in ${ args.push(<#=column_name#>) } and is_deleted=1`;<#
+        const sql = `update <#=mod#>_<#=many2many.table#> set is_deleted=0 where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in (${ args.push(<#=column_name#>) }) and is_deleted=1`;<#
         }
         #>
         await execute(sql, args);<#
@@ -5868,7 +5868,7 @@ export async function forceDeleteByIds(
       const <#=column_name#> = oldModel.<#=column_name#>;
       if (<#=column_name#> && <#=column_name#>.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in ${ args.push(<#=column_name#>) }`;
+        const sql = `delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in (${ args.push(<#=column_name#>) })`;
         await execute(sql, args);
       }
     }<#
