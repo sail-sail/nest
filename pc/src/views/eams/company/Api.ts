@@ -49,10 +49,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找单位列表
- * @param {CompanySearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: CompanySearch,
@@ -86,9 +82,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个单位
- * @param {CompanySearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: CompanySearch,
@@ -117,8 +110,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找单位总数
- * @param {CompanySearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: CompanySearch,
@@ -162,9 +153,6 @@ export async function create(
 
 /**
  * 批量创建单位
- * @param {CompanyInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: CompanyInput[],
@@ -191,9 +179,6 @@ export async function creates(
 
 /**
  * 根据 id 修改单位
- * @param {CompanyId} id
- * @param {CompanyInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: CompanyId,
@@ -220,8 +205,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找单位
- * @param {CompanyId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: CompanyId,
@@ -248,8 +231,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除单位
- * @param {CompanyId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: CompanyId[],
@@ -273,9 +254,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用单位
- * @param {CompanyId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: CompanyId[],
@@ -301,9 +279,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁单位
- * @param {CompanyId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: CompanyId[],
@@ -329,8 +304,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原单位
- * @param {CompanyId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: CompanyId[],
@@ -354,8 +327,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除单位
- * @param {CompanyId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: CompanyId[],
@@ -504,7 +475,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入单位
- * @param {CompanyInput[]} inputs
  */
 export async function importModels(
   inputs: CompanyInput[],
@@ -556,7 +526,6 @@ export async function importModels(
 
 /**
  * 查找 单位 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

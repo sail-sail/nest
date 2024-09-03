@@ -46,10 +46,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找全宗设置列表
- * @param {ArchiveSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: ArchiveSearch,
@@ -83,9 +79,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个全宗设置
- * @param {ArchiveSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: ArchiveSearch,
@@ -114,8 +107,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找全宗设置总数
- * @param {ArchiveSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: ArchiveSearch,
@@ -159,9 +150,6 @@ export async function create(
 
 /**
  * 批量创建全宗设置
- * @param {ArchiveInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: ArchiveInput[],
@@ -188,9 +176,6 @@ export async function creates(
 
 /**
  * 根据 id 修改全宗设置
- * @param {ArchiveId} id
- * @param {ArchiveInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: ArchiveId,
@@ -217,8 +202,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找全宗设置
- * @param {ArchiveId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: ArchiveId,
@@ -245,8 +228,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除全宗设置
- * @param {ArchiveId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: ArchiveId[],
@@ -270,8 +251,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原全宗设置
- * @param {ArchiveId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: ArchiveId[],
@@ -295,8 +274,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除全宗设置
- * @param {ArchiveId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: ArchiveId[],
@@ -492,7 +469,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入全宗设置
- * @param {ArchiveInput[]} inputs
  */
 export async function importModels(
   inputs: ArchiveInput[],
@@ -544,7 +520,6 @@ export async function importModels(
 
 /**
  * 查找 全宗设置 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,
