@@ -588,10 +588,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找<#=table_comment#>列表
- * @param {<#=searchName#>} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: <#=searchName#>,
@@ -625,9 +621,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个<#=table_comment#>
- * @param {<#=searchName#>} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: <#=searchName#>,
@@ -656,7 +649,9 @@ export async function findOne(
 if (hasDataPermit() && hasCreateUsrId) {
 #>
 
-/** 根据 ids 获取会员卡是否可编辑数据权限 */
+/**
+ * 根据 ids 获取会员卡是否可编辑数据权限
+ */
 export async function getEditableDataPermitsByIds(
   ids: <#=Table_Up2#>Id[],
   opt?: GqlOpt,
@@ -687,9 +682,6 @@ export type <#=modelNameTree#> = <#=modelName#> & {
 
 /**
  * 查找<#=table_comment#>树形列表
- * @param sort 
- * @param opt 
- * @returns 
  */
 export async function findTree(
   search?: <#=searchName#>,
@@ -710,8 +702,6 @@ export async function findTree(
 
 /**
  * 根据搜索条件查找<#=table_comment#>总数
- * @param {<#=searchName#>} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: <#=searchName#>,
@@ -737,8 +727,6 @@ if (hasSummary) {
 
 /**
  * 根据搜索条件查找<#=table_comment#>合计
- * @param {<#=searchName#>} search
- * @param {GqlOpt} opt?
  */
 export async function findSummary(
   search?: <#=searchName#>,
@@ -801,9 +789,6 @@ export async function create(
 
 /**
  * 批量创建<#=table_comment#>
- * @param {<#=inputName#>[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: <#=inputName#>[],
@@ -834,9 +819,6 @@ if (opts.noEdit !== true) {
 
 /**
  * 根据 id 修改<#=table_comment#>
- * @param {<#=Table_Up#>Id} id
- * @param {<#=inputName#>} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: <#=Table_Up#>Id,
@@ -865,8 +847,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找<#=table_comment#>
- * @param {<#=Table_Up#>Id} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: <#=Table_Up#>Id,
@@ -895,8 +875,6 @@ if (opts.noDelete !== true) {
 
 /**
  * 根据 ids 删除<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
@@ -924,8 +902,6 @@ if (hasDefault && opts.noEdit !== true) {
 
 /**
  * 根据 id 设置默认<#=table_comment#>
- * @param {<#=Table_Up#>Id} id
- * @param {GqlOpt} opt?
  */
 export async function defaultById(
   id: <#=Table_Up#>Id,
@@ -953,9 +929,6 @@ if (hasEnabled && opts.noEdit !== true) {
 
 /**
  * 根据 ids 启用或禁用<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: <#=Table_Up#>Id[],
@@ -985,9 +958,6 @@ if (hasLocked && opts.noEdit !== true) {
 
 /**
  * 根据 ids 锁定或解锁<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: <#=Table_Up#>Id[],
@@ -1017,8 +987,6 @@ if (opts.noRevert !== true && hasIsDeleted) {
 
 /**
  * 根据 ids 还原<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: <#=Table_Up#>Id[],
@@ -1046,8 +1014,6 @@ if (opts.noForceDelete !== true && hasIsDeleted) {
 
 /**
  * 根据 ids 彻底删除<#=table_comment#>
- * @param {<#=Table_Up#>Id[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
@@ -1894,7 +1860,6 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 
 /**
  * 批量导入<#=table_comment#>
- * @param {<#=inputName#>[]} inputs
  */
 export async function importModels(
   inputs: <#=inputName#>[],
@@ -1950,7 +1915,6 @@ if (hasOrderBy) {
 
 /**
  * 查找 <#=table_comment#> order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

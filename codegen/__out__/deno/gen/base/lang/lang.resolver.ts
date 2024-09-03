@@ -32,8 +32,9 @@ export async function findCountLang(
     findCount,
   } = await import("./lang.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -51,17 +52,23 @@ export async function findAllLang(
   
   checkSortLang(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取语言字段注释
  */
 export async function getFieldCommentsLang(): Promise<LangFieldComment> {
-  const { getFieldComments } = await import("./lang.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./lang.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -78,8 +85,9 @@ export async function findOneLang(
   
   checkSortLang(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -93,9 +101,9 @@ export async function findByIdLang(
     findById,
   } = await import("./lang.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -155,7 +163,9 @@ export async function updateByIdLang(
     route_path,
     "edit",
   );
+  
   const id2: LangId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -176,8 +186,10 @@ export async function deleteByIdsLang(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -203,6 +215,7 @@ export async function enableByIdsLang(
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
+  
   return res;
 }
 
@@ -223,7 +236,9 @@ export async function revertByIdsLang(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -244,7 +259,9 @@ export async function forceDeleteByIdsLang(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }
 
@@ -252,7 +269,12 @@ export async function forceDeleteByIdsLang(
  * 查找 语言 order_by 字段的最大值
  */
 export async function findLastOrderByLang(): Promise<number> {
-  const { findLastOrderBy } = await import("./lang.service.ts");
+  
+  const {
+    findLastOrderBy,
+  } = await import("./lang.service.ts");
+  
   const res = findLastOrderBy();
+  
   return res;
 }

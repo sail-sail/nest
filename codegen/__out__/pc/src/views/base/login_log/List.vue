@@ -29,7 +29,7 @@
       @keydown.enter="onSearch(true)"
     >
       
-      <template v-if="field_permit('type') && (showBuildIn || builtInSearch?.type == null)">
+      <template v-if="(showBuildIn || builtInSearch?.type == null)">
         <el-form-item
           :label="n('类型')"
           prop="type"
@@ -44,7 +44,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="field_permit('username') && (builtInSearch?.username == null && (showBuildIn || builtInSearch?.username_like == null))">
+      <template v-if="(builtInSearch?.username == null && (showBuildIn || builtInSearch?.username_like == null))">
         <el-form-item
           :label="n('用户名')"
           prop="username_like"
@@ -57,7 +57,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="field_permit('is_succ') && (showBuildIn || builtInSearch?.is_succ == null)">
+      <template v-if="(showBuildIn || builtInSearch?.is_succ == null)">
         <el-form-item
           :label="n('登录成功')"
           prop="is_succ"
@@ -72,7 +72,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="field_permit('ip') && (builtInSearch?.ip == null && (showBuildIn || builtInSearch?.ip_like == null))">
+      <template v-if="(builtInSearch?.ip == null && (showBuildIn || builtInSearch?.ip_like == null))">
         <el-form-item
           :label="n('IP')"
           prop="ip_like"
@@ -85,7 +85,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="field_permit('create_time') && (showBuildIn || builtInSearch?.create_time == null)">
+      <template v-if="(showBuildIn || builtInSearch?.create_time == null)">
         <el-form-item
           :label="n('登录时间')"
           prop="create_time"
@@ -482,7 +482,6 @@ const dirtyStore = useDirtyStore();
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
 const permit = permitStore.getPermit(pagePath);
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -830,8 +829,7 @@ let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列标签国际化 */
 watchEffect(() => {
-  let tableColumns2 = getTableColumns();
-  tableColumns2 = fieldPermitStore.useTableColumnsFieldPermit(tableColumns2);
+  const tableColumns2 = getTableColumns();
   for (let i = 0; i < tableColumns2.length; i++) {
     const column2 = tableColumns2[i];
     const column = tableColumns.find((item) => item.prop === column2.prop);
@@ -846,6 +844,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
+  initColumns,
 } = $(useTableColumns<LoginLogModel>(
   $$(tableColumns),
   {
@@ -1175,6 +1174,7 @@ watch(
 );
 
 async function initFrame() {
+  initColumns(tableColumns);
   await Promise.all([
     initI18nsEfc(),
     dataGrid(true),

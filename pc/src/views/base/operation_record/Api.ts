@@ -47,10 +47,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找操作记录列表
- * @param {OperationRecordSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: OperationRecordSearch,
@@ -84,9 +80,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个操作记录
- * @param {OperationRecordSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: OperationRecordSearch,
@@ -115,8 +108,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找操作记录总数
- * @param {OperationRecordSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: OperationRecordSearch,
@@ -140,8 +131,6 @@ export async function findCount(
 
 /**
  * 根据 id 查找操作记录
- * @param {OperationRecordId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: OperationRecordId,
@@ -168,8 +157,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除操作记录
- * @param {OperationRecordId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: OperationRecordId[],
@@ -193,8 +180,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原操作记录
- * @param {OperationRecordId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: OperationRecordId[],
@@ -218,8 +203,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除操作记录
- * @param {OperationRecordId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: OperationRecordId[],
