@@ -143,10 +143,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找订单列表
- * @param {OrderSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: OrderSearch,
@@ -180,9 +176,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个订单
- * @param {OrderSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: OrderSearch,
@@ -211,8 +204,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找订单总数
- * @param {OrderSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: OrderSearch,
@@ -256,9 +247,6 @@ export async function create(
 
 /**
  * 批量创建订单
- * @param {OrderInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: OrderInput[],
@@ -285,9 +273,6 @@ export async function creates(
 
 /**
  * 根据 id 修改订单
- * @param {OrderId} id
- * @param {OrderInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: OrderId,
@@ -314,8 +299,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找订单
- * @param {OrderId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: OrderId,
@@ -342,8 +325,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除订单
- * @param {OrderId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: OrderId[],
@@ -367,9 +348,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用订单
- * @param {OrderId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: OrderId[],
@@ -395,9 +373,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁订单
- * @param {OrderId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: OrderId[],
@@ -423,8 +398,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原订单
- * @param {OrderId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: OrderId[],
@@ -448,8 +421,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除订单
- * @param {OrderId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: OrderId[],
@@ -722,7 +693,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入订单
- * @param {OrderInput[]} inputs
  */
 export async function importModels(
   inputs: OrderInput[],

@@ -101,10 +101,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找会员卡充值记录列表
- * @param {CardRechargeSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: CardRechargeSearch,
@@ -138,9 +134,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个会员卡充值记录
- * @param {CardRechargeSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: CardRechargeSearch,
@@ -169,8 +162,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找会员卡充值记录总数
- * @param {CardRechargeSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: CardRechargeSearch,
@@ -194,8 +185,6 @@ export async function findCount(
 
 /**
  * 根据 id 查找会员卡充值记录
- * @param {CardRechargeId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: CardRechargeId,
@@ -222,8 +211,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除会员卡充值记录
- * @param {CardRechargeId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: CardRechargeId[],
@@ -247,8 +234,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原会员卡充值记录
- * @param {CardRechargeId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: CardRechargeId[],
@@ -272,8 +257,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除会员卡充值记录
- * @param {CardRechargeId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: CardRechargeId[],

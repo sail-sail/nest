@@ -42,8 +42,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找会员卡消费记录总数
- * @param {CardConsumeSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: CardConsumeSearch,
@@ -59,15 +57,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找会员卡消费记录列表
- * @param {CardConsumeSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<CardConsumeModel[]>} 
  */
 export async function findAll(
   search?: CardConsumeSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<CardConsumeModel[]> {
   
   search = search || { };
@@ -78,7 +72,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: CardConsumeInput,
 ) {
@@ -88,11 +84,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个会员卡消费记录
- * @param {CardConsumeSearch} search? 搜索条件
  */
 export async function findOne(
   search?: CardConsumeSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<CardConsumeModel | undefined> {
   
   search = search || { };
@@ -105,7 +100,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找会员卡消费记录
- * @param {CardConsumeId} id
  */
 export async function findById(
   id?: CardConsumeId | null,
@@ -116,7 +110,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找会员卡消费记录是否存在
- * @param {CardConsumeSearch} search? 搜索条件
  */
 export async function exist(
   search?: CardConsumeSearch,
@@ -132,7 +125,6 @@ export async function exist(
 
 /**
  * 根据 id 查找会员卡消费记录是否存在
- * @param {CardConsumeId} id
  */
 export async function existById(
   id?: CardConsumeId | null,
@@ -143,7 +135,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验会员卡消费记录
- * @param input 
  */
 export async function validate(
   input: CardConsumeInput,
@@ -154,8 +145,6 @@ export async function validate(
 
 /**
  * 批量创建会员卡消费记录
- * @param {CardConsumeInput[]} inputs
- * @return {Promise<CardConsumeId[]>} ids
  */
 export async function creates(
   inputs: CardConsumeInput[],
@@ -169,9 +158,6 @@ export async function creates(
 
 /**
  * 根据 id 修改会员卡消费记录
- * @param {CardConsumeId} id
- * @param {CardConsumeInput} input
- * @return {Promise<CardConsumeId>}
  */
 export async function updateById(
   id: CardConsumeId,
@@ -184,8 +170,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除会员卡消费记录
- * @param {CardConsumeId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: CardConsumeId[],
@@ -197,8 +181,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原会员卡消费记录
- * @param {CardConsumeId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: CardConsumeId[],
@@ -209,8 +191,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除会员卡消费记录
- * @param {CardConsumeId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: CardConsumeId[],

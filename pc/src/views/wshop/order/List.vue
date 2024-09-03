@@ -29,7 +29,7 @@
       @keydown.enter="onSearch(true)"
     >
       
-      <template v-if="field_permit('lbl') && (builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
+      <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
         <el-form-item
           :label="n('订单号')"
           prop="lbl_like"
@@ -42,7 +42,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="field_permit('company') && (builtInSearch?.company == null && (showBuildIn || builtInSearch?.company_like == null))">
+      <template v-if="(builtInSearch?.company == null && (showBuildIn || builtInSearch?.company_like == null))">
         <el-form-item
           :label="n('公司')"
           prop="company_like"
@@ -55,7 +55,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="field_permit('phone') && (builtInSearch?.phone == null && (showBuildIn || builtInSearch?.phone_like == null))">
+      <template v-if="(builtInSearch?.phone == null && (showBuildIn || builtInSearch?.phone_like == null))">
         <el-form-item
           :label="n('联系电话')"
           prop="phone_like"
@@ -68,7 +68,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="field_permit('is_enabled') && (showBuildIn || builtInSearch?.is_enabled == null)">
+      <template v-if="(showBuildIn || builtInSearch?.is_enabled == null)">
         <el-form-item
           :label="n('启用')"
           prop="is_enabled"
@@ -816,7 +816,6 @@ const dirtyStore = useDirtyStore();
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
 
 const permit = permitStore.getPermit(pagePath);
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 
@@ -1273,8 +1272,7 @@ let tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列标签国际化 */
 watchEffect(() => {
-  let tableColumns2 = getTableColumns();
-  tableColumns2 = fieldPermitStore.useTableColumnsFieldPermit(tableColumns2);
+  const tableColumns2 = getTableColumns();
   for (let i = 0; i < tableColumns2.length; i++) {
     const column2 = tableColumns2[i];
     const column = tableColumns.find((item) => item.prop === column2.prop);
@@ -1289,6 +1287,7 @@ let {
   headerDragend,
   resetColumns,
   storeColumns,
+  initColumns,
 } = $(useTableColumns<OrderModel>(
   $$(tableColumns),
   {
@@ -1985,6 +1984,7 @@ watch(
 );
 
 async function initFrame() {
+  initColumns(tableColumns);
   await Promise.all([
     initI18nsEfc(),
     dataGrid(true),

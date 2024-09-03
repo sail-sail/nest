@@ -266,7 +266,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<RechargeRuleSearch>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;
@@ -373,22 +373,14 @@ export async function findAll(
   }
   sql += ` group by t.id`;
   
-  // 排序
-  if (!sort) {
-    sort = [
-      {
-        prop: "order_by",
-        order: SortOrderEnum.Asc,
-      },
-    ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
-  }
+  sort = sort ?? [ ];
   sort = sort.filter((item) => item.prop);
+  
   sort.push({
     prop: "order_by",
     order: SortOrderEnum.Asc,
   });
+  
   if (!sort.some((item) => item.prop === "create_time")) {
     sort.push({
       prop: "create_time",
@@ -709,7 +701,7 @@ export async function checkByUnique(
 /** 根据条件查找第一充值赠送规则 */
 export async function findOne(
   search?: Readonly<RechargeRuleSearch>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },

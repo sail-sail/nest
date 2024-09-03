@@ -63,10 +63,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找产品类别列表
- * @param {PtTypeSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: PtTypeSearch,
@@ -100,9 +96,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个产品类别
- * @param {PtTypeSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: PtTypeSearch,
@@ -131,8 +124,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找产品类别总数
- * @param {PtTypeSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: PtTypeSearch,
@@ -176,9 +167,6 @@ export async function create(
 
 /**
  * 批量创建产品类别
- * @param {PtTypeInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: PtTypeInput[],
@@ -205,9 +193,6 @@ export async function creates(
 
 /**
  * 根据 id 修改产品类别
- * @param {PtTypeId} id
- * @param {PtTypeInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: PtTypeId,
@@ -234,8 +219,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找产品类别
- * @param {PtTypeId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: PtTypeId,
@@ -262,8 +245,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除产品类别
- * @param {PtTypeId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: PtTypeId[],
@@ -287,9 +268,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用产品类别
- * @param {PtTypeId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: PtTypeId[],
@@ -315,9 +293,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁产品类别
- * @param {PtTypeId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: PtTypeId[],
@@ -343,8 +318,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原产品类别
- * @param {PtTypeId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: PtTypeId[],
@@ -368,8 +341,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除产品类别
- * @param {PtTypeId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: PtTypeId[],
@@ -529,7 +500,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入产品类别
- * @param {PtTypeInput[]} inputs
  */
 export async function importModels(
   inputs: PtTypeInput[],
@@ -581,7 +551,6 @@ export async function importModels(
 
 /**
  * 查找 产品类别 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

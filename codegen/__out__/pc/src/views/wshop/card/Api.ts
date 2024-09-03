@@ -109,10 +109,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找会员卡列表
- * @param {CardSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: CardSearch,
@@ -146,9 +142,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个会员卡
- * @param {CardSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: CardSearch,
@@ -177,8 +170,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找会员卡总数
- * @param {CardSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: CardSearch,
@@ -222,9 +213,6 @@ export async function create(
 
 /**
  * 批量创建会员卡
- * @param {CardInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: CardInput[],
@@ -251,9 +239,6 @@ export async function creates(
 
 /**
  * 根据 id 修改会员卡
- * @param {CardId} id
- * @param {CardInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: CardId,
@@ -280,8 +265,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找会员卡
- * @param {CardId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: CardId,
@@ -308,8 +291,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除会员卡
- * @param {CardId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: CardId[],
@@ -333,9 +314,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用会员卡
- * @param {CardId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: CardId[],
@@ -361,9 +339,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁会员卡
- * @param {CardId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: CardId[],
@@ -389,8 +364,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原会员卡
- * @param {CardId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: CardId[],
@@ -414,8 +387,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除会员卡
- * @param {CardId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: CardId[],
@@ -641,7 +612,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入会员卡
- * @param {CardInput[]} inputs
  */
 export async function importModels(
   inputs: CardInput[],

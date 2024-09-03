@@ -75,10 +75,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找充值赠送规则列表
- * @param {RechargeRuleSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: RechargeRuleSearch,
@@ -112,9 +108,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个充值赠送规则
- * @param {RechargeRuleSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: RechargeRuleSearch,
@@ -143,8 +136,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找充值赠送规则总数
- * @param {RechargeRuleSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: RechargeRuleSearch,
@@ -188,9 +179,6 @@ export async function create(
 
 /**
  * 批量创建充值赠送规则
- * @param {RechargeRuleInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: RechargeRuleInput[],
@@ -217,9 +205,6 @@ export async function creates(
 
 /**
  * 根据 id 修改充值赠送规则
- * @param {RechargeRuleId} id
- * @param {RechargeRuleInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: RechargeRuleId,
@@ -246,8 +231,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找充值赠送规则
- * @param {RechargeRuleId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: RechargeRuleId,
@@ -274,8 +257,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: RechargeRuleId[],
@@ -299,9 +280,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: RechargeRuleId[],
@@ -327,9 +305,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: RechargeRuleId[],
@@ -355,8 +330,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: RechargeRuleId[],
@@ -380,8 +353,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除充值赠送规则
- * @param {RechargeRuleId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: RechargeRuleId[],
@@ -530,7 +501,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入充值赠送规则
- * @param {RechargeRuleInput[]} inputs
  */
 export async function importModels(
   inputs: RechargeRuleInput[],

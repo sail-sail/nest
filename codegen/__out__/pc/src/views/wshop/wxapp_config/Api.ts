@@ -57,10 +57,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找小程序配置列表
- * @param {WxappConfigSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: WxappConfigSearch,
@@ -94,9 +90,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个小程序配置
- * @param {WxappConfigSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: WxappConfigSearch,
@@ -125,8 +118,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找小程序配置总数
- * @param {WxappConfigSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: WxappConfigSearch,
@@ -170,9 +161,6 @@ export async function create(
 
 /**
  * 批量创建小程序配置
- * @param {WxappConfigInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: WxappConfigInput[],
@@ -199,9 +187,6 @@ export async function creates(
 
 /**
  * 根据 id 修改小程序配置
- * @param {WxappConfigId} id
- * @param {WxappConfigInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxappConfigId,
@@ -228,8 +213,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找小程序配置
- * @param {WxappConfigId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: WxappConfigId,
@@ -256,8 +239,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除小程序配置
- * @param {WxappConfigId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: WxappConfigId[],
@@ -281,9 +262,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用小程序配置
- * @param {WxappConfigId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: WxappConfigId[],
@@ -309,9 +287,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁小程序配置
- * @param {WxappConfigId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: WxappConfigId[],
@@ -337,8 +312,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原小程序配置
- * @param {WxappConfigId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: WxappConfigId[],
@@ -362,8 +335,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除小程序配置
- * @param {WxappConfigId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: WxappConfigId[],
@@ -512,7 +483,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入小程序配置
- * @param {WxappConfigInput[]} inputs
  */
 export async function importModels(
   inputs: WxappConfigInput[],

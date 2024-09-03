@@ -42,8 +42,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找会员卡充值记录总数
- * @param {CardRechargeSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: CardRechargeSearch,
@@ -59,15 +57,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找会员卡充值记录列表
- * @param {CardRechargeSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<CardRechargeModel[]>} 
  */
 export async function findAll(
   search?: CardRechargeSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<CardRechargeModel[]> {
   
   search = search || { };
@@ -78,7 +72,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: CardRechargeInput,
 ) {
@@ -88,11 +84,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个会员卡充值记录
- * @param {CardRechargeSearch} search? 搜索条件
  */
 export async function findOne(
   search?: CardRechargeSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<CardRechargeModel | undefined> {
   
   search = search || { };
@@ -105,7 +100,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找会员卡充值记录
- * @param {CardRechargeId} id
  */
 export async function findById(
   id?: CardRechargeId | null,
@@ -116,7 +110,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找会员卡充值记录是否存在
- * @param {CardRechargeSearch} search? 搜索条件
  */
 export async function exist(
   search?: CardRechargeSearch,
@@ -132,7 +125,6 @@ export async function exist(
 
 /**
  * 根据 id 查找会员卡充值记录是否存在
- * @param {CardRechargeId} id
  */
 export async function existById(
   id?: CardRechargeId | null,
@@ -143,7 +135,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验会员卡充值记录
- * @param input 
  */
 export async function validate(
   input: CardRechargeInput,
@@ -154,8 +145,6 @@ export async function validate(
 
 /**
  * 批量创建会员卡充值记录
- * @param {CardRechargeInput[]} inputs
- * @return {Promise<CardRechargeId[]>} ids
  */
 export async function creates(
   inputs: CardRechargeInput[],
@@ -169,9 +158,6 @@ export async function creates(
 
 /**
  * 根据 id 修改会员卡充值记录
- * @param {CardRechargeId} id
- * @param {CardRechargeInput} input
- * @return {Promise<CardRechargeId>}
  */
 export async function updateById(
   id: CardRechargeId,
@@ -184,8 +170,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除会员卡充值记录
- * @param {CardRechargeId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: CardRechargeId[],
@@ -197,8 +181,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原会员卡充值记录
- * @param {CardRechargeId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: CardRechargeId[],
@@ -209,8 +191,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除会员卡充值记录
- * @param {CardRechargeId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: CardRechargeId[],
