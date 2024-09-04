@@ -20,14 +20,14 @@ pub async fn find_all(
   
   check_sort_menu(sort.as_deref())?;
   
-  let res = menu_service::find_all(
+  let models = menu_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找菜单总数
