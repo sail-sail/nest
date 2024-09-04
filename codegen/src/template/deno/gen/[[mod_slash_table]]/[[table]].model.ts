@@ -826,40 +826,40 @@ export async function fieldPermitModel<#=Table_Up#>(
       #><#
         if ([ "int", "tinyint", "decimal" ].includes(data_type)) {
       #>
-      input.<#=column_name#> = 0;<#
+      model.<#=column_name#> = 0;<#
         } else {
       #>
-      input.<#=column_name#> = "";<#
+      model.<#=column_name#> = "";<#
         }
       #><#
       } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
       #>
-      input.<#=column_name#> = "";
-      input.<#=column_name#>_lbl = "";<#
+      model.<#=column_name#> = "";
+      model.<#=column_name#>_lbl = "";<#
         if (is_nullable) {
       #>
-      input.<#=column_name#>_save_null = false;<#
+      model.<#=column_name#>_save_null = false;<#
         }
       #><#
       } else if (foreignKey) {
       #>
-      input.<#=column_name#> = undefined;<#
+      model.<#=column_name#> = undefined;<#
         if (hasModelLabel) {
       #>
-      input.<#=modelLabel#> = "";<#
+      model.<#=modelLabel#> = "";<#
         }
       #><#
       } else if (column.dict || column.dictbiz) {
       #>
-      input.<#=column_name#> = "" as any;<#
+      model.<#=column_name#> = "" as any;<#
         if (hasModelLabel) {
       #>
-      input.<#=modelLabel#> = "";<#
+      model.<#=modelLabel#> = "";<#
         }
       #><#
       } else {
       #>
-      input.<#=column_name#> = "";<#
+      model.<#=column_name#> = "";<#
       }
       #>
       continue;
