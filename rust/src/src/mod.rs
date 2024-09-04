@@ -14,6 +14,7 @@ pub struct SrcQuery(
   crate::src::base::usr::usr_graphql::UsrQuery,
   crate::src::base::permit::permit_graphql::PermitQuery,
   crate::src::base::role::role_graphql::RoleQuery,
+  crate::src::base::field_permit::field_permit_graphql::FieldPermitQuery,
 );
 
 #[derive(MergedObject, Default)]

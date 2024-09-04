@@ -60,10 +60,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找租户列表
- * @param {TenantSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: TenantSearch,
@@ -97,9 +93,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个租户
- * @param {TenantSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: TenantSearch,
@@ -128,8 +121,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找租户总数
- * @param {TenantSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: TenantSearch,
@@ -173,9 +164,6 @@ export async function create(
 
 /**
  * 批量创建租户
- * @param {TenantInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: TenantInput[],
@@ -202,9 +190,6 @@ export async function creates(
 
 /**
  * 根据 id 修改租户
- * @param {TenantId} id
- * @param {TenantInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: TenantId,
@@ -231,8 +216,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找租户
- * @param {TenantId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: TenantId,
@@ -259,8 +242,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除租户
- * @param {TenantId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: TenantId[],
@@ -284,9 +265,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用租户
- * @param {TenantId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: TenantId[],
@@ -312,9 +290,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁租户
- * @param {TenantId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: TenantId[],
@@ -340,8 +315,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原租户
- * @param {TenantId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: TenantId[],
@@ -365,8 +338,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除租户
- * @param {TenantId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: TenantId[],
@@ -692,7 +663,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入租户
- * @param {TenantInput[]} inputs
  */
 export async function importModels(
   inputs: TenantInput[],
@@ -744,7 +714,6 @@ export async function importModels(
 
 /**
  * 查找 租户 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

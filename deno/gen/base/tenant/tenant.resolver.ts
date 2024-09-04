@@ -32,8 +32,9 @@ export async function findCountTenant(
     findCount,
   } = await import("./tenant.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -51,17 +52,23 @@ export async function findAllTenant(
   
   checkSortTenant(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取租户字段注释
  */
 export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
-  const { getFieldComments } = await import("./tenant.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./tenant.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -78,8 +85,9 @@ export async function findOneTenant(
   
   checkSortTenant(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -93,9 +101,9 @@ export async function findByIdTenant(
     findById,
   } = await import("./tenant.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -155,7 +163,9 @@ export async function updateByIdTenant(
     route_path,
     "edit",
   );
+  
   const id2: TenantId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -176,8 +186,10 @@ export async function deleteByIdsTenant(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -203,6 +215,7 @@ export async function enableByIdsTenant(
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
+  
   return res;
 }
 
@@ -228,7 +241,9 @@ export async function lockByIdsTenant(
     route_path,
     "edit",
   );
+  
   const res = await lockByIds(ids, is_locked);
+  
   return res;
 }
 
@@ -249,7 +264,9 @@ export async function revertByIdsTenant(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -270,7 +287,9 @@ export async function forceDeleteByIdsTenant(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }
 
@@ -278,7 +297,12 @@ export async function forceDeleteByIdsTenant(
  * 查找 租户 order_by 字段的最大值
  */
 export async function findLastOrderByTenant(): Promise<number> {
-  const { findLastOrderBy } = await import("./tenant.service.ts");
+  
+  const {
+    findLastOrderBy,
+  } = await import("./tenant.service.ts");
+  
   const res = findLastOrderBy();
+  
   return res;
 }

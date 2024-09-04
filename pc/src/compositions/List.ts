@@ -1130,18 +1130,18 @@ export function useTableColumns<T>(
     tableColumns.value = tableColumn1s || [ ...tableColumn0s ];
   }
   
-  watch(
-    () => [
-      toValue(opt?.routePath),
-      toValue(opt?.persistKey),
-    ],
-    () => {
-      initColumns();
-    },
-    {
-      immediate: true,
-    },
-  );
+  // watch(
+  //   () => [
+  //     toValue(opt?.routePath),
+  //     toValue(opt?.persistKey),
+  //   ],
+  //   () => {
+  //     initColumns();
+  //   },
+  //   {
+  //     immediate: true,
+  //   },
+  // );
   
   async function storeColumns(tableColumns2?: any, force?: boolean) {
     if (tableColumns2) {
