@@ -20,14 +20,14 @@ pub async fn find_all(
   
   check_sort_options(sort.as_deref())?;
   
-  let res = options_service::find_all(
+  let models = options_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找系统选项总数

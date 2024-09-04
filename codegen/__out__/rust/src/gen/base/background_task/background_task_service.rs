@@ -120,6 +120,7 @@ pub async fn find_by_id(
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
+#[allow(dead_code)]
 pub async fn set_id_by_lbl(
   input: BackgroundTaskInput,
 ) -> Result<BackgroundTaskInput> {
