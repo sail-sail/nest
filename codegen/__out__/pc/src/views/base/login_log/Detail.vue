@@ -70,7 +70,7 @@
         @submit.prevent
       >
         
-        <template v-if="field_permit('type') && (showBuildIn || builtInModel?.type == null)">
+        <template v-if="(showBuildIn || builtInModel?.type == null)">
           <el-form-item
             :label="n('类型')"
             prop="type"
@@ -85,7 +85,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('username') && (showBuildIn || builtInModel?.username == null)">
+        <template v-if="(showBuildIn || builtInModel?.username == null)">
           <el-form-item
             :label="n('用户名')"
             prop="username"
@@ -98,7 +98,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('is_succ') && (showBuildIn || builtInModel?.is_succ == null)">
+        <template v-if="(showBuildIn || builtInModel?.is_succ == null)">
           <el-form-item
             :label="n('登录成功')"
             prop="is_succ"
@@ -113,7 +113,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="field_permit('ip') && (showBuildIn || builtInModel?.ip == null)">
+        <template v-if="(showBuildIn || builtInModel?.ip == null)">
           <el-form-item
             :label="n('IP')"
             prop="ip"
@@ -222,10 +222,8 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 
 const permit = permitStore.getPermit(pagePath);
-const field_permit = fieldPermitStore.getFieldPermit(pagePath);
 
 let inited = $ref(false);
 

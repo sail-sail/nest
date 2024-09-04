@@ -18,5 +18,7 @@ pub struct GetDictbiz {
   pub code: String,
   pub r#type: String,
   pub lbl: String,
+  #[graphql(skip)]
+  pub lbl_lang: Option<String>,
   pub val: String,
 }

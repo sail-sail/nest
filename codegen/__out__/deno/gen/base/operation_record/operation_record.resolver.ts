@@ -30,8 +30,9 @@ export async function findCountOperationRecord(
     findCount,
   } = await import("./operation_record.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -49,17 +50,23 @@ export async function findAllOperationRecord(
   
   checkSortOperationRecord(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取操作记录字段注释
  */
 export async function getFieldCommentsOperationRecord(): Promise<OperationRecordFieldComment> {
-  const { getFieldComments } = await import("./operation_record.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./operation_record.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -76,8 +83,9 @@ export async function findOneOperationRecord(
   
   checkSortOperationRecord(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -91,9 +99,9 @@ export async function findByIdOperationRecord(
     findById,
   } = await import("./operation_record.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -113,8 +121,10 @@ export async function deleteByIdsOperationRecord(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -134,7 +144,9 @@ export async function revertByIdsOperationRecord(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -155,6 +167,8 @@ export async function forceDeleteByIdsOperationRecord(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }

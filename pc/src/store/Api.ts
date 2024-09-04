@@ -28,3 +28,24 @@ export async function getOptionsByLbl(
   const data = res.getOptionsByLbl;
   return data;
 }
+
+/** 字段权限 */
+export async function getFieldPermit(
+  route_path: string,
+  opt?: GqlOpt,
+): Promise<string[]> {
+  const res: {
+    getFieldPermit: Query["getFieldPermit"],
+  } = await query({
+    query: /* GraphQL */ `
+      query($route_path: String!) {
+        getFieldPermit(route_path: $route_path)
+      }
+    `,
+    variables: {
+      route_path,
+    },
+  }, opt);
+  const data = res.getFieldPermit;
+  return data;
+}

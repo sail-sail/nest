@@ -32,8 +32,9 @@ export async function findCountFieldPermit(
     findCount,
   } = await import("./field_permit.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -51,17 +52,23 @@ export async function findAllFieldPermit(
   
   checkSortFieldPermit(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取字段权限字段注释
  */
 export async function getFieldCommentsFieldPermit(): Promise<FieldPermitFieldComment> {
-  const { getFieldComments } = await import("./field_permit.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./field_permit.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -78,8 +85,9 @@ export async function findOneFieldPermit(
   
   checkSortFieldPermit(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -93,9 +101,9 @@ export async function findByIdFieldPermit(
     findById,
   } = await import("./field_permit.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -155,7 +163,9 @@ export async function updateByIdFieldPermit(
     route_path,
     "edit",
   );
+  
   const id2: FieldPermitId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -176,8 +186,10 @@ export async function deleteByIdsFieldPermit(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -197,7 +209,9 @@ export async function revertByIdsFieldPermit(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -218,6 +232,8 @@ export async function forceDeleteByIdsFieldPermit(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }
