@@ -42,7 +42,6 @@
     "jose/": "https://deno.land/x/jose@v5.8.0/",
     "mnemonist": "https://esm.sh/mnemonist@0.39.8",
     "promisify": "https://deno.land/x/promisify@v0.1.0/mod.ts",
-    "reactivity": "https://deno.land/x/vue3_reactivity@v1.0.0/mod.ts",
     "redis": "https://deno.land/x/redis@v0.32.4/mod.ts",
     "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts"
   },
