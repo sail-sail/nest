@@ -3737,7 +3737,34 @@ watch(
 async function initFrame() {<#
   if (tableFieldPermit) {
   #>
-  await fieldPermitStore.setTableColumnsFieldPermit($$(tableColumns), pagePath);<#
+  await fieldPermitStore.setTableColumnsFieldPermit(
+    $$(tableColumns),
+    [<#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (!column.fieldPermit) continue;
+        const column_name = column.COLUMN_NAME;
+        if ([
+          "id",
+          "create_usr_id",
+          "create_time",
+          "update_usr_id",
+          "update_time",
+          "tenant_id",
+          "is_hidden",
+          "is_deleted",
+          "is_sys",
+        ].includes(column_name)) continue;
+        let data_type = column.DATA_TYPE;
+        const column_comment = column.COLUMN_COMMENT;
+      #>
+      "<#=column_name#>",<#
+      }
+      #>
+    ],
+    pagePath,
+  );<#
   }
   #>
   initColumns(tableColumns);
