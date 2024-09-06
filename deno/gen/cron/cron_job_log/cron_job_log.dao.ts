@@ -110,22 +110,22 @@ async function getWhereQuery(
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null) {
-    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.cron_job_id != null) {
-    whereQuery += ` and t.cron_job_id in ${ args.push(search.cron_job_id) }`;
+    whereQuery += ` and t.cron_job_id in (${ args.push(search.cron_job_id) })`;
   }
   if (search?.cron_job_id_is_null) {
     whereQuery += ` and t.cron_job_id is null`;
   }
   if (search?.cron_job_id_lbl != null) {
-    whereQuery += ` and cron_job_id_lbl.lbl in ${ args.push(search.cron_job_id_lbl) }`;
+    whereQuery += ` and cron_job_id_lbl.lbl in (${ args.push(search.cron_job_id_lbl) })`;
   }
   if (isNotEmpty(search?.cron_job_id_lbl_like)) {
     whereQuery += ` and cron_job_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.cron_job_id_lbl_like) + "%") }`;
   }
   if (search?.exec_state != null) {
-    whereQuery += ` and t.exec_state in ${ args.push(search.exec_state) }`;
+    whereQuery += ` and t.exec_state in (${ args.push(search.exec_state) })`;
   }
   if (search?.exec_result != null) {
     whereQuery += ` and t.exec_result=${ args.push(search.exec_result) }`;
@@ -164,25 +164,25 @@ async function getWhereQuery(
     }
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
+    whereQuery += ` and t.create_usr_id_lbl in (${ args.push(search.create_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.create_usr_id_lbl_like)) {
     whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+    whereQuery += ` and t.update_usr_id_lbl in (${ args.push(search.update_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.update_usr_id_lbl_like)) {
     whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
@@ -259,7 +259,7 @@ export async function findCount(
 export async function findAll(
   search?: Readonly<CronJobLogSearch>,
   page?: Readonly<PageInput>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
     ids_limit?: number;
@@ -353,18 +353,9 @@ export async function findAll(
   }
   sql += ` group by t.id`;
   
-  // 排序
-  if (!sort) {
-    sort = [
-      {
-        prop: "create_time",
-        order: SortOrderEnum.Desc,
-      },
-    ];
-  } else if (!Array.isArray(sort)) {
-    sort = [ sort ];
-  }
+  sort = sort ?? [ ];
   sort = sort.filter((item) => item.prop);
+  
   sort.push({
     prop: "create_time",
     order: SortOrderEnum.Desc,
@@ -698,7 +689,7 @@ export async function checkByUnique(
 /** 根据条件查找第一定时任务日志 */
 export async function findOne(
   search?: Readonly<CronJobLogSearch>,
-  sort?: SortInput | SortInput[],
+  sort?: SortInput[],
   options?: {
     is_debug?: boolean;
   },

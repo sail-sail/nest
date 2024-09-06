@@ -49,10 +49,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找任务列表
- * @param {JobSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: JobSearch,
@@ -86,9 +82,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个任务
- * @param {JobSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: JobSearch,
@@ -117,8 +110,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找任务总数
- * @param {JobSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: JobSearch,
@@ -162,9 +153,6 @@ export async function create(
 
 /**
  * 批量创建任务
- * @param {JobInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: JobInput[],
@@ -191,9 +179,6 @@ export async function creates(
 
 /**
  * 根据 id 修改任务
- * @param {JobId} id
- * @param {JobInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: JobId,
@@ -220,8 +205,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找任务
- * @param {JobId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: JobId,
@@ -248,8 +231,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除任务
- * @param {JobId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: JobId[],
@@ -273,9 +254,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用任务
- * @param {JobId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: JobId[],
@@ -301,9 +279,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁任务
- * @param {JobId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: JobId[],
@@ -329,8 +304,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原任务
- * @param {JobId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: JobId[],
@@ -354,8 +327,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除任务
- * @param {JobId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: JobId[],
@@ -504,7 +475,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入任务
- * @param {JobInput[]} inputs
  */
 export async function importModels(
   inputs: JobInput[],
@@ -556,7 +526,6 @@ export async function importModels(
 
 /**
  * 查找 任务 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

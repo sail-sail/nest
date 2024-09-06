@@ -34,8 +34,9 @@ export async function findCountCronJob(
     findCount,
   } = await import("./cron_job.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -53,17 +54,23 @@ export async function findAllCronJob(
   
   checkSortCronJob(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取定时任务字段注释
  */
 export async function getFieldCommentsCronJob(): Promise<CronJobFieldComment> {
-  const { getFieldComments } = await import("./cron_job.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./cron_job.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -80,8 +87,9 @@ export async function findOneCronJob(
   
   checkSortCronJob(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -95,9 +103,9 @@ export async function findByIdCronJob(
     findById,
   } = await import("./cron_job.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -157,7 +165,9 @@ export async function updateByIdCronJob(
     route_path,
     "edit",
   );
+  
   const id2: CronJobId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -178,8 +188,10 @@ export async function deleteByIdsCronJob(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -205,6 +217,7 @@ export async function enableByIdsCronJob(
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
+  
   return res;
 }
 
@@ -230,7 +243,9 @@ export async function lockByIdsCronJob(
     route_path,
     "edit",
   );
+  
   const res = await lockByIds(ids, is_locked);
+  
   return res;
 }
 
@@ -251,7 +266,9 @@ export async function revertByIdsCronJob(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -272,7 +289,9 @@ export async function forceDeleteByIdsCronJob(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }
 
@@ -280,7 +299,12 @@ export async function forceDeleteByIdsCronJob(
  * 查找 定时任务 order_by 字段的最大值
  */
 export async function findLastOrderByCronJob(): Promise<number> {
-  const { findLastOrderBy } = await import("./cron_job.service.ts");
+  
+  const {
+    findLastOrderBy,
+  } = await import("./cron_job.service.ts");
+  
   const res = findLastOrderBy();
+  
   return res;
 }
