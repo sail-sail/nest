@@ -73,6 +73,12 @@ use crate::src::base::permit::permit_service::use_permit;
 
 use super::<#=table#>_model::*;
 use super::<#=table#>_service;<#
+if (tableFieldPermit) {
+#>
+
+use crate::src::base::field_permit::field_permit_service::get_field_permit;<#
+}
+#><#
 if (log) {
 #>
 
@@ -144,8 +150,16 @@ pub async fn find_all(
   #>
   
   let mut models = models;
-  for model in &mut models {
-    field_permit_model_<#=table#>(model).await?;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    for model in &mut models {
+      field_permit_model_<#=table#>(
+        model,
+        fields.clone(),
+      ).await?;
+    }
   }
   let models = models;<#
   }
@@ -232,8 +246,16 @@ pub async fn find_one(
   #>
   
   let mut model = model;
-  if let Some(model) = &mut model {
-    field_permit_model_<#=table#>(model).await?;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    if let Some(model) = &mut model {
+      field_permit_model_<#=table#>(
+        model,
+        fields.clone(),
+      ).await?;
+    }
   }
   let model = model;<#
   }
@@ -282,8 +304,16 @@ pub async fn find_by_id(
   #>
   
   let mut model = model;
-  if let Some(model) = &mut model {
-    field_permit_model_<#=table#>(model).await?;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    if let Some(model) = &mut model {
+      field_permit_model_<#=table#>(
+        model,
+        fields.clone(),
+      ).await?;
+    }
   }
   let model = model;<#
   }
@@ -348,8 +378,16 @@ pub async fn creates(
   #>
   
   let mut inputs = inputs;
-  for input in &mut inputs {
-    field_permit_input_<#=table#>(input).await?;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    for input in &mut inputs {
+      field_permit_input_<#=table#>(
+        input,
+        fields.clone(),
+      ).await?;
+    }
   }
   let inputs = inputs;<#
   }
@@ -459,7 +497,15 @@ pub async fn update_by_id(
   #>
   
   let mut input = input;
-  field_permit_input_<#=table#>(&mut input).await?;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    field_permit_input_<#=table#>(
+      &mut input,
+      fields,
+    ).await?;
+  }
   let input = input;<#
   }
   #><#

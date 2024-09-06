@@ -39,6 +39,8 @@ pub async fn get_dict<T: AsRef<str>>(
       args.push(lang_id.into());
       lang_select = "base_dict_detail_lang.lbl as lbl_lang,";
     }
+  } else {
+    lang_select = "null as lbl_lang,";
   }
   let lang_join = lang_join;
   let lang_select = lang_select;
