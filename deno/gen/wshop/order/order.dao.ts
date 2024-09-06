@@ -121,7 +121,7 @@ async function getWhereQuery(
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null) {
-    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.lbl_seq != null) {
     if (search.lbl_seq[0] != null) {
@@ -158,28 +158,28 @@ async function getWhereQuery(
     whereQuery += ` and t.phone like ${ args.push("%" + sqlLike(search?.phone_like) + "%") }`;
   }
   if (search?.status != null) {
-    whereQuery += ` and t.status in ${ args.push(search.status) }`;
+    whereQuery += ` and t.status in (${ args.push(search.status) })`;
   }
   if (search?.usr_id != null) {
-    whereQuery += ` and t.usr_id in ${ args.push(search.usr_id) }`;
+    whereQuery += ` and t.usr_id in (${ args.push(search.usr_id) })`;
   }
   if (search?.usr_id_is_null) {
     whereQuery += ` and t.usr_id is null`;
   }
   if (search?.usr_id_lbl != null) {
-    whereQuery += ` and usr_id_lbl.lbl in ${ args.push(search.usr_id_lbl) }`;
+    whereQuery += ` and usr_id_lbl.lbl in (${ args.push(search.usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.usr_id_lbl_like)) {
     whereQuery += ` and usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.usr_id_lbl_like) + "%") }`;
   }
   if (search?.card_id != null) {
-    whereQuery += ` and t.card_id in ${ args.push(search.card_id) }`;
+    whereQuery += ` and t.card_id in (${ args.push(search.card_id) })`;
   }
   if (search?.card_id_is_null) {
     whereQuery += ` and t.card_id is null`;
   }
   if (search?.card_id_lbl != null) {
-    whereQuery += ` and card_id_lbl.lbl in ${ args.push(search.card_id_lbl) }`;
+    whereQuery += ` and card_id_lbl.lbl in (${ args.push(search.card_id_lbl) })`;
   }
   if (isNotEmpty(search?.card_id_lbl_like)) {
     whereQuery += ` and card_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.card_id_lbl_like) + "%") }`;
@@ -193,7 +193,7 @@ async function getWhereQuery(
     }
   }
   if (search?.type != null) {
-    whereQuery += ` and t.type in ${ args.push(search.type) }`;
+    whereQuery += ` and t.type in (${ args.push(search.type) })`;
   }
   if (search?.amt != null) {
     if (search.amt[0] != null) {
@@ -236,10 +236,10 @@ async function getWhereQuery(
     }
   }
   if (search?.is_locked != null) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+    whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
   if (search?.is_enabled != null) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+    whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
   if (search?.rem != null) {
     whereQuery += ` and t.rem=${ args.push(search.rem) }`;
@@ -248,13 +248,13 @@ async function getWhereQuery(
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and create_usr_id_lbl.lbl in ${ args.push(search.create_usr_id_lbl) }`;
+    whereQuery += ` and create_usr_id_lbl.lbl in (${ args.push(search.create_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.create_usr_id_lbl_like)) {
     whereQuery += ` and create_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.create_usr_id_lbl_like) + "%") }`;
@@ -268,13 +268,13 @@ async function getWhereQuery(
     }
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and update_usr_id_lbl.lbl in ${ args.push(search.update_usr_id_lbl) }`;
+    whereQuery += ` and update_usr_id_lbl.lbl in (${ args.push(search.update_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.update_usr_id_lbl_like)) {
     whereQuery += ` and update_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.update_usr_id_lbl_like) + "%") }`;
@@ -288,13 +288,13 @@ async function getWhereQuery(
     }
   }
   if (search?.org_id != null) {
-    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id in (${ args.push(search.org_id) })`;
   }
   if (search?.org_id_is_null) {
     whereQuery += ` and t.org_id is null`;
   }
   if (search?.org_id_lbl != null) {
-    whereQuery += ` and org_id_lbl.lbl in ${ args.push(search.org_id_lbl) }`;
+    whereQuery += ` and org_id_lbl.lbl in (${ args.push(search.org_id_lbl) })`;
   }
   if (isNotEmpty(search?.org_id_lbl_like)) {
     whereQuery += ` and org_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.org_id_lbl_like) + "%") }`;
@@ -600,6 +600,9 @@ export async function findAll(
     // 会员卡
     model.card_id_lbl = model.card_id_lbl || "";
     
+    // 订单金额
+    model.price = new Decimal(model.price ?? 0);
+    
     // 订单类别
     let type_lbl = model.type as string;
     if (!isEmpty(model.type)) {
@@ -609,6 +612,18 @@ export async function findAll(
       }
     }
     model.type_lbl = type_lbl || "";
+    
+    // 消费充值金额
+    model.amt = new Decimal(model.amt ?? 0);
+    
+    // 消费赠送金额
+    model.give_amt = new Decimal(model.give_amt ?? 0);
+    
+    // 消费后充值余额
+    model.balance = new Decimal(model.balance ?? 0);
+    
+    // 消费后赠送余额
+    model.give_balance = new Decimal(model.give_balance ?? 0);
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -2024,7 +2039,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  const sql = `update wshop_order set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
+  const sql = `update wshop_order set is_enabled=${ args.push(is_enabled) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -2088,7 +2103,7 @@ export async function lockByIds(
   }
   
   const args = new QueryArgs();
-  let sql = `update wshop_order set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
+  let sql = `update wshop_order set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   

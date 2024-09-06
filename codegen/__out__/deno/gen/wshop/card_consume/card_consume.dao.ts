@@ -111,7 +111,7 @@ async function getWhereQuery(
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null) {
-    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.transaction_id != null) {
     whereQuery += ` and t.transaction_id=${ args.push(search.transaction_id) }`;
@@ -120,25 +120,25 @@ async function getWhereQuery(
     whereQuery += ` and t.transaction_id like ${ args.push("%" + sqlLike(search?.transaction_id_like) + "%") }`;
   }
   if (search?.card_id != null) {
-    whereQuery += ` and t.card_id in ${ args.push(search.card_id) }`;
+    whereQuery += ` and t.card_id in (${ args.push(search.card_id) })`;
   }
   if (search?.card_id_is_null) {
     whereQuery += ` and t.card_id is null`;
   }
   if (search?.card_id_lbl != null) {
-    whereQuery += ` and card_id_lbl.lbl in ${ args.push(search.card_id_lbl) }`;
+    whereQuery += ` and card_id_lbl.lbl in (${ args.push(search.card_id_lbl) })`;
   }
   if (isNotEmpty(search?.card_id_lbl_like)) {
     whereQuery += ` and card_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.card_id_lbl_like) + "%") }`;
   }
   if (search?.usr_id != null) {
-    whereQuery += ` and t.usr_id in ${ args.push(search.usr_id) }`;
+    whereQuery += ` and t.usr_id in (${ args.push(search.usr_id) })`;
   }
   if (search?.usr_id_is_null) {
     whereQuery += ` and t.usr_id is null`;
   }
   if (search?.usr_id_lbl != null) {
-    whereQuery += ` and usr_id_lbl.lbl in ${ args.push(search.usr_id_lbl) }`;
+    whereQuery += ` and usr_id_lbl.lbl in (${ args.push(search.usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.usr_id_lbl_like)) {
     whereQuery += ` and usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.usr_id_lbl_like) + "%") }`;
@@ -190,13 +190,13 @@ async function getWhereQuery(
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and create_usr_id_lbl.lbl in ${ args.push(search.create_usr_id_lbl) }`;
+    whereQuery += ` and create_usr_id_lbl.lbl in (${ args.push(search.create_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.create_usr_id_lbl_like)) {
     whereQuery += ` and create_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.create_usr_id_lbl_like) + "%") }`;
@@ -210,13 +210,13 @@ async function getWhereQuery(
     }
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and update_usr_id_lbl.lbl in ${ args.push(search.update_usr_id_lbl) }`;
+    whereQuery += ` and update_usr_id_lbl.lbl in (${ args.push(search.update_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.update_usr_id_lbl_like)) {
     whereQuery += ` and update_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.update_usr_id_lbl_like) + "%") }`;
@@ -230,13 +230,13 @@ async function getWhereQuery(
     }
   }
   if (search?.org_id != null) {
-    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id in (${ args.push(search.org_id) })`;
   }
   if (search?.org_id_is_null) {
     whereQuery += ` and t.org_id is null`;
   }
   if (search?.org_id_lbl != null) {
-    whereQuery += ` and org_id_lbl.lbl in ${ args.push(search.org_id_lbl) }`;
+    whereQuery += ` and org_id_lbl.lbl in (${ args.push(search.org_id_lbl) })`;
   }
   if (isNotEmpty(search?.org_id_lbl_like)) {
     whereQuery += ` and org_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.org_id_lbl_like) + "%") }`;
@@ -459,6 +459,18 @@ export async function findAll(
     
     // 用户
     model.usr_id_lbl = model.usr_id_lbl || "";
+    
+    // 消费充值金额
+    model.amt = new Decimal(model.amt ?? 0);
+    
+    // 消费赠送金额
+    model.give_amt = new Decimal(model.give_amt ?? 0);
+    
+    // 消费后余额
+    model.balance = new Decimal(model.balance ?? 0);
+    
+    // 消费后赠送余额
+    model.give_balance = new Decimal(model.give_balance ?? 0);
     
     // 创建人
     model.create_usr_id_lbl = model.create_usr_id_lbl || "";
