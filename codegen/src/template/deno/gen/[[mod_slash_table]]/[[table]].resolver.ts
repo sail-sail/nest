@@ -79,8 +79,12 @@ import type {<#
 import {
   checkSort<#=Table_Up#>,<#
   if (tableFieldPermit) {
+  #><#
+    if (opts.noAdd !== true || opts.noEdit !== true) {
   #>
-  fieldPermitInput<#=Table_Up2#>,
+  fieldPermitInput<#=Table_Up2#>,<#
+    }
+  #>
   fieldPermitModel<#=Table_Up2#>,<#
   }
   #>
@@ -180,9 +184,7 @@ export async function findAll<#=Table_Up2#>(
   if (tableFieldPermit) {
   #>
   
-  for (const model of models) {
-    await fieldPermitModel<#=Table_Up2#>(model);
-  }<#
+  await fieldPermitModel<#=Table_Up2#>(models);<#
   }
   #>
   
@@ -267,7 +269,7 @@ export async function findOne<#=Table_Up2#>(
   if (tableFieldPermit) {
   #>
   
-  await fieldPermitModel<#=Table_Up2#>(model);<#
+  await fieldPermitModel<#=Table_Up2#>([ model ]);<#
   }
   #>
   
@@ -308,7 +310,7 @@ export async function findById<#=Table_Up2#>(
   if (tableFieldPermit) {
   #>
   
-  await fieldPermitModel<#=Table_Up2#>(model);<#
+  await fieldPermitModel<#=Table_Up2#>([ model ]);<#
   }
   #>
   
@@ -341,9 +343,7 @@ export async function creates<#=Table_Up2#>(
   if (tableFieldPermit) {
   #>
   
-  for (const input of inputs) {
-    await fieldPermitInput<#=Table_Up2#>(input);
-  }<#
+  await fieldPermitInput<#=Table_Up2#>(inputs);<#
   }
   #><#
   if (log) {
@@ -470,7 +470,7 @@ export async function updateById<#=Table_Up2#>(
   if (tableFieldPermit) {
   #>
   
-  await fieldPermitInput<#=Table_Up2#>(input);<#
+  await fieldPermitInput<#=Table_Up2#>([ input ]);<#
   }
   #><#
   if (log) {
