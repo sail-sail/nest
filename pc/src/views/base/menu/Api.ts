@@ -58,10 +58,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找菜单列表
- * @param {MenuSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: MenuSearch,
@@ -95,9 +91,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个菜单
- * @param {MenuSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: MenuSearch,
@@ -130,9 +123,6 @@ export type MenuModelTree = MenuModel & {
 
 /**
  * 查找菜单树形列表
- * @param sort 
- * @param opt 
- * @returns 
  */
 export async function findTree(
   search?: MenuSearch,
@@ -151,8 +141,6 @@ export async function findTree(
 
 /**
  * 根据搜索条件查找菜单总数
- * @param {MenuSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: MenuSearch,
@@ -196,9 +184,6 @@ export async function create(
 
 /**
  * 批量创建菜单
- * @param {MenuInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: MenuInput[],
@@ -225,9 +210,6 @@ export async function creates(
 
 /**
  * 根据 id 修改菜单
- * @param {MenuId} id
- * @param {MenuInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: MenuId,
@@ -254,8 +236,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找菜单
- * @param {MenuId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: MenuId,
@@ -282,8 +262,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除菜单
- * @param {MenuId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: MenuId[],
@@ -307,9 +285,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用菜单
- * @param {MenuId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: MenuId[],
@@ -335,9 +310,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁菜单
- * @param {MenuId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: MenuId[],
@@ -363,8 +335,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原菜单
- * @param {MenuId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: MenuId[],
@@ -388,8 +358,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除菜单
- * @param {MenuId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: MenuId[],
@@ -616,7 +584,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入菜单
- * @param {MenuInput[]} inputs
  */
 export async function importModels(
   inputs: MenuInput[],
@@ -668,7 +635,6 @@ export async function importModels(
 
 /**
  * 查找 菜单 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

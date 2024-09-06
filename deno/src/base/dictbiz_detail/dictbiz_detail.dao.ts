@@ -23,7 +23,7 @@ type DictModel = {
 };
 
 /**
- * 获取 codes 对应的系统字典
+ * 获取业务字典
  */
 export async function getDictbiz(
   codes: string[] = [ ],
@@ -49,11 +49,11 @@ export async function getDictbiz(
     const lang_id = await get_lang_id();
     if (lang_id) {
       lang_join = `
-        left join base_dict_detail_lang
-          on t.id=base_dict_detail_lang.dict_detail_id
-          and base_dict_detail_lang.lang_id=${ args.push(lang_id) }
+        left join base_dictbiz_detail_lang
+          on t.id=base_dictbiz_detail_lang.dictbiz_detail_id
+          and base_dictbiz_detail_lang.lang_id=${ args.push(lang_id) }
       `;
-      lang_select = "base_dict_detail_lang.lbl as lbl_lang,";
+      lang_select = "base_dictbiz_detail_lang.lbl as lbl_lang,";
     }
   }
   
@@ -77,7 +77,7 @@ export async function getDictbiz(
       and t.is_enabled=1
       and t.tenant_id=${ args.push(tenant_id) }
       and base_dictbiz.tenant_id=${ args.push(tenant_id) }
-      and base_dictbiz.code in ${ args.push(codes) }
+      and base_dictbiz.code in (${ args.push(codes) })
     order by
       t.order_by asc
   `;

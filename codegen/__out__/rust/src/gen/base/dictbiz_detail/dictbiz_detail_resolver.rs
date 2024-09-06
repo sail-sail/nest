@@ -22,14 +22,14 @@ pub async fn find_all(
   
   check_sort_dictbiz_detail(sort.as_deref())?;
   
-  let res = dictbiz_detail_service::find_all(
+  let models = dictbiz_detail_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找业务字典明细总数

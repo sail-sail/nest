@@ -47,10 +47,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找组织列表
- * @param {OrgSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: OrgSearch,
@@ -84,9 +80,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个组织
- * @param {OrgSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: OrgSearch,
@@ -115,8 +108,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找组织总数
- * @param {OrgSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: OrgSearch,
@@ -160,9 +151,6 @@ export async function create(
 
 /**
  * 批量创建组织
- * @param {OrgInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: OrgInput[],
@@ -189,9 +177,6 @@ export async function creates(
 
 /**
  * 根据 id 修改组织
- * @param {OrgId} id
- * @param {OrgInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: OrgId,
@@ -218,8 +203,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找组织
- * @param {OrgId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: OrgId,
@@ -246,8 +229,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除组织
- * @param {OrgId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: OrgId[],
@@ -271,9 +252,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用组织
- * @param {OrgId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: OrgId[],
@@ -299,9 +277,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或解锁组织
- * @param {OrgId[]} ids
- * @param {0 | 1} is_locked
- * @param {GqlOpt} opt?
  */
 export async function lockByIds(
   ids: OrgId[],
@@ -327,8 +302,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原组织
- * @param {OrgId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: OrgId[],
@@ -352,8 +325,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除组织
- * @param {OrgId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: OrgId[],
@@ -501,7 +472,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入组织
- * @param {OrgInput[]} inputs
  */
 export async function importModels(
   inputs: OrgInput[],
@@ -553,7 +523,6 @@ export async function importModels(
 
 /**
  * 查找 组织 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

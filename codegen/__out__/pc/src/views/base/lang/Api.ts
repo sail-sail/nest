@@ -46,10 +46,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找语言列表
- * @param {LangSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: LangSearch,
@@ -83,9 +79,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个语言
- * @param {LangSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: LangSearch,
@@ -114,8 +107,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找语言总数
- * @param {LangSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: LangSearch,
@@ -159,9 +150,6 @@ export async function create(
 
 /**
  * 批量创建语言
- * @param {LangInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: LangInput[],
@@ -188,9 +176,6 @@ export async function creates(
 
 /**
  * 根据 id 修改语言
- * @param {LangId} id
- * @param {LangInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: LangId,
@@ -217,8 +202,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找语言
- * @param {LangId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: LangId,
@@ -245,8 +228,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除语言
- * @param {LangId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: LangId[],
@@ -270,9 +251,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或禁用语言
- * @param {LangId[]} ids
- * @param {0 | 1} is_enabled
- * @param {GqlOpt} opt?
  */
 export async function enableByIds(
   ids: LangId[],
@@ -298,8 +276,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 还原语言
- * @param {LangId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: LangId[],
@@ -323,8 +299,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除语言
- * @param {LangId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: LangId[],
@@ -472,7 +446,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入语言
- * @param {LangInput[]} inputs
  */
 export async function importModels(
   inputs: LangInput[],
@@ -524,7 +497,6 @@ export async function importModels(
 
 /**
  * 查找 语言 order_by 字段的最大值
- * @param {GqlOpt} opt?
  */
 export async function findLastOrderBy(
   opt?: GqlOpt,

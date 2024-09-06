@@ -19,29 +19,29 @@ futures-util = "0.3"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
-tokio = { version = "1.39", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
+tokio = { version = "1.40", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
 poem = { version = "3.0.4", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "tokio-metrics", "websocket"], default-features = false }
-async-graphql = { version = "7.0.7", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str"] }
+async-graphql = { version = "7.0.9", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str"] }
 smol_str = { version = "0.2", features = ["serde"] }
 slab = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
 lazy_static = "1.5"
 anyhow = "1.0"
-sqlx = { version = "0.8.0", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
+sqlx = { version = "0.8.2", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15"
-rust-s3 = { version = "0.35.0-alpha.3", features = ["tokio-rustls-tls"], default-features = false }
+rust-s3 = { version = "0.35.1", features = ["tokio-rustls-tls"], default-features = false }
 imstr = { version = "0.2", features = ["serde"] }
 jwt = "0.16"
 sha2 = "0.10"
 sha1 = "0.10"
 hmac = { version = "0.12", features = ["reset"] }
-# protobuf = "3.3"
+# protobuf = "3.5.1"
 hex-literal = "0.4"
 hex = "0.4"
 base64 = "0.21"
 utf8_slice = "1.0"
 derive-new = "0.6"
-reqwest = { version = "0.12.4", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
+reqwest = { version = "0.12.7", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
 encoding_rs = "0.8"
 urlencoding = "2.1"
 # sqlformat = "0.2.3"
@@ -54,8 +54,8 @@ redis = { version = "0.26", features = ["tokio-comp"], default-features = false 
 # pin-project = "1.1"
 bigdecimal = "0.4"
 time = "0.3"
-rust_decimal = "1.35"
-rust_decimal_macros = "1.34"
+rust_decimal = "1.36"
+rust_decimal_macros = "1.36"
 # enum_dispatch = "0.3"
 # pin-project-lite = "0.2"
 # rayon = "1.10"
@@ -84,8 +84,8 @@ color-backtrace = "0.6.1"
 tikv-jemallocator = "0.5"
 
 # [build.dependencies]
-# protobuf = "3.2"
-# protobuf-codegen = "3.2"
+# protobuf = "3.5.1"
+# protobuf-codegen = "3.5.1"
 
 [[bin]]
 name = "rust"

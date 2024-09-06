@@ -28,21 +28,21 @@ pub async fn find_all(
   
   check_sort_usr(sort.as_deref())?;
   
-  let res = usr_service::find_all(
+  let models = usr_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  let mut res = res;
-  for model in &mut res {
+  let mut models = models;
+  for model in &mut models {
     // 密码
     model.password = String::new();
   }
-  let res = res;
+  let models = models;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找用户总数
@@ -91,7 +91,6 @@ pub async fn find_one(
     // 密码
     model.password = String::new();
   }
-  
   let model = model;
   
   Ok(model)
@@ -113,7 +112,6 @@ pub async fn find_by_id(
     // 密码
     model.password = String::new();
   }
-  
   let model = model;
   
   Ok(model)

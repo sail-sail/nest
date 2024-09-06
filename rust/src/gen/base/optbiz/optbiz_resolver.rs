@@ -22,14 +22,14 @@ pub async fn find_all(
   
   check_sort_optbiz(sort.as_deref())?;
   
-  let res = optbiz_service::find_all(
+  let models = optbiz_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找业务选项总数
