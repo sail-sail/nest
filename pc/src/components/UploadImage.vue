@@ -181,7 +181,7 @@ const emit = defineEmits<
 
 const props = withDefaults(
   defineProps<{
-    modelValue: InputMaybe<string>;
+    modelValue?: InputMaybe<string>;
     maxFileSize?: number;
     maxSize?: number;
     accept?: string;
