@@ -20,14 +20,14 @@ pub async fn find_all(
   
   check_sort_field_permit(sort.as_deref())?;
   
-  let res = field_permit_service::find_all(
+  let models = field_permit_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找字段权限总数

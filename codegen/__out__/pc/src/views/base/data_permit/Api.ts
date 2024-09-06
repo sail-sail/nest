@@ -55,10 +55,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找数据权限列表
- * @param {DataPermitSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: DataPermitSearch,
@@ -92,9 +88,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个数据权限
- * @param {DataPermitSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: DataPermitSearch,
@@ -123,8 +116,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找数据权限总数
- * @param {DataPermitSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: DataPermitSearch,
@@ -168,9 +159,6 @@ export async function create(
 
 /**
  * 批量创建数据权限
- * @param {DataPermitInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: DataPermitInput[],
@@ -197,9 +185,6 @@ export async function creates(
 
 /**
  * 根据 id 修改数据权限
- * @param {DataPermitId} id
- * @param {DataPermitInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: DataPermitId,
@@ -226,8 +211,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找数据权限
- * @param {DataPermitId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: DataPermitId,
@@ -254,8 +237,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除数据权限
- * @param {DataPermitId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: DataPermitId[],
@@ -279,8 +260,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原数据权限
- * @param {DataPermitId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: DataPermitId[],
@@ -304,8 +283,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除数据权限
- * @param {DataPermitId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: DataPermitId[],
@@ -532,7 +509,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入数据权限
- * @param {DataPermitInput[]} inputs
  */
 export async function importModels(
   inputs: DataPermitInput[],

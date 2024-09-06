@@ -20,14 +20,14 @@ pub async fn find_all(
   
   check_sort_i18n(sort.as_deref())?;
   
-  let res = i18n_service::find_all(
+  let models = i18n_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找国际化总数

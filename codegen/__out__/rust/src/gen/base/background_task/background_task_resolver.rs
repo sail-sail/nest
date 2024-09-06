@@ -22,14 +22,14 @@ pub async fn find_all(
   
   check_sort_background_task(sort.as_deref())?;
   
-  let res = background_task_service::find_all(
+  let models = background_task_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找后台任务总数
@@ -78,41 +78,6 @@ pub async fn find_by_id(
   Ok(model)
 }
 
-/// 创建后台任务
-#[allow(dead_code)]
-pub async fn creates(
-  inputs: Vec<BackgroundTaskInput>,
-  options: Option<Options>,
-) -> Result<Vec<BackgroundTaskId>> {
-  
-  let mut inputs = inputs;
-  for input in &mut inputs {
-    input.id = None;
-  }
-  let inputs = inputs;
-  
-  let mut inputs2 = Vec::with_capacity(inputs.len());
-  for input in inputs {
-    let input = background_task_service::set_id_by_lbl(
-      input,
-    ).await?;
-    inputs2.push(input);
-  }
-  let inputs = inputs2;
-  
-  use_permit(
-    get_route_path_background_task(),
-    "add".to_owned(),
-  ).await?;
-  
-  let ids = background_task_service::creates(
-    inputs,
-    options,
-  ).await?;
-  
-  Ok(ids)
-}
-
 /// 后台任务根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
@@ -128,36 +93,6 @@ pub async fn update_tenant_by_id(
   ).await?;
   
   Ok(num)
-}
-
-/// 根据 id 修改后台任务
-#[allow(dead_code)]
-pub async fn update_by_id(
-  id: BackgroundTaskId,
-  input: BackgroundTaskInput,
-  options: Option<Options>,
-) -> Result<BackgroundTaskId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = background_task_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    get_route_path_background_task(),
-    "edit".to_owned(),
-  ).await?;
-  
-  let res = background_task_service::update_by_id(
-    id,
-    input,
-    options,
-  ).await?;
-  
-  Ok(res)
 }
 
 /// 根据 ids 删除后台任务

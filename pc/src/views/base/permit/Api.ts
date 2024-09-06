@@ -48,10 +48,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找按钮权限列表
- * @param {PermitSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: PermitSearch,
@@ -85,9 +81,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个按钮权限
- * @param {PermitSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: PermitSearch,
@@ -116,8 +109,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找按钮权限总数
- * @param {PermitSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: PermitSearch,
@@ -161,9 +152,6 @@ export async function create(
 
 /**
  * 批量创建按钮权限
- * @param {PermitInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: PermitInput[],
@@ -190,9 +178,6 @@ export async function creates(
 
 /**
  * 根据 id 修改按钮权限
- * @param {PermitId} id
- * @param {PermitInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: PermitId,
@@ -219,8 +204,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找按钮权限
- * @param {PermitId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: PermitId,
@@ -247,8 +230,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除按钮权限
- * @param {PermitId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: PermitId[],
@@ -272,8 +253,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原按钮权限
- * @param {PermitId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: PermitId[],
@@ -297,8 +276,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除按钮权限
- * @param {PermitId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: PermitId[],
@@ -511,7 +488,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入按钮权限
- * @param {PermitInput[]} inputs
  */
 export async function importModels(
   inputs: PermitInput[],

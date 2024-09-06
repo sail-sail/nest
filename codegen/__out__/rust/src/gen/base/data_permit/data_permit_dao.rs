@@ -1194,7 +1194,7 @@ pub async fn check_by_unique(
 
 // MARK: set_id_by_lbl
 /// 根据lbl翻译业务字典, 外键关联id, 日期
-#[allow(unused_variables)]
+#[allow(unused_variables, dead_code)]
 pub async fn set_id_by_lbl(
   input: DataPermitInput,
 ) -> Result<DataPermitInput> {

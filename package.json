@@ -20,6 +20,7 @@
     "build-prod": "cd rust && npm run build-prod",
     "build-test": "cd rust && npm run build-test",
     "publish": "cd rust && npm run publish",
+    "field_permit": "cd codegen && node -r ts-node/register src/util/npmFieldPermit.ts",
     "upgrade": "cd codegen && npm run upgrade && npm run codegen",
     "db_charset": "cd codegen && ts-node src/util/npmDbCharset.ts",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
