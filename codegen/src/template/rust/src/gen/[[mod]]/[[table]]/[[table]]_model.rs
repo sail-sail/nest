@@ -3080,209 +3080,225 @@ pub fn get_route_path_<#=table#>() -> String {
   "/<#=mod#>/<#=table#>".to_owned()
 }<#
 if (tableFieldPermit) {
+#><#
+if (opts.noAdd !== true || opts.noEdit !== true) {
 #>
 
 /// 过滤 input 字段权限
 pub async fn field_permit_input_<#=table#>(
   input: &mut <#=tableUP#>Input,
+  mut fields: Option<Vec<String>>,
 ) -> Result<()> {
   
   let route_path = get_route_path_<#=table#>();
   
-  let fields = get_field_permit(route_path).await?;
-  
-  for field in fields {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.fieldPermit) continue;
-      const column_name = column.COLUMN_NAME;
-      if ([
-        "id",
-        "create_usr_id",
-        "create_time",
-        "update_usr_id",
-        "update_time",
-        "tenant_id",
-        "is_hidden",
-        "is_deleted",
-        "is_sys",
-      ].includes(column_name)) continue;
-      let data_type = column.DATA_TYPE;
-      const column_comment = column.COLUMN_COMMENT;
-      if (!column_comment && column_name !== "id") {
-        throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
-      }
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      const foreignTableUp = foreignKey && foreignKey.table && foreignKey.table.substring(0, 1).toUpperCase()+foreignKey.table.substring(1);
-      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-        return item.substring(0, 1).toUpperCase() + item.substring(1);
-      }).join("");
-      let modelLabel = column.modelLabel;
-      let cascade_fields = [ ];
-      if (foreignKey) {
-        cascade_fields = foreignKey.cascade_fields || [ ];
-        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
-        } else if (modelLabel) {
-          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
-        }
-      }
-      if (foreignKey && foreignKey.lbl && !modelLabel) {
-        modelLabel = column_name + "_" + foreignKey.lbl;
-      } else if (!foreignKey && !modelLabel) {
-        modelLabel = column_name + "_lbl";
-      }
-      let hasModelLabel = !!column.modelLabel;
-      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
-        hasModelLabel = true;
-      } else if (foreignKey && foreignKey.lbl) {
-        hasModelLabel = true;
-      }
-    #>
-    // <#=column_comment#>
-    if field == "<#=column_name#>" {<#
-      if (!foreignKey && !column.dict && !column.dictbiz
-        && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
-      ) {
-      #>
-      input.<#=column_name#> = None;<#
-      } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
-      #>
-      input.<#=column_name#> = None;
-      input.<#=column_name#>_lbl = None;<#
-        if (is_nullable) {
-      #>
-      input.<#=column_name#>_save_null = false;<#
-        }
-      #><#
-      } else if (foreignKey) {
-      #>
-      input.<#=column_name#> = None;<#
-        if (hasModelLabel) {
-      #>
-      input.<#=modelLabel#> = None;<#
-        }
-      #><#
-      } else if (column.dict || column.dictbiz) {
-      #>
-      input.<#=column_name#> = None;<#
-        if (hasModelLabel) {
-      #>
-      input.<#=modelLabel#> = None;<#
-        }
-      #><#
-      } else {
-      #>
-      input.<#=column_name#> = None;<#
-      }
-      #>
-      continue;
-    }<#
-    }
-    #>
+  if fields.is_none() {
+    fields = get_field_permit(route_path).await?;
   }
   
+  if fields.is_none() {
+    return Ok(());
+  }
+  let fields = fields.unwrap();<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (!column.fieldPermit) continue;
+    const column_name = column.COLUMN_NAME;
+    if ([
+      "id",
+      "create_usr_id",
+      "create_time",
+      "update_usr_id",
+      "update_time",
+      "tenant_id",
+      "is_hidden",
+      "is_deleted",
+      "is_sys",
+    ].includes(column_name)) continue;
+    let data_type = column.DATA_TYPE;
+    const column_comment = column.COLUMN_COMMENT;
+    if (!column_comment && column_name !== "id") {
+      throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
+    }
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTableUp = foreignKey && foreignKey.table && foreignKey.table.substring(0, 1).toUpperCase()+foreignKey.table.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let modelLabel = column.modelLabel;
+    let cascade_fields = [ ];
+    if (foreignKey) {
+      cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+      } else if (modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+      }
+    }
+    if (foreignKey && foreignKey.lbl && !modelLabel) {
+      modelLabel = column_name + "_" + foreignKey.lbl;
+    } else if (!foreignKey && !modelLabel) {
+      modelLabel = column_name + "_lbl";
+    }
+    let hasModelLabel = !!column.modelLabel;
+    if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+      hasModelLabel = true;
+    } else if (foreignKey && foreignKey.lbl) {
+      hasModelLabel = true;
+    }
+  #>
+  
+  // <#=column_comment#>
+  if !fields.contains(&"<#=column_name#>".to_owned()) {<#
+    if (!foreignKey && !column.dict && !column.dictbiz
+      && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
+    ) {
+    #>
+    input.<#=column_name#> = None;<#
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+    #>
+    input.<#=column_name#> = None;
+    input.<#=column_name#>_lbl = None;<#
+      if (is_nullable) {
+    #>
+    input.<#=column_name#>_save_null = false;<#
+      }
+    #><#
+    } else if (foreignKey) {
+    #>
+    input.<#=column_name#> = None;<#
+      if (hasModelLabel) {
+    #>
+    input.<#=modelLabel#> = None;<#
+      }
+    #><#
+    } else if (column.dict || column.dictbiz) {
+    #>
+    input.<#=column_name#> = None;<#
+      if (hasModelLabel) {
+    #>
+    input.<#=modelLabel#> = None;<#
+      }
+    #><#
+    } else {
+    #>
+    input.<#=column_name#> = None;<#
+    }
+    #>
+    return Ok(());
+  }<#
+  }
+  #>
+  
   Ok(())
+}<#
 }
+#>
 
 /// 过滤 model 字段权限
 pub async fn field_permit_model_<#=table#>(
   model: &mut <#=tableUP#>Model,
+  mut fields: Option<Vec<String>>,
 ) -> Result<()> {
   
   let route_path = get_route_path_<#=table#>();
   
-  let fields = get_field_permit(route_path).await?;
+  if fields.is_none() {
+    fields = get_field_permit(route_path).await?;
+  }
   
-  for field in fields {<#
-    for (let i = 0; i < columns.length; i++) {
-      const column = columns[i];
-      if (column.ignoreCodegen) continue;
-      if (!column.fieldPermit) continue;
-      const column_name = column.COLUMN_NAME;
-      if ([
-        "id",
-        "create_usr_id",
-        "create_time",
-        "update_usr_id",
-        "update_time",
-        "tenant_id",
-        "is_hidden",
-        "is_deleted",
-        "is_sys",
-      ].includes(column_name)) continue;
-      let data_type = column.DATA_TYPE;
-      const column_comment = column.COLUMN_COMMENT;
-      if (!column_comment && column_name !== "id") {
-        throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
+  if fields.is_none() {
+    return Ok(());
+  }
+  let fields = fields.unwrap();<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (!column.fieldPermit) continue;
+    const column_name = column.COLUMN_NAME;
+    if ([
+      "id",
+      "create_usr_id",
+      "create_time",
+      "update_usr_id",
+      "update_time",
+      "tenant_id",
+      "is_hidden",
+      "is_deleted",
+      "is_sys",
+    ].includes(column_name)) continue;
+    let data_type = column.DATA_TYPE;
+    const column_comment = column.COLUMN_COMMENT;
+    if (!column_comment && column_name !== "id") {
+      throw `错误: 表: ${ table } 字段: ${ column_name } 无 comment`;
+    }
+    let is_nullable = column.IS_NULLABLE === "YES";
+    const foreignKey = column.foreignKey;
+    const foreignTableUp = foreignKey && foreignKey.table && foreignKey.table.substring(0, 1).toUpperCase()+foreignKey.table.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+    let modelLabel = column.modelLabel;
+    let cascade_fields = [ ];
+    if (foreignKey) {
+      cascade_fields = foreignKey.cascade_fields || [ ];
+      if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+      } else if (modelLabel) {
+        cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
       }
-      let is_nullable = column.IS_NULLABLE === "YES";
-      const foreignKey = column.foreignKey;
-      const foreignTableUp = foreignKey && foreignKey.table && foreignKey.table.substring(0, 1).toUpperCase()+foreignKey.table.substring(1);
-      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
-        return item.substring(0, 1).toUpperCase() + item.substring(1);
-      }).join("");
-      let modelLabel = column.modelLabel;
-      let cascade_fields = [ ];
-      if (foreignKey) {
-        cascade_fields = foreignKey.cascade_fields || [ ];
-        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
-          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
-        } else if (modelLabel) {
-          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
-        }
-      }
-      if (foreignKey && foreignKey.lbl && !modelLabel) {
-        modelLabel = column_name + "_" + foreignKey.lbl;
-      } else if (!foreignKey && !modelLabel) {
-        modelLabel = column_name + "_lbl";
-      }
-      let hasModelLabel = !!column.modelLabel;
-      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
-        hasModelLabel = true;
-      } else if (foreignKey && foreignKey.lbl) {
-        hasModelLabel = true;
-      }
+    }
+    if (foreignKey && foreignKey.lbl && !modelLabel) {
+      modelLabel = column_name + "_" + foreignKey.lbl;
+    } else if (!foreignKey && !modelLabel) {
+      modelLabel = column_name + "_lbl";
+    }
+    let hasModelLabel = !!column.modelLabel;
+    if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+      hasModelLabel = true;
+    } else if (foreignKey && foreignKey.lbl) {
+      hasModelLabel = true;
+    }
+  #>
+  
+  // <#=column_comment#>
+  if !fields.contains(&"<#=column_name#>".to_owned()) {<#
+    if (!foreignKey && !column.dict && !column.dictbiz
+      && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
+    ) {
     #>
-    // <#=column_comment#>
-    if field == "<#=column_name#>" {<#
-      if (!foreignKey && !column.dict && !column.dictbiz
-        && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
-      ) {
-      #>
-      model.<#=column_name#> = Default::default();<#
-      } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
-      #>
-      model.<#=column_name#> = Default::default();
-      model.<#=column_name#>_lbl = Default::default();<#
-      } else if (foreignKey) {
-      #>
-      model.<#=column_name#> = Default::default();<#
-        if (hasModelLabel) {
-      #>
-      model.<#=modelLabel#> = Default::default();<#
-        }
-      #><#
-      } else if (column.dict || column.dictbiz) {
-      #>
-      model.<#=column_name#> = Default::default();<#
-        if (hasModelLabel) {
-      #>
-      model.<#=modelLabel#> = Default::default();<#
-        }
-      #><#
-      } else {
-      #>
-      model.<#=column_name#> = Default::default();<#
+    model.<#=column_name#> = Default::default();<#
+    } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+    #>
+    model.<#=column_name#> = Default::default();
+    model.<#=column_name#>_lbl = Default::default();<#
+    } else if (foreignKey) {
+    #>
+    model.<#=column_name#> = Default::default();<#
+      if (hasModelLabel) {
+    #>
+    model.<#=modelLabel#> = Default::default();<#
       }
-      #>
-      continue;
-    }<#
+    #><#
+    } else if (column.dict || column.dictbiz) {
+    #>
+    model.<#=column_name#> = Default::default();<#
+      if (hasModelLabel) {
+    #>
+    model.<#=modelLabel#> = Default::default();<#
+      }
+    #><#
+    } else {
+    #>
+    model.<#=column_name#> = Default::default();<#
     }
     #>
+    return Ok(());
+  }<#
   }
+  #>
   
   Ok(())
 }<#

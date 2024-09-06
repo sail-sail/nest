@@ -16,8 +16,9 @@ impl FieldPermitQuery {
     &self,
     ctx: &Context<'_>,
     route_path: String,
-  ) -> Result<Vec<String>> {
+  ) -> Result<Option<Vec<String>>> {
     Ctx::builder(ctx)
+      .with_auth()?
       .build()
       .scope({
         field_permit_resolver::get_field_permit(
