@@ -7,7 +7,7 @@ defineGraphql(resolvers, /* GraphQL */`
 type Query {
   
   "字段权限"
-  getFieldPermit(route_path: String!): [String!]!
+  getFieldPermit(route_path: String!): [String!]
   
 }
 
