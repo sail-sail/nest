@@ -22,14 +22,14 @@ pub async fn find_all(
   
   check_sort_wxw_usr(sort.as_deref())?;
   
-  let res = wxw_usr_service::find_all(
+  let models = wxw_usr_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找企微用户总数

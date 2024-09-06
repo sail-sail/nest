@@ -22,14 +22,14 @@ pub async fn find_all(
   
   check_sort_wxw_msg(sort.as_deref())?;
   
-  let res = wxw_msg_service::find_all(
+  let models = wxw_msg_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找企微消息总数
@@ -78,41 +78,6 @@ pub async fn find_by_id(
   Ok(model)
 }
 
-/// 创建企微消息
-#[allow(dead_code)]
-pub async fn creates(
-  inputs: Vec<WxwMsgInput>,
-  options: Option<Options>,
-) -> Result<Vec<WxwMsgId>> {
-  
-  let mut inputs = inputs;
-  for input in &mut inputs {
-    input.id = None;
-  }
-  let inputs = inputs;
-  
-  let mut inputs2 = Vec::with_capacity(inputs.len());
-  for input in inputs {
-    let input = wxw_msg_service::set_id_by_lbl(
-      input,
-    ).await?;
-    inputs2.push(input);
-  }
-  let inputs = inputs2;
-  
-  use_permit(
-    get_route_path_wxw_msg(),
-    "add".to_owned(),
-  ).await?;
-  
-  let ids = wxw_msg_service::creates(
-    inputs,
-    options,
-  ).await?;
-  
-  Ok(ids)
-}
-
 /// 企微消息根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
@@ -128,36 +93,6 @@ pub async fn update_tenant_by_id(
   ).await?;
   
   Ok(num)
-}
-
-/// 根据 id 修改企微消息
-#[allow(dead_code)]
-pub async fn update_by_id(
-  id: WxwMsgId,
-  input: WxwMsgInput,
-  options: Option<Options>,
-) -> Result<WxwMsgId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = wxw_msg_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    get_route_path_wxw_msg(),
-    "edit".to_owned(),
-  ).await?;
-  
-  let res = wxw_msg_service::update_by_id(
-    id,
-    input,
-    options,
-  ).await?;
-  
-  Ok(res)
 }
 
 /// 根据 ids 删除企微消息
