@@ -60,6 +60,8 @@ const hasDictbiz = columns.some((column) => {
   }
   return column.dictbiz;
 });
+
+const tableFieldPermit = columns.some((item) => item.fieldPermit);
 #>#[allow(unused_imports)]
 use std::time::Instant;
 
@@ -71,6 +73,12 @@ use crate::src::base::permit::permit_service::use_permit;
 
 use super::<#=table#>_model::*;
 use super::<#=table#>_service;<#
+if (tableFieldPermit) {
+#>
+
+use crate::src::base::field_permit::field_permit_service::get_field_permit;<#
+}
+#><#
 if (log) {
 #>
 
@@ -106,7 +114,7 @@ pub async fn find_all(
   
   check_sort_<#=table#>(sort.as_deref())?;
   
-  let res = <#=table#>_service::find_all(
+  let models = <#=table#>_service::find_all(
     search,
     page,
     sort,
@@ -115,8 +123,8 @@ pub async fn find_all(
   if (hasPassword) {
   #>
   
-  let mut res = res;
-  for model in &mut res {<#
+  let mut models = models;
+  for model in &mut models {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -135,11 +143,29 @@ pub async fn find_all(
     }
     #>
   }
-  let res = res;<#
+  let models = models;<#
+  }
+  #><#
+  if (tableFieldPermit) {
+  #>
+  
+  let mut models = models;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    for model in &mut models {
+      field_permit_model_<#=table#>(
+        model,
+        fields.clone(),
+      ).await?;
+    }
+  }
+  let models = models;<#
   }
   #>
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找<#=table_comment#>总数
@@ -213,7 +239,24 @@ pub async fn find_one(
     }
     #>
   }
+  let model = model;<#
+  }
+  #><#
+  if (tableFieldPermit) {
+  #>
   
+  let mut model = model;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    if let Some(model) = &mut model {
+      field_permit_model_<#=table#>(
+        model,
+        fields.clone(),
+      ).await?;
+    }
+  }
   let model = model;<#
   }
   #>
@@ -254,7 +297,24 @@ pub async fn find_by_id(
     }
     #>
   }
+  let model = model;<#
+  }
+  #><#
+  if (tableFieldPermit) {
+  #>
   
+  let mut model = model;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    if let Some(model) = &mut model {
+      field_permit_model_<#=table#>(
+        model,
+        fields.clone(),
+      ).await?;
+    }
+  }
   let model = model;<#
   }
   #>
@@ -278,6 +338,8 @@ pub async fn get_editable_data_permits_by_ids(
   Ok(res)
 }<#
 }
+#><#
+if (opts.noAdd !== true) {
 #>
 
 /// 创建<#=table_comment#>
@@ -311,7 +373,25 @@ pub async fn creates(
   use_permit(
     get_route_path_<#=table#>(),
     "add".to_owned(),
-  ).await?;
+  ).await?;<#
+  if (tableFieldPermit) {
+  #>
+  
+  let mut inputs = inputs;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    for input in &mut inputs {
+      field_permit_input_<#=table#>(
+        input,
+        fields.clone(),
+      ).await?;
+    }
+  }
+  let inputs = inputs;<#
+  }
+  #>
   
   let ids = <#=table#>_service::creates(
     inputs,
@@ -361,6 +441,8 @@ pub async fn creates(
   
   Ok(ids)
 }<#
+}
+#><#
 if (hasTenant_id) {
 #>
 
@@ -381,6 +463,8 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }<#
 }
+#><#
+if (opts.noEdit !== true) {
 #>
 
 /// 根据 id 修改<#=table_comment#>
@@ -409,6 +493,22 @@ pub async fn update_by_id(
     get_route_path_<#=table#>(),
     "edit".to_owned(),
   ).await?;<#
+  if (tableFieldPermit) {
+  #>
+  
+  let mut input = input;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    field_permit_input_<#=table#>(
+      &mut input,
+      fields,
+    ).await?;
+  }
+  let input = input;<#
+  }
+  #><#
   if (log) {
   #>
   
@@ -463,7 +563,11 @@ pub async fn update_by_id(
   #>
   
   Ok(res)
+}<#
 }
+#><#
+if (opts.noDelete !== true) {
+#>
 
 /// 根据 ids 删除<#=table_comment#>
 #[allow(dead_code)]
@@ -535,6 +639,8 @@ pub async fn delete_by_ids(
   
   Ok(num)
 }<#
+}
+#><#
 if (hasDefault && opts.noEdit !== true) {
 #>
 

@@ -255,6 +255,7 @@ pub async fn get_editable_data_permits_by_ids(
 #>
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
+#[allow(dead_code)]
 pub async fn set_id_by_lbl(
   input: <#=tableUP#>Input,
 ) -> Result<<#=tableUP#>Input> {

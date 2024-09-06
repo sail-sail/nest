@@ -14,8 +14,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找登录日志总数
- * @param {LoginLogSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: LoginLogSearch,
@@ -31,15 +29,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找登录日志列表
- * @param {LoginLogSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<LoginLogModel[]>} 
  */
 export async function findAll(
   search?: LoginLogSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<LoginLogModel[]> {
   
   search = search || { };
@@ -50,7 +44,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: LoginLogInput,
 ) {
@@ -60,11 +56,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个登录日志
- * @param {LoginLogSearch} search? 搜索条件
  */
 export async function findOne(
   search?: LoginLogSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<LoginLogModel | undefined> {
   
   search = search || { };
@@ -77,7 +72,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找登录日志
- * @param {LoginLogId} id
  */
 export async function findById(
   id?: LoginLogId | null,
@@ -88,7 +82,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找登录日志是否存在
- * @param {LoginLogSearch} search? 搜索条件
  */
 export async function exist(
   search?: LoginLogSearch,
@@ -104,7 +97,6 @@ export async function exist(
 
 /**
  * 根据 id 查找登录日志是否存在
- * @param {LoginLogId} id
  */
 export async function existById(
   id?: LoginLogId | null,
@@ -115,7 +107,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验登录日志
- * @param input 
  */
 export async function validate(
   input: LoginLogInput,
@@ -126,8 +117,6 @@ export async function validate(
 
 /**
  * 批量创建登录日志
- * @param {LoginLogInput[]} inputs
- * @return {Promise<LoginLogId[]>} ids
  */
 export async function creates(
   inputs: LoginLogInput[],
@@ -141,9 +130,6 @@ export async function creates(
 
 /**
  * 根据 id 修改登录日志
- * @param {LoginLogId} id
- * @param {LoginLogInput} input
- * @return {Promise<LoginLogId>}
  */
 export async function updateById(
   id: LoginLogId,
@@ -156,8 +142,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除登录日志
- * @param {LoginLogId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: LoginLogId[],
@@ -169,8 +153,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原登录日志
- * @param {LoginLogId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: LoginLogId[],
@@ -181,8 +163,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除登录日志
- * @param {LoginLogId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: LoginLogId[],
