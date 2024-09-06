@@ -22,14 +22,14 @@ pub async fn find_all(
   
   check_sort_cron_job(sort.as_deref())?;
   
-  let res = cron_job_service::find_all(
+  let models = cron_job_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找定时任务总数
