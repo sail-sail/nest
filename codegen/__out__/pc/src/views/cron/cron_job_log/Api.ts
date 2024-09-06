@@ -53,10 +53,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找定时任务日志列表
- * @param {CronJobLogSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: CronJobLogSearch,
@@ -90,9 +86,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个定时任务日志
- * @param {CronJobLogSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: CronJobLogSearch,
@@ -121,8 +114,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找定时任务日志总数
- * @param {CronJobLogSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: CronJobLogSearch,
@@ -146,8 +137,6 @@ export async function findCount(
 
 /**
  * 根据 id 查找定时任务日志
- * @param {CronJobLogId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: CronJobLogId,
@@ -174,8 +163,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除定时任务日志
- * @param {CronJobLogId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: CronJobLogId[],
@@ -199,8 +186,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原定时任务日志
- * @param {CronJobLogId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: CronJobLogId[],
@@ -224,8 +209,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除定时任务日志
- * @param {CronJobLogId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: CronJobLogId[],
