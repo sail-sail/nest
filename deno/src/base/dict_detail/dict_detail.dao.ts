@@ -20,7 +20,7 @@ type DictModel = {
 };
 
 /**
- * 获取 codes 对应的系统字典
+ * 获取系统字典
  */
 export async function getDict(
   codes: string[] = [ ],
@@ -67,7 +67,7 @@ export async function getDict(
     where
       t.is_deleted=0
       and t.is_enabled=1
-      and base_dict.code in ${ args.push(codes) }
+      and base_dict.code in (${ args.push(codes) })
     order by
       t.order_by asc
   `;
