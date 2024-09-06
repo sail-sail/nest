@@ -43,20 +43,37 @@ export default defineStore("field_permit", function() {
   
   async function setTableColumnsFieldPermit(
     tableColumns: Ref<ColumnType[]>,
-    permitFields: string[],
+    permitFields: (string | string[])[],
     route_path?: string,
   ) {
     if (!route_path) {
       const route = useRoute();
       route_path = route.path;
     }
+    const permitFieldsFlat = permitFields.flat();
     const fields = field_permits[route_path];
     if (fields !== undefined) {
       if (fields === null) {
         return;
       }
       tableColumns.value = tableColumns.value.filter((column) => {
-        return fields.includes(column.prop) || !permitFields.includes(column.prop);
+        if (!permitFieldsFlat.includes(column.prop)) {
+          return true;
+        }
+        for (const field of fields) {
+          for (const permitField of permitFieldsFlat) {
+            if (Array.isArray(permitField)) {
+              if (permitField.includes(field)) {
+                return true;
+              }
+              continue;
+            }
+            if (permitField === field) {
+              return true;
+            }
+          }
+        }
+        return false;
       });
     }
     field_permits[route_path] = [ ];
@@ -66,7 +83,23 @@ export default defineStore("field_permit", function() {
       return;
     }
     tableColumns.value = tableColumns.value.filter((column) => {
-      return fields2.includes(column.prop) || !permitFields.includes(column.prop);
+      if (!permitFieldsFlat.includes(column.prop)) {
+        return true;
+      }
+      for (const field of fields2) {
+        for (const permitField of permitFieldsFlat) {
+          if (Array.isArray(permitField)) {
+            if (permitField.includes(field)) {
+              return true;
+            }
+            continue;
+          }
+          if (permitField === field) {
+            return true;
+          }
+        }
+      }
+      return false;
     });
   }
   

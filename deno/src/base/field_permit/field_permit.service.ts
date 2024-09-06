@@ -43,11 +43,11 @@ export async function getFieldPermit(
   );
   await validateIsEnabledUsr(usr_model);
   
-  // const username = usr_model.username;
+  const username = usr_model.username;
   
-  // if (username === "admin") {
-  //   return null;
-  // }
+  if (username === "admin") {
+    return null;
+  }
   
   const menu_model = await findOneMenu(
     {

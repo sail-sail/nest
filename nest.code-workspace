@@ -47,6 +47,6 @@
       "added": true
     },
     "scm.diffDecorationsIgnoreTrimWhitespace": "true",
-    "scm.showHistoryGraph": false
+    "diffEditor.ignoreTrimWhitespace": true
   }
 }

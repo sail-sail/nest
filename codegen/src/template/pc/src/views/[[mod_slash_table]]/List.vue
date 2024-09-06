@@ -3758,8 +3758,61 @@ async function initFrame() {<#
         ].includes(column_name)) continue;
         let data_type = column.DATA_TYPE;
         const column_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTableUp = foreignKey && foreignKey.table && foreignKey.table.substring(0, 1).toUpperCase()+foreignKey.table.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let modelLabel = column.modelLabel;
+        let cascade_fields = [ ];
+        if (foreignKey) {
+          cascade_fields = foreignKey.cascade_fields || [ ];
+          if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+          } else if (modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+          }
+        }
+        if (foreignKey && foreignKey.lbl && !modelLabel) {
+          modelLabel = column_name + "_" + foreignKey.lbl;
+        } else if (!foreignKey && !modelLabel) {
+          modelLabel = column_name + "_lbl";
+        }
+        let hasModelLabel = !!column.modelLabel;
+        if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+          hasModelLabel = true;
+        } else if (foreignKey && foreignKey.lbl) {
+          hasModelLabel = true;
+        }
+      #><#
+      if (!foreignKey && !column.dict && !column.dictbiz
+        && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
+      ) {
       #>
       "<#=column_name#>",<#
+      } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+      #>
+      [ "<#=column_name#>", "<#=column_name#>_lbl" ],<#
+      } else if (foreignKey) {
+      #>
+      [ "<#=column_name#>",<#
+        if (hasModelLabel) {
+      #> "<#=modelLabel#>"<#
+        }
+      #> ],<#
+      } else if (column.dict || column.dictbiz) {
+      #>
+      [ "<#=column_name#>",<#
+        if (hasModelLabel) {
+      #> "<#=modelLabel#>"<#
+        }
+      #> ],<#
+      } else {
+      #>
+      "<#=column_name#>",<#
+      }
+      #><#
       }
       #>
     ],
