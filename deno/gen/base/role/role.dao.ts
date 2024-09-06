@@ -111,7 +111,7 @@ async function getWhereQuery(
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null) {
-    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
@@ -126,34 +126,34 @@ async function getWhereQuery(
     whereQuery += ` and t.home_url like ${ args.push("%" + sqlLike(search?.home_url_like) + "%") }`;
   }
   if (search?.menu_ids != null) {
-    whereQuery += ` and base_menu.id in ${ args.push(search.menu_ids) }`;
+    whereQuery += ` and base_menu.id in (${ args.push(search.menu_ids) })`;
   }
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
   if (search?.permit_ids != null) {
-    whereQuery += ` and base_permit.id in ${ args.push(search.permit_ids) }`;
+    whereQuery += ` and base_permit.id in (${ args.push(search.permit_ids) })`;
   }
   if (search?.permit_ids_is_null) {
     whereQuery += ` and base_permit.id is null`;
   }
   if (search?.data_permit_ids != null) {
-    whereQuery += ` and base_data_permit.id in ${ args.push(search.data_permit_ids) }`;
+    whereQuery += ` and base_data_permit.id in (${ args.push(search.data_permit_ids) })`;
   }
   if (search?.data_permit_ids_is_null) {
     whereQuery += ` and base_data_permit.id is null`;
   }
   if (search?.field_permit_ids != null) {
-    whereQuery += ` and base_field_permit.id in ${ args.push(search.field_permit_ids) }`;
+    whereQuery += ` and base_field_permit.id in (${ args.push(search.field_permit_ids) })`;
   }
   if (search?.field_permit_ids_is_null) {
     whereQuery += ` and base_field_permit.id is null`;
   }
   if (search?.is_locked != null) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+    whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
   if (search?.is_enabled != null) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+    whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
@@ -170,13 +170,13 @@ async function getWhereQuery(
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and t.create_usr_id_lbl in ${ args.push(search.create_usr_id_lbl) }`;
+    whereQuery += ` and t.create_usr_id_lbl in (${ args.push(search.create_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.create_usr_id_lbl_like)) {
     whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
@@ -190,13 +190,13 @@ async function getWhereQuery(
     }
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and t.update_usr_id_lbl in ${ args.push(search.update_usr_id_lbl) }`;
+    whereQuery += ` and t.update_usr_id_lbl in (${ args.push(search.update_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.update_usr_id_lbl_like)) {
     whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
@@ -701,7 +701,7 @@ export async function setIdByLbl(
     } else {
       const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `select t.id from base_menu t where t.lbl in ${ args.push(input.menu_ids_lbl) }`;
+      const sql = `select t.id from base_menu t where t.lbl in (${ args.push(input.menu_ids_lbl) })`;
       interface Result {
         id: MenuId;
       }
@@ -723,7 +723,7 @@ export async function setIdByLbl(
     } else {
       const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `select t.id from base_permit t where t.lbl in ${ args.push(input.permit_ids_lbl) }`;
+      const sql = `select t.id from base_permit t where t.lbl in (${ args.push(input.permit_ids_lbl) })`;
       interface Result {
         id: PermitId;
       }
@@ -745,7 +745,7 @@ export async function setIdByLbl(
     } else {
       const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
       const args = new QueryArgs();
-      const sql = `select t.id from base_field_permit t where t.lbl in ${ args.push(input.field_permit_ids_lbl) }`;
+      const sql = `select t.id from base_field_permit t where t.lbl in (${ args.push(input.field_permit_ids_lbl) })`;
       interface Result {
         id: FieldPermitId;
       }
@@ -1986,7 +1986,7 @@ export async function deleteByIds(
       const menu_ids = oldModel.menu_ids;
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_role_menu set is_deleted=1 where role_id=${ args.push(id) } and menu_id in ${ args.push(menu_ids) } and is_deleted=0`;
+        const sql = `update base_role_menu set is_deleted=1 where role_id=${ args.push(id) } and menu_id in (${ args.push(menu_ids) }) and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -1994,7 +1994,7 @@ export async function deleteByIds(
       const permit_ids = oldModel.permit_ids;
       if (permit_ids && permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_role_permit set is_deleted=1 where role_id=${ args.push(id) } and permit_id in ${ args.push(permit_ids) } and is_deleted=0`;
+        const sql = `update base_role_permit set is_deleted=1 where role_id=${ args.push(id) } and permit_id in (${ args.push(permit_ids) }) and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -2002,7 +2002,7 @@ export async function deleteByIds(
       const data_permit_ids = oldModel.data_permit_ids;
       if (data_permit_ids && data_permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_role_data_permit set is_deleted=1 where role_id=${ args.push(id) } and data_permit_id in ${ args.push(data_permit_ids) } and is_deleted=0`;
+        const sql = `update base_role_data_permit set is_deleted=1 where role_id=${ args.push(id) } and data_permit_id in (${ args.push(data_permit_ids) }) and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -2010,7 +2010,7 @@ export async function deleteByIds(
       const field_permit_ids = oldModel.field_permit_ids;
       if (field_permit_ids && field_permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_role_field_permit set is_deleted=1 where role_id=${ args.push(id) } and field_permit_id in ${ args.push(field_permit_ids) } and is_deleted=0`;
+        const sql = `update base_role_field_permit set is_deleted=1 where role_id=${ args.push(id) } and field_permit_id in (${ args.push(field_permit_ids) }) and is_deleted=0`;
         await execute(sql, args);
       }
     }
@@ -2087,7 +2087,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  const sql = `update base_role set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
+  const sql = `update base_role set is_enabled=${ args.push(is_enabled) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -2155,7 +2155,7 @@ export async function lockByIds(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = `update base_role set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
+  let sql = `update base_role set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -2238,7 +2238,7 @@ export async function revertByIds(
       const menu_ids = old_model.menu_ids;
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_role_menu set is_deleted=0 where role_id=${ args.push(id) } and menu_id in ${ args.push(menu_ids) } and is_deleted=1`;
+        const sql = `update base_role_menu set is_deleted=0 where role_id=${ args.push(id) } and menu_id in (${ args.push(menu_ids) }) and is_deleted=1`;
         await execute(sql, args);
       }
     }
@@ -2246,7 +2246,7 @@ export async function revertByIds(
       const permit_ids = old_model.permit_ids;
       if (permit_ids && permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_role_permit set is_deleted=0 where role_id=${ args.push(id) } and permit_id in ${ args.push(permit_ids) } and is_deleted=1`;
+        const sql = `update base_role_permit set is_deleted=0 where role_id=${ args.push(id) } and permit_id in (${ args.push(permit_ids) }) and is_deleted=1`;
         await execute(sql, args);
       }
     }
@@ -2254,7 +2254,7 @@ export async function revertByIds(
       const data_permit_ids = old_model.data_permit_ids;
       if (data_permit_ids && data_permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_role_data_permit set is_deleted=0 where role_id=${ args.push(id) } and data_permit_id in ${ args.push(data_permit_ids) } and is_deleted=1`;
+        const sql = `update base_role_data_permit set is_deleted=0 where role_id=${ args.push(id) } and data_permit_id in (${ args.push(data_permit_ids) }) and is_deleted=1`;
         await execute(sql, args);
       }
     }
@@ -2262,7 +2262,7 @@ export async function revertByIds(
       const field_permit_ids = old_model.field_permit_ids;
       if (field_permit_ids && field_permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `update base_role_field_permit set is_deleted=0 where role_id=${ args.push(id) } and field_permit_id in ${ args.push(field_permit_ids) } and is_deleted=1`;
+        const sql = `update base_role_field_permit set is_deleted=0 where role_id=${ args.push(id) } and field_permit_id in (${ args.push(field_permit_ids) }) and is_deleted=1`;
         await execute(sql, args);
       }
     }
@@ -2330,7 +2330,7 @@ export async function forceDeleteByIds(
       const menu_ids = oldModel.menu_ids;
       if (menu_ids && menu_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_role_menu where role_id=${ args.push(id) } and menu_id in ${ args.push(menu_ids) }`;
+        const sql = `delete from base_role_menu where role_id=${ args.push(id) } and menu_id in (${ args.push(menu_ids) })`;
         await execute(sql, args);
       }
     }
@@ -2338,7 +2338,7 @@ export async function forceDeleteByIds(
       const permit_ids = oldModel.permit_ids;
       if (permit_ids && permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_role_permit where role_id=${ args.push(id) } and permit_id in ${ args.push(permit_ids) }`;
+        const sql = `delete from base_role_permit where role_id=${ args.push(id) } and permit_id in (${ args.push(permit_ids) })`;
         await execute(sql, args);
       }
     }
@@ -2346,7 +2346,7 @@ export async function forceDeleteByIds(
       const data_permit_ids = oldModel.data_permit_ids;
       if (data_permit_ids && data_permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_role_data_permit where role_id=${ args.push(id) } and data_permit_id in ${ args.push(data_permit_ids) }`;
+        const sql = `delete from base_role_data_permit where role_id=${ args.push(id) } and data_permit_id in (${ args.push(data_permit_ids) })`;
         await execute(sql, args);
       }
     }
@@ -2354,7 +2354,7 @@ export async function forceDeleteByIds(
       const field_permit_ids = oldModel.field_permit_ids;
       if (field_permit_ids && field_permit_ids.length > 0) {
         const args = new QueryArgs();
-        const sql = `delete from base_role_field_permit where role_id=${ args.push(id) } and field_permit_id in ${ args.push(field_permit_ids) }`;
+        const sql = `delete from base_role_field_permit where role_id=${ args.push(id) } and field_permit_id in (${ args.push(field_permit_ids) })`;
         await execute(sql, args);
       }
     }
