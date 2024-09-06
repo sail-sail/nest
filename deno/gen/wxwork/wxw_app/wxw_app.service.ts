@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找企微应用总数
- * @param {WxwAppSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: WxwAppSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找企微应用列表
- * @param {WxwAppSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<WxwAppModel[]>} 
  */
 export async function findAll(
   search?: WxwAppSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxwAppModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: WxwAppInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个企微应用
- * @param {WxwAppSearch} search? 搜索条件
  */
 export async function findOne(
   search?: WxwAppSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxwAppModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找企微应用
- * @param {WxwAppId} id
  */
 export async function findById(
   id?: WxwAppId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找企微应用是否存在
- * @param {WxwAppSearch} search? 搜索条件
  */
 export async function exist(
   search?: WxwAppSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找企微应用是否存在
- * @param {WxwAppId} id
  */
 export async function existById(
   id?: WxwAppId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验企微应用
- * @param input 
  */
 export async function validate(
   input: WxwAppInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建企微应用
- * @param {WxwAppInput[]} inputs
- * @return {Promise<WxwAppId[]>} ids
  */
 export async function creates(
   inputs: WxwAppInput[],
@@ -145,9 +134,6 @@ export async function creates(
 
 /**
  * 根据 id 修改企微应用
- * @param {WxwAppId} id
- * @param {WxwAppInput} input
- * @return {Promise<WxwAppId>}
  */
 export async function updateById(
   id: WxwAppId,
@@ -165,8 +151,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除企微应用
- * @param {WxwAppId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: WxwAppId[],
@@ -189,9 +173,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用企微应用
- * @param {WxwAppId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: WxwAppId[],
@@ -203,9 +184,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁企微应用
- * @param {WxwAppId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: WxwAppId[],
@@ -217,8 +195,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原企微应用
- * @param {WxwAppId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: WxwAppId[],
@@ -229,8 +205,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除企微应用
- * @param {WxwAppId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: WxwAppId[],
@@ -249,7 +223,6 @@ export async function getFieldComments(): Promise<WxwAppFieldComment> {
 
 /**
  * 查找 企微应用 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {

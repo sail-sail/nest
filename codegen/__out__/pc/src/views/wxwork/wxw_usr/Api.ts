@@ -41,10 +41,6 @@ export function intoInput(
 
 /**
  * 根据搜索条件查找企微用户列表
- * @param {WxwUsrSearch} search?
- * @param {PageInput} page
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findAll(
   search?: WxwUsrSearch,
@@ -78,9 +74,6 @@ export async function findAll(
 
 /**
  * 根据条件查找第一个企微用户
- * @param {WxwUsrSearch} search?
- * @param {Sort[]} sort?
- * @param {GqlOpt} opt?
  */
 export async function findOne(
   search?: WxwUsrSearch,
@@ -109,8 +102,6 @@ export async function findOne(
 
 /**
  * 根据搜索条件查找企微用户总数
- * @param {WxwUsrSearch} search?
- * @param {GqlOpt} opt?
  */
 export async function findCount(
   search?: WxwUsrSearch,
@@ -154,9 +145,6 @@ export async function create(
 
 /**
  * 批量创建企微用户
- * @param {WxwUsrInput[]} inputs
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
  */
 export async function creates(
   inputs: WxwUsrInput[],
@@ -183,9 +171,6 @@ export async function creates(
 
 /**
  * 根据 id 修改企微用户
- * @param {WxwUsrId} id
- * @param {WxwUsrInput} input
- * @param {GqlOpt} opt?
  */
 export async function updateById(
   id: WxwUsrId,
@@ -212,8 +197,6 @@ export async function updateById(
 
 /**
  * 根据 id 查找企微用户
- * @param {WxwUsrId} id
- * @param {GqlOpt} opt?
  */
 export async function findById(
   id: WxwUsrId,
@@ -240,8 +223,6 @@ export async function findById(
 
 /**
  * 根据 ids 删除企微用户
- * @param {WxwUsrId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function deleteByIds(
   ids: WxwUsrId[],
@@ -265,8 +246,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原企微用户
- * @param {WxwUsrId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function revertByIds(
   ids: WxwUsrId[],
@@ -290,8 +269,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除企微用户
- * @param {WxwUsrId[]} ids
- * @param {GqlOpt} opt?
  */
 export async function forceDeleteByIds(
   ids: WxwUsrId[],
@@ -432,7 +409,6 @@ export function useExportExcel(routePath: string) {
 
 /**
  * 批量导入企微用户
- * @param {WxwUsrInput[]} inputs
  */
 export async function importModels(
   inputs: WxwUsrInput[],
