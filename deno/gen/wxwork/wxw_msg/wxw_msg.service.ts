@@ -14,8 +14,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找企微消息总数
- * @param {WxwMsgSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: WxwMsgSearch,
@@ -31,15 +29,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找企微消息列表
- * @param {WxwMsgSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<WxwMsgModel[]>} 
  */
 export async function findAll(
   search?: WxwMsgSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxwMsgModel[]> {
   
   search = search || { };
@@ -50,7 +44,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: WxwMsgInput,
 ) {
@@ -60,11 +56,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个企微消息
- * @param {WxwMsgSearch} search? 搜索条件
  */
 export async function findOne(
   search?: WxwMsgSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<WxwMsgModel | undefined> {
   
   search = search || { };
@@ -77,7 +72,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找企微消息
- * @param {WxwMsgId} id
  */
 export async function findById(
   id?: WxwMsgId | null,
@@ -88,7 +82,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找企微消息是否存在
- * @param {WxwMsgSearch} search? 搜索条件
  */
 export async function exist(
   search?: WxwMsgSearch,
@@ -104,7 +97,6 @@ export async function exist(
 
 /**
  * 根据 id 查找企微消息是否存在
- * @param {WxwMsgId} id
  */
 export async function existById(
   id?: WxwMsgId | null,
@@ -115,7 +107,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验企微消息
- * @param input 
  */
 export async function validate(
   input: WxwMsgInput,
@@ -126,8 +117,6 @@ export async function validate(
 
 /**
  * 批量创建企微消息
- * @param {WxwMsgInput[]} inputs
- * @return {Promise<WxwMsgId[]>} ids
  */
 export async function creates(
   inputs: WxwMsgInput[],
@@ -141,9 +130,6 @@ export async function creates(
 
 /**
  * 根据 id 修改企微消息
- * @param {WxwMsgId} id
- * @param {WxwMsgInput} input
- * @return {Promise<WxwMsgId>}
  */
 export async function updateById(
   id: WxwMsgId,
@@ -156,8 +142,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除企微消息
- * @param {WxwMsgId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: WxwMsgId[],
@@ -169,8 +153,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 还原企微消息
- * @param {WxwMsgId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: WxwMsgId[],
@@ -181,8 +163,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除企微消息
- * @param {WxwMsgId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: WxwMsgId[],
