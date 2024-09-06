@@ -33,7 +33,7 @@ export async function getOptionsByLbl(
 export async function getFieldPermit(
   route_path: string,
   opt?: GqlOpt,
-): Promise<string[]> {
+): Promise<string[] | null> {
   const res: {
     getFieldPermit: Query["getFieldPermit"],
   } = await query({
@@ -47,5 +47,5 @@ export async function getFieldPermit(
     },
   }, opt);
   const data = res.getFieldPermit;
-  return data;
+  return data ?? null;
 }
