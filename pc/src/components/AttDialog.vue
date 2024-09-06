@@ -106,7 +106,7 @@
           v-model="backgroundColor"
           show-alpha
           :predefine="predefineColors"
-          @active-change="backgroundColor = $event"
+          @active-change="backgroundColor = ($event ?? undefined)"
         />
       </div>
       
@@ -352,7 +352,7 @@ let nowIndex = $ref(0);
 
 let iframeLoading = $ref(false);
 
-let backgroundColor = $ref<string | null>("#000000");
+let backgroundColor = $ref<string | undefined>("#000000");
 
 let predefineColors = $ref([
   '#ff4500',

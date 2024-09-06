@@ -20,7 +20,7 @@ type DictModel = {
 };
 
 /**
- * 获取 codes 对应的系统字典
+ * 获取系统字典
  */
 export async function getDict(
   codes: string[] = [ ],
