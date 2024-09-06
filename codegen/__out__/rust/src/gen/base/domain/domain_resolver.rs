@@ -20,14 +20,14 @@ pub async fn find_all(
   
   check_sort_domain(sort.as_deref())?;
   
-  let res = domain_service::find_all(
+  let models = domain_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找域名总数

@@ -15,6 +15,7 @@ pub struct SrcQuery(
   crate::src::base::usr::usr_graphql::UsrQuery,
   crate::src::base::permit::permit_graphql::PermitQuery,
   crate::src::base::role::role_graphql::RoleQuery,
+  crate::src::base::field_permit::field_permit_graphql::FieldPermitQuery,
   crate::src::wxwork::wxw_usr::wxw_usr_graphql::WxwUsrQuery,
   crate::src::wxwork::wxw_app_token::wxw_app_token_graphql::WxwAppTokenQuery,
 );

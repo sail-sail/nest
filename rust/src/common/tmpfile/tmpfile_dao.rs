@@ -4,8 +4,6 @@ use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Comma
 use s3::request::tokio_backend::HyperRequest;
 use s3::request::Request;
 
-pub type OssBucket = Bucket;
-
 #[derive(Debug)]
 pub struct StatObject {
   pub last_modified: Option<String>,
@@ -32,7 +30,7 @@ async fn create_bucket(
   Ok(())
 }
 
-fn new_bucket() -> Result<OssBucket> {
+fn new_bucket() -> Result<Box<Bucket>> {
   let bucket_name = env::var("tmpfile_bucket")?;
   let endpoint = env::var("tmpfile_endpoint").unwrap_or("http://localhost:9000".to_owned());
   let accesskey = env::var("tmpfile_accesskey").unwrap_or_default();

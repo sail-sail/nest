@@ -85,6 +85,8 @@ for (let i = 0; i < columns.length; i++) {
 }
 const old_mod = mod;
 const old_table = table;
+
+const tableFieldPermit = columns.some((item) => item.fieldPermit);
 #>
 <CustomDialog
   ref="customDialogRef"
@@ -228,9 +230,14 @@ const old_table = table;
           if (column.inlineMany2manyTab) continue;
           const isPassword = column.isPassword;
           form_item_index++;
+          const fieldPermit = column.fieldPermit;
         #>
         
-        <template v-if="field_permit('<#=column_name#>') && (showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
+        <template v-if="<#
+          if (fieldPermit) {
+        #>field_permit('<#=column_name#>') && <#
+          }
+        #>(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
           <el-form-item
             :label="n('<#=column_comment#>')"
             prop="<#=column_name#>"<#
@@ -713,7 +720,7 @@ const old_table = table;
                 prop="_seq"
                 :label="ns('序号')"
                 align="center"
-                width="50"
+                width="80"
               >
               </el-table-column><#
               for (let i = 0; i < columns.length; i++) {
@@ -1090,7 +1097,7 @@ const old_table = table;
                 v-if="!isLocked && !isReadonly"
                 prop="_operation"
                 :label="ns('操作')"
-                width="70"
+                width="90"
                 align="center"
                 fixed="right"
               >
@@ -2940,11 +2947,19 @@ const {
   initSysI18ns,
 } = useI18n(pagePath);
 
-const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
+const permitStore = usePermitStore();<#
+if (tableFieldPermit) {
+#>
+const fieldPermitStore = useFieldPermitStore();<#
+}
+#>
 
-const permit = permitStore.getPermit(pagePath);
+const permit = permitStore.getPermit(pagePath);<#
+if (tableFieldPermit) {
+#>
 const field_permit = fieldPermitStore.getFieldPermit(pagePath);<#
+}
+#><#
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;

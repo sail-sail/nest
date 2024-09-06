@@ -32,8 +32,9 @@ export async function findCountDomain(
     findCount,
   } = await import("./domain.service.ts");
   
-  const res = await findCount(search);
-  return res;
+  const num = await findCount(search);
+  
+  return num;
 }
 
 /**
@@ -51,17 +52,23 @@ export async function findAllDomain(
   
   checkSortDomain(sort);
   
-  const res = await findAll(search, page, sort);
-  return res;
+  const models = await findAll(search, page, sort);
+  
+  return models;
 }
 
 /**
  * 获取域名字段注释
  */
 export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
-  const { getFieldComments } = await import("./domain.service.ts");
-  const res = await getFieldComments();
-  return res;
+  
+  const {
+    getFieldComments,
+  } = await import("./domain.service.ts");
+  
+  const field_comment = await getFieldComments();
+  
+  return field_comment;
 }
 
 /**
@@ -78,8 +85,9 @@ export async function findOneDomain(
   
   checkSortDomain(sort);
   
-  const res = await findOne(search, sort);
-  return res;
+  const model = await findOne(search, sort);
+  
+  return model;
 }
 
 /**
@@ -93,9 +101,9 @@ export async function findByIdDomain(
     findById,
   } = await import("./domain.service.ts");
   
-  const res = await findById(id);
+  const model = await findById(id);
   
-  return res;
+  return model;
 }
 
 /**
@@ -155,7 +163,9 @@ export async function updateByIdDomain(
     route_path,
     "edit",
   );
+  
   const id2: DomainId = await updateById(id, input);
+  
   return id2;
 }
 
@@ -176,8 +186,10 @@ export async function deleteByIdsDomain(
     route_path,
     "delete",
   );
-  const res = await deleteByIds(ids);
-  return res;
+  
+  const num = await deleteByIds(ids);
+  
+  return num;
 }
 
 /**
@@ -197,6 +209,7 @@ export async function defaultByIdDomain(
     route_path,
     "edit",
   );
+  
   const res = await defaultById(id);
   return res;
 }
@@ -224,6 +237,7 @@ export async function enableByIdsDomain(
     "edit",
   );
   const res = await enableByIds(ids, is_enabled);
+  
   return res;
 }
 
@@ -249,7 +263,9 @@ export async function lockByIdsDomain(
     route_path,
     "edit",
   );
+  
   const res = await lockByIds(ids, is_locked);
+  
   return res;
 }
 
@@ -270,7 +286,9 @@ export async function revertByIdsDomain(
     route_path,
     "delete",
   );
+  
   const res = await revertByIds(ids);
+  
   return res;
 }
 
@@ -291,7 +309,9 @@ export async function forceDeleteByIdsDomain(
     route_path,
     "force_delete",
   );
+  
   const res = await forceDeleteByIds(ids);
+  
   return res;
 }
 
@@ -299,7 +319,12 @@ export async function forceDeleteByIdsDomain(
  * 查找 域名 order_by 字段的最大值
  */
 export async function findLastOrderByDomain(): Promise<number> {
-  const { findLastOrderBy } = await import("./domain.service.ts");
+  
+  const {
+    findLastOrderBy,
+  } = await import("./domain.service.ts");
+  
   const res = findLastOrderBy();
+  
   return res;
 }

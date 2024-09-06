@@ -20,14 +20,14 @@ pub async fn find_all(
   
   check_sort_lang(sort.as_deref())?;
   
-  let res = lang_service::find_all(
+  let models = lang_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找语言总数

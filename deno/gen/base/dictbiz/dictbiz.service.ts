@@ -18,8 +18,6 @@ async function setSearchQuery(
 
 /**
  * 根据条件查找业务字典总数
- * @param {DictbizSearch} search? 搜索条件
- * @return {Promise<number>}
  */
 export async function findCount(
   search?: DictbizSearch,
@@ -35,15 +33,11 @@ export async function findCount(
 
 /**
  * 根据搜索条件和分页查找业务字典列表
- * @param {DictbizSearch} search? 搜索条件
- * @param {PageInput} page? 分页条件
- * @param {SortInput|SortInput[]} sort? 排序
- * @return {Promise<DictbizModel[]>} 
  */
 export async function findAll(
   search?: DictbizSearch,
   page?: PageInput,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<DictbizModel[]> {
   
   search = search || { };
@@ -54,7 +48,9 @@ export async function findAll(
   return models;
 }
 
-/** 根据lbl翻译业务字典, 外键关联id, 日期 */
+/**
+ * 根据 lbl 翻译业务字典, 外键关联 id, 日期
+ */
 export async function setIdByLbl(
   input: DictbizInput,
 ) {
@@ -64,11 +60,10 @@ export async function setIdByLbl(
 
 /**
  * 根据条件查找第一个业务字典
- * @param {DictbizSearch} search? 搜索条件
  */
 export async function findOne(
   search?: DictbizSearch,
-  sort?: SortInput|SortInput[],
+  sort?: SortInput[],
 ): Promise<DictbizModel | undefined> {
   
   search = search || { };
@@ -81,7 +76,6 @@ export async function findOne(
 
 /**
  * 根据 id 查找业务字典
- * @param {DictbizId} id
  */
 export async function findById(
   id?: DictbizId | null,
@@ -92,7 +86,6 @@ export async function findById(
 
 /**
  * 根据搜索条件查找业务字典是否存在
- * @param {DictbizSearch} search? 搜索条件
  */
 export async function exist(
   search?: DictbizSearch,
@@ -108,7 +101,6 @@ export async function exist(
 
 /**
  * 根据 id 查找业务字典是否存在
- * @param {DictbizId} id
  */
 export async function existById(
   id?: DictbizId | null,
@@ -119,7 +111,6 @@ export async function existById(
 
 /**
  * 增加和修改时校验业务字典
- * @param input 
  */
 export async function validate(
   input: DictbizInput,
@@ -130,8 +121,6 @@ export async function validate(
 
 /**
  * 批量创建业务字典
- * @param {DictbizInput[]} inputs
- * @return {Promise<DictbizId[]>} ids
  */
 export async function creates(
   inputs: DictbizInput[],
@@ -145,9 +134,6 @@ export async function creates(
 
 /**
  * 根据 id 修改业务字典
- * @param {DictbizId} id
- * @param {DictbizInput} input
- * @return {Promise<DictbizId>}
  */
 export async function updateById(
   id: DictbizId,
@@ -170,8 +156,6 @@ export async function updateById(
 
 /**
  * 根据 ids 删除业务字典
- * @param {DictbizId[]} ids
- * @return {Promise<number>}
  */
 export async function deleteByIds(
   ids: DictbizId[],
@@ -205,9 +189,6 @@ export async function deleteByIds(
 
 /**
  * 根据 ids 启用或者禁用业务字典
- * @param {DictbizId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function enableByIds(
   ids: DictbizId[],
@@ -219,9 +200,6 @@ export async function enableByIds(
 
 /**
  * 根据 ids 锁定或者解锁业务字典
- * @param {DictbizId[]} ids
- * @param {0 | 1} is_locked
- * @return {Promise<number>}
  */
 export async function lockByIds(
   ids: DictbizId[],
@@ -233,8 +211,6 @@ export async function lockByIds(
 
 /**
  * 根据 ids 还原业务字典
- * @param {DictbizId[]} ids
- * @return {Promise<number>}
  */
 export async function revertByIds(
   ids: DictbizId[],
@@ -245,8 +221,6 @@ export async function revertByIds(
 
 /**
  * 根据 ids 彻底删除业务字典
- * @param {DictbizId[]} ids
- * @return {Promise<number>}
  */
 export async function forceDeleteByIds(
   ids: DictbizId[],
@@ -265,7 +239,6 @@ export async function getFieldComments(): Promise<DictbizFieldComment> {
 
 /**
  * 查找 业务字典 order_by 字段的最大值
- * @return {Promise<number>}
  */
 export async function findLastOrderBy(
 ): Promise<number> {

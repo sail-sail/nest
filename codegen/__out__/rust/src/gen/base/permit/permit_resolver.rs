@@ -20,14 +20,14 @@ pub async fn find_all(
   
   check_sort_permit(sort.as_deref())?;
   
-  let res = permit_service::find_all(
+  let models = permit_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找按钮权限总数
