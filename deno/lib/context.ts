@@ -27,6 +27,8 @@ import {
   isEmpty,
 } from "/lib/util/string_util.ts";
 
+import Decimal from "decimal.js";
+
 declare global {
   interface Window {
     process: {
@@ -776,10 +778,6 @@ export function escapeDec(orderDec?: InputMaybe<SortOrderEnum>|"asc"|"desc") {
 
 /**
  * 拼装debug用的sql语句
- * @private
- * @param {string} query
- * @param {any[]} args
- * @return {string}
  */
 // deno-lint-ignore no-explicit-any
 function getDebugQuery(query: string, args: any[]|undefined): string {
@@ -915,6 +913,16 @@ export async function query<T = any>(
   if (args instanceof QueryArgs) {
     args = args.value;
   }
+  
+  // Decimal 转换成 string
+  if (args) {
+    for (let i = 0; i < args.length; i++) {
+      if (args[i] instanceof Decimal) {
+        args[i] = args[i].toString();
+      }
+    }
+  }
+  
   let result: T[] = await getCache(opt?.cacheKey1, opt?.cacheKey2);
   if (result != null) {
     return result;
@@ -961,6 +969,16 @@ export async function execute(
   if (args instanceof QueryArgs) {
     args = args.value;
   }
+  
+  // Decimal 转换成 string
+  if (args) {
+    for (let i = 0; i < args.length; i++) {
+      if (args[i] instanceof Decimal) {
+        args[i] = args[i].toString();
+      }
+    }
+  }
+  
   // deno-lint-ignore no-explicit-any
   let result: any;
   if (context.is_tran) {

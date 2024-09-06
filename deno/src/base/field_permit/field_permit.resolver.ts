@@ -5,7 +5,7 @@ import {
 // 字段权限
 export async function getFieldPermit(
   route_path: string,
-): Promise<string[]> {
+): Promise<string[] | null> {
   
   const fields = await getFieldPermitService(route_path);
   
