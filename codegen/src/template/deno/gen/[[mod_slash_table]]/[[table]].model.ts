@@ -652,16 +652,28 @@ if (tableFieldPermit) {
 
 /** 过滤 input 字段权限 */
 export async function fieldPermitInput<#=Table_Up#>(
-  input: <#=Table_Up#>Input,
+  inputs?: (<#=Table_Up#>Input | null | undefined)[],
 ) {
   
   const {
     getFieldPermit,
   } = await import("/src/base/field_permit/field_permit.service.ts");
   
+  if (!inputs) {
+    return;
+  }
+  
   const fields = await getFieldPermit(route_path);
   
-  for (const field of fields) {<#
+  if (fields == null) {
+    return;
+  }
+  
+  for (const input of inputs) {
+    
+    if (!input) {
+      continue;
+    }<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -711,7 +723,7 @@ export async function fieldPermitInput<#=Table_Up#>(
         hasModelLabel = true;
       }
     #>
-    if (field === "<#=column_name#>") {<#
+    if (!fields.includes("<#=column_name#>")) {<#
       if (!foreignKey && !column.dict && !column.dictbiz
         && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
       ) {
@@ -752,24 +764,33 @@ export async function fieldPermitInput<#=Table_Up#>(
     }
     #>
   }
+  
 }
 
 /** 过滤 model 字段权限 */
 export async function fieldPermitModel<#=Table_Up#>(
-  model?: <#=Table_Up#>Model,
+  models?: (<#=Table_Up#>Model | null | undefined)[],
 ) {
   
   const {
     getFieldPermit,
   } = await import("/src/base/field_permit/field_permit.service.ts");
   
-  if (!model) {
+  if (!models) {
     return;
   }
   
   const fields = await getFieldPermit(route_path);
   
-  for (const field of fields) {<#
+  if (fields == null) {
+    return;
+  }
+  
+  for (const model of models) {
+    
+    if (!model) {
+      continue;
+    }<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
@@ -819,47 +840,47 @@ export async function fieldPermitModel<#=Table_Up#>(
         hasModelLabel = true;
       }
     #>
-    if (field === "<#=column_name#>") {<#
+    if (!fields.includes("<#=column_name#>")) {<#
       if (!foreignKey && !column.dict && !column.dictbiz
         && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
       ) {
       #><#
         if ([ "int", "tinyint", "decimal" ].includes(data_type)) {
       #>
-      input.<#=column_name#> = 0;<#
+      model.<#=column_name#> = 0;<#
         } else {
       #>
-      input.<#=column_name#> = "";<#
+      model.<#=column_name#> = "";<#
         }
       #><#
       } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
       #>
-      input.<#=column_name#> = "";
-      input.<#=column_name#>_lbl = "";<#
+      model.<#=column_name#> = "";
+      model.<#=column_name#>_lbl = "";<#
         if (is_nullable) {
       #>
-      input.<#=column_name#>_save_null = false;<#
+      model.<#=column_name#>_save_null = false;<#
         }
       #><#
       } else if (foreignKey) {
       #>
-      input.<#=column_name#> = undefined;<#
+      model.<#=column_name#> = undefined;<#
         if (hasModelLabel) {
       #>
-      input.<#=modelLabel#> = "";<#
+      model.<#=modelLabel#> = "";<#
         }
       #><#
       } else if (column.dict || column.dictbiz) {
       #>
-      input.<#=column_name#> = "" as any;<#
+      model.<#=column_name#> = "" as any;<#
         if (hasModelLabel) {
       #>
-      input.<#=modelLabel#> = "";<#
+      model.<#=modelLabel#> = "";<#
         }
       #><#
       } else {
       #>
-      input.<#=column_name#> = "";<#
+      model.<#=column_name#> = "";<#
       }
       #>
       continue;
@@ -867,6 +888,7 @@ export async function fieldPermitModel<#=Table_Up#>(
     }
     #>
   }
+  
 }<#
 }
 #>

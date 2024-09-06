@@ -207,7 +207,8 @@ export default defineStore("menu", function() {
     search,
     getLblByPath,
   });
-}, {
+},
+{
   persist: {
     paths: [
       "menus",
