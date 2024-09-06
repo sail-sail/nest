@@ -116,7 +116,7 @@ async function getWhereQuery(
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null) {
-    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.lbl_seq != null) {
     if (search.lbl_seq[0] != null) {
@@ -133,19 +133,19 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.usr_id != null) {
-    whereQuery += ` and t.usr_id in ${ args.push(search.usr_id) }`;
+    whereQuery += ` and t.usr_id in (${ args.push(search.usr_id) })`;
   }
   if (search?.usr_id_is_null) {
     whereQuery += ` and t.usr_id is null`;
   }
   if (search?.usr_id_lbl != null) {
-    whereQuery += ` and usr_id_lbl.lbl in ${ args.push(search.usr_id_lbl) }`;
+    whereQuery += ` and usr_id_lbl.lbl in (${ args.push(search.usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.usr_id_lbl_like)) {
     whereQuery += ` and usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.usr_id_lbl_like) + "%") }`;
   }
   if (search?.grade != null) {
-    whereQuery += ` and t.grade in ${ args.push(search.grade) }`;
+    whereQuery += ` and t.grade in (${ args.push(search.grade) })`;
   }
   if (search?.name != null) {
     whereQuery += ` and t.name=${ args.push(search.name) }`;
@@ -192,13 +192,13 @@ async function getWhereQuery(
     }
   }
   if (search?.is_default_card != null) {
-    whereQuery += ` and t.is_default_card in ${ args.push(search.is_default_card) }`;
+    whereQuery += ` and t.is_default_card in (${ args.push(search.is_default_card) })`;
   }
   if (search?.is_locked != null) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+    whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
   if (search?.is_enabled != null) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+    whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
   if (search?.rem != null) {
     whereQuery += ` and t.rem=${ args.push(search.rem) }`;
@@ -207,13 +207,13 @@ async function getWhereQuery(
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and create_usr_id_lbl.lbl in ${ args.push(search.create_usr_id_lbl) }`;
+    whereQuery += ` and create_usr_id_lbl.lbl in (${ args.push(search.create_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.create_usr_id_lbl_like)) {
     whereQuery += ` and create_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.create_usr_id_lbl_like) + "%") }`;
@@ -227,13 +227,13 @@ async function getWhereQuery(
     }
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and update_usr_id_lbl.lbl in ${ args.push(search.update_usr_id_lbl) }`;
+    whereQuery += ` and update_usr_id_lbl.lbl in (${ args.push(search.update_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.update_usr_id_lbl_like)) {
     whereQuery += ` and update_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.update_usr_id_lbl_like) + "%") }`;
@@ -247,13 +247,13 @@ async function getWhereQuery(
     }
   }
   if (search?.org_id != null) {
-    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id in (${ args.push(search.org_id) })`;
   }
   if (search?.org_id_is_null) {
     whereQuery += ` and t.org_id is null`;
   }
   if (search?.org_id_lbl != null) {
-    whereQuery += ` and org_id_lbl.lbl in ${ args.push(search.org_id_lbl) }`;
+    whereQuery += ` and org_id_lbl.lbl in (${ args.push(search.org_id_lbl) })`;
   }
   if (isNotEmpty(search?.org_id_lbl_like)) {
     whereQuery += ` and org_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.org_id_lbl_like) + "%") }`;
@@ -530,6 +530,15 @@ export async function findAll(
       }
     }
     model.grade_lbl = grade_lbl || "";
+    
+    // 充值余额
+    model.balance = new Decimal(model.balance ?? 0);
+    
+    // 赠送余额
+    model.give_balance = new Decimal(model.give_balance ?? 0);
+    
+    // 累计消费
+    model.growth_amt = new Decimal(model.growth_amt ?? 0);
     
     // 默认
     let is_default_card_lbl = model.is_default_card?.toString() || "";
@@ -1859,7 +1868,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  const sql = `update wshop_card set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
+  const sql = `update wshop_card set is_enabled=${ args.push(is_enabled) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1923,7 +1932,7 @@ export async function lockByIds(
   }
   
   const args = new QueryArgs();
-  let sql = `update wshop_card set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
+  let sql = `update wshop_card set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   

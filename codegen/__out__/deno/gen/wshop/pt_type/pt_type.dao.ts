@@ -107,7 +107,7 @@ async function getWhereQuery(
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
   if (search?.ids != null) {
-    whereQuery += ` and t.id in ${ args.push(search.ids) }`;
+    whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
   if (search?.img != null) {
     whereQuery += ` and t.img=${ args.push(search.img) }`;
@@ -122,16 +122,16 @@ async function getWhereQuery(
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.is_home != null) {
-    whereQuery += ` and t.is_home in ${ args.push(search.is_home) }`;
+    whereQuery += ` and t.is_home in (${ args.push(search.is_home) })`;
   }
   if (search?.is_recommend != null) {
-    whereQuery += ` and t.is_recommend in ${ args.push(search.is_recommend) }`;
+    whereQuery += ` and t.is_recommend in (${ args.push(search.is_recommend) })`;
   }
   if (search?.is_locked != null) {
-    whereQuery += ` and t.is_locked in ${ args.push(search.is_locked) }`;
+    whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
   if (search?.is_enabled != null) {
-    whereQuery += ` and t.is_enabled in ${ args.push(search.is_enabled) }`;
+    whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
@@ -148,13 +148,13 @@ async function getWhereQuery(
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in ${ args.push(search.create_usr_id) }`;
+    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
   if (search?.create_usr_id_is_null) {
     whereQuery += ` and t.create_usr_id is null`;
   }
   if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and create_usr_id_lbl.lbl in ${ args.push(search.create_usr_id_lbl) }`;
+    whereQuery += ` and create_usr_id_lbl.lbl in (${ args.push(search.create_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.create_usr_id_lbl_like)) {
     whereQuery += ` and create_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.create_usr_id_lbl_like) + "%") }`;
@@ -168,13 +168,13 @@ async function getWhereQuery(
     }
   }
   if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in ${ args.push(search.update_usr_id) }`;
+    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
   }
   if (search?.update_usr_id_is_null) {
     whereQuery += ` and t.update_usr_id is null`;
   }
   if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and update_usr_id_lbl.lbl in ${ args.push(search.update_usr_id_lbl) }`;
+    whereQuery += ` and update_usr_id_lbl.lbl in (${ args.push(search.update_usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.update_usr_id_lbl_like)) {
     whereQuery += ` and update_usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.update_usr_id_lbl_like) + "%") }`;
@@ -188,13 +188,13 @@ async function getWhereQuery(
     }
   }
   if (search?.org_id != null) {
-    whereQuery += ` and t.org_id in ${ args.push(search.org_id) }`;
+    whereQuery += ` and t.org_id in (${ args.push(search.org_id) })`;
   }
   if (search?.org_id_is_null) {
     whereQuery += ` and t.org_id is null`;
   }
   if (search?.org_id_lbl != null) {
-    whereQuery += ` and org_id_lbl.lbl in ${ args.push(search.org_id_lbl) }`;
+    whereQuery += ` and org_id_lbl.lbl in (${ args.push(search.org_id_lbl) })`;
   }
   if (isNotEmpty(search?.org_id_lbl_like)) {
     whereQuery += ` and org_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.org_id_lbl_like) + "%") }`;
@@ -1712,7 +1712,7 @@ export async function enableByIds(
   }
   
   const args = new QueryArgs();
-  const sql = `update wshop_pt_type set is_enabled=${ args.push(is_enabled) } where id in ${ args.push(ids) }`;
+  const sql = `update wshop_pt_type set is_enabled=${ args.push(is_enabled) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
@@ -1780,7 +1780,7 @@ export async function lockByIds(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = `update wshop_pt_type set is_locked=${ args.push(is_locked) } where id in ${ args.push(ids) }`;
+  let sql = `update wshop_pt_type set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
