@@ -22,14 +22,14 @@ pub async fn find_all(
   
   check_sort_cron_job_log(sort.as_deref())?;
   
-  let res = cron_job_log_service::find_all(
+  let models = cron_job_log_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找定时任务日志总数
@@ -78,41 +78,6 @@ pub async fn find_by_id(
   Ok(model)
 }
 
-/// 创建定时任务日志
-#[allow(dead_code)]
-pub async fn creates(
-  inputs: Vec<CronJobLogInput>,
-  options: Option<Options>,
-) -> Result<Vec<CronJobLogId>> {
-  
-  let mut inputs = inputs;
-  for input in &mut inputs {
-    input.id = None;
-  }
-  let inputs = inputs;
-  
-  let mut inputs2 = Vec::with_capacity(inputs.len());
-  for input in inputs {
-    let input = cron_job_log_service::set_id_by_lbl(
-      input,
-    ).await?;
-    inputs2.push(input);
-  }
-  let inputs = inputs2;
-  
-  use_permit(
-    get_route_path_cron_job_log(),
-    "add".to_owned(),
-  ).await?;
-  
-  let ids = cron_job_log_service::creates(
-    inputs,
-    options,
-  ).await?;
-  
-  Ok(ids)
-}
-
 /// 定时任务日志根据id修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
@@ -128,36 +93,6 @@ pub async fn update_tenant_by_id(
   ).await?;
   
   Ok(num)
-}
-
-/// 根据 id 修改定时任务日志
-#[allow(dead_code)]
-pub async fn update_by_id(
-  id: CronJobLogId,
-  input: CronJobLogInput,
-  options: Option<Options>,
-) -> Result<CronJobLogId> {
-  
-  let mut input = input;
-  input.id = None;
-  let input = input;
-  
-  let input = cron_job_log_service::set_id_by_lbl(
-    input,
-  ).await?;
-  
-  use_permit(
-    get_route_path_cron_job_log(),
-    "edit".to_owned(),
-  ).await?;
-  
-  let res = cron_job_log_service::update_by_id(
-    id,
-    input,
-    options,
-  ).await?;
-  
-  Ok(res)
 }
 
 /// 根据 ids 删除定时任务日志

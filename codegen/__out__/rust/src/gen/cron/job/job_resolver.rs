@@ -22,14 +22,14 @@ pub async fn find_all(
   
   check_sort_job(sort.as_deref())?;
   
-  let res = job_service::find_all(
+  let models = job_service::find_all(
     search,
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(models)
 }
 
 /// 根据条件查找任务总数
