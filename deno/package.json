@@ -16,7 +16,8 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "path-to-regexp": "6.2.1"
+    "path-to-regexp": "6.2.1",
+    "mysql2": "3.11.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.2",

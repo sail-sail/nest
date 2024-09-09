@@ -1,10 +1,8 @@
 import {
   set_is_tran,
-  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
-  UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -107,40 +105,6 @@ export async function findByIdFieldPermit(
 }
 
 /**
- * 批量创建字段权限
- */
-export async function createsFieldPermit(
-  inputs: FieldPermitInput[],
-  unique_type?: UniqueType,
-): Promise<FieldPermitId[]> {
-  
-  const {
-    validate,
-    setIdByLbl,
-    creates,
-  } = await import("./field_permit.service.ts");
-  
-  set_is_tran(true);
-  set_is_creating(true);
-  
-  await usePermit(
-    route_path,
-    "add",
-  );
-  
-  for (const input of inputs) {
-    input.id = undefined;
-    
-    await setIdByLbl(input);
-    
-    await validate(input);
-  }
-  const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
-  return ids;
-}
-
-/**
  * 根据 id 修改字段权限
  */
 export async function updateByIdFieldPermit(
@@ -170,70 +134,15 @@ export async function updateByIdFieldPermit(
 }
 
 /**
- * 根据 ids 删除字段权限
+ * 查找 字段权限 order_by 字段的最大值
  */
-export async function deleteByIdsFieldPermit(
-  ids: FieldPermitId[],
-): Promise<number> {
+export async function findLastOrderByFieldPermit(): Promise<number> {
   
   const {
-    deleteByIds,
+    findLastOrderBy,
   } = await import("./field_permit.service.ts");
   
-  set_is_tran(true);
-  
-  await usePermit(
-    route_path,
-    "delete",
-  );
-  
-  const num = await deleteByIds(ids);
-  
-  return num;
-}
-
-/**
- * 根据 ids 还原字段权限
- */
-export async function revertByIdsFieldPermit(
-  ids: FieldPermitId[],
-): Promise<number> {
-  
-  const {
-    revertByIds,
-  } = await import("./field_permit.service.ts");
-  
-  set_is_tran(true);
-  
-  await usePermit(
-    route_path,
-    "delete",
-  );
-  
-  const res = await revertByIds(ids);
-  
-  return res;
-}
-
-/**
- * 根据 ids 彻底删除字段权限
- */
-export async function forceDeleteByIdsFieldPermit(
-  ids: FieldPermitId[],
-): Promise<number> {
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./field_permit.service.ts");
-  
-  set_is_tran(true);
-  
-  await usePermit(
-    route_path,
-    "force_delete",
-  );
-  
-  const res = await forceDeleteByIds(ids);
+  const res = findLastOrderBy();
   
   return res;
 }
