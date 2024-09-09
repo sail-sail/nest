@@ -1966,6 +1966,7 @@ pub async fn create(
 // MARK: update_by_id
 /// 根据 id 修改租户
 #[allow(unused_mut)]
+#[allow(unused_variables)]
 pub async fn update_by_id(
   id: TenantId,
   mut input: TenantInput,
@@ -3014,6 +3015,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
+  #[allow(unused_mut)]
   let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);
   
   sql_wheres.push("t.is_deleted=0");

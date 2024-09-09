@@ -1872,6 +1872,7 @@ pub async fn update_tenant_by_id(
 // MARK: update_by_id
 /// 根据 id 修改业务字典
 #[allow(unused_mut)]
+#[allow(unused_variables)]
 pub async fn update_by_id(
   id: DictbizId,
   mut input: DictbizInput,
@@ -2802,6 +2803,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
+  #[allow(unused_mut)]
   let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);
   
   sql_wheres.push("t.is_deleted=0");
