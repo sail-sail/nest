@@ -705,6 +705,9 @@ async function getWhereQuery(
   if (hasIsDeleted) {
   #>
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;<#
+  } else {
+  #>
+  whereQuery += " 1=1"<#
   }
   #><#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -988,6 +991,8 @@ async function getFromQuery(
     if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
       cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
     }
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    const foreignHasIsDeleted = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_deleted");
   #><#
     if (foreignKey.type === "many2many") {
   #>
@@ -1000,7 +1005,7 @@ async function getFromQuery(
     #>
   left join <#=foreignKey.mod#>_<#=foreignTable#>
     on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>=<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
-    if (hasIsDeleted) {
+    if (foreignHasIsDeleted) {
     #>
     and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted=${ args.push(is_deleted) }<#
     }

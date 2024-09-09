@@ -201,6 +201,9 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
+  if (search?.is_hidden != null) {
+    whereQuery += ` and t.is_hidden in (${ args.push(search?.is_hidden) })`;
+  }
   return whereQuery;
 }
 
@@ -365,6 +368,17 @@ export async function findAll(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  // 隐藏记录
+  if (search && search.is_hidden != null) {
+    const len = search.is_hidden.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_hidden.length > ${ ids_limit }`);
     }
   }
   
@@ -1203,7 +1217,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_menu(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,parent_id,lbl,route_path,route_query,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into base_menu(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,parent_id,lbl,route_path,route_query,is_locked,is_enabled,order_by,rem,is_hidden)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1325,6 +1339,11 @@ async function _creates(
       }
       if (input.rem != null) {
         sql += `,${ args.push(input.rem) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_hidden != null) {
+        sql += `,${ args.push(input.is_hidden) }`;
       } else {
         sql += ",default";
       }
@@ -1570,6 +1589,12 @@ export async function updateById(
   if (input.create_time != null || input.create_time_save_null) {
     if (input.create_time != oldModel.create_time) {
       sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_hidden != null) {
+    if (input.is_hidden != oldModel.is_hidden) {
+      sql += `is_hidden=${ args.push(input.is_hidden) },`;
       updateFldNum++;
     }
   }

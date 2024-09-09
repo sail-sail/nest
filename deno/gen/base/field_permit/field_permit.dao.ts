@@ -70,10 +70,6 @@ import {
 } from "/gen/base/menu/menu.dao.ts";
 
 import {
-  findById as findByIdUsr,
-} from "/gen/base/usr/usr.dao.ts";
-
-import {
   route_path,
 } from "./field_permit.model.ts";
 
@@ -88,7 +84,7 @@ async function getWhereQuery(
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   let whereQuery = "";
-  whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
+  whereQuery += " 1=1"
   if (search?.id != null) {
     whereQuery += ` and t.id=${ args.push(search?.id) }`;
   }
@@ -127,6 +123,14 @@ async function getWhereQuery(
       whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
     }
   }
+  if (search?.order_by != null) {
+    if (search.order_by[0] != null) {
+      whereQuery += ` and t.order_by>=${ args.push(search.order_by[0]) }`;
+    }
+    if (search.order_by[1] != null) {
+      whereQuery += ` and t.order_by<=${ args.push(search.order_by[1]) }`;
+    }
+  }
   if (search?.rem != null) {
     if (server_i18n_enable) {
       whereQuery += ` and (t.rem=${ args.push(search.rem) } or base_field_permit_lang.rem=${ args.push(search.rem) })`;
@@ -139,46 +143,6 @@ async function getWhereQuery(
       whereQuery += ` and (t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") } or base_field_permit_lang.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") })`;
     } else {
       whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
-    }
-  }
-  if (search?.create_usr_id != null) {
-    whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
-  }
-  if (search?.create_usr_id_is_null) {
-    whereQuery += ` and t.create_usr_id is null`;
-  }
-  if (search?.create_usr_id_lbl != null) {
-    whereQuery += ` and t.create_usr_id_lbl in (${ args.push(search.create_usr_id_lbl) })`;
-  }
-  if (isNotEmpty(search?.create_usr_id_lbl_like)) {
-    whereQuery += ` and t.create_usr_id_lbl like ${ args.push("%" + sqlLike(search.create_usr_id_lbl_like) + "%") }`;
-  }
-  if (search?.create_time != null) {
-    if (search.create_time[0] != null) {
-      whereQuery += ` and t.create_time>=${ args.push(search.create_time[0]) }`;
-    }
-    if (search.create_time[1] != null) {
-      whereQuery += ` and t.create_time<=${ args.push(search.create_time[1]) }`;
-    }
-  }
-  if (search?.update_usr_id != null) {
-    whereQuery += ` and t.update_usr_id in (${ args.push(search.update_usr_id) })`;
-  }
-  if (search?.update_usr_id_is_null) {
-    whereQuery += ` and t.update_usr_id is null`;
-  }
-  if (search?.update_usr_id_lbl != null) {
-    whereQuery += ` and t.update_usr_id_lbl in (${ args.push(search.update_usr_id_lbl) })`;
-  }
-  if (isNotEmpty(search?.update_usr_id_lbl_like)) {
-    whereQuery += ` and t.update_usr_id_lbl like ${ args.push("%" + sqlLike(search.update_usr_id_lbl_like) + "%") }`;
-  }
-  if (search?.update_time != null) {
-    if (search.update_time[0] != null) {
-      whereQuery += ` and t.update_time>=${ args.push(search.update_time[0]) }`;
-    }
-    if (search.update_time[1] != null) {
-      whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
   return whereQuery;
@@ -303,28 +267,6 @@ export async function findAll(
       throw new Error(`search.menu_id.length > ${ ids_limit }`);
     }
   }
-  // 创建人
-  if (search && search.create_usr_id != null) {
-    const len = search.create_usr_id.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
-    }
-  }
-  // 更新人
-  if (search && search.update_usr_id != null) {
-    const len = search.update_usr_id.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
-    }
-  }
   
   let lang_sql = "";
   
@@ -350,7 +292,7 @@ export async function findAll(
   sort = sort.filter((item) => item.prop);
   
   sort.push({
-    prop: "create_time",
+    prop: "order_by",
     order: SortOrderEnum.Asc,
   });
   for (let i = 0; i < sort.length; i++) {
@@ -409,30 +351,6 @@ export async function findAll(
     
     // 菜单
     model.menu_id_lbl = model.menu_id_lbl || "";
-    
-    // 创建时间
-    if (model.create_time) {
-      const create_time = dayjs(model.create_time);
-      if (isNaN(create_time.toDate().getTime())) {
-        model.create_time_lbl = (model.create_time || "").toString();
-      } else {
-        model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
-      }
-    } else {
-      model.create_time_lbl = "";
-    }
-    
-    // 更新时间
-    if (model.update_time) {
-      const update_time = dayjs(model.update_time);
-      if (isNaN(update_time.toDate().getTime())) {
-        model.update_time_lbl = (model.update_time || "").toString();
-      } else {
-        model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
-      }
-    } else {
-      model.update_time_lbl = "";
-    }
   }
   
   return result;
@@ -485,15 +403,8 @@ export async function getFieldComments(): Promise<FieldPermitFieldComment> {
     menu_id_lbl: await n("菜单"),
     code: await n("编码"),
     lbl: await n("名称"),
+    order_by: await n("排序"),
     rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
   };
   return fieldComments;
 }
@@ -830,7 +741,7 @@ export async function existById(
   }
   
   const args = new QueryArgs();
-  const sql = `select 1 e from base_field_permit t where t.id=${ args.push(id) } and t.is_deleted = 0 limit 1`;
+  const sql = `select 1 e from base_field_permit t where t.id=${ args.push(id) } limit 1`;
   
   const cacheKey1 = `dao.sql.${ table }`;
   const cacheKey2 = await hash(JSON.stringify({ sql, args }));
@@ -906,20 +817,6 @@ export async function validate(
     input.rem,
     100,
     fieldComments.rem,
-  );
-  
-  // 创建人
-  await validators.chars_max_length(
-    input.create_usr_id,
-    22,
-    fieldComments.create_usr_id,
-  );
-  
-  // 更新人
-  await validators.chars_max_length(
-    input.update_usr_id,
-    22,
-    fieldComments.update_usr_id,
   );
   
 }
@@ -1064,91 +961,13 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_field_permit(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,menu_id,code,lbl,rem,is_sys)values";
+  let sql = "insert into base_field_permit(id,menu_id,code,lbl,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
     for (let i = 0; i < inputs2.length; i++) {
       const input = inputs2[i];
       sql += `(${ args.push(input.id) }`;
-      if (!is_silent_mode) {
-        if (input.create_time != null || input.create_time_save_null) {
-          sql += `,${ args.push(input.create_time) }`;
-        } else {
-          sql += `,${ args.push(reqDate()) }`;
-        }
-      } else {
-        if (input.create_time != null || input.create_time_save_null) {
-          sql += `,${ args.push(input.create_time) }`;
-        } else {
-          sql += `,null`;
-        }
-      }
-      if (input.update_time != null || input.update_time_save_null) {
-        sql += `,${ args.push(input.update_time) }`;
-      } else {
-        sql += `,null`;
-      }
-      if (!is_silent_mode) {
-        if (input.create_usr_id == null) {
-          let usr_id = await get_usr_id();
-          let usr_lbl = "";
-          if (usr_id) {
-            const usr_model = await findByIdUsr(usr_id, options);
-            if (!usr_model) {
-              usr_id = undefined;
-            } else {
-              usr_lbl = usr_model.lbl;
-            }
-          }
-          if (usr_id != null) {
-            sql += `,${ args.push(usr_id) }`;
-          } else {
-            sql += ",default";
-          }
-          sql += `,${ args.push(usr_lbl) }`;
-        } else if (input.create_usr_id as unknown as string === "-") {
-          sql += ",default";
-          sql += ",default";
-        } else {
-          let usr_id: UsrId | undefined = input.create_usr_id;
-          let usr_lbl = "";
-          const usr_model = await findByIdUsr(usr_id, options);
-          if (!usr_model) {
-            usr_id = undefined;
-            usr_lbl = "";
-          } else {
-            usr_lbl = usr_model.lbl;
-          }
-          if (usr_id) {
-            sql += `,${ args.push(usr_id) }`;
-          } else {
-            sql += ",default";
-          }
-          sql += `,${ args.push(usr_lbl) }`;
-        }
-      } else {
-        if (input.create_usr_id == null) {
-          sql += ",default";
-        } else {
-          sql += `,${ args.push(input.create_usr_id) }`;
-        }
-        if (input.create_usr_id_lbl == null) {
-          sql += ",default";
-        } else {
-          sql += `,${ args.push(input.create_usr_id_lbl) }`;
-        }
-      }
-      if (input.update_usr_id != null) {
-        sql += `,${ args.push(input.update_usr_id) }`;
-      } else {
-        sql += ",default";
-      }
-      if (input.update_usr_id_lbl != null) {
-        sql += `,${ args.push(input.update_usr_id_lbl) }`;
-      } else {
-        sql += ",default";
-      }
       if (input.menu_id != null) {
         sql += `,${ args.push(input.menu_id) }`;
       } else {
@@ -1161,6 +980,11 @@ async function _creates(
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.order_by != null) {
+        sql += `,${ args.push(input.order_by) }`;
       } else {
         sql += ",default";
       }
@@ -1359,28 +1183,17 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (input.order_by != null) {
+    if (input.order_by != oldModel.order_by) {
+      sql += `order_by=${ args.push(input.order_by) },`;
+      updateFldNum++;
+    }
+  }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       if (!server_i18n_enable) {
         sql += `rem=${ args.push(input.rem) },`;
       }
-      updateFldNum++;
-    }
-  }
-  if (isNotEmpty(input.create_usr_id_lbl)) {
-    sql += `create_usr_id_lbl=?,`;
-    args.push(input.create_usr_id_lbl);
-    updateFldNum++;
-  }
-  if (input.create_usr_id != null) {
-    if (input.create_usr_id != oldModel.create_usr_id) {
-      sql += `create_usr_id=${ args.push(input.create_usr_id) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.create_time != null || input.create_time_save_null) {
-    if (input.create_time != oldModel.create_time) {
-      sql += `create_time=${ args.push(input.create_time) },`;
       updateFldNum++;
     }
   }
@@ -1393,57 +1206,6 @@ export async function updateById(
   let sqlSetFldNum = updateFldNum;
   
   if (updateFldNum > 0) {
-    if (!is_silent_mode && !is_creating) {
-      if (input.update_usr_id == null) {
-        let usr_id = await get_usr_id();
-        let usr_lbl = "";
-        if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id, options);
-          if (!usr_model) {
-            usr_id = undefined;
-          } else {
-            usr_lbl = usr_model.lbl;
-          }
-        }
-        if (usr_id != null) {
-          sql += `update_usr_id=${ args.push(usr_id) },`;
-        }
-        if (usr_lbl) {
-          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
-        }
-      } else if (input.update_usr_id && input.update_usr_id as unknown as string !== "-") {
-        let usr_id: UsrId | undefined = input.update_usr_id;
-        let usr_lbl = "";
-        if (usr_id) {
-          const usr_model = await findByIdUsr(usr_id, options);
-          if (!usr_model) {
-            usr_id = undefined;
-          } else {
-            usr_lbl = usr_model.lbl;
-          }
-        }
-        if (usr_id) {
-          sql += `update_usr_id=${ args.push(usr_id) },`;
-          sql += `update_usr_id_lbl=${ args.push(usr_lbl) },`;
-        }
-      }
-    } else {
-      if (input.update_usr_id != null) {
-        sql += `update_usr_id=${ args.push(input.update_usr_id) },`;
-      }
-      if (input.update_usr_id_lbl != null) {
-        sql += `update_usr_id_lbl=${ args.push(input.update_usr_id_lbl) },`;
-      }
-    }
-    if (!is_silent_mode && !is_creating) {
-      if (input.update_time != null || input.update_time_save_null) {
-        sql += `update_time=${ args.push(input.update_time) },`;
-      } else {
-        sql += `update_time=${ args.push(reqDate()) },`;
-      }
-    } else if (input.update_time != null || input.update_time_save_null) {
-      sql += `update_time=${ args.push(input.update_time) },`;
-    }
     if (sql.endsWith(",")) {
       sql = sql.substring(0, sql.length - 1);
     }
@@ -1522,31 +1284,11 @@ export async function deleteByIds(
       log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
     }
     const args = new QueryArgs();
-    let sql = `update base_field_permit set is_deleted=1`;
-    if (!is_silent_mode && !is_creating) {
-      let usr_id = await get_usr_id();
-      if (usr_id != null) {
-        sql += `,delete_usr_id=${ args.push(usr_id) }`;
-      }
-      let usr_lbl = "";
-      if (usr_id) {
-        const usr_model = await findByIdUsr(usr_id, options);
-        if (!usr_model) {
-          usr_id = undefined;
-        } else {
-          usr_lbl = usr_model.lbl;
-        }
-      }
-      if (usr_lbl) {
-        sql += `,delete_usr_id_lbl=${ args.push(usr_lbl) }`;
-      }
-      sql += `,delete_time=${ args.push(reqDate()) }`;
-    }
-    sql += ` where id=${ args.push(id) } limit 1`;
+    const sql = `delete from base_field_permit where id=${ args.push(id) } limit 1`;
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;
     if (server_i18n_enable) {
-      const sql = "update base_field_permit_lang set is_deleted=1 where field_permit_id=?";
+      const sql = "delete from base_field_permit_lang where field_permit_id=?";
       const args = new QueryArgs();
       args.push(id);
       await execute(sql, args);
@@ -1563,26 +1305,21 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-// MARK: revertByIds
-/** 根据 ids 还原 字段权限 */
-export async function revertByIds(
-  ids: FieldPermitId[],
+// MARK: findLastOrderBy
+/** 查找 字段权限 order_by 字段的最大值 */
+export async function findLastOrderBy(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_field_permit";
-  const method = "revertByIds";
+  const method = "findLastOrderBy";
   
   const is_debug = get_is_debug(options?.is_debug);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
-    if (ids) {
-      msg += ` ids:${ JSON.stringify(ids) }`;
-    }
     if (options && Object.keys(options).length > 0) {
       msg += ` options:${ JSON.stringify(options) }`;
     }
@@ -1591,130 +1328,20 @@ export async function revertByIds(
     options.is_debug = false;
   }
   
-  if (!ids || !ids.length) {
-    return 0;
+  let sql = `select t.order_by order_by from base_field_permit t`;
+  const whereQuery: string[] = [ ];
+  const args = new QueryArgs();
+  whereQuery.push(` t.is_deleted=0`);
+  if (whereQuery.length > 0) {
+    sql += " where " + whereQuery.join(" and ");
   }
+  sql += ` order by t.order_by desc limit 1`;
   
-  await delCache();
-  
-  let num = 0;
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    let old_model = await findOne(
-      {
-        id,
-        is_deleted: 1,
-      },
-      undefined,
-      options,
-    );
-    if (!old_model) {
-      old_model = await findById(
-        id,
-        options,
-      );
-    }
-    if (!old_model) {
-      continue;
-    }
-    {
-      const input = {
-        ...old_model,
-        id: undefined,
-      } as FieldPermitInput;
-      const models = await findByUnique(input, options);
-      for (const model of models) {
-        if (model.id === id) {
-          continue;
-        }
-        throw await ns("此 {0} 已经存在", await ns("字段权限"));
-      }
-    }
-    const args = new QueryArgs();
-    const sql = `update base_field_permit set is_deleted=0 where id=${ args.push(id) } limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "update base_field_permit_lang set is_deleted=0 where field_permit_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
+  interface Result {
+    order_by: number;
   }
+  let model = await queryOne<Result>(sql, args);
+  let result = model?.order_by ?? 0;
   
-  await delCache();
-  
-  return num;
-}
-
-// MARK: forceDeleteByIds
-/** 根据 ids 彻底删除 字段权限 */
-export async function forceDeleteByIds(
-  ids: FieldPermitId[],
-  options?: {
-    is_debug?: boolean;
-    is_silent_mode?: boolean;
-  },
-): Promise<number> {
-  
-  const table = "base_field_permit";
-  const method = "forceDeleteByIds";
-  
-  const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
-  const is_debug = get_is_debug(options?.is_debug);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (ids) {
-      msg += ` ids:${ JSON.stringify(ids) }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  if (!ids || !ids.length) {
-    return 0;
-  }
-  
-  await delCache();
-  
-  let num = 0;
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    const oldModel = await findOne(
-      {
-        id,
-        is_deleted: 1,
-      },
-      undefined,
-      options,
-    );
-    if (oldModel && !is_silent_mode) {
-      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
-    }
-    const args = new QueryArgs();
-    const sql = `delete from base_field_permit where id=${ args.push(id) } and is_deleted = 1 limit 1`;
-    const result = await execute(sql, args);
-    num += result.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "delete from base_field_permit_lang where field_permit_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
-    {
-      const args = new QueryArgs();
-      const sql = `delete from base_role_field_permit where field_permit_id=${ args.push(id) }`;
-      await execute(sql, args);
-    }
-  }
-  
-  await delCache();
-  
-  return num;
+  return result;
 }
