@@ -36,6 +36,7 @@ declare global {
     create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
     update_time?: [(string|undefined|null), (string|undefined|null)];
+    is_hidden?: (0|1)[];
   }
 
   interface MenuModel extends MenuModelType {
@@ -47,6 +48,7 @@ declare global {
     update_usr_id_lbl: string;
     update_time?: string | null;
     update_time_lbl: string;
+    is_hidden: 0|1;
   }
 
   interface MenuInput extends MenuInputType {
@@ -61,6 +63,7 @@ declare global {
     update_time_lbl?: string | null;
     update_time_save_null?: boolean | null;
     is_deleted?: number | null;
+    is_hidden?: 0|1|null;
   }
 
   interface MenuFieldComment extends MenuFieldCommentType {

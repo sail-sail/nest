@@ -565,7 +565,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
     un-m="x-1.5 t-1.5"
     un-flex="~ nowrap"
   >
-    <template v-if="search.is_deleted !== 1"><#
+    <template v-if="<# if (hasIsDeleted) { #>search.is_deleted !== 1<# } else { #>true<# } #>"><#
       if (opts.noAdd !== true) {
       #>
       
@@ -826,7 +826,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
     </template>
     
     <template v-else><#
-      if (opts.noRevert !== true) {
+      if (opts.noRevert !== true && hasIsDeleted) {
       #>
       
       <el-button
@@ -1636,7 +1636,7 @@ import {
   getPagePath,
   findAll,
   findCount,<#
-    if (opts.noRevert !== true) {
+    if (opts.noRevert !== true && hasIsDeleted) {
   #>
   revertByIds,<#
     }
@@ -3558,7 +3558,7 @@ async function onLockByIds(is_locked: 0 | 1) {
 }<#
 }
 #><#
-if (opts.noRevert !== true) {
+if (opts.noRevert !== true && hasIsDeleted) {
 #>
 
 /** 点击还原 */
@@ -3737,7 +3737,87 @@ watch(
 async function initFrame() {<#
   if (tableFieldPermit) {
   #>
-  await fieldPermitStore.setTableColumnsFieldPermit($$(tableColumns), pagePath);<#
+  await fieldPermitStore.setTableColumnsFieldPermit(
+    $$(tableColumns),
+    [<#
+      for (let i = 0; i < columns.length; i++) {
+        const column = columns[i];
+        if (column.ignoreCodegen) continue;
+        if (!column.fieldPermit) continue;
+        const column_name = column.COLUMN_NAME;
+        if ([
+          "id",
+          "create_usr_id",
+          "create_time",
+          "update_usr_id",
+          "update_time",
+          "tenant_id",
+          "is_hidden",
+          "is_deleted",
+          "is_sys",
+        ].includes(column_name)) continue;
+        let data_type = column.DATA_TYPE;
+        const column_comment = column.COLUMN_COMMENT;
+        let is_nullable = column.IS_NULLABLE === "YES";
+        const foreignKey = column.foreignKey;
+        const foreignTableUp = foreignKey && foreignKey.table && foreignKey.table.substring(0, 1).toUpperCase()+foreignKey.table.substring(1);
+        const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
+        let modelLabel = column.modelLabel;
+        let cascade_fields = [ ];
+        if (foreignKey) {
+          cascade_fields = foreignKey.cascade_fields || [ ];
+          if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+          } else if (modelLabel) {
+            cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+          }
+        }
+        if (foreignKey && foreignKey.lbl && !modelLabel) {
+          modelLabel = column_name + "_" + foreignKey.lbl;
+        } else if (!foreignKey && !modelLabel) {
+          modelLabel = column_name + "_lbl";
+        }
+        let hasModelLabel = !!column.modelLabel;
+        if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+          hasModelLabel = true;
+        } else if (foreignKey && foreignKey.lbl) {
+          hasModelLabel = true;
+        }
+      #><#
+      if (!foreignKey && !column.dict && !column.dictbiz
+        && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
+      ) {
+      #>
+      "<#=column_name#>",<#
+      } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+      #>
+      [ "<#=column_name#>", "<#=column_name#>_lbl" ],<#
+      } else if (foreignKey) {
+      #>
+      [ "<#=column_name#>",<#
+        if (hasModelLabel) {
+      #> "<#=modelLabel#>"<#
+        }
+      #> ],<#
+      } else if (column.dict || column.dictbiz) {
+      #>
+      [ "<#=column_name#>",<#
+        if (hasModelLabel) {
+      #> "<#=modelLabel#>"<#
+        }
+      #> ],<#
+      } else {
+      #>
+      "<#=column_name#>",<#
+      }
+      #><#
+      }
+      #>
+    ],
+    pagePath,
+  );<#
   }
   #>
   initColumns(tableColumns);
