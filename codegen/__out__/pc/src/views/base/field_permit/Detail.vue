@@ -10,7 +10,6 @@
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
-  @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"
   @keydown.ctrl.enter="onSaveKeydown"
   @keydown.ctrl.s="onSaveKeydown"
 >
@@ -23,27 +22,6 @@
         @click="onReset"
       ></ElIconRefresh>
     </div>
-    <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
-      <div
-        v-if="!isReadonly"
-        :title="ns('锁定')"
-      >
-        <ElIconUnlock
-          class="unlock_but"
-          @click="isReadonly = true;"
-        >
-        </ElIconUnlock>
-      </div>
-      <div
-        v-else
-        :title="ns('解锁')"
-      >
-        <ElIconLock
-          class="lock_but"
-          @click="isReadonly = false;"
-        ></ElIconLock>
-      </div>
-    </template>
   </template>
   <div
     un-flex="~ [1_0_0] col basis-[inherit]"
@@ -63,7 +41,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -97,7 +75,7 @@
             <CustomInput
               v-model="dialogModel.code"
               :placeholder="`${ ns('请输入') } ${ n('编码') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="true"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -115,10 +93,24 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.order_by == null)">
+          <el-form-item
+            :label="n('排序')"
+            prop="order_by"
+          >
+            <CustomInputNumber
+              v-model="dialogModel.order_by"
+              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInputNumber>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
             :label="n('备注')"
             prop="rem"
+            un-grid="col-span-full"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -148,30 +140,6 @@
           <ElIconCircleClose />
         </template>
         <span>{{ ns('关闭') }}</span>
-      </el-button>
-      
-      <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
-        plain
-        type="primary"
-        @click="onSaveAndCopy"
-      >
-        <template #icon>
-          <ElIconCircleCheck />
-        </template>
-        <span>{{ ns('保存并继续') }}</span>
-      </el-button>
-      
-      <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
-        plain
-        type="primary"
-        @click="onSave"
-      >
-        <template #icon>
-          <ElIconCircleCheck />
-        </template>
-        <span>{{ ns('保存') }}</span>
       </el-button>
       
       <el-button
@@ -238,8 +206,8 @@ import type {
 } from "vue";
 
 import {
-  create,
   findOne,
+  findLastOrderBy,
   updateById,
   getDefaultInput,
   getPagePath,
@@ -308,18 +276,6 @@ watchEffect(async () => {
         message: `${ await nsAsync("请选择") } ${ n("菜单") }`,
       },
     ],
-    // 编码
-    code: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("编码") }`,
-      },
-      {
-        type: "string",
-        max: 64,
-        message: `${ n("编码") } ${ await nsAsync("长度不能超过 {0}", 64) }`,
-      },
-    ],
     // 名称
     lbl: [
       {
@@ -330,6 +286,13 @@ watchEffect(async () => {
         type: "string",
         max: 100,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
+      },
+    ],
+    // 排序
+    order_by: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
   };
@@ -428,13 +391,16 @@ async function showDialog(
   if (action === "add") {
     const [
       defaultModel,
+      order_by,
     ] = await Promise.all([
       getDefaultInput(),
+      findLastOrderBy(),
     ]);
     dialogModel = {
       ...defaultModel,
       ...builtInModel,
       ...model,
+      order_by: order_by + 1,
     };
   } else if (dialogAction === "copy") {
     if (!model?.id) {
@@ -442,16 +408,19 @@ async function showDialog(
     }
     const [
       data,
+      order_by,
     ] = await Promise.all([
       findOneModel({
         id: model.id,
-        is_deleted,
       }),
+      findLastOrderBy(),
     ]);
     if (data) {
       dialogModel = {
         ...data,
         id: undefined,
+        code: undefined,
+        order_by: order_by + 1,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
     }
@@ -508,12 +477,15 @@ async function onReset() {
   if (dialogAction === "add" || dialogAction === "copy") {
     const [
       defaultModel,
+      order_by,
     ] = await Promise.all([
       getDefaultInput(),
+      findLastOrderBy(),
     ]);
     dialogModel = {
       ...defaultModel,
       ...builtInModel,
+      order_by: order_by + 1,
     };
     nextTick(() => nextTick(() => formRef?.clearValidate()));
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -536,7 +508,6 @@ async function onRefresh() {
   ] = await Promise.all([
     await findOneModel({
       id,
-      is_deleted,
     }),
   ]);
   if (data) {
@@ -687,19 +658,7 @@ async function save() {
     return;
   }
   let id: FieldPermitId | undefined = undefined;
-  let msg = "";
-  if (dialogAction === "add" || dialogAction === "copy") {
-    const dialogModel2 = {
-      ...dialogModel,
-    };
-    if (!showBuildIn) {
-      Object.assign(dialogModel2, builtInModel);
-    }
-    Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
-    dialogModel.id = id;
-    msg = await nsAsync("新增成功");
-  } else if (dialogAction === "edit" || dialogAction === "view") {
+  let msg = "";if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
       return;
     }
@@ -737,11 +696,12 @@ async function onSaveAndCopy() {
   dialogAction = "copy";
   const [
     data,
+    order_by,
   ] = await Promise.all([
     findOneModel({
       id,
-      is_deleted,
     }),
+    findLastOrderBy(),
   ]);
   if (!data) {
     return;
@@ -749,6 +709,8 @@ async function onSaveAndCopy() {
   dialogModel = {
     ...data,
     id: undefined,
+    code: undefined,
+    order_by: order_by + 1,
   };
   Object.assign(dialogModel, { is_deleted: undefined });
 }
@@ -810,11 +772,8 @@ async function onInitI18ns() {
     "菜单",
     "编码",
     "名称",
+    "排序",
     "备注",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
   ];
   await Promise.all([
     initDetailI18ns(),

@@ -40,6 +40,8 @@ export function intoInput(
     code: model?.code,
     // 名称
     lbl: model?.lbl,
+    // 排序
+    order_by: model?.order_by,
     // 备注
     rem: model?.rem,
   };
@@ -131,52 +133,6 @@ export async function findCount(
 }
 
 /**
- * 创建字段权限
- * @param {FieldPermitInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
- */
-export async function create(
-  input: FieldPermitInput,
-  unique_type?: UniqueType,
-  opt?: GqlOpt,
-): Promise<FieldPermitId> {
-  const ids = await creates(
-    [ input ],
-    unique_type,
-    opt,
-  );
-  const id = ids[0];
-  return id;
-}
-
-/**
- * 批量创建字段权限
- */
-export async function creates(
-  inputs: FieldPermitInput[],
-  unique_type?: UniqueType,
-  opt?: GqlOpt,
-): Promise<FieldPermitId[]> {
-  inputs = inputs.map(intoInput);
-  const data: {
-    createsFieldPermit: Mutation["createsFieldPermit"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($inputs: [FieldPermitInput!]!, $unique_type: UniqueType) {
-        createsFieldPermit(inputs: $inputs, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      inputs,
-      unique_type,
-    },
-  }, opt);
-  const ids = data.createsFieldPermit;
-  return ids;
-}
-
-/**
  * 根据 id 修改字段权限
  */
 export async function updateById(
@@ -226,75 +182,6 @@ export async function findById(
   const model = data.findByIdFieldPermit;
   await setLblById(model);
   return model;
-}
-
-/**
- * 根据 ids 删除字段权限
- */
-export async function deleteByIds(
-  ids: FieldPermitId[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    deleteByIdsFieldPermit: Mutation["deleteByIdsFieldPermit"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [FieldPermitId!]!) {
-        deleteByIdsFieldPermit(ids: $ids)
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const res = data.deleteByIdsFieldPermit;
-  return res;
-}
-
-/**
- * 根据 ids 还原字段权限
- */
-export async function revertByIds(
-  ids: FieldPermitId[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    revertByIdsFieldPermit: Mutation["revertByIdsFieldPermit"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [FieldPermitId!]!) {
-        revertByIdsFieldPermit(ids: $ids)
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const res = data.revertByIdsFieldPermit;
-  return res;
-}
-
-/**
- * 根据 ids 彻底删除字段权限
- */
-export async function forceDeleteByIds(
-  ids: FieldPermitId[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    forceDeleteByIdsFieldPermit: Mutation["forceDeleteByIdsFieldPermit"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [FieldPermitId!]!) {
-        forceDeleteByIdsFieldPermit(ids: $ids)
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const res = data.forceDeleteByIdsFieldPermit;
-  return res;
 }
 
 export async function findAllMenu(
@@ -379,8 +266,8 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsFieldPermit {
             menu_id_lbl
-            code
             lbl
+            order_by
             rem
           }
           findAllMenu {
@@ -487,54 +374,22 @@ export function useExportExcel(routePath: string) {
 }
 
 /**
- * 批量导入字段权限
+ * 查找 字段权限 order_by 字段的最大值
  */
-export async function importModels(
-  inputs: FieldPermitInput[],
-  percentage: Ref<number>,
-  isCancel: Ref<boolean>,
+export async function findLastOrderBy(
   opt?: GqlOpt,
 ) {
-  const {
-    nsAsync,
-  } = useI18n();
-  
-  opt = opt || { };
-  opt.showErrMsg = false;
-  opt.notLoading = true;
-  
-  let succNum = 0;
-  let failNum = 0;
-  const failErrMsgs: string[] = [ ];
-  percentage.value = 0;
-  
-  const len = inputs.length;
-  const inputsArr = splitCreateArr(inputs);
-  
-  let i = 0;
-  for (const inputs of inputsArr) {
-    if (isCancel.value) {
-      break;
-    }
-    
-    i += inputs.length;
-    
-    try {
-      await creates(
-        inputs,
-        UniqueType.Update,
-        opt,
-      );
-      succNum += inputs.length;
-    } catch (err) {
-      failNum += inputs.length;
-      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));
-    }
-    
-    percentage.value = Math.floor((i + 1) / len * 100);
-  }
-  
-  return showUploadMsg(succNum, failNum, failErrMsgs);
+  const data: {
+    findLastOrderByFieldPermit: Query["findLastOrderByFieldPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        findLastOrderByFieldPermit
+      }
+    `,
+  }, opt);
+  const res = data.findLastOrderByFieldPermit;
+  return res;
 }
 
 export function getPagePath() {
@@ -544,6 +399,7 @@ export function getPagePath() {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: FieldPermitInput = {
+    order_by: 1,
   };
   return defaultInput;
 }
