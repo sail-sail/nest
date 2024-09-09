@@ -593,14 +593,14 @@ async fn get_from_query(
   inner join base_role on base_role.id=base_role_data_permit.role_id where base_role_data_permit.is_deleted=?
   group by role_id) _data_permit on _data_permit.role_id=t.id
   left join base_role_field_permit on base_role_field_permit.role_id=t.id and base_role_field_permit.is_deleted=?
-  left join base_field_permit on base_role_field_permit.field_permit_id=base_field_permit.id and base_field_permit.is_deleted=?
+  left join base_field_permit on base_role_field_permit.field_permit_id=base_field_permit.id
   left join (select json_objectagg(base_role_field_permit.order_by,base_field_permit.id) field_permit_ids,
   json_objectagg(base_role_field_permit.order_by,base_field_permit.lbl) field_permit_ids_lbl,
   base_role.id role_id from base_role_field_permit
   inner join base_field_permit on base_field_permit.id=base_role_field_permit.field_permit_id
   inner join base_role on base_role.id=base_role_field_permit.role_id where base_role_field_permit.is_deleted=?
   group by role_id) _field_permit on _field_permit.role_id=t.id"#.to_owned();
-  for _ in 0..12 {
+  for _ in 0..11 {
     args.push(is_deleted.into());
   }
   Ok(from_query)
@@ -2134,6 +2134,7 @@ pub async fn update_tenant_by_id(
 // MARK: update_by_id
 /// 根据 id 修改角色
 #[allow(unused_mut)]
+#[allow(unused_variables)]
 pub async fn update_by_id(
   id: RoleId,
   mut input: RoleInput,
@@ -3406,6 +3407,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
+  #[allow(unused_mut)]
   let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);
   
   sql_wheres.push("t.is_deleted=0");

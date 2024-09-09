@@ -204,32 +204,14 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原字段权限
-#[allow(dead_code)]
-pub async fn revert_by_ids(
-  ids: Vec<FieldPermitId>,
+/// 查找 字段权限 order_by 字段的最大值
+pub async fn find_last_order_by(
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u32> {
   
-  let num = field_permit_dao::revert_by_ids(
-    ids,
+  let res = field_permit_dao::find_last_order_by(
     options,
   ).await?;
   
-  Ok(num)
-}
-
-/// 根据 ids 彻底删除字段权限
-#[allow(dead_code)]
-pub async fn force_delete_by_ids(
-  ids: Vec<FieldPermitId>,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = field_permit_dao::force_delete_by_ids(
-    ids,
-    options,
-  ).await?;
-  
-  Ok(num)
+  Ok(res)
 }

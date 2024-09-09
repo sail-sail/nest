@@ -1612,6 +1612,7 @@ pub async fn create(
 // MARK: update_by_id
 /// 根据 id 修改国际化
 #[allow(unused_mut)]
+#[allow(unused_variables)]
 pub async fn update_by_id(
   id: I18nId,
   mut input: I18nInput,
