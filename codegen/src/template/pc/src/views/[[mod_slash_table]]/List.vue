@@ -565,7 +565,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
     un-m="x-1.5 t-1.5"
     un-flex="~ nowrap"
   >
-    <template v-if="search.is_deleted !== 1"><#
+    <template v-if="<# if (hasIsDeleted) { #>search.is_deleted !== 1<# } else { #>true<# } #>"><#
       if (opts.noAdd !== true) {
       #>
       
@@ -826,7 +826,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
     </template>
     
     <template v-else><#
-      if (opts.noRevert !== true) {
+      if (opts.noRevert !== true && hasIsDeleted) {
       #>
       
       <el-button
@@ -1636,7 +1636,7 @@ import {
   getPagePath,
   findAll,
   findCount,<#
-    if (opts.noRevert !== true) {
+    if (opts.noRevert !== true && hasIsDeleted) {
   #>
   revertByIds,<#
     }
@@ -3558,7 +3558,7 @@ async function onLockByIds(is_locked: 0 | 1) {
 }<#
 }
 #><#
-if (opts.noRevert !== true) {
+if (opts.noRevert !== true && hasIsDeleted) {
 #>
 
 /** 点击还原 */

@@ -108,11 +108,4 @@ export default defineStore("field_permit", function() {
     getFieldPermit,
     setTableColumnsFieldPermit,
   });
-},
-{
-  persist: {
-    paths: [
-      "field_permits",
-    ],
-  },
 });
