@@ -177,29 +177,18 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原字段权限
- */
-export async function revertByIds(
-  ids: FieldPermitId[],
-): Promise<number> {
-  const data = await field_permitDao.revertByIds(ids);
-  return data;
-}
-
-/**
- * 根据 ids 彻底删除字段权限
- */
-export async function forceDeleteByIds(
-  ids: FieldPermitId[],
-): Promise<number> {
-  const data = await field_permitDao.forceDeleteByIds(ids);
-  return data;
-}
-
-/**
  * 获取字段权限字段注释
  */
 export async function getFieldComments(): Promise<FieldPermitFieldComment> {
   const data = await field_permitDao.getFieldComments();
+  return data;
+}
+
+/**
+ * 查找 字段权限 order_by 字段的最大值
+ */
+export async function findLastOrderBy(
+): Promise<number> {
+  const data = await field_permitDao.findLastOrderBy();
   return data;
 }
