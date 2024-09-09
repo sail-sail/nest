@@ -48,6 +48,9 @@ lazy_static! {
 #[graphql(rename_fields = "snake_case", name = "MenuModel")]
 #[allow(dead_code)]
 pub struct MenuModel {
+  /// 隐藏字段
+  #[graphql(skip)]
+  pub is_hidden: u8,
   /// ID
   pub id: MenuId,
   /// 父菜单
@@ -107,6 +110,8 @@ impl FromRow<'_, MySqlRow> for MenuModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
     
     let server_i18n_enable = get_server_i18n_enable();
+    // 隐藏字段
+    let is_hidden = row.try_get("is_hidden")?;
     // ID
     let id: MenuId = row.try_get("id")?;
     // 父菜单
@@ -189,6 +194,7 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let is_deleted: u8 = row.try_get("is_deleted")?;
     
     let model = Self {
+      is_hidden,
       is_deleted,
       id,
       parent_id,
@@ -290,6 +296,8 @@ pub struct MenuSearch {
   pub id: Option<MenuId>,
   /// ID列表
   pub ids: Option<Vec<MenuId>>,
+  #[graphql(skip)]
+  pub is_hidden: Option<Vec<u8>>,
   pub is_deleted: Option<u8>,
   /// 父菜单
   #[graphql(name = "parent_id")]
@@ -376,6 +384,9 @@ impl std::fmt::Debug for MenuSearch {
     }
     if let Some(ref ids) = self.ids {
       item = item.field("ids", ids);
+    }
+    if let Some(ref is_hidden) = self.is_hidden {
+      item = item.field("is_hidden", is_hidden);
     }
     if let Some(ref is_deleted) = self.is_deleted {
       if *is_deleted == 1 {
@@ -464,6 +475,9 @@ pub struct MenuInput {
   /// 删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
+  /// 隐藏字段
+  #[graphql(skip)]
+  pub is_hidden: Option<u8>,
   /// 父菜单
   #[graphql(name = "parent_id")]
   pub parent_id: Option<MenuId>,
@@ -534,6 +548,7 @@ impl From<MenuModel> for MenuInput {
     Self {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
+      is_hidden: model.is_hidden.into(),
       // 父菜单
       parent_id: model.parent_id.into(),
       parent_id_lbl: model.parent_id_lbl.into(),
@@ -576,6 +591,8 @@ impl From<MenuInput> for MenuSearch {
     Self {
       id: input.id,
       ids: None,
+      // 隐藏字段
+      is_hidden: input.is_hidden.map(|x| vec![x]),
       is_deleted: None,
       // 父菜单
       parent_id: input.parent_id.map(|x| vec![x]),
