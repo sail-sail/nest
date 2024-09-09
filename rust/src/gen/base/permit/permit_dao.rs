@@ -1622,6 +1622,7 @@ async fn refresh_lang_by_input(
 // MARK: update_by_id
 /// 根据 id 修改按钮权限
 #[allow(unused_mut)]
+#[allow(unused_variables)]
 pub async fn update_by_id(
   id: PermitId,
   mut input: PermitInput,

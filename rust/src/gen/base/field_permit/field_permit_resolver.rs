@@ -76,41 +76,6 @@ pub async fn find_by_id(
   Ok(model)
 }
 
-/// 创建字段权限
-#[allow(dead_code)]
-pub async fn creates(
-  inputs: Vec<FieldPermitInput>,
-  options: Option<Options>,
-) -> Result<Vec<FieldPermitId>> {
-  
-  let mut inputs = inputs;
-  for input in &mut inputs {
-    input.id = None;
-  }
-  let inputs = inputs;
-  
-  let mut inputs2 = Vec::with_capacity(inputs.len());
-  for input in inputs {
-    let input = field_permit_service::set_id_by_lbl(
-      input,
-    ).await?;
-    inputs2.push(input);
-  }
-  let inputs = inputs2;
-  
-  use_permit(
-    get_route_path_field_permit(),
-    "add".to_owned(),
-  ).await?;
-  
-  let ids = field_permit_service::creates(
-    inputs,
-    options,
-  ).await?;
-  
-  Ok(ids)
-}
-
 /// 根据 id 修改字段权限
 #[allow(dead_code)]
 pub async fn update_by_id(
@@ -141,26 +106,6 @@ pub async fn update_by_id(
   Ok(res)
 }
 
-/// 根据 ids 删除字段权限
-#[allow(dead_code)]
-pub async fn delete_by_ids(
-  ids: Vec<FieldPermitId>,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  use_permit(
-    get_route_path_field_permit(),
-    "delete".to_owned(),
-  ).await?;
-  
-  let num = field_permit_service::delete_by_ids(
-    ids,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 获取字段权限字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
@@ -173,42 +118,14 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原字段权限
-#[allow(dead_code)]
-pub async fn revert_by_ids(
-  ids: Vec<FieldPermitId>,
+/// 查找 字段权限 order_by 字段的最大值
+pub async fn find_last_order_by(
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u32> {
   
-  use_permit(
-    get_route_path_field_permit(),
-    "delete".to_owned(),
-  ).await?;
-  
-  let num = field_permit_service::revert_by_ids(
-    ids,
+  let res = field_permit_service::find_last_order_by(
     options,
   ).await?;
   
-  Ok(num)
-}
-
-/// 根据 ids 彻底删除字段权限
-#[allow(dead_code)]
-pub async fn force_delete_by_ids(
-  ids: Vec<FieldPermitId>,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  use_permit(
-    get_route_path_field_permit(),
-    "force_delete".to_owned(),
-  ).await?;
-  
-  let num = field_permit_service::force_delete_by_ids(
-    ids,
-    options,
-  ).await?;
-  
-  Ok(num)
+  Ok(res)
 }
