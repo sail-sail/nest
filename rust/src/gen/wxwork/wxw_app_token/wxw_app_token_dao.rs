@@ -1857,6 +1857,7 @@ pub async fn update_tenant_by_id(
 // MARK: update_by_id
 /// 根据 id 修改企微应用接口凭据
 #[allow(unused_mut)]
+#[allow(unused_variables)]
 pub async fn update_by_id(
   id: WxwAppTokenId,
   mut input: WxwAppTokenInput,
