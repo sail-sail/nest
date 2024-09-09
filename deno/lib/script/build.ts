@@ -11,8 +11,6 @@ import {
 
 import { copyDir } from "/lib/util/fs_util.ts";
 
-import * as child_process from "node:child_process";
-
 const separator = Deno.build.os == "windows" ? ";" : ":";
 const path = Deno.env.get("path") || "";
 const paths = path.split(separator);
@@ -296,11 +294,6 @@ async function nuxt() {
   await Deno.mkdir(`${ buildDir }/../nuxt/`, { recursive: true });
   await copyDir(`${ nuxtDir }/.output/`, `${ buildDir }/../nuxt/`);
   await Deno.copyFile(`${ nuxtDir }/.npmrc`, `${ buildDir }/../nuxt/server/.npmrc`);
-  
-  child_process.execSync(`npm install --omit=dev --legacy-peer-deps`, {
-    cwd: `${ buildDir }/../nuxt/server/`,
-    stdio: "inherit",
-  });
   
   const parsedEnv = parseEnv(await Deno.readTextFile(`${ nuxtDir }/.env.${ env }`));
   
