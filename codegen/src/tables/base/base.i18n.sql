@@ -59,7 +59,6 @@ CREATE TABLE if not exists `base_field_permit_lang` (
   `field_permit_id` varchar(22) NOT NULL DEFAULT '' COMMENT '字段权限',
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
-  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
-  INDEX (`lang_id`, `field_permit_id`, `is_deleted`),
+  INDEX (`lang_id`, `field_permit_id`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='字段权限语言';
