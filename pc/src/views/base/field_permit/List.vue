@@ -117,17 +117,6 @@
               <ElIconRemove />
             </el-icon>
           </div>
-          
-          <el-checkbox
-            v-if="!isLocked"
-            :set="search.is_deleted = search.is_deleted ?? 0"
-            v-model="search.is_deleted"
-            :false-value="0"
-            :true-value="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
-          </el-checkbox>
         </div>
       </el-form-item>
       
@@ -182,31 +171,7 @@
     un-m="x-1.5 t-1.5"
     un-flex="~ nowrap"
   >
-    <template v-if="search.is_deleted !== 1">
-      
-      <el-button
-        v-if="permit('add') && !isLocked"
-        plain
-        type="primary"
-        @click="openAdd"
-      >
-        <template #icon>
-          <ElIconCirclePlus />
-        </template>
-        <span>{{ ns('新增') }}</span>
-      </el-button>
-      
-      <el-button
-        v-if="permit('add') && !isLocked"
-        plain
-        type="primary"
-        @click="openCopy"
-      >
-        <template #icon>
-          <ElIconCopyDocument />
-        </template>
-        <span>{{ ns('复制') }}</span>
-      </el-button>
+    <template v-if="true">
       
       <el-button
         v-if="permit('edit') && !isLocked"
@@ -218,18 +183,6 @@
           <ElIconEdit />
         </template>
         <span>{{ ns('编辑') }}</span>
-      </el-button>
-      
-      <el-button
-        v-if="permit('delete') && !isLocked"
-        plain
-        type="danger"
-        @click="onDeleteByIds"
-      >
-        <template #icon>
-          <ElIconCircleClose />
-        </template>
-        <span>{{ ns('删除') }}</span>
       </el-button>
       
       <el-button
@@ -252,96 +205,9 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <el-dropdown
-        trigger="click"
-        un-m="x-3"
-      >
-        
-        <el-button
-          plain
-        >
-          <span
-            v-if="exportExcel.workerStatus === 'RUNNING'"
-            un-text="red"
-          >
-            {{ ns('正在导出') }}
-          </span>
-          <span
-            v-else-if="exportExcel.loading"
-            un-text="red"
-          >
-            {{ ns('正在为导出加载数据') }}
-          </span>
-          <span
-            v-else
-          >
-            {{ ns('更多操作') }}
-          </span>
-          <el-icon>
-            <ElIconArrowDown />
-          </el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu
-            un-min="w-20"
-            un-whitespace-nowrap
-          >
-            
-            <el-dropdown-item
-              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
-              un-justify-center
-              @click="onExport"
-            >
-              <span>{{ ns('导出') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-else-if="!exportExcel.loading"
-              un-justify-center
-              @click="onCancelExport"
-            >
-              <span un-text="red">{{ ns('取消导出') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('add') && !isLocked"
-              un-justify-center
-              @click="onImportExcel"
-            >
-              <span>{{ ns('导入') }}</span>
-            </el-dropdown-item>
-            
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      
     </template>
     
     <template v-else>
-      
-      <el-button
-        v-if="permit('delete') && !isLocked"
-        plain
-        type="primary"
-        @click="onRevertByIds"
-      >
-        <template #icon>
-          <ElIconCircleCheck />
-        </template>
-        <span>{{ ns('还原') }}</span>
-      </el-button>
-      
-      <el-button
-        v-if="permit('force_delete') && !isLocked"
-        plain
-        type="danger"
-        @click="onForceDeleteByIds"
-      >
-        <template #icon>
-          <ElIconCircleClose />
-        </template>
-        <span>{{ ns('彻底删除') }}</span>
-      </el-button>
       
       <el-button
         plain
@@ -362,60 +228,6 @@
         </template>
         <span>{{ ns('刷新') }}</span>
       </el-button>
-      
-      <el-dropdown
-        trigger="click"
-        un-m="x-3"
-      >
-        
-        <el-button
-          plain
-        >
-          <span
-            v-if="exportExcel.workerStatus === 'RUNNING'"
-          >
-            {{ ns('正在导出') }}
-          </span>
-          <span
-            v-else-if="exportExcel.loading"
-            un-text="red"
-          >
-            {{ ns('正在为导出加载数据') }}
-          </span>
-          <span
-            v-else
-          >
-            {{ ns('更多操作') }}
-          </span>
-          <el-icon>
-            <ElIconArrowDown />
-          </el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu
-            un-min="w-20"
-            un-whitespace-nowrap
-          >
-            
-            <el-dropdown-item
-              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
-              un-justify-center
-              @click="onExport"
-            >
-              <span>{{ ns('导出') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-else-if="!exportExcel.loading"
-              un-justify-center
-              @click="onCancelExport"
-            >
-              <span un-text="red">{{ ns('取消导出') }}</span>
-            </el-dropdown-item>
-            
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
       
     </template>
     
@@ -461,7 +273,6 @@
         @header-dragend="headerDragend"
         @row-dblclick="onRowDblclick"
         @keydown.escape="onEmptySelected"
-        @keydown.ctrl.delete.stop="onDeleteByIds"
         @keydown.enter="onRowEnter"
         @keydown.up="onRowUp"
         @keydown.down="onRowDown"
@@ -471,7 +282,6 @@
         @keydown.end="onRowEnd"
         @keydown.page-up="onPageUp"
         @keydown.page-down="onPageDown"
-        @keydown.ctrl.i="onInsert"
       >
         
         <el-table-column
@@ -513,44 +323,31 @@
             </el-table-column>
           </template>
           
+          <!-- 排序 -->
+          <template v-else-if="'order_by' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomInputNumber
+                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.order_by"
+                  :min="0"
+                  @change="updateById(
+                    row.id,
+                    {
+                      order_by: row.order_by,
+                    },
+                    { notLoading: true },
+                  )"
+                ></CustomInputNumber>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 备注 -->
           <template v-else-if="'rem' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 创建人 -->
-          <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 创建时间 -->
-          <template v-else-if="'create_time_lbl' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 更新人 -->
-          <template v-else-if="'update_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.update_usr_id == null)">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 更新时间 -->
-          <template v-else-if="'update_time_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -598,17 +395,6 @@
     ref="detailRef"
   ></Detail>
   
-  <UploadFileDialog
-    ref="uploadFileDialogRef"
-    @download-import-template="onDownloadImportTemplate"
-  ></UploadFileDialog>
-  
-  <ImportPercentageDialog
-    :percentage="importPercentage"
-    :dialog_visible="isImporting"
-    @stop="stopImport"
-  ></ImportPercentageDialog>
-  
 </div>
 </template>
 
@@ -619,13 +405,7 @@ import {
   getPagePath,
   findAll,
   findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  useExportExcel,
   updateById,
-  importModels,
-  useDownloadImportTemplate,
 } from "./Api";
 
 import {
@@ -673,7 +453,6 @@ const emit = defineEmits<{
 }>();
 
 const props = defineProps<{
-  is_deleted?: string;
   showBuildIn?: string;
   isPagination?: string;
   isLocked?: string;
@@ -693,7 +472,6 @@ const props = defineProps<{
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
-  is_deleted: "0|1",
   showBuildIn: "0|1",
   isPagination: "0|1",
   isLocked: "0|1",
@@ -702,10 +480,6 @@ const builtInSearchType: { [key: string]: string } = {
   ids: "string[]",
   menu_id: "string[]",
   menu_id_lbl: "string[]",
-  create_usr_id: "string[]",
-  create_usr_id_lbl: "string[]",
-  update_usr_id: "string[]",
-  update_usr_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -751,7 +525,6 @@ let tableRef = $ref<InstanceType<typeof ElTable>>();
 /** 查询 */
 function initSearch() {
   const search = {
-    is_deleted: 0,
   } as FieldPermitSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
@@ -949,48 +722,19 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "排序",
+      prop: "order_by",
+      width: 100,
+      sortable: "custom",
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "备注",
       prop: "rem",
       width: 280,
       align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "创建人",
-      prop: "create_usr_id_lbl",
-      sortBy: "create_usr_id_lbl",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "创建时间",
-      prop: "create_time_lbl",
-      sortBy: "create_time",
-      width: 150,
-      sortable: "custom",
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "更新人",
-      prop: "update_usr_id_lbl",
-      sortBy: "update_usr_id_lbl",
-      width: 120,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "更新时间",
-      prop: "update_time_lbl",
-      sortBy: "update_time",
-      width: 150,
-      sortable: "custom",
-      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1046,7 +790,6 @@ async function dataGrid(
 }
 
 function getDataSearch() {
-  const is_deleted = search.is_deleted;
   const search2 = {
     ...search,
     idsChecked: undefined,
@@ -1054,7 +797,6 @@ function getDataSearch() {
   if (!showBuildIn) {
     Object.assign(search2, builtInSearch);
   }
-  search2.is_deleted = is_deleted;
   if (idsChecked) {
     search2.ids = selectedIds;
   }
@@ -1103,7 +845,7 @@ async function useFindCount(
 }
 
 const _defaultSort: Sort = {
-  prop: "create_time",
+  prop: "order_by",
   order: "ascending",
 };
 
@@ -1145,184 +887,6 @@ async function onSortChange(
   sort.prop = prop2;
   sort.order = order || "ascending";
   await dataGrid();
-}
-
-let exportExcel = $ref(useExportExcel(pagePath));
-
-/** 导出Excel */
-async function onExport() {
-  const search2 = getDataSearch();
-  await exportExcel.workerFn(
-    toExcelColumns(tableColumns),
-    search2,
-    [ sort ],
-  );
-}
-
-/** 取消导出Excel */
-async function onCancelExport() {
-  exportExcel.workerTerminate();
-}
-
-/** 打开新增页面 */
-async function openAdd() {
-  if (isLocked) {
-    return;
-  }
-  if (!detailRef) {
-    return;
-  }
-  if (!permit("add")) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  const {
-    changedIds,
-  } = await detailRef.showDialog({
-    title: await nsAsync("新增") + " " + await nsAsync("字段权限"),
-    action: "add",
-    builtInModel,
-    showBuildIn: $$(showBuildIn),
-  });
-  tableFocus();
-  if (changedIds.length === 0) {
-    return;
-  }
-  selectedIds = [
-    ...changedIds,
-  ];
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(true);
-  emit("add", changedIds);
-}
-
-/** 打开复制页面 */
-async function openCopy() {
-  if (isLocked) {
-    return;
-  }
-  if (!detailRef) {
-    return;
-  }
-  if (!permit("add")) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 复制 的 {0}", await nsAsync("字段权限")));
-    return;
-  }
-  const {
-    changedIds,
-  } = await detailRef.showDialog({
-    title: await nsAsync("复制") + " " + await nsAsync("字段权限"),
-    action: "copy",
-    builtInModel,
-    showBuildIn: $$(showBuildIn),
-    model: {
-      id: selectedIds[selectedIds.length - 1],
-    },
-  });
-  tableFocus();
-  if (changedIds.length === 0) {
-    return;
-  }
-  selectedIds = [
-    ...changedIds,
-  ];
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(true);
-  emit("add", changedIds);
-}
-
-/** 打开新增或复制页面, 未选择任何行则为新增, 选中一行为复制此行 */
-async function onInsert() {
-  if (isLocked) {
-    return;
-  }
-  await openAdd();
-}
-
-let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
-
-let importPercentage = $ref(0);
-let isImporting = $ref(false);
-let isStopImport = $ref(false);
-
-const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
-
-/**
- * 下载导入模板
- */
-async function onDownloadImportTemplate() {
-  await downloadImportTemplate.workerFn();
-}
-
-/** 弹出导入窗口 */
-async function onImportExcel() {
-  if (isLocked) {
-    return;
-  }
-  if (!uploadFileDialogRef) {
-    return;
-  }
-  const header: { [key: string]: string } = {
-    [ await nAsync("菜单") ]: "menu_id_lbl",
-    [ await nAsync("编码") ]: "code",
-    [ await nAsync("名称") ]: "lbl",
-    [ await nAsync("备注") ]: "rem",
-  };
-  const file = await uploadFileDialogRef.showDialog({
-    title: await nsAsync("批量导入"),
-    accept: ".xlsx",
-  });
-  tableFocus();
-  if (!file) {
-    return;
-  }
-  isStopImport = false;
-  isImporting = true;
-  importPercentage = 0;
-  let msg: VNode | undefined = undefined;
-  let succNum = 0;
-  try {
-    const messageHandler = ElMessage.info(await nsAsync("正在导入..."));
-    const models = await getExcelData<FieldPermitInput>(
-      file,
-      header,
-      {
-        key_types: {
-          "menu_id_lbl": "string",
-          "code": "string",
-          "lbl": "string",
-          "rem": "string",
-        },
-      },
-    );
-    messageHandler.close();
-    const res = await importModels(
-      models,
-      $$(importPercentage),
-      $$(isStopImport),
-    );
-    msg = res.msg;
-    succNum = res.succNum;
-  } finally {
-    isImporting = false;
-  }
-  if (msg) {
-    ElMessageBox.alert(msg)
-  }
-  if (succNum > 0) {
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
-/** 取消导入 */
-async function stopImport() {
-  isStopImport = true;
-  isImporting = false;
 }
 
 /** 打开编辑页面 */
@@ -1372,7 +936,6 @@ async function onRowEnter(e: KeyboardEvent) {
   if (e.ctrlKey) {
     await openEdit();
   } else if (e.shiftKey) {
-    await openCopy();
   } else {
     await openView();
   }
@@ -1407,7 +970,6 @@ async function openView() {
     return;
   }
   const search = getDataSearch();
-  const is_deleted = search.is_deleted;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1418,7 +980,6 @@ async function openView() {
     isLocked: $$(isLocked),
     model: {
       ids: selectedIds,
-      is_deleted,
     },
   });
   tableFocus();
@@ -1430,116 +991,14 @@ async function openView() {
   emit("edit", changedIds);
 }
 
-/** 点击删除 */
-async function onDeleteByIds() {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (!permit("delete")) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("字段权限")));
-    return;
-  }
-  try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("字段权限")) }?`, {
-      confirmButtonText: await nsAsync("确定"),
-      cancelButtonText: await nsAsync("取消"),
-      type: "warning",
-    });
-  } catch (err) {
-    return;
-  }
-  const num = await deleteByIds(selectedIds);
-  if (num) {
-    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
-    selectedIds = [ ];
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("字段权限")));
-    emit("remove", num);
-  }
-}
-
-/** 点击彻底删除 */
-async function onForceDeleteByIds() {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (!permit("forceDelete")) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("字段权限")));
-    return;
-  }
-  try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("字段权限")) }?`, {
-      confirmButtonText: await nsAsync("确定"),
-      cancelButtonText: await nsAsync("取消"),
-      type: "warning",
-    });
-  } catch (err) {
-    return;
-  }
-  const num = await forceDeleteByIds(selectedIds);
-  if (num) {
-    selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("字段权限")));
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
-/** 点击还原 */
-async function onRevertByIds() {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (permit("delete") === false) {
-    ElMessage.warning(await nsAsync("无权限"));
-    return;
-  }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("字段权限")));
-    return;
-  }
-  try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("字段权限")) }?`, {
-      confirmButtonText: await nsAsync("确定"),
-      cancelButtonText: await nsAsync("取消"),
-      type: "warning",
-    });
-  } catch (err) {
-    return;
-  }
-  const num = await revertByIds(selectedIds);
-  if (num) {
-    search.is_deleted = 0;
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("字段权限")));
-    emit("revert", num);
-  }
-}
-
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
     "菜单",
     "编码",
     "名称",
+    "排序",
     "备注",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
   ];
   await Promise.all([
     initListI18ns(),
@@ -1582,7 +1041,6 @@ watch(
     if (isSearchReset) {
       return;
     }
-    search.is_deleted = builtInSearch.is_deleted;
     if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
       return;
     }

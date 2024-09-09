@@ -4925,8 +4925,12 @@ async function onSaveAndCopy() {
     #>
   ] = await Promise.all([
     findOneModel({
-      id,
-      is_deleted,
+      id,<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted,<#
+      }
+      #>
     }),<#
     if (hasOrderBy) {
     #>
