@@ -242,7 +242,6 @@ async function getFromQuery(
     and base_role_permit.is_deleted=${ args.push(is_deleted) }
   left join base_permit
     on base_role_permit.permit_id=base_permit.id
-    and base_permit.is_deleted=${ args.push(is_deleted) }
   left join(select
   json_objectagg(base_role_permit.order_by,base_permit.id) permit_ids,
   json_objectagg(base_role_permit.order_by,base_permit.lbl) permit_ids_lbl,
