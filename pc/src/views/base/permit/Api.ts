@@ -40,6 +40,8 @@ export function intoInput(
     code: model?.code,
     // 名称
     lbl: model?.lbl,
+    // 排序
+    order_by: model?.order_by,
     // 备注
     rem: model?.rem,
   };
@@ -131,52 +133,6 @@ export async function findCount(
 }
 
 /**
- * 创建按钮权限
- * @param {PermitInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
- */
-export async function create(
-  input: PermitInput,
-  unique_type?: UniqueType,
-  opt?: GqlOpt,
-): Promise<PermitId> {
-  const ids = await creates(
-    [ input ],
-    unique_type,
-    opt,
-  );
-  const id = ids[0];
-  return id;
-}
-
-/**
- * 批量创建按钮权限
- */
-export async function creates(
-  inputs: PermitInput[],
-  unique_type?: UniqueType,
-  opt?: GqlOpt,
-): Promise<PermitId[]> {
-  inputs = inputs.map(intoInput);
-  const data: {
-    createsPermit: Mutation["createsPermit"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($inputs: [PermitInput!]!, $unique_type: UniqueType) {
-        createsPermit(inputs: $inputs, unique_type: $unique_type)
-      }
-    `,
-    variables: {
-      inputs,
-      unique_type,
-    },
-  }, opt);
-  const ids = data.createsPermit;
-  return ids;
-}
-
-/**
  * 根据 id 修改按钮权限
  */
 export async function updateById(
@@ -226,75 +182,6 @@ export async function findById(
   const model = data.findByIdPermit;
   await setLblById(model);
   return model;
-}
-
-/**
- * 根据 ids 删除按钮权限
- */
-export async function deleteByIds(
-  ids: PermitId[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    deleteByIdsPermit: Mutation["deleteByIdsPermit"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [PermitId!]!) {
-        deleteByIdsPermit(ids: $ids)
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const res = data.deleteByIdsPermit;
-  return res;
-}
-
-/**
- * 根据 ids 还原按钮权限
- */
-export async function revertByIds(
-  ids: PermitId[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    revertByIdsPermit: Mutation["revertByIdsPermit"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [PermitId!]!) {
-        revertByIdsPermit(ids: $ids)
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const res = data.revertByIdsPermit;
-  return res;
-}
-
-/**
- * 根据 ids 彻底删除按钮权限
- */
-export async function forceDeleteByIds(
-  ids: PermitId[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    forceDeleteByIdsPermit: Mutation["forceDeleteByIdsPermit"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [PermitId!]!) {
-        forceDeleteByIdsPermit(ids: $ids)
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const res = data.forceDeleteByIdsPermit;
-  return res;
 }
 
 export async function findAllMenu(
@@ -378,14 +265,8 @@ export function useDownloadImportTemplate(routePath: string) {
       query: /* GraphQL */ `
         query {
           getFieldCommentsPermit {
-            menu_id_lbl
-            code
             lbl
             rem
-          }
-          findAllMenu {
-            id
-            lbl
           }
         }
       `,
@@ -487,54 +368,22 @@ export function useExportExcel(routePath: string) {
 }
 
 /**
- * 批量导入按钮权限
+ * 查找 按钮权限 order_by 字段的最大值
  */
-export async function importModels(
-  inputs: PermitInput[],
-  percentage: Ref<number>,
-  isCancel: Ref<boolean>,
+export async function findLastOrderBy(
   opt?: GqlOpt,
 ) {
-  const {
-    nsAsync,
-  } = useI18n();
-  
-  opt = opt || { };
-  opt.showErrMsg = false;
-  opt.notLoading = true;
-  
-  let succNum = 0;
-  let failNum = 0;
-  const failErrMsgs: string[] = [ ];
-  percentage.value = 0;
-  
-  const len = inputs.length;
-  const inputsArr = splitCreateArr(inputs);
-  
-  let i = 0;
-  for (const inputs of inputsArr) {
-    if (isCancel.value) {
-      break;
-    }
-    
-    i += inputs.length;
-    
-    try {
-      await creates(
-        inputs,
-        UniqueType.Update,
-        opt,
-      );
-      succNum += inputs.length;
-    } catch (err) {
-      failNum += inputs.length;
-      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));
-    }
-    
-    percentage.value = Math.floor((i + 1) / len * 100);
-  }
-  
-  return showUploadMsg(succNum, failNum, failErrMsgs);
+  const data: {
+    findLastOrderByPermit: Query["findLastOrderByPermit"];
+  } = await query({
+    query: /* GraphQL */ `
+      query {
+        findLastOrderByPermit
+      }
+    `,
+  }, opt);
+  const res = data.findLastOrderByPermit;
+  return res;
 }
 
 export function getPagePath() {
@@ -544,6 +393,7 @@ export function getPagePath() {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: PermitInput = {
+    order_by: 1,
   };
   return defaultInput;
 }
