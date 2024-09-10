@@ -17,26 +17,10 @@ type FieldPermitModel {
   code: String!
   "名称"
   lbl: String!
+  "排序"
+  order_by: Int!
   "备注"
   rem: String!
-  "创建人"
-  create_usr_id: UsrId!
-  "创建人"
-  create_usr_id_lbl: String!
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String!
-  "更新人"
-  update_usr_id: UsrId!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String!
-  "是否已删除"
-  is_deleted: Int!
 }
 type FieldPermitFieldComment {
   "ID"
@@ -49,24 +33,10 @@ type FieldPermitFieldComment {
   code: String!
   "名称"
   lbl: String!
+  "排序"
+  order_by: String!
   "备注"
   rem: String!
-  "创建人"
-  create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
-  "创建时间"
-  create_time: String!
-  "创建时间"
-  create_time_lbl: String!
-  "更新人"
-  update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: String!
-  "更新时间"
-  update_time_lbl: String!
 }
 input FieldPermitInput {
   "ID"
@@ -79,12 +49,12 @@ input FieldPermitInput {
   code: String
   "名称"
   lbl: String
+  "排序"
+  order_by: Int
   "备注"
   rem: String
 }
 input FieldPermitSearch {
-  "是否已删除"
-  is_deleted: Int
   "ID列表"
   ids: [FieldPermitId!]
   "ID"
@@ -103,22 +73,6 @@ input FieldPermitSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "创建人"
-  create_usr_id: [UsrId!]
-  "创建人"
-  create_usr_id_is_null: Boolean
-  "创建人"
-  create_usr_id_lbl: [String!]
-  "创建人"
-  create_usr_id_lbl_like: String
-  "更新人"
-  update_usr_id: [UsrId!]
-  "更新人"
-  update_usr_id_is_null: Boolean
-  "更新人"
-  update_usr_id_lbl: [String!]
-  "更新人"
-  update_usr_id_lbl_like: String
 }
 type Query {
   "根据条件查找字段权限总数"
@@ -131,18 +85,12 @@ type Query {
   findOneFieldPermit(search: FieldPermitSearch, sort: [SortInput!]): FieldPermitModel
   "根据 id 查找字段权限"
   findByIdFieldPermit(id: FieldPermitId!): FieldPermitModel
+  "查找字段权限 order_by 字段的最大值"
+  findLastOrderByFieldPermit: Int!
 }
 type Mutation {
-  "批量创建字段权限"
-  createsFieldPermit(inputs: [FieldPermitInput!]!, unique_type: UniqueType): [FieldPermitId!]!
   "根据 id 修改字段权限"
   updateByIdFieldPermit(id: FieldPermitId!, input: FieldPermitInput!): FieldPermitId!
-  "根据 ids 删除字段权限"
-  deleteByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
-  "根据 ids 还原字段权限"
-  revertByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
-  "根据 ids 彻底删除字段权限"
-  forceDeleteByIdsFieldPermit(ids: [FieldPermitId!]!): Int!
 }
 
 `);

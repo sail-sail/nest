@@ -69,7 +69,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 14 * 2);
+  let mut where_query = String::with_capacity(80 * 15 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -507,6 +507,30 @@ async fn get_where_query(
       args.push(update_time_lt.into());
     }
   }
+  // 隐藏记录
+  {
+    let is_hidden: Option<Vec<u8>> = match search {
+      Some(item) => item.is_hidden.clone(),
+      None => Default::default(),
+    };
+    if let Some(is_hidden) = is_hidden {
+      let arg = {
+        if is_hidden.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(is_hidden.len());
+          for item in is_hidden {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.is_hidden in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   Ok(where_query)
 }
 
@@ -650,6 +674,22 @@ pub async fn find_all(
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
         return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 隐藏记录
+  if let Some(search) = &search {
+    if search.is_hidden.is_some() {
+      let len = search.is_hidden.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.is_hidden.length > {ids_limit}"));
       }
     }
   }
@@ -855,6 +895,7 @@ pub async fn get_field_comments(
     "更新人".into(),
     "更新时间".into(),
     "更新时间".into(),
+    "隐藏记录".into(),
   ];
   
   let map = n_route.n_batch(
@@ -1540,7 +1581,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1565,9 +1606,11 @@ async fn _creates(
   sql_fields += ",order_by";
   // 备注
   sql_fields += ",rem";
+  // 隐藏记录
+  sql_fields += ",is_hidden";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 14 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 15 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1736,6 +1779,13 @@ async fn _creates(
     if let Some(rem) = input.rem {
       sql_values += ",?";
       args.push(rem.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 隐藏记录
+    if let Some(is_hidden) = input.is_hidden {
+      sql_values += ",?";
+      args.push(is_hidden.into());
     } else {
       sql_values += ",default";
     }
@@ -1921,6 +1971,7 @@ async fn refresh_lang_by_input(
 // MARK: update_by_id
 /// 根据 id 修改菜单
 #[allow(unused_mut)]
+#[allow(unused_variables)]
 pub async fn update_by_id(
   id: MenuId,
   mut input: MenuInput,
@@ -2036,7 +2087,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_fields = String::with_capacity(80 * 15 + 20);
   
   let mut field_num: usize = 0;
   // 父菜单
@@ -2090,6 +2141,12 @@ pub async fn update_by_id(
       sql_fields += "rem=?,";
       args.push(rem.into());
     }
+  }
+  // 隐藏记录
+  if let Some(is_hidden) = input.is_hidden {
+    field_num += 1;
+    sql_fields += "is_hidden=?,";
+    args.push(is_hidden.into());
   }
   
   if field_num > 0 {
@@ -2874,6 +2931,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
+  #[allow(unused_mut)]
   let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);
   
   sql_wheres.push("t.is_deleted=0");

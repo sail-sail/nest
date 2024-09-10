@@ -204,32 +204,14 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原按钮权限
-#[allow(dead_code)]
-pub async fn revert_by_ids(
-  ids: Vec<PermitId>,
+/// 查找 按钮权限 order_by 字段的最大值
+pub async fn find_last_order_by(
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u32> {
   
-  let num = permit_dao::revert_by_ids(
-    ids,
+  let res = permit_dao::find_last_order_by(
     options,
   ).await?;
   
-  Ok(num)
-}
-
-/// 根据 ids 彻底删除按钮权限
-#[allow(dead_code)]
-pub async fn force_delete_by_ids(
-  ids: Vec<PermitId>,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = permit_dao::force_delete_by_ids(
-    ids,
-    options,
-  ).await?;
-  
-  Ok(num)
+  Ok(res)
 }

@@ -617,6 +617,10 @@ async fn get_where_query(
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());<#
+  } else {
+  #>
+  
+  where_query.push_str(" 1=1");<#
   }
   #>
   {
@@ -1267,6 +1271,8 @@ async fn get_from_query(
     if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
       cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
     }
+    const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+    const foreignHasIsDeleted = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_deleted");
   #><#
     if (foreignKey.type === "many2many") {
   #>
@@ -1277,7 +1283,7 @@ async fn get_from_query(
     }
     #>
   left join <#=foreignKey.mod#>_<#=foreignTable#> on <#=many2many.mod#>_<#=many2many.table#>.<#=many2many.column2#>=<#=foreignKey.mod#>_<#=foreignTable#>.<#=foreignKey.column#><#
-    if (hasIsDeleted) {
+    if (foreignHasIsDeleted) {
       fromQueryIsDeletedNum++;
     #> and <#=foreignKey.mod#>_<#=foreignTable#>.is_deleted=?<#
     }
@@ -4382,6 +4388,7 @@ async fn refresh_lang_by_input(
 // MARK: update_by_id
 /// 根据 id 修改<#=table_comment#>
 #[allow(unused_mut)]
+#[allow(unused_variables)]
 pub async fn update_by_id(
   id: <#=Table_Up#>Id,
   mut input: <#=tableUP#>Input,
@@ -4452,7 +4459,9 @@ pub async fn update_by_id(
     ).await?;
     return Err(anyhow!(err_msg));
   }
-  let old_model = old_model.unwrap();
+  let old_model = old_model.unwrap();<#
+  if (hasVersion || hasUpdateUsrId || hasUpdateTime) {
+  #>
   
   if !is_silent_mode {
     info!(
@@ -4463,6 +4472,8 @@ pub async fn update_by_id(
       serde_json::to_string(&old_model)?,
     );
   }<#
+  }
+  #><#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
@@ -6934,6 +6945,7 @@ pub async fn find_last_order_by(
   
   #[allow(unused_mut)]
   let mut args = QueryArgs::new();
+  #[allow(unused_mut)]
   let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);<#
   if (hasIsDeleted) {
   #>

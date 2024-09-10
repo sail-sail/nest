@@ -32,24 +32,25 @@ async function _getMenus(
       base_menu_lang.lbl as lbl_lang
     from base_menu t
     inner join base_tenant_menu
-      on t.id = base_tenant_menu.menu_id
+      on t.id=base_tenant_menu.menu_id
       and base_tenant_menu.is_deleted=0
     inner join base_tenant
-      on base_tenant_menu.tenant_id = base_tenant.id
+      on base_tenant_menu.tenant_id=base_tenant.id
       and base_tenant.is_deleted=0
       and base_tenant.is_enabled=1
     inner join base_role_menu
-      on t.id = base_role_menu.menu_id
+      on t.id=base_role_menu.menu_id
       and base_role_menu.is_deleted=0
     inner join base_usr_role
       on base_role_menu.role_id=base_usr_role.role_id
       and base_usr_role.is_deleted=0
     left join base_menu_lang
-      on t.id = base_menu_lang.menu_id
-      and base_menu_lang.lang_id = ${ args.push(await get_lang_id()) }
+      on t.id=base_menu_lang.menu_id
+      and base_menu_lang.lang_id=${ args.push(await get_lang_id()) }
     where
       t.is_deleted=0
       and t.is_enabled=1
+      and t.is_hidden=0
   `;
   const usr_id = await get_usr_id();
   if (!usr_id) {
