@@ -177,29 +177,18 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原按钮权限
- */
-export async function revertByIds(
-  ids: PermitId[],
-): Promise<number> {
-  const data = await permitDao.revertByIds(ids);
-  return data;
-}
-
-/**
- * 根据 ids 彻底删除按钮权限
- */
-export async function forceDeleteByIds(
-  ids: PermitId[],
-): Promise<number> {
-  const data = await permitDao.forceDeleteByIds(ids);
-  return data;
-}
-
-/**
  * 获取按钮权限字段注释
  */
 export async function getFieldComments(): Promise<PermitFieldComment> {
   const data = await permitDao.getFieldComments();
+  return data;
+}
+
+/**
+ * 查找 按钮权限 order_by 字段的最大值
+ */
+export async function findLastOrderBy(
+): Promise<number> {
+  const data = await permitDao.findLastOrderBy();
   return data;
 }

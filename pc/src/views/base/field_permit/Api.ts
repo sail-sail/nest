@@ -267,7 +267,6 @@ export function useDownloadImportTemplate(routePath: string) {
           getFieldCommentsFieldPermit {
             menu_id_lbl
             lbl
-            order_by
             rem
           }
           findAllMenu {

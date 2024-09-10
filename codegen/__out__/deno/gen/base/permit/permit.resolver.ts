@@ -1,10 +1,8 @@
 import {
   set_is_tran,
-  set_is_creating,
 } from "/lib/context.ts";
 
 import type {
-  UniqueType,
   PageInput,
   SortInput,
 } from "/gen/types.ts";
@@ -107,40 +105,6 @@ export async function findByIdPermit(
 }
 
 /**
- * 批量创建按钮权限
- */
-export async function createsPermit(
-  inputs: PermitInput[],
-  unique_type?: UniqueType,
-): Promise<PermitId[]> {
-  
-  const {
-    validate,
-    setIdByLbl,
-    creates,
-  } = await import("./permit.service.ts");
-  
-  set_is_tran(true);
-  set_is_creating(true);
-  
-  await usePermit(
-    route_path,
-    "add",
-  );
-  
-  for (const input of inputs) {
-    input.id = undefined;
-    
-    await setIdByLbl(input);
-    
-    await validate(input);
-  }
-  const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
-  return ids;
-}
-
-/**
  * 根据 id 修改按钮权限
  */
 export async function updateByIdPermit(
@@ -170,70 +134,15 @@ export async function updateByIdPermit(
 }
 
 /**
- * 根据 ids 删除按钮权限
+ * 查找 按钮权限 order_by 字段的最大值
  */
-export async function deleteByIdsPermit(
-  ids: PermitId[],
-): Promise<number> {
+export async function findLastOrderByPermit(): Promise<number> {
   
   const {
-    deleteByIds,
+    findLastOrderBy,
   } = await import("./permit.service.ts");
   
-  set_is_tran(true);
-  
-  await usePermit(
-    route_path,
-    "delete",
-  );
-  
-  const num = await deleteByIds(ids);
-  
-  return num;
-}
-
-/**
- * 根据 ids 还原按钮权限
- */
-export async function revertByIdsPermit(
-  ids: PermitId[],
-): Promise<number> {
-  
-  const {
-    revertByIds,
-  } = await import("./permit.service.ts");
-  
-  set_is_tran(true);
-  
-  await usePermit(
-    route_path,
-    "delete",
-  );
-  
-  const res = await revertByIds(ids);
-  
-  return res;
-}
-
-/**
- * 根据 ids 彻底删除按钮权限
- */
-export async function forceDeleteByIdsPermit(
-  ids: PermitId[],
-): Promise<number> {
-  
-  const {
-    forceDeleteByIds,
-  } = await import("./permit.service.ts");
-  
-  set_is_tran(true);
-  
-  await usePermit(
-    route_path,
-    "force_delete",
-  );
-  
-  const res = await forceDeleteByIds(ids);
+  const res = findLastOrderBy();
   
   return res;
 }
