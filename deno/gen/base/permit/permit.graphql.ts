@@ -17,26 +17,10 @@ type PermitModel {
   code: String!
   "名称"
   lbl: String!
+  "排序"
+  order_by: Int!
   "备注"
   rem: String!
-  "创建人"
-  create_usr_id: UsrId!
-  "创建人"
-  create_usr_id_lbl: String!
-  "创建时间"
-  create_time: NaiveDateTime
-  "创建时间"
-  create_time_lbl: String!
-  "更新人"
-  update_usr_id: UsrId!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: NaiveDateTime
-  "更新时间"
-  update_time_lbl: String!
-  "是否已删除"
-  is_deleted: Int!
 }
 type PermitFieldComment {
   "ID"
@@ -49,24 +33,10 @@ type PermitFieldComment {
   code: String!
   "名称"
   lbl: String!
+  "排序"
+  order_by: String!
   "备注"
   rem: String!
-  "创建人"
-  create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
-  "创建时间"
-  create_time: String!
-  "创建时间"
-  create_time_lbl: String!
-  "更新人"
-  update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: String!
-  "更新时间"
-  update_time_lbl: String!
 }
 input PermitInput {
   "ID"
@@ -79,12 +49,12 @@ input PermitInput {
   code: String
   "名称"
   lbl: String
+  "排序"
+  order_by: Int
   "备注"
   rem: String
 }
 input PermitSearch {
-  "是否已删除"
-  is_deleted: Int
   "ID列表"
   ids: [PermitId!]
   "ID"
@@ -103,22 +73,6 @@ input PermitSearch {
   "名称"
   lbl: String
   lbl_like: String
-  "创建人"
-  create_usr_id: [UsrId!]
-  "创建人"
-  create_usr_id_is_null: Boolean
-  "创建人"
-  create_usr_id_lbl: [String!]
-  "创建人"
-  create_usr_id_lbl_like: String
-  "更新人"
-  update_usr_id: [UsrId!]
-  "更新人"
-  update_usr_id_is_null: Boolean
-  "更新人"
-  update_usr_id_lbl: [String!]
-  "更新人"
-  update_usr_id_lbl_like: String
 }
 type Query {
   "根据条件查找按钮权限总数"
@@ -131,18 +85,12 @@ type Query {
   findOnePermit(search: PermitSearch, sort: [SortInput!]): PermitModel
   "根据 id 查找按钮权限"
   findByIdPermit(id: PermitId!): PermitModel
+  "查找按钮权限 order_by 字段的最大值"
+  findLastOrderByPermit: Int!
 }
 type Mutation {
-  "批量创建按钮权限"
-  createsPermit(inputs: [PermitInput!]!, unique_type: UniqueType): [PermitId!]!
   "根据 id 修改按钮权限"
   updateByIdPermit(id: PermitId!, input: PermitInput!): PermitId!
-  "根据 ids 删除按钮权限"
-  deleteByIdsPermit(ids: [PermitId!]!): Int!
-  "根据 ids 还原按钮权限"
-  revertByIdsPermit(ids: [PermitId!]!): Int!
-  "根据 ids 彻底删除按钮权限"
-  forceDeleteByIdsPermit(ids: [PermitId!]!): Int!
 }
 
 `);
