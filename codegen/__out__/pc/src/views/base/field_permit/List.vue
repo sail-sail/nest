@@ -329,20 +329,6 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <CustomInputNumber
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.order_by"
-                  :min="0"
-                  @change="updateById(
-                    row.id,
-                    {
-                      order_by: row.order_by,
-                    },
-                    { notLoading: true },
-                  )"
-                ></CustomInputNumber>
-              </template>
             </el-table-column>
           </template>
           
