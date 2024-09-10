@@ -578,7 +578,7 @@ async fn get_from_query(
   inner join base_role on base_role.id=base_role_menu.role_id where base_role_menu.is_deleted=?
   group by role_id) _menu on _menu.role_id=t.id
   left join base_role_permit on base_role_permit.role_id=t.id and base_role_permit.is_deleted=?
-  left join base_permit on base_role_permit.permit_id=base_permit.id and base_permit.is_deleted=?
+  left join base_permit on base_role_permit.permit_id=base_permit.id
   left join (select json_objectagg(base_role_permit.order_by,base_permit.id) permit_ids,
   json_objectagg(base_role_permit.order_by,base_permit.lbl) permit_ids_lbl,
   base_role.id role_id from base_role_permit
@@ -600,7 +600,7 @@ async fn get_from_query(
   inner join base_field_permit on base_field_permit.id=base_role_field_permit.field_permit_id
   inner join base_role on base_role.id=base_role_field_permit.role_id where base_role_field_permit.is_deleted=?
   group by role_id) _field_permit on _field_permit.role_id=t.id"#.to_owned();
-  for _ in 0..11 {
+  for _ in 0..10 {
     args.push(is_deleted.into());
   }
   Ok(from_query)
