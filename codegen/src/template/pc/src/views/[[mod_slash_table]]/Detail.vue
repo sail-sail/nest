@@ -3951,6 +3951,7 @@ async function showDialog(
           if (column_name === "is_deleted") continue;
           if (column_name === "version") continue;
           if (column_name === "tenant_id") continue;
+          if (column_name === "order_by") continue;
           let data_type = column.DATA_TYPE;
           let column_type = column.COLUMN_TYPE;
           let column_comment = column.COLUMN_COMMENT || "";
@@ -4956,6 +4957,7 @@ async function onSaveAndCopy() {
       if (column_name === "is_deleted") continue;
       if (column_name === "version") continue;
       if (column_name === "tenant_id") continue;
+      if (column_name === "order_by") continue;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
