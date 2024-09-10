@@ -604,10 +604,10 @@ export default defineConfig({
         "code",
       ],
       list_tree: "menu_id",
-      defaultSort: {
-        prop: "create_time",
-        order: "ascending",
-      },
+      noAdd: true,
+      noDelete: true,
+      noExport: true,
+      noForceDelete: true,
     },
     columns: [
       {
@@ -618,6 +618,7 @@ export default defineConfig({
           mod: "base",
           table: "menu",
         },
+        readonly: true,
       },
       {
         COLUMN_NAME: "code",
@@ -626,6 +627,7 @@ export default defineConfig({
         width: 160,
         align: "left",
         fixed: false,
+        readonly: true,
       },
       {
         COLUMN_NAME: "lbl",
@@ -636,19 +638,11 @@ export default defineConfig({
         fixed: false,
       },
       {
+        COLUMN_NAME: "order_by",
+        readonly: true,
+      },
+      {
         COLUMN_NAME: "rem",
-      },
-      {
-        COLUMN_NAME: "create_usr_id",
-      },
-      {
-        COLUMN_NAME: "create_time",
-      },
-      {
-        COLUMN_NAME: "update_usr_id",
-      },
-      {
-        COLUMN_NAME: "update_time",
       },
     ],
   },
@@ -751,6 +745,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "order_by",
+        readonly: true,
       },
       {
         COLUMN_NAME: "rem",
