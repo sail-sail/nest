@@ -1198,6 +1198,9 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     },
                     { notLoading: true },
                   )"
+                  @keydown.stop
+                  @dblclick.stop
+                  @keydown.enter="() => tableFocus()"
                 ></CustomInputNumber>
               </template><#
               } else if (prefix) {
