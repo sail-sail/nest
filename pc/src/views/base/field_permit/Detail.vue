@@ -101,7 +101,7 @@
             <CustomInputNumber
               v-model="dialogModel.order_by"
               :placeholder="`${ ns('请输入') } ${ n('排序') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="true"
             ></CustomInputNumber>
           </el-form-item>
         </template>
@@ -286,13 +286,6 @@ watchEffect(async () => {
         type: "string",
         max: 100,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
-      },
-    ],
-    // 排序
-    order_by: [
-      {
-        required: true,
-        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
       },
     ],
   };

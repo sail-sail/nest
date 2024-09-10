@@ -301,18 +301,9 @@ CREATE TABLE if not exists `base_permit` (
   `code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `is_sys` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统记录,dict:is_sys',
-  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
-  `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
-  `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
-  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
-  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
-  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
-  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
-  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`menu_id`, `code`, `is_deleted`),
+  INDEX (`menu_id`, `code`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='按钮权限';
 
