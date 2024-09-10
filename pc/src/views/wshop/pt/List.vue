@@ -639,6 +639,9 @@
                     },
                     { notLoading: true },
                   )"
+                  @keydown.stop
+                  @dblclick.stop
+                  @keydown.enter="() => tableFocus()"
                 ></CustomInputNumber>
               </template>
             </el-table-column>
