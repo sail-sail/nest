@@ -209,7 +209,7 @@ function start() {
   // }
   const arr = [
     "run",
-    "--watch-hmr",
+    "--unstable-hmr",
     "--inspect",
     "--unstable-ffi",
     "-A",
