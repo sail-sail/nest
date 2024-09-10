@@ -29,8 +29,6 @@ async function findAllMenu(context) {
       t.*
     FROM
       base_menu t
-    WHERE
-      t.is_deleted = 0
   `;
   const [ rows ] = await context.conn.query(sql);
   _menuModels = rows;
@@ -51,8 +49,6 @@ async function findAllPermit(context) {
       t.*
     FROM
       base_permit t
-    WHERE
-      t.is_deleted = 0
   `;
   const [ rows ] = await context.conn.query(sql);
   _permitModels = rows;
@@ -96,6 +92,7 @@ async function savePermit(context, model) {
           menu_id = ?,
           code = ?,
           lbl = ?,
+          order_by = ?,
           is_sys = 1
         where
           id = ?
@@ -104,6 +101,7 @@ async function savePermit(context, model) {
         model.menu_id,
         model.code,
         lbl,
+        model.order_by,
         model0.id,
       ];
       try {
@@ -121,8 +119,10 @@ async function savePermit(context, model) {
       menu_id,
       code,
       lbl,
+      order_by,
       is_sys
     ) VALUES (
+      ?,
       ?,
       ?,
       ?,
@@ -135,6 +135,7 @@ async function savePermit(context, model) {
     model.menu_id,
     model.code,
     model.lbl,
+    model.order_by,
   ];
   try {
     await context.conn.execute(sql, args);
@@ -149,11 +150,9 @@ async function savePermit(context, model) {
  */
 async function deletePermit(context, id) {
   const sql = `
-    UPDATE
+    delete from
       base_permit
-    SET
-      is_deleted = 1
-    WHERE
+    where
       id = ?
   `;
   const args = [
@@ -181,6 +180,7 @@ async function getPermits(ph){
   if (!arr) {
     return permits;
   }
+  let order_by = 1;
   for (const item of arr) {
     const code = item.substring(8, item.length - 2);
     let name = "";
@@ -214,7 +214,9 @@ async function getPermits(ph){
       ph,
       code,
       name,
+      order_by,
     });
+    order_by++;
   }
   return permits;
 }
@@ -294,6 +296,7 @@ async function exec(context) {
             menu_id: menuModel.id,
             code: item.code,
             lbl: item.name,
+            order_by: item.order_by,
           }));
           for (const permitModel of permitModels) {
             permitModelsAll.push(permitModel);
