@@ -110,6 +110,21 @@ impl PermitGenQuery {
       }).await
   }
   
+  /// 查找 按钮权限 order_by 字段的最大值
+  async fn find_last_order_by_permit(
+    &self,
+    ctx: &Context<'_>,
+  ) -> Result<u32> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        permit_resolver::find_last_order_by(
+          None,
+        )
+      }).await
+  }
+  
 }
 
 #[derive(Default)]
@@ -117,30 +132,6 @@ pub struct PermitGenMutation;
 
 #[Object(rename_args = "snake_case")]
 impl PermitGenMutation {
-  
-  /// 创建按钮权限
-  async fn creates_permit(
-    &self,
-    ctx: &Context<'_>,
-    inputs: Vec<PermitInput>,
-    unique_type: Option<UniqueType>,
-  ) -> Result<Vec<PermitId>> {
-    let mut options = Options::new();
-    if let Some(unique_type) = unique_type {
-      options = options.set_unique_type(unique_type);
-    }
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .with_creating(Some(true))
-      .build()
-      .scope({
-        permit_resolver::creates(
-          inputs,
-          options.into(),
-        )
-      }).await
-  }
   
   /// 根据 id 修改按钮权限
   async fn update_by_id_permit(
@@ -157,60 +148,6 @@ impl PermitGenMutation {
         permit_resolver::update_by_id(
           id,
           input,
-          None,
-        )
-      }).await
-  }
-  
-  /// 根据 ids 删除按钮权限
-  async fn delete_by_ids_permit(
-    &self,
-    ctx: &Context<'_>,
-    ids: Vec<PermitId>,
-  ) -> Result<u64> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        permit_resolver::delete_by_ids(
-          ids,
-          None,
-        )
-      }).await
-  }
-  
-  /// 根据 ids 还原按钮权限
-  async fn revert_by_ids_permit(
-    &self,
-    ctx: &Context<'_>,
-    ids: Vec<PermitId>,
-  ) -> Result<u64> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        permit_resolver::revert_by_ids(
-          ids,
-          None,
-        )
-      }).await
-  }
-  
-  /// 根据 ids 彻底删除按钮权限
-  async fn force_delete_by_ids_permit(
-    &self,
-    ctx: &Context<'_>,
-    ids: Vec<PermitId>,
-  ) -> Result<u64> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        permit_resolver::force_delete_by_ids(
-          ids,
           None,
         )
       }).await
