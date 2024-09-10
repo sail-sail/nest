@@ -47,10 +47,12 @@ export async function payNow(
       is_enabled: [ 1 ],
       is_deleted: 0,
     },
-    {
-      prop: "lbl_seq",
-      order: SortOrderEnum.Asc,
-    },
+    [
+      {
+        prop: "lbl_seq",
+        order: SortOrderEnum.Asc,
+      },
+    ],
   );
   if (!cardModel) {
     return false;
