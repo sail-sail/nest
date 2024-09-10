@@ -36,10 +36,6 @@ async function getMenus(context: Context): Promise<MenuModel[]> {
 async function exec() {
   console.time("field_permit");
   
-  const dateNow = dayjs();
-  const create_usr_id = "9LmnqhLITzKskFO/lcXRqA";
-  const create_usr_id_lbl = "admin";
-  
   const context = await initContext();
   
   const menu_models = await getMenus(context);
@@ -50,7 +46,7 @@ async function exec() {
     route_path_map.set(menu_model.route_path, menu_model);
   }
   
-  const sql = "select id,menu_id,code,lbl from base_field_permit where is_deleted=0";
+  const sql = "select id,menu_id,code,lbl from base_field_permit order by order_by asc";
   const [ models ] = await context.conn.query(sql);
   const field_permit_models = models as FieldPermitModel[];
   
@@ -77,7 +73,6 @@ async function exec() {
     let updateNum = 0;
     let createNum = 0;
     
-    let createNow = dayjs(dateNow);
     for (let j = 0; j < columns.length; j++) {
       const column = columns[j];
       if (column.isVirtual) continue;
@@ -106,10 +101,9 @@ async function exec() {
           table_name,
           code,
         })).digest("base64").substring(0, 22);
-        createNow = createNow.add(1, "second");
-        const create_time = createNow.format("YYYY-MM-DD HH:mm:ss");
-        const sql = "insert into base_field_permit(id,menu_id,code,lbl,create_time,create_usr_id,create_usr_id_lbl) values(?,?,?,?,?,?,?)";
-        await context.conn.query(sql, [id, menu_id, code, lbl, create_time, create_usr_id, create_usr_id_lbl]);
+        const order_by = j + 1;
+        const sql = "insert into base_field_permit(id,menu_id,code,lbl,order_by) values(?,?,?,?,?)";
+        await context.conn.query(sql, [id, menu_id, code, lbl, order_by]);
         createNum++;
       }
     }

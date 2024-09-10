@@ -76,41 +76,6 @@ pub async fn find_by_id(
   Ok(model)
 }
 
-/// 创建按钮权限
-#[allow(dead_code)]
-pub async fn creates(
-  inputs: Vec<PermitInput>,
-  options: Option<Options>,
-) -> Result<Vec<PermitId>> {
-  
-  let mut inputs = inputs;
-  for input in &mut inputs {
-    input.id = None;
-  }
-  let inputs = inputs;
-  
-  let mut inputs2 = Vec::with_capacity(inputs.len());
-  for input in inputs {
-    let input = permit_service::set_id_by_lbl(
-      input,
-    ).await?;
-    inputs2.push(input);
-  }
-  let inputs = inputs2;
-  
-  use_permit(
-    get_route_path_permit(),
-    "add".to_owned(),
-  ).await?;
-  
-  let ids = permit_service::creates(
-    inputs,
-    options,
-  ).await?;
-  
-  Ok(ids)
-}
-
 /// 根据 id 修改按钮权限
 #[allow(dead_code)]
 pub async fn update_by_id(
@@ -141,26 +106,6 @@ pub async fn update_by_id(
   Ok(res)
 }
 
-/// 根据 ids 删除按钮权限
-#[allow(dead_code)]
-pub async fn delete_by_ids(
-  ids: Vec<PermitId>,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  use_permit(
-    get_route_path_permit(),
-    "delete".to_owned(),
-  ).await?;
-  
-  let num = permit_service::delete_by_ids(
-    ids,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 获取按钮权限字段注释
 pub async fn get_field_comments(
   options: Option<Options>,
@@ -173,42 +118,14 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原按钮权限
-#[allow(dead_code)]
-pub async fn revert_by_ids(
-  ids: Vec<PermitId>,
+/// 查找 按钮权限 order_by 字段的最大值
+pub async fn find_last_order_by(
   options: Option<Options>,
-) -> Result<u64> {
+) -> Result<u32> {
   
-  use_permit(
-    get_route_path_permit(),
-    "delete".to_owned(),
-  ).await?;
-  
-  let num = permit_service::revert_by_ids(
-    ids,
+  let res = permit_service::find_last_order_by(
     options,
   ).await?;
   
-  Ok(num)
-}
-
-/// 根据 ids 彻底删除按钮权限
-#[allow(dead_code)]
-pub async fn force_delete_by_ids(
-  ids: Vec<PermitId>,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  use_permit(
-    get_route_path_permit(),
-    "force_delete".to_owned(),
-  ).await?;
-  
-  let num = permit_service::force_delete_by_ids(
-    ids,
-    options,
-  ).await?;
-  
-  Ok(num)
+  Ok(res)
 }

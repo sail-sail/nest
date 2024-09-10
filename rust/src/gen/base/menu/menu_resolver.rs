@@ -18,6 +18,12 @@ pub async fn find_all(
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });
+  
   check_sort_menu(sort.as_deref())?;
   
   let models = menu_service::find_all(
@@ -36,6 +42,12 @@ pub async fn find_count(
   options: Option<Options>,
 ) -> Result<u64> {
   
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });
+  
   let num = menu_service::find_count(
     search,
     options,
@@ -50,6 +62,12 @@ pub async fn find_one(
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<MenuModel>> {
+  
+  let search = Some({
+    let mut search = search.unwrap_or_default();
+    search.is_hidden = Some(vec![0]);
+    search
+  });
   
   check_sort_menu(sort.as_deref())?;
   

@@ -449,7 +449,7 @@ export async function getPermitList() {
     undefined,
     [
       {
-        prop: "create_time",
+        prop: "order_by",
         order: "ascending",
       },
     ],
@@ -537,7 +537,7 @@ export async function getFieldPermitList() {
     undefined,
     [
       {
-        prop: "create_time",
+        prop: "order_by",
         order: "ascending",
       },
     ],
