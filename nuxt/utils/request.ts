@@ -1,6 +1,6 @@
 import { saveAs } from "file-saver";
-import { loading } from "@/store/index";
-import { authorization } from "@/store/usr";
+import { useLoading } from "@/store/index";
+import { uesAuthorization } from "@/store/usr";
 
 export const baseURL = "";
 
@@ -15,8 +15,14 @@ export async function request<T>(
     method?: string;
     data?: any;
     duration?: number;
+    authorization?: string;
   },
 ): Promise<T> {
+  let authorization = $(uesAuthorization());
+  if (config?.authorization != null) {
+    authorization = config?.authorization;
+  }
+  let loading = $(useLoading());
   let err: any;
   let res: {
     data: any;
@@ -31,17 +37,13 @@ export async function request<T>(
         config.url = `${ baseURL }/${ config.url }`;
       }
     }
-    if (import.meta.client) {
-      if (!config.notLoading) {
-        loading().value++;
-      }
+    if (!config.notLoading) {
+      loading++;
     }
     config.header = config.header || new Headers();
     
-    if (import.meta.client) {
-      if (authorization().value) {
-        config.header.set("authorization", authorization().value);
-      }
+    if (authorization) {
+      config.header.set("authorization", authorization);
     }
     
     let body = config.data;
@@ -78,10 +80,8 @@ export async function request<T>(
       err = "网络连接失败，请稍后再试";
     }
   } finally {
-    if (import.meta.client) {
-      if (!config.notLoading) {
-        loading().value--;
-      }
+    if (!config.notLoading) {
+      loading--;
     }
   }
   const header = res?.header || new Headers();
@@ -90,9 +90,7 @@ export async function request<T>(
     if (authorization2.startsWith("Bearer ")) {
       authorization2 = authorization2.substring(7);
     }
-    if (import.meta.client) {
-      authorization().value = authorization2;
-    }
+    authorization = authorization2;
   }
   if (config.reqType === "graphql") {
     if (err != null) {
@@ -109,9 +107,11 @@ export async function request<T>(
   }
   const data = res!.data;
   if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
-    // TODO 退出登录
-    // indexStore.logout();
-    console.error("退出登录");
+    // 退出登录
+    authorization = "";
+    if (import.meta.client) {
+      window.location.reload();
+    }
     return data;
   }
   if (data && data.code !== 0) {
@@ -135,8 +135,14 @@ export async function uploadFile(
     notLoading?: boolean;
     showErrMsg?: boolean;
     duration?: number;
+    authorization?: string;
   },
 ) {
+  let authorization = $(uesAuthorization());
+  if (config?.authorization != null) {
+    authorization = config?.authorization;
+  }
+  let loading = $(useLoading());
   config = config || { };
   config.type = config.type || "oss";
   config.url = config.url || `${ baseURL }/api/${ config.type }/upload`;
@@ -153,18 +159,14 @@ export async function uploadFile(
   config.data = formData;
   config.header = config.header || new Headers();
   
-  if (import.meta.client) {
-    if (authorization().value) {
-      config.header.set("authorization", authorization().value);
-    }
+  if (authorization) {
+    config.header.set("authorization", authorization);
   }
   let err: any = undefined;
   let res: any = undefined;
   try {
-    if (import.meta.client) {
-      if (!config.notLoading) {
-        loading().value++;
-      }
+    if (!config.notLoading) {
+      loading++;
     }
     res = await request<{
       code: number;
@@ -174,10 +176,8 @@ export async function uploadFile(
   } catch(errTmp) {
     err = (errTmp as Error);
   } finally {
-    if (import.meta.client) {
-      if (!config.notLoading) {
-        loading().value--;
-      }
+    if (!config.notLoading) {
+      loading--;
     }
   }
   const header = res?.header || new Headers();
@@ -186,9 +186,7 @@ export async function uploadFile(
     if (authorization2.startsWith("Bearer ")) {
       authorization2 = authorization2.substring(7);
     }
-    if (import.meta.client) {
-      authorization().value = authorization2;
-    }
+    authorization = authorization2;
   }
   if (err != null && (!config || config.showErrMsg !== false)) {
     const errMsg = (err as any).errMsg || err.toString();
@@ -197,8 +195,11 @@ export async function uploadFile(
   {
     const data = res;
     if (data && (data.key === "token_empty" || data.key === "refresh_token_expired")) {
-      // TODO 退出登录
-      // indexStore.logout();
+      // 退出登录
+      authorization = "";
+      if (import.meta.client) {
+        window.location.reload();
+      }
       return data;
     }
     if (data && data.code !== 0) {

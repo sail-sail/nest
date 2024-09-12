@@ -1,2 +1,8 @@
 
-export const authorization = () => useState<string>("usr/authorization", () => "");
+export const uesAuthorization = () => useCookie<string>(
+  "authorization",
+  {
+    default: () => "",
+    watch: true,
+  },
+);
