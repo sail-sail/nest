@@ -6,7 +6,7 @@ import type {
 export async function useMySeoMeta() {
   const seo_model = $(await findDefaultSeo());
   if (!seo_model) {
-    console.error("未找到默认的SEO优化");
+    // console.error("未找到默认的SEO优化");
     return;
   }
   let ogImage = "";

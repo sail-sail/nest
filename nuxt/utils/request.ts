@@ -31,13 +31,17 @@ export async function request<T>(
         config.url = `${ baseURL }/${ config.url }`;
       }
     }
-    if (!config.notLoading) {
-      loading().value++;
+    if (import.meta.client) {
+      if (!config.notLoading) {
+        loading().value++;
+      }
     }
     config.header = config.header || new Headers();
     
-    if (authorization().value) {
-      config.header.set("authorization", authorization().value);
+    if (import.meta.client) {
+      if (authorization().value) {
+        config.header.set("authorization", authorization().value);
+      }
     }
     
     let body = config.data;
@@ -74,8 +78,10 @@ export async function request<T>(
       err = "网络连接失败，请稍后再试";
     }
   } finally {
-    if (!config.notLoading) {
-      loading().value--;
+    if (import.meta.client) {
+      if (!config.notLoading) {
+        loading().value--;
+      }
     }
   }
   const header = res?.header || new Headers();
@@ -84,7 +90,9 @@ export async function request<T>(
     if (authorization2.startsWith("Bearer ")) {
       authorization2 = authorization2.substring(7);
     }
-    authorization().value = authorization2;
+    if (import.meta.client) {
+      authorization().value = authorization2;
+    }
   }
   if (config.reqType === "graphql") {
     if (err != null) {
@@ -144,15 +152,19 @@ export async function uploadFile(
   }
   config.data = formData;
   config.header = config.header || new Headers();
-    
-  if (authorization().value) {
-    config.header.set("authorization", authorization().value);
+  
+  if (import.meta.client) {
+    if (authorization().value) {
+      config.header.set("authorization", authorization().value);
+    }
   }
   let err: any = undefined;
   let res: any = undefined;
   try {
-    if (!config.notLoading) {
-      loading().value++;
+    if (import.meta.client) {
+      if (!config.notLoading) {
+        loading().value++;
+      }
     }
     res = await request<{
       code: number;
@@ -162,8 +174,10 @@ export async function uploadFile(
   } catch(errTmp) {
     err = (errTmp as Error);
   } finally {
-    if (!config.notLoading) {
-      loading().value--;
+    if (import.meta.client) {
+      if (!config.notLoading) {
+        loading().value--;
+      }
     }
   }
   const header = res?.header || new Headers();
@@ -172,7 +186,9 @@ export async function uploadFile(
     if (authorization2.startsWith("Bearer ")) {
       authorization2 = authorization2.substring(7);
     }
-    authorization().value = authorization2;
+    if (import.meta.client) {
+      authorization().value = authorization2;
+    }
   }
   if (err != null && (!config || config.showErrMsg !== false)) {
     const errMsg = (err as any).errMsg || err.toString();
