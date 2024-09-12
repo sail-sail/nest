@@ -12,7 +12,7 @@ import {
 
 import combinedQuery from "graphql-combine-query";
 
-import { authorization } from "@/store/usr";
+import { uesAuthorization } from "@/store/usr";
 
 declare global {
   
@@ -29,6 +29,7 @@ declare global {
     notLoading?: boolean;
     isMutation?: boolean;
     "Request-ID"?: string;
+    authorization?: string;
   }
   
 }
@@ -259,7 +260,8 @@ export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
 }
 
 export function getQueryUrl(gqlArg: GqlArg, opt?: GqlOpt, authorization0?: string): string {
-  if (!authorization) {
+  let authorization = $(uesAuthorization());
+  if (authorization0 == null) {
     authorization0 = authorization;
   }
   let request_id: string | undefined;
@@ -277,6 +279,10 @@ export function getQueryUrl(gqlArg: GqlArg, opt?: GqlOpt, authorization0?: strin
 }
 
 async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
+  let authorization = $(uesAuthorization());
+  if (opt?.authorization != null) {
+    authorization = opt?.authorization;
+  }
   // let duration = 3000;
   // if (opt && opt.duration != null) {
   //   duration = opt.duration;
@@ -305,6 +311,7 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       // showErrMsg: opt?.showErrMsg,
       // duration: opt?.duration,
       isMutation: opt?.isMutation,
+      authorization,
     } as any);
   } catch (err0) {
     const err = err0 as any;

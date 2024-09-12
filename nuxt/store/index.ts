@@ -1,3 +1,3 @@
 
-export const loading = () => useState<number>("index/loading", () => 0);
+export const useLoading = () => useState<number>("index/loading", () => 0);
 
