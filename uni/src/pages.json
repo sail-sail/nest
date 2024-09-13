@@ -1,7 +1,7 @@
 {
   "easycom": {
-		"autoscan": true,
-		"custom": {
+    "autoscan": true,
+    "custom": {
       "^App(.*)": "@/components/App$1/App$1.vue",
       "^Custom(.*)": "@/components/Custom$1/Custom$1.vue",
       "^tm-(.*)": "@/tmui/components/tm-$1/tm-$1.vue"
