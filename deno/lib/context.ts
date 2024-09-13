@@ -803,7 +803,7 @@ function getDebugQuery(query: string, args: any[]|undefined): string {
     } else if (type === "[object Null]" || type === "[object Undefined]") {
       val = `NULL`;
     } else if (type === "[object Array]") {
-      val = `('${ parameter.join("','") }')`;
+      val = `'${ parameter.join("','") }'`;
     } else {
       let tmpVal = parameter;
       if (tmpVal == null) {
@@ -986,13 +986,13 @@ export async function execute(
     if (!opt || opt.debug !== false) {
       log(getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
     }
-    result = await conn.execute(sql, args);
+    result = await conn.query(sql, args);
   } else {
     if (!opt || opt.debug !== false) {
       log(getDebugQuery(sql, args));
     }
     const pool = await getMysqlPool();
-    result = await pool.execute(sql, args);
+    result = await pool.query(sql, args);
   }
   result = result[0];
   if (!opt || opt.logResult !== false) {
