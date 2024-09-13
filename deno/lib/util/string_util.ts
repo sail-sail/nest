@@ -50,3 +50,13 @@ export function sqlLike(str = ""): string {
     return "\\" + m;
   });
 }
+
+let specialCharsReg: RegExp | undefined = undefined;
+
+/** 替换字符串里面正则表达式的转义符 */
+export function replaceRegExpEscape(str: string): string {
+  if (specialCharsReg === undefined) {
+    specialCharsReg = /[.*+?^${}()|[\]\\]/g;
+  }
+  return str.replace(specialCharsReg, '\\$&');
+}
