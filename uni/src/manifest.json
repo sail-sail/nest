@@ -12,8 +12,7 @@
     "splashscreen" : {
       "alwaysShowBeforeRender" : true,
       "waiting" : true,
-      "autoclose" : true,
-      "delay" : 0
+      "autoclose" : true
     },
     /* 快应用特有相关 */
     "quickapp" : {},
