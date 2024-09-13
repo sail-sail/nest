@@ -40,7 +40,7 @@
     "pinia-plugin-persistedstate": "3.2.3",
     "pinyin-pro": "3.24.2",
     "sortablejs": "1.15.3",
-    "swiper": "11.1.12",
+    "swiper": "11.1.14",
     "vue": "3.5.4",
     "vue-countup-v3": "1.4.2",
     "vue-demi": "0.14.10",
@@ -68,7 +68,7 @@
     "stylus": "0.63.0",
     "typescript": "5.6.2",
     "unocss": "0.62.3",
-    "unplugin-auto-import": "0.18.2",
+    "unplugin-auto-import": "0.18.3",
     "unplugin-icons": "0.19.3",
     "unplugin-turbo-console": "1.10.1",
     "unplugin-vue-components": "0.27.4",
@@ -79,7 +79,7 @@
     "vite-plugin-vue-devtools": "7.4.5",
     "vite-plugin-vue-inspector": "5.2.0",
     "vite-plugin-wasm": "3.3.0",
-    "vitest": "2.0.5",
+    "vitest": "2.1.0",
     "vue-tsc": "2.1.6"
   }
 }
