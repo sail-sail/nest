@@ -747,7 +747,7 @@ export async function commit(conn?: mysql2.PoolConnection, opt?: { debug?: boole
     log("commit;" + " /* "+ conn.threadId +" */");
   }
   try {
-    await conn.execute("commit");
+    await conn.commit();
   } finally {
     conn.release();
   }

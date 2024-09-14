@@ -69,12 +69,12 @@ const config: CodegenConfig = {
         "useTypeImports": true,
         "scalars": {
           "Decimal": {
-            "input": "InstanceType<typeof import(\"decimal.js-light\").default>",
-            "output": "InstanceType<typeof import(\"decimal.js-light\").default>"
+            "input": "InstanceType<typeof import(\"decimal.js\").default>",
+            "output": "InstanceType<typeof import(\"decimal.js\").default>"
           },
           "BigDecimal": {
-            "input": "InstanceType<typeof import(\"decimal.js-light\").default>",
-            "output": "InstanceType<typeof import(\"decimal.js-light\").default>"
+            "input": "InstanceType<typeof import(\"decimal.js\").default>",
+            "output": "InstanceType<typeof import(\"decimal.js\").default>"
           },
           "NaiveDate": {
             "input": "string",
@@ -118,12 +118,12 @@ const config: CodegenConfig = {
         "useTypeImports": true,
         "scalars": {
           "Decimal": {
-            "input": "InstanceType<typeof import(\"decimal.js-light\").default>",
-            "output": "InstanceType<typeof import(\"decimal.js-light\").default>"
+            "input": "InstanceType<typeof import(\"decimal.js\").default>",
+            "output": "InstanceType<typeof import(\"decimal.js\").default>"
           },
           "BigDecimal": {
-            "input": "InstanceType<typeof import(\"decimal.js-light\").default>",
-            "output": "InstanceType<typeof import(\"decimal.js-light\").default>"
+            "input": "InstanceType<typeof import(\"decimal.js\").default>",
+            "output": "InstanceType<typeof import(\"decimal.js\").default>"
           },
           "NaiveDate": {
             "input": "string",
