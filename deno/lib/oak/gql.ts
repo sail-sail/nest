@@ -33,10 +33,6 @@ import {
   handleRequestId,
 } from "/lib/oak/request_id.ts";
 
-// import {
-//   Decimal,
-// } from "decimal.js";
-
 const gqlRouter = new Router();
 
 const _gqlSchemaStr = /* GraphQL */`
