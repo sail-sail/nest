@@ -203,7 +203,7 @@ export default defineConfig({
           "@/locales/i18n": [
             "useI18n",
           ],
-          "decimal.js-light": [
+          "decimal.js": [
             [ "default", "Decimal" ],
           ],
         },
