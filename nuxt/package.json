@@ -12,19 +12,19 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "decimal.js-light": "2.5.1",
+    "decimal.js": "10.4.3",
     "file-saver": "2.0.5",
-    "graphql": "17.0.0-alpha.5",
+    "graphql": "17.0.0-alpha.7",
     "graphql-combine-query": "1.2.4",
-    "vue": "3.5.4",
-    "vue-router": "4.4.4"
+    "vue": "3.5.5",
+    "vue-router": "4.4.5"
   },
   "devDependencies": {
     "@types/file-saver": "2.0.7",
-    "@types/node": "22.5.4",
+    "@types/node": "22.5.5",
     "@unocss/nuxt": "0.62.3",
     "@unocss/preset-rem-to-px": "0.62.3",
-    "@vue-macros/nuxt": "1.11.14",
+    "@vue-macros/nuxt": "1.12.1",
     "@vue-macros/reactivity-transform": "1.1.0",
     "nuxt": "3.13.1",
     "sass": "1.78.0",
