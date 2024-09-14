@@ -2312,17 +2312,7 @@ let {
     }
     #>
   },
-));<#
-if (opts?.tableSelectable) {
-#>
-
-useSubscribeList<<#=Table_Up#>Id>(
-  $$(tableRef),
-  pagePath,
-  dataGrid,
-);<#
-}
-#>
+));
 
 watch(
   () => selectedIds,
