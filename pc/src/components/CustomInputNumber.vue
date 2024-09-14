@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts" setup>
-import Decimal from "decimal.js-light";
+import Decimal from "decimal.js";
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
