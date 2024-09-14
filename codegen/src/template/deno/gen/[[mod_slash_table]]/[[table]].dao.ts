@@ -809,7 +809,7 @@ async function getWhereQuery(
     } else {
     #>
     if (server_i18n_enable) {
-      whereQuery += ` and (t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }) or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in ${ args.push(search.<#=modelLabel#>) })`;
+      whereQuery += ` and (t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }) or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }))`;
     } else {
       whereQuery += ` and t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) })`;
     }<#
@@ -838,7 +838,7 @@ async function getWhereQuery(
     whereQuery += ` and <#=column_name#>_lbl.<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) })`;<#
     } else {
     #>
-    whereQuery += ` and (<#=column_name#>_lbl.<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }) or <#=foreignSchema.opts.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> in ${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) })`;<#
+    whereQuery += ` and (<#=column_name#>_lbl.<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }) or <#=foreignSchema.opts.langTable.opts.table_name#>.<#=column_name#>_<#=foreignKey.lbl#> in (${ args.push(search.<#=column_name#>_<#=foreignKey.lbl#>) }))`;<#
     }
     #>
   }
