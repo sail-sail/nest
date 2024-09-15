@@ -3,11 +3,7 @@
   :locale="locale"
   :button="{ autoInsertSpace: false }"
 >
-  <Login
-    v-if="!usrStore.authorization || usrStore.isLogining"
-  ></Login>
   <router-view
-    v-else
     v-slot="{ Component }"
   >
     <template v-if="Component">
@@ -47,15 +43,12 @@
 import locale from "@/locales";
 import Background_taskListDialog from "./views/base/background_task/ListDialog.vue";
 
-import Login from "./layout/Login.vue";
-
 const {
   ns,
   initSysI18ns,
 } = useI18n();
 
 const tabsStore = useTabsStore();
-const usrStore = useUsrStore();
 
 const router = useRouter();
 const route = useRoute();
