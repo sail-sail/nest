@@ -16,20 +16,20 @@
     "file-saver": "2.0.5",
     "graphql": "17.0.0-alpha.7",
     "graphql-combine-query": "1.2.4",
-    "vue": "3.5.5",
+    "vue": "3.5.6",
     "vue-router": "4.4.5"
   },
   "devDependencies": {
     "@types/file-saver": "2.0.7",
     "@types/node": "22.5.5",
-    "@unocss/nuxt": "0.62.3",
-    "@unocss/preset-rem-to-px": "0.62.3",
-    "@vue-macros/nuxt": "1.12.1",
-    "@vue-macros/reactivity-transform": "1.1.0",
-    "nuxt": "3.13.1",
-    "sass": "1.78.0",
+    "@unocss/nuxt": "0.62.4",
+    "@unocss/preset-rem-to-px": "0.62.4",
+    "@vue-macros/nuxt": "1.12.2",
+    "@vue-macros/reactivity-transform": "1.1.1",
+    "nuxt": "3.13.2",
+    "sass": "1.79.1",
     "typescript": "5.6.2",
-    "unocss": "0.62.3",
+    "unocss": "0.62.4",
     "vue-tsc": "2.1.6"
   }
 }
