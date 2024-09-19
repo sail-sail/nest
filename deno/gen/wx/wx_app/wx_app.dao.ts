@@ -67,11 +67,6 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  encrypt,
-  decrypt,
-} from "/lib/util/dao_util.ts";
-
-import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -131,6 +126,12 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.appid_like)) {
     whereQuery += ` and t.appid like ${ args.push("%" + sqlLike(search?.appid_like) + "%") }`;
+  }
+  if (search?.appsecret != null) {
+    whereQuery += ` and t.appsecret=${ args.push(search.appsecret) }`;
+  }
+  if (isNotEmpty(search?.appsecret_like)) {
+    whereQuery += ` and t.appsecret like ${ args.push("%" + sqlLike(search?.appsecret_like) + "%") }`;
   }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
@@ -407,8 +408,6 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    // 开发者密码
-    model.appsecret = await decrypt(model.appsecret);
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -1253,7 +1252,7 @@ async function _creates(
         sql += ",default";
       }
       if (input.appsecret != null) {
-        sql += `,${ args.push(await encrypt(input.appsecret)) }`;
+        sql += `,${ args.push(input.appsecret) }`;
       } else {
         sql += ",default";
       }
@@ -1442,7 +1441,7 @@ export async function updateById(
   }
   if (input.appsecret != null) {
     if (input.appsecret != oldModel.appsecret) {
-      sql += `appsecret=${ args.push(await encrypt(input.appsecret)) },`;
+      sql += `appsecret=${ args.push(input.appsecret) },`;
       updateFldNum++;
     }
   }

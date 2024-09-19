@@ -4,6 +4,10 @@ import {
   UniqueType,
 } from "#/types";
 
+import {
+  WxoAppEncodingType,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
@@ -41,6 +45,9 @@ export function intoInput(
     token: model?.token,
     // 消息加解密密钥
     encoding_aes_key: model?.encoding_aes_key,
+    // 消息加解密方式
+    encoding_type: model?.encoding_type,
+    encoding_type_lbl: model?.encoding_type_lbl,
     // 网页授权域名
     domain_id: model?.domain_id,
     domain_id_lbl: model?.domain_id_lbl,
@@ -428,12 +435,19 @@ export function useDownloadImportTemplate(routePath: string) {
             appsecret
             token
             encoding_aes_key
+            encoding_type_lbl
             domain_id_lbl
             order_by
             rem
           }
           findAllDomain {
             id
+            lbl
+          }
+          getDict(codes: [
+            "wxo_app_encoding_type",
+          ]) {
+            code
             lbl
           }
         }
@@ -499,6 +513,7 @@ export function useExportExcel(routePath: string) {
               lbl
             }
             getDict(codes: [
+              "wxo_app_encoding_type",
               "is_locked",
               "is_enabled",
             ]) {
@@ -619,6 +634,7 @@ export function getPagePath() {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: WxoAppInput = {
+    encoding_type: WxoAppEncodingType.Plaintext,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,

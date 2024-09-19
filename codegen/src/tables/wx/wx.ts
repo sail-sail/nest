@@ -30,7 +30,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "appsecret",
         require: true,
-        isEncrypt: true,
         width: 260,
         align: "left",
       },
@@ -191,21 +190,22 @@ export default defineConfig({
       {
         COLUMN_NAME: "appsecret",
         require: true,
-        isEncrypt: true,
         width: 260,
         align: "left",
       },
       {
         COLUMN_NAME: "token",
-        isEncrypt: true,
         width: 140,
         align: "left",
       },
       {
         COLUMN_NAME: "encoding_aes_key",
-        isEncrypt: true,
         width: 140,
         align: "left",
+      },
+      {
+        COLUMN_NAME: "encoding_type",
+        width: 140,
       },
       {
         COLUMN_NAME: "domain_id",
