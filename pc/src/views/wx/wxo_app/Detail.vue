@@ -153,6 +153,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.encoding_type == null)">
+          <el-form-item
+            :label="n('消息加解密方式')"
+            prop="encoding_type"
+          >
+            <DictSelect
+              :set="dialogModel.encoding_type = dialogModel.encoding_type ?? undefined"
+              v-model="dialogModel.encoding_type"
+              code="wxo_app_encoding_type"
+              :placeholder="`${ ns('请选择') } ${ n('消息加解密方式') }`"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.domain_id == null)">
           <el-form-item
             :label="n('网页授权域名')"
@@ -420,6 +435,13 @@ watchEffect(async () => {
         type: "string",
         max: 200,
         message: `${ n("开发者密码") } ${ await nsAsync("长度不能超过 {0}", 200) }`,
+      },
+    ],
+    // 消息加解密方式
+    encoding_type: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("消息加解密方式") }`,
       },
     ],
     // 网页授权域名
@@ -777,11 +799,15 @@ async function nextId() {
 
 watch(
   () => [
+    dialogModel.encoding_type,
     dialogModel.domain_id,
   ],
   () => {
     if (!inited) {
       return;
+    }
+    if (!dialogModel.encoding_type) {
+      dialogModel.encoding_type_lbl = "";
     }
     if (!dialogModel.domain_id) {
       dialogModel.domain_id_lbl = "";
@@ -958,6 +984,7 @@ async function onInitI18ns() {
     "开发者密码",
     "令牌",
     "消息加解密密钥",
+    "消息加解密方式",
     "网页授权域名",
     "锁定",
     "启用",

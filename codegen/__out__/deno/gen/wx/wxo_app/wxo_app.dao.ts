@@ -67,11 +67,6 @@ import {
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  encrypt,
-  decrypt,
-} from "/lib/util/dao_util.ts";
-
-import {
   UniqueType,
   SortOrderEnum,
 } from "/gen/types.ts";
@@ -79,6 +74,7 @@ import {
 import type {
   PageInput,
   SortInput,
+  WxoAppEncodingType,
 } from "/gen/types.ts";
 
 import {
@@ -135,6 +131,27 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.appid_like)) {
     whereQuery += ` and t.appid like ${ args.push("%" + sqlLike(search?.appid_like) + "%") }`;
+  }
+  if (search?.appsecret != null) {
+    whereQuery += ` and t.appsecret=${ args.push(search.appsecret) }`;
+  }
+  if (isNotEmpty(search?.appsecret_like)) {
+    whereQuery += ` and t.appsecret like ${ args.push("%" + sqlLike(search?.appsecret_like) + "%") }`;
+  }
+  if (search?.token != null) {
+    whereQuery += ` and t.token=${ args.push(search.token) }`;
+  }
+  if (isNotEmpty(search?.token_like)) {
+    whereQuery += ` and t.token like ${ args.push("%" + sqlLike(search?.token_like) + "%") }`;
+  }
+  if (search?.encoding_aes_key != null) {
+    whereQuery += ` and t.encoding_aes_key=${ args.push(search.encoding_aes_key) }`;
+  }
+  if (isNotEmpty(search?.encoding_aes_key_like)) {
+    whereQuery += ` and t.encoding_aes_key like ${ args.push("%" + sqlLike(search?.encoding_aes_key_like) + "%") }`;
+  }
+  if (search?.encoding_type != null) {
+    whereQuery += ` and t.encoding_type in (${ args.push(search.encoding_type) })`;
   }
   if (search?.domain_id != null) {
     whereQuery += ` and t.domain_id in (${ args.push(search.domain_id) })`;
@@ -312,6 +329,17 @@ export async function findAll(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
+  // 消息加解密方式
+  if (search && search.encoding_type != null) {
+    const len = search.encoding_type.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.encoding_type.length > ${ ids_limit }`);
+    }
+  }
   // 网页授权域名
   if (search && search.domain_id != null) {
     const len = search.domain_id.length;
@@ -427,21 +455,27 @@ export async function findAll(
   );
   
   const [
+    encoding_typeDict, // 消息加解密方式
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
+    "wxo_app_encoding_type",
     "is_locked",
     "is_enabled",
   ]);
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    // 开发者密码
-    model.appsecret = await decrypt(model.appsecret);
-    // 令牌
-    model.token = await decrypt(model.token);
-    // 消息加解密密钥
-    model.encoding_aes_key = await decrypt(model.encoding_aes_key);
+    
+    // 消息加解密方式
+    let encoding_type_lbl = model.encoding_type as string;
+    if (!isEmpty(model.encoding_type)) {
+      const dictItem = encoding_typeDict.find((dictItem) => dictItem.val === model.encoding_type);
+      if (dictItem) {
+        encoding_type_lbl = dictItem.lbl;
+      }
+    }
+    model.encoding_type_lbl = encoding_type_lbl || "";
     
     // 网页授权域名
     model.domain_id_lbl = model.domain_id_lbl || "";
@@ -505,12 +539,25 @@ export async function setIdByLbl(
   };
   
   const [
+    encoding_typeDict, // 消息加解密方式
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
+    "wxo_app_encoding_type",
     "is_locked",
     "is_enabled",
   ]);
+  
+  // 消息加解密方式
+  if (isNotEmpty(input.encoding_type_lbl) && input.encoding_type == null) {
+    const val = encoding_typeDict.find((itemTmp) => itemTmp.lbl === input.encoding_type_lbl)?.val;
+    if (val != null) {
+      input.encoding_type = val as WxoAppEncodingType;
+    }
+  } else if (isEmpty(input.encoding_type_lbl) && input.encoding_type != null) {
+    const lbl = encoding_typeDict.find((itemTmp) => itemTmp.val === input.encoding_type)?.lbl || "";
+    input.encoding_type_lbl = lbl;
+  }
   
   // 网页授权域名
   if (isNotEmpty(input.domain_id_lbl) && input.domain_id == null) {
@@ -573,6 +620,8 @@ export async function getFieldComments(): Promise<WxoAppFieldComment> {
     appsecret: await n("开发者密码"),
     token: await n("令牌"),
     encoding_aes_key: await n("消息加解密密钥"),
+    encoding_type: await n("消息加解密方式"),
+    encoding_type_lbl: await n("消息加解密方式"),
     domain_id: await n("网页授权域名"),
     domain_id_lbl: await n("网页授权域名"),
     is_locked: await n("锁定"),
@@ -1056,6 +1105,13 @@ export async function validate(
     fieldComments.encoding_aes_key,
   );
   
+  // 消息加解密方式
+  await validators.chars_max_length(
+    input.encoding_type,
+    20,
+    fieldComments.encoding_type,
+  );
+  
   // 网页授权域名
   await validators.chars_max_length(
     input.domain_id,
@@ -1226,7 +1282,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wxo_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,appid,appsecret,token,encoding_aes_key,domain_id,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into wx_wxo_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,appid,appsecret,token,encoding_aes_key,encoding_type,domain_id,is_locked,is_enabled,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1340,17 +1396,22 @@ async function _creates(
         sql += ",default";
       }
       if (input.appsecret != null) {
-        sql += `,${ args.push(await encrypt(input.appsecret)) }`;
+        sql += `,${ args.push(input.appsecret) }`;
       } else {
         sql += ",default";
       }
       if (input.token != null) {
-        sql += `,${ args.push(await encrypt(input.token)) }`;
+        sql += `,${ args.push(input.token) }`;
       } else {
         sql += ",default";
       }
       if (input.encoding_aes_key != null) {
-        sql += `,${ args.push(await encrypt(input.encoding_aes_key)) }`;
+        sql += `,${ args.push(input.encoding_aes_key) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.encoding_type != null) {
+        sql += `,${ args.push(input.encoding_type) }`;
       } else {
         sql += ",default";
       }
@@ -1544,19 +1605,25 @@ export async function updateById(
   }
   if (input.appsecret != null) {
     if (input.appsecret != oldModel.appsecret) {
-      sql += `appsecret=${ args.push(await encrypt(input.appsecret)) },`;
+      sql += `appsecret=${ args.push(input.appsecret) },`;
       updateFldNum++;
     }
   }
   if (input.token != null) {
     if (input.token != oldModel.token) {
-      sql += `token=${ args.push(await encrypt(input.token)) },`;
+      sql += `token=${ args.push(input.token) },`;
       updateFldNum++;
     }
   }
   if (input.encoding_aes_key != null) {
     if (input.encoding_aes_key != oldModel.encoding_aes_key) {
-      sql += `encoding_aes_key=${ args.push(await encrypt(input.encoding_aes_key)) },`;
+      sql += `encoding_aes_key=${ args.push(input.encoding_aes_key) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.encoding_type != null) {
+    if (input.encoding_type != oldModel.encoding_type) {
+      sql += `encoding_type=${ args.push(input.encoding_type) },`;
       updateFldNum++;
     }
   }

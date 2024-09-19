@@ -6,6 +6,16 @@ import * as resolver from "./wxo_app.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxoAppId
 
+"公众号设置消息加解密方式"
+enum WxoAppEncodingType {
+  "明文模式"
+  plaintext
+  "兼容模式"
+  compatible
+  "安全模式"
+  safe
+}
+
 type WxoAppModel {
   "ID"
   id: WxoAppId!
@@ -21,6 +31,10 @@ type WxoAppModel {
   token: String!
   "消息加解密密钥"
   encoding_aes_key: String!
+  "消息加解密方式"
+  encoding_type: WxoAppEncodingType!
+  "消息加解密方式"
+  encoding_type_lbl: String!
   "网页授权域名"
   domain_id: DomainId!
   "网页授权域名"
@@ -71,6 +85,10 @@ type WxoAppFieldComment {
   token: String!
   "消息加解密密钥"
   encoding_aes_key: String!
+  "消息加解密方式"
+  encoding_type: String!
+  "消息加解密方式"
+  encoding_type_lbl: String!
   "网页授权域名"
   domain_id: String!
   "网页授权域名"
@@ -119,6 +137,10 @@ input WxoAppInput {
   token: String
   "消息加解密密钥"
   encoding_aes_key: String
+  "消息加解密方式"
+  encoding_type: WxoAppEncodingType
+  "消息加解密方式"
+  encoding_type_lbl: String
   "网页授权域名"
   domain_id: DomainId
   "网页授权域名"

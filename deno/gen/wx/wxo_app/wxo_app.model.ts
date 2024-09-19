@@ -3,6 +3,8 @@ import type {
   WxoAppModel as WxoAppModelType,
   WxoAppSearch as WxoAppSearchType,
   WxoAppFieldComment as WxoAppFieldCommentType,
+  // 消息加解密方式
+  WxoAppEncodingType,
   SortInput,
 } from "/gen/types.ts";
 
@@ -19,6 +21,17 @@ declare global {
   type WxoAppId = Distinct<string, typeof wxoAppId>;
 
   interface WxoAppSearch extends WxoAppSearchType {
+    /** 开发者密码 */
+    appsecret?: string;
+    appsecret_like?: string;
+    /** 令牌 */
+    token?: string;
+    token_like?: string;
+    /** 消息加解密密钥 */
+    encoding_aes_key?: string;
+    encoding_aes_key_like?: string;
+    /** 消息加解密方式 */
+    encoding_type?: WxoAppEncodingType[];
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */

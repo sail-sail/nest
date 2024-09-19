@@ -19,6 +19,9 @@ declare global {
   type WxAppId = Distinct<string, typeof wxAppId>;
 
   interface WxAppSearch extends WxAppSearchType {
+    /** 开发者密码 */
+    appsecret?: string;
+    appsecret_like?: string;
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */

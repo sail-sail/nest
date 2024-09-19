@@ -92,7 +92,7 @@ CREATE TABLE `wx_wxo_app` (
   `appsecret` varchar(200) NOT NULL DEFAULT '' COMMENT '开发者密码',
   `token` varchar(200) NOT NULL DEFAULT '' COMMENT '令牌',
   `encoding_aes_key` varchar(200) NOT NULL DEFAULT '' COMMENT '消息加解密密钥',
-  `encoding_type` varchar(20) NOT NULL DEFAULT '' COMMENT '消息加解密方式,dict:wxo_app_encoding_type',
+  `encoding_type` varchar(20) NOT NULL DEFAULT 'plaintext' COMMENT '消息加解密方式,dict:wxo_app_encoding_type',
   `domain_id` varchar(22) NOT NULL DEFAULT '' COMMENT '网页授权域名',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
