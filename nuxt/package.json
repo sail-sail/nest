@@ -27,7 +27,7 @@
     "@vue-macros/nuxt": "1.12.2",
     "@vue-macros/reactivity-transform": "1.1.1",
     "nuxt": "3.13.2",
-    "sass": "1.79.1",
+    "sass": "1.78.0",
     "typescript": "5.6.2",
     "unocss": "0.62.4",
     "vue-tsc": "2.1.6"
