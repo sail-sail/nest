@@ -59,14 +59,13 @@ CREATE TABLE if not exists `wx_wx_usr` (
   `avatar_url` varchar(500) NOT NULL DEFAULT '' COMMENT '头像',
   `mobile` varchar(30) NOT NULL DEFAULT '' COMMENT '手机',
   `openid` varchar(100) NOT NULL DEFAULT '' COMMENT '小程序用户唯一标识',
-  `unionid` varchar(100) NOT NULL DEFAULT '' COMMENT '小程序用户统一标识',
+  `unionid` varchar(100) NOT NULL DEFAULT '' COMMENT '用户统一标识',
   `gender` int(11) NOT NULL DEFAULT 0 COMMENT '性别,dict:wx_usr_gender',
   `city` varchar(100) NOT NULL DEFAULT '' COMMENT '城市',
   `province` varchar(100) NOT NULL DEFAULT '' COMMENT '省份',
   `country` varchar(100) NOT NULL DEFAULT '' COMMENT '国家',
   `language` varchar(100) NOT NULL DEFAULT '' COMMENT '语言',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
-  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -78,7 +77,7 @@ CREATE TABLE if not exists `wx_wx_usr` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`openid`, `org_id`, `tenant_id`, `is_deleted`),
+  INDEX (`openid`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='小程序用户';
 
@@ -93,6 +92,7 @@ CREATE TABLE `wx_wxo_app` (
   `token` varchar(200) NOT NULL DEFAULT '' COMMENT '令牌',
   `encoding_aes_key` varchar(200) NOT NULL DEFAULT '' COMMENT '消息加解密密钥',
   `encoding_type` varchar(20) NOT NULL DEFAULT 'plaintext' COMMENT '消息加解密方式,dict:wxo_app_encoding_type',
+  `scope` varchar(20) NOT NULL DEFAULT 'snsapi_base' COMMENT '授权作用域,dict:wxo_app_scope',
   `domain_id` varchar(22) NOT NULL DEFAULT '' COMMENT '网页授权域名',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
@@ -119,12 +119,17 @@ CREATE TABLE `wx_wxo_app` (
 drop table if exists `wx_wxo_usr`;
 CREATE TABLE if not exists `wx_wxo_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
-  `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
+  `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '昵称',
+  `headimgurl` varchar(200) NOT NULL DEFAULT '' COMMENT '头像',
+  `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '绑定用户',
   `openid` varchar(100) NOT NULL DEFAULT '' COMMENT '公众号用户唯一标识',
-  `unionid` varchar(100) NOT NULL DEFAULT '' COMMENT '公众号用户统一标识',
+  `unionid` varchar(100) NOT NULL DEFAULT '' COMMENT '用户统一标识',
+  `sex` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '性别,dict:wx_usr_gender',
+  `province` varchar(10) NOT NULL DEFAULT '' COMMENT '省份',
+  `city` varchar(10) NOT NULL DEFAULT '' COMMENT '城市',
+  `country` varchar(10) NOT NULL DEFAULT '' COMMENT '国家',
+  `privilege` varchar(200) NOT NULL DEFAULT '' COMMENT '特权',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
-  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -136,8 +141,8 @@ CREATE TABLE if not exists `wx_wxo_usr` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
-  INDEX (`usr_id`, `org_id`, `tenant_id`, `is_deleted`),
-  INDEX (`openid`, `org_id`, `tenant_id`, `is_deleted`),
+  INDEX (`usr_id`, `tenant_id`, `is_deleted`),
+  INDEX (`openid`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='公众号用户';
 
@@ -216,7 +221,6 @@ CREATE TABLE if not exists `wx_pay_transactions_jsapi` (
   `currency` varchar(16) NOT NULL DEFAULT '' COMMENT '货币类型,dict:wx_pay_notice_currency',
   `openid` varchar(128) NOT NULL DEFAULT '' COMMENT '用户标识',
   `prepay_id` varchar(64) NOT NULL DEFAULT '' COMMENT '预支付交易会话标识',
-  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -229,7 +233,6 @@ CREATE TABLE if not exists `wx_pay_transactions_jsapi` (
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`prepay_id`),
-  INDEX (`org_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信JSAPI下单';
 
@@ -255,7 +258,6 @@ CREATE TABLE if not exists `wx_wx_pay_notice` (
   `device_id` varchar(32) NOT NULL DEFAULT '' COMMENT '商户端设备号',
   `rem` varchar(50) NOT NULL DEFAULT '' COMMENT '备注',
   `raw` text COMMENT '原始数据',
-  `org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '组织',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -268,6 +270,5 @@ CREATE TABLE if not exists `wx_wx_pay_notice` (
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
   INDEX (`transaction_id`),
-  INDEX (`org_id`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='微信支付通知';

@@ -208,6 +208,10 @@ export default defineConfig({
         width: 140,
       },
       {
+        COLUMN_NAME: "scope",
+        width: 140,
+      },
+      {
         COLUMN_NAME: "domain_id",
         width: 240,
         align: "left",
@@ -278,6 +282,9 @@ export default defineConfig({
         fixed: "left",
       },
       {
+        COLUMN_NAME: "headimgurl",
+      },
+      {
         COLUMN_NAME: "usr_id",
         headerAlign: "center",
         align: "left",
@@ -290,6 +297,26 @@ export default defineConfig({
       {
         COLUMN_NAME: "unionid",
         width: 180,
+      },
+      {
+        COLUMN_NAME: "sex",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "province",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "city",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "country",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "privilege",
+        onlyCodegenDeno: true,
       },
       {
         COLUMN_NAME: "rem",

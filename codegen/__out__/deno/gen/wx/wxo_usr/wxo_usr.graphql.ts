@@ -9,16 +9,28 @@ scalar WxoUsrId
 type WxoUsrModel {
   "ID"
   id: WxoUsrId!
-  "名称"
+  "昵称"
   lbl: String!
-  "用户"
+  "头像"
+  headimgurl: String!
+  "绑定用户"
   usr_id: UsrId!
-  "用户"
+  "绑定用户"
   usr_id_lbl: String!
   "公众号用户唯一标识"
   openid: String!
-  "公众号用户统一标识"
+  "用户统一标识"
   unionid: String!
+  "性别"
+  sex: Int!
+  "性别"
+  sex_lbl: String!
+  "省份"
+  province: String!
+  "城市"
+  city: String!
+  "国家"
+  country: String!
   "备注"
   rem: String!
   "创建人"
@@ -43,16 +55,30 @@ type WxoUsrModel {
 type WxoUsrFieldComment {
   "ID"
   id: String!
-  "名称"
+  "昵称"
   lbl: String!
-  "用户"
+  "头像"
+  headimgurl: String!
+  "绑定用户"
   usr_id: String!
-  "用户"
+  "绑定用户"
   usr_id_lbl: String!
   "公众号用户唯一标识"
   openid: String!
-  "公众号用户统一标识"
+  "用户统一标识"
   unionid: String!
+  "性别"
+  sex: String!
+  "性别"
+  sex_lbl: String!
+  "省份"
+  province: String!
+  "城市"
+  city: String!
+  "国家"
+  country: String!
+  "特权"
+  privilege: String!
   "备注"
   rem: String!
   "创建人"
@@ -71,24 +97,32 @@ type WxoUsrFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
-  "组织"
-  org_id: String!
-  "组织"
-  org_id_lbl: String!
 }
 input WxoUsrInput {
   "ID"
   id: WxoUsrId
-  "名称"
+  "昵称"
   lbl: String
-  "用户"
+  "头像"
+  headimgurl: String
+  "绑定用户"
   usr_id: UsrId
-  "用户"
+  "绑定用户"
   usr_id_lbl: String
   "公众号用户唯一标识"
   openid: String
-  "公众号用户统一标识"
+  "用户统一标识"
   unionid: String
+  "性别"
+  sex: Int
+  "性别"
+  sex_lbl: String
+  "省份"
+  province: String
+  "城市"
+  city: String
+  "国家"
+  country: String
   "备注"
   rem: String
 }
@@ -99,16 +133,16 @@ input WxoUsrSearch {
   ids: [WxoUsrId!]
   "ID"
   id: WxoUsrId
-  "名称"
+  "昵称"
   lbl: String
   lbl_like: String
-  "用户"
+  "绑定用户"
   usr_id: [UsrId!]
-  "用户"
+  "绑定用户"
   usr_id_is_null: Boolean
-  "用户"
+  "绑定用户"
   usr_id_lbl: [String!]
-  "用户"
+  "绑定用户"
   usr_id_lbl_like: String
   "创建人"
   create_usr_id: [UsrId!]

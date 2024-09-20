@@ -332,7 +332,6 @@ export async function bindWxUsr(
       wx_usr_id,
       {
         usr_id: model.id,
-        org_id,
       },
     );
   }

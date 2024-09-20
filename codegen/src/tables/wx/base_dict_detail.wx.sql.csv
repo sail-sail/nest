@@ -25,3 +25,6 @@ rsSUGgRuRD2TUUL/PyTS6g,qdUtCjusRjiO22jxXk7ipA,微信支付通知-用户支付币
 62P4nWK+Sv+8Cq+D9nunLw,XsJS1HyjRQuwgi2za8vmJw,公众号设置-消息加解密方式,明文模式,plaintext,1,1,1
 lvMOWAcVTLK1Nu/oaF1ybA,XsJS1HyjRQuwgi2za8vmJw,,兼容模式,compatible,2,1,1
 yqw4v9PrRZe+tiYw8iMy3w,XsJS1HyjRQuwgi2za8vmJw,,安全模式,safe,3,1,1
+,,,,,,,
+jldstD0kTSSfuOdhqTGjLw,THoRcre6SEy9JConjQz6Hg,公众号设置-授权作用域,静默模式,snsapi_base,1,1,1
+zU5jvc42SRycLO3h0g+jdw,THoRcre6SEy9JConjQz6Hg,,授权模式,snsapi_userinfo,2,1,1

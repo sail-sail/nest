@@ -23,7 +23,7 @@ type WxUsrModel {
   mobile: String!
   "小程序用户唯一标识"
   openid: String!
-  "小程序用户统一标识"
+  "用户统一标识"
   unionid: String!
   "性别"
   gender: Int!
@@ -75,7 +75,7 @@ type WxUsrFieldComment {
   mobile: String!
   "小程序用户唯一标识"
   openid: String!
-  "小程序用户统一标识"
+  "用户统一标识"
   unionid: String!
   "性别"
   gender: String!
@@ -107,10 +107,6 @@ type WxUsrFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
-  "组织"
-  org_id: String!
-  "组织"
-  org_id_lbl: String!
 }
 input WxUsrInput {
   "ID"
@@ -129,7 +125,7 @@ input WxUsrInput {
   mobile: String
   "小程序用户唯一标识"
   openid: String
-  "小程序用户统一标识"
+  "用户统一标识"
   unionid: String
   "性别"
   gender: Int

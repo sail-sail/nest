@@ -75,6 +75,7 @@ import type {
   PageInput,
   SortInput,
   WxoAppEncodingType,
+  WxoAppScope,
 } from "/gen/types.ts";
 
 import {
@@ -152,6 +153,9 @@ async function getWhereQuery(
   }
   if (search?.encoding_type != null) {
     whereQuery += ` and t.encoding_type in (${ args.push(search.encoding_type) })`;
+  }
+  if (search?.scope != null) {
+    whereQuery += ` and t.scope in (${ args.push(search.scope) })`;
   }
   if (search?.domain_id != null) {
     whereQuery += ` and t.domain_id in (${ args.push(search.domain_id) })`;
@@ -340,6 +344,17 @@ export async function findAll(
       throw new Error(`search.encoding_type.length > ${ ids_limit }`);
     }
   }
+  // 授权作用域
+  if (search && search.scope != null) {
+    const len = search.scope.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.scope.length > ${ ids_limit }`);
+    }
+  }
   // 网页授权域名
   if (search && search.domain_id != null) {
     const len = search.domain_id.length;
@@ -456,10 +471,12 @@ export async function findAll(
   
   const [
     encoding_typeDict, // 消息加解密方式
+    scopeDict, // 授权作用域
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
     "wxo_app_encoding_type",
+    "wxo_app_scope",
     "is_locked",
     "is_enabled",
   ]);
@@ -476,6 +493,16 @@ export async function findAll(
       }
     }
     model.encoding_type_lbl = encoding_type_lbl || "";
+    
+    // 授权作用域
+    let scope_lbl = model.scope as string;
+    if (!isEmpty(model.scope)) {
+      const dictItem = scopeDict.find((dictItem) => dictItem.val === model.scope);
+      if (dictItem) {
+        scope_lbl = dictItem.lbl;
+      }
+    }
+    model.scope_lbl = scope_lbl || "";
     
     // 网页授权域名
     model.domain_id_lbl = model.domain_id_lbl || "";
@@ -540,10 +567,12 @@ export async function setIdByLbl(
   
   const [
     encoding_typeDict, // 消息加解密方式
+    scopeDict, // 授权作用域
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
     "wxo_app_encoding_type",
+    "wxo_app_scope",
     "is_locked",
     "is_enabled",
   ]);
@@ -557,6 +586,17 @@ export async function setIdByLbl(
   } else if (isEmpty(input.encoding_type_lbl) && input.encoding_type != null) {
     const lbl = encoding_typeDict.find((itemTmp) => itemTmp.val === input.encoding_type)?.lbl || "";
     input.encoding_type_lbl = lbl;
+  }
+  
+  // 授权作用域
+  if (isNotEmpty(input.scope_lbl) && input.scope == null) {
+    const val = scopeDict.find((itemTmp) => itemTmp.lbl === input.scope_lbl)?.val;
+    if (val != null) {
+      input.scope = val as WxoAppScope;
+    }
+  } else if (isEmpty(input.scope_lbl) && input.scope != null) {
+    const lbl = scopeDict.find((itemTmp) => itemTmp.val === input.scope)?.lbl || "";
+    input.scope_lbl = lbl;
   }
   
   // 网页授权域名
@@ -622,6 +662,8 @@ export async function getFieldComments(): Promise<WxoAppFieldComment> {
     encoding_aes_key: await n("消息加解密密钥"),
     encoding_type: await n("消息加解密方式"),
     encoding_type_lbl: await n("消息加解密方式"),
+    scope: await n("授权作用域"),
+    scope_lbl: await n("授权作用域"),
     domain_id: await n("网页授权域名"),
     domain_id_lbl: await n("网页授权域名"),
     is_locked: await n("锁定"),
@@ -1112,6 +1154,13 @@ export async function validate(
     fieldComments.encoding_type,
   );
   
+  // 授权作用域
+  await validators.chars_max_length(
+    input.scope,
+    20,
+    fieldComments.scope,
+  );
+  
   // 网页授权域名
   await validators.chars_max_length(
     input.domain_id,
@@ -1282,7 +1331,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wxo_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,appid,appsecret,token,encoding_aes_key,encoding_type,domain_id,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into wx_wxo_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,appid,appsecret,token,encoding_aes_key,encoding_type,scope,domain_id,is_locked,is_enabled,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1412,6 +1461,11 @@ async function _creates(
       }
       if (input.encoding_type != null) {
         sql += `,${ args.push(input.encoding_type) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.scope != null) {
+        sql += `,${ args.push(input.scope) }`;
       } else {
         sql += ",default";
       }
@@ -1624,6 +1678,12 @@ export async function updateById(
   if (input.encoding_type != null) {
     if (input.encoding_type != oldModel.encoding_type) {
       sql += `encoding_type=${ args.push(input.encoding_type) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.scope != null) {
+    if (input.scope != oldModel.scope) {
+      sql += `scope=${ args.push(input.scope) },`;
       updateFldNum++;
     }
   }
