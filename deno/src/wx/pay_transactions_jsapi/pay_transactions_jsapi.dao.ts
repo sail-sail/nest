@@ -173,7 +173,6 @@ export async function transactions_jsapi(
     await findByIdWxUsr(wx_usr_id),
   );
   const tenant_id: TenantId = wx_usrModel.tenant_id;
-  const org_id: OrgId = wx_usrModel.org_id;
   
   await createPayTransactionsJsapi({
     appid: obj.appid,
@@ -193,7 +192,6 @@ export async function transactions_jsapi(
     openid: params.payer.openid,
     prepay_id: result.package,
     tenant_id,
-    org_id,
   });
   return result;
 }

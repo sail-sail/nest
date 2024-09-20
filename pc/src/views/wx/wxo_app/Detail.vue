@@ -168,6 +168,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.scope == null)">
+          <el-form-item
+            :label="n('授权作用域')"
+            prop="scope"
+          >
+            <DictSelect
+              :set="dialogModel.scope = dialogModel.scope ?? undefined"
+              v-model="dialogModel.scope"
+              code="wxo_app_scope"
+              :placeholder="`${ ns('请选择') } ${ n('授权作用域') }`"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.domain_id == null)">
           <el-form-item
             :label="n('网页授权域名')"
@@ -442,6 +457,13 @@ watchEffect(async () => {
       {
         required: true,
         message: `${ await nsAsync("请输入") } ${ n("消息加解密方式") }`,
+      },
+    ],
+    // 授权作用域
+    scope: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("授权作用域") }`,
       },
     ],
     // 网页授权域名
@@ -800,6 +822,7 @@ async function nextId() {
 watch(
   () => [
     dialogModel.encoding_type,
+    dialogModel.scope,
     dialogModel.domain_id,
   ],
   () => {
@@ -808,6 +831,9 @@ watch(
     }
     if (!dialogModel.encoding_type) {
       dialogModel.encoding_type_lbl = "";
+    }
+    if (!dialogModel.scope) {
+      dialogModel.scope_lbl = "";
     }
     if (!dialogModel.domain_id) {
       dialogModel.domain_id_lbl = "";
@@ -985,6 +1011,7 @@ async function onInitI18ns() {
     "令牌",
     "消息加解密密钥",
     "消息加解密方式",
+    "授权作用域",
     "网页授权域名",
     "锁定",
     "启用",

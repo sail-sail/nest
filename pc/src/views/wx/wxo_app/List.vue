@@ -588,6 +588,15 @@
             </el-table-column>
           </template>
           
+          <!-- 授权作用域 -->
+          <template v-else-if="'scope_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 网页授权域名 -->
           <template v-else-if="'domain_id_lbl' === col.prop && (showBuildIn || builtInSearch?.domain_id == null)">
             <el-table-column
@@ -1128,6 +1137,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "授权作用域",
+      prop: "scope_lbl",
+      sortBy: "scope",
+      width: 140,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "网页授权域名",
       prop: "domain_id_lbl",
       sortBy: "domain_id_lbl",
@@ -1489,6 +1507,7 @@ async function onImportExcel() {
     [ await nAsync("令牌") ]: "token",
     [ await nAsync("消息加解密密钥") ]: "encoding_aes_key",
     [ await nAsync("消息加解密方式") ]: "encoding_type_lbl",
+    [ await nAsync("授权作用域") ]: "scope_lbl",
     [ await nAsync("网页授权域名") ]: "domain_id_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
@@ -1522,6 +1541,7 @@ async function onImportExcel() {
           "token": "string",
           "encoding_aes_key": "string",
           "encoding_type_lbl": "string",
+          "scope_lbl": "string",
           "domain_id_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
@@ -1882,6 +1902,7 @@ async function initI18nsEfc() {
     "令牌",
     "消息加解密密钥",
     "消息加解密方式",
+    "授权作用域",
     "网页授权域名",
     "锁定",
     "启用",

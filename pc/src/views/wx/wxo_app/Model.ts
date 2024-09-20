@@ -39,6 +39,9 @@ export const wxoAppFields = [
   // 消息加解密方式
   "encoding_type",
   "encoding_type_lbl",
+  // 授权作用域
+  "scope",
+  "scope_lbl",
   // 网页授权域名
   "domain_id",
   "domain_id_lbl",

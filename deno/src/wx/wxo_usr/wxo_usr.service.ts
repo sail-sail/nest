@@ -2,6 +2,7 @@ import type {
   WxoLoginByCodeInput,
   LoginModel,
   LoginInput,
+  WxoGetAppid,
 } from "/gen/types.ts";
 
 import {
@@ -45,7 +46,12 @@ import {
 
 import {
   fetchOpenid as fetchOpenidWxoUsr,
+  fetchUserInfo as fetchUserInfoWxoUsr,
 } from "./wxo_usr.dao.ts";
+
+import type {
+  FetchUserInfo,
+} from "./wxo_usr.model.ts";
 
 import {
   createToken as createTokenAuth,
@@ -76,29 +82,31 @@ import {
 /** 通过域名获取开发者ID */
 export async function wxoGetAppid(
   host: string,
-) {
+): Promise<WxoGetAppid> {
   // 获取域名
-  const domainModel = await validateOptionDomain(
+  const domain_model = await validateOptionDomain(
     await findOneDomain({
       lbl: host,
     }),
   );
-  await validateIsEnabledDomain(domainModel);
+  await validateIsEnabledDomain(domain_model);
   
-  const domain_id = domainModel.id;
+  const domain_id = domain_model.id;
   
   // 获取微信公众号的开发者ID
-  const wxoAppModel = await validateOptionWxoApp(
+  const wxo_app_model = await validateOptionWxoApp(
     await findOneWxoApp({
       domain_id: [ domain_id ],
     }),
   );
-  await validateIsEnabledWxoApp(wxoAppModel);
+  await validateIsEnabledWxoApp(wxo_app_model);
   
-  const appid = wxoAppModel.appid;
+  const appid = wxo_app_model.appid;
+  const scope = wxo_app_model.scope;
   
   return {
     appid,
+    scope,
   };
 }
 
@@ -122,105 +130,117 @@ export async function wxoLoginByCode(
   
   const domain_id = domainModel.id;
   
-  // 获取企微应用
-  const wxo_appModel = await validateOptionWxoApp(
+  // 获取微信公众号应用
+  const wxo_app_model = await validateOptionWxoApp(
     await findOneWxoApp({
       domain_id: [ domain_id ],
     })
   );
-  await validateIsEnabledWxoApp(wxo_appModel);
+  await validateIsEnabledWxoApp(wxo_app_model);
   
-  const tenant_id = wxo_appModel.tenant_id!;
-  const appid = wxo_appModel.appid;
+  const tenant_id = wxo_app_model.tenant_id!;
+  const appid = wxo_app_model.appid;
   
   // 获取微信公众号的openid
   const {
     openid,
     unionid,
+    access_token,
   } = await fetchOpenidWxoUsr(code, appid);
   
+  let userinfo: FetchUserInfo | undefined;
+  
+  if (wxo_app_model.scope === "snsapi_userinfo") {
+    userinfo = await fetchUserInfoWxoUsr(
+      openid,
+      access_token,
+      lang,
+    );
+  }
+  
   // 微信公众号用户
-  let wxo_usrModel = await findOneWxoUsr({
+  let wxo_usr_model = await findOneWxoUsr({
     lbl: openid,
   });
   // 用户初次登录, 设置租户
-  if (!wxo_usrModel) {
+  if (!wxo_usr_model) {
+    let privilege = undefined;
+    if (userinfo?.privilege) {
+      privilege = userinfo.privilege.join(",");
+    }
     const id = await createWxoUsr(
       {
         openid,
-        lbl: openid,
+        lbl: userinfo?.nickname || openid,
+        headimgurl: userinfo?.headimgurl,
         unionid,
+        sex: userinfo?.sex,
+        province: userinfo?.province,
+        city: userinfo?.city,
+        country: userinfo?.country,
+        privilege,
       },
     );
     await updateTenantByIdWxoUsr(id, tenant_id!);
-    wxo_usrModel = await validateOptionWxoUsr(
+    wxo_usr_model = await validateOptionWxoUsr(
       await findByIdWxoUsr(id),
     );
   }
-  if (wxo_usrModel.tenant_id !== tenant_id) {
-    await updateTenantByIdWxoUsr(wxo_usrModel.id, tenant_id);
+  if (wxo_usr_model.tenant_id !== tenant_id) {
+    await updateTenantByIdWxoUsr(wxo_usr_model.id, tenant_id);
   }
-  if (wxo_usrModel.unionid != unionid) {
+  if (wxo_usr_model.unionid != unionid) {
     await updateByIdWxoUsr(
-      wxo_usrModel.id,
+      wxo_usr_model.id,
       {
         unionid,
       },
     );
   }
-  if (!wxo_usrModel.usr_id) {
-    const id = await createUsr(
+  if (!wxo_usr_model.usr_id) {
+    const usr_id = await createUsr(
       {
-        lbl: await ns("游客"),
-        rem: await ns("微信用户"),
+        lbl: userinfo?.nickname || openid,
+        rem: await ns("微信公众号游客"),
         is_hidden: 1,
       },
       {
         uniqueType: UniqueType.Update,
       },
     );
-    await updateTenantByIdUsr(id, tenant_id);
+    await updateTenantByIdUsr(usr_id, tenant_id);
     await updateByIdWxoUsr(
-      wxo_usrModel.id,
+      wxo_usr_model.id,
       {
-        usr_id: id,
+        usr_id,
+        create_usr_id: usr_id,
       },
     );
-    wxo_usrModel = await validateOptionWxoUsr(
-      await findByIdWxoUsr(wxo_usrModel.id),
+    wxo_usr_model = await validateOptionWxoUsr(
+      await findByIdWxoUsr(wxo_usr_model.id),
     );
   }
   
-  const usrModel = await validateOptionUsr(
-    await findByIdUsr(wxo_usrModel.usr_id),
+  const usr_model = await validateOptionUsr(
+    await findByIdUsr(wxo_usr_model.usr_id),
   );
-  const username = usrModel.username;
+  const username = usr_model.username;
   
-  let org_id: OrgId | undefined = undefined;
-  const org_ids = await getOrgIdsById(wxo_usrModel.usr_id);
-  if (!org_id) {
-    org_id = org_ids[0];
-  }
-  if (org_id) {
-    if (!org_ids.includes(org_id)) {
-      org_id = undefined;
-    }
-  }
-  
-  const usr_id = wxo_usrModel.usr_id;
-  const wxo_usr_id = wxo_usrModel.id;
+  const usr_id = wxo_usr_model.usr_id;
+  const wxo_usr_id = wxo_usr_model.id;
+  const org_id = usr_model.default_org_id;
   
   const {
     authorization,
   } = await createTokenAuth({
     id: usr_id,
-    org_id,
     wxo_usr_id,
     tenant_id,
+    org_id,
     lang,
   });
   
-  const loginModel: LoginModel = {
+  const login_model: LoginModel = {
     usr_id,
     username,
     tenant_id,
@@ -229,7 +249,7 @@ export async function wxoLoginByCode(
     lang,
   };
   
-  return loginModel;
+  return login_model;
 }
 
 /**
@@ -263,20 +283,20 @@ export async function checkBindWxoUsr() {
 export async function bindWxoUsr(
   input: LoginInput,
 ): Promise<LoginModel> {
-  const authModel = await getAuthModel();
+  const auth_model = await getAuthModel();
   
-  if (!authModel) {
+  if (!auth_model) {
     throw await ns("未登录");
   }
   
   const authUsrModel = await validateOptionUsr(
-    await findByIdUsr(authModel?.id),
+    await findByIdUsr(auth_model?.id),
   );
   if (!authUsrModel.is_hidden) {
     throw await ns("此微信已被其它用户绑定");
   }
   
-  const wxo_usr_id = authModel?.wxo_usr_id as WxoUsrId;
+  const wxo_usr_id = auth_model?.wxo_usr_id as WxoUsrId;
   if (!wxo_usr_id) {
     throw "wx_usr_id can not be null";
   }
@@ -320,7 +340,7 @@ export async function bindWxoUsr(
   
   if (!model || !model.id) {
     model = {
-      id: authModel.id,
+      id: auth_model.id,
       default_org_id: authUsrModel.default_org_id,
       is_hidden: authUsrModel.is_hidden,
     },
@@ -369,7 +389,6 @@ export async function bindWxoUsr(
       wxo_usr_id,
       {
         usr_id: model.id,
-        org_id,
       },
     );
   }

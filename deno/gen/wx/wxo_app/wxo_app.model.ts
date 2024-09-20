@@ -5,6 +5,8 @@ import type {
   WxoAppFieldComment as WxoAppFieldCommentType,
   // 消息加解密方式
   WxoAppEncodingType,
+  // 授权作用域
+  WxoAppScope,
   SortInput,
 } from "/gen/types.ts";
 
@@ -32,6 +34,8 @@ declare global {
     encoding_aes_key_like?: string;
     /** 消息加解密方式 */
     encoding_type?: WxoAppEncodingType[];
+    /** 授权作用域 */
+    scope?: WxoAppScope[];
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */

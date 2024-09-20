@@ -19,12 +19,29 @@ declare global {
   type WxoUsrId = Distinct<string, typeof wxoUsrId>;
 
   interface WxoUsrSearch extends WxoUsrSearchType {
+    /** 头像 */
+    headimgurl?: string;
+    headimgurl_like?: string;
     /** 公众号用户唯一标识 */
     openid?: string;
     openid_like?: string;
-    /** 公众号用户统一标识 */
+    /** 用户统一标识 */
     unionid?: string;
     unionid_like?: string;
+    /** 性别 */
+    sex?: number[];
+    /** 省份 */
+    province?: string;
+    province_like?: string;
+    /** 城市 */
+    city?: string;
+    city_like?: string;
+    /** 国家 */
+    country?: string;
+    country_like?: string;
+    /** 特权 */
+    privilege?: string;
+    privilege_like?: string;
     /** 备注 */
     rem?: string;
     rem_like?: string;
@@ -32,22 +49,12 @@ declare global {
     create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
     update_time?: [(string|undefined|null), (string|undefined|null)];
-    /** 组织 */
-    org_id?: OrgId[];
-    /** 组织 */
-    org_id_is_null?: boolean;
-    /** 组织 */
-    org_id_lbl?: string[];
-    /** 组织 */
-    org_id_lbl_like?: string;
     tenant_id?: TenantId | null;
   }
 
   interface WxoUsrModel extends WxoUsrModelType {
-    /** 组织 */
-    org_id: OrgId;
-    /** 组织 */
-    org_id_lbl: string;
+    /** 特权 */
+    privilege: string;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -60,10 +67,8 @@ declare global {
   }
 
   interface WxoUsrInput extends WxoUsrInputType {
-    /** 组织 */
-    org_id?: OrgId | null;
-    /** 组织 */
-    org_id_lbl?: string | null;
+    /** 特权 */
+    privilege?: string | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;

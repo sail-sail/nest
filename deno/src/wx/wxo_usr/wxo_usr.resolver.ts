@@ -6,12 +6,13 @@ import type {
   LoginInput,
   LoginModel,
   WxoLoginByCodeInput,
+  WxoGetAppid,
 } from "/gen/types.ts";
 
 /** 通过域名获取开发者ID */
 export async function wxoGetAppid(
   host: string,
-) {
+): Promise<WxoGetAppid> {
   const {
     wxoGetAppid,
   } = await import("./wxo_usr.service.ts");

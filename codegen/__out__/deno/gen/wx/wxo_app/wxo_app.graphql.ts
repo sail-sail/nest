@@ -16,6 +16,14 @@ enum WxoAppEncodingType {
   safe
 }
 
+"公众号设置授权作用域"
+enum WxoAppScope {
+  "静默模式"
+  snsapi_base
+  "授权模式"
+  snsapi_userinfo
+}
+
 type WxoAppModel {
   "ID"
   id: WxoAppId!
@@ -35,6 +43,10 @@ type WxoAppModel {
   encoding_type: WxoAppEncodingType!
   "消息加解密方式"
   encoding_type_lbl: String!
+  "授权作用域"
+  scope: WxoAppScope!
+  "授权作用域"
+  scope_lbl: String!
   "网页授权域名"
   domain_id: DomainId!
   "网页授权域名"
@@ -89,6 +101,10 @@ type WxoAppFieldComment {
   encoding_type: String!
   "消息加解密方式"
   encoding_type_lbl: String!
+  "授权作用域"
+  scope: String!
+  "授权作用域"
+  scope_lbl: String!
   "网页授权域名"
   domain_id: String!
   "网页授权域名"
@@ -141,6 +157,10 @@ input WxoAppInput {
   encoding_type: WxoAppEncodingType
   "消息加解密方式"
   encoding_type_lbl: String
+  "授权作用域"
+  scope: WxoAppScope
+  "授权作用域"
+  scope_lbl: String
   "网页授权域名"
   domain_id: DomainId
   "网页授权域名"

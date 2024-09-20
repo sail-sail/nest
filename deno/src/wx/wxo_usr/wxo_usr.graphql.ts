@@ -9,6 +9,9 @@ type WxoGetAppid {
   "开发者ID"
   appid: String!
   
+  "应用授权作用域，snsapi_base 或 snsapi_userinfo"
+  scope: String!
+  
 }
 
 input WxoLoginByCodeInput {

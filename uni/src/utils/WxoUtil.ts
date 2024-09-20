@@ -36,6 +36,7 @@ export async function wxoGetAppid() {
   }
   return {
     appid: data.appid,
+    scope: data.scope,
     agentid: undefined,
   };
 }

@@ -6,6 +6,7 @@ import {
 
 import {
   WxoAppEncodingType,
+  WxoAppScope,
 } from "#/types";
 
 import type {
@@ -48,6 +49,9 @@ export function intoInput(
     // 消息加解密方式
     encoding_type: model?.encoding_type,
     encoding_type_lbl: model?.encoding_type_lbl,
+    // 授权作用域
+    scope: model?.scope,
+    scope_lbl: model?.scope_lbl,
     // 网页授权域名
     domain_id: model?.domain_id,
     domain_id_lbl: model?.domain_id_lbl,
@@ -436,6 +440,7 @@ export function useDownloadImportTemplate(routePath: string) {
             token
             encoding_aes_key
             encoding_type_lbl
+            scope_lbl
             domain_id_lbl
             order_by
             rem
@@ -446,6 +451,7 @@ export function useDownloadImportTemplate(routePath: string) {
           }
           getDict(codes: [
             "wxo_app_encoding_type",
+            "wxo_app_scope",
           ]) {
             code
             lbl
@@ -514,6 +520,7 @@ export function useExportExcel(routePath: string) {
             }
             getDict(codes: [
               "wxo_app_encoding_type",
+              "wxo_app_scope",
               "is_locked",
               "is_enabled",
             ]) {
@@ -635,6 +642,7 @@ export function getPagePath() {
 export async function getDefaultInput() {
   const defaultInput: WxoAppInput = {
     encoding_type: WxoAppEncodingType.Plaintext,
+    scope: WxoAppScope.SnsapiBase,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
