@@ -278,7 +278,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "lbl",
         search: true,
-        width: 280,
         fixed: "left",
       },
       {
@@ -286,8 +285,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "usr_id",
-        headerAlign: "center",
-        align: "left",
         width: 240,
       },
       {
@@ -301,6 +298,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "sex",
         width: 120,
+        align: "center",
       },
       {
         COLUMN_NAME: "province",

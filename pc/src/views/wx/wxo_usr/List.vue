@@ -467,6 +467,13 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <el-image
+                  v-if="row.headimgurl"
+                  :src="row.headimgurl"
+                  style="height: 50px;"
+                ></el-image>
+              </template>
             </el-table-column>
           </template>
           
@@ -926,7 +933,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "昵称",
       prop: "lbl",
-      width: 280,
+      width: 200,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -944,7 +951,7 @@ function getTableColumns(): ColumnType[] {
       prop: "usr_id_lbl",
       sortBy: "usr_id_lbl",
       width: 240,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -969,7 +976,7 @@ function getTableColumns(): ColumnType[] {
       prop: "sex_lbl",
       sortBy: "sex",
       width: 120,
-      align: "right",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },

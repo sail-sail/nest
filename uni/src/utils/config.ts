@@ -33,7 +33,7 @@ if (import.meta.env.MODE === "development") {
     wsProt = "ws:";
   }
   // #endif
-  domain = "localhost:4000";
+  // domain = "localhost:4000";
 } else if (import.meta.env.MODE === "test") {
   // #ifndef H5
   host = "localhost";
@@ -53,7 +53,7 @@ if (import.meta.env.MODE === "development") {
     wsProt = "ws:";
   }
   // #endif
-  domain = "localhost:4000";
+  // domain = "localhost:4000";
 } else if (import.meta.env.MODE === "production") {
   // #ifndef H5
   host = "localhost";

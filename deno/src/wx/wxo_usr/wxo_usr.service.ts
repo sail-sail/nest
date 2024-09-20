@@ -158,26 +158,33 @@ export async function wxoLoginByCode(
     );
   }
   
+  const lbl = userinfo?.nickname || openid;
+  const headimgurl = userinfo?.headimgurl;
+  const sex = userinfo?.sex;
+  const province = userinfo?.province;
+  const city= userinfo?.city;
+  const country = userinfo?.country;
+  let privilege = undefined;
+  if (userinfo?.privilege) {
+    privilege = userinfo.privilege.join(",");
+  }
+  
   // 微信公众号用户
   let wxo_usr_model = await findOneWxoUsr({
     lbl: openid,
   });
   // 用户初次登录, 设置租户
   if (!wxo_usr_model) {
-    let privilege = undefined;
-    if (userinfo?.privilege) {
-      privilege = userinfo.privilege.join(",");
-    }
     const id = await createWxoUsr(
       {
         openid,
-        lbl: userinfo?.nickname || openid,
-        headimgurl: userinfo?.headimgurl,
+        lbl,
+        headimgurl,
         unionid,
-        sex: userinfo?.sex,
-        province: userinfo?.province,
-        city: userinfo?.city,
-        country: userinfo?.country,
+        sex,
+        province,
+        city,
+        country,
         privilege,
       },
     );
@@ -189,7 +196,21 @@ export async function wxoLoginByCode(
   if (wxo_usr_model.tenant_id !== tenant_id) {
     await updateTenantByIdWxoUsr(wxo_usr_model.id, tenant_id);
   }
-  if (wxo_usr_model.unionid != unionid) {
+  if (wxo_app_model.scope === "snsapi_userinfo") {
+    await updateByIdWxoUsr(
+      wxo_usr_model.id,
+      {
+        unionid,
+        lbl,
+        headimgurl,
+        sex,
+        province,
+        city,
+        country,
+        privilege,
+      },
+    );
+  } else {
     await updateByIdWxoUsr(
       wxo_usr_model.id,
       {
@@ -200,7 +221,7 @@ export async function wxoLoginByCode(
   if (!wxo_usr_model.usr_id) {
     const usr_id = await createUsr(
       {
-        lbl: userinfo?.nickname || openid,
+        lbl,
         rem: await ns("微信公众号游客"),
         is_hidden: 1,
       },
