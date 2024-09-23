@@ -39,6 +39,9 @@ export async function fetchOpenid(
   }&code=${
     encodeURIComponent(code)
   }&grant_type=authorization_code`;
+  
+  log("wxo_usr.fetchOpenid.url", url);
+  
   const res = await fetch(url);
   
   const data: {
@@ -49,7 +52,7 @@ export async function fetchOpenid(
     errmsg?: string,
   } = await res.json();
   
-  log("wxo_usr.fetchOpenid", data);
+  log("wxo_usr.fetchOpenid.data", data);
   
   const errcode = data.errcode;
   const openid = data.openid;
@@ -83,9 +86,14 @@ export async function fetchUserInfo(
   }&lang=${
     lang
   }`;
+  
+  log("wxo_usr.fetchUserInfo.url", url);
+  
   const res = await fetch(url);
   
   const data: FetchUserInfo = await res.json();
+  
+  log("wxo_usr.fetchUserInfo.data", data);
   
   return data;
 }
