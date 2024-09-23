@@ -108,6 +108,7 @@
           >
             <CustomSelect
               v-model="dialogModel.usr_id"
+              v-model:model-label="dialogModel.usr_id_lbl"
               :method="getUsrList"
               :options-map="((item: UsrModel) => {
                 return {

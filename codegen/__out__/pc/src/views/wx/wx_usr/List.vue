@@ -964,7 +964,7 @@ function getTableColumns(): ColumnType[] {
       prop: "usr_id_lbl",
       sortBy: "usr_id_lbl",
       width: 240,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },

@@ -132,10 +132,10 @@ async function getWhereQuery(
     whereQuery += ` and t.usr_id is null`;
   }
   if (search?.usr_id_lbl != null) {
-    whereQuery += ` and usr_id_lbl.lbl in (${ args.push(search.usr_id_lbl) })`;
+    whereQuery += ` and t.usr_id_lbl in (${ args.push(search.usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.usr_id_lbl_like)) {
-    whereQuery += ` and usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.usr_id_lbl_like) + "%") }`;
+    whereQuery += ` and t.usr_id_lbl like ${ args.push("%" + sqlLike(search.usr_id_lbl_like) + "%") }`;
   }
   if (search?.openid != null) {
     whereQuery += ` and t.openid=${ args.push(search.openid) }`;
@@ -232,8 +232,7 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  let fromQuery = `wx_wxo_usr t
-  left join base_usr usr_id_lbl on usr_id_lbl.id=t.usr_id`;
+  let fromQuery = `wx_wxo_usr t`;
   return fromQuery;
 }
 
@@ -373,7 +372,6 @@ export async function findAll(
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
-      ,usr_id_lbl.lbl usr_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -430,9 +428,6 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    // 绑定用户
-    model.usr_id_lbl = model.usr_id_lbl || "";
     
     // 性别
     let sex_lbl = model.sex?.toString() || "";
@@ -1154,7 +1149,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wxo_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,headimgurl,usr_id,openid,unionid,sex,province,city,country,privilege,rem)values";
+  let sql = "insert into wx_wxo_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,headimgurl,usr_id_lbl,usr_id,openid,unionid,sex,province,city,country,privilege,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1259,6 +1254,11 @@ async function _creates(
       }
       if (input.headimgurl != null) {
         sql += `,${ args.push(input.headimgurl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.usr_id_lbl != null) {
+        sql += `,${ args.push(input.usr_id_lbl) }`;
       } else {
         sql += ",default";
       }
@@ -1463,6 +1463,11 @@ export async function updateById(
       sql += `headimgurl=${ args.push(input.headimgurl) },`;
       updateFldNum++;
     }
+  }
+  if (isNotEmpty(input.usr_id_lbl)) {
+    sql += `usr_id_lbl=?,`;
+    args.push(input.usr_id_lbl);
+    updateFldNum++;
   }
   if (input.usr_id != null) {
     if (input.usr_id != oldModel.usr_id) {

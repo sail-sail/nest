@@ -234,7 +234,9 @@ export async function wxoLoginByCode(
       wxo_usr_model.id,
       {
         usr_id,
+        usr_id_lbl: lbl,
         create_usr_id: usr_id,
+        create_usr_id_lbl: lbl,
       },
     );
     wxo_usr_model = await validateOptionWxoUsr(
