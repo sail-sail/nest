@@ -13,7 +13,7 @@ export function uniqueID() {
 }
 
 export function uuid() {
-  if (typeof crypto !== "undefined") {
+  if (crypto.randomUUID) {
     return crypto.randomUUID();
   }
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
