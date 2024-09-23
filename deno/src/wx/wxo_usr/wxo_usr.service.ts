@@ -171,7 +171,7 @@ export async function wxoLoginByCode(
   
   // 微信公众号用户
   let wxo_usr_model = await findOneWxoUsr({
-    lbl: openid,
+    openid,
   });
   // 用户初次登录, 设置租户
   if (!wxo_usr_model) {
