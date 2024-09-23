@@ -19,6 +19,7 @@
     "@element-plus/icons-vue": "2.3.1",
     "@jsquash/resize": "2.0.0",
     "@jsquash/webp": "1.4.0",
+    "@qr-x/vue": "1.1.1",
     "@vue-office/docx": "1.6.2",
     "@vue-office/excel": "1.7.11",
     "@vue/reactivity": "3.5.6",
