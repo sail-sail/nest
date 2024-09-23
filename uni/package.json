@@ -63,7 +63,7 @@
     "numeral": "2.0.6",
     "pinia": "2.2.2",
     "pinia-plugin-unistorage": "0.1.2",
-    "vue": "3.5.6",
+    "vue": "3.5.8",
     "vue-demi": "0.14.10"
   },
   "devDependencies": {
@@ -89,9 +89,9 @@
     "unocss-applet": "0.8.2",
     "unplugin-auto-import": "0.18.3",
     "unplugin-icons": "0.19.3",
-    "unplugin-turbo-console": "1.10.1",
+    "unplugin-turbo-console": "1.10.2",
     "unplugin-vue-components": "0.27.4",
-    "vite": "5.4.6",
+    "vite": "5.4.7",
     "vite-plugin-inspect": "0.8.7",
     "vite-plugin-vue-inspector": "5.2.0",
     "vitest": "2.1.1",
