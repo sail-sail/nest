@@ -71,3 +71,12 @@ export async function unBindWxoUsr() {
   
   return await unBindWxoUsr();
 }
+
+/** 获取公众号用户信息 */
+export async function getWxoUsrInfo() {
+  const {
+    getWxoUsrInfo,
+  } = await import("./wxo_usr.service.ts");
+  
+  return await getWxoUsrInfo();
+}
