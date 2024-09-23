@@ -457,14 +457,19 @@ export async function unBindWxoUsr() {
 
 /** 获取公众号用户信息 */
 export async function getWxoUsrInfo() {
+  
   const authModel = await getAuthModel();
   const wxo_usr_id = authModel?.wxo_usr_id as WxoUsrId;
+  
   if (!wxo_usr_id) {
     throw "wxo_usr_id can not be null";
   }
-  const wxo_usr_model = await validateOptionWxoUsr(
-    await findByIdWxoUsr(wxo_usr_id),
-  );
+  const wxo_usr_model = await findByIdWxoUsr(wxo_usr_id);
+  
+  if (!wxo_usr_model) {
+    return;
+  }
+  
   return {
     id: wxo_usr_model.id,
     lbl: wxo_usr_model.lbl,

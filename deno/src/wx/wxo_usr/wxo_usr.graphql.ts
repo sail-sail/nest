@@ -14,6 +14,12 @@ type WxoGetAppid {
   
 }
 
+type GetWxoUsrInfo {
+  id: String!
+  lbl: String!
+  headimgurl: String!
+}
+
 input WxoLoginByCodeInput {
   "域名"
   host: String!
@@ -35,7 +41,7 @@ type Query {
   checkBindWxoUsr: Boolean!
   
   "获取公众号用户信息"
-  getWxoUsrInfo: WxoUsrModel!
+  getWxoUsrInfo: GetWxoUsrInfo
   
 }
 
