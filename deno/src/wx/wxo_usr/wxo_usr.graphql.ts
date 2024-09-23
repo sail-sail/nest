@@ -34,6 +34,9 @@ type Query {
   "公众号用户是否已绑定"
   checkBindWxoUsr: Boolean!
   
+  "获取公众号用户信息"
+  getWxoUsrInfo: WxoUsrModel!
+  
 }
 
 type Mutation {
