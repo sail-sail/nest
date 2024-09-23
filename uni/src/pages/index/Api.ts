@@ -69,7 +69,7 @@ export async function checkLogin(
       }
     `,
   }, opt);
-  const data = res?.checkLogin || false;
+  const data = res.checkLogin;
   return data;
 }
 
