@@ -100,9 +100,8 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "usr_id",
-        headerAlign: "center",
-        align: "left",
         width: 240,
+        modelLabel: "usr_id_lbl",
       },
       {
         COLUMN_NAME: "nick_name",
@@ -286,6 +285,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "usr_id",
         width: 240,
+        modelLabel: "usr_id_lbl",
       },
       {
         COLUMN_NAME: "openid",
