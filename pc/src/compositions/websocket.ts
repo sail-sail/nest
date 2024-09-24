@@ -80,23 +80,20 @@ async function connect() {
       socket = undefined;
       reConnect();
     };
-    await Promise.all([
-      await new Promise((resolve) => setTimeout(resolve, 5000)),
-      await new Promise((resolve) => {
-        if (!socket) {
-          resolve(undefined);
-          return;
-        }
-        if (socket.readyState === WebSocket.OPEN) {
-          resolve(undefined);
-          return;
-        }
-        socket.onopen = function() {
-          // console.log('websocket: onopen');
-          resolve(undefined);
-        };
-      }),
-    ]);
+    await new Promise((resolve) => {
+      if (!socket) {
+        resolve(undefined);
+        return;
+      }
+      if (socket.readyState === WebSocket.OPEN) {
+        resolve(undefined);
+        return;
+      }
+      socket.onopen = function() {
+        // console.log('websocket: onopen');
+        resolve(undefined);
+      };
+    });
     for (const [ topic ] of topicCallbackMap) {
       socket?.send(JSON.stringify({
         action: "subscribe",
