@@ -1,6 +1,6 @@
 import { saveAs } from "file-saver";
 import { useLoading } from "@/store/index";
-import { uesAuthorization } from "@/store/usr";
+import { useAuthorization } from "@/store/usr";
 
 export const baseURL = "";
 
@@ -18,7 +18,7 @@ export async function request<T>(
     authorization?: string;
   },
 ): Promise<T> {
-  let authorization = $(uesAuthorization());
+  let authorization = $(useAuthorization());
   if (config?.authorization != null) {
     authorization = config?.authorization;
   }
@@ -138,7 +138,7 @@ export async function uploadFile(
     authorization?: string;
   },
 ) {
-  let authorization = $(uesAuthorization());
+  let authorization = $(useAuthorization());
   if (config?.authorization != null) {
     authorization = config?.authorization;
   }

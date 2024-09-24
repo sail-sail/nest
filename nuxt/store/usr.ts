@@ -1,5 +1,5 @@
 
-export const uesAuthorization = () => useCookie<string>(
+export const useAuthorization = () => useCookie<string>(
   "authorization",
   {
     default: () => "",
