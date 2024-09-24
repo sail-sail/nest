@@ -8,11 +8,11 @@ export default defineEventHandler(async (event) => {
   } else if (method === "POST") {
     body = await readBody(event);
   }
+  const headers = event.headers;
+  headers.set("Content-Type", "application/json");
   const res = await fetch(`${ serverHost }/graphql`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify(body),
   });
   const data = await res.json();
