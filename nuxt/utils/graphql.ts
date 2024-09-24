@@ -12,7 +12,7 @@ import {
 
 import combinedQuery from "graphql-combine-query";
 
-import { uesAuthorization } from "@/store/usr";
+import { useAuthorization } from "@/store/usr";
 
 declare global {
   
@@ -260,7 +260,7 @@ export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
 }
 
 export function getQueryUrl(gqlArg: GqlArg, opt?: GqlOpt, authorization0?: string): string {
-  let authorization = $(uesAuthorization());
+  let authorization = $(useAuthorization());
   if (authorization0 == null) {
     authorization0 = authorization;
   }
@@ -279,7 +279,7 @@ export function getQueryUrl(gqlArg: GqlArg, opt?: GqlOpt, authorization0?: strin
 }
 
 async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
-  let authorization = $(uesAuthorization());
+  let authorization = $(useAuthorization());
   if (opt?.authorization != null) {
     authorization = opt?.authorization;
   }
