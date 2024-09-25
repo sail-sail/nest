@@ -41,8 +41,10 @@ type WxappConfigModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
+  "系统字段"
+  is_sys: Int!
 }
 type WxappConfigFieldComment {
   "ID"
@@ -105,7 +107,7 @@ input WxappConfigInput {
   rem: String
 }
 input WxappConfigSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [WxappConfigId!]
