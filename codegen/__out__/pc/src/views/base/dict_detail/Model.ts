@@ -11,6 +11,8 @@ declare global {
   }
 
   interface DictDetailInput extends DictDetailInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface DictDetailSearch extends DictDetailSearchType {
@@ -54,6 +56,7 @@ export const dictDetailFields = [
   "update_time",
   "update_time_lbl",
   "is_deleted",
+  "is_sys",
 ];
 
 export const dictDetailQueryField = `
