@@ -57,6 +57,7 @@ export default defineConfig({
         "vue",
         "uni-app",
         "pinia",
+        "@vueuse/core",
         {
           "numeral": [
             [ "default", "numeral" ]

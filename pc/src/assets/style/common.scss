@@ -450,8 +450,8 @@ html:is(.dark) {
 
 .el-form-item .el-form-item__content {
   line-height: unset;
-  flex-wrap: nowrap;
-  overflow: hidden;
+  // flex-wrap: nowrap;
+  // overflow: hidden;
 }
 
 .inlineMany2manyTab_table {

@@ -31,7 +31,7 @@ type LoginLogModel {
   create_time: NaiveDateTime
   "登录时间"
   create_time_lbl: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type LoginLogFieldComment {
@@ -83,7 +83,7 @@ input LoginLogInput {
   ip: String
 }
 input LoginLogSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [LoginLogId!]
