@@ -11,6 +11,8 @@ declare global {
   }
 
   interface OptionsInput extends OptionsInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface OptionsSearch extends OptionsSearchType {
@@ -54,6 +56,7 @@ export const optionsFields = [
   "update_time_lbl",
   "version",
   "is_deleted",
+  "is_sys",
 ];
 
 export const optionsQueryField = `
