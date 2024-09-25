@@ -715,10 +715,6 @@ import {
   useDownloadImportTemplate,
 } from "./Api";
 
-import {
-  publish,
-} from "@/compositions/websocket";
-
 defineOptions({
   name: "系统选项",
 });
@@ -833,44 +829,6 @@ const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
-
-useSubscribeList<OptionsId>(
-  pagePath,
-  async function(data) {
-    const action = data.action;
-    if (action === "add") {
-      await dataGrid(true);
-      return;
-    }
-    if (action === "edit") {
-      const id = data.id;
-      if (tableData.some((model) => model.id === id)) {
-        await dataGrid();
-      }
-      return;
-    }
-    if (action === "delete") {
-      const ids = data.ids;
-      selectedIds = selectedIds.filter((id) => !ids.includes(id));
-      await dataGrid(true);
-      return;
-    }
-    if (action === "import") {
-      await dataGrid(true);
-      return;
-    }
-    if (action === "revert") {
-      await dataGrid(true);
-      return;
-    }
-    if (action === "forceDelete") {
-      if (search.is_deleted === 1) {
-        await dataGrid(true);
-      }
-      return;
-    }
-  },
-);
 
 /** 查询 */
 function initSearch() {
@@ -1471,13 +1429,6 @@ async function onImportExcel() {
     ElMessageBox.alert(msg)
   }
   if (succNum > 0) {
-    publish({
-      topic: JSON.stringify({
-        pagePath,
-        action: "import",
-      }),
-      payload: selectedIds,
-    });
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1663,13 +1614,6 @@ async function onDeleteByIds() {
   }
   const num = await deleteByIds(selectedIds);
   if (num) {
-    publish({
-      topic: JSON.stringify({
-        pagePath,
-        action: "delete",
-      }),
-      payload: selectedIds,
-    });
     tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
@@ -1704,13 +1648,6 @@ async function onForceDeleteByIds() {
   }
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
-    publish({
-      topic: JSON.stringify({
-        pagePath,
-        action: "forceDelete",
-      }),
-      payload: num,
-    });
     selectedIds = [ ];
     ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("系统选项")));
     dirtyStore.fireDirty(pageName);
@@ -1811,13 +1748,6 @@ async function onRevertByIds() {
   }
   const num = await revertByIds(selectedIds);
   if (num) {
-    publish({
-      topic: JSON.stringify({
-        pagePath,
-        action: "revert",
-      }),
-      payload: num,
-    });
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
