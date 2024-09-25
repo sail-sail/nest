@@ -11,6 +11,8 @@ declare global {
   }
 
   interface DictbizDetailInput extends DictbizDetailInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface DictbizDetailSearch extends DictbizDetailSearchType {
@@ -54,6 +56,7 @@ export const dictbizDetailFields = [
   "update_time",
   "update_time_lbl",
   "is_deleted",
+  "is_sys",
 ];
 
 export const dictbizDetailQueryField = `
