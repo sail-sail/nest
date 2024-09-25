@@ -47,7 +47,7 @@ type BaiduAppModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type BaiduAppFieldComment {
@@ -119,7 +119,7 @@ input BaiduAppInput {
   rem: String
 }
 input BaiduAppSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [BaiduAppId!]
