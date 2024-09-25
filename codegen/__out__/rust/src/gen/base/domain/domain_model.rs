@@ -385,7 +385,7 @@ impl std::fmt::Debug for DomainSearch {
 pub struct DomainInput {
   /// ID
   pub id: Option<DomainId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 协议

@@ -53,7 +53,6 @@ lazy_static! {
 #[allow(dead_code)]
 pub struct DictModel {
   /// 系统字段
-  #[graphql(skip)]
   pub is_sys: u8,
   /// ID
   pub id: DictId,
@@ -428,11 +427,10 @@ impl std::fmt::Debug for DictSearch {
 pub struct DictInput {
   /// ID
   pub id: Option<DictId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
-  #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 编码
   #[graphql(name = "code")]
