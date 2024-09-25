@@ -11,6 +11,8 @@ declare global {
   }
 
   interface LangInput extends LangInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface LangSearch extends LangSearchType {
@@ -48,6 +50,7 @@ export const langFields = [
   "update_time",
   "update_time_lbl",
   "is_deleted",
+  "is_sys",
 ];
 
 export const langQueryField = `
