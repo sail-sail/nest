@@ -46,7 +46,6 @@ lazy_static! {
 #[allow(dead_code)]
 pub struct LangModel {
   /// 系统字段
-  #[graphql(skip)]
   pub is_sys: u8,
   /// ID
   pub id: LangId,
@@ -343,11 +342,10 @@ impl std::fmt::Debug for LangSearch {
 pub struct LangInput {
   /// ID
   pub id: Option<LangId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
-  #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 编码
   #[graphql(name = "code")]

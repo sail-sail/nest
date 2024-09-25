@@ -763,6 +763,7 @@ export default defineConfig({
         "lbl",
         "ky",
       ],
+      isRealData: false,
     },
     columns: [
       {
@@ -820,6 +821,7 @@ export default defineConfig({
         "lbl",
         "ky",
       ],
+      isRealData: false,
     },
     columns: [
       {
@@ -1140,6 +1142,9 @@ export default defineConfig({
         prop: "order_by",
         order: "ascending",
       },
+      sys_fields: [
+        "val",
+      ],
     },
     columns: [
       {

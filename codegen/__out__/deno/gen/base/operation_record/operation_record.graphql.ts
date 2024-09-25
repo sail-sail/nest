@@ -33,7 +33,7 @@ type OperationRecordModel {
   create_time: NaiveDateTime
   "操作时间"
   create_time_lbl: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type OperationRecordFieldComment {

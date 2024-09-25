@@ -492,7 +492,7 @@ impl std::fmt::Debug for DeptSearch {
 pub struct DeptInput {
   /// ID
   pub id: Option<DeptId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
