@@ -11,6 +11,8 @@ declare global {
   }
 
   interface PermitInput extends PermitInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface PermitSearch extends PermitSearchType {
@@ -35,6 +37,7 @@ export const permitFields = [
   "order_by",
   // 备注
   "rem",
+  "is_sys",
 ];
 
 export const permitQueryField = `
