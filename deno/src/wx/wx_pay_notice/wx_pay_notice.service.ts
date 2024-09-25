@@ -252,7 +252,6 @@ export async function pay_notice(
   );
   const pay_transactions_jsapi_id: PayTransactionsJsapiId = pay_transactions_jsapiModel.id;
   const tenant_id: TenantId = pay_transactions_jsapiModel.tenant_id;
-  const org_id: OrgId = pay_transactions_jsapiModel.org_id;
   const attach2 = pay_transactions_jsapiModel.attach2;
   
   if (trade_state === "SUCCESS" && trade_type === "JSAPI") {
@@ -260,7 +259,6 @@ export async function pay_notice(
       wx_pay_noticeId,
       {
         tenant_id,
-        org_id,
       },
     );
     

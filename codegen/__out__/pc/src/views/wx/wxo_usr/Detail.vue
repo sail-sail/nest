@@ -77,12 +77,25 @@
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
-            :label="n('名称')"
+            :label="n('昵称')"
             prop="lbl"
           >
             <CustomInput
               v-model="dialogModel.lbl"
-              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+              :placeholder="`${ ns('请输入') } ${ n('昵称') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.headimgurl == null)">
+          <el-form-item
+            :label="n('头像')"
+            prop="headimgurl"
+          >
+            <CustomInput
+              v-model="dialogModel.headimgurl"
+              :placeholder="`${ ns('请输入') } ${ n('头像') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -90,11 +103,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
           <el-form-item
-            :label="n('用户')"
+            :label="n('绑定用户')"
             prop="usr_id"
           >
             <CustomSelect
               v-model="dialogModel.usr_id"
+              v-model:model-label="dialogModel.usr_id_lbl"
               :method="getUsrList"
               :options-map="((item: UsrModel) => {
                 return {
@@ -102,7 +116,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('用户') }`"
+              :placeholder="`${ ns('请选择') } ${ n('绑定用户') }`"
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
@@ -123,12 +137,66 @@
         
         <template v-if="(showBuildIn || builtInModel?.unionid == null)">
           <el-form-item
-            :label="n('公众号用户统一标识')"
+            :label="n('用户统一标识')"
             prop="unionid"
           >
             <CustomInput
               v-model="dialogModel.unionid"
-              :placeholder="`${ ns('请输入') } ${ n('公众号用户统一标识') }`"
+              :placeholder="`${ ns('请输入') } ${ n('用户统一标识') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.sex == null)">
+          <el-form-item
+            :label="n('性别')"
+            prop="sex"
+          >
+            <DictSelect
+              :set="dialogModel.sex = dialogModel.sex ?? undefined"
+              v-model="dialogModel.sex"
+              code="wx_usr_gender"
+              :placeholder="`${ ns('请选择') } ${ n('性别') }`"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.province == null)">
+          <el-form-item
+            :label="n('省份')"
+            prop="province"
+          >
+            <CustomInput
+              v-model="dialogModel.province"
+              :placeholder="`${ ns('请输入') } ${ n('省份') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.city == null)">
+          <el-form-item
+            :label="n('城市')"
+            prop="city"
+          >
+            <CustomInput
+              v-model="dialogModel.city"
+              :placeholder="`${ ns('请输入') } ${ n('城市') }`"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.country == null)">
+          <el-form-item
+            :label="n('国家')"
+            prop="country"
+          >
+            <CustomInput
+              v-model="dialogModel.country"
+              :placeholder="`${ ns('请输入') } ${ n('国家') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -321,16 +389,16 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
-    // 名称
+    // 昵称
     lbl: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("名称") }`,
+        message: `${ await nsAsync("请输入") } ${ n("昵称") }`,
       },
       {
         type: "string",
         max: 100,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
+        message: `${ n("昵称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
       },
     ],
   };
@@ -639,6 +707,7 @@ async function nextId() {
 watch(
   () => [
     dialogModel.usr_id,
+    dialogModel.sex,
   ],
   () => {
     if (!inited) {
@@ -646,6 +715,9 @@ watch(
     }
     if (!dialogModel.usr_id) {
       dialogModel.usr_id_lbl = "";
+    }
+    if (!dialogModel.sex) {
+      dialogModel.sex_lbl = "";
     }
   },
 );
@@ -808,10 +880,15 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
-    "名称",
-    "用户",
+    "昵称",
+    "头像",
+    "绑定用户",
     "公众号用户唯一标识",
-    "公众号用户统一标识",
+    "用户统一标识",
+    "性别",
+    "省份",
+    "城市",
+    "国家",
     "备注",
     "创建人",
     "创建时间",

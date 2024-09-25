@@ -6,6 +6,24 @@ import * as resolver from "./wxo_app.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar WxoAppId
 
+"公众号设置消息加解密方式"
+enum WxoAppEncodingType {
+  "明文模式"
+  plaintext
+  "兼容模式"
+  compatible
+  "安全模式"
+  safe
+}
+
+"公众号设置授权作用域"
+enum WxoAppScope {
+  "静默模式"
+  snsapi_base
+  "授权模式"
+  snsapi_userinfo
+}
+
 type WxoAppModel {
   "ID"
   id: WxoAppId!
@@ -21,6 +39,14 @@ type WxoAppModel {
   token: String!
   "消息加解密密钥"
   encoding_aes_key: String!
+  "消息加解密方式"
+  encoding_type: WxoAppEncodingType!
+  "消息加解密方式"
+  encoding_type_lbl: String!
+  "授权作用域"
+  scope: WxoAppScope!
+  "授权作用域"
+  scope_lbl: String!
   "网页授权域名"
   domain_id: DomainId!
   "网页授权域名"
@@ -53,7 +79,7 @@ type WxoAppModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type WxoAppFieldComment {
@@ -71,6 +97,14 @@ type WxoAppFieldComment {
   token: String!
   "消息加解密密钥"
   encoding_aes_key: String!
+  "消息加解密方式"
+  encoding_type: String!
+  "消息加解密方式"
+  encoding_type_lbl: String!
+  "授权作用域"
+  scope: String!
+  "授权作用域"
+  scope_lbl: String!
   "网页授权域名"
   domain_id: String!
   "网页授权域名"
@@ -119,6 +153,14 @@ input WxoAppInput {
   token: String
   "消息加解密密钥"
   encoding_aes_key: String
+  "消息加解密方式"
+  encoding_type: WxoAppEncodingType
+  "消息加解密方式"
+  encoding_type_lbl: String
+  "授权作用域"
+  scope: WxoAppScope
+  "授权作用域"
+  scope_lbl: String
   "网页授权域名"
   domain_id: DomainId
   "网页授权域名"
@@ -137,7 +179,7 @@ input WxoAppInput {
   rem: String
 }
 input WxoAppSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [WxoAppId!]

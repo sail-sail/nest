@@ -95,6 +95,7 @@
           >
             <CustomSelect
               v-model="dialogModel.usr_id"
+              v-model:model-label="dialogModel.usr_id_lbl"
               :method="getUsrList"
               :options-map="((item: UsrModel) => {
                 return {
@@ -162,12 +163,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.unionid == null)">
           <el-form-item
-            :label="n('小程序用户统一标识')"
+            :label="n('用户统一标识')"
             prop="unionid"
           >
             <CustomInput
               v-model="dialogModel.unionid"
-              :placeholder="`${ ns('请输入') } ${ n('小程序用户统一标识') }`"
+              :placeholder="`${ ns('请输入') } ${ n('用户统一标识') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -924,7 +925,7 @@ async function onInitI18ns() {
     "头像",
     "手机",
     "小程序用户唯一标识",
-    "小程序用户统一标识",
+    "用户统一标识",
     "性别",
     "城市",
     "省份",

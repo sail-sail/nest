@@ -6,12 +6,13 @@ import type {
   LoginInput,
   LoginModel,
   WxoLoginByCodeInput,
+  WxoGetAppid,
 } from "/gen/types.ts";
 
 /** 通过域名获取开发者ID */
 export async function wxoGetAppid(
   host: string,
-) {
+): Promise<WxoGetAppid> {
   const {
     wxoGetAppid,
   } = await import("./wxo_usr.service.ts");
@@ -69,4 +70,13 @@ export async function unBindWxoUsr() {
   } = await import("./wxo_usr.service.ts");
   
   return await unBindWxoUsr();
+}
+
+/** 获取公众号用户信息 */
+export async function getWxoUsrInfo() {
+  const {
+    getWxoUsrInfo,
+  } = await import("./wxo_usr.service.ts");
+  
+  return await getWxoUsrInfo();
 }

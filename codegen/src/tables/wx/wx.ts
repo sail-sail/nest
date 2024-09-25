@@ -30,7 +30,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "appsecret",
         require: true,
-        isEncrypt: true,
         width: 260,
         align: "left",
       },
@@ -101,9 +100,8 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "usr_id",
-        headerAlign: "center",
-        align: "left",
         width: 240,
+        modelLabel: "usr_id_lbl",
       },
       {
         COLUMN_NAME: "nick_name",
@@ -191,21 +189,26 @@ export default defineConfig({
       {
         COLUMN_NAME: "appsecret",
         require: true,
-        isEncrypt: true,
         width: 260,
         align: "left",
       },
       {
         COLUMN_NAME: "token",
-        isEncrypt: true,
         width: 140,
         align: "left",
       },
       {
         COLUMN_NAME: "encoding_aes_key",
-        isEncrypt: true,
         width: 140,
         align: "left",
+      },
+      {
+        COLUMN_NAME: "encoding_type",
+        width: 140,
+      },
+      {
+        COLUMN_NAME: "scope",
+        width: 140,
       },
       {
         COLUMN_NAME: "domain_id",
@@ -274,14 +277,15 @@ export default defineConfig({
       {
         COLUMN_NAME: "lbl",
         search: true,
-        width: 280,
         fixed: "left",
       },
       {
+        COLUMN_NAME: "headimgurl",
+      },
+      {
         COLUMN_NAME: "usr_id",
-        headerAlign: "center",
-        align: "left",
         width: 240,
+        modelLabel: "usr_id_lbl",
       },
       {
         COLUMN_NAME: "openid",
@@ -290,6 +294,27 @@ export default defineConfig({
       {
         COLUMN_NAME: "unionid",
         width: 180,
+      },
+      {
+        COLUMN_NAME: "sex",
+        width: 120,
+        align: "center",
+      },
+      {
+        COLUMN_NAME: "province",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "city",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "country",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "privilege",
+        onlyCodegenDeno: true,
       },
       {
         COLUMN_NAME: "rem",

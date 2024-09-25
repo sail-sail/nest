@@ -81,10 +81,6 @@ import {
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  findOne as findOneOrg,
-} from "/gen/base/org/org.dao.ts";
-
-import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
@@ -130,10 +126,10 @@ async function getWhereQuery(
     whereQuery += ` and t.usr_id is null`;
   }
   if (search?.usr_id_lbl != null) {
-    whereQuery += ` and usr_id_lbl.lbl in (${ args.push(search.usr_id_lbl) })`;
+    whereQuery += ` and t.usr_id_lbl in (${ args.push(search.usr_id_lbl) })`;
   }
   if (isNotEmpty(search?.usr_id_lbl_like)) {
-    whereQuery += ` and usr_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.usr_id_lbl_like) + "%") }`;
+    whereQuery += ` and t.usr_id_lbl like ${ args.push("%" + sqlLike(search.usr_id_lbl_like) + "%") }`;
   }
   if (search?.nick_name != null) {
     whereQuery += ` and t.nick_name=${ args.push(search.nick_name) }`;
@@ -238,18 +234,6 @@ async function getWhereQuery(
       whereQuery += ` and t.update_time<=${ args.push(search.update_time[1]) }`;
     }
   }
-  if (search?.org_id != null) {
-    whereQuery += ` and t.org_id in (${ args.push(search.org_id) })`;
-  }
-  if (search?.org_id_is_null) {
-    whereQuery += ` and t.org_id is null`;
-  }
-  if (search?.org_id_lbl != null) {
-    whereQuery += ` and org_id_lbl.lbl in (${ args.push(search.org_id_lbl) })`;
-  }
-  if (isNotEmpty(search?.org_id_lbl_like)) {
-    whereQuery += ` and org_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.org_id_lbl_like) + "%") }`;
-  }
   return whereQuery;
 }
 
@@ -260,9 +244,7 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  let fromQuery = `wx_wx_usr t
-  left join base_usr usr_id_lbl on usr_id_lbl.id=t.usr_id
-  left join base_org org_id_lbl on org_id_lbl.id=t.org_id`;
+  let fromQuery = `wx_wx_usr t`;
   return fromQuery;
 }
 
@@ -399,22 +381,9 @@ export async function findAll(
       throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
     }
   }
-  // 组织
-  if (search && search.org_id != null) {
-    const len = search.org_id.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.org_id.length > ${ ids_limit }`);
-    }
-  }
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
-      ,usr_id_lbl.lbl usr_id_lbl
-      ,org_id_lbl.lbl org_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -472,9 +441,6 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    // 用户
-    model.usr_id_lbl = model.usr_id_lbl || "";
-    
     // 性别
     let gender_lbl = model.gender?.toString() || "";
     if (model.gender != null) {
@@ -508,9 +474,6 @@ export async function findAll(
     } else {
       model.update_time_lbl = "";
     }
-    
-    // 组织
-    model.org_id_lbl = model.org_id_lbl || "";
   }
   
   return result;
@@ -568,32 +531,6 @@ export async function setIdByLbl(
     const lbl = genderDict.find((itemTmp) => itemTmp.val === String(input.gender))?.lbl || "";
     input.gender_lbl = lbl;
   }
-  
-  // 组织
-  if (isNotEmpty(input.org_id_lbl) && input.org_id == null) {
-    input.org_id_lbl = String(input.org_id_lbl).trim();
-    const orgModel = await findOneOrg(
-      {
-        lbl: input.org_id_lbl,
-      },
-      undefined,
-      options,
-    );
-    if (orgModel) {
-      input.org_id = orgModel.id;
-    }
-  } else if (isEmpty(input.org_id_lbl) && input.org_id != null) {
-    const org_model = await findOneOrg(
-      {
-        id: input.org_id,
-      },
-      undefined,
-      options,
-    );
-    if (org_model) {
-      input.org_id_lbl = org_model.lbl;
-    }
-  }
 }
 
 // MARK: getFieldComments
@@ -609,7 +546,7 @@ export async function getFieldComments(): Promise<WxUsrFieldComment> {
     avatar_url: await n("头像"),
     mobile: await n("手机"),
     openid: await n("小程序用户唯一标识"),
-    unionid: await n("小程序用户统一标识"),
+    unionid: await n("用户统一标识"),
     gender: await n("性别"),
     gender_lbl: await n("性别"),
     city: await n("城市"),
@@ -625,8 +562,6 @@ export async function getFieldComments(): Promise<WxUsrFieldComment> {
     update_usr_id_lbl: await n("更新人"),
     update_time: await n("更新时间"),
     update_time_lbl: await n("更新时间"),
-    org_id: await n("组织"),
-    org_id_lbl: await n("组织"),
   };
   return fieldComments;
 }
@@ -1044,7 +979,7 @@ export async function validate(
     fieldComments.openid,
   );
   
-  // 小程序用户统一标识
+  // 用户统一标识
   await validators.chars_max_length(
     input.unionid,
     100,
@@ -1242,7 +1177,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,usr_id,nick_name,avatar_url,mobile,openid,unionid,gender,city,province,country,language,rem,org_id)values";
+  let sql = "insert into wx_wx_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,usr_id_lbl,usr_id,nick_name,avatar_url,mobile,openid,unionid,gender,city,province,country,language,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1345,6 +1280,11 @@ async function _creates(
       } else {
         sql += ",default";
       }
+      if (input.usr_id_lbl != null) {
+        sql += `,${ args.push(input.usr_id_lbl) }`;
+      } else {
+        sql += ",default";
+      }
       if (input.usr_id != null) {
         sql += `,${ args.push(input.usr_id) }`;
       } else {
@@ -1402,11 +1342,6 @@ async function _creates(
       }
       if (input.rem != null) {
         sql += `,${ args.push(input.rem) }`;
-      } else {
-        sql += ",default";
-      }
-      if (input.org_id != null) {
-        sql += `,${ args.push(input.org_id) }`;
       } else {
         sql += ",default";
       }
@@ -1561,6 +1496,11 @@ export async function updateById(
       updateFldNum++;
     }
   }
+  if (isNotEmpty(input.usr_id_lbl)) {
+    sql += `usr_id_lbl=?,`;
+    args.push(input.usr_id_lbl);
+    updateFldNum++;
+  }
   if (input.usr_id != null) {
     if (input.usr_id != oldModel.usr_id) {
       sql += `usr_id=${ args.push(input.usr_id) },`;
@@ -1647,12 +1587,6 @@ export async function updateById(
   if (input.create_time != null || input.create_time_save_null) {
     if (input.create_time != oldModel.create_time) {
       sql += `create_time=${ args.push(input.create_time) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.org_id != null) {
-    if (input.org_id != oldModel.org_id) {
-      sql += `org_id=${ args.push(input.org_id) },`;
       updateFldNum++;
     }
   }

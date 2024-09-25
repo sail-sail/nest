@@ -506,7 +506,7 @@
             </el-table-column>
           </template>
           
-          <!-- 小程序用户统一标识 -->
+          <!-- 用户统一标识 -->
           <template v-else-if="'unionid' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -964,7 +964,7 @@ function getTableColumns(): ColumnType[] {
       prop: "usr_id_lbl",
       sortBy: "usr_id_lbl",
       width: 240,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -1001,7 +1001,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "小程序用户统一标识",
+      label: "用户统一标识",
       prop: "unionid",
       width: 180,
       align: "center",
@@ -1374,7 +1374,7 @@ async function onImportExcel() {
     [ await nAsync("头像") ]: "avatar_url",
     [ await nAsync("手机") ]: "mobile",
     [ await nAsync("小程序用户唯一标识") ]: "openid",
-    [ await nAsync("小程序用户统一标识") ]: "unionid",
+    [ await nAsync("用户统一标识") ]: "unionid",
     [ await nAsync("性别") ]: "gender_lbl",
     [ await nAsync("城市") ]: "city",
     [ await nAsync("省份") ]: "province",
@@ -1657,7 +1657,7 @@ async function initI18nsEfc() {
     "头像",
     "手机",
     "小程序用户唯一标识",
-    "小程序用户统一标识",
+    "用户统一标识",
     "性别",
     "城市",
     "省份",

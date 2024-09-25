@@ -91,7 +91,7 @@ type PayTransactionsJsapiModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type PayTransactionsJsapiFieldComment {
@@ -155,10 +155,6 @@ type PayTransactionsJsapiFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
-  "组织"
-  org_id: String!
-  "组织"
-  org_id_lbl: String!
 }
 input PayTransactionsJsapiInput {
   "ID"
@@ -209,7 +205,7 @@ input PayTransactionsJsapiInput {
   prepay_id: String
 }
 input PayTransactionsJsapiSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [PayTransactionsJsapiId!]
