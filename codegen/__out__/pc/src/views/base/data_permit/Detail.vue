@@ -84,7 +84,7 @@
               v-model="dialogModel.menu_id"
               :method="getMenuTree"
               :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
               :props="{
                 label: 'lbl',
                 children: 'children',
@@ -107,7 +107,7 @@
               v-model="dialogModel.scope"
               code="data_permit_scope"
               :placeholder="`${ ns('请选择') } ${ n('范围') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
             ></DictSelect>
           </el-form-item>
         </template>

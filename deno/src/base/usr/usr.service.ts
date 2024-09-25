@@ -186,8 +186,9 @@ export async function getLoginInfo() {
   if (!authModel) {
     throw await ns("未登录");
   }
+  const tenant_id = authModel.tenant_id;
   const org_id = authModel.org_id;
-  const id: UsrId = authModel.id;
+  const id = authModel.id;
   const usr_model = await findByIdUsr(
     id,
     {
@@ -220,6 +221,7 @@ export async function getLoginInfo() {
     lbl: usr_model.lbl,
     username: usr_model.username,
     lang: authModel.lang,
+    tenant_id,
     org_id,
     org_id_models,
   };

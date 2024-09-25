@@ -83,7 +83,7 @@
             <CustomInput
               v-model="dialogModel.code"
               :placeholder="`${ ns('请输入') } ${ n('编码') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -111,7 +111,7 @@
               v-model="dialogModel.type"
               code="dict_type"
               :placeholder="`${ ns('请选择') } ${ n('数据类型') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
             ></DictSelect>
           </el-form-item>
         </template>
@@ -210,7 +210,7 @@
                     <CustomInput
                       v-model="row.val"
                       placeholder=" "
-                      :readonly="isLocked || isReadonly"
+                      :readonly="isLocked || isReadonly || !!row.is_sys"
                     ></CustomInput>
                   </template>
                 </template>
@@ -258,6 +258,7 @@
                     size="small"
                     plain
                     type="danger"
+                    :disabled="!!row.is_sys"
                     @click="dict_detailRemove(row)"
                   >
                     {{ ns('删除') }}
