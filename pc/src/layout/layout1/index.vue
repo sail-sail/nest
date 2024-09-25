@@ -1,5 +1,9 @@
 <template>
+<Login
+  v-if="!usrStore.authorization || usrStore.isLogining"
+></Login>
 <div
+  v-else
   un-w="full"
   un-h="full"
   un-overflow-hidden
@@ -331,6 +335,8 @@
 import LeftMenu from "./Menu.vue";
 import Top from "./Top.vue";
 import Tabs from "./Tabs.vue";
+
+import Login from "../Login.vue";
 
 import ChangePassword from "../change_password/ChangePassword.vue";
 

@@ -2811,7 +2811,7 @@ pub async fn delete_by_ids(
       if !role_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_usr_role set is_deleted=1 where usr_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(role_ids.len());
           for item in role_ids {
@@ -2838,7 +2838,7 @@ pub async fn delete_by_ids(
       if !dept_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_usr_dept set is_deleted=1 where usr_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(dept_ids.len());
           for item in dept_ids {
@@ -2865,7 +2865,7 @@ pub async fn delete_by_ids(
       if !org_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_usr_org set is_deleted=1 where usr_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(org_ids.len());
           for item in org_ids {
@@ -2890,7 +2890,7 @@ pub async fn delete_by_ids(
     {
       let mut args = QueryArgs::new();
       let sql = "update base_dept_usr set is_deleted=1 where usr_id=? and is_deleted=0".to_owned();
-      args.push(id.as_ref().into());
+      args.push(id.clone().into());
       let args: Vec<_> = args.into();
       execute(
         sql,
@@ -3142,7 +3142,7 @@ pub async fn revert_by_ids(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.as_ref().into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -3211,7 +3211,7 @@ pub async fn revert_by_ids(
       if !role_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_usr_role set is_deleted=0 where usr_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(role_ids.len());
           for item in role_ids {
@@ -3238,7 +3238,7 @@ pub async fn revert_by_ids(
       if !dept_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_usr_dept set is_deleted=0 where usr_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(dept_ids.len());
           for item in dept_ids {
@@ -3265,7 +3265,7 @@ pub async fn revert_by_ids(
       if !org_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_usr_org set is_deleted=0 where usr_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(org_ids.len());
           for item in org_ids {
@@ -3365,7 +3365,7 @@ pub async fn force_delete_by_ids(
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.as_ref().into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -3389,11 +3389,11 @@ pub async fn force_delete_by_ids(
       if !role_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "delete from base_usr_role where usr_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(role_ids.len());
         for item in role_ids {
           items.push("?");
-          args.push(item.as_ref().into());
+          args.push(item.clone().into());
         }
         sql.push_str(" role_id in (");
         sql.push_str(&items.join(","));
@@ -3411,11 +3411,11 @@ pub async fn force_delete_by_ids(
       if !dept_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "delete from base_usr_dept where usr_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(dept_ids.len());
         for item in dept_ids {
           items.push("?");
-          args.push(item.as_ref().into());
+          args.push(item.clone().into());
         }
         sql.push_str(" dept_id in (");
         sql.push_str(&items.join(","));
@@ -3433,11 +3433,11 @@ pub async fn force_delete_by_ids(
       if !org_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "delete from base_usr_org where usr_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(org_ids.len());
         for item in org_ids {
           items.push("?");
-          args.push(item.as_ref().into());
+          args.push(item.clone().into());
         }
         sql.push_str(" org_id in (");
         sql.push_str(&items.join(","));
@@ -3453,7 +3453,7 @@ pub async fn force_delete_by_ids(
     {
       let mut args = QueryArgs::new();
       let sql = "delete from base_dept_usr where usr_id=?".to_owned();
-      args.push(id.as_ref().into());
+      args.push(id.clone().into());
       let args: Vec<_> = args.into();
       execute(
         sql,

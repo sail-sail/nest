@@ -21,6 +21,8 @@ type PermitModel {
   order_by: Int!
   "备注"
   rem: String!
+  "系统字段"
+  is_sys: Int!
 }
 type PermitFieldComment {
   "ID"

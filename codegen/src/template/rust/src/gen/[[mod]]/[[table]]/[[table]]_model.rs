@@ -280,7 +280,6 @@ pub struct <#=tableUP#>Model {<#
   if (hasIsSys) {
   #>
   /// 系统字段
-  #[graphql(skip)]
   pub is_sys: u8,<#
   }
   #><#
@@ -2006,7 +2005,7 @@ pub struct <#=tableUP#>Input {
   pub id: Option<<#=Table_Up#>Id>,<#
   if (hasIsDeleted) {
   #>
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,<#
   }
@@ -2021,7 +2020,6 @@ pub struct <#=tableUP#>Input {
   if (hasIsSys) {
   #>
   /// 系统记录
-  #[graphql(skip)]
   pub is_sys: Option<u8>,<#
   }
   #><#

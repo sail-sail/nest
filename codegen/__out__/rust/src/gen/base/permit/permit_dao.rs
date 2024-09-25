@@ -1627,7 +1627,7 @@ pub async fn delete_by_ids(
     {
       let mut args = QueryArgs::new();
       let sql = "update base_role_permit set is_deleted=1 where permit_id=? and is_deleted=0".to_owned();
-      args.push(id.as_ref().into());
+      args.push(id.clone().into());
       let args: Vec<_> = args.into();
       execute(
         sql,

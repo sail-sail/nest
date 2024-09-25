@@ -435,7 +435,7 @@ impl std::fmt::Debug for BackgroundTaskSearch {
 pub struct BackgroundTaskInput {
   /// ID
   pub id: Option<BackgroundTaskId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID

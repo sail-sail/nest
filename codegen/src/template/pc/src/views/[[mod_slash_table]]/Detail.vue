@@ -3,6 +3,7 @@ const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by' &&
 const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
+const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
@@ -274,7 +275,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -339,7 +344,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -397,7 +406,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -439,7 +452,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -477,7 +494,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -503,7 +524,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -539,7 +564,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -559,7 +588,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -580,7 +613,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -618,7 +655,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -650,7 +691,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked || isReadonly"<#
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
               }
               #><#
               if (readonlyPlaceholder) {
@@ -688,6 +733,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           for (const inlineForeignTab of inlineForeignTabs) {
             const inlineForeignSchema = optTables[inlineForeignTab.mod + "_" + inlineForeignTab.table];
             const columns = inlineForeignSchema.columns.filter((item) => item.COLUMN_NAME !== inlineForeignTab.column);
+            const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
             const table = inlineForeignTab.table;
             const mod = inlineForeignTab.mod;
             if (!inlineForeignSchema) {
@@ -808,7 +854,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -840,7 +890,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -883,7 +937,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -909,7 +967,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -935,7 +997,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -971,7 +1037,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                       #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -991,7 +1061,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -1013,7 +1087,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -1051,7 +1129,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -1076,7 +1158,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -1118,6 +1204,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     size="small"
                     plain
                     type="danger"
+                    :disabled="!!row.is_sys"
                     @click="<#=inline_column_name#>Remove(row)"
                   >
                     {{ ns('删除') }}
@@ -1286,7 +1373,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1351,7 +1442,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1409,7 +1504,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1451,7 +1550,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1489,7 +1592,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1515,7 +1622,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1551,7 +1662,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1571,7 +1686,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1592,7 +1711,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1630,7 +1753,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1662,7 +1789,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly="true"<#
                     } else {
                     #>
-                    :readonly="isLocked || isReadonly"<#
+                    :readonly="isLocked || isReadonly<#
+                      if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                      #> || !!dialogModel.is_sys<#
+                      }
+                      #>"<#
                     }
                     #><#
                     if (readonlyPlaceholder) {
@@ -1732,6 +1863,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               throw new Error(`表: ${ mod }_${ table } 不存在`);
               process.exit(1);
             }
+            const opts = inlineMany2manySchema.opts;
             const tableUp = table.substring(0, 1).toUpperCase()+table.substring(1);
             const Table_Up = tableUp.split("_").map(function(item) {
               return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -1740,6 +1872,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             if (inlineMany2manyTabLabel === "") {
               inlineMany2manyTabLabel = column_name;
             }
+            const hasIsSys = inlineMany2manyColumns.some((column) => column.COLUMN_NAME === "is_sys");
           #>
           <el-tab-pane
             label="<#=column_comment#>"
@@ -1852,7 +1985,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -1884,7 +2021,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -1927,7 +2068,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -1953,7 +2098,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -1979,7 +2128,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -2015,7 +2168,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -2035,7 +2192,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -2057,7 +2218,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -2095,7 +2260,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {
@@ -2120,7 +2289,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       :readonly="true"<#
                       } else {
                       #>
-                      :readonly="isLocked || isReadonly"<#
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!row.is_sys<#
+                        }
+                        #>"<#
                       }
                       #><#
                       if (readonlyPlaceholder) {

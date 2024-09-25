@@ -7,6 +7,7 @@ const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const hasIsHidden = columns.some((column) => column.COLUMN_NAME === "is_hidden");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
+const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -281,8 +282,14 @@ type <#=modelName#> {<#
   #><#
   if (hasIsDeleted) {
   #>
-  "是否已删除"
+  "已删除"
   is_deleted: Int!<#
+  }
+  #><#
+  if (hasIsSys) {
+  #>
+  "系统字段"
+  is_sys: Int!<#
   }
   #><#
   for (const inlineForeignTab of inlineForeignTabs) {
