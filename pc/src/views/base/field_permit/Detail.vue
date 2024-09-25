@@ -62,7 +62,7 @@
               v-model="dialogModel.menu_id"
               :method="getMenuTree"
               :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
             ></CustomTreeSelect>
           </el-form-item>
         </template>

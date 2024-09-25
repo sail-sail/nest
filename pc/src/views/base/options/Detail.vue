@@ -83,7 +83,7 @@
             <CustomInput
               v-model="dialogModel.lbl"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -96,7 +96,7 @@
             <CustomInput
               v-model="dialogModel.ky"
               :placeholder="`${ ns('请输入') } ${ n('键') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -259,12 +259,6 @@ import {
   getPagePath,
 } from "./Api";
 
-import {
-  subscribe,
-  publish,
-  unSubscribe,
-} from "@/compositions/websocket";
-
 const emit = defineEmits<{
   nextId: [
     {
@@ -401,8 +395,6 @@ async function showDialog(
   showBuildIn = false;
   isReadonly = false;
   isLocked = false;
-  isShowEditCallbackConfirm = false;
-  isShowDeleteCallbackConfirm = false;
   is_deleted = model?.is_deleted ?? 0;
   if (arg?.findOne) {
     findOneModel = arg.findOne;
@@ -569,74 +561,6 @@ async function onReset() {
   });
 }
 
-let isShowEditCallbackConfirm = false;
-
-/** 订阅编辑消息回调 */
-async function subscribeEditCallback(id?: OptionsId) {
-  if (!id) {
-    return;
-  }
-  if (id !== dialogModel.id) {
-    return;
-  }
-  if (isShowEditCallbackConfirm) {
-    return;
-  }
-  isShowEditCallbackConfirm = true;
-  try {
-    await ElMessageBox.confirm(
-      await nsAsync("此 {0} 已被其他用户编辑，是否刷新?", await nsAsync("系统选项")),
-      {
-        confirmButtonText: await nsAsync("刷新"),
-        cancelButtonText: await nsAsync("取消"),
-        type: "warning",
-      },
-    );
-    isShowEditCallbackConfirm = false;
-  } catch (err) {
-    isShowEditCallbackConfirm = false;
-    return;
-  }
-  await onRefresh();
-}
-
-let isShowDeleteCallbackConfirm = false;
-
-/** 订阅删除消息回调 */
-async function subscribeDeleteCallback(ids?: OptionsId[]) {
-  if (!ids) {
-    return;
-  }
-  if (!dialogModel.id) {
-    return;
-  }
-  if (!ids.includes(dialogModel.id)) {
-    return;
-  }
-  if (dialogAction === "add" || dialogAction === "copy") {
-    return;
-  }
-  if (isShowDeleteCallbackConfirm) {
-    return;
-  }
-  try {
-    await ElMessageBox.confirm(
-      await nsAsync("此 {0} 已被其他用户删除, 是否关闭窗口", await nsAsync("系统选项")),
-      {
-        confirmButtonText: await nsAsync("关闭"),
-        cancelButtonText: await nsAsync("暂不关闭"),
-        type: "warning",
-      },
-    );
-  } catch {
-    return;
-  }
-  onCloseResolve({
-    type: "cancel",
-    changedIds,
-  });
-}
-
 /** 刷新 */
 async function onRefresh() {
   const id = dialogModel.id;
@@ -796,13 +720,6 @@ async function save() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    publish({
-      topic: JSON.stringify({
-        pagePath,
-        action: "add",
-      }),
-      payload: id,
-    });
     msg = await nsAsync("新增成功");
   } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
@@ -820,13 +737,6 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );
-    publish({
-      topic: JSON.stringify({
-        pagePath,
-        action: "edit",
-      }),
-      payload: id,
-    });
     msg = await nsAsync("编辑成功");
   }
   if (id) {
@@ -887,39 +797,9 @@ async function onSave() {
 }
 
 async function onDialogOpen() {
-  subscribe(
-    JSON.stringify({
-      pagePath,
-      action: "edit",
-    }),
-    subscribeEditCallback,
-  );
-  subscribe(
-    JSON.stringify({
-      pagePath,
-      action: "delete",
-    }),
-    subscribeDeleteCallback,
-  );
 }
 
 async function onDialogClose() {
-  isShowEditCallbackConfirm = true;
-  isShowDeleteCallbackConfirm = true;
-  unSubscribe(
-    JSON.stringify({
-      pagePath,
-      action: "edit",
-    }),
-    subscribeEditCallback,
-  );
-  unSubscribe(
-    JSON.stringify({
-      pagePath,
-      action: "delete",
-    }),
-    subscribeDeleteCallback,
-  );
 }
 
 async function onBeforeClose() {

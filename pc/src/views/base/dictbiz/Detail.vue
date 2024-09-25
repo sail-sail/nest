@@ -258,6 +258,7 @@
                     size="small"
                     plain
                     type="danger"
+                    :disabled="!!row.is_sys"
                     @click="dictbiz_detailRemove(row)"
                   >
                     {{ ns('删除') }}
