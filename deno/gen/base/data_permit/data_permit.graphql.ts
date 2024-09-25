@@ -119,7 +119,7 @@ input DataPermitInput {
   rem: String
 }
 input DataPermitSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [DataPermitId!]
