@@ -83,7 +83,7 @@
             <CustomInput
               v-model="dialogModel.code"
               :placeholder="`${ ns('请输入') } ${ n('编码') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
             ></CustomInput>
           </el-form-item>
         </template>

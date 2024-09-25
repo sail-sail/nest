@@ -11,6 +11,8 @@ declare global {
   }
 
   interface JobInput extends JobInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface JobSearch extends JobSearchType {
@@ -51,6 +53,7 @@ export const jobFields = [
   "update_time",
   "update_time_lbl",
   "is_deleted",
+  "is_sys",
 ];
 
 export const jobQueryField = `
