@@ -35,7 +35,7 @@ type WxwAppModel {
   order_by: Int!
   "备注"
   rem: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type WxwAppFieldComment {
@@ -115,7 +115,7 @@ input WxwAppInput {
   rem: String
 }
 input WxwAppSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [WxwAppId!]
