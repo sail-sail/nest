@@ -131,7 +131,13 @@ declare global {
     #>
   }
 
-  interface <#=inputName#> extends <#=inputName#>Type {
+  interface <#=inputName#> extends <#=inputName#>Type {<#
+    if (hasIsSys) {
+    #>
+    /** 系统字段 */
+    is_sys?: number;<#
+    }
+    #>
   }
 
   interface <#=searchName#> extends <#=searchName#>Type {
@@ -201,6 +207,11 @@ export const <#=fieldsName#> = [<#
   if (hasIsDeleted) {
   #>
   "is_deleted",<#
+  }
+  #><#
+  if (hasIsSys) {
+  #>
+  "is_sys",<#
   }
   #>
 ];
