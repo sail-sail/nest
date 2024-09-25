@@ -1203,8 +1203,12 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     v-else
                     size="small"
                     plain
-                    type="danger"
-                    :disabled="!!row.is_sys"
+                    type="danger"<#
+                    if (hasIsSys) {
+                    #>
+                    :disabled="!!row.is_sys"<#
+                    }
+                    #>
                     @click="<#=inline_column_name#>Remove(row)"
                   >
                     {{ ns('删除') }}
