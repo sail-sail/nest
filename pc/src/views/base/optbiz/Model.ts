@@ -11,6 +11,8 @@ declare global {
   }
 
   interface OptbizInput extends OptbizInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface OptbizSearch extends OptbizSearchType {
@@ -54,6 +56,7 @@ export const optbizFields = [
   "update_time_lbl",
   "version",
   "is_deleted",
+  "is_sys",
 ];
 
 export const optbizQueryField = `

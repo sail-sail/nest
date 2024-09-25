@@ -51,8 +51,10 @@ type TenantModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
+  "系统字段"
+  is_sys: Int!
 }
 type TenantFieldComment {
   "ID"
@@ -131,7 +133,7 @@ input TenantInput {
   rem: String
 }
 input TenantSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [TenantId!]
