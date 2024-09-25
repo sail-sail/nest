@@ -341,7 +341,7 @@ impl std::fmt::Debug for LoginLogSearch {
 pub struct LoginLogInput {
   /// ID
   pub id: Option<LoginLogId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID

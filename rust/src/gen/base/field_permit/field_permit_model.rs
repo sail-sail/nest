@@ -46,7 +46,6 @@ lazy_static! {
 #[allow(dead_code)]
 pub struct FieldPermitModel {
   /// 系统字段
-  #[graphql(skip)]
   pub is_sys: u8,
   /// ID
   pub id: FieldPermitId,
@@ -252,7 +251,6 @@ pub struct FieldPermitInput {
   /// ID
   pub id: Option<FieldPermitId>,
   /// 系统记录
-  #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 菜单
   #[graphql(name = "menu_id")]
