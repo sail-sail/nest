@@ -97,7 +97,7 @@
             <CustomInput
               v-model="dialogModel.lbl"
               :placeholder="`${ ns('请输入') } ${ n('名称') }`"
-              :readonly="isLocked || isReadonly"
+              :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
             ></CustomInput>
           </el-form-item>
         </template>

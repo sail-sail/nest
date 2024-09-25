@@ -13,6 +13,8 @@ declare global {
   }
 
   interface WxappConfigInput extends WxappConfigInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface WxappConfigSearch extends WxappConfigSearchType {
@@ -53,6 +55,7 @@ export const wxappConfigFields = [
   "update_time",
   "update_time_lbl",
   "is_deleted",
+  "is_sys",
 ];
 
 export const wxappConfigQueryField = `
