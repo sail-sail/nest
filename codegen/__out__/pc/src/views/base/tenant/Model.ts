@@ -11,6 +11,8 @@ declare global {
   }
 
   interface TenantInput extends TenantInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface TenantSearch extends TenantSearchType {
@@ -58,6 +60,7 @@ export const tenantFields = [
   "update_time",
   "update_time_lbl",
   "is_deleted",
+  "is_sys",
 ];
 
 export const tenantQueryField = `
