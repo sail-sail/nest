@@ -42,7 +42,7 @@ export function intoInput(
     mobile: model?.mobile,
     // 小程序用户唯一标识
     openid: model?.openid,
-    // 小程序用户统一标识
+    // 用户统一标识
     unionid: model?.unionid,
     // 性别
     gender: model?.gender,

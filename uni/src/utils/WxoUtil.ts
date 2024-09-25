@@ -19,6 +19,7 @@ export async function wxoGetAppid() {
       query($host: String!) {
         wxoGetAppid(host: $host) {
           appid
+          scope
         }
       }
     `,
@@ -36,6 +37,7 @@ export async function wxoGetAppid() {
   }
   return {
     appid: data.appid,
+    scope: data.scope,
     agentid: undefined,
   };
 }

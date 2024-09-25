@@ -31,7 +31,7 @@ declare global {
     /** 小程序用户唯一标识 */
     openid?: string;
     openid_like?: string;
-    /** 小程序用户统一标识 */
+    /** 用户统一标识 */
     unionid?: string;
     unionid_like?: string;
     /** 性别 */
@@ -55,22 +55,10 @@ declare global {
     create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
     update_time?: [(string|undefined|null), (string|undefined|null)];
-    /** 组织 */
-    org_id?: OrgId[];
-    /** 组织 */
-    org_id_is_null?: boolean;
-    /** 组织 */
-    org_id_lbl?: string[];
-    /** 组织 */
-    org_id_lbl_like?: string;
     tenant_id?: TenantId | null;
   }
 
   interface WxUsrModel extends WxUsrModelType {
-    /** 组织 */
-    org_id: OrgId;
-    /** 组织 */
-    org_id_lbl: string;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -83,10 +71,6 @@ declare global {
   }
 
   interface WxUsrInput extends WxUsrInputType {
-    /** 组织 */
-    org_id?: OrgId | null;
-    /** 组织 */
-    org_id_lbl?: string | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;

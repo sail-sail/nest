@@ -24,15 +24,26 @@ declare global {
 export const wxoUsrFields = [
   // ID
   "id",
-  // 名称
+  // 昵称
   "lbl",
-  // 用户
+  // 头像
+  "headimgurl",
+  // 绑定用户
   "usr_id",
   "usr_id_lbl",
   // 公众号用户唯一标识
   "openid",
-  // 公众号用户统一标识
+  // 用户统一标识
   "unionid",
+  // 性别
+  "sex",
+  "sex_lbl",
+  // 省份
+  "province",
+  // 城市
+  "city",
+  // 国家
+  "country",
   // 备注
   "rem",
   // 创建人

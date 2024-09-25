@@ -31,12 +31,12 @@
       
       <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
         <el-form-item
-          :label="n('名称')"
+          :label="n('昵称')"
           prop="lbl_like"
         >
           <CustomInput
             v-model="search.lbl_like"
-            :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+            :placeholder="`${ ns('请输入') } ${ n('昵称') }`"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -452,7 +452,7 @@
           :key="col.prop"
         >
           
-          <!-- 名称 -->
+          <!-- 昵称 -->
           <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -461,7 +461,16 @@
             </el-table-column>
           </template>
           
-          <!-- 用户 -->
+          <!-- 头像 -->
+          <template v-else-if="'headimgurl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 绑定用户 -->
           <template v-else-if="'usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.usr_id == null)">
             <el-table-column
               v-if="col.hide !== true"
@@ -479,8 +488,44 @@
             </el-table-column>
           </template>
           
-          <!-- 公众号用户统一标识 -->
+          <!-- 用户统一标识 -->
           <template v-else-if="'unionid' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 性别 -->
+          <template v-else-if="'sex_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 省份 -->
+          <template v-else-if="'province' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 城市 -->
+          <template v-else-if="'city' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 国家 -->
+          <template v-else-if="'country' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -655,10 +700,10 @@ const props = defineProps<{
   selectedIds?: WxoUsrId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: WxoUsrId; // ID
-  lbl?: string; // 名称
-  lbl_like?: string; // 名称
-  usr_id?: string|string[]; // 用户
-  usr_id_lbl?: string; // 用户
+  lbl?: string; // 昵称
+  lbl_like?: string; // 昵称
+  usr_id?: string|string[]; // 绑定用户
+  usr_id_lbl?: string; // 绑定用户
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -879,20 +924,27 @@ let tableData = $ref<WxoUsrModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "名称",
+      label: "昵称",
       prop: "lbl",
-      width: 280,
+      width: 200,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
     },
     {
-      label: "用户",
+      label: "头像",
+      prop: "headimgurl",
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "绑定用户",
       prop: "usr_id_lbl",
       sortBy: "usr_id_lbl",
       width: 240,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
@@ -905,9 +957,42 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "公众号用户统一标识",
+      label: "用户统一标识",
       prop: "unionid",
       width: 180,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "性别",
+      prop: "sex_lbl",
+      sortBy: "sex",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "省份",
+      prop: "province",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "城市",
+      prop: "city",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "国家",
+      prop: "country",
+      width: 120,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1231,10 +1316,15 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
-    [ await nAsync("名称") ]: "lbl",
-    [ await nAsync("用户") ]: "usr_id_lbl",
+    [ await nAsync("昵称") ]: "lbl",
+    [ await nAsync("头像") ]: "headimgurl",
+    [ await nAsync("绑定用户") ]: "usr_id_lbl",
     [ await nAsync("公众号用户唯一标识") ]: "openid",
-    [ await nAsync("公众号用户统一标识") ]: "unionid",
+    [ await nAsync("用户统一标识") ]: "unionid",
+    [ await nAsync("性别") ]: "sex_lbl",
+    [ await nAsync("省份") ]: "province",
+    [ await nAsync("城市") ]: "city",
+    [ await nAsync("国家") ]: "country",
     [ await nAsync("备注") ]: "rem",
   };
   const file = await uploadFileDialogRef.showDialog({
@@ -1258,9 +1348,14 @@ async function onImportExcel() {
       {
         key_types: {
           "lbl": "string",
+          "headimgurl": "string",
           "usr_id_lbl": "string",
           "openid": "string",
           "unionid": "string",
+          "sex_lbl": "string",
+          "province": "string",
+          "city": "string",
+          "country": "string",
           "rem": "string",
         },
       },
@@ -1498,10 +1593,15 @@ async function onRevertByIds() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "名称",
-    "用户",
+    "昵称",
+    "头像",
+    "绑定用户",
     "公众号用户唯一标识",
-    "公众号用户统一标识",
+    "用户统一标识",
+    "性别",
+    "省份",
+    "城市",
+    "国家",
     "备注",
     "创建人",
     "创建时间",

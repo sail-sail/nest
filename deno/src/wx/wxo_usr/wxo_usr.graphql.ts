@@ -9,6 +9,15 @@ type WxoGetAppid {
   "开发者ID"
   appid: String!
   
+  "应用授权作用域，snsapi_base 或 snsapi_userinfo"
+  scope: String!
+  
+}
+
+type GetWxoUsrInfo {
+  id: String!
+  lbl: String!
+  headimgurl: String!
 }
 
 input WxoLoginByCodeInput {
@@ -30,6 +39,9 @@ type Query {
   
   "公众号用户是否已绑定"
   checkBindWxoUsr: Boolean!
+  
+  "获取公众号用户信息"
+  getWxoUsrInfo: GetWxoUsrInfo
   
 }
 

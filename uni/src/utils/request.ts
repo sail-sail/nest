@@ -424,6 +424,7 @@ export async function uniLogin() {
       const {
         appid,
         agentid,
+        scope,
       } = await wxwGetAppid();
       if (appid) {
         let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
@@ -434,7 +435,7 @@ export async function uniLogin() {
         }
         url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
         url += `&response_type=code`;
-        url += `&scope=snsapi_base`;
+        url += `&scope=${ (scope || "snsapi_base") }`;
         url += `&state=${ encodeURIComponent(state) }`;
         url += "#wechat_redirect";
         location.replace(url);

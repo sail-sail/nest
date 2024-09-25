@@ -29,15 +29,26 @@ export function intoInput(
   const input: WxoUsrInput = {
     // ID
     id: model?.id,
-    // 名称
+    // 昵称
     lbl: model?.lbl,
-    // 用户
+    // 头像
+    headimgurl: model?.headimgurl,
+    // 绑定用户
     usr_id: model?.usr_id,
     usr_id_lbl: model?.usr_id_lbl,
     // 公众号用户唯一标识
     openid: model?.openid,
-    // 公众号用户统一标识
+    // 用户统一标识
     unionid: model?.unionid,
+    // 性别
+    sex: model?.sex,
+    sex_lbl: model?.sex_lbl,
+    // 省份
+    province: model?.province,
+    // 城市
+    city: model?.city,
+    // 国家
+    country: model?.country,
     // 备注
     rem: model?.rem,
   };
@@ -359,13 +370,24 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsWxoUsr {
             lbl
+            headimgurl
             usr_id_lbl
             openid
             unionid
+            sex_lbl
+            province
+            city
+            country
             rem
           }
           findAllUsr {
             id
+            lbl
+          }
+          getDict(codes: [
+            "wx_usr_gender",
+          ]) {
+            code
             lbl
           }
         }
@@ -428,6 +450,12 @@ export function useExportExcel(routePath: string) {
               ${ wxoUsrQueryField }
             }
             findAllUsr {
+              lbl
+            }
+            getDict(codes: [
+              "wx_usr_gender",
+            ]) {
+              code
               lbl
             }
           }
@@ -525,6 +553,7 @@ export function getPagePath() {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: WxoUsrInput = {
+    sex: 0,
   };
   return defaultInput;
 }

@@ -69,7 +69,7 @@ export async function checkLogin(
       }
     `,
   }, opt);
-  const data = res?.checkLogin || false;
+  const data = res.checkLogin;
   return data;
 }
 
@@ -111,7 +111,6 @@ export async function findAllRole(
           permit_ids
           permit_ids_lbl
           data_permit_ids
-          data_permit_ids_lbl
           is_locked
           is_locked_lbl
           is_enabled
