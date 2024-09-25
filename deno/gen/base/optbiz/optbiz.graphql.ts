@@ -45,8 +45,10 @@ type OptbizModel {
   update_time_lbl: String!
   "版本号"
   version: Int!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
+  "系统字段"
+  is_sys: Int!
 }
 type OptbizFieldComment {
   "ID"
@@ -111,7 +113,7 @@ input OptbizInput {
   version: Int
 }
 input OptbizSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [OptbizId!]
