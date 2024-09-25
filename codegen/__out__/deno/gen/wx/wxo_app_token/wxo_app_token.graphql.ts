@@ -21,7 +21,7 @@ type WxoAppTokenModel {
   token_time_lbl: String!
   "令牌超时时间"
   expires_in: Int!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type WxoAppTokenFieldComment {
@@ -75,7 +75,7 @@ input WxoAppTokenInput {
   expires_in: Int
 }
 input WxoAppTokenSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [WxoAppTokenId!]
