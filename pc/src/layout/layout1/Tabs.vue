@@ -31,6 +31,10 @@
           v-else-if="item?.icon === 'iconfont-home-fill' && !config.indexIsEmpty"
           class="tab_icon"
           :title="item.lbl"
+          :style="{
+            paddingLeft: item.closeable !== false ? '6px' : undefined,
+          }"
+          un-box-border
         >
           <el-icon
             size="20"
