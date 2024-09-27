@@ -18,24 +18,29 @@
     >
       <template #default>
         <div
+          v-if="!item?.icon"
           class="tab_label"
           :title="item.lbl"
         >
           <span
-            v-if="!item?.icon"
           >
             {{ item.lbl }}
           </span>
-          <div
-            v-else-if="item?.icon === 'iconfont-home-fill' && !config.indexIsEmpty"
-            class="tab_icon"
+        </div>
+        <div
+          v-else-if="item?.icon === 'iconfont-home-fill' && !config.indexIsEmpty"
+          class="tab_icon"
+          :title="item.lbl"
+          :style="{
+            paddingLeft: item.closeable !== false ? '6px' : undefined,
+          }"
+          un-box-border
+        >
+          <el-icon
+            size="20"
           >
-            <el-icon
-              size="20"
-            >
-              <i un-i="iconfont-home-fill"></i>
-            </el-icon>
-          </div>
+            <i un-i="iconfont-home-fill"></i>
+          </el-icon>
         </div>
       </template>
       <template #dropdown>
