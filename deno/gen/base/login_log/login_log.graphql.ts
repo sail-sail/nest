@@ -83,7 +83,7 @@ input LoginLogInput {
   ip: String
 }
 input LoginLogSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [LoginLogId!]

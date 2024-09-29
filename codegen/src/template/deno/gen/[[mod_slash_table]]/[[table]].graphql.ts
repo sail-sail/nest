@@ -703,7 +703,7 @@ input <#=inputName#> {<#
 input <#=searchName#> {<#
   if (hasIsDeleted) {
   #>
-  "是否已删除"
+  "已删除"
   is_deleted: Int<#
   }
   #>
