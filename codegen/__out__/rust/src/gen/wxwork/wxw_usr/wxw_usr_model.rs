@@ -515,7 +515,7 @@ impl std::fmt::Debug for WxwUsrSearch {
 pub struct WxwUsrInput {
   /// ID
   pub id: Option<WxwUsrId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID

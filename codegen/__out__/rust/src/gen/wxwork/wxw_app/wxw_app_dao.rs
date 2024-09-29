@@ -2566,7 +2566,7 @@ pub async fn revert_by_ids(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.as_ref().into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -2704,7 +2704,7 @@ pub async fn force_delete_by_ids(
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.as_ref().into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
