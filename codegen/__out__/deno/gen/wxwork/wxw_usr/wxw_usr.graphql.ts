@@ -15,7 +15,7 @@ type WxwUsrModel {
   userid: String!
   "备注"
   rem: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type WxwUsrFieldComment {
@@ -73,7 +73,7 @@ input WxwUsrInput {
   rem: String
 }
 input WxwUsrSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [WxwUsrId!]

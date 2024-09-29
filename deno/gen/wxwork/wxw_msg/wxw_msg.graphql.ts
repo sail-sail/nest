@@ -31,7 +31,7 @@ type WxwMsgModel {
   create_time_lbl: String!
   "错误信息"
   errmsg: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type WxwMsgFieldComment {
@@ -99,7 +99,7 @@ input WxwMsgInput {
   errmsg: String
 }
 input WxwMsgSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [WxwMsgId!]
