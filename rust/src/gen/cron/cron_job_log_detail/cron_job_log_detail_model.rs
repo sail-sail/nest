@@ -297,7 +297,7 @@ impl std::fmt::Debug for CronJobLogDetailSearch {
 pub struct CronJobLogDetailInput {
   /// ID
   pub id: Option<CronJobLogDetailId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
