@@ -135,7 +135,7 @@ input DictbizInput {
   dictbiz_detail: [DictbizDetailInput!]
 }
 input DictbizSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [DictbizId!]
