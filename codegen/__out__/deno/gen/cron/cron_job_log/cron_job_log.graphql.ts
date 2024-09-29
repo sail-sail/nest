@@ -43,7 +43,7 @@ type CronJobLogModel {
   create_time: NaiveDateTime
   "创建时间"
   create_time_lbl: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type CronJobLogFieldComment {
@@ -115,7 +115,7 @@ input CronJobLogInput {
   rem: String
 }
 input CronJobLogSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [CronJobLogId!]

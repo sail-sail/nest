@@ -49,7 +49,7 @@ type CronJobModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type CronJobFieldComment {
@@ -127,7 +127,7 @@ input CronJobInput {
   rem: String
 }
 input CronJobSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [CronJobId!]

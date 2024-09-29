@@ -41,8 +41,10 @@ type JobModel {
   update_time: NaiveDateTime
   "更新时间"
   update_time_lbl: String!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
+  "系统字段"
+  is_sys: Int!
 }
 type JobFieldComment {
   "ID"
@@ -101,7 +103,7 @@ input JobInput {
   rem: String
 }
 input JobSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [JobId!]
