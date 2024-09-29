@@ -95,7 +95,7 @@ input I18nInput {
   rem: String
 }
 input I18nSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [I18nId!]
