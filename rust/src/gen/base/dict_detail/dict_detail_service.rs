@@ -156,6 +156,19 @@ pub async fn update_by_id(
     return Err(anyhow!(err_msg));
   }
   
+  // 不能修改系统记录的系统字段
+  let model = dict_detail_dao::find_by_id(
+    id.clone(),
+    None,
+  ).await?;
+  
+  if let Some(model) = model {
+    if model.is_sys == 1 {
+      // 值
+      input.val = None;
+    }
+  }
+  
   let dict_detail_id = dict_detail_dao::update_by_id(
     id,
     input,

@@ -661,7 +661,7 @@ impl std::fmt::Debug for UsrSearch {
 pub struct UsrInput {
   /// ID
   pub id: Option<UsrId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID

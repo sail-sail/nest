@@ -51,7 +51,6 @@ pub struct DataPermitModel {
   #[graphql(skip)]
   pub tenant_id: TenantId,
   /// 系统字段
-  #[graphql(skip)]
   pub is_sys: u8,
   /// ID
   pub id: DataPermitId,
@@ -357,14 +356,13 @@ impl std::fmt::Debug for DataPermitSearch {
 pub struct DataPermitInput {
   /// ID
   pub id: Option<DataPermitId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 系统记录
-  #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 菜单
   #[graphql(name = "menu_id")]

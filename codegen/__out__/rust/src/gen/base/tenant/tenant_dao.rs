@@ -2429,7 +2429,7 @@ pub async fn delete_by_ids(
       if !domain_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_tenant_domain set is_deleted=1 where tenant_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(domain_ids.len());
           for item in domain_ids {
@@ -2456,7 +2456,7 @@ pub async fn delete_by_ids(
       if !menu_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_tenant_menu set is_deleted=1 where tenant_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(menu_ids.len());
           for item in menu_ids {
@@ -2722,7 +2722,7 @@ pub async fn revert_by_ids(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.as_ref().into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -2791,7 +2791,7 @@ pub async fn revert_by_ids(
       if !domain_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_tenant_domain set is_deleted=0 where tenant_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(domain_ids.len());
           for item in domain_ids {
@@ -2818,7 +2818,7 @@ pub async fn revert_by_ids(
       if !menu_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update base_tenant_menu set is_deleted=0 where tenant_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(menu_ids.len());
           for item in menu_ids {
@@ -2918,7 +2918,7 @@ pub async fn force_delete_by_ids(
     
     let sql = format!("delete from {table} where id=? and is_deleted=1 limit 1");
     
-    args.push(id.as_ref().into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -2942,11 +2942,11 @@ pub async fn force_delete_by_ids(
       if !domain_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "delete from base_tenant_domain where tenant_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(domain_ids.len());
         for item in domain_ids {
           items.push("?");
-          args.push(item.as_ref().into());
+          args.push(item.clone().into());
         }
         sql.push_str(" domain_id in (");
         sql.push_str(&items.join(","));
@@ -2964,11 +2964,11 @@ pub async fn force_delete_by_ids(
       if !menu_ids.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "delete from base_tenant_menu where tenant_id=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(menu_ids.len());
         for item in menu_ids {
           items.push("?");
-          args.push(item.as_ref().into());
+          args.push(item.clone().into());
         }
         sql.push_str(" menu_id in (");
         sql.push_str(&items.join(","));

@@ -52,7 +52,6 @@ pub struct DictbizDetailModel {
   #[graphql(skip)]
   pub tenant_id: TenantId,
   /// 系统字段
-  #[graphql(skip)]
   pub is_sys: u8,
   /// ID
   pub id: DictbizDetailId,
@@ -418,14 +417,13 @@ impl std::fmt::Debug for DictbizDetailSearch {
 pub struct DictbizDetailInput {
   /// ID
   pub id: Option<DictbizDetailId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 系统记录
-  #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 业务字典
   #[graphql(name = "dictbiz_id")]
