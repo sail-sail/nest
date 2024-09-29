@@ -51,7 +51,6 @@ pub struct JobModel {
   #[graphql(skip)]
   pub tenant_id: TenantId,
   /// 系统字段
-  #[graphql(skip)]
   pub is_sys: u8,
   /// ID
   pub id: JobId,
@@ -380,14 +379,13 @@ impl std::fmt::Debug for JobSearch {
 pub struct JobInput {
   /// ID
   pub id: Option<JobId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   /// 系统记录
-  #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 编码
   #[graphql(name = "code")]
