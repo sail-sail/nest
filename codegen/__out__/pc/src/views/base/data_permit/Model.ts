@@ -11,6 +11,8 @@ declare global {
   }
 
   interface DataPermitInput extends DataPermitInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface DataPermitSearch extends DataPermitSearchType {
@@ -48,6 +50,7 @@ export const dataPermitFields = [
   "update_time",
   "update_time_lbl",
   "is_deleted",
+  "is_sys",
 ];
 
 export const dataPermitQueryField = `

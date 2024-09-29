@@ -49,7 +49,6 @@ lazy_static! {
 #[allow(dead_code)]
 pub struct TenantModel {
   /// 系统字段
-  #[graphql(skip)]
   pub is_sys: u8,
   /// ID
   pub id: TenantId,
@@ -515,11 +514,10 @@ impl std::fmt::Debug for TenantSearch {
 pub struct TenantInput {
   /// ID
   pub id: Option<TenantId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 系统记录
-  #[graphql(skip)]
   pub is_sys: Option<u8>,
   /// 名称
   #[graphql(name = "lbl")]

@@ -372,7 +372,7 @@ impl std::fmt::Debug for I18nSearch {
 pub struct I18nInput {
   /// ID
   pub id: Option<I18nId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 语言

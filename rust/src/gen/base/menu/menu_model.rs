@@ -472,7 +472,7 @@ impl std::fmt::Debug for MenuSearch {
 pub struct MenuInput {
   /// ID
   pub id: Option<MenuId>,
-  /// 删除
+  /// 已删除
   #[graphql(skip)]
   pub is_deleted: Option<u8>,
   /// 隐藏字段

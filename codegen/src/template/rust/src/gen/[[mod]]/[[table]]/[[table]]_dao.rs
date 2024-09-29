@@ -5638,7 +5638,7 @@ pub async fn delete_by_ids(
         if (hasIsDeleted) {
         #>
         let mut sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=1 where <#=many2many.column1#>=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -5655,7 +5655,7 @@ pub async fn delete_by_ids(
         } else {
         #>
         let mut sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -5678,7 +5678,7 @@ pub async fn delete_by_ids(
         } else {
         #>
         let mut sql = "select count(id) as total from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -5733,11 +5733,11 @@ pub async fn delete_by_ids(
       if (hasIsDeleted) {
       #>
       let sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=1 where <#=many2many.column2#>=? and is_deleted=0".to_owned();
-      args.push(id.as_ref().into());<#
+      args.push(id.clone().into());<#
       } else {
       #>
       let sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=? and is_deleted=0".to_owned();
-      args.push(id.as_ref().into());<#
+      args.push(id.clone().into());<#
       }
       #>
       let args: Vec<_> = args.into();
@@ -5949,7 +5949,7 @@ pub async fn default_by_id(
     
     let sql = format!("update {table} set is_default=0 where is_default=1 and id!=?");
     
-    args.push(id.as_ref().into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -6299,7 +6299,7 @@ pub async fn revert_by_ids(
     
     let sql = format!("update {table} set is_deleted=0 where id=? limit 1");
     
-    args.push(id.as_ref().into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -6432,7 +6432,7 @@ pub async fn revert_by_ids(
       if !<#=column_name#>.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "update <#=mod#>_<#=many2many.table#> set is_deleted=0 where <#=many2many.column1#>=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let arg = {
           let mut items = Vec::with_capacity(<#=column_name#>.len());
           for item in <#=column_name#> {
@@ -6680,7 +6680,7 @@ pub async fn force_delete_by_ids(
     }
     #> limit 1");
     
-    args.push(id.as_ref().into());
+    args.push(id.clone().into());
     
     let args: Vec<_> = args.into();
     
@@ -6754,11 +6754,11 @@ pub async fn force_delete_by_ids(
       if !<#=column_name#>.is_empty() {
         let mut args = QueryArgs::new();
         let mut sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=? and".to_owned();
-        args.push(id.as_ref().into());
+        args.push(id.clone().into());
         let mut items = Vec::with_capacity(<#=column_name#>.len());
         for item in <#=column_name#> {
           items.push("?");
-          args.push(item.as_ref().into());
+          args.push(item.clone().into());
         }
         sql.push_str(" <#=many2many.column2#> in (");
         sql.push_str(&items.join(","));
@@ -6787,7 +6787,7 @@ pub async fn force_delete_by_ids(
     {
       let mut args = QueryArgs::new();
       let sql = "delete from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=?".to_owned();
-      args.push(id.as_ref().into());
+      args.push(id.clone().into());
       let args: Vec<_> = args.into();
       execute(
         sql,
