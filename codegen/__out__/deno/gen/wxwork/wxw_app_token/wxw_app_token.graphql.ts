@@ -39,7 +39,7 @@ type WxwAppTokenModel {
   jsapi_ticket_agent_config_time_lbl: String!
   "应用jsapi_ticket超时时间"
   jsapi_ticket_agent_config_expires_in: Int!
-  "是否已删除"
+  "已删除"
   is_deleted: Int!
 }
 type WxwAppTokenFieldComment {
@@ -133,7 +133,7 @@ input WxwAppTokenInput {
   jsapi_ticket_agent_config_expires_in: Int
 }
 input WxwAppTokenSearch {
-  "是否已删除"
+  "已删除"
   is_deleted: Int
   "ID列表"
   ids: [WxwAppTokenId!]
