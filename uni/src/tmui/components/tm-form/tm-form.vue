@@ -198,7 +198,7 @@
 	 * type 为all时会省略fileds字段，校验全部
 	 * type非all时，会校验fileds字段
 	 */
-	function validate(fileds:string[] = [],type = 'all') {
+	function validate(fileds:string[] = [],type = 'all', isShowError = true) {
 		formFunCallBack.value = 'validate'
 		let par = toRaw(_callBackModelVal.value)
 		let isPass = true
@@ -241,6 +241,9 @@
 			
 		}
 
+    if (isShowError) {
+      validateResultList.value = [...list]
+    }
 		return { result: list, isPass, data: toRaw(_modelVal.value), validate: isPass }
 	}
 	
