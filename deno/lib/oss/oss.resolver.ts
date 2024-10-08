@@ -14,8 +14,10 @@ export async function getStatsOss(
     let stats = undefined;
     try {
       stats = await ossService.statObject(id);
-    } catch (err) {
-      if (err.code === "NotFound") {
+    } catch (err0) {
+      const err = err0 as Error;
+      // deno-lint-ignore no-explicit-any
+      if ((err as any).code === "NotFound") {
         lbl = "";
       } else {
         throw err;

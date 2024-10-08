@@ -40,6 +40,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     :clearable="false"
     class="select_input"
     :placeholder="props.placeholder"
+    :readonly-placeholder="props.placeholder"
     @keydown.enter="onEnter"
   >
     <template
