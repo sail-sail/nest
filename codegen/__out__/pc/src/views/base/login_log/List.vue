@@ -146,7 +146,7 @@
           <el-checkbox
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
-            v-model="search.is_deleted"
+            v-model="search.is_deleted as number"
             :false-value="0"
             :true-value="1"
             @change="recycleChg"
