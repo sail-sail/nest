@@ -82,7 +82,8 @@ export async function redisClient() {
     } = await import("redis");
     _redisClient = await redisConnect(option);
   } catch (err) {
-    if (err.code === "ECONNREFUSED") {
+    // deno-lint-ignore no-explicit-any
+    if ((err as any).code === "ECONNREFUSED") {
       cache_ECONNREFUSED = true;
       _redisClient = undefined;
       console.error(`redis连接失败`, option);
