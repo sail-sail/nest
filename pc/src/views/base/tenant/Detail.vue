@@ -415,6 +415,7 @@ async function domain_idsOpenAddDialog() {
     action: "add",
   });
   if (changedIds.length > 0) {
+    await domain_idsRef.refresh();
     dialogModel.domain_ids = dialogModel.domain_ids || [ ];
     for (const id of changedIds) {
       if (dialogModel.domain_ids.includes(id)) {
@@ -422,7 +423,6 @@ async function domain_idsOpenAddDialog() {
       }
       dialogModel.domain_ids.push(id);
     }
-    await domain_idsRef.refresh();
   }
   domain_idsRef.focus();
 }

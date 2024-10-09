@@ -3629,7 +3629,8 @@ async function <#=column_name#>OpenAddDialog() {
     title: await nsAsync("新增") + " " + await nsAsync("<#=foreignSchema.opts.table_comment#>"),
     action: "add",
   });
-  if (changedIds.length > 0) {<#
+  if (changedIds.length > 0) {
+    await <#=column_name#>Ref.refresh();<#
     if (foreignKey.multiple) {
     #>
     dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || [ ];
@@ -3644,7 +3645,6 @@ async function <#=column_name#>OpenAddDialog() {
     dialogModel.<#=column_name#> = changedIds[0];<#
     }
     #>
-    await <#=column_name#>Ref.refresh();
   }
   <#=column_name#>Ref.focus();
 }<#
