@@ -63,7 +63,7 @@
         size="default"
         label-width="auto"
         
-        un-grid="~ cols-[repeat(1,380px)]"
+        un-grid="~ cols-[repeat(2,380px)]"
         un-gap="x-2 y-4"
         un-justify-items-end
         un-items-center
@@ -74,6 +74,20 @@
         
         @submit.prevent
       >
+        
+        <template v-if="(showBuildIn || builtInModel?.code == null)">
+          <el-form-item
+            :label="n('编码')"
+            prop="code"
+          >
+            <CustomInput
+              v-model="dialogModel.code"
+              :placeholder="`${ ns('请输入') } ${ n('编码') }`"
+              :readonly="true"
+              :readonly-placeholder="ns('(自动生成)')"
+            ></CustomInput>
+          </el-form-item>
+        </template>
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
@@ -118,6 +132,7 @@
           <el-form-item
             :label="n('备注')"
             prop="rem"
+            un-grid="col-span-full"
           >
             <CustomInput
               v-model="dialogModel.rem"
@@ -449,6 +464,7 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
+        code: undefined,
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
@@ -784,6 +800,7 @@ async function onSaveAndCopy() {
   dialogModel = {
     ...data,
     id: undefined,
+    code: undefined,
     is_locked: undefined,
     is_locked_lbl: undefined,
     order_by: order_by + 1,
@@ -845,6 +862,7 @@ async function beforeClose(done: (cancel: boolean) => void) {
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
   const codes: string[] = [
+    "编码",
     "名称",
     "首页",
     "菜单权限",

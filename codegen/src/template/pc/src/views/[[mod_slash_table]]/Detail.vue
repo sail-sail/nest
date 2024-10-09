@@ -376,7 +376,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     plain
                     @click="<#=column_name#>OpenAddDialog"
                   >
-                    {{ ns("新增") }}{{ ns("<#=foreignSchema.opts.table_comment#>") }}
+                    {{ ns("新增") }} {{ ns("<#=foreignSchema.opts.table_comment#>") }}
                   </el-button>
                 </div>
               </template>
@@ -3618,7 +3618,7 @@ for (let i = 0; i < columns.length; i++) {
 let <#=foreignSchema.opts.table#>DetailDialogRef = $ref<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>();
 let <#=column_name#>Ref = $ref<InstanceType<typeof CustomSelect>>();
 
-/** 打开新增<#=foreignSchema.opts.table_comment#>对话框 */
+/** 打开新增 <#=foreignSchema.opts.table_comment#> 对话框 */
 async function <#=column_name#>OpenAddDialog() {
   if (!<#=column_name#>Ref || !<#=foreignSchema.opts.table#>DetailDialogRef) {
     return;
@@ -3626,7 +3626,7 @@ async function <#=column_name#>OpenAddDialog() {
   const {
     changedIds,
   } = await <#=foreignSchema.opts.table#>DetailDialogRef.showDialog({
-    title: await nsAsync("新增") + await nsAsync("<#=foreignSchema.opts.table_comment#>"),
+    title: await nsAsync("新增") + " " + await nsAsync("<#=foreignSchema.opts.table_comment#>"),
     action: "add",
   });
   if (changedIds.length > 0) {<#
