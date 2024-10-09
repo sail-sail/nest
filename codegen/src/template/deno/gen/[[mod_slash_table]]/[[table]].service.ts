@@ -383,7 +383,7 @@ export async function updateById(
   }<#
   }
   #><#
-  if (hasIsSys) {
+  if (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) {
   #>
   
   // 不能修改系统记录的系统字段
