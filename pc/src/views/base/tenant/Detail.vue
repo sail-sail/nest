@@ -120,7 +120,7 @@
                     plain
                     @click="domain_idsOpenAddDialog"
                   >
-                    {{ ns("新增") }}{{ ns("域名") }}
+                    {{ ns("新增") }} {{ ns("域名") }}
                   </el-button>
                 </div>
               </template>
@@ -403,7 +403,7 @@ watchEffect(async () => {
 let domainDetailDialogRef = $ref<InstanceType<typeof DomainDetailDialog>>();
 let domain_idsRef = $ref<InstanceType<typeof CustomSelect>>();
 
-/** 打开新增域名对话框 */
+/** 打开新增 域名 对话框 */
 async function domain_idsOpenAddDialog() {
   if (!domain_idsRef || !domainDetailDialogRef) {
     return;
@@ -411,7 +411,7 @@ async function domain_idsOpenAddDialog() {
   const {
     changedIds,
   } = await domainDetailDialogRef.showDialog({
-    title: await nsAsync("新增") + await nsAsync("域名"),
+    title: await nsAsync("新增") + " " + await nsAsync("域名"),
     action: "add",
   });
   if (changedIds.length > 0) {
