@@ -1,2 +1,2 @@
-id,lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys
-ZDbZlC1OT8KaDg6soxMCBQ,默认租户,MGExYjJhODVkY2FlNDI4OW,1,1,1,,1
+id,lbl,lang_id,lang_id_lbl,is_locked,is_enabled,order_by,rem,is_sys
+ZDbZlC1OT8KaDg6soxMCBQ,默认租户,MGExYjJhODVkY2FlNDI4OW,中文,1,1,1,,1
