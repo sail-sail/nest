@@ -32,6 +32,6 @@
     "dotenv": "16.4.5",
     "graphql-ts-client-codegen": "3.1.17",
     "ssh2-promise": "1.0.3",
-    "typescript": "5.6.2"
+    "typescript": "5.6.3"
   }
 }
