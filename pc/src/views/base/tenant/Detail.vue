@@ -135,6 +135,7 @@
           >
             <CustomSelect
               v-model="dialogModel.lang_id"
+              v-model:model-label="dialogModel.lang_id_lbl"
               :method="getLangList"
               :options-map="((item: LangModel) => {
                 return {
