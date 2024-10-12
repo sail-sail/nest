@@ -19,7 +19,7 @@ import {
   checkLogin,
 } from "./Api";
 
-let title = $ref("hello");
+const title = ref("hello");
 
 async function checkLoginEfc() {
   const res = await checkLogin();
