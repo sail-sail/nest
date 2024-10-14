@@ -19,7 +19,6 @@
     "skipLibCheck": true,
     "lib": [ "esnext", "dom" ],
     "types": [
-      "@vue-macros/reactivity-transform/macros-global",
       "node",
       "vite/client",
       "@dcloudio/types",

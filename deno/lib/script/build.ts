@@ -25,6 +25,7 @@ function getArg(name: string): string | undefined {
 const denoDir = Deno.cwd();
 const pcDir = denoDir + "/../pc";
 const uniDir = denoDir + "/../uni";
+const docsDir = denoDir + "/../docs";
 const buildDir = getArg("--build-dir") || `${ denoDir }/../build/deno`;
 // nr build-test -- --command uni
 // nr build-test -- --c uni
@@ -268,10 +269,10 @@ async function uni() {
 async function docs() {
   console.log("docs");
   const command = new Deno.Command(pnpmCmd, {
-    cwd: denoDir + "/../",
+    cwd: docsDir,
     args: [
       "run",
-      "docs:build",
+      `build-${ env }`,
     ],
     stderr: "inherit",
     stdout: "inherit",
@@ -280,6 +281,13 @@ async function docs() {
   if (output.code == 1) {
     Deno.exit(1);
   }
+  try {
+    await Deno.remove(`${ buildDir }/../docs/`, { recursive: true });
+    // deno-lint-ignore no-empty
+  } catch (_err) {
+  }
+  await Deno.mkdir(`${ buildDir }/../docs/`, { recursive: true });
+  await copyDir(`${ docsDir }/dist/.vitepress/`, `${ buildDir }/../docs/`);
 }
 
 async function publish() {

@@ -121,11 +121,11 @@ import type {
 
 const usrStore = useUsrStore(cfg.pinia);
 
-let formRef = $ref<InstanceType<typeof TmForm>>();
+const formRef = ref<InstanceType<typeof TmForm>>();
 
 let tenants: GetLoginTenants[] = [ ];
 
-let model: LoginInput = $ref<LoginInput>({
+const model = ref<LoginInput>({
   username: "admin",
   password: "a",
   tenant_id: "" as unknown as TenantId,
@@ -134,13 +134,13 @@ let model: LoginInput = $ref<LoginInput>({
 let redirect_uri = cfg.homePage;
 
 async function onLogin() {
-  if (!formRef) {
+  if (!formRef.value) {
     return;
   }
   
   const {
     isPass,
-  } = formRef.validate();
+  } = formRef.value.validate();
   
   if (!isPass) {
     return;
@@ -148,9 +148,9 @@ async function onLogin() {
   
   uni.setStorage({
     key: "oldLoginModel",
-    data: model,
+    data: model.value,
   });
-  const loginModel = await login(model);
+  const loginModel = await login(model.value);
   if (!loginModel.authorization) {
     return;
   }
@@ -169,10 +169,10 @@ async function onLogin() {
  */
 async function getLoginTenantsEfc() {
   const tenants = await getLoginTenants({ domain: cfg.domain });
-  if (!model.tenant_id && tenants.length > 0) {
-    model.tenant_id = tenants[0].id;
-  } else if (model.tenant_id && !tenants.some((item) => item.id === model.tenant_id)) {
-    model.tenant_id = tenants[0].id;
+  if (!model.value.tenant_id && tenants.length > 0) {
+    model.value.tenant_id = tenants[0].id;
+  } else if (model.value.tenant_id && !tenants.some((item) => item.id === model.value.tenant_id)) {
+    model.value.tenant_id = tenants[0].id;
   }
   return tenants;
 }
@@ -190,9 +190,9 @@ async function setOldLoginModel() {
           console.error(err);
         }
       }
-      model = res.data;
-      if (!tenants.some((item) => item.id === model.tenant_id)) {
-        model.tenant_id = tenants[0]?.id;
+      model.value = res.data;
+      if (!tenants.some((item) => item.id === model.value.tenant_id)) {
+        model.value.tenant_id = tenants[0]?.id;
       }
     }
   } catch (err) {
