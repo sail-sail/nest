@@ -15,16 +15,16 @@ import Unocss from "unocss/vite";
 
 import Inspector from "vite-plugin-vue-inspector";
 
-import reactivityTransform from "@vue-macros/reactivity-transform/vite";
+// import reactivityTransform from "@vue-macros/reactivity-transform/vite";
 
-import TurboConsole from "unplugin-turbo-console/vite";
+// import TurboConsole from "unplugin-turbo-console/vite";
 
 const pluginsH5: PluginOption[] = [ ];
 
 const isH5 = process.env.UNI_PLATFORM === "h5";
 
 if (isH5) {
-  pluginsH5.push(TurboConsole());
+  // pluginsH5.push(TurboConsole());
   pluginsH5.push(
     Inspector({
       toggleButtonPos: "top-left",
@@ -38,13 +38,14 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
+        api: "modern-compiler",
         additionalData: `@import "@/assets/style/uni.scss";`,
       },
     },
   },
   plugins: [
     (uni as any).default(),
-    reactivityTransform(),
+    // reactivityTransform(),
     ...pluginsH5,
     Icons({
       compiler: "vue3",
