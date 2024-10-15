@@ -464,7 +464,7 @@ watchEffect(async () => {
     type: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("类型") }`,
+        message: `${ await nsAsync("请选择") } ${ n("类型") }`,
       },
     ],
     // 排序
