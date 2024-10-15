@@ -460,6 +460,13 @@ watchEffect(async () => {
         message: `${ n("用户名") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
     ],
+    // 类型
+    type: [
+      {
+        required: true,
+        message: `${ await nsAsync("请输入") } ${ n("类型") }`,
+      },
+    ],
     // 排序
     order_by: [
       {
