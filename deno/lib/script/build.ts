@@ -287,7 +287,7 @@ async function docs() {
   } catch (_err) {
   }
   await Deno.mkdir(`${ buildDir }/../docs/`, { recursive: true });
-  await copyDir(`${ docsDir }/dist/.vitepress/`, `${ buildDir }/../docs/`);
+  await copyDir(`${ docsDir }/.vitepress/dist/`, `${ buildDir }/../docs/`);
 }
 
 async function publish() {
@@ -320,8 +320,10 @@ try {
 }
 await Deno.mkdir(`${ buildDir }/../`, { recursive: true });
 
-await codegen();
-await gqlgen();
+if (commands.length !== 1 || commands[0] !== "docs") {
+  await codegen();
+  await gqlgen();
+}
 
 for (let i = 0; i < commands.length; i++) {
   const command = commands[i].trim();
