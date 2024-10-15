@@ -298,6 +298,10 @@ export default defineConfig({
         align: "left",
       },
       {
+        COLUMN_NAME: "type",
+        width: 120,
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
