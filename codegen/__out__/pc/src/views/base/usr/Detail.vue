@@ -212,6 +212,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.type == null)">
+          <el-form-item
+            :label="n('类型')"
+            prop="type"
+          >
+            <DictSelect
+              :set="dialogModel.type = dialogModel.type ?? undefined"
+              v-model="dialogModel.type"
+              code="usr_type"
+              :placeholder="`${ ns('请选择') } ${ n('类型') }`"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -812,6 +827,7 @@ watch(
     dialogModel.dept_ids,
     dialogModel.org_ids,
     dialogModel.default_org_id,
+    dialogModel.type,
   ],
   () => {
     if (!inited) {
@@ -828,6 +844,9 @@ watch(
     }
     if (!dialogModel.default_org_id) {
       dialogModel.default_org_id_lbl = "";
+    }
+    if (!dialogModel.type) {
+      dialogModel.type_lbl = "";
     }
   },
 );
@@ -1035,6 +1054,7 @@ async function onInitI18ns() {
     "所属部门",
     "所属组织",
     "默认组织",
+    "类型",
     "锁定",
     "启用",
     "排序",
