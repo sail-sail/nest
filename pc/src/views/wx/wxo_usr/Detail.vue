@@ -401,6 +401,20 @@ watchEffect(async () => {
         message: `${ n("昵称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
       },
     ],
+    // 绑定用户
+    usr_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("绑定用户") }`,
+      },
+    ],
+    // 性别
+    sex: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("性别") }`,
+      },
+    ],
   };
 });
 

@@ -447,6 +447,34 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 交易类型
+    trade_type: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("交易类型") }`,
+      },
+    ],
+    // 交易状态
+    trade_state: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("交易状态") }`,
+      },
+    ],
+    // 货币类型
+    currency: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("货币类型") }`,
+      },
+    ],
+    // 用户支付币种
+    payer_currency: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("用户支付币种") }`,
+      },
+    ],
   };
 });
 
