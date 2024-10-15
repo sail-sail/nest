@@ -460,18 +460,11 @@ watchEffect(async () => {
         message: `${ n("用户名") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
       },
     ],
-    // 所属角色
-    role_ids: [
+    // 类型
+    type: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("所属角色") }`,
-      },
-    ],
-    // 所属部门
-    dept_ids: [
-      {
-        required: true,
-        message: `${ await nsAsync("请选择") } ${ n("所属部门") }`,
+        message: `${ await nsAsync("请输入") } ${ n("类型") }`,
       },
     ],
     // 排序
