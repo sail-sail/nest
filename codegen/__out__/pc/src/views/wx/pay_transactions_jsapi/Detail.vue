@@ -428,11 +428,25 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 交易状态
+    trade_state: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("交易状态") }`,
+      },
+    ],
     // 是否支持发票
     support_fapiao: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("是否支持发票") }`,
+        message: `${ await nsAsync("请选择") } ${ n("是否支持发票") }`,
+      },
+    ],
+    // 货币类型
+    currency: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("货币类型") }`,
       },
     ],
   };
