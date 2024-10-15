@@ -582,6 +582,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "menu_id",
         search: true,
+        require: false,
       },
       {
         COLUMN_NAME: "code",
