@@ -41,7 +41,7 @@ await Deno.mkdir(buildDir, { recursive: true });
 
 async function copyEnv() {
   console.log("copyEnv");
-  await Deno.mkdir(`${ buildDir }/tmp`, { recursive: true });
+  // await Deno.mkdir(`${ buildDir }/tmp`, { recursive: true });
   
   const ecosystemStr = await Deno.readTextFile(denoDir+"/ecosystem.config.js");
   const ecosystemStr2 = ecosystemStr.replaceAll("{env}", env);
