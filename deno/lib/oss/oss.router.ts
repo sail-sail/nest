@@ -7,9 +7,9 @@ import {
   error,
 } from "/lib/context.ts";
 
-import {
-  resize,
-} from "/lib/image/mod.ts";
+// import {
+//   resize,
+// } from "/lib/image/mod.ts";
 
 import {
   handleRequestId,
@@ -266,7 +266,12 @@ router.get("img", async function(ctx) {
     const height = h == null ? undefined : parseInt(h);
     const width = w == null ? undefined : parseInt(w);
     const quality = q == null ? undefined : parseInt(q);
-    const content2 = await resize(
+    
+    const {
+      resize,
+    } = await import("/lib/image/mod.ts");
+    
+    const content2 = resize(
       content,
       format,
       width,

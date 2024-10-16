@@ -48,9 +48,9 @@ async function copyEnv() {
   await Deno.writeTextFile(`${ buildDir }/ecosystem.config.js`, ecosystemStr2);
   
   await Deno.copyFile(denoDir+"/.env."+env, `${ buildDir }/.env.`+env);
-  await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
+  // await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
   // await Deno.copyFile(denoDir+"/lib/image/image.dll", `${ buildDir }/lib/image/image.dll`);
-  await Deno.copyFile(denoDir+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
+  // await Deno.copyFile(denoDir+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
 }
 
 async function codegen() {
