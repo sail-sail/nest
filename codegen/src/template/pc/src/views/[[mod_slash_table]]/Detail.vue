@@ -3282,11 +3282,21 @@ watchEffect(async () => {
         if (!foreignKey) {
     #>
     // <#=column_comment#>
-    <#=column_name#>: [
+    <#=column_name#>: [<#
+      if (column.dict || column.dictbiz) {
+      #>
+      {
+        required: <#=(!!require).toString()#>,
+        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,
+      },<#
+      } else {
+      #>
       {
         required: <#=(!!require).toString()#>,
         message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,
       },<#
+      }
+      #><#
         for (let j = 0; j < validators.length; j++) {
           const validator = validators[j];
       #><#
@@ -3629,7 +3639,8 @@ async function <#=column_name#>OpenAddDialog() {
     title: await nsAsync("新增") + " " + await nsAsync("<#=foreignSchema.opts.table_comment#>"),
     action: "add",
   });
-  if (changedIds.length > 0) {<#
+  if (changedIds.length > 0) {
+    await <#=column_name#>Ref.refresh();<#
     if (foreignKey.multiple) {
     #>
     dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || [ ];
@@ -3644,7 +3655,6 @@ async function <#=column_name#>OpenAddDialog() {
     dialogModel.<#=column_name#> = changedIds[0];<#
     }
     #>
-    await <#=column_name#>Ref.refresh();
   }
   <#=column_name#>Ref.focus();
 }<#
