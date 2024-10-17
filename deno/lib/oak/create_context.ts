@@ -17,7 +17,8 @@ export function createContext(): Middleware {
     if (pathname === "/graphql" || pathname === "/api/graphql") {
       try {
         return await next();
-      } catch (err) {
+      } catch (err0) {
+        const err = err0 as Error;
         error(err);
         ctx.response.body = {
           code: 1,
@@ -29,7 +30,8 @@ export function createContext(): Middleware {
     return await runInAsyncHooks(context, async function() {
       try {
         await next();
-      } catch (err) {
+      } catch (err0) {
+        const err = err0 as Error;
         error(err);
         ctx.response.body = {
           code: 1,

@@ -3178,7 +3178,67 @@ export async function validate(
   }
   #>
   
+}<#
+const autoCodeColumn = columns.find((item) => item.autoCode);
+if (autoCodeColumn) {
+#>
+
+// MARK: findAutoCode
+/** 获得 <#=table_comment#> 自动编码 */
+export async function findAutoCode(
+  options?: {
+    is_debug?: boolean;
+  },
+) {
+  
+  const table = "<#=mod#>_<#=table#>";
+  const method = "findAutoCode";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model = await findOne(
+    undefined,
+    [
+      {
+        prop: "<#=autoCodeColumn.autoCode.seq#>",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  const <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;<#
+  if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+  #>
+  const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0");<#
+  } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+  #>
+  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0");<#
+  } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
+  #>
+  const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0") + "<#=autoCodeColumn.autoCode.suffix#>";<#
+  } else {
+  #>
+  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0") + "<#=autoCodeColumn.autoCode.suffix#>";<#
+  }
+  #>
+  
+  return {
+    <#=autoCodeColumn.autoCode.seq#>,
+    <#=autoCodeColumn.COLUMN_NAME#>,
+  };
+}<#
 }
+#>
 
 // MARK: create
 /** 创建 <#=table_comment#> */
@@ -3249,7 +3309,24 @@ export async function creates(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }<#
+  if (autoCodeColumn) {
+  #>
+  
+  // 设置自动编码
+  for (const input of inputs) {
+    if (input.code) {
+      continue;
+    }
+    const {
+      <#=autoCodeColumn.autoCode.seq#>,
+      <#=autoCodeColumn.COLUMN_NAME#>,
+    } = await findAutoCode(options);
+    input.<#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>;
+    input.<#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.COLUMN_NAME#>;
+  }<#
   }
+  #>
   
   const ids = await _creates(inputs, options);
   

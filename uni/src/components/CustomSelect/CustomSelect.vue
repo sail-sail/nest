@@ -184,16 +184,16 @@ const dHeight = computed(() => {
   return props.height + sysinfo.value.bottom + 80;
 });
 
-let inited = $ref(false);
-let data = $ref<any[]>([ ]);
-let options4SelectV2 = $ref<OptionType[]>(props.options4SelectV2 || [ ]);
+let inited = ref(false);
+let data = ref<any[]>([ ]);
+let options4SelectV2 = ref<OptionType[]>(props.options4SelectV2 || [ ]);
   
-let modelValue = $ref(props.modelValue);
+let modelValue = ref(props.modelValue);
 
 watch(
   () => props.modelValue,
   () => {
-    modelValue = props.modelValue;
+    modelValue.value = props.modelValue;
   },
 );
 
@@ -201,41 +201,41 @@ watch(
   () => props.disabled,
   () => {
     if (props.disabled) {
-      showPicker = false;
+      showPicker.value = false;
     }
   },
 );
 
-let modelValueMuti = $computed(() => {
-  if (!modelValue) {
+let modelValueMuti = computed(() => {
+  if (!modelValue.value) {
     return [ ];
   }
   if (props.multiple) {
-    if (Array.isArray(modelValue)) {
-      return modelValue as string[];
+    if (Array.isArray(modelValue.value)) {
+      return modelValue.value as string[];
     } else {
-      return [ modelValue as string ];
+      return [ modelValue.value as string ];
     }
   }
-  return [ modelValue as string ];
+  return [ modelValue.value as string ];
 });
 
-let isValueEmpty = $computed(() => {
+let isValueEmpty = computed(() => {
   if (!modelValue) {
     return true;
   }
   if (props.multiple) {
-    return !modelValue || (modelValue as string[]).length === 0;
+    return !modelValue || (modelValue.value as string[]).length === 0;
   }
   return false;
 });
 
-let showPicker = $ref(false);
+let showPicker = ref(false);
 
-let pickerValue = $computed({
+let pickerValue = computed({
   get() {
     const value: number[] = [ ];
-    const idx = options4SelectV2.findIndex((item) => item.value === modelValue);
+    const idx = options4SelectV2.value.findIndex((item) => item.value === modelValue.value);
     if (idx !== -1) {
       value.push(idx);
     }
@@ -243,30 +243,30 @@ let pickerValue = $computed({
   },
   set(idxs: number[]) {
     if (idxs.length === 0) {
-      modelValue = undefined;
+      modelValue.value = undefined;
       return;
     }
     const idx = idxs[0];
-    modelValue = options4SelectV2[idx].value;
+    modelValue.value = options4SelectV2[idx].value;
     onChange();
   },
 });
 
-let modelLabels = $computed(() => {
-  if (!modelValue) {
+let modelLabels = computed(() => {
+  if (!modelValue.value) {
     return "";
   }
   if (!props.multiple) {
-    const model = data.find((item) => props.optionsMap(item).value === modelValue);
+    const model = data.value.find((item) => props.optionsMap(item).value === modelValue.value);
     if (!model) {
       return "";
     }
     return [ props.optionsMap(model).label || "" ];
   }
   let labels: string[] = [ ];
-  let modelValues = (modelValue || [ ]) as string[];
+  let modelValues = (modelValue.value || [ ]) as string[];
   for (const value of modelValues) {
-    const model = data.find((item) => props.optionsMap(item).value === value);
+    const model = data.value.find((item) => props.optionsMap(item).value === value);
     if (!model) {
       continue;
     }
@@ -279,18 +279,18 @@ function onClick() {
   if (props.disabled || props.readonly) {
     return;
   }
-  showPicker = true;
+  showPicker.value = true;
 }
 
 function onChange() {
   let modelValueArr: string[] = [ ];
   if (props.multiple) {
-    modelValueArr = (modelValue || [ ]) as string[];
+    modelValueArr = (modelValue.value || [ ]) as string[];
   } else if (modelValue) {
-    modelValueArr = [ modelValue as string ];
+    modelValueArr = [ modelValue.value as string ];
   }
   const models = modelValueArr.map((modelValue) => {
-    const model = data.find((item) => props.optionsMap(item).value === modelValue)!;
+    const model = data.value.find((item) => props.optionsMap(item).value === modelValue)!;
     return model;
   });
   if (props.multiple) {
@@ -302,38 +302,38 @@ function onChange() {
 
 function onClear() {
   if (!props.multiple) {
-    modelValue = "";
+    modelValue.value = "";
   } else {
-    modelValue = [ ];
+    modelValue.value = [ ];
   }
-  emit("update:modelValue", modelValue);
+  emit("update:modelValue", modelValue.value);
   emit("clear");
 }
 
 function onConfirm() {
-  showPicker = false;
-  emit("update:modelValue", modelValue);
+  showPicker.value = false;
+  emit("update:modelValue", modelValue.value);
 }
 
 async function refreshEfc() {
   const method = props.method;
   if (!method) {
-    if (!options4SelectV2 || options4SelectV2.length === 0) {
-      inited = false;
+    if (!options4SelectV2 || options4SelectV2.value.length === 0) {
+      inited.value = false;
     } else {
-      inited = true;
+      inited.value = true;
     }
     return;
   }
-  if (!options4SelectV2 || options4SelectV2.length === 0) {
-    inited = false;
+  if (!options4SelectV2 || options4SelectV2.value.length === 0) {
+    inited.value = false;
   } else {
-    inited = true;
+    inited.value = true;
   }
-  data = await method();
-  emit("data", data);
-  options4SelectV2 = data.map(props.optionsMap);
-  inited = true;
+  data.value = await method();
+  emit("data", data.value);
+  options4SelectV2.value = data.value.map(props.optionsMap);
+  inited.value = true;
 }
 
 if (props.init) {
