@@ -376,7 +376,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     plain
                     @click="<#=column_name#>OpenAddDialog"
                   >
-                    {{ ns("新增") }}{{ ns("<#=foreignSchema.opts.table_comment#>") }}
+                    {{ ns("新增") }} {{ ns("<#=foreignSchema.opts.table_comment#>") }}
                   </el-button>
                 </div>
               </template>
@@ -1203,8 +1203,12 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     v-else
                     size="small"
                     plain
-                    type="danger"
-                    :disabled="!!row.is_sys"
+                    type="danger"<#
+                    if (hasIsSys) {
+                    #>
+                    :disabled="!!row.is_sys"<#
+                    }
+                    #>
                     @click="<#=inline_column_name#>Remove(row)"
                   >
                     {{ ns('删除') }}
@@ -3278,11 +3282,21 @@ watchEffect(async () => {
         if (!foreignKey) {
     #>
     // <#=column_comment#>
-    <#=column_name#>: [
+    <#=column_name#>: [<#
+      if (column.dict || column.dictbiz) {
+      #>
+      {
+        required: <#=(!!require).toString()#>,
+        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,
+      },<#
+      } else {
+      #>
       {
         required: <#=(!!require).toString()#>,
         message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,
       },<#
+      }
+      #><#
         for (let j = 0; j < validators.length; j++) {
           const validator = validators[j];
       #><#
@@ -3614,7 +3628,7 @@ for (let i = 0; i < columns.length; i++) {
 let <#=foreignSchema.opts.table#>DetailDialogRef = $ref<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>();
 let <#=column_name#>Ref = $ref<InstanceType<typeof CustomSelect>>();
 
-/** 打开新增<#=foreignSchema.opts.table_comment#>对话框 */
+/** 打开新增 <#=foreignSchema.opts.table_comment#> 对话框 */
 async function <#=column_name#>OpenAddDialog() {
   if (!<#=column_name#>Ref || !<#=foreignSchema.opts.table#>DetailDialogRef) {
     return;
@@ -3622,10 +3636,11 @@ async function <#=column_name#>OpenAddDialog() {
   const {
     changedIds,
   } = await <#=foreignSchema.opts.table#>DetailDialogRef.showDialog({
-    title: await nsAsync("新增") + await nsAsync("<#=foreignSchema.opts.table_comment#>"),
+    title: await nsAsync("新增") + " " + await nsAsync("<#=foreignSchema.opts.table_comment#>"),
     action: "add",
   });
-  if (changedIds.length > 0) {<#
+  if (changedIds.length > 0) {
+    await <#=column_name#>Ref.refresh();<#
     if (foreignKey.multiple) {
     #>
     dialogModel.<#=column_name#> = dialogModel.<#=column_name#> || [ ];
@@ -3640,7 +3655,6 @@ async function <#=column_name#>OpenAddDialog() {
     dialogModel.<#=column_name#> = changedIds[0];<#
     }
     #>
-    await <#=column_name#>Ref.refresh();
   }
   <#=column_name#>Ref.focus();
 }<#

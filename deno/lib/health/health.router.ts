@@ -32,7 +32,8 @@ router.get("health", async function(ctx) {
     
     response.status = 200;
     response.body = "OK";
-  } catch (err) {
+  } catch (err0) {
+    const err = err0 as Error;
     error(err);
     const errMsg = err?.message || err?.toString() || err || "";
     response.status = 500;

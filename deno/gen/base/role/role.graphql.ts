@@ -9,6 +9,8 @@ scalar RoleId
 type RoleModel {
   "ID"
   id: RoleId!
+  "编码"
+  code: String!
   "名称"
   lbl: String!
   "首页"
@@ -57,10 +59,16 @@ type RoleModel {
   update_time_lbl: String!
   "已删除"
   is_deleted: Int!
+  "系统字段"
+  is_sys: Int!
 }
 type RoleFieldComment {
   "ID"
   id: String!
+  "卡号-序列号"
+  code_seq: String!
+  "编码"
+  code: String!
   "名称"
   lbl: String!
   "首页"
@@ -113,6 +121,8 @@ type RoleFieldComment {
 input RoleInput {
   "ID"
   id: RoleId
+  "编码"
+  code: String
   "名称"
   lbl: String
   "首页"
@@ -151,6 +161,9 @@ input RoleSearch {
   ids: [RoleId!]
   "ID"
   id: RoleId
+  "编码"
+  code: String
+  code_like: String
   "名称"
   lbl: String
   lbl_like: String
