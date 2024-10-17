@@ -94,6 +94,7 @@ CREATE TABLE if not exists `base_usr` (
   `username` varchar(45) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` varchar(43) NOT NULL DEFAULT '' COMMENT '密码',
   `default_org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '默认组织',
+  `type` varchar(10) NOT NULL DEFAULT 'login' COMMENT '类型,dict:usr_type',
   `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
