@@ -286,7 +286,7 @@ watchEffect(async () => {
     exec_state: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("执行状态") }`,
+        message: `${ await nsAsync("请选择") } ${ n("执行状态") }`,
       },
     ],
   };
