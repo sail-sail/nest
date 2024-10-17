@@ -1,31 +1,5 @@
-import {
-  getLibSuffix,
-  readPointer,
-} from "../util/ffi_util.ts";
-
-const libSuffix = getLibSuffix();
-
-const {
-  symbols: image,
-  close,
-} = Deno.dlopen(
-  `./lib/image/image.${ libSuffix }`,
-  {
-    "resize": {
-      parameters: [
-        "buffer",
-        "usize",
-        "buffer",
-        "usize",
-        "u32",
-        "u32",
-        "u8",
-      ],
-      result: "buffer",
-      nonblocking: true,
-    },
-  } as const,
-);
+// @ts-types="./image_wasm.d.ts"
+import * as image_wasm from "./image_wasm.js";
 
 /**
  * 压缩图片
@@ -36,25 +10,25 @@ const {
  * @param quality 压缩的质量, 默认为 80, 范围为 0 ~ 100
  * @returns 返回压缩后的图片二进制数据
  */
-export async function resize(
+export function resize(
   content: Uint8Array,
   format = "webp",
   width = 0,
   height = 0,
   quality = 80,
 ) {
-  const formatBuf = new TextEncoder().encode(format);
-  const rawResult = await image.resize(
+  const content2 = image_wasm.resize(
     content,
-    BigInt(content.byteLength),
-    formatBuf,
-    BigInt(formatBuf.byteLength),
+    format,
     width,
     height,
     quality,
   );
-  const content2 = readPointer(rawResult);
   return content2;
+}
+
+function close() {
+  // image.close();
 }
 
 export { close };

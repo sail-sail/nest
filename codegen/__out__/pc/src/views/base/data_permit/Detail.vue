@@ -325,14 +325,14 @@ watchEffect(async () => {
     scope: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("范围") }`,
+        message: `${ await nsAsync("请选择") } ${ n("范围") }`,
       },
     ],
     // 类型
     type: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("类型") }`,
+        message: `${ await nsAsync("请选择") } ${ n("类型") }`,
       },
     ],
   };
