@@ -346,6 +346,13 @@ watchEffect(async () => {
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
       },
     ],
+    // 关联单位
+    company_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("关联单位") }`,
+      },
+    ],
     // 排序
     order_by: [
       {

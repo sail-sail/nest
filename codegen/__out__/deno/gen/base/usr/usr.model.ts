@@ -3,8 +3,6 @@ import type {
   UsrModel as UsrModelType,
   UsrSearch as UsrSearchType,
   UsrFieldComment as UsrFieldCommentType,
-  // 类型
-  UsrType,
   SortInput,
 } from "/gen/types.ts";
 
@@ -25,7 +23,7 @@ declare global {
     img?: string;
     img_like?: string;
     /** 类型 */
-    type?: UsrType[];
+    type?: string[];
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */
