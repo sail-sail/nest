@@ -298,6 +298,10 @@ export default defineConfig({
         align: "left",
       },
       {
+        COLUMN_NAME: "type",
+        width: 120,
+      },
+      {
         COLUMN_NAME: "is_locked",
       },
       {
@@ -578,6 +582,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "menu_id",
         search: true,
+        require: false,
       },
       {
         COLUMN_NAME: "code",

@@ -41,16 +41,16 @@ await Deno.mkdir(buildDir, { recursive: true });
 
 async function copyEnv() {
   console.log("copyEnv");
-  await Deno.mkdir(`${ buildDir }/tmp`, { recursive: true });
+  await Deno.mkdir(`${ buildDir }`, { recursive: true });
   
   const ecosystemStr = await Deno.readTextFile(denoDir+"/ecosystem.config.js");
   const ecosystemStr2 = ecosystemStr.replaceAll("{env}", env);
   await Deno.writeTextFile(`${ buildDir }/ecosystem.config.js`, ecosystemStr2);
   
   await Deno.copyFile(denoDir+"/.env."+env, `${ buildDir }/.env.`+env);
-  await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
+  // await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
   // await Deno.copyFile(denoDir+"/lib/image/image.dll", `${ buildDir }/lib/image/image.dll`);
-  await Deno.copyFile(denoDir+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
+  // await Deno.copyFile(denoDir+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
 }
 
 async function codegen() {
@@ -287,7 +287,7 @@ async function docs() {
   } catch (_err) {
   }
   await Deno.mkdir(`${ buildDir }/../docs/`, { recursive: true });
-  await copyDir(`${ docsDir }/dist/.vitepress/`, `${ buildDir }/../docs/`);
+  await copyDir(`${ docsDir }/.vitepress/dist/`, `${ buildDir }/../docs/`);
 }
 
 async function publish() {
@@ -320,8 +320,10 @@ try {
 }
 await Deno.mkdir(`${ buildDir }/../`, { recursive: true });
 
-await codegen();
-await gqlgen();
+if (commands.length !== 1 || commands[0] !== "docs") {
+  await codegen();
+  await gqlgen();
+}
 
 for (let i = 0; i < commands.length; i++) {
   const command = commands[i].trim();

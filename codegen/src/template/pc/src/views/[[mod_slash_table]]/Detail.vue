@@ -3282,11 +3282,21 @@ watchEffect(async () => {
         if (!foreignKey) {
     #>
     // <#=column_comment#>
-    <#=column_name#>: [
+    <#=column_name#>: [<#
+      if (column.dict || column.dictbiz) {
+      #>
+      {
+        required: <#=(!!require).toString()#>,
+        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,
+      },<#
+      } else {
+      #>
       {
         required: <#=(!!require).toString()#>,
         message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,
       },<#
+      }
+      #><#
         for (let j = 0; j < validators.length; j++) {
           const validator = validators[j];
       #><#
