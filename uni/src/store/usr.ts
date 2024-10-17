@@ -4,80 +4,80 @@ import type {
 
 export default defineStore("usr", function() {
   
-  let authorization = $ref(uni.getStorageSync("authorization") || "");
-  let usr_id = $ref<UsrId>(uni.getStorageSync("usr_id"));
-  let tenant_id = $ref<TenantId>(uni.getStorageSync("tenant_id"));
-  let username = $ref<string>(uni.getStorageSync("username"));
-  let loginInfo = $ref<GetLoginInfo>(uni.getStorageSync("loginInfo"));
+  let authorization = ref(uni.getStorageSync("authorization") || "");
+  let usr_id = ref<UsrId>(uni.getStorageSync("usr_id"));
+  let tenant_id = ref<TenantId>(uni.getStorageSync("tenant_id"));
+  let username = ref<string>(uni.getStorageSync("username"));
+  let loginInfo = ref<GetLoginInfo>(uni.getStorageSync("loginInfo"));
   
-  function setAuthorization(authorization0: typeof authorization) {
-    if (authorization !== authorization0) {
-      authorization = authorization0;
+  function setAuthorization(authorization0: string) {
+    if (authorization.value !== authorization0) {
+      authorization.value = authorization0;
       uni.setStorageSync("authorization", authorization0);
     }
   }
   
   function getAuthorization() {
-    return authorization;
+    return authorization.value;
   }
   
-  function setUsrId(usr_id0: typeof usr_id) {
-    usr_id = usr_id0;
+  function setUsrId(usr_id0: UsrId) {
+    usr_id.value = usr_id0;
     uni.setStorageSync("usr_id", usr_id0);
   }
   
   function getUsrId() {
-    return usr_id;
+    return usr_id.value;
   }
   
-  let showAuth = $ref(false);
+  let showAuth = ref(false);
   
-  function setShowAuth(showAuth1: typeof showAuth) {
-    showAuth = showAuth1;
+  function setShowAuth(showAuth1: boolean) {
+    showAuth.value = showAuth1;
   }
   
   function getShowAuth() {
-    return showAuth;
+    return showAuth.value;
   }
   
-  let lang = $ref("");
+  let lang = ref("");
   
-  function setLang(lang0: typeof lang) {
-    lang = lang0;
+  function setLang(lang0: string) {
+    lang.value = lang0;
   }
   
   function getLang() {
-    return lang;
+    return lang.value;
   }
   
-  function setLoginInfo(loginInfo0: typeof loginInfo) {
-    loginInfo = loginInfo0;
+  function setLoginInfo(loginInfo0: GetLoginInfo) {
+    loginInfo.value = loginInfo0;
     uni.setStorageSync("loginInfo", loginInfo0);
   }
   
   function getLoginInfo() {
-    return loginInfo;
+    return loginInfo.value;
   }
   
-  function setUsername(username0: typeof username) {
-    username = username0;
+  function setUsername(username0: string) {
+    username.value = username0;
     uni.setStorageSync("username", username0);
   }
   
   function getUsername() {
-    return username;
+    return username.value;
   }
   
-  function setTenantId(tenant_id0: typeof tenant_id) {
-    tenant_id = tenant_id0;
+  function setTenantId(tenant_id0: TenantId) {
+    tenant_id.value = tenant_id0;
     uni.setStorageSync("tenant_id", tenant_id0);
   }
   
   function getTenantId() {
-    return tenant_id;
+    return tenant_id.value;
   }
   
-  return $$({
+  return {
     getAuthorization,
     setAuthorization,
     getUsrId,
@@ -92,5 +92,5 @@ export default defineStore("usr", function() {
     setUsername,
     getTenantId,
     setTenantId,
-  });
+  };
 });
