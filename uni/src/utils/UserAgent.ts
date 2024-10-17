@@ -12,14 +12,17 @@ export class UserAgent {
    */
   #userAgent: string;
   
-  os: "windows" | "android" | "mac" | "linux" | "unknown";
+  os: "windows" | "android" | "mac" | "linux" | "openharmony" | "unknown";
   
-  platform: "android" | "iphone" | "ipad" | "ipod" | "unknown";
+  platform: "android" | "iphone" | "ipad" | "ipod" | "openharmony" | "unknown";
   
   isWxwork: boolean;
   
   isWechat: boolean;
   
+  /**
+   * Mozilla/5.0 (iPhone; CPU iPhone OS 17_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.52(0x18003425) NetType/4G Language/zh_CN
+   */
   constructor(userAgent0: string) {
     this.#userAgent = userAgent0;
     let userAgent = userAgent0.toLowerCase();
@@ -29,6 +32,8 @@ export class UserAgent {
       this.os = "android";
     } else if (userAgent.includes("mac")) {
       this.os = "mac";
+    } else if (userAgent.includes("openharmony")) {
+      this.os = "openharmony";
     } else {
       this.os = "unknown";
     }
@@ -40,11 +45,18 @@ export class UserAgent {
       this.platform = "ipad";
     } else if (userAgent.includes("ipod")) {
       this.platform = "ipod";
+    } else if (userAgent.includes("openharmony")) {
+      this.platform = "openharmony";
     } else {
       this.platform = "unknown";
     }
     this.isWxwork = userAgent.includes(" wxwork");
     this.isWechat = userAgent.includes(" wechat");
+    if (!this.isWechat) {
+      if (userAgent.includes("micromessenger")) {
+        this.isWechat = true;
+      }
+    }
     if (userAgent.includes("windowswechat")) {
       this.isWechat = true;
       this.os = "windows";
@@ -59,11 +71,11 @@ export class UserAgent {
   }
   
   get isMobile() {
-    return this.os === "android" || this.platform === "iphone" || this.platform === "ipod";
+    return this.os === "android" || this.platform === "iphone" || this.platform === "ipod" || this.platform === "openharmony";
   }
   
   get isShareWeixin() {
-    return this.os === "android" || this.platform === "iphone" || this.platform === "ipad";
+    return this.os === "android" || this.platform === "iphone" || this.platform === "ipad" || this.platform === "openharmony";
   }
   
   toString() {

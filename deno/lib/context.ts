@@ -934,18 +934,29 @@ export async function query<T = any>(
     //   debugSql = getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */";
     //   log(debugSql);
     // }
-    const res = await conn.query(sql, args);
-    // deno-lint-ignore no-explicit-any
-    result = res[0] as any[];
+    try {
+      const res = await conn.query(sql, args);
+      // deno-lint-ignore no-explicit-any
+      result = res[0] as any[];
+    } catch(err) {
+      error(sql, args);
+      throw err;
+    }
   } else {
     // if (!opt || opt.debug !== false) {
     //   debugSql = getDebugQuery(sql, args);
     //   log(debugSql);
     // }
     const pool = await getMysqlPool(opt?.database_name);
-    const res = await pool.query(sql, args);
-    // deno-lint-ignore no-explicit-any
-    result = res[0] as any[];
+    try {
+      const res = await pool.query(sql, args);
+      // deno-lint-ignore no-explicit-any
+      result = res[0] as any[];
+    } catch(err) {
+      error(sql);
+      error(args);
+      throw err;
+    }
   }
   await setCache(opt?.cacheKey1, opt?.cacheKey2, result);
   // if ((!opt || opt.logResult !== false) && process.env.NODE_ENV === "production") {
@@ -992,8 +1003,14 @@ export async function execute(
     if (!opt || opt.debug !== false) {
       log(getDebugQuery(sql, args));
     }
-    const pool = await getMysqlPool();
-    result = await pool.query(sql, args);
+    try {
+      const pool = await getMysqlPool();
+      result = await pool.query(sql, args);
+    } catch(err) {
+      error(sql);
+      error(args);
+      throw err;
+    }
   }
   result = result[0];
   if (!opt || opt.logResult !== false) {
