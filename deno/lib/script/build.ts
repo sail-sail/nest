@@ -30,6 +30,7 @@ const denoDir = Deno.cwd();
 const pcDir = denoDir + "/../pc";
 const uniDir = denoDir + "/../uni";
 const nuxtDir = denoDir + "/../nuxt";
+const docsDir = denoDir + "/../docs";
 const buildDir = getArg("--build-dir") || `${ denoDir }/../build/deno`;
 // nr build-test -- --command uni
 // nr build-test -- --c uni
@@ -45,16 +46,16 @@ await Deno.mkdir(buildDir, { recursive: true });
 
 async function copyEnv() {
   console.log("copyEnv");
-  await Deno.mkdir(`${ buildDir }/tmp`, { recursive: true });
+  await Deno.mkdir(`${ buildDir }`, { recursive: true });
   
   const ecosystemStr = await Deno.readTextFile(denoDir+"/ecosystem.config.js");
   const ecosystemStr2 = ecosystemStr.replaceAll("{env}", env);
   await Deno.writeTextFile(`${ buildDir }/ecosystem.config.js`, ecosystemStr2);
   
   await Deno.copyFile(denoDir+"/.env."+env, `${ buildDir }/.env.`+env);
-  await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
+  // await Deno.mkdir(`${ buildDir }/lib/image/`, { recursive: true });
   // await Deno.copyFile(denoDir+"/lib/image/image.dll", `${ buildDir }/lib/image/image.dll`);
-  await Deno.copyFile(denoDir+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
+  // await Deno.copyFile(denoDir+"/lib/image/image.so", `${ buildDir }/lib/image/image.so`);
 }
 
 async function codegen() {
@@ -307,10 +308,10 @@ async function nuxt() {
 async function docs() {
   console.log("docs");
   const command = new Deno.Command(pnpmCmd, {
-    cwd: denoDir + "/../",
+    cwd: docsDir,
     args: [
       "run",
-      "docs:build",
+      `build-${ env }`,
     ],
     stderr: "inherit",
     stdout: "inherit",
@@ -319,6 +320,13 @@ async function docs() {
   if (output.code == 1) {
     Deno.exit(1);
   }
+  try {
+    await Deno.remove(`${ buildDir }/../docs/`, { recursive: true });
+    // deno-lint-ignore no-empty
+  } catch (_err) {
+  }
+  await Deno.mkdir(`${ buildDir }/../docs/`, { recursive: true });
+  await copyDir(`${ docsDir }/.vitepress/dist/`, `${ buildDir }/../docs/`);
 }
 
 async function publish() {
@@ -351,8 +359,10 @@ try {
 }
 await Deno.mkdir(`${ buildDir }/../`, { recursive: true });
 
-await codegen();
-await gqlgen();
+if (commands.length !== 1 || commands[0] !== "docs") {
+  await codegen();
+  await gqlgen();
+}
 
 for (let i = 0; i < commands.length; i++) {
   const command = commands[i].trim();
