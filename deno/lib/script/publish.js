@@ -96,8 +96,7 @@ console.log(publishPath);
   if (commands.length === 0) {
     try {
       let cmd = "";
-      // cmd += `rm -rf ${ publishPath }/docs`;
-      cmd += ` ; pm2 stop ${ projectName }`;
+      cmd += `pm2 stop ${ projectName }`;
       cmd += ` ; rm -rf ${ publishPath }/pc`
       cmd += ` ; rm -rf ${ publishPath }/deno`
       cmd += ` ; rm -rf ${ publishPath }/uni`
