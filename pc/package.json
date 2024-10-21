@@ -30,7 +30,7 @@
     "dayjs": "1.11.13",
     "decimal.js": "10.4.3",
     "ejsexcel-browserify": "4.4.3",
-    "element-plus": "2.8.6",
+    "element-plus": "2.8.5",
     "file-saver": "2.0.5",
     "filesize": "10.1.6",
     "graphql": "17.0.0-alpha.7",
