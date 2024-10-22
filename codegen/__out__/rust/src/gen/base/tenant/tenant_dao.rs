@@ -245,19 +245,19 @@ async fn get_where_query(
           items.join(",")
         }
       };
-      where_query.push_str(" and lang_id_lbl.lbl in (");
+      where_query.push_str(" and t.lang_id_lbl in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
-  }
-  {
-    let lang_id_lbl_like = match search {
-      Some(item) => item.lang_id_lbl_like.clone(),
-      None => None,
-    };
-    if let Some(lang_id_lbl_like) = lang_id_lbl_like {
-      where_query.push_str(" and lang_id_lbl.lbl like ?");
-      args.push(format!("%{}%", sql_like(&lang_id_lbl_like)).into());
+    {
+      let lang_id_lbl_like = match search {
+        Some(item) => item.lang_id_lbl_like.clone(),
+        None => None,
+      };
+      if let Some(lang_id_lbl_like) = lang_id_lbl_like {
+        where_query.push_str(" and lang_id_lbl.lbl like ?");
+        args.push(format!("%{}%", sql_like(&lang_id_lbl_like)).into());
+      }
     }
   }
   // 锁定
@@ -542,8 +542,7 @@ async fn get_from_query(
   base_tenant.id tenant_id from base_tenant_menu
   inner join base_menu on base_menu.id=base_tenant_menu.menu_id
   inner join base_tenant on base_tenant.id=base_tenant_menu.tenant_id where base_tenant_menu.is_deleted=?
-  group by tenant_id) _menu on _menu.tenant_id=t.id
-  left join base_lang lang_id_lbl on lang_id_lbl.id=t.lang_id"#.to_owned();
+  group by tenant_id) _menu on _menu.tenant_id=t.id"#.to_owned();
   for _ in 0..6 {
     args.push(is_deleted.into());
   }
@@ -745,7 +744,6 @@ pub async fn find_all(
   ,max(domain_ids_lbl) domain_ids_lbl
   ,max(menu_ids) menu_ids
   ,max(menu_ids_lbl) menu_ids_lbl
-  ,lang_id_lbl.lbl lang_id_lbl
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -1666,6 +1664,8 @@ async fn _creates(
   // 名称
   sql_fields += ",lbl";
   // 语言
+  sql_fields += ",lang_id_lbl";
+  // 语言
   sql_fields += ",lang_id";
   // 锁定
   sql_fields += ",is_locked";
@@ -1799,6 +1799,17 @@ async fn _creates(
     if let Some(lbl) = input.lbl {
       sql_values += ",?";
       args.push(lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 语言
+    if let Some(lang_id_lbl) = input.lang_id_lbl {
+      if !lang_id_lbl.is_empty() {
+        sql_values += ",?";
+        args.push(lang_id_lbl.into());
+      } else {
+        sql_values += ",default";
+      }
     } else {
       sql_values += ",default";
     }
@@ -2079,6 +2090,14 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
+  }
+  // 语言
+  if let Some(lang_id_lbl) = input.lang_id_lbl {
+    if !lang_id_lbl.is_empty() {
+      field_num += 1;
+      sql_fields += "lang_id_lbl=?,";
+      args.push(lang_id_lbl.into());
+    }
   }
   // 语言
   if let Some(lang_id) = input.lang_id {
