@@ -184,7 +184,7 @@ async function compile() {
     let cmds = [
       "compile",
       // "--no-check",
-      "--unstable-ffi",
+      // "--unstable-ffi",
       // `--allow-read=${ allowReads.join(",") }`,
       `--allow-read`,
       // `--allow-write=${ allowWrites.join(",") }`,
@@ -193,7 +193,7 @@ async function compile() {
       `--allow-env`,
       // `--allow-net=${ allowNets.join(",") }`,
       `--allow-net`,
-      `--allow-ffi`,
+      // `--allow-ffi`,
     ];
     if (target) {
       cmds = cmds.concat([ "--target", target ]);

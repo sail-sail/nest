@@ -24,6 +24,7 @@ export function createContext(): Middleware {
           code: 1,
           msg: err?.message || err?.toString() || "",
         };
+        return;
       }
     }
     const context = newContext(ctx);
