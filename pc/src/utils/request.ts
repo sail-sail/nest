@@ -60,7 +60,11 @@ export async function request<T>(
       method: config.method || "post",
       body,
     });
-    if (resFt.status !== 200) {
+    const status = resFt.status;
+    if (status === 502) {
+      throw new Error("服务器正在重启，请稍后再试");
+    }
+    if (status !== 200) {
       const errMsg = await resFt.text();
       throw new Error(errMsg);
     }

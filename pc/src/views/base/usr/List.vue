@@ -178,7 +178,7 @@
           <el-checkbox
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
-            v-model="search.is_deleted"
+            v-model="search.is_deleted as number"
             :false-value="0"
             :true-value="1"
             @change="recycleChg"
@@ -652,6 +652,15 @@
           
           <!-- 默认组织 -->
           <template v-else-if="'default_org_id_lbl' === col.prop && (showBuildIn || builtInSearch?.default_org_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 类型 -->
+          <template v-else-if="'type_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1254,6 +1263,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
+      label: "类型",
+      prop: "type_lbl",
+      sortBy: "type",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
@@ -1606,6 +1624,7 @@ async function onImportExcel() {
     [ await nAsync("所属部门") ]: "dept_ids_lbl",
     [ await nAsync("所属组织") ]: "org_ids_lbl",
     [ await nAsync("默认组织") ]: "default_org_id_lbl",
+    [ await nAsync("类型") ]: "type_lbl",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
     [ await nAsync("排序") ]: "order_by",
@@ -1638,6 +1657,7 @@ async function onImportExcel() {
           "dept_ids_lbl": "string[]",
           "org_ids_lbl": "string[]",
           "default_org_id_lbl": "string",
+          "type_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
@@ -1997,6 +2017,7 @@ async function initI18nsEfc() {
     "所属部门",
     "所属组织",
     "默认组织",
+    "类型",
     "锁定",
     "启用",
     "排序",

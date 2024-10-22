@@ -11,6 +11,8 @@ declare global {
   }
 
   interface RoleInput extends RoleInputType {
+    /** 系统字段 */
+    is_sys?: number;
   }
 
   interface RoleSearch extends RoleSearchType {
@@ -24,6 +26,8 @@ declare global {
 export const roleFields = [
   // ID
   "id",
+  // 编码
+  "code",
   // 名称
   "lbl",
   // 首页
@@ -62,6 +66,7 @@ export const roleFields = [
   "update_time",
   "update_time_lbl",
   "is_deleted",
+  "is_sys",
 ];
 
 export const roleQueryField = `

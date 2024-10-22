@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import AppLoading from "@/components/AppLoading/AppLoading.vue";
 
-let title = $ref("hello");
+const title = ref("hello");
 
 </script>
 

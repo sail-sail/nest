@@ -102,8 +102,10 @@ async function download(ctx: RouterContext<any>) {
     }
     const res = new Response(objInfo.body);
     response.body = await res.arrayBuffer();
-  } catch (err) {
-    if (err.code === "NotFound") {
+  } catch (err0) {
+    const err = err0 as Error;
+    // deno-lint-ignore no-explicit-any
+    if ((err as any).code === "NotFound") {
       const errMsg = "文件不存在!";
       response.status = 404;
       response.body = errMsg;

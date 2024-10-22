@@ -19,6 +19,8 @@ declare global {
   type RoleId = Distinct<string, typeof roleId>;
 
   interface RoleSearch extends RoleSearchType {
+    /** 卡号-序列号 */
+    code_seq?: [(number|undefined|null), (number|undefined|null)];
     /** 首页 */
     home_url?: string;
     home_url_like?: string;
@@ -37,6 +39,10 @@ declare global {
   }
 
   interface RoleModel extends RoleModelType {
+    /** 卡号-序列号 */
+    code_seq: number;
+    /** 系统字段 */
+    is_sys: number;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -49,6 +55,10 @@ declare global {
   }
 
   interface RoleInput extends RoleInputType {
+    /** 卡号-序列号 */
+    code_seq?: number | null;
+    /** 系统字段 */
+    is_sys?: number | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
