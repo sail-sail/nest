@@ -67,7 +67,8 @@ router.get("upgrade", async function(ctx) {
   socket.onopen = function() {
     try {
       onopen(socket, clientId);
-    } catch (err) {
+    } catch (err0) {
+      const err = err0 as Error;
       error(err);
       try {
         if (socket.readyState === WebSocket.OPEN) {

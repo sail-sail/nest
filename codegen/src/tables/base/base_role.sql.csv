@@ -1,2 +1,2 @@
-id,lbl,rem,is_enabled,tenant_id
-T/A58UzxTzK0thbZH7aZhw,管理员,,1,ZDbZlC1OT8KaDg6soxMCBQ
+id,code_seq,code,lbl,rem,is_enabled,is_sys,tenant_id
+T/A58UzxTzK0thbZH7aZhw,1,JS001,管理员,,1,1,ZDbZlC1OT8KaDg6soxMCBQ
