@@ -120,7 +120,7 @@
                     plain
                     @click="domain_idsOpenAddDialog"
                   >
-                    {{ ns("新增") }}{{ ns("域名") }}
+                    {{ ns("新增") }} {{ ns("域名") }}
                   </el-button>
                 </div>
               </template>
@@ -135,6 +135,7 @@
           >
             <CustomSelect
               v-model="dialogModel.lang_id"
+              v-model:model-label="dialogModel.lang_id_lbl"
               :method="getLangList"
               :options-map="((item: LangModel) => {
                 return {
@@ -403,7 +404,7 @@ watchEffect(async () => {
 let domainDetailDialogRef = $ref<InstanceType<typeof DomainDetailDialog>>();
 let domain_idsRef = $ref<InstanceType<typeof CustomSelect>>();
 
-/** 打开新增域名对话框 */
+/** 打开新增 域名 对话框 */
 async function domain_idsOpenAddDialog() {
   if (!domain_idsRef || !domainDetailDialogRef) {
     return;
@@ -411,10 +412,11 @@ async function domain_idsOpenAddDialog() {
   const {
     changedIds,
   } = await domainDetailDialogRef.showDialog({
-    title: await nsAsync("新增") + await nsAsync("域名"),
+    title: await nsAsync("新增") + " " + await nsAsync("域名"),
     action: "add",
   });
   if (changedIds.length > 0) {
+    await domain_idsRef.refresh();
     dialogModel.domain_ids = dialogModel.domain_ids || [ ];
     for (const id of changedIds) {
       if (dialogModel.domain_ids.includes(id)) {
@@ -422,7 +424,6 @@ async function domain_idsOpenAddDialog() {
       }
       dialogModel.domain_ids.push(id);
     }
-    await domain_idsRef.refresh();
   }
   domain_idsRef.focus();
 }

@@ -40,6 +40,8 @@ export function intoInput(
   const input: RoleInput = {
     // ID
     id: model?.id,
+    // 编码
+    code: model?.code,
     // 名称
     lbl: model?.lbl,
     // 首页

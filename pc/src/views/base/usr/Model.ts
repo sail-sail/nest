@@ -44,6 +44,9 @@ export const usrFields = [
   // 默认组织
   "default_org_id",
   "default_org_id_lbl",
+  // 类型
+  "type",
+  "type_lbl",
   // 锁定
   "is_locked",
   "is_locked_lbl",

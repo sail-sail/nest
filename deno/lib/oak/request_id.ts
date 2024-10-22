@@ -25,7 +25,8 @@ export async function handleRequestId(
   try {
     await _handleRequestId(requestId);
     return false;
-  } catch (err) {
+  } catch (err0) {
+    const err = err0 as Error;
     response.status = 500;
     response.body = err.message;
     return true;

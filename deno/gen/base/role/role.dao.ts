@@ -113,6 +113,20 @@ async function getWhereQuery(
   if (search?.ids != null) {
     whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
+  if (search?.code_seq != null) {
+    if (search.code_seq[0] != null) {
+      whereQuery += ` and t.code_seq>=${ args.push(search.code_seq[0]) }`;
+    }
+    if (search.code_seq[1] != null) {
+      whereQuery += ` and t.code_seq<=${ args.push(search.code_seq[1]) }`;
+    }
+  }
+  if (search?.code != null) {
+    whereQuery += ` and t.code=${ args.push(search.code) }`;
+  }
+  if (isNotEmpty(search?.code_like)) {
+    whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
@@ -783,6 +797,8 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
   const n = initN(route_path);
   const fieldComments: RoleFieldComment = {
     id: await n("ID"),
+    code_seq: await n("卡号-序列号"),
+    code: await n("编码"),
     lbl: await n("名称"),
     home_url: await n("首页"),
     menu_ids: await n("菜单权限"),
@@ -1192,6 +1208,13 @@ export async function validate(
     fieldComments.id,
   );
   
+  // 编码
+  await validators.chars_max_length(
+    input.code,
+    45,
+    fieldComments.code,
+  );
+  
   // 名称
   await validators.chars_max_length(
     input.lbl,
@@ -1227,6 +1250,48 @@ export async function validate(
     fieldComments.update_usr_id,
   );
   
+}
+
+// MARK: findAutoCode
+/** 获得 角色 自动编码 */
+export async function findAutoCode(
+  options?: {
+    is_debug?: boolean;
+  },
+) {
+  
+  const table = "base_role";
+  const method = "findAutoCode";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model = await findOne(
+    undefined,
+    [
+      {
+        prop: "code_seq",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  const code_seq = (model?.code_seq || 0) + 1;
+  const code = "JS" + code_seq.toString().padStart(3, "0");
+  
+  return {
+    code_seq,
+    code,
+  };
 }
 
 // MARK: create
@@ -1298,6 +1363,19 @@ export async function creates(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+  
+  // 设置自动编码
+  for (const input of inputs) {
+    if (input.code) {
+      continue;
+    }
+    const {
+      code_seq,
+      code,
+    } = await findAutoCode(options);
+    input.code_seq = code_seq;
+    input.code = code;
   }
   
   const ids = await _creates(inputs, options);
@@ -1377,7 +1455,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_role(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,home_url,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into base_role(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,lbl,home_url,is_locked,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1475,6 +1553,16 @@ async function _creates(
       } else {
         sql += ",default";
       }
+      if (input.code_seq != null) {
+        sql += `,${ args.push(input.code_seq) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.code != null) {
+        sql += `,${ args.push(input.code) }`;
+      } else {
+        sql += ",default";
+      }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
       } else {
@@ -1502,6 +1590,11 @@ async function _creates(
       }
       if (input.rem != null) {
         sql += `,${ args.push(input.rem) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_sys != null) {
+        sql += `,${ args.push(input.is_sys) }`;
       } else {
         sql += ",default";
       }
@@ -1711,6 +1804,18 @@ export async function updateById(
   const args = new QueryArgs();
   let sql = `update base_role set `;
   let updateFldNum = 0;
+  if (input.code_seq != null) {
+    if (input.code_seq != oldModel.code_seq) {
+      sql += `code_seq=${ args.push(input.code_seq) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.code != null) {
+    if (input.code != oldModel.code) {
+      sql += `code=${ args.push(input.code) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl=${ args.push(input.lbl) },`;
@@ -1761,6 +1866,12 @@ export async function updateById(
   if (input.create_time != null || input.create_time_save_null) {
     if (input.create_time != oldModel.create_time) {
       sql += `create_time=${ args.push(input.create_time) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_sys != null) {
+    if (input.is_sys != oldModel.is_sys) {
+      sql += `is_sys=${ args.push(input.is_sys) },`;
       updateFldNum++;
     }
   }

@@ -45,30 +45,30 @@ const props = withDefaults(
   },
 );
 
-let modelValue = $ref(props.modelValue);
+let modelValue = ref(props.modelValue);
 
 watch(
   () => props.modelValue,
   () => {
-    modelValue = props.modelValue;
+    modelValue.value = props.modelValue;
   },
 );
 
 watch(
-  () => modelValue,
+  () => modelValue.value,
   () => {
-    emit("update:modelValue", modelValue);
+    emit("update:modelValue", modelValue.value);
   },
 );
 
 function onChange() {
-  emit("update:modelValue", modelValue);
-  emit("change", modelValue);
+  emit("update:modelValue", modelValue.value);
+  emit("change", modelValue.value);
 }
 
 function onClear() {
-  modelValue = "";
-  emit("update:modelValue", modelValue);
+  modelValue.value = "";
+  emit("update:modelValue", modelValue.value);
   emit("clear");
 }
 </script>
