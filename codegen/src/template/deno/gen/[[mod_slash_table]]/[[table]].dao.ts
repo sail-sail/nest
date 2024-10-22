@@ -3315,7 +3315,7 @@ export async function creates(
   
   // 设置自动编码
   for (const input of inputs) {
-    if (input.code) {
+    if (input.<#=autoCodeColumn.COLUMN_NAME#>) {
       continue;
     }
     const {
