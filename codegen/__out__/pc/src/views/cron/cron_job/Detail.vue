@@ -377,7 +377,7 @@ watchEffect(async () => {
     timezone: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("时区") }`,
+        message: `${ await nsAsync("请选择") } ${ n("时区") }`,
       },
     ],
     // 排序
