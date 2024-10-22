@@ -302,6 +302,20 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 企微应用
+    wxw_app_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("企微应用") }`,
+      },
+    ],
+    // 发送状态
+    errcode: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("发送状态") }`,
+      },
+    ],
   };
 });
 
