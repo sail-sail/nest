@@ -203,12 +203,11 @@ pub async fn img(
       return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
     }
   }
-  match &stat.content_type {
-    Some(content_type) => {
+  if let Some(content_type) = &stat.content_type {
+    if !content_type.is_empty() {
       response = response.content_type(content_type);
-    },
-    None => {},
-  };
+    }
+  }
   filename = filename.trim().to_string();
   let file_name_empty = filename.is_empty();
   if file_name_empty {
@@ -312,12 +311,11 @@ pub async fn img(
   
   let stat = tmpfile_dao::head_object(&cache_id).await?;
   if let Some(stat) = stat {
-    match &stat.content_type {
-      Some(content_type) => {
+    if let Some(content_type) = &stat.content_type {
+      if !content_type.is_empty() {
         response = response.content_type(content_type);
-      },
-      None => {},
-    };
+      }
+    }
     if file_name_empty {
       filename = stat.filename;
       if filename.is_empty() {
