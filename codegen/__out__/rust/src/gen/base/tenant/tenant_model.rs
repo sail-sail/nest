@@ -649,6 +649,8 @@ impl From<TenantInput> for TenantSearch {
       menu_ids: input.menu_ids,
       // 语言
       lang_id: input.lang_id.map(|x| vec![x]),
+      // 语言
+      lang_id_lbl: input.lang_id_lbl.map(|x| vec![x]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用

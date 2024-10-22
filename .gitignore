@@ -10,6 +10,7 @@ unpackage
 ~$*.xlsx
 target
 Cargo.lock
+deno.lock
 
 */typings/ids.d.ts
 */typings/types.ts
@@ -33,3 +34,6 @@ publish_cnf.js
 /pc/typings/auto-imports.d.ts
 /pc/vite.config.mts.timestamp-*.mjs
 database_crypto_key.txt
+
+docs/.vitepress/cache
+docs/.vitepress/dist

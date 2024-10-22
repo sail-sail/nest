@@ -145,11 +145,6 @@ export async function updateById(
     throw await ns("不能修改已经锁定的数据");
   }
   
-  // 不能修改系统记录的系统字段
-  const model = await dictbiz_detailDao.findById(id);
-  if (model && model.is_sys === 1) {
-  }
-  
   const id2 = await dictbiz_detailDao.updateById(id, input);
   return id2;
 }

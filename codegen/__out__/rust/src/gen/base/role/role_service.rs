@@ -217,6 +217,22 @@ pub async fn delete_by_ids(
     }
   }
   
+  let models = role_dao::find_all(
+    Some(RoleSearch {
+      ids: Some(ids.clone()),
+      ..Default::default()
+    }),
+    None,
+    None,
+    options.clone(),
+  ).await?;
+  for model in models {
+    if model.is_sys == 1 {
+      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;
+      return Err(anyhow!(err_msg));
+    }
+  }
+  
   let num = role_dao::delete_by_ids(
     ids,
     options,

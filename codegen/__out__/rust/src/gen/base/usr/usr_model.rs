@@ -94,6 +94,12 @@ pub struct UsrModel {
   /// 默认组织
   #[graphql(name = "default_org_id_lbl")]
   pub default_org_id_lbl: String,
+  /// 类型
+  #[graphql(name = "type")]
+  pub r#type: UsrType,
+  /// 类型
+  #[graphql(name = "type_lbl")]
+  pub type_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: u8,
@@ -275,6 +281,9 @@ impl FromRow<'_, MySqlRow> for UsrModel {
     let default_org_id: OrgId = row.try_get("default_org_id")?;
     let default_org_id_lbl: Option<String> = row.try_get("default_org_id_lbl")?;
     let default_org_id_lbl = default_org_id_lbl.unwrap_or_default();
+    // 类型
+    let type_lbl: String = row.try_get("type")?;
+    let r#type: UsrType = type_lbl.clone().try_into()?;
     // 锁定
     let is_locked: u8 = row.try_get("is_locked")?;
     let is_locked_lbl: String = is_locked.to_string();
@@ -325,6 +334,8 @@ impl FromRow<'_, MySqlRow> for UsrModel {
       org_ids_lbl,
       default_org_id,
       default_org_id_lbl,
+      r#type,
+      type_lbl,
       is_locked,
       is_locked_lbl,
       is_enabled,
@@ -385,6 +396,12 @@ pub struct UsrFieldComment {
   /// 默认组织
   #[graphql(name = "default_org_id_lbl")]
   pub default_org_id_lbl: String,
+  /// 类型
+  #[graphql(name = "type")]
+  pub r#type: String,
+  /// 类型
+  #[graphql(name = "type_lbl")]
+  pub type_lbl: String,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: String,
@@ -496,6 +513,9 @@ pub struct UsrSearch {
   /// 默认组织
   #[graphql(name = "default_org_id_lbl_like")]
   pub default_org_id_lbl_like: Option<String>,
+  /// 类型
+  #[graphql(skip)]
+  pub r#type: Option<Vec<UsrType>>,
   /// 锁定
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
@@ -610,6 +630,10 @@ impl std::fmt::Debug for UsrSearch {
     if let Some(ref default_org_id_is_null) = self.default_org_id_is_null {
       item = item.field("default_org_id_is_null", default_org_id_is_null);
     }
+    // 类型
+    if let Some(ref r#type) = self.r#type {
+      item = item.field("r#type", r#type);
+    }
     // 锁定
     if let Some(ref is_locked) = self.is_locked {
       item = item.field("is_locked", is_locked);
@@ -706,6 +730,12 @@ pub struct UsrInput {
   /// 默认组织
   #[graphql(name = "default_org_id_lbl")]
   pub default_org_id_lbl: Option<String>,
+  /// 类型
+  #[graphql(name = "type")]
+  pub r#type: Option<UsrType>,
+  /// 类型
+  #[graphql(name = "type_lbl")]
+  pub type_lbl: Option<String>,
   /// 锁定
   #[graphql(name = "is_locked")]
   pub is_locked: Option<u8>,
@@ -783,6 +813,9 @@ impl From<UsrModel> for UsrInput {
       // 默认组织
       default_org_id: model.default_org_id.into(),
       default_org_id_lbl: model.default_org_id_lbl.into(),
+      // 类型
+      r#type: model.r#type.into(),
+      type_lbl: model.type_lbl.into(),
       // 锁定
       is_locked: model.is_locked.into(),
       is_locked_lbl: model.is_locked_lbl.into(),
@@ -837,6 +870,8 @@ impl From<UsrInput> for UsrSearch {
       org_ids: input.org_ids,
       // 默认组织
       default_org_id: input.default_org_id.map(|x| vec![x]),
+      // 类型
+      r#type: input.r#type.map(|x| vec![x]),
       // 锁定
       is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
@@ -966,6 +1001,91 @@ impl<'r> sqlx::Decode<'r, MySql> for UsrId {
 impl PartialEq<str> for UsrId {
   fn eq(&self, other: &str) -> bool {
     self.0 == other
+  }
+}
+
+/// 用户类型
+#[derive(Enum, Copy, Clone, Default, Eq, PartialEq, Serialize, Deserialize, Debug)]
+pub enum UsrType {
+  /// 登录用户
+  #[default]
+  #[graphql(name="login")]
+  Login,
+  /// 第三方接口
+  #[graphql(name="api")]
+  Api,
+}
+
+impl fmt::Display for UsrType {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    match self {
+      Self::Login => write!(f, "login"),
+      Self::Api => write!(f, "api"),
+    }
+  }
+}
+
+impl From<UsrType> for SmolStr {
+  fn from(value: UsrType) -> Self {
+    match value {
+      UsrType::Login => "login".into(),
+      UsrType::Api => "api".into(),
+    }
+  }
+}
+
+impl From<UsrType> for String {
+  fn from(value: UsrType) -> Self {
+    match value {
+      UsrType::Login => "login".into(),
+      UsrType::Api => "api".into(),
+    }
+  }
+}
+
+impl From<UsrType> for ArgType {
+  fn from(value: UsrType) -> Self {
+    ArgType::SmolStr(value.into())
+  }
+}
+
+impl FromStr for UsrType {
+  type Err = anyhow::Error;
+  
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "login" => Ok(Self::Login),
+      "api" => Ok(Self::Api),
+      _ => Err(anyhow::anyhow!("UsrType can't convert from {s}")),
+    }
+  }
+}
+
+impl UsrType {
+  pub fn as_str(&self) -> &str {
+    match self {
+      Self::Login => "login",
+      Self::Api => "api",
+    }
+  }
+}
+
+impl TryFrom<String> for UsrType {
+  type Error = sqlx::Error;
+  
+  fn try_from(s: String) -> Result<Self, sqlx::Error> {
+    match s.as_str() {
+      "login" => Ok(Self::Login),
+      "api" => Ok(Self::Api),
+      _ => Err(sqlx::Error::Decode(
+        Box::new(sqlx::Error::ColumnDecode {
+          index: "type".to_owned(),
+          source: Box::new(sqlx::Error::Protocol(
+            "UsrType can't convert from {s}".to_owned(),
+          )),
+        }),
+      )),
+    }
   }
 }
 

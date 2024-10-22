@@ -437,6 +437,8 @@ export async function uniLogin() {
         url += `&scope=snsapi_base`;
         url += `&state=${ encodeURIComponent(state) }`;
         url += "#wechat_redirect";
+        alert(url);
+        console.log(url);
         location.replace(url);
         return false;
       }

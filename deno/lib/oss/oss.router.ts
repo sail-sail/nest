@@ -7,9 +7,9 @@ import {
   error,
 } from "/lib/context.ts";
 
-import {
-  resize,
-} from "/lib/image/mod.ts";
+// import {
+//   resize,
+// } from "/lib/image/mod.ts";
 
 import {
   handleRequestId,
@@ -102,8 +102,10 @@ async function download(ctx: RouterContext<any>) {
     }
     const res = new Response(objInfo.body);
     response.body = await res.arrayBuffer();
-  } catch (err) {
-    if (err.code === "NotFound") {
+  } catch (err0) {
+    const err = err0 as Error;
+    // deno-lint-ignore no-explicit-any
+    if ((err as any).code === "NotFound") {
       const errMsg = "文件不存在!";
       response.status = 404;
       response.body = errMsg;
@@ -264,7 +266,12 @@ router.get("img", async function(ctx) {
     const height = h == null ? undefined : parseInt(h);
     const width = w == null ? undefined : parseInt(w);
     const quality = q == null ? undefined : parseInt(q);
-    const content2 = await resize(
+    
+    const {
+      resize,
+    } = await import("/lib/image/mod.ts");
+    
+    const content2 = resize(
       content,
       format,
       width,
@@ -318,8 +325,10 @@ router.get("img", async function(ctx) {
     
     response.body = content2;
     return;
-  } catch (err) {
-    if (err.code === "NotFound") {
+  } catch (err0) {
+    const err = err0 as Error;
+    // deno-lint-ignore no-explicit-any
+    if ((err as any).code === "NotFound") {
       const errMsg = "文件不存在!";
       response.status = 404;
       response.body = errMsg;

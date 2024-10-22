@@ -125,10 +125,10 @@ async function getWhereQuery(
     whereQuery += ` and t.lang_id is null`;
   }
   if (search?.lang_id_lbl != null) {
-    whereQuery += ` and lang_id_lbl.lbl in (${ args.push(search.lang_id_lbl) })`;
+    whereQuery += ` and t.lang_id_lbl in (${ args.push(search.lang_id_lbl) })`;
   }
   if (isNotEmpty(search?.lang_id_lbl_like)) {
-    whereQuery += ` and lang_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.lang_id_lbl_like) + "%") }`;
+    whereQuery += ` and t.lang_id_lbl like ${ args.push("%" + sqlLike(search.lang_id_lbl_like) + "%") }`;
   }
   if (search?.is_locked != null) {
     whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
@@ -232,8 +232,7 @@ async function getFromQuery(
   inner join base_menu on base_menu.id=base_tenant_menu.menu_id
   inner join base_tenant on base_tenant.id=base_tenant_menu.tenant_id
   where base_tenant_menu.is_deleted=${ args.push(is_deleted) }
-  group by tenant_id) _menu on _menu.tenant_id=t.id
-  left join base_lang lang_id_lbl on lang_id_lbl.id=t.lang_id`;
+  group by tenant_id) _menu on _menu.tenant_id=t.id`;
   return fromQuery;
 }
 
@@ -410,7 +409,6 @@ export async function findAll(
       ,max(domain_ids_lbl) domain_ids_lbl
       ,max(menu_ids) menu_ids
       ,max(menu_ids_lbl) menu_ids_lbl
-      ,lang_id_lbl.lbl lang_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -526,9 +524,6 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    // 语言
-    model.lang_id_lbl = model.lang_id_lbl || "";
     
     // 锁定
     let is_locked_lbl = model.is_locked?.toString() || "";
@@ -1278,7 +1273,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys)values";
+  let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,lang_id_lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1365,6 +1360,11 @@ async function _creates(
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.lang_id_lbl != null) {
+        sql += `,${ args.push(input.lang_id_lbl) }`;
       } else {
         sql += ",default";
       }
@@ -1527,6 +1527,11 @@ export async function updateById(
       sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
+  }
+  if (isNotEmpty(input.lang_id_lbl)) {
+    sql += `lang_id_lbl=?,`;
+    args.push(input.lang_id_lbl);
+    updateFldNum++;
   }
   if (input.lang_id != null) {
     if (input.lang_id != oldModel.lang_id) {

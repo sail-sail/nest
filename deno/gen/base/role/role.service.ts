@@ -167,6 +167,17 @@ export async function deleteByIds(
     }
   }
   
+  {
+    const models = await roleDao.findAll({
+      ids,
+    });
+    for (const model of models) {
+      if (model.is_sys === 1) {
+        throw await ns("不能删除系统记录");
+      }
+    }
+  }
+  
   const data = await roleDao.deleteByIds(ids);
   return data;
 }
