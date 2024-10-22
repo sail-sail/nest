@@ -140,11 +140,6 @@ export async function updateById(
   input: LangInput,
 ): Promise<LangId> {
   
-  // 不能修改系统记录的系统字段
-  const model = await langDao.findById(id);
-  if (model && model.is_sys === 1) {
-  }
-  
   const id2 = await langDao.updateById(id, input);
   return id2;
 }
