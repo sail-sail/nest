@@ -121,6 +121,7 @@ for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
   ) continue;
   langTableRecords.push(record);
 }
+const autoCodeColumn = columns.find((item) => item.autoCode);
 #>#[allow(unused_imports)]
 use serde::{Serialize, Deserialize};
 #[allow(unused_imports)]
@@ -3197,7 +3198,25 @@ pub async fn creates(
       "{req_id} {msg}",
       req_id = get_req_id(),
     );
+  }<#
+  if (autoCodeColumn) {
+  #>
+  
+  // 设置自动编码
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.<#=autoCodeColumn.COLUMN_NAME#>.is_some() && !input.<#=autoCodeColumn.COLUMN_NAME#>.as_ref().unwrap().is_empty() {
+      continue;
+    }
+    let (
+      <#=autoCodeColumn.autoCode.seq#>,
+      <#=autoCodeColumn.COLUMN_NAME#>,
+    ) = find_auto_code(options.clone()).await?;
+    input.<#=autoCodeColumn.autoCode.seq#> = Some(<#=autoCodeColumn.autoCode.seq#>);
+    input.<#=autoCodeColumn.COLUMN_NAME#> = Some(<#=autoCodeColumn.COLUMN_NAME#>);
+  }<#
   }
+  #>
   
   let ids = _creates(
     inputs,
@@ -3962,7 +3981,53 @@ async fn _creates(
   #>
   
   Ok(ids2)
+}<#
+if (autoCodeColumn) {
+#>
+
+// MARK: findAutoCode
+/// 获得 <#=table_comment#> 自动编码
+pub async fn find_auto_code(
+  options: Option<Options>,
+) -> Result<(u32, String)> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let method = "find_auto_code";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let model = find_one(
+    None,
+    Some(vec![
+      SortInput {
+        prop: "<#=autoCodeColumn.autoCode.seq#>".to_owned(),
+        order: SortOrderEnum::Desc,
+      },
+    ]),
+    options,
+  ).await?;
+  
+  let <#=autoCodeColumn.autoCode.seq#> = model
+    .as_ref()
+    .map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>) + 1;
+  
+  let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>", <#=autoCodeColumn.autoCode.seq#>);
+  
+  Ok((<#=autoCodeColumn.autoCode.seq#>, <#=autoCodeColumn.COLUMN_NAME#>))
+}<#
 }
+#>
 
 // MARK: create
 /// 创建<#=table_comment#>

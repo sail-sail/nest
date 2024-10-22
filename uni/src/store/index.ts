@@ -6,21 +6,21 @@ import { defineStore } from "pinia";
 
 export default defineStore("index", function() {
   
-  let loading = $ref(0);
+  let loading = ref(0);
   
   function addLoading() {
-    loading++;
+    loading.value++;
   }
   
   function minusLoading() {
-    loading--;
-    if(loading < 0) {
-      loading = 0;
+    loading.value--;
+    if(loading.value < 0) {
+      loading.value = 0;
     }
   }
   
   function getLoading() {
-    return loading;
+    return loading.value;
   }
   
   let systemInfo: UniApp.GetSystemInfoResult | undefined;
@@ -38,7 +38,7 @@ export default defineStore("index", function() {
   
   let userAgent: UserAgent | undefined;
   
-  function getUserAgent() {
+  function getUserAgent(): UserAgent {
     if (userAgent) {
       return userAgent;
     }
@@ -49,27 +49,27 @@ export default defineStore("index", function() {
     return userAgent;
   }
   
-  let launchOptions = $ref<App.LaunchShowOption>();
+  let launchOptions = ref<App.LaunchShowOption>();
   
   function setLaunchOptions(options?: App.LaunchShowOption) {
-    launchOptions = options;
+    launchOptions.value = options;
   }
   
   function getLaunchOptions() {
-    return launchOptions!;
+    return launchOptions.value!;
   }
   
-  let uid = $ref("");
+  let uid = ref("");
   
-  function setUid(uid0: typeof uid) {
-    uid = uid0;
+  function setUid(uid0: string) {
+    uid.value = uid0;
   }
   
   function getUid() {
-    return uid;
+    return uid.value;
   }
   
-  return $$({
+  return {
     getUid,
     getLoading,
     addLoading,
@@ -80,5 +80,5 @@ export default defineStore("index", function() {
     getSystemInfo,
     setSystemInfo,
     getUserAgent,
-  });
+  };
 });

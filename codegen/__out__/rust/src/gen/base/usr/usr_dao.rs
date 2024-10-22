@@ -74,7 +74,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 20 * 2);
+  let mut where_query = String::with_capacity(80 * 21 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -351,6 +351,30 @@ async fn get_where_query(
     if let Some(default_org_id_lbl_like) = default_org_id_lbl_like {
       where_query.push_str(" and default_org_id_lbl.lbl like ?");
       args.push(format!("%{}%", sql_like(&default_org_id_lbl_like)).into());
+    }
+  }
+  // 类型
+  {
+    let r#type: Option<Vec<UsrType>> = match search {
+      Some(item) => item.r#type.clone(),
+      None => None,
+    };
+    if let Some(r#type) = r#type {
+      let arg = {
+        if r#type.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(r#type.len());
+          for item in r#type {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.type in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }
   // 锁定
@@ -782,6 +806,22 @@ pub async fn find_all(
       }
     }
   }
+  // 类型
+  if let Some(search) = &search {
+    if search.r#type.is_some() {
+      let len = search.r#type.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(anyhow!("search.type.length > {ids_limit}"));
+      }
+    }
+  }
   // 锁定
   if let Some(search) = &search {
     if search.is_locked.is_some() {
@@ -920,18 +960,29 @@ pub async fn find_all(
   ).await?;
   
   let dict_vec = get_dict(&[
+    "usr_type",
     "is_locked",
     "is_enabled",
   ]).await?;
   let [
+    type_dict,
     is_locked_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 2] = dict_vec
+  ]: [Vec<_>; 3] = dict_vec
     .try_into()
     .map_err(|err| anyhow!("{:#?}", err))?;
   
   #[allow(unused_variables)]
   for model in &mut res {
+    
+    // 类型
+    model.r#type_lbl = {
+      r#type_dict
+        .iter()
+        .find(|item| item.val == model.r#type.as_str())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.r#type.to_string())
+    };
     
     // 锁定
     model.is_locked_lbl = {
@@ -1051,6 +1102,8 @@ pub async fn get_field_comments(
     "所属组织".into(),
     "默认组织".into(),
     "默认组织".into(),
+    "类型".into(),
+    "类型".into(),
     "锁定".into(),
     "锁定".into(),
     "启用".into(),
@@ -1093,20 +1146,22 @@ pub async fn get_field_comments(
     org_ids_lbl: vec[9].to_owned(),
     default_org_id: vec[10].to_owned(),
     default_org_id_lbl: vec[11].to_owned(),
-    is_locked: vec[12].to_owned(),
-    is_locked_lbl: vec[13].to_owned(),
-    is_enabled: vec[14].to_owned(),
-    is_enabled_lbl: vec[15].to_owned(),
-    order_by: vec[16].to_owned(),
-    rem: vec[17].to_owned(),
-    create_usr_id: vec[18].to_owned(),
-    create_usr_id_lbl: vec[19].to_owned(),
-    create_time: vec[20].to_owned(),
-    create_time_lbl: vec[21].to_owned(),
-    update_usr_id: vec[22].to_owned(),
-    update_usr_id_lbl: vec[23].to_owned(),
-    update_time: vec[24].to_owned(),
-    update_time_lbl: vec[25].to_owned(),
+    r#type: vec[12].to_owned(),
+    type_lbl: vec[13].to_owned(),
+    is_locked: vec[14].to_owned(),
+    is_locked_lbl: vec[15].to_owned(),
+    is_enabled: vec[16].to_owned(),
+    is_enabled_lbl: vec[17].to_owned(),
+    order_by: vec[18].to_owned(),
+    rem: vec[19].to_owned(),
+    create_usr_id: vec[20].to_owned(),
+    create_usr_id_lbl: vec[21].to_owned(),
+    create_time: vec[22].to_owned(),
+    create_time_lbl: vec[23].to_owned(),
+    update_usr_id: vec[24].to_owned(),
+    update_usr_id_lbl: vec[25].to_owned(),
+    update_time: vec[26].to_owned(),
+    update_time_lbl: vec[27].to_owned(),
   };
   Ok(field_comments)
 }
@@ -1561,13 +1616,29 @@ pub async fn set_id_by_lbl(
   let mut input = input;
   
   let dict_vec = get_dict(&[
+    "usr_type",
     "is_locked",
     "is_enabled",
   ]).await?;
   
+  // 类型
+  if input.r#type.is_none() {
+    let type_dict = &dict_vec[0];
+    if let Some(type_lbl) = input.type_lbl.clone() {
+      input.r#type = type_dict
+        .iter()
+        .find(|item| {
+          item.lbl == type_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
   // 锁定
   if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[0];
+    let is_locked_dict = &dict_vec[1];
     if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
       input.is_locked = is_locked_dict
         .iter()
@@ -1582,7 +1653,7 @@ pub async fn set_id_by_lbl(
   
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1733,12 +1804,37 @@ pub async fn set_id_by_lbl(
     }
   }
   
+  // 类型
+  if
+    input.type_lbl.is_some() && !input.type_lbl.as_ref().unwrap().is_empty()
+    && input.r#type.is_none()
+  {
+    let type_dict = &dict_vec[0];
+    let dict_model = type_dict.iter().find(|item| {
+      item.lbl == input.type_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.r#type = val.parse::<UsrType>()?.into();
+    }
+  } else if
+    (input.type_lbl.is_none() || input.type_lbl.as_ref().unwrap().is_empty())
+    && input.r#type.is_some()
+  {
+    let type_dict = &dict_vec[0];
+    let dict_model = type_dict.iter().find(|item| {
+      item.val == input.r#type.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.type_lbl = lbl;
+  }
+  
   // 锁定
   if
     input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
     && input.is_locked.is_none()
   {
-    let is_locked_dict = &dict_vec[0];
+    let is_locked_dict = &dict_vec[1];
     let dict_model = is_locked_dict.iter().find(|item| {
       item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
     });
@@ -1750,7 +1846,7 @@ pub async fn set_id_by_lbl(
     (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
     && input.is_locked.is_some()
   {
-    let is_locked_dict = &dict_vec[0];
+    let is_locked_dict = &dict_vec[1];
     let dict_model = is_locked_dict.iter().find(|item| {
       item.val == input.is_locked.unwrap_or_default().to_string()
     });
@@ -1763,7 +1859,7 @@ pub async fn set_id_by_lbl(
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -1775,7 +1871,7 @@ pub async fn set_id_by_lbl(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[2];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -1883,7 +1979,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1903,6 +1999,8 @@ async fn _creates(
   sql_fields += ",password";
   // 默认组织
   sql_fields += ",default_org_id";
+  // 类型
+  sql_fields += ",type";
   // 锁定
   sql_fields += ",is_locked";
   // 启用
@@ -1915,7 +2013,7 @@ async fn _creates(
   sql_fields += ",is_hidden";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 21 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2077,6 +2175,13 @@ async fn _creates(
     if let Some(default_org_id) = input.default_org_id {
       sql_values += ",?";
       args.push(default_org_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 类型
+    if let Some(r#type) = input.r#type {
+      sql_values += ",?";
+      args.push(r#type.into());
     } else {
       sql_values += ",default";
     }
@@ -2405,7 +2510,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2445,6 +2550,12 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "default_org_id=?,";
     args.push(default_org_id.into());
+  }
+  // 类型
+  if let Some(r#type) = input.r#type {
+    field_num += 1;
+    sql_fields += "type=?,";
+    args.push(r#type.into());
   }
   // 锁定
   if let Some(is_locked) = input.is_locked {

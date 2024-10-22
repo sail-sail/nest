@@ -1,6 +1,6 @@
 export class ServiceException extends Error {
   
-  message: string;
+  override message: string;
   code: string|undefined;
   /** 默认回滚事务, 可设置为不回滚事务而是提交事务 */
   _rollback: boolean|undefined;

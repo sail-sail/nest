@@ -4,6 +4,10 @@ import {
   UniqueType,
 } from "#/types";
 
+import {
+  UsrType,
+} from "#/types";
+
 import type {
   Query,
   Mutation,
@@ -61,6 +65,9 @@ export function intoInput(
     // 默认组织
     default_org_id: model?.default_org_id,
     default_org_id_lbl: model?.default_org_id_lbl,
+    // 类型
+    type: model?.type,
+    type_lbl: model?.type_lbl,
     // 锁定
     is_locked: model?.is_locked,
     is_locked_lbl: model?.is_locked_lbl,
@@ -554,6 +561,7 @@ export function useDownloadImportTemplate(routePath: string) {
             dept_ids_lbl
             org_ids_lbl
             default_org_id_lbl
+            type_lbl
             order_by
             rem
           }
@@ -567,6 +575,12 @@ export function useDownloadImportTemplate(routePath: string) {
           }
           findAllOrg {
             id
+            lbl
+          }
+          getDict(codes: [
+            "usr_type",
+          ]) {
+            code
             lbl
           }
         }
@@ -638,6 +652,7 @@ export function useExportExcel(routePath: string) {
               lbl
             }
             getDict(codes: [
+              "usr_type",
               "is_locked",
               "is_enabled",
             ]) {
@@ -758,6 +773,7 @@ export function getPagePath() {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: UsrInput = {
+    type: UsrType.Login,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
