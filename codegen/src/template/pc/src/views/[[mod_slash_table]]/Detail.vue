@@ -284,7 +284,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
               :inited
