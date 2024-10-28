@@ -149,9 +149,9 @@ router.get("upgrade", function(ctx) {
         }
         const dataStr = JSON.stringify(data);
         for (const [ clientId2, topics ] of clientIdTopicsMap) {
-          if (clientId2 === clientId) {
-            continue;
-          }
+          // if (clientId2 === clientId) {
+          //   continue;
+          // }
           if (!topics.includes(topic)) {
             continue;
           }
