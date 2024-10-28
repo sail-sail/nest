@@ -3,7 +3,6 @@
   class="custom_input n-w-full"
   :transprent="true"
   :show-bottom-botder="false"
-  :input-padding="[0, 0]"
   v-bind="$attrs"
   v-model.lazy="modelValue"
   :show-clear="props.readonly ? false : props.showClear"
@@ -11,6 +10,7 @@
   @clear="onClear"
   :disabled="props.readonly"
   :placeholder="props.readonly ? '' : props.placeholder"
+  :color="props.color"
 >
   <template #left>
     <slot name="left"></slot>
@@ -35,6 +35,7 @@ const props = withDefaults(
     readonly?: boolean;
     showClear?: boolean;
     placeholder?: string;
+    color?: string;
   }>(),
   {
     modelValue: undefined,
@@ -42,6 +43,7 @@ const props = withDefaults(
     readonly: undefined,
     showClear: true,
     placeholder: undefined,
+    color: "transparent",
   },
 );
 
