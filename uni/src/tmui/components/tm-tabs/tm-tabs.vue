@@ -1,1210 +1,466 @@
-<template>
-	<view
-		class="flex flex-col overflow"
-		:style="[props.height && !isDulitabs && cacheTabs.length > 0 ? { height: height + 'rpx' } : '', { width: props.width + 'rpx' }]"
-	>
-		<!-- 此源码有uniapp bug.如果在nvue页面编译至h5平台时，开启enable-flexr后需要里面再套层view再写flex才能真正的开flex -->
-		<!-- 因此下面的内容作了条件编译分为nvue和非nvue -->
-		<!-- https://ask.dcloud.net.cn/question/143230 -->
-		<!-- #ifndef APP-NVUE -->
-		<view
-			@touchmove="onMove"
-			@touchend="onEnd"
-			@touchstart="onStart"
-			@mousemove="onMove"
-			@mouseup="onEnd"
-			@mouseleave="onEnd"
-			@mousedown="onStart"
-			ref="tabsDom"
-			:style="{
-				width: props.swiper ? `${totalWidth}px` : `${props.width}rpx`,
-				transform: props.swiper ? `translateX(${directoStyle}px)` : `translateX(0px)`
-			}"
-			v-if="_tabPos == 'bottom' && !isDulitabs"
-			:class="[!isEndMove || isNvue ? 'tmTabsPane' : '']"
-			class="flex flex-row flex-nowrap overflow"
-		>
-			<slot></slot>
-		</view>
-		<!-- #endif -->
-		<!-- #ifdef APP-NVUE -->
-		<!-- @touchmove="onMove"
-		@touchend="onEnd" 
-		@touchstart="onStart" -->
-		<view
-			@touchstart="spinNvueAni"
-			ref="tabsDom"
-			:style="{
-				width: props.swiper ? `${totalWidth}px` : `${props.width}rpx`,
-				transform: `translateX(0px)`
-			}"
-			v-if="_tabPos == 'bottom' && !isDulitabs && props.swiper"
-			class="flex flex-row flex-nowrap overflow"
-		>
-			<slot></slot>
-		</view>
-		<!-- #endif -->
+<script setup lang="ts">
+import { ref, computed, onMounted, watch, PropType, provide, nextTick } from 'vue';
+import { useTmConfig } from "../../libs/config";
+import { tmDate, type tmDateTypeTime, createDate } from '../../libs/tmDate';
+import { covetUniNumber, getUnit } from '../../libs/tool';
+import { getDefaultColor } from '../../libs/colors';
 
-		<tm-sheet
-			:darkBgColor="props.darkBgColor"
-			:transprent="props.transprent"
-			:color="props.color"
-			:followTheme="props.followTheme"
-			:dark="props.dark"
-			:round="props.round"
-			:shadow="props.shadow"
-			:outlined="props.outlined"
-			:border="props.border"
-			:borderStyle="props.borderStyle"
-			:borderDirection="props.borderDirection"
-			:text="props.text"
-			:linear="props.linear"
-			:linearDeep="props.linearDeep"
-			:margin="[0, 0]"
-			:padding="[0, 0]"
-			:height="props.itemHeight + modelStyle.border + props.gutter + 4"
-			:_class="['flex-center flex-row nonvue', cstomClass]"
-			:_style="props._style"
-			:width="props.width"
-		>
-			<!-- 标题 -->
-			<!-- #ifndef APP-NVUE -->
-			<scroll-view
-				:style="[{ width: `${props.width}rpx`, height: `${props.itemHeight + 4}rpx` }]"
-				:scroll-with-animation="true"
-				:scroll-into-view="_scrollToId"
-				:scroll-x="true"
-				:show-scrollbar="false"
-				enable-flex
-				class="tableHeader flex-row relative"
-			>
-				<view class="flex flex-row nowrap nonvue fulled" :class="[_align]" :style="[{ height: `${props.itemHeight + 4}rpx` }]">
-					<view :id="tabsid + item.key" v-for="(item, index) in cacheTabs" :key="index" class="flex flex-shrink">
-						<tm-sheet
-							@click="changeKey(item.key)"
-							:round="props.itemRound"
-							:linear="props.itemLinear"
-							:linearDeep="props.itemLinearDeep"
-							borderDirection="bottom"
-							:text="item.key === _active ? modelStyle.text : false"
-							:border="item.key === _active ? modelStyle.border : 0"
-							:transprent="item.key === _active ? modelStyle.transprent : true"
-							:color="props.activeColor && item.key === _active ? props.activeColor : props.color"
-							:width="props.itemWidth"
-							_class="flex-col flex-col-center-center"
-							:margin="[0, 0]"
-							:padding="[0, 0]"
-							:height="props.itemHeight"
-						>
-							<view
-								:style="[props.itemWidth > 0 ? { width: (props.itemWidth) + 'rpx' } : {paddingLeft:'20rpx',paddingRight:'20rpx'}, { height: props.itemHeight + 'rpx' }]"
-								class="flex flex-row flex-row-center-center relative flex-shrink"
-							>
-								<view class="flex flex-row flex-center">
-									<tm-icon
-										:userInteractionEnabled="false"
-										v-if="item.icon"
-										_class="pr-5"
-										:color="item.key === _active ? props.activeFontColor : props.unSelectedColor"
-										:font-size="item.key === _active ? props.activeFontSize : props.itemFontSize"
-										:name="item.icon"
-									>
-									</tm-icon>
-									<tm-text
-										:userInteractionEnabled="false"
-										:font-size="item.key === _active ? props.activeFontSize : props.itemFontSize"
-										:_class="item.key === _active ? 'text-weight-b' : ''"
-										:color="item.key === _active ? props.activeFontColor : props.unSelectedColor"
-										:label="item.title"
-									>
-									</tm-text>
-								</view>
-								<view
-									:userInteractionEnabled="false"
-									v-if="!item.count && item.dot"
-									:style="{
-										height: 12 + 'rpx',
-										top: '12rpx',
-										right: '-16rpx',
-										width: isNvue ? 'flex-1' : '100%'
-									}"
-									class="absolute t-0 r-0 flex flex-row flex-row-center-end"
-								>
-									<tm-badge dot :color="item.dotColor"> </tm-badge>
-								</view>
-								<view
-									:userInteractionEnabled="false"
-									v-if="item.count && !item.dot"
-									:style="{
-										height: props.itemHeight - 30 + 'rpx',
-										top: '10rpx',
-										right: props.showTabsLineAni ? 0 : -16 + 'rpx',
-										width: isNvue ? 'flex-1' : '100%'
-									}"
-									class="absolute t-0 r-0"
-								>
-									<tm-badge :count="item.count" :color="item.dotColor"> </tm-badge>
-								</view>
-							</view>
-						</tm-sheet>
-					</view>
-				</view>
-				
-				<view
-					v-if="props.showTabsLineAni && props.itemWidth > 0 && props.showTabsLine"
-					class="anilineBar absolute l-0"
-					:style="{
-						width: `${contentWidth}rpx`,
-						height: '1px',
-						top: `${props.itemHeight}rpx`,
-						backgroundColor: props.showTabsLineAni ? (store.tmStore.dark ? '#616161' : '#ebebeb') : ''
-					}"
-				></view>
-				<view
-					v-if="props.showTabsLineAni && props.itemWidth > 0"
-					class="anilineBar absolute l-0 b-0 flex flex-row flex-center"
-					:style="{
-						transform: `translateX(${anitLineLeft}px)`,
-						top: `${props.itemHeight - 2}rpx`,
-						width: _itemwidth + 'px',
-						height: '4px'
-					}"
-				>
-					<tm-sheet
-						parenClass="animateAll_tabs_tmui"
-						:follow-dark="false"
-						:color="props.tabsLineAniColor"
-						:width="widthDrag"
-						unit="px"
-						:height="4"
-						:margin="[0, 0]"
-						:padding="[0, 0]"
-					></tm-sheet>
-				</view>
-			</scroll-view>
-
-			<!-- #endif -->
-			<!-- 标题 -->
-			<!-- #ifdef APP-NVUE -->
-
-			<scroll-view
-				v-if="!props.showTabsLineAni && props.itemWidth == 0"
-				:scroll-into-view="_scrollToId"
-				:scroll-x="true"
-				:scroll-with-animation="true"
-				:show-scrollbar="false"
-				enable-flex
-				class="flex-row"
-				:class="[_align]"
-				:style="[{ width: `${props.width}rpx`, height: `${props.itemHeight + 4}rpx` }]"
-			>
-				<view :id="tabsid + item.key" v-for="(item, index) in cacheTabs" :key="index" class="flex flex-shrink">
-					<tm-sheet
-						@click="changeKey(item.key)"
-						:round="props.itemRound"
-						:linear="props.itemLinear"
-						:linearDeep="props.itemLinearDeep"
-						borderDirection="bottom"
-						:text="item.key === _active ? modelStyle.text : false"
-						:border="item.key === _active ? modelStyle.border : 0"
-						:transprent="item.key === _active ? modelStyle.transprent : true"
-						:color="props.activeColor && item.key === _active ? props.activeColor : props.color"
-						:width="props.itemWidth"
-						_class="flex-center flex-row"
-						:margin="[0, 0]"
-						:padding="[0, 0]"
-						:height="props.itemHeight"
-						unit="rpx"
-					>
-						<tm-badge :font-size="19" :dot="item.dot" :count="item.count" :color="item.dotColor">
-							<view class="flex flex-row flex-center px-20" :style="{ height: props.itemHeight - 20 + 'rpx' }">
-								<tm-icon
-									:userInteractionEnabled="false"
-									v-if="item.icon"
-									_class="pr-5"
-									:color="item.key === _active ? props.activeFontColor : props.unSelectedColor"
-									:font-size="item.key === _active ? props.activeFontSize : props.itemFontSize"
-									:name="item.icon"
-								>
-								</tm-icon>
-								<tm-text
-									:userInteractionEnabled="false"
-									:font-size="item.key === _active ? props.activeFontSize : props.itemFontSize"
-									:color="item.key === _active ? props.activeFontColor : props.unSelectedColor"
-									:label="item.title"
-								>
-								</tm-text>
-							</view>
-						</tm-badge>
-					</tm-sheet>
-				</view>
-				<view
-					v-if="props.showTabsLineAni && props.itemWidth > 0 && props.showTabsLine"
-					class="absolute l-0 b-0"
-					:style="{
-						width: `${contentWidth}rpx`,
-						height: '1px',
-						backgroundColor: props.showTabsLineAni ? (store.tmStore.dark ? '#616161' : '#ebebeb') : ''
-					}"
-				></view>
-				<view
-					v-if="props.showTabsLineAni && props.itemWidth > 0"
-					class="anilineBar absolute l-0 b-0"
-					:style="{ transform: `translateX(${anitLineLeft}px)` }"
-				>
-					<tm-sheet
-						:round="10"
-						:follow-dark="false"
-						:width="40"
-						:color="props.tabsLineAniColor"
-						:height="8"
-						:margin="[0, 0]"
-						:padding="[0, 0]"
-					></tm-sheet>
-				</view>
-			</scroll-view>
-
-			<scroll-view
-				v-if="props.showTabsLineAni && props.itemWidth > 0"
-				:scroll-into-view="_scrollToId"
-				:scroll-x="true"
-				:scroll-with-animation="true"
-				:show-scrollbar="false"
-				enable-flex
-				class="flex-row"
-				:class="[_align]"
-				:style="[{ width: `${_width}px`, height: `${props.itemHeight + 4}rpx` }]"
-			>
-				<view :id="tabsid + item.key" v-for="(item, index) in cacheTabs" :key="index">
-					<tm-sheet
-						@click="changeKey(item.key)"
-						:round="props.itemRound"
-						:linear="props.itemLinear"
-						:linearDeep="props.itemLinearDeep"
-						borderDirection="bottom"
-						:text="item.key === _active ? modelStyle.text : false"
-						:border="item.key === _active ? modelStyle.border : 0"
-						:transprent="item.key === _active ? modelStyle.transprent : true"
-						:color="props.activeColor && item.key === _active ? props.activeColor : props.color"
-						:width="_itemwidth"
-						_class="flex-center flex-row"
-						:margin="[0, 0]"
-						:padding="[0, 0]"
-						:height="_itemheight"
-						unit="px"
-					>
-						<tm-badge :font-size="19" :dot="item.dot" :count="item.count" :color="item.dotColor">
-							<view class="flex flex-row flex-center px-20" :style="{ height: props.itemHeight - 20 + 'rpx' }">
-								<tm-icon
-									:userInteractionEnabled="false"
-									v-if="item.icon"
-									_class="pr-5"
-									:color="item.key === _active ? props.activeFontColor : props.unSelectedColor"
-									:font-size="item.key === _active ? props.activeFontSize : props.itemFontSize"
-									:name="item.icon"
-								>
-								</tm-icon>
-								<tm-text
-									:userInteractionEnabled="false"
-									:font-size="item.key === _active ? props.activeFontSize : props.itemFontSize"
-									:color="item.key === _active ? props.activeFontColor : props.unSelectedColor"
-									:label="item.title"
-								>
-								</tm-text>
-							</view>
-						</tm-badge>
-					</tm-sheet>
-				</view>
-				<view
-					v-if="props.showTabsLineAni && props.itemWidth > 0 && props.showTabsLine"
-					class="absolute l-0 b-0"
-					:style="{
-						width: `${contentWidth}rpx`,
-						height: '1px',
-						backgroundColor: props.showTabsLineAni ? (store.tmStore.dark ? '#616161' : '#ebebeb') : ''
-					}"
-				></view>
-				<view
-					v-if="props.showTabsLineAni && props.itemWidth > 0"
-					class="anilineBar absolute l-0 b-0 flex flex-row flex-center"
-					:style="{
-						transform: `translateX(${anitLineLeft}px)`,
-						width: _itemwidth + 'px',
-						height: '4px'
-					}"
-				>
-					<tm-sheet
-						ref="sliderBarDom"
-						:round="10"
-						:follow-dark="false"
-						:width="sliderBarWidth"
-						unit="px"
-						:height="4"
-						:color="props.tabsLineAniColor"
-						:margin="[0, 0]"
-						:padding="[0, 0]"
-					></tm-sheet>
-				</view>
-			</scroll-view>
-			<!-- #endif -->
-		</tm-sheet>
-		<!-- #ifndef APP-NVUE -->
-		<view
-			id="webIdTabs"
-			@touchmove="onMove"
-			@touchend="onEnd"
-			@touchstart="onStart"
-			@touchcancel="onEnd"
-			@mousemove="onMove"
-			@mouseup="onEnd"
-			@mouseleave="onEnd"
-			@mousedown="onStart"
-			ref="tabsDom"
-			:style="{
-				width: props.swiper ? `${totalWidth}px` : `${props.width}rpx`,
-				transform: props.swiper ? `translateX(${directoStyle}px)` : `translateX(0px)`
-			}"
-			v-if="_tabPos == 'top' && !isDulitabs"
-			:class="[!isEndMove || isNvue ? 'tmTabsPane' : '']"
-			class="flex flex-row flex-nowrap overflow"
-		>
-			<slot></slot>
-		</view>
-		<!-- #endif -->
-		<!-- #ifdef APP-NVUE -->
-		<!-- @touchmove="onMove"
-		@touchend="onEnd" 
-		@touchstart="onStart" -->
-		<!-- @touchmove="onMove" @touchend="onEnd" @touchcancel="onEnd"  -->
-		<view
-			@touchstart="spinNvueAni"
-			@touchmove="onMove"
-			ref="tabsDom"
-			:style="{
-				width: props.swiper ? `${totalWidth}px` : `${props.width}rpx`,
-				transform: `translateX(0px)`
-			}"
-			v-if="_tabPos == 'top' && !isDulitabs"
-			class="flex flex-row flex-nowrap overflow"
-		>
-			<slot></slot>
-		</view>
-		<!-- #endif -->
-	</view>
-</template>
-<script lang="ts" setup>
 /**
- * 选项卡
- * @description 可以单独使用，配合tm-tabs-pane可实现卡片内容切换。
- * @example
- * <tm-tabs :width="750" default-name="6">
-		<tm-tabs-pane v-for="item in 20" :name="item" :title="'未收件'+item">
-			{{item}}
-		</tm-tabs-pane>
-	</tm-tabs>
+ * @displayName 标签导航
+ * @exportName tm-tabs
+ * @category 导航组件
+ * @description tabs标签导航组件,样式非常丰富可以完成你想要的自定义样式.
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-import {
-	computed,
-	ref,
-	provide,
-	watch,
-	toRaw,
-	nextTick,
-	onMounted,
-	watchEffect,
-	PropType,
-	getCurrentInstance,
-	onUnmounted,
-	ComponentInternalInstance
-} from 'vue'
-import tmSheet from '../tm-sheet/tm-sheet.vue'
-import tmText from '../tm-text/tm-text.vue'
-import tmIcon from '../tm-icon/tm-icon.vue'
-import tmBadge from '../tm-badge/tm-badge.vue'
-import { custom_props, computedClass } from '../../tool/lib/minxs'
-import { useTmpiniaStore } from '../../tool/lib/tmpinia'
-const store = useTmpiniaStore()
-// #ifdef APP-NVUE || APP-PLUS-NVUE
-var dom = weex.requireModule('dom')
-const Binding = uni.requireNativePlugin('bindingx')
-const animation = uni.requireNativePlugin('animation')
-// #endif
-const proxy = getCurrentInstance()?.proxy ?? null
-
-const bindxToken = ref(null)
-const emits = defineEmits(['update:activeName', 'change', 'click'])
-type alignType = 'left' | 'center' | 'around' | 'right'
-const props = defineProps({
-	...custom_props,
-	//如果提供了，那么就不需要tm-tabs-pane，可以单独使用。
-	list: {
-		type: Array as PropType<Array<Tmui.tabs>>,
-		default: () => []
-	},
-	rangKey: {
-		type: String,
-		default: 'title'
-	},
-	color: {
-		type: String,
-		default: 'white'
-	},
-	transprent: {
-		type: [Boolean, String],
-		default: false
-	},
-	width: {
-		type: Number,
-		default: 500
-	},
-	itemHeight: {
-		type: Number,
-		default: 80
-	},
-	//不设定窗口高度，在真机上有闪烁。如果设定为0将是自动高度。
-	height: {
-		type: Number,
-		default: 1000
-	},
-	//内容在bar中的上下间隔。当有选项背景色时，底部为白色，这相当有用。
-	gutter: {
-		type: Number,
-		default: 0
-	},
-	defaultName: {
-		type: [String, Number],
-		default: ''
-	},
-	//当前活动项。v-model:active-name
-	activeName: {
-		type: [String, Number],
-		default: ''
-	},
-	//标签导航的位置，
-	//top导航在上方，bottom导航在下方。
-	tabPos: {
-		type: String,
-		default: 'top'
-	},
-	//项目的宽度。如果提供，每个标签是等宽度的，如果不提供自动宽度。
-	itemWidth: {
-		type: Number,
-		default: 0
-	},
-	//tab选中的背景颜色。默认为空
-	activeColor: {
-		type: String,
-		default: 'primary'
-	},
-	activeFontColor: {
-		type: String,
-		default: 'primary'
-	},
-	activeFontSize: {
-		type: Number,
-		default: 28
-	},
-	//选项卡样式模型
-	itemModel: {
-		type: String,
-		default: 'text' //line底部线条，card背景颜色模式，text文本模式,textLight背景减淡模式，文字会变灰。
-	},
-	//默认为空即根据主题自定颜色。如果填写了将使用该颜色为未选中色。
-	unSelectedColor: {
-		type: String,
-		default: ''
-	},
-	itemFontSize: {
-		type: Number,
-		default: 28
-	},
-	itemLinear: {
-		type: String,
-		default: ''
-	},
-	itemLinearDeep: {
-		type: String,
-		default: 'light'
-	},
-	itemRound: {
-		type: Number,
-		default: 0
-	},
-	/**
-	 * 标题的分布方式
-	 */
-	align: {
-		type: String as PropType<'left' | 'center' | 'around' | 'right'>,
-		default: 'left' //left:左对齐,right：右对齐,center：剧中,around：剧中均分
-	},
-	//是否启用pane滑动切换tabs。如果关闭有助于页面更顺畅。如果启用请不要大量内容。
-	swiper: {
-		type: Boolean,
-		default: false
-	},
-	//是否显示底部线条动画样式。
-	showTabsLineAni: {
-		type: Boolean,
-		default: false
-	},
-	//是否显示底部线条动的底部灰色导轨
-	showTabsLine: {
-		type: Boolean,
-		default: true
-	},
-	//下面活动的横线的颜色。
-	tabsLineAniColor: {
-		type: String,
-		default: 'primary'
-	},
-	disAbledPull: {
-		type: Boolean,
-		default: true
-	},
-	//暗下强制的背景色，
-	//有时自动的背景，可能不是你想要暗黑背景，此时可以使用此参数，强制使用背景色，
-	//只能是颜色值。
-	darkBgColor: {
-		type: String,
-		default: ''
-	},
-	/** 当选中某一项时,内容会往前滚动的项目数量,类似于位置让选中项始终在中间. */
-	subtract: {
-		type: Number,
-		default: 2
-	}
-})
-const _disAbledPull = computed(() => props.disAbledPull)
-const _align = computed(() => {
-	let align_list = {
-		right: 'flex-row-center-end',
-		left: 'flex-row-center-start',
-		center: 'flex-row-center-center',
-		around: 'flex-around'
-	}
-	let key: alignType = 'center'
-	if (align_list.hasOwnProperty(props.align)) {
-		key = props.align
-	}
-	return align_list[key]
-})
-const _active = ref(props.defaultName)
-emits('update:activeName', _active.value)
-const cstomClass = computed(() => computedClass(props))
-const _scrollToId = ref('')
-const modelStyle = computed(() => {
-	if (props.itemModel == 'text') {
-		return {
-			transprent: true,
-			border: 0,
-			text: false
-		}
-	} else if (props.itemModel == 'line') {
-		return {
-			transprent: true,
-			border: 4,
-			text: false
-		}
-	} else if (props.itemModel == 'textLight') {
-		return {
-			transprent: false,
-			border: 4,
-			text: true
-		}
-	} else if (props.itemModel == 'card') {
-		return {
-			transprent: false,
-			border: 0,
-			text: false
-		}
-	}
-	return {
-		transprent: true,
-		border: 0,
-		text: false
-	}
-})
-const tmTabsId = 'tmTabsId'
-const _tabPos = computed(() => props.tabPos)
-const cacheTabs = ref<Array<Tmui.tabs>>([])
-
-const isDulitabs = computed(() => props.list.length > 0)
-const tabsid = 'tabs_id_' + uni.$tm.u.getUid(1) + '_'
-const isNvue = ref(false)
-const _itemheight = Math.ceil(uni.upx2px(props.itemHeight))
-const totalWidth = computed(() => uni.upx2px(cacheTabs.value.length * props.width))
-const _itemwidth = Math.ceil(uni.upx2px(props.itemWidth))
-const _sliderBarwidth = Math.ceil(uni.upx2px(40))
-const _width = Math.ceil(uni.upx2px(props.width))
-const contentWidth = computed(() => {
-	let width = (props.itemWidth ) * cacheTabs.value.length
-	if (width <= props.width) {
-		width = props.width
-	}
-	return width
-})
-const contentWidth_px = computed(() => {
-	let width = _itemwidth * cacheTabs.value.length
-	if (width <= props.width) {
-		width = uni.upx2px(props.width)
-	}
-	return Math.ceil(width)
-})
-
-// 线滚动动画。
-const anitLineLeft = ref(0)
-
-// #ifdef APP-NVUE
-isNvue.value = true
-// #endif
-
-let timerId: any = NaN
-let timerId2: any = NaN
-function debounce(func: Function, wait = 500, immediate = false) {
-	// 清除定时器
-	if (!isNaN(timerId)) clearTimeout(timerId)
-	// 立即执行，此类情况一般用不到
-
-	if (immediate) {
-		var callNow = !timerId
-		timerId = setTimeout(() => {
-			timerId = NaN
-		}, wait)
-
-		if (callNow) typeof func === 'function' && func()
-	} else {
-		// 设置定时器，当最后一次操作后，timeout不会再被清除，所以在延时wait毫秒后执行func回调方法
-		timerId = setTimeout(() => {
-			typeof func === 'function' && func()
-		}, wait)
-	}
-}
-function debounce2(func: Function, wait = 500, immediate = false) {
-	// 清除定时器
-	if (!isNaN(timerId2)) clearTimeout(timerId2)
-	// 立即执行，此类情况一般用不到
-
-	if (immediate) {
-		var callNow = !timerId2
-		timerId2 = setTimeout(() => {
-			timerId2 = NaN
-		}, wait)
-
-		if (callNow) typeof func === 'function' && func()
-	} else {
-		// 设置定时器，当最后一次操作后，timeout不会再被清除，所以在延时wait毫秒后执行func回调方法
-		timerId2 = setTimeout(() => {
-			typeof func === 'function' && func()
-		}, wait)
-	}
-}
-
-// 判断滑动方向及距离start------------------------------------------------
-const _startx = ref(0)
-const _starty = ref(0)
-const _movex = ref(0)
-const _movey = ref(0)
-const _x = ref(0)
-const _y = ref(0)
-const directo = 'none'
-const _moveX = ref(0)
-const _moveY = ref(0)
-const directoStyle = ref(0) //左右距离
-const isEndMove = ref(true)
-const maxLen = 80 //只有拖拉距离大于此值才会切换。
-const activeIndex = computed(() => cacheTabs.value.findIndex((el) => el.key == _active.value))
-let ctxLeft = 0
-let ctxTop = 0
-let timeDetail = 1 //动画时长。
-let isMoveEnb = false
-// 当前处于什么状态.left,right,down,up
-let dirType = ref('none')
-
-// 当前是否处于拖动中，但实际未松手，还未形成真正意义 上切换.
-let isDrag = ref(false)
-let sliderBarWidth = uni.upx2px(40)
-let widthDrag = ref(sliderBarWidth)
-// 判断滑动方向及距离end------------------------------------------------
-
-watchEffect(() => {
-	cacheTabs.value = []
-	props.list.forEach((el, index) => {
-		cacheTabs.value.push({
-			key: el?.key ?? el?.id ?? String(index),
-			title: el[props.rangKey] ?? String(index),
-			icon: el?.icon ?? '',
-			dot: el?.dot ?? false,
-			count: el?.count ?? '',
-			dotColor: el?.dotColor ?? 'red'
-		})
-	})
-})
-
-function setTabsBarLineLeft(key: string | number = '') {
-	if (!props.showTabsLineAni) return
-	let keybl = key || _active.value
-	let index = cacheTabs.value.findIndex((el) => el.key == keybl)
-
-	if (index > -1) {
-		let leftPx = _itemwidth * index
-		if (props.align == 'center') {
-			leftPx = leftPx + (_width - _itemwidth * cacheTabs.value.length) / 2 - 1
-		}
-
-		anitLineLeft.value = Math.ceil(leftPx)
-	}
-}
-
-function unbindKey(key: string | number) {
-	let index: number = cacheTabs.value.findIndex((el) => el.key == key)
-	if (index > -1) {
-		cacheTabs.value.splice(index, 1)
-	}
-	let index2: number = cacheTabs.value.findIndex((el) => el.key == _active.value)
-
-	if (index2 == -1 && cacheTabs.value.length > 0) {
-		changeKey(cacheTabs.value[0]?.key ?? '', false, false)
-	} else if (cacheTabs.value.length == 0) {
-		changeKey('', false, false)
-	}
-}
-watch(
-	() => props.activeName,
-	() => {
-		if (props.activeName == _active.value) return
-		changeKey(props.activeName, false, false)
-	}
+defineOptions({ name: 'TmTabs' });
+const { config } = useTmConfig()
+const emit = defineEmits([
+    /** 变化时触发 */
+    "change",
+    /** 同步vmodel */
+    "update:modelValue"
+])
+const props = defineProps(
+    {
+        /**
+         * 圆角
+         */
+        round: {
+            type: [String, Number],
+            default: 0
+        },
+        /**
+         * 宽
+         */
+        width: {
+            type: [String, Number],
+            default: "auto"
+        },
+        /**
+         * 高是必填，不可为auto。
+         */
+        height: {
+            type: [String, Number],
+            default: "88"
+        },
+        /**
+         * 排版模式
+         * around:居中并且均分[数据多时会造成无法滚动]
+         * between:均分在整个宽上(如想相项目宽一样,你可以设置属性width比如你有3个可以设置为33%)[数据多时会造成无法滚动]
+         * start:左对齐[数据多时可滚动]
+         * end:右对齐[数据多时可滚动]
+         * center:中间对齐[数据多时会造成无法滚动]
+         */
+        mode: {
+            type: String as PropType<"around" | "between" | "start" | "end" | "center">,
+            default: "start"
+        },
+        /**
+         * 背景
+         */
+        color: {
+            type: String,
+            default: "white"
+        },
+        /**
+         * 暗黑时的背景,如果不填写读取sheetDark
+         */
+        darkColor: {
+            type: String,
+            default: ""
+        },
+        /**
+         * 文本激活时的颜色 ，空值默认取全局主题色
+         */
+        activeTitleColor: {
+            type: String,
+            default: ""
+        },
+        /**
+         * 文本默认颜色
+         */
+        titleColor: {
+            type: String,
+            default: "#888888"
+        },
+        /**
+         * 文本默认的暗黑颜色，如果不填写取白色。
+         */
+        darkTitleColor: {
+            type: String,
+            default: "#cacaca"
+        },
+        /**
+         * 底部线条激活时的颜色，空值默认取全局主题色
+         */
+        lineColor: {
+            type: String,
+            default: ""
+        },
+        lineHeight: {
+            type: String,
+            default: "3px"
+        },
+        /**
+         * 底部的线条是与项目等宽还是固定默认的小宽度。
+         */
+        lineFull: {
+            type: Boolean,
+            default: false
+        },
+        /**
+         * 是否显示底部的线条
+         */
+        showLine: {
+            type: Boolean,
+            default: true
+        },
+        /**
+         * id值，如果数据没有提供id属性，这里的id就是索引
+         * 等同v-model
+         */
+        modelValue: {
+            type: [String, Number],
+            default: 0
+        },
+        /**
+         * 标题字号
+         */
+        fontSize: {
+            type: [String, Number],
+            default: "30"
+        },
+        /**
+         * 激活时的标题字号
+         */
+        activeFontSize: {
+            type: [String, Number],
+            default: "32"
+        },
+        /**
+         * 项目宽度，默认是auto，即自动根据标题内容自动撑开宽度。
+         * 如果你想均分（适合不超过一行），比如你有5个标签，那么你就可以设置为"20%"
+         */
+        itemWidth: {
+            type: [String, Number],
+            default: "auto"
+        },
+        /**
+         * 标题的padding是左右的间隙。
+         */
+        titlePadding: {
+            type: [String, Number],
+            default: "12px"
+        },
+        /**
+         * 选中当前项是，移动的差值个数。比如你要让选中的居中，你一屏内
+         * 刚好显示5个，你就设置为2，如果你一屏显示3个，就设置为1，就是你一屏内
+         * 里面要显示的是单数，才好控制选中的始终是在中间位置 。
+         */
+        moveCount: {
+            type: Number,
+            default: 2
+        },
+        /**
+         * 项目之间的间隙.如果你设定了itemwidth一般会有富余宽,两边自然有间隙,此时你应该设置为0以免造成不居中的假象.
+         */
+        gap: {
+            type: [String, Number],
+            default: 20
+        },
+        /**
+         * 数据数组,可以混合类型可以是单类型
+         * 数据格式比较灵活.
+         * 如果数据是对象且出现了dot:true该项数组右上角出现角标红点
+         * 如果dot:非boolean比如:dot:32会出现数字角标或者文本角标.如果为false或者空值为隐藏
+         */
+        list: {
+            type: [Array<Record<string, any> | string>],
+            default: () => [],
+            require: true
+        },
+        /**
+         * 当你的list为对象时可用
+         * 如果数据是string会直接取数据本身
+         */
+        rangKey: {
+            type: String,
+            default: "title"
+        },
+        /** 
+         * id标识,用来vmodel双向绑定选中的值,
+         * 如果你的list中不存在或者没有id标识
+         * 那么取数组循环的索引值
+         * */
+        rangId: {
+            type: String,
+            default: "id"
+        },
+        /** 
+         * 读取角标的标识字段,默认是dot
+         * */
+        rangDot: {
+            type: String,
+            default: "dot"
+        },
+        /**
+         * 角标的背景,默认是等同激活的标题颜色
+         * 如果填写使用本值,文字颜色始终是白的.
+         */
+        dotBgColor: {
+            type: String,
+            default: ""
+        },
+        /**
+         * 默认的自定项目的style样式,可以用来完全覆盖默认的样式.
+         */
+        customItemStyle: {
+            type: String,
+            default: ""
+        },
+        /**
+         * 默认的激活自定项目的style样式,可以用来完全覆盖默认的样式.
+         */
+        activeItemStyle: {
+            type: String,
+            default: ""
+        }
+    }
 )
+const _showLine = computed(() => props.showLine)
 
-onMounted(() => {
-	setTimeout(() => {
-		_scrollToId.value = tabsid + _active.value
-		nextTick(() => {
-			// #ifdef APP-NVUE
-			dom.getComponentRect(proxy?.$refs?.tabsDom, function (res) {
-				if (res?.size) {
-					ctxLeft = Math.floor(res.size.left)
-					ctxTop = Math.floor(res.size.top)
+const _lineFull = computed(() => props.lineFull)
+const _customItemStyle = computed(() => props.customItemStyle)
+const _activeItemStyle = computed(() => props.activeItemStyle)
 
-					spinNvueAniEnd(0, -uni.upx2px(activeIndex.value * props.width), 1)
-					_startx.value = uni.upx2px(activeIndex.value * props.width)
-				}
-			})
-			// #endif
-			setTabsBarLineLeft(props.defaultName)
-		})
-	}, 300)
-})
-watchEffect(() => {
-	directoStyle.value = Math.ceil(uni.upx2px(-activeIndex.value * props.width))
-	spinNvueAniEnd(0, -uni.upx2px(activeIndex.value * props.width), timeDetail)
-})
-watch(
-	() => _active.value,
-	() => {
-		nextTick(() => {
-			let index = cacheTabs.value.findIndex((el) => el.key == _active.value)
-
-			if (index > -1) {
-				if (typeof cacheTabs.value[index - props.subtract] !== 'undefined') {
-					_scrollToId.value = tabsid + cacheTabs.value[index - props.subtract]?.key
-				} else {
-					_scrollToId.value = tabsid + cacheTabs.value[0]?.key
-				}
-			} else {
-				_scrollToId.value = tabsid + _active.value
-			}
-
-			setTabsBarLineLeft()
-		})
-	}
-)
-
-// 确实当前是单击还是移动。点击
-let isMoveing = ref(false)
-function webClick() {}
-function onStart(event: TouchEvent) {
-	if (!props.swiper) return
-	isEndMove.value = true
-	isMoveEnb = true
-	isMoveing.value = false
-	isDrag.value = true
-	if (event.type.indexOf('mouse') == -1 && event.changedTouches.length == 1) {
-		var touch = event.changedTouches[0]
-		if (typeof touch?.pageX !== 'undefined') {
-			_startx.value = touch.pageX - ctxLeft
-			_starty.value = touch.pageY - ctxTop
-		} else {
-			_startx.value = touch.x
-			_starty.value = touch.y
-		}
-	} else {
-		_startx.value = event.pageX - event.currentTarget.offsetLeft - ctxLeft
-		_starty.value = event.pageY - event.currentTarget.offsetTop - ctxTop
-	}
-}
-function onMove(event: TouchEvent) {
-	if (!props.swiper || isMoveEnb == false) return
-	isMoveing.value = true
-	let nowx = 0
-	let nowy = 0
-	if (event.type.indexOf('mouse') == -1 && event.changedTouches.length == 1) {
-		var touch = event.changedTouches[0]
-		if (typeof touch?.pageX !== 'undefined') {
-			nowx = touch.pageX - ctxLeft
-			nowy = touch.pageY - ctxTop
-		} else {
-			nowx = touch.x
-			nowy = touch.y
-		}
-	} else {
-		nowx = event.pageX - event.currentTarget.offsetLeft - ctxLeft
-		nowy = event.pageY - event.currentTarget.offsetTop - ctxTop
-	}
-
-	_x.value = nowx - _startx.value
-	_y.value = nowy - _starty.value
-	setDirXy(_x.value, _y.value)
-}
-
-function onEnd(event: TouchEvent) {
-	if (!props.swiper || !isMoveEnb || !isMoveing.value) return
-	isEndMove.value = false
-	isMoveing.value = false
-	debounce2(
-		() => {
-			setDirXy(_x.value, _y.value, true)
-			isDrag.value = false
-		},
-		250,
-		true
-	)
-	isMoveEnb = false
-}
-
-function setDirXy(x: number, y: number, isEnd = false) {
-	const oldindex = activeIndex.value
-	let nowLeft = uni.upx2px(activeIndex.value * props.width)
-
-	// 这里防止抖动引起的方向错误
-	debounce(
-		() => {
-			if (x > 0 && Math.abs(x) > Math.abs(y)) {
-				dirType.value = 'right'
-			} else if (x < 0 && Math.abs(x) > Math.abs(y)) {
-				dirType.value = 'left'
-			} else if (y > 0 && Math.abs(y) > Math.abs(x)) {
-				dirType.value = 'down'
-			} else if (y < 0 && Math.abs(y) > Math.abs(x)) {
-				dirType.value = 'up'
-			} else {
-				dirType.value = 'none'
-			}
-		},
-		300,
-		true
-	)
-
-	if (dirType.value == 'right') {
-		//第一和最后一张，不需要滑动。
-		if (activeIndex.value == 0) return
-		directoStyle.value = x - nowLeft
-		// #ifdef H5
-		let sx = Math.abs(sliderBarWidth) * 1.05
-		sx = Math.min(sx, sliderBarWidth)
-		sx = Math.max(sx, _itemwidth)
-		widthDrag.value = sx
-		// #endif
-		if (isEnd) {
-			setRightDirRight()
-			widthDrag.value = sliderBarWidth
-		}
-	} else if (dirType.value == 'left') {
-		//第一和最后一张，不需要滑动。
-		if (activeIndex.value == cacheTabs.value.length - 1) return
-		directoStyle.value = x - nowLeft
-		// #ifdef H5
-		let sx = Math.abs(_x.value) * 1.0002
-		sx = Math.min(sx, sliderBarWidth)
-		sx = Math.max(sx, _itemwidth)
-		widthDrag.value = sx
-		// #endif
-		if (isEnd) {
-			setLeftDirLeft()
-			widthDrag.value = sliderBarWidth
-		}
-	}
-
-	function setRightDirRight() {
-		if (x < maxLen || activeIndex.value <= 0) {
-			directoStyle.value = -nowLeft
-		} else {
-			_active.value = cacheTabs.value[activeIndex.value - 1]?.key ?? -1
-			changeKey(_active.value, false)
-		}
-	}
-
-	function setLeftDirLeft() {
-		if (Math.abs(x) < maxLen || activeIndex.value >= cacheTabs.value.length - 1) {
-			directoStyle.value = -nowLeft
-		} else {
-			_active.value = cacheTabs.value[activeIndex.value + 1]?.key ?? -1
-			changeKey(_active.value, false)
-		}
-	}
-}
-
-function getEl(el: HTMLElement) {
-	if (typeof el === 'string' || typeof el === 'number') return el
-	// @ts-nocheck
-	if (WXEnvironment) {
-		return el.ref
-	} else {
-		return el instanceof HTMLElement ? el : el?.$el
-	}
-}
-onUnmounted(() => {
-	// #ifdef APP-PLUS-NVUE
-	if (bindxToken.value) {
-		Binding.unbind({
-			token: bindxToken.value,
-			eventType: 'timing'
-		})
-	}
-	// #endif
+const _fontSize = computed(() => {
+    let fontSize = covetUniNumber(props.fontSize, config.unit);
+    if (config.fontSizeScale == 1) return fontSize;
+    let sizeNumber = parseInt(fontSize)
+    if (isNaN(sizeNumber)) {
+        sizeNumber = 30
+    }
+    return (sizeNumber * config.fontSizeScale).toString() + getUnit(fontSize)
 })
 
-function setDirXyNvue(x: number, y: number, dirX = 'none') {
-	const oldindex = activeIndex.value
-	let nowLeft = uni.upx2px(activeIndex.value * props.width)
-	let maxLeft = uni.upx2px((cacheTabs.value.length - 1) * props.width)
-	dirType.value = dirX
-	// _startx.value 为当前tabs相对左边的距离。 ，x为偏移量.
+const _itemWidth = computed(() => covetUniNumber(props.itemWidth, config.unit))
 
-	if (dirType.value == 'right') {
-		//第一张回弹
-		if (activeIndex.value == 0) {
-			_startx.value = 0
-			spinNvueAniEnd(0, 0, 250)
-			return
-		}
-		// 小于此阀值，不产生切换。
-		if (Math.abs(x) < maxLen) {
-			_startx.value = nowLeft
-			spinNvueAniEnd(-nowLeft, 0, 250)
-		} else {
-			// 进入上一个
-			_active.value = cacheTabs.value[activeIndex.value - 1]?.key ?? -1
-			nowLeft = uni.upx2px(activeIndex.value * props.width)
-			_startx.value = nowLeft
-			spinNvueAniEnd(-nowLeft, 0, 250)
-			changeKey(_active.value, false)
-		}
-	} else if (dirType.value == 'left') {
-		//最后一张回弹
-		if (activeIndex.value == cacheTabs.value.length - 1) {
-			_startx.value = maxLeft
-			spinNvueAniEnd(-maxLeft, 0, 250)
-			return
-		}
-		// 小于此阀值，不产生切换。
-		if (Math.abs(x) < maxLen) {
-			_startx.value = nowLeft
-			spinNvueAniEnd(-nowLeft, 0, 250)
-		} else {
-			// 进入下一个
-			_active.value = cacheTabs.value[activeIndex.value + 1]?.key ?? -1
-			nowLeft = uni.upx2px(activeIndex.value * props.width)
-			_startx.value = nowLeft
-			spinNvueAniEnd(-nowLeft, 0, 250)
+const _round = computed(() => covetUniNumber(props.round, config.unit))
 
-			changeKey(_active.value, false)
-		}
-	}
-}
-
-function spinNvueAni() {
-	if (!props.swiper) return
-	// #ifdef APP-NVUE
-	if (!proxy?.$refs?.tabsDom) return
-
-	let icon = getEl(proxy?.$refs?.tabsDom)
-	let sliderBarDom = getEl(proxy?.$refs?.sliderBarDom)
-	let icon_bind = Binding.bind(
-		{
-			anchor: icon,
-			eventType: 'pan',
-			props: [
-				{
-					element: icon,
-					property: 'transform.translateX',
-					expression: `abs(y)>abs(x)?${-_startx.value}:x+` + (0 - _startx.value)
-				}
-			]
-		},
-		function (res: any) {
-			if (res.state == 'end') {
-				isMoveing.value = false
-				if (Math.abs(res.deltaY) > 80) {
-					let nowLeft = uni.upx2px(activeIndex.value * props.width)
-					spinNvueAniEnd(-nowLeft, 0, 0)
-					return
-				}
-				const startx = _startx.value
-				_startx.value -= res.deltaX
-				_starty.value += res.deltaY
-				let lx = 'left'
-				if (res.deltaX > 0) {
-					lx = 'right'
-				}
-				setDirXyNvue(res.deltaX, res.deltaY, lx)
-			} else if (res.state == 'start') {
-				isMoveing.value = true
-			}
-		}
-	)
-	// #endif
-}
-function spinNvueAniEnd(start: number, end: number, time = timeDetail) {
-	if (!props.swiper) return
-	// #ifdef APP-NVUE
-	if (!proxy?.$refs?.tabsDom) return
-	animation.transition(
-		proxy?.$refs?.tabsDom,
-		{
-			styles: {
-				transform: `translateX(${start + end}px)`,
-				transformOrigin: 'center center'
-			},
-			duration: time, //ms
-			timingFunction: 'ease',
-			delay: 0 //ms
-		},
-		() => {}
-	)
-
-	// #endif
-}
-
-function pushKey(o: Tmui.tabs) {
-	let index: number = cacheTabs.value.findIndex((el) => el.key === o.key)
-	if (index > -1) {
-		cacheTabs.value.splice(index, 1, {
-			...cacheTabs.value[0],
-			...o
-		})
-	} else {
-		cacheTabs.value.push(o)
-	}
-
-	if (_active.value == '') {
-		changeKey(cacheTabs.value[0]?.key ?? -1, false)
-	}
-}
-
-function changeKey(key: string | number, isclick = true, isNomarlChange = true) {
-	isEndMove.value = true
-	_active.value = key
-	// #ifdef APP-NVUE
-	_startx.value = uni.upx2px(activeIndex.value * props.width)
-	// #endif
-	timeDetail = 1
-	emits('update:activeName', toRaw(_active.value))
-	if (isNomarlChange) {
-		nextTick(() => {
-			emits('change', key)
-		})
-	}
-	if (isclick) {
-		nextTick(() => {
-			emits('click', key)
-		})
-	}
-}
-
-function setTitle(o: Tmui.tabs) {
-	let index: number = cacheTabs.value.findIndex((el) => el.key == o.key)
-	if (index > -1) {
-		cacheTabs.value.splice(index, 1, o)
-	}
-}
-provide(
-	'tabsActiveName',
-	computed(() => _active.value)
-)
-provide('tabsActiveactiveIndex', activeIndex)
-provide(
-	'tabsActiveCacheTabse',
-	computed(() => cacheTabs.value)
-)
-
-provide(
-	'tabsWidth',
-	computed(() => props.width)
-)
-provide(
-	'tabsheight',
-	computed(() => {
-		if (!props.height) return 0
-		return props.height - props.itemHeight - props.gutter
-	})
-)
-provide(
-	'tabsSwiper',
-	computed(() => props.swiper)
-)
-provide(
-	'tabsSwiperIsMoveing',
-	computed(() => isMoveing.value)
-)
-provide(
-	'tabsSwiperDisAbledPull',
-	computed(() => props.disAbledPull)
-)
-
-defineExpose({
-	pushKey: pushKey,
-	changeKey: changeKey,
-	unbindKey,
-	setTitle: setTitle,
-	tmTabsId
+const _activeFontSize = computed(() => {
+    // covetUniNumber(props.activeFontSize, config.unit)
+    let fontSize = covetUniNumber(props.activeFontSize, config.unit);
+    if (config.fontSizeScale == 1) return fontSize;
+    let sizeNumber = parseInt(fontSize)
+    if (isNaN(sizeNumber)) {
+        sizeNumber = 32
+    }
+    return (sizeNumber * config.fontSizeScale).toString() + getUnit(fontSize)
 })
+
+const _lineHeight = computed(() => covetUniNumber(props.lineHeight, config.unit))
+const _gap = computed(() => covetUniNumber(props.gap, config.unit))
+const _height = computed(() => covetUniNumber(props.height, config.unit))
+
+const _width = computed(() => covetUniNumber(props.width, config.unit))
+
+const _color = computed(() => {
+    if (config.mode == 'dark') {
+        if (props.darkColor != '') {
+            return getDefaultColor(props.darkColor)
+        } else {
+            return getDefaultColor(config.sheetDarkColor)
+        }
+    }
+    return getDefaultColor(props.color)
+})
+
+const _activeTitleColor = computed(() => {
+    if (props.activeTitleColor == "") return getDefaultColor(config.color);
+    return getDefaultColor(props.activeTitleColor)
+})
+const _dotBgColor = computed(() => {
+    if (props.dotBgColor == "") return _activeTitleColor.value
+    return props.dotBgColor
+})
+
+const _titleColor = computed(() => {
+    if (config.mode == 'dark') {
+        if (props.darkTitleColor != '') {
+            return getDefaultColor(props.darkTitleColor)
+        } else {
+            return "#ffffff"
+        }
+    }
+    return getDefaultColor(props.titleColor)
+})
+
+const _lineColor = computed(() => {
+    if (props.lineColor == "") return _activeTitleColor.value;
+    return getDefaultColor(props.lineColor)
+})
+
+const activeName = ref(props.modelValue)
+const moveName = ref(props.modelValue)
+const _list = computed(() => props.list)
+const _listIds = computed(() => {
+    let ids: Array<string | number> = _list.value.map((item, index) => {
+        if (typeof item === 'string') return index
+        let id = typeof item[props.rangId] == 'undefined' ? index : item[props.rangId]
+        return id;
+    })
+    return ids;
+})
+const _mode = computed(() => {
+    if (props.mode == 'around') return "space-around"
+    if (props.mode == 'between') return "space-between"
+    if (props.mode == 'center') return "center"
+    if (props.mode == 'end') return "flex-end"
+    return 'flex-start'
+})
+provide('tmTabsActiveName', computed((): string | number => activeName.value))
+
+watch(() => props.modelValue, (newValue: string | number) => {
+    if (newValue == activeName.value) return;
+    toggleActivate(newValue)
+})
+const getValue = (item: Record<string, any> | string): string => {
+    if (typeof item === 'string') return item;
+    let value = item[props.rangKey] || ""
+    return value;
+}
+const getDot = (item: Record<string, any> | string): boolean | string | number => {
+    if (typeof item === 'string') return false;
+    let value = typeof item[props.rangDot] == 'undefined' ? false : item[props.rangDot]
+    return value;
+}
+/**
+ * 切换选中
+ */
+const toggleActivate = (name: string | number, isEmits = false) => {
+    activeName.value = name
+    if (isEmits) {
+        emit('update:modelValue', name)
+        emit('change', name)
+    }
+    changMovename(name)
+}
+const changMovename = (name: string | number) => {
+    let index = _listIds.value.findIndex(el => el == name)
+    if (index == -1) return;
+    index = index - props.moveCount
+    index = Math.max(0, index)
+    moveName.value = ''
+
+    nextTick(() => {
+        moveName.value = _listIds.value[index];
+    })
+}
+const tabsOnclick = (item: string | Record<string, any>, index: number) => {
+    let name = _listIds.value[index];
+    if (name == activeName.value) return;
+    toggleActivate(name, true)
+}
+
+defineExpose({ toggleActivate })
+
 </script>
-<style>
-.animateAll_tabs_tmui {
-	transition-delay: 0;
-	transition-timing-function: ease;
-	transition-property: transform, width;
-	transition-duration: 0.3s;
+<script lang="ts">
+export default {
+    options: {
+        styleIsolation: "apply-shared",
+        virtualHost: true,
+        addGlobalClass: true,
+        multipleSlots: true
+    }
 }
-</style>
-<style scoped>
-	.nonvue{
-		/* #ifndef APP-NVUE */
-		box-sizing: border-box;
-		/* #endif */
-	}
-.tmTabsPane {
-	transition-delay: 0;
-	transition-timing-function: ease;
-	transition-property: transform;
-	transition-duration: 0.3s;
+</script>
+<template>
+    <view class="tmTabs" :style="{
+        backgroundColor: _color,
+        'border-radius': _round,
+        height: _height,
+        width: _width
+    }
+        ">
+        <scroll-view :show-scrollbar="false" enable-flex :scroll-into-view="'tabs_' + moveName" class="tmTabsWrapBox"
+            :scroll-x="true">
+            <view class="tmTabsWrap" :style="{ justifyContent: _mode }">
+                <view @click="tabsOnclick(item, index)" class="tmTabsItem" :id="'tabs_' + _listIds[index]"
+                    v-for="(item, index) in _list" :key="index" :style="[
+                        {
+                            color: activeName == _listIds[index] ? _activeTitleColor : _titleColor,
+                            fontSize: activeName == _listIds[index] ? _activeFontSize : _fontSize,
+                            fontWeight: activeName == _listIds[index] ? 'bold' : 'normal',
+                            width: _itemWidth,
+                            padding: `0px ${_gap}`
+                        },
+                        activeName == _listIds[index] ? _activeItemStyle : _customItemStyle
+                    ]">
+                    <tm-badge :bg-color="_dotBgColor" :label="getDot(item)">
+                        {{ getValue(item) }}
+                    </tm-badge>
+                    <view v-if="_showLine" class="tmTabsItemLiner" :style="{
+                        width: activeName == _listIds[index] ? (_lineFull ? '100%' : '36%') : '0%',
+                        height: _lineHeight,
+                        maxWidth: !_lineFull ? '36px' : 'auto',
+                        backgroundColor: activeName == _listIds[index] ? _lineColor : 'transparent'
+                    }"></view>
+                </view>
+            </view>
+        </scroll-view>
+    </view>
+
+</template>
+<style lang="css">
+.tmTabsItem {
+    /* padding: 0 20rpx; */
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    flex-shrink: 0;
+    box-sizing: border-box;
 }
 
-.anilineBar {
-	transition-delay: 0;
-	transition-timing-function: ease;
-	transition-property: transform, width;
-	transition-duration: 0.3s;
+.tmTabsItemLiner {
+    /* height: 2px; */
+    position: absolute;
+    z-index: 1;
+    bottom: 0px;
+    transition: all 0.3s ease-in-out;
+
 }
 
-/* #ifndef APP-NVUE */
-::-webkit-scrollbar,
-scroll-view::-webkit-scrollbar {
-	display: none;
-	width: 0;
-	height: 0;
-	color: transparent;
+.tmTabs {
+    position: relative;
+    box-sizing: border-box;
 }
-/* #endif */
+
+.tmTabsWrapBox {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.tmTabsWrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    min-width: 100%;
+    /* justify-content: flex-start; */
+    align-items: center;
+    /* width: auto; */
+    height: 100%;
+    box-sizing: border-box;
+}
 </style>
