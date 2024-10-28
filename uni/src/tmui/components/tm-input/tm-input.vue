@@ -1,695 +1,768 @@
 <template>
-	<tm-sheet :eventPenetrationEnabled="true" :transprent="true" :margin="props.margin" :padding="props.padding">
-		<tm-sheet
-			:transprent="props.transprent"
-			:round="props.round"
-			no-level
-			:margin="[0, 0]"
-			:padding="_inputPadding"
-			:border="props.border"
-			:text="props.text"
-			:color="_color"
-			:outlined="props.outlined"
-			:shadow="props.shadow"
-			:linear="props.linear"
-			:linearDeep="props.linearDeep"
-			_style="transition:border 0.24s"
-		>
-			<view
-				class="flex flex-row relative"
-				@click="inputClick($event, '')"
-				:class="[propsDetail.type == 'textarea' ? propsDetail.layoutAlign : 'flex-row-center-start']"
-				:style="[propsDetail.autoHeight && propsDetail.type == 'textarea' ? {} : { height: `${_height}rpx` }]"
-			>
-				<view v-if="propsDetail.search || propsDetail.searchLabel" class="px-9"></view>
-				<slot name="left"></slot>
-				<view v-if="propsDetail.prefix" class="pr-16">
-					<tm-icon
-						_style="transition:color 0.24s"
-						:font-size="propsDetail.fontSize"
-						:color="props.prefixColor"
-						:name="propsDetail.prefix"
-						:customicon="props.customicon"
-					></tm-icon>
-				</view>
-				<view v-if="propsDetail.prefixLabel" class="pr-24">
-					<tm-text
-						_style="transition:color 0.24s"
-						:font-size="propsDetail.fontSize"
-						:color="props.prefixColor"
-						:label="propsDetail.prefixLabel"
-					></tm-text>
-				</view>
+    <view class="tmInput" :style="{
+        width: _width,
+        height: _height,
+        minHeight: _minHeight,
+        color: _fontColor,
+    }">
+        <!-- 
+        @slot 左侧插槽
+        -->
+        <slot name="left">
+            <text v-if="_attrs.leftText !== ''" :style="{ marginRight: '24rpx', fontSize: _fontSize }">{{
+                _attrs.leftText
+            }}</text>
+        </slot>
 
-				<view v-if="!isAndroid" @click="inputClick($event, 'ali')" class="flex-1 relative flex-row flex" :style="[{ width: '0px' }]">
-					<!-- <view @click.stop="emits('click',$event)" class=" l-0 t-0 flex-1 " :style="{height: `${_height}rpx`,background:'red'}"></view> -->
-					<input
-						class="flex-1"
-						:userInteractionEnabled="false"
-						v-if="propsDetail.type != 'textarea'"
-						:value="_value"
-						:focus="propsDetail.focus"
-						@focus="focus"
-						@blur="blur"
-						@confirm="confirm"
-						@input="inputHandler"
-						@keyboardheightchange="emits('keyboardheightchange', $event)"
-						:password="showPasswordText"
-						:maxlength="propsDetail.maxlength"
-						:disabled="propsDetail.disabled"
-						:cursorSpacing="propsDetail.cursorSpacing"
-						:confirmType="propsDetail.confirmType"
-						:confirmHold="propsDetail.confirmHold"
-						:autoBlur="propsDetail.autoBlur"
-						:holdKeyboard="propsDetail.holdKeyboard"
-						:adjustPosition="propsDetail.adjustPosition"
-						:readonly="propsDetail.readyOnly"
-						:type="propsDetail.type"
-						:placeholder="propsDetail.placeholder"
-						:style="[
-							{
-								height: `${_height}rpx`,
-								color: propsDetail.fontColor ? propsDetail.fontColor : tmcomputed.textColor,
-								'text-align': props.align,
-								fontSize: `${propsDetail.fontSize_px}px`,
-								transition: 'color 0.24s'
-							}
-						]"
-						:placeholder-style="`fontSize:${propsDetail.fontSize_px}px;${props.placeholderStyle}`"
-						:ready-only="propsDetail.readyOnly"
-					/>
+        <view class="tmInputWrap" :style="[
+            {
+                backgroundColor: _color,
+                fontSize: _fontSize,
+                minHeight: _minHeight,
+                borderRadius: _round,
+            },
+            _focusHighlight
 
-					<textarea
-						:userInteractionEnabled="false"
-						v-if="propsDetail.type == 'textarea'"
-						:value="_value"
-						:focus="propsDetail.focus"
-						@focus="focus"
-						@blur="blur"
-						@confirm="confirm"
-						@input="inputHandler"
-						@keyboardheightchange="emits('keyboardheightchange', $event)"
-						:maxlength="propsDetail.maxlength"
-						:disabled="propsDetail.disabled"
-						:placeholder="propsDetail.placeholder"
-						:cursorSpacing="propsDetail.cursorSpacing"
-						:confirmHold="propsDetail.confirmHold"
-						:autoBlur="propsDetail.autoBlur"
-						:holdKeyboard="propsDetail.holdKeyboard"
-						:cursor="propsDetail.cursor"
-						:show-confirm-bar="propsDetail.showConfirmBar"
-						:selectionStart="propsDetail.selectionStart"
-						:selectionEnd="propsDetail.selectionEnd"
-						:disable-default-padding="propsDetail.disableDefaultPadding"
-						:fixed="propsDetail.fixed"
-						:autoHeight="propsDetail.autoHeight"
-						:readonly="propsDetail.readyOnly"
-						:adjustPosition="propsDetail.adjustPosition"
-						:type="propsDetail.type"
-						:style="[
-							propsDetail.autoHeight ? {} : { height: `${_height}rpx` },
-							{
-								width: 'auto',
-								'word-break': 'break-word',
-								color: propsDetail.fontColor ? propsDetail.fontColor : tmcomputed.textColor,
-								'text-align': props.align,
-								fontSize: `${propsDetail.fontSize_px}px`,
-								transition: 'color 0.24s'
-							}
-						]"
-						class="wrap flex-1"
-						:placeholder-style="`fontSize:${propsDetail.fontSize_px}px;${props.placeholderStyle}`"
-						:ready-only="propsDetail.readyOnly"
-					></textarea>
-				</view>
-				<view v-if="isAndroid" class="flex-1 relative flex-row flex" :style="[{ width: '0px' }]">
-					<!-- <view @click.stop="emits('click',$event)" class=" l-0 t-0 flex-1 " :style="{height: `${_height}rpx`,background:'red'}"></view> -->
-					<input
-						class="flex-1"
-						@click.stop="emits('click', $event)"
-						:userInteractionEnabled="false"
-						v-if="propsDetail.type != 'textarea'"
-						:value="_value"
-						:focus="propsDetail.focus"
-						@focus="focus"
-						@blur="blur"
-						@confirm="confirm"
-						@input="inputHandler"
-						@keyboardheightchange="emits('keyboardheightchange', $event)"
-						:password="showPasswordText"
-						:disabled="propsDetail.disabled"
-						:cursorSpacing="propsDetail.cursorSpacing"
-						:confirmType="propsDetail.confirmType"
-						:confirmHold="propsDetail.confirmHold"
-						:autoBlur="propsDetail.autoBlur"
-						:holdKeyboard="propsDetail.holdKeyboard"
-						:adjustPosition="propsDetail.adjustPosition"
-						:maxlength="propsDetail.maxlength"
-						:type="propsDetail.type"
-						:readonly="propsDetail.readyOnly"
-						:placeholder="propsDetail.placeholder"
-						:style="[
-							{
-								height: `${_height}rpx`,
-								color: propsDetail.fontColor ? propsDetail.fontColor : tmcomputed.textColor,
-								'text-align': props.align,
-								fontSize: `${propsDetail.fontSize_px}px`
-							}
-						]"
-						:placeholder-style="`fontSize:${propsDetail.fontSize_px}px;${props.placeholderStyle}`"
-					/>
-					<textarea
-						@click.stop="emits('click', $event)"
-						:userInteractionEnabled="false"
-						v-if="propsDetail.type == 'textarea'"
-						:value="_value"
-						:focus="propsDetail.focus"
-						@focus="focus"
-						@blur="blur"
-						@confirm="confirm"
-						@input="inputHandler"
-						@keyboardheightchange="emits('keyboardheightchange', $event)"
-						:disabled="propsDetail.disabled"
-						:placeholder="propsDetail.placeholder"
-						:cursorSpacing="propsDetail.cursorSpacing"
-						:confirmHold="propsDetail.confirmHold"
-						:autoBlur="propsDetail.autoBlur"
-						:holdKeyboard="propsDetail.holdKeyboard"
-						:adjustPosition="propsDetail.adjustPosition"
-						:maxlength="propsDetail.maxlength"
-						:autoHeight="propsDetail.autoHeight"
-						:cursor="propsDetail.cursor"
-						:show-confirm-bar="propsDetail.showConfirmBar"
-						:selectionStart="propsDetail.selectionStart"
-						:selectionEnd="propsDetail.selectionEnd"
-						:disable-default-padding="propsDetail.disableDefaultPadding"
-						:readonly="propsDetail.readyOnly"
-						:fixed="propsDetail.fixed"
-						:type="propsDetail.type"
-						:style="[
-							propsDetail.autoHeight ? {} : { height: `${_height}rpx` },
-							{
-								width: 'auto',
-								'word-break': 'break-word',
-								color: propsDetail.fontColor ? propsDetail.fontColor : tmcomputed.textColor,
-								'text-align': props.align,
-								fontSize: `${propsDetail.fontSize_px}px`
-							}
-						]"
-						class="wrap flex-1"
-						:placeholder-style="`fontSize:${propsDetail.fontSize_px}px;${props.placeholderStyle}`"
-					></textarea>
-				</view>
-				<view @click="clearBtn" class="pl-16" v-if="propsDetail.showClear && _valueLenChar > 0">
-					<tm-icon
-						:customicon="props.customicon"
-						_style="transition:color 0.24s"
-						:userInteractionEnabled="false"
-						:font-size="propsDetail.fontSize"
-						:color="props.clearAndEyeColor"
-						name="tmicon-times-circle-fill"
-					>
-					</tm-icon>
-				</view>
-				<view class="pl-16" v-if="_requiredError">
-					<tm-icon _style="transition:color 0.24s" :font-size="propsDetail.fontSize" name="tmicon-exclamation-circle"></tm-icon>
-				</view>
-				<view class="pl-16" v-if="propsDetail.suffix">
-					<tm-icon
-						:customicon="props.customicon"
-						_style="transition:color 0.24s"
-						:font-size="propsDetail.fontSize"
-						:color="props.suffixColor"
-						:name="propsDetail.suffix"
-					></tm-icon>
-				</view>
+        ]" :class="[_attrs.inputClass]">
+            <!-- 
+            @slot 输入框左侧图标插槽
+            -->
+            <slot name="leftIcon">
+                <tm-icon v-if="_attrs.leftIcon" :size="_attrs.fontSize" _style="margin-left:24rpx" :name="leftIcon"
+                    :color="_attrs.iconColor || config.color"></tm-icon>
+            </slot>
+            <view class="tmInputWrapBox"
+                :style="[_attrs.type != 'textarea' ? { height: _minHeight } : { minHeight: _minHeight }]">
+                <input v-if="_attrs.type != 'textarea'" @keyboardheightchange="onkeyboardheightchange"
+                    @confirm="onconfirm" @focus="onfocus" @blur="onblur" @input="oninput" :value="nowValue"
+                    :password="_attrs.password&&showPasswordEye" :disabled="_attrs.disabled" :maxlength="_attrs.maxlength"
+                    :cursorSpacing="_attrs.cursorSpacing" :focus="_attrs.focus" :confirmType="_attrs.confirmType"
+                    :confirmHld="_attrs.confirmHold" :cursor="_attrs.cursor"
+                    :cursorColor="_attrs.cursorColor || config.color" :selectionStart="_attrs.selectionStart"
+                    :selectionEnd="_attrs.selectionEnd" :adjustPosition="_attrs.adjustPosition"
+                    :autoBlur="_attrs.autoBlur" :ignoreCompositionEvent="_attrs.ignoreCompositionEvent"
+                    :alwaysEmbed="_attrs.alwaysEmbed" :holdKeyboard="_attrs.holdKeyboard"
+                    :safePasswordCertPath="_attrs.safePasswordCertPath" :safePasswordLength="_attrs.safePasswordLength"
+                    :safePasswordTimeStamp="_attrs.safePasswordTimeStamp" :safePasswordNonce="_attrs.safePasswordNonce"
+                    :safePasswordSalt="_attrs.safePasswordSalt" :safePasswordCustomHash="_attrs.safePasswordCustomHash"
+                    :randomNumber="_attrs.randomNumber" :controlled="_attrs.controlled"
+                    :alwaysSystem="_attrs.alwaysSystem" :inputmode="_attrs.inputmode" class="tmInputInput tmInputText"
+                    :placeholderStyle="`textAlign: ${_attrs.align};fontSize:${_fontSize};` + _attrs.placeholderStyle"
+                    :placeholder="_attrs.placeholder" :placeholderClass="_attrs.placeholderClass" :style="[
+                        {
+                            textAlign: _attrs.align,
+                            padding: `0px ${_inputPadding}`,
+                            color: _inputFontColor,
+                        },
+                        _attrs.inputStyle
 
-				<view v-if="propsDetail.suffixLabel" class="pl-16">
-					<tm-text
-						_style="transition:color 0.24s"
-						:font-size="propsDetail.fontSize"
-						:color="props.suffixColor"
-						:label="propsDetail.suffixLabel"
-					></tm-text>
-				</view>
+                    ]" />
+                <!-- @vue-ignore -->
+                <textarea v-else @keyboardheightchange="onkeyboardheightchange" @confirm="onconfirm" @focus="onfocus"
+                    @blur="onblur" @input="oninput" @linechange="onlinechange" :autoHeight="_attrs.autoHeight"
+                    :fixed="_attrs.fixed" :showConfirmBar="_attrs.showConfirmBar" :value="nowValue"
+                    :disabled="_attrs.disabled" :maxlength="_attrs.maxlength" :cursorSpacing="_attrs.cursorSpacing"
+                    :focus="_attrs.focus" :confirmHld="_attrs.confirmHold" :cursor="_attrs.cursor"
+                    :cursorColor="_attrs.cursorColor || config.color" :selectionStart="_attrs.selectionStart"
+                    :selectionEnd="_attrs.selectionEnd" :adjustPosition="_attrs.adjustPosition"
+                    :autoBlur="_attrs.autoBlur" :ignoreCompositionEvent="_attrs.ignoreCompositionEvent"
+                    :holdKeyboard="_attrs.holdKeyboard" :inputmode="_attrs.inputmode"
+                    :placeholderStyle="`textAlign: ${_attrs.align};fontSize:${_fontSize};` + _attrs.placeholderStyle"
+                    :placeholder="_attrs.placeholder" :placeholderClass="_attrs.placeholderClass"
+                    class="tmInputInput tmInputTextArea" :style="[
+                        {
+                            width: 'auto',
+                            textAlign: _attrs.align,
+                            padding: `${_inputPadding}`,
+                            color: _inputFontColor,
+                        },
+                        _attrs.autoHeight ? { minHeight: _attrs.autoHeight } : { height: _minHeight },
+                        _attrs.inputStyle
+                        ]">
 
-				<view @click="changeSeePassword" class="pl-16" v-if="showPasswordIcon">
-					<!-- tmicon-eyeslash-fill -->
-					<tm-icon
-						:color="props.clearAndEyeColor"
-						_style="transition:color 0.24s"
-						:userInteractionEnabled="false"
-						:font-size="propsDetail.fontSize"
-						:name="showPasswordText ? 'tmicon-eyeslash-fill' : 'tmicon-eye-fill'"
-					></tm-icon>
-				</view>
-
-				<!-- #ifndef MP-ALIPAY -->
-				<view v-if="propsDetail.showCharNumber && _valueLenChar > 0 && propsDetail.type != 'textarea'" class="pl-16 flex-row flex">
-					<tm-text _style="transition:color 0.24s" :label="_valueLenChar"></tm-text>
-					<tm-text _style="transition:color 0.24s" v-if="propsDetail.maxlength > 0" :label="'/' + propsDetail.maxlength"></tm-text>
-				</view>
-				<!-- 原因是支付宝小程序自带了计数器。会导致重叠。 -->
-				<view
-					v-if="propsDetail.showCharNumber && _valueLenChar > 0 && propsDetail.type == 'textarea'"
-					class="pl-16 flex-row flex absolute r-0"
-					:class="[`b-${12}`]"
-				>
-					<tm-text _style="transition:color 0.24s" :label="_valueLenChar"></tm-text>
-					<tm-text _style="transition:color 0.24s" v-if="propsDetail.maxlength > 0" :label="'/' + propsDetail.maxlength"></tm-text>
-				</view>
-				<!-- #endif -->
-				<slot name="right">
-					<view v-if="propsDetail.search || propsDetail.searchLabel" class="pl-16">
-						<TmButton
-							:round="props.round"
-							:width="props.searchWidth"
-							:followTheme="props.followTheme"
-							@click="searchClick"
-							:color="props.searchBgColor"
-							:font-size="24"
-							:height="_height - 11"
-							:padding="[16, 0]"
-							:block="!props.searchWidth"
-							:margin="[0, 0]"
-							:fontColor="props.searchFontColor"
-							:icon="propsDetail.search"
-							:label="propsDetail.searchLabel"
-						></TmButton>
-					</view>
-				</slot>
-			</view>
-		</tm-sheet>
-	</tm-sheet>
+                    </textarea>
+                <!-- <view class="tmInputPlaceholder" :class="[showPlaceholder&&!isFocus?'tmInputPlaceholderOn':'tmInputPlaceholderOff',_attrs.placeholderClass]" :style="[
+                    {
+                        textAlign: _attrs.align,
+                        fontSize: _fontSize,
+                        lineHeight: _minHeight,
+                        padding: `0px ${_inputPadding}`,
+                    },
+                    _attrs.placeholderStyle,
+                ]">
+                    {{ _attrs.placeholder }}
+                </view> -->
+                <view class="tmInputShowChar" v-if="_attrs.maxlength > -1 && _attrs.showCharCount">
+                    <!-- 
+                    @slot 输入框右侧显示字数
+                    -->
+                    <slot name="maxlength">
+                        {{ String(nowValue).length + '/' + _attrs.maxlength }}
+                    </slot>
+                </view>
+            </view>
+            <tm-icon :size="_attrs.fontSize" @click="onclear" _style="padding:16rpx;" :color="_clearColor"
+                v-if="_attrs.showClear" name="close-circle-fill"></tm-icon>
+            <tm-icon v-if="_attrs.showEye" :size="_attrs.fontSize" 
+            @click="showPasswordEye = !showPasswordEye" 
+            _style="padding:16rpx;" :color="showPasswordEye?_clearColor:config.color"
+                :name="showPasswordEye?'eye-off-line':'eye-line'"></tm-icon>
+            <!-- 
+            @slot 输入框内右侧图标
+            -->
+            <slot name="rightIcon">
+                <tm-icon :size="_attrs.fontSize" v-if="_attrs.rightIcon"
+                    :_style="_attrs.showClear ? 'margin-right:24rpx' : 'margin:0 24rpx'" :name="rightIcon"
+                    :color="_attrs.iconColor || config.color"></tm-icon>
+            </slot>
+        </view>
+        <!-- 
+        @slot 输入框右侧
+         -->
+        <slot name="right">
+            <text v-if="_attrs.rightText != ''" :style="{ marginLeft: '24rpx', fontSize: _fontSize }">{{
+                _attrs.rightText
+            }}</text>
+        </slot>
+    </view>
 </template>
+<script setup lang="ts">
+import { ComputedRef, PropType, computed, nextTick, ref, watchEffect } from "vue";
+import {
+    arrayNumberValid,
+    arrayNumberValidByStyleMP,
+    covetUniNumber,
+    linearValid,
+} from "../../libs/tool";
+import { useTmConfig } from "../../libs/config";
+import {
+    getDefaultColor,
+    setTextColorLightByDark
+} from "../../libs/colors";
 
-<script lang="ts" setup>
-import { computed, PropType, ref, watch, getCurrentInstance, inject, toRaw } from 'vue'
-import { inputPushItem, rulesItem } from './../tm-form-item/interface'
-import tmSheet from '../tm-sheet/tm-sheet.vue'
-import tmIcon from '../tm-icon/tm-icon.vue'
-import tmText from '../tm-text/tm-text.vue'
-import { custom_props, computedTheme, computedClass, computedStyle, computedDark } from '../../tool/lib/minxs'
-import { useTmpiniaStore } from '../../tool/lib/tmpinia'
-import TmButton from '../tm-button/tm-button.vue'
-const store = useTmpiniaStore()
-const emits = defineEmits(['focus', 'blur', 'confirm', 'input', 'update:modelValue', 'clear', 'search', 'keyboardheightchange', 'click'])
-const proxy = getCurrentInstance()?.proxy ?? null
-const props = defineProps({
-	...custom_props,
-	followTheme: {
-		type: [Boolean, String],
-		default: true
-	},
-	color: {
-		type: String,
-		default: 'grey-4'
-	},
-	searchBgColor:{
-		type: String,
-		default: 'primary'
-	},
-	searchFontColor: {
-		type: String,
-		default: ''
-	},
-	searchWidth: {
-		type: Number,
-		default: 0
-	},
-	prefixColor: {
-		type: String,
-		default: ''
-	},
-	suffixColor: {
-		type: String,
-		default: ''
-	},
-	//激活时的主题配色。
-	focusColor: {
-		type: String,
-		default: 'primary'
-	},
-	/** 清除按钮，显示密码按钮的颜色 */
-	clearAndEyeColor:{
-		type: String,
-		default: ''
-	},
-	//默认使用自动配色
-	fontColor: {
-		type: String,
-		default: ''
-	},
-	text: {
-		type: Boolean,
-		default: true
-	},
-	outlined: {
-		type: Boolean,
-		default: false
-	},
-	border: {
-		type: Number,
-		default: 0
-	},
-	transprent: {
-		type: Boolean,
-		default: false
-	},
-	round: {
-		type: Number,
-		default: 3
-	},
-	shadow: {
-		type: Number,
-		default: 0
-	},
-	margin: {
-		type: Array as PropType<Array<number>>,
-		default: () => [0, 0]
-	},
-	padding: {
-		type: Array as PropType<Array<number>>,
-		default: () => [0, 0]
-	},
-	height: {
-		type: Number,
-		default: 64
-	},
-	//前缀图标
-	prefix: {
-		type: String,
-		default: ''
-	},
-	//前缀文字
-	prefixLabel: {
-		type: String,
-		default: ''
-	},
-	//后缀图标
-	suffix: {
-		type: String,
-		default: ''
-	},
-	//后缀文字
-	suffixLabel: {
-		type: String,
-		default: ''
-	},
+/**
+ * @displayName 输入框
+ * @exportName tm-input
+ * @category 表单组件
+ * @description 可以全局配置圆角风格.
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
+ */
+defineOptions({ name: "TmInput" });
+const { config } = useTmConfig();
+const emits = defineEmits([
+    /**
+     * 输入框行数变化时触发(文本哉才有)
+     * @property {object} evt {height: 0, heightRpx: 0, lineCount: 0}
+     */
+    'linechange',
+    /**
+     * 键盘高度变化时触发
+     * @property {number} height 键盘高度
+     */
+    'keyboardheightchange',
+    /**
+     * 点击完成按钮时触发
+     * @property {string} value 输入的值
+     */
+    'confirm',
+    /**
+     * 失去焦点时触发
+     */
+    'blur',
+    /**
+     * 获取焦点时触发
+     */
+    'focus',
+    /**
+     * 清除事件
+     */
+    'clear',
+    /**
+     * 输入时候触发
+     * @property {string} value 输入的值
+     */
+    "input",
+    /**
+     * 等同v-model
+     * @property {string} value 输入的值
+     */
+    "update:modelValue",
+]);
+const attrs = defineProps({
+    /**
+     * 输入框的值
+     */
+    modelValue: {
+        type: [String, Number],
+        default: "",
+    },
+    /**
+     * 输入框自定义的style样式
+     */
+    inputStyle: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 输入框自定义的class样式
+     */
+    inputClass: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 输入类型,可选值:text,number,idcard,digit,tel,safe-password,nickname,
+     * textarea:文本域
+     */
+    type: {
+        type: String as PropType<
+            "text" | "number" | "idcard" | "digit" | "tel" | "safe-password" | "nickname" | "textarea"
+        >,
+        deffault: "",
+    },
+    /**
+     * 是否是密码框
+     */
+    password: {
+        type: Boolean,
+        default: false,
+    },
+    /**
+     * 显示密码小眼睛
+     */
+     showEye: {
+        type: Boolean,
+        default: false,
+    },
+    /**
+     * 输入框的占位文字
+     */
+    placeholder: {
+        type: String,
+        default: "请输入或选择",
+    },
+    /**
+     * 输入框的占位文字样式
+     */
+    placeholderStyle: {
+        type: String,
+        default: "color: #b1b1b1;",
+    },
+    /**
+     * 输入框的占位样式
+     */
+    placeholderClass: {
+        type: String,
+        default: "",
+    },
+    /**
+     * 输入框的对齐方式,可选值:left,right,center
+     */
+    align: {
+        type: String as PropType<"left" | "right" | "center">,
+        default: "left",
+    },
+    /**
+     * 输入框背景
+     */
+    color: {
+        type: String,
+        default: "",
+    },
+    /**
+     * 输入框暗黑背景，空值取全局的配置
+     * 提供会覆盖全局的配色。默认是透明
+     */
+    darkBgColor: {
+        type: String,
+        default: "transparent",
+    },
+    /**
+     * 输入框字体大小
+     */
+    fontSize: {
+        type: String,
+        default: "32",
+    },
+    width: {
+        type: String,
+        default: "auto",
+    },
+    height: {
+        type: String,
+        default: "auto",
+    },
+    minHeight: {
+        type: String,
+        default: "88",
+    },
+    /**
+     * 输入框内的左右间隙
+     */
+    inputPadding: {
+        type: String,
+        default: "24"
+    },
+    /**
+     * 输入框圆角,默认空值取全局的配置
+     */
+    round: {
+        type: [String, Number, Array<string | number>],
+        default: ""
+    },
+    /**
+     * 是否显示清除按钮
+     */
+    showClear: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 清除按钮颜色
+     */
+    clearColor: {
+        type: String,
+        default: "#b1b1b1"
+    },
+    /**
+     * 是否显示字符字统计
+     */
+    showCharCount: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 字体颜色
+     */
+    fontColor: {
+        type: String,
+        default: "#333333"
+    },
+    /**
+     * 暗黑模式字体颜色,如果不填写自动反转
+     */
+    darkFontColor: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 激活时的字体颜色
+     * 空值取全局主题色,并且darkFontColor会失效.
+     * 如果填写none则不生效
+     */
+    focusFontColor: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 左图标的名称
+     */
+    leftIcon: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 左图标的颜色
+     * 默认空值取全局的主题色。
+     */
+    iconColor: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 右图标的名称
+     */
+    rightIcon: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 右文字
+     */
+    rightText: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 右文字
+     */
+    leftText: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 是否禁用
+     */
+    disabled: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 是否聚焦
+     */
+    focus: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 键盘右下解按钮文字,可以取值:send,search,next,done
+     * 只对input有效,对textarea无效
+     */
+    confirmType: {
+        type: String as PropType<"send" | "search" | "next" | "done">,
+        default: "done"
+    },
+    /**
+     * 光标与键盘的距离，单位px
+     */
+    cursorSpacing: {
+        type: Number,
+        default: 0
+    },
+    /**
+     * 输入框的最大长度
+     */
+    maxlength: {
+        type: Number,
+        default: -1
+    },
+    confirmHold: {
+        type: Boolean,
+        default: false
+    },
+    cursor: {
+        type: Number,
+        default: 0
+    },
+    /**
+     * 光标颜色,默认空值取全局配置
+     */
+    cursorColor: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 光标起始位置
+     */
+    selectionStart: {
+        type: Number,
+        default: -1
+    },
+    /**
+     * 光标结束位置
+     */
+    selectionEnd: {
+        type: Number,
+        default: -1
+    },
+    /**
+     * 是否自动聚焦
+     */
+    adjustPosition: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 是否自动失焦
+     */
+    autoBlur: {
+        type: Boolean,
+        default: false
+    },
+    ignoreCompositionEvent: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 强制 input 处于同层状态
+     */
+    alwaysEmbed: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * focus时，点击页面的时候不收起键盘
+     */
+    holdKeyboard: {
+        type: Boolean,
+        default: false
+    },
+    safePasswordCertPath: {
+        type: String,
+        default: "",
+    },
+    safePasswordLength: {
+        type: Number,
+        default: NaN
+    },
+    safePasswordTimeStamp: {
+        type: Number,
+        default: NaN
+    },
+    safePasswordNonce: {
+        type: String,
+        default: ''
+    },
+    safePasswordSalt: {
+        type: String,
+        default: ''
+    },
+    safePasswordCustomHash: {
+        type: String,
+        default: ''
+    },
+    randomNumber: {
+        type: Boolean,
+        default: false
+    },
+    controlled: {
+        type: Boolean,
+        default: false
+    },
+    alwaysSystem: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * input 输入模式
+     */
+    inputmode: {
+        type: String as PropType<"url" | "email" | "search" | "tel" | "text" | "numeric" | "none" | "decimal">,
+        default: "text"
+    },
+    autoHeight: {
+        type: Boolean,
+        default: false
+    },
+    fixed: {
+        type: Boolean,
+        default: false
+    },
+    showConfirmBar: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 是否高亮聚焦当前输入框
+     * 会使用全局的主题色为边框色。
+     */
+    focusHighlight: {
+        type: [Boolean, String],
+        default: true
+    },
+    /**
+     * 高亮聚焦当前输入框的样式
+     * 默认为自动全局2px solid 主题色,如果填写了以你的为准。
+     */
+    focusHighlightStyle: {
+        type: String,
+        default: ''
+    },
+});
+const _attrs = computed(() => attrs);
+const nowValue = ref<string | number>("");
+const isFocus = ref<boolean>(false);
 
-	fontSize: {
-		type: Number,
-		default: 30
-	},
-	//tmicon-search
-	search: {
-		type: String,
-		default: ''
-	},
-	//搜索
-	searchLabel: {
-		type: String,
-		default: ''
-	},
-	showClear: {
-		type: Boolean,
-		default: false
-	},
-	password: {
-		type: Boolean,
-		default: false
-	},
-	//是否禁用
-	disabled: {
-		type: Boolean,
-		default: false
-	},
-	placeholder: {
-		type: String,
-		default: '请输入内容'
-	},
-	//错误时，提示的文本。
-	errorLabel: {
-		type: String,
-		default: '请输入内容'
-	},
-	//对齐方式。
-	//left,right,center
-	align: {
-		type: String as PropType<'left' | 'right' | 'center'>,
-		default: 'left'
-	},
-	modelValue: {
-		type: [String, Number],
-		default: ''
-	},
-	inputPadding: {
-		type: Array as PropType<Array<number>>,
-		default: () => [24, 0]
-	},
-	//是否显示字符统计。
-	showCharNumber: {
-		type: Boolean,
-		default: false
-	},
-	maxlength: {
-		type: Number,
-		default: -1
-	},
-	type: {
-		type: String as PropType<'text' | 'number' | 'idcard' | 'digit' | 'tel' | 'safe-password' | 'nickname' | 'textarea'>,
-		default: 'text'
-	},
-	cursorSpacing: {
-		type: Number,
-		default: 24
-	},
-	confirmType: {
-		type: String as PropType<'send' | 'search' | 'next' | 'go' | 'done'>,
-		default: 'done'
-	},
-	confirmHold: {
-		type: Boolean,
-		default: false
-	},
-	autoBlur: {
-		type: Boolean,
-		default: true
-	},
-	holdKeyboard: {
-		type: Boolean,
-		default: false
-	},
-	adjustPosition: {
-		type: Boolean,
-		default: true
-	},
-	//默认的聚集状态
-	focus: {
-		type: Boolean,
-		default: false
-	},
-	cursor: {
-		type: Number,
-		default: 0
-	},
-	showConfirmBar: {
-		type: Boolean,
-		default: true
-	},
-	selectionStart: {
-		type: Number,
-		default: -1
-	},
-	selectionEnd: {
-		type: Number,
-		default: -1
-	},
-	disableDefaultPadding: {
-		type: Boolean,
-		default: false
-	},
-	fixed: {
-		type: Boolean,
-		default: false
-	},
-	placeholderStyle: {
-		type: String,
-		default: ''
-	},
-	autoHeight: {
-		type: Boolean,
-		default: false
-	},
-	readyOnly: {
-		type: Boolean,
-		default: false
-	},
-	/**横向布局的对齐类,主要是用来配置文本域时,左图标需要顶对齐或者左中对齐. */
-	layoutAlign: {
-		type: String,
-		default: 'flex-row-top-start'
-	},
-	customicon: {
-		type: Boolean,
-		default: false
-	},
-})
 
-let parentFormItem: any = proxy?.$parent
-while (parentFormItem) {
-	if (parentFormItem?.tmFormComnameFormItem == 'tmFormComnameFormItem' || !parentFormItem) {
-		break
-	} else {
-		parentFormItem = parentFormItem?.$parent ?? undefined
-	}
-}
-
-const isAndroid = ref(false)
-isAndroid.value = uni.getSystemInfoSync().osName == 'android' ? true : false
-const _height = computed(() => props.height)
-const _inputPadding = computed(() => {
-	if (props.search !== '' || props.searchLabel !== '') {
-		return [4, 0]
-	}
-	return props.inputPadding
-})
-let timerId: any = NaN
-function debounce(func: Function, wait = 500, immediate = false) {
-	// 清除定时器
-	if (!isNaN(timerId)) clearTimeout(timerId)
-	// 立即执行，此类情况一般用不到
-	if (immediate) {
-		var callNow = !timerId
-		timerId = setTimeout(() => {
-			timerId = NaN
-		}, wait)
-
-		if (callNow) typeof func === 'function' && func()
-	} else {
-		// 设置定时器，当最后一次操作后，timeout不会再被清除，所以在延时wait毫秒后执行func回调方法
-		timerId = setTimeout(() => {
-			typeof func === 'function' && func()
-			timerId = NaN
-		}, wait)
-	}
-}
-const propsDetail = computed(() => {
-	return {
-		...props,
-		fontSize_px: uni.upx2px(props.fontSize)
-	}
-})
-const _blackValue = props.modelValue
-// 设置响应式全局组件库配置表。
-const tmcfg = computed(() => store.tmStore)
-//自定义样式：
-const customCSSStyle = computed(() => computedStyle(props))
-//自定类
-const customClass = computed(() => computedClass(props))
-//是否暗黑模式。
-const isDark = computed(() => computedDark(props, tmcfg.value))
-//当前是否显示检验错误状态？
-const _requiredError = ref(false)
-//是否聚焦中。
-const _foucsActive = ref(props.focus || false)
-watch(
-	() => props.focus,
-	() => {
-		_foucsActive.value = props.focus
-	}
-)
+const showPlaceholder = computed(() => {
+    return nowValue.value == "" ? true : false;
+});
+const showPasswordEye = ref(_attrs.value.password)
 const _color = computed(() => {
-	let color = props.color
-	if (_foucsActive.value) {
-		if (props.followTheme && store.tmStore.color) {
-			color = store.tmStore.color
-		} else {
-			color = props.focusColor
-		}
-	}
-	if (_requiredError.value) color = 'red'
-	return color
+    let color = attrs.color;
+    if (color == "") {
+        color = config.inputLightColor
+    }
+    if (config.mode == "dark") {
+        color = attrs.darkBgColor;
+        if (color == "") {
+            color = config.inputDarkColor;
+        }
+    }
+    return getDefaultColor(color);
+});
+const _focusHighlight = computed(() => {
+    let defaultsolid = 'border:solid 2px transparent;' + _attrs.value.inputStyle
+    if (!isFocus.value) return defaultsolid;
+    return attrs.focusHighlight ? (attrs.focusHighlightStyle || `border:solid 2px ${getDefaultColor(config.color)} !important`) : defaultsolid;
 })
-//计算主题
-const tmcomputed = computed(() => {
-	const _props = { ...props, color: _color.value }
-	return computedTheme(_props, isDark.value, tmcfg.value)
+const _fontColor = computed(() => {
+    let fontColor = attrs.fontColor;
+    if (config.mode == "dark") {
+        fontColor = attrs.darkFontColor;
+        if (fontColor == "") {
+            fontColor = setTextColorLightByDark(attrs.fontColor)
+        }
+    }
+    return getDefaultColor(fontColor)
 })
-
-//显示密码和关闭密码。
-const showPasswordText = ref(propsDetail.value.password)
-const showPasswordIcon = computed(() => props.password)
-const _errorLabel = ref(props.errorLabel)
-const _value = ref(props.modelValue)
-const _valueLenChar = computed(() => {
-	//在ios上字符的长度不能采用str.length来计算。因为一个中文=2。一个英文=1；
-	let str = String(_value.value).split('')
-	return str.length
+const _inputFontColor = computed(() => {
+    if (!isFocus.value) return _fontColor.value
+    if (attrs.fontColor == 'none') return _fontColor.value;
+    return getDefaultColor(attrs.focusFontColor || config.color)
 })
-watch(
-	() => props.modelValue,
-	() => (_value.value = props.modelValue)
-)
+const _fontSize = computed(() => {
+    return covetUniNumber(attrs.fontSize, config.unit);
+});
+const _width = computed(() => {
+    return covetUniNumber(attrs.width, config.unit);
+});
+const _height = computed(() => {
+    return covetUniNumber(attrs.height, config.unit);
+});
+const _minHeight = computed(() => {
+    return covetUniNumber(attrs.minHeight, config.unit);
+});
+const _inputPadding = computed(() => {
+    return covetUniNumber(attrs.inputPadding, config.unit);
+});
+const _round = computed((): string | undefined => {
+    let round = attrs.round;
+    if (round === '' && config.inputRadius !== '') {
+        round = config.inputRadius;
+    }
+    if (round === '') return undefined
+    return arrayNumberValid(round, '0px').join(' ')
+});
+const _clearColor = computed(() => getDefaultColor(attrs.clearColor))
+const oninput = (evt: Event) => {
+    // @ts-ignore
+    let value: string | number = evt.detail.value;
+    let pvalue = value
+    if (attrs.type == "number" || attrs.type == "digit" || attrs.type == "tel") {
+        pvalue = typeof pvalue == "number" ? pvalue.toString() : pvalue;
+        try {
+            let oladvalue = parseFloat(pvalue);
+            if (isNaN(oladvalue) || /[^0-9.]+/.test(pvalue)) {
+                pvalue = ''
+            }
+        } catch (_) {
 
-function searchClick() {
-	emits('search', _value.value)
-}
-function clearBtn() {
-	_value.value = ''
-	emits('update:modelValue', '')
-	emits('clear')
-}
-function changeSeePassword() {
-	showPasswordText.value = !showPasswordText.value
-}
-function focus(e: any) {
-	_foucsActive.value = true
-	emits('focus', e)
-	// pushFormItem();
-}
-function blur(e: any) {
-	_foucsActive.value = false
-	// pushFormItem();
-	emits('blur', e)
-}
-function confirm() {
-	emits('confirm', _value.value)
-}
-function inputHandler(e: CustomEvent) {
-	// #ifndef MP-WEIXIN
-	_value.value = e.detail.value
-	// #endif
-	emits('input', e.detail.value)
-	emits('update:modelValue', e.detail.value)
+        }
+    }
 
-	return e.detail.value
-}
-function inputClick(e: Event, type: string) {
-	// e.stopPropagation();
+    nowValue.value = value;
 
-	if (type == 'ali') {
-		debounce(
-			() => {
-				emits('click', e)
-			},
-			200,
-			true
-		)
-		return
-	} else {
-		debounce(() => emits('click', e), 200, true)
-	}
+    nextTick(() => {
+        nowValue.value = pvalue;
+        emits("input", pvalue);
+        emits("update:modelValue", pvalue);
+    })
+    return value
+};
+const onclear = () => {
+    nowValue.value = '';
+    emits('update:modelValue', '')
+    emits("clear")
 }
+const onfocus = () => {
+    isFocus.value = true;
+};
+const onblur = () => {
+    isFocus.value = false;
+};
+const onconfirm = (evt: any) => {
+    emits("confirm", evt.detail.value);
+};
+const onkeyboardheightchange = (evt: any) => {
+    emits('keyboardheightchange', evt.detail.height);
+};
+const onlinechange = (evt: any) => {
+    emits('linechange', evt.detail);
+}
+watchEffect(() => {
+    // if(nowValue.value==attrs.modelValue) return;
+    nowValue.value = attrs.modelValue;
+});
+</script>
+<script lang="ts">
+export default {
+    options: {
+        styleIsolation: "apply-shared",
+        virtualHost: true,
+        addGlobalClass: true,
+        multipleSlots: true,
+    },
+};
 </script>
 
-<style scoped>
-/* #ifndef APP-NVUE */
-input,
-textarea {
-	background-color: transparent;
-	background: transparent;
+<style lang="scss" scoped>
+.tmInputShowChar {
+    font-size: 12px;
+    position: absolute;
+    right: 24rpx;
+    bottom: 16rpx;
+    pointer-events: none;
+    opacity: 0.5;
 }
 
-/* #endif */
+.tmInput {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+    box-sizing: border-box;
+    box-sizing: border-box;
+
+}
+
+.tmInputWrap {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    overflow: hidden;
+    flex: 1;
+    box-sizing: border-box;
+    transition-property: border-color;
+    transition-duration: 0.3s;
+    transition-timing-function: linear;
+    border-color: transparent;
+
+}
+
+.tmInputWrapBox {
+    position: relative;
+    height: 100%;
+    flex: 1;
+    box-sizing: border-box;
+
+    .tmInputInput {
+        height: 100%;
+    }
+
+    .tmInputPlaceholder {
+        box-sizing: border-box;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        display: -webkit-box;
+        white-space: inherit;
+        text-wrap: nowrap;
+        opacity: 0;
+        transition: all 0.2s cubic-bezier(.42, .38, .15, .93);
+
+        &.tmInputPlaceholderOn {
+            opacity: 1;
+            transform: translateY(0%);
+        }
+
+        &.tmInputPlaceholderOff {
+            opacity: 0;
+            transform: translateY(50rpx);
+
+        }
+    }
+}
 </style>

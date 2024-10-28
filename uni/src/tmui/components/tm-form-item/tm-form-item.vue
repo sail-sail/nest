@@ -1,432 +1,261 @@
-<template>
-	<view :class="[`mx-${props.margin[0]}`]">
-		<tm-sheet :transprent="props.transprent !== null ? props.transprent : tmFormTransprent" :round="props.round"
-			:margin="[0, 0]" :padding="props.padding">
-			<view :class="[`py-${props.margin[1]}`]">
-				<view v-if="props.showError && props.showTopErrorGap" :style="{ height: `${props.errHeight}rpx` }">
-				</view>
-				<view :class="[
-            'flex',
-            tmFormLayout == 'horizontal' ? 'flex-row ' : ' ',
-            tmFormLayout == 'horizontal' && !props.align ? 'flex-row-center-start' : '',
-            tmFormLayout == 'vertical' && !props.align ? 'flex-col' : '',
-            props.align,
-            props.parentClass,
-          ]">
-					<slot name="label">
-						<view v-if="_label"
-							:style="[tmFormLayout == 'horizontal' ? { width: (props.labelWidth || tmFormLabelWidth) + 'rpx' } : '']"
-							class="flex flex-row" :class="[
-								tmFormLabelAlign == 'right' ? 'flex-row-center-end' : 'flex-row-center-start',
-								tmFormLayout != 'horizontal' ? 'mb-24 flex-1 ' : 'mr-32 '
-							]">
-							<view v-if="tmFormLabelAlign != 'right'" style="width: 12px " class="flex flex-row flex-row-center-center">
-								<tm-text v-if="_required" color="red" :font-size="30" label="*"></tm-text>
-							</view>
-							<view class="flex " :class="[
-							tmFormLayout == 'horizontal'?'flex-1':'',
-							tmFormLabelAlign == 'right'&&tmFormLayout == 'horizontal'?'text-align-right':'',
-							tmFormLabelAlign == 'center'&&tmFormLayout == 'horizontal'?'text-align-center':'',
-							]" :style="[tmFormLayout == 'horizontal'?{width:'0px'}:'']">
-								<tm-text
-									:color="tmFormFun == 'validate' && item.isRequiredError == true && props.requiredTitleChangeColor ? 'red' : ''"
-									:font-size="30" :label="_label"></tm-text>
-							</view>
-							<view v-if="tmFormLabelAlign == 'right'" style="width: 12px " class="flex flex-row flex-row-center-center">
-								<tm-text v-if="_required" color="red" :font-size="30" label="*"></tm-text>
-							</view>
-						</view>
-					</slot>
-					<view class="flex-1" :style="[tmFormLayout == 'horizontal' ? { width: '0px' } : '']">
-						<slot></slot>
-					</view>
-				</view>
-				<view :class="props.desc ? 'pt-12' : ''">
-					<slot name="desc">
-						<tm-text color="grey-darken-2" :font-size="22" :label="props.desc"></tm-text>
-					</slot>
-				</view>
-				<view v-if="props.showError" :style="{ height: `${props.errHeight}rpx` }">
-					<view v-if="tmFormFun == 'validate' && item.isRequiredError == true">
-						<slot name="error" :data="{ message: item.message }">
-							<tm-text color="red" :font-size="22" :label="item.message"></tm-text>
-						</slot>
-					</view>
-				</view>
-			</view>
-		</tm-sheet>
-		<view v-if="tmFormBorder">
-			<tm-divider :border="2" :padding="[0, 0]" :margin="[0, 0]"></tm-divider>
-		</view>
-	</view>
-</template>
-<script lang="ts" setup>
-	/**
- * 表单项目
- * @description 只能放置在tm-from里面，不限层级。但不能嵌套使用。
- * 从3.0.86开始,验证不与子组件挂勾,只验证绑定到form中的vmodel数据中的formitem中的filed字段.
- * 这样的改变意味着,传统的cell或者只用展示的view组件,只要提供了filed就能验证,无需特定Input,upload这样的
- * 组件才能进行验证.大大的提高了移动端的表单验证效率,特别适合大量的不同类型数据组件的验证规则.
+<script setup lang="ts">
+import { ref, computed, getCurrentInstance, inject, onBeforeUnmount, watch, PropType,onMounted } from 'vue';
+import { defaultValidator } from "./../tm-form/validator"
+import { useTmConfig } from "../../libs/config";
+import TmForm from '../tm-form/tm-form.vue';
+import { covetUniNumber } from '../../libs/tool';
+import { getDefaultColor } from '../../libs/colors';
+
+/**
+ * @displayName 表单子组件
+ * @exportName tm-form-item
+ * @category 表单组件
+ * @page tm-form
+ * @description 表单组件的校验规则现在统一放到了form组件上，form-item上不再配置校验，主要是方便统一管理校验模块，并且校验函数作了升级处理。
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-	import {
-		computed,
-		watch,
-		PropType,
-		provide,
-		ref,
-		getCurrentInstance,
-		onUnmounted,
-		Ref,
-		inject,
-		isProxy,
-		toRaw,
-		ComputedRef,
-		onMounted,
-		nextTick
-	} from 'vue'
-	import tmSheet from '../tm-sheet/tm-sheet.vue'
-	import tmText from '../tm-text/tm-text.vue'
-	import tmDivider from '../tm-divider/tm-divider.vue'
-	import { rulesItem, inputPushItem } from './interface'
-	import { formItem, validateResultListType } from './../tm-form/interface'
-	const proxy = getCurrentInstance()?.proxy ?? null
-	const tmFormComnameFormItem = 'tmFormComnameFormItem'
-	const props = defineProps({
-		parentClass: {
-			type: String,
-			default: ''
-		},
-		align: {
-			type: String,
-			default: ''
-		},
-		label: {
-			type: String,
-			default: ''
-		},
-		//表单描述
-		desc: {
-			type: String,
-			default: ''
-		},
-		margin: {
-			type: Array as PropType<Array<number>>,
-			default: () => [0, 0],
-		},
-		padding: {
-			type: Array as PropType<Array<number>>,
-			default: () => [0, 0]
-		},
-		//如果在forom绑定的model为深层对象，这里的名称需要如下:
-		//比如model = {a:2,b:{c:333}}
-		//如果想绑定c,则field = "b.c"
-		field: {
-			type: String,
-			default: ''
-		},
-		//表彰底部的单项注意说明。
-		help: {
-			type: String,
-			default: ''
-		},
-		//是否必填
-		required: {
-			type: Boolean,
-			default: false
-		},
-		//检验规则
-		rules: {
-			type: [Object, Array] as PropType<Array<rulesItem> | rulesItem>,
-			default: () => {
-				return [{ validator: false, required: false }]
-			}
-		},
-		//显示下划线。
-		border: {
-			type: Boolean,
-			default: null
-		},
-		showError: {
-			type: Boolean,
-			default: true
-		},
-		/**当显示错误信息标题时，是否隐藏顶部的间隙，当连续的布局时有用，可以减少之间的间隙大小。 */
-		showTopErrorGap: {
-			type: Boolean,
-			default: true
-		},
-		//校验不通过时，是否让标题跟着变化文字颜色，默认是。
-		requiredTitleChangeColor: {
-			type: Boolean,
-			default: false
-		},
-		transprent: {
-			type: [Boolean, String],
-			default: null
-		},
-		round: {
-			type: Number,
-			default: 0
-		},
-		errHeight: {
-			type: Number,
-			default: 30
-		},
-		labelWidth: {
-			type: Number,
-			default: 0
-		}
-	})
-	const item = ref<formItem>({
-		label: '', //标签名称。
-		field: props.field, //字段名称key.
-		value: null,
-		isRequiredError: false, //true,错误，false正常 检验状态
-		message: '', //检验信息提示语。
-		id: uni.$tm.u.getUid(1), //表单唯一标识id
-		componentsName: '', //表单组件类型。
-		rules: []
-	})
-	const _required = ref(props.required)
-	const tmFormLabelWidth = inject(
-		'tmFormLabelWidth',
-		computed(() => 100)
-	)
-	const tmFormLabelAlign = inject(
-		'tmFormLabelAlign',
-		computed(() => 'left')
-	)
-	const tmFormLayout = inject(
-		'tmFormLayout',
-		computed(() => 'horizontal')
-	)
-	const tmFormBorder_inject = inject(
-		'tmFormBorder',
-		computed(() => true)
-	)
-	const tmFormTransprent = inject(
-		'tmFormTransprent',
-		computed(() => false)
-	)
-	const tmFormFun = inject(
-		'tmFormFun',
-		computed(() => '')
-	)
-	const tmFormValidateResultList = inject(
-		'validateResultList',
-		computed<validateResultListType[]>(() => [])
-	)
+defineOptions({ name: "TmFormItem" });
+const { config } = useTmConfig();
 
-	const tmFormBorder = computed(() => {
-		if (props.border !== null && typeof props.border === 'boolean') return props.border
-		return tmFormBorder_inject.value
-	})
-	const _label = computed(() => props.label)
-	//父级方法。
-	let parent : any = proxy?.$parent
-	while (parent) {
-		if (parent?.tmFormComnameId == 'tmFormId' || !parent) {
-			break
-		} else {
-			parent = parent?.$parent ?? undefined
-		}
-	}
+const props = defineProps({
+    /**
+     * 表单字段唯一标识。
+     */
+    name: {
+        type: String,
+        default: '',
+        required: true
+    },
+    /**
+     * 必款时的符号，如果为false，或者空则不显示
+     */
+    required: {
+        type: [String, Boolean],
+        default: "*"
+    },
+    /**
+     * 表单标题
+     */
+    label: {
+        type: [String],
+        default: ""
+    },
+    /**
+     * 方向，这里会覆盖form父上的方向值。
+     */
+    direction: {
+        type: String as PropType<"horizontal" | "vertical">,
+        default: ""
+    },
+    /**
+     * 方向,里会覆盖form父上的值。
+     */
+    labelWidth: {
+        type: [String, Number],
+        default: ""
+    },
+    showLabel: {
+        type: Boolean,
+        default: true
+    },
+    showBottom: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 标题字号大小，会覆盖父form值
+     */
+    labelFontSize: {
+        type: [String, Number],
+        default: ""
+    },
+    /**
+     * 标题颜色，会覆盖父form值
+     */
+    labelFontColor: {
+        type: [String],
+        default: ""
+    },
+})
+const proxy = getCurrentInstance()?.proxy
+let tid = 0;
+const isPass = ref<boolean | null>(null)
+const errorMessage = ref<string | null>(null)
 
-	//卸载后需要清空。
-	onUnmounted(() => {
-		delCom()
-	})
+const tmFormModelValue = inject("tmFormModelValue", computed((): Record<string, any> => {
+    return {}
+}))
+const tmFormVaildType = inject("tmFormVaildType", computed(() => ''))
+const tmFormDirection = inject("tmFormDirection", computed(() => ''))
+const tmFormLabelwidth = inject("tmFormLabelwidth", computed(() => ''))
+const tmFormGap = inject("tmFormGap", computed(() => '0'))
+const tmFormLabelFontSize = inject("tmFormLabelFontSize", computed(() => '30'))
+const tmFormLabelFontColor = inject("tmFormLabelFontColor", computed(() => '#333333'))
+const _tmFormGap = computed(() => covetUniNumber(tmFormGap.value))
+const _tmFormDirection = computed(() => {
+    if (props.direction) return props.direction
+    if (tmFormDirection.value) return tmFormDirection.value
+    return "horizontal"
+})
+const _labelWidth = computed(() => {
+    if (props.labelWidth) return covetUniNumber(props.labelWidth)
+    if (tmFormLabelwidth.value) return covetUniNumber(tmFormLabelwidth.value)
+    return "190rpx"
+})
+const _tmFormLabelFontSize = computed(() => {
+    if (props.labelFontSize) return covetUniNumber(props.labelFontSize)
+    if (tmFormLabelFontSize.value) return covetUniNumber(tmFormLabelFontSize.value)
+    return "30rpx"
+})
+const _tmFormLabelFontColor = computed(() => {
+    if (props.labelFontColor) return getDefaultColor(props.labelFontColor)
+    if (tmFormLabelFontColor.value) return getDefaultColor(tmFormLabelFontColor.value)
+    return "#333333"
+})
 
-	// provide("tmFormItemVaildata",item.value.isRequiredError)
-	const Rules = computed(() => {
-		let defaultrs : Array<rulesItem> = []
-		if (Array.isArray(props?.rules)) {
-			props?.rules.forEach((el) => {
-				let isreq = el?.required || props.required
-				defaultrs.push({
-					message: el?.message ?? '请填写必要的内容',
-					required: isreq,
-					validator: el?.validator ?? false
-				})
-			})
-		} else {
-			defaultrs = [
-				{
-					message: props?.rules?.message ?? '请填写必要的内容',
-					required: props.rules?.required || props.required,
-					validator: props.rules?.validator ?? false
-				}
-			]
-		}
-		return defaultrs
-	})
-	//向父级推表单类组件。
-	function pushCom(itemComval ?: inputPushItem) {
-		if (parent) {
-			item.value = { ...item.value, ...(itemComval ?? {}), rules: Rules.value }
-			parent.pushKey({ ...item.value })
-		}
-	}
-	function delCom() {
-		if (parent) {
-			parent.delKey(item.value)
-		}
-	}
+const _required = computed(() => props.required)
+const _label = computed(() => props.label)
+const _showLabel = computed(() => props.showLabel)
+const _showBottom = computed(() => props.showBottom)
+const isFirstVaild = ref(true)
+watch(() => tmFormModelValue.value[props.name], (val: any) => {
+    if (tmFormVaildType.value != 'valid') return
+    if (isFirstVaild.value) {
+        isFirstVaild.value = false;
+        return
+    }
+    clearTimeout(tid)
+    tid = setTimeout(() => {
+        _validFun(val)
+    }, 200);
+}, { deep: true })
 
-	defineExpose({ pushCom, delCom, tmFormComnameFormItem })
+watch(tmFormVaildType, (val: string) => {
+    if (val == 'reset' || val == '') {
+        isPass.value = null;
+        errorMessage.value = null;
+    }
+    if (val == 'valid') {
+        let value = tmFormModelValue.value[props.name]
+        if (typeof value !== 'undefined') {
+            _validFun(value)
+        }
+        isFirstVaild.value = false;
 
-	const validate = (rules : Array<rulesItem>, value : any) => {
-		rules = rules.map((el) => {
-			if (typeof el.validator === 'function' && el.required === true) {
-				return el
-			} else if (typeof el.validator === 'boolean' && el.required === true) {
-				return {
-					...el,
-					validator: (val : any) => {
-						if (val === null || val === '' || typeof val == 'undefined') return false
-						if (typeof val === 'object') {
-							if (Array.isArray(val)) {
-								if (val.length == 0) return false
-							} else if (Object.keys(val).length === 0 && val.constructor === Object) {
-								return false
-							}
-						}
-						if (typeof val === 'boolean') {
-							return val
-						}
-						if (typeof val === 'number') {
-							if (isNaN(val)) return false
-							if (Number(val) < 0) return false
-						}
-						if (typeof val === 'string') {
-							if (val.trim().length == 0) return false
-						}
-						return true
-					}
-				}
-			} else {
-				return {
-					...el,
-					validator: (val : string | number) => {
-						return true
-					}
-				}
-			}
-		})
-		let rules_filter : Array<rulesItem> = rules.filter((el) => {
-			return typeof el.validator === 'function' && el.required === true
-		})
-		let rules_fun : Array<Promise<rulesItem>> = rules_filter.map((el) => {
-			return new Promise(async (res, rej) => {
-				if (typeof el.validator === 'function') {
-					let vr = await el.validator(value)
-					if (vr) {
-						res({
-							message: String(el.message),
-							validator: true
-						})
-					} else {
-						rej({
-							message: el.message,
-							validator: false
-						})
-					}
-				} else {
-					res({
-						message: el.message,
-						validator: true
-					})
-				}
-			})
-		})
+    }
+})
 
-		return Promise.all(rules_fun)
-	}
+const _validFun = (val: any) => {
+    if (!proxy) return;
+    let parent = findParent(proxy)
+    if (!parent) return;
+    let ele = parent! as InstanceType<typeof TmForm>
+    let valid = ele._validate(props.name, val)
+    if (typeof valid == 'boolean') {
+        if (valid === true) {
+            isPass.value = true;
+            errorMessage.value = null;
+        }
+        return;
+    }
+    if (!valid.validate) {
+        isPass.value = false;
+        errorMessage.value = valid.message;
+    } else {
+        isPass.value = true;
+        errorMessage.value = null;
+    }
+}
 
-	onMounted(() => {
-		//预先推送。
-		pushCom()
-	})
+const setVisibled = (isvisible = true)=>{
+	if (!proxy) return;
+	let parent = findParent(proxy)
+	if (!parent) return;
+	let ele = parent! as InstanceType<typeof TmForm>
+	ele._setMarker(props.name,isvisible)
+}
+function findParent(parent: any): any {
+    if (parent == null) return null;
+    if (parent.$parent?.$options?.name == "TmForm") return parent.$parent;
+    let parents = findParent(parent.$parent);
+    if (parents?.$options?.name == "TmForm") return parents;
+    return null;
+}
 
-	watch(
-		() => tmFormValidateResultList.value,
-		() => {
-			const result = tmFormValidateResultList.value.filter((el) => el.field == props.field)
-			if (result.length > 0) {
-				item.value.message = result[0].message
-				item.value.isRequiredError = !result[0].validator
-			}else if(tmFormValidateResultList.value.length==0){
-				item.value.message=""
-				item.value.isRequiredError = true
-			}
-		},
-		{ deep: true, immediate: true }
-	)
+onMounted(() => {
+    setVisibled(true)
+})
+onBeforeUnmount(() => {
+    clearTimeout(tid)
+	setVisibled(false)
+})
 
-	function _recursive_parseJson2Form_(resObj : any, parentKey : string, JsonObject : any) {
-		var gettype = Object.prototype.toString
-		for (var Key in JsonObject) {
-			var tmpVal = JsonObject[Key]
-
-			var typeStr = gettype.call(tmpVal)
-			/*
-	
-								"[object String]";
-								"[object Number]";
-								"[object Boolean]"
-								"[object Undefined]"
-								"[object Null]"
-								"[object Object]"
-								"[object Array]"
-								"[object Function]"
-								*/
-			if (tmpVal == null || tmpVal == undefined) {
-				resObj[parentKey + '.' + Key] = ''
-			} else {
-				if (
-					typeStr == '[object String]' ||
-					typeStr == '[object Number]' ||
-					typeStr == '[object Boolean]' ||
-					typeStr == '[object Null]' ||
-					typeStr == '[object Undefined]'
-				) {
-					resObj[parentKey + '.' + Key] = tmpVal + ''
-				} else if (typeStr == '[object Object]') {
-					_recursive_parseJson2Form_(resObj, parentKey + '.' + Key, tmpVal)
-				} else if (typeStr == '[object Array]') {
-					if (tmpVal.length <= 0) {
-						resObj[parentKey + '.' + Key] = ''
-					} else {
-						var isSimpleArray = false
-						for (var arrIndex in tmpVal) {
-							var childItem = tmpVal[arrIndex]
-							var childTypeStr = gettype.call(childItem)
-
-							if (
-								childTypeStr == '[object String]' ||
-								childTypeStr == '[object Number]' ||
-								childTypeStr == '[object Boolean]' ||
-								childTypeStr == '[object Null]' ||
-								childTypeStr == '[object Undefined]'
-							) {
-								isSimpleArray = true
-							}
-						}
-						if (isSimpleArray) {
-							resObj[parentKey + '.' + Key] = tmpVal.join(',')
-						} else {
-							var nowIndex = 0
-							for (var arrIndex in tmpVal) {
-								var childItem = tmpVal[arrIndex]
-								_recursive_parseJson2Form_(resObj, parentKey + '.' + Key + '[' + nowIndex + ']', childItem)
-								nowIndex++
-							}
-						}
-					}
-				}
-			}
-		}
-	}
 </script>
+<script lang="ts">
+export default {
+  options: {
+    styleIsolation: "apply-shared",
+    virtualHost: true,
+    addGlobalClass: true,
+    multipleSlots: true,
+  },
+};
+</script>
+<template>
+    <view class="tmFormItem" :style="{ marginBottom: _tmFormGap }">
+        <view class="tmFormItemWrap" :class="[_tmFormDirection == 'horizontal' ? 'tmFormItemWrapRow' : 'tmFormItemWrapCol']">
 
-<style></style>
+            <view v-if="_showLabel" class="tmFormItemLabel"
+                :style="{ width: _tmFormDirection == 'horizontal' ? _labelWidth : 'auto', fontSize: _tmFormLabelFontSize, color: _tmFormLabelFontColor }">
+                <text class="tmFormRequired" v-if="_required">{{ _required }}</text>
+                <slot name="label">
+                    {{ _label }}
+                </slot>
+            </view>
+            <view class="tmFormItemWrapContent">
+                <!-- 
+                @slot 表单默认插槽,可以不是直接form-item直接子节点,可以根据自己需要随意布局,只要form-item在里面即可.
+                -->
+                <slot></slot>
+            </view>
+        </view>
+        <view class="tmFormError" v-if="errorMessage && !isPass">
+            {{ errorMessage }}
+        </view>
+        <view v-if="_showBottom" :style="{ marginTop: _tmFormGap, height: '1px', backgroundColor: '#f5f5f5' }"></view>
+    </view>
+</template>
+<style scoped>
+.tmFormItemWrapRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+}
+
+.tmFormItemLabel {
+    flex-shrink: 0;
+
+}
+
+
+.tmFormItemWrapContent {
+    flex: 1;
+}
+
+.tmFormRequired {
+    color: red;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.tmFormError {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+}
+</style>

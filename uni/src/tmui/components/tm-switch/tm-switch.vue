@@ -1,344 +1,371 @@
-<template>
-	<tm-sheet
-		@click="switchClick"
-		:no-level="!_CheckVal"
-		:followTheme="props.followTheme"
-		:followDark="props.followDark"
-		:dark="props.dark"
-		:shadow="props.shadow"
-		:outlined="props.outlined"
-		:borderStyle="props.borderStyle"
-		:borderDirection="props.borderDirection"
-		:linearDeep="props.linearDeep"
-		:linear="_CheckVal ? props.linear : ''"
-		:round="viewSize.round"
-		:color="_CheckVal ? props.color : props.unCheckedColor"
-		:darkBgColor="_CheckVal ? '' : 'rgba(255,255,255,0.06)'"
-		:height="viewSize.height"
-		:width="viewSize.width"
-		parenClass="switchbgani"
-		:_class="['flex  relative flex-col', props.disabled ? 'opacity-4' : '']"
-		:text="_CheckVal ? false : props.text"
-		unit="px"
-		:padding="[0, 0]"
-		:margin="props.margin"
-	>
-		<view
-			class="relative flex relative flex-col nvue"
-			:style="{
-				padding: '2px',
-				width: `${viewSize.width}px`,
-				height: `${viewSize.height}px`
-			}"
-		>
-			<view
-				:userInteractionEnabled="false"
-				class="flex flex-row flex-between"
-				:style="[{ width: viewSize.coenteWidth + 'px', height: viewSize.innerHeight + 'px' }]"
-			>
-				<view class="flex-1 flex-row flex-row-center-center"><tm-text :font-size="viewSize.fontSize" :label="props.label[0]"></tm-text></view>
-				<view class="flex-1 flex-row flex-row-center-center"><tm-text :font-size="viewSize.fontSize" :label="props.label[1]"></tm-text></view>
-			</view>
-			<view
-				:userInteractionEnabled="false"
-				:class="['absolute base nvue', _CheckVal ? 'on' : 'off']"
-				ref="switch"
-				:style="{
-					width: viewSize.innerWidth + 'px',
-					height: viewSize.innerHeight + 'px'
-				}"
-				class="flex flex-col"
-			>
-				<tm-sheet
-					:userInteractionEnabled="false"
-					:padding="[0, 0]"
-					:margin="[0, 0]"
-					:height="viewSize.innerHeight"
-					:width="viewSize.innerWidth"
-					:color="props.barColor"
-					:follow-dark="false"
-					:round="viewSize.round"
-					unit="px"
-					_class="flex flex-center flex-row"
-				>
-					<tm-icon
-						:followTheme="props.followTheme"
-						v-if="_load"
-						:font-size="viewSize.fontSize"
-						:color="props.color"
-						name="tmicon-shuaxin"
-						spin
-					></tm-icon>
-					<tmTranslate name="zoom" v-if="!_load">
-						<tm-icon
-							v-if="props.barIcon && _CheckVal"
-							:followTheme="props.followTheme"
-							:font-size="viewSize.fontSize"
-							:color="props.color"
-							:name="props.barIcon"
-						></tm-icon>
-						<tm-icon
-							v-if="props.offIcon && !_CheckVal"
-							:followTheme="props.followTheme"
-							:font-size="viewSize.fontSize"
-							:name="props.offIcon"
-							_class="opacity-5"
-						></tm-icon>
-					</tmTranslate>
-				</tm-sheet>
-			</view>
-		</view>
-	</tm-sheet>
-</template>
-
-<script lang="ts" setup>
+<script setup lang="ts">
+import { computed, ref, onMounted, watch, PropType } from "vue";
+import { arrayNumberValid, getUid, arrayNumberValidByStyleMP, arrayNumberValidByStyleBorderColor, arrayNumberValidByStyleBorderStyle, covetUniNumber, linearValid, getUnit } from "../../libs/tool";
+import { useTmConfig } from "../../libs/config";
+import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
 /**
- * 开关
- * @description 便捷的选择框。可以加载中，异步开关。
- */
-import { computed, ref, getCurrentInstance, onMounted, toRaw, watchEffect, watch, nextTick, inject, PropType } from 'vue'
-import { inputPushItem, rulesItem } from './../tm-form-item/interface'
-import { custom_props } from '../../tool/lib/minxs'
-import tmSheet from '../tm-sheet/tm-sheet.vue'
-import tmText from '../tm-text/tm-text.vue'
-import tmIcon from '../tm-icon/tm-icon.vue'
-import tmTranslate from '../tm-translate/tm-translate.vue'
-import { useTmpiniaStore } from '../../tool/lib/tmpinia'
-const store = useTmpiniaStore()
+* @displayName 开关
+* @exportName tm-switch
+* @category 表单组件
+* @description 开关，用于直观的展示选项表单的选择。
+* @constant 平台兼容
+*	| H5 | uniAPP | 小程序 | version |
+   | --- | --- | --- | --- |
+   | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
+*/
+defineOptions({ name: 'TmSwitch' });
+const { config } = useTmConfig()
 
-// #ifdef APP-PLUS-NVUE
-const animation = uni.requireNativePlugin('animation')
-// #endif
-/**
- * 事件说明
- * update:modelValue v-model双向绑定数据。
- */
-const emits = defineEmits(['update:modelValue', 'change', 'click'])
-const proxy = getCurrentInstance()?.proxy ?? null
 const props = defineProps({
-	...custom_props,
-	//是否跟随全局主题的变换而变换
-	followTheme: {
-		type: [Boolean, String],
-		default: true
-	},
-	margin: {
-		type: Array as PropType<Array<number>>,
-		default: () => [0, 0]
-	},
-	transprent: {
-		type: Boolean,
-		default: false
-	},
-	defaultValue: {
-		type: [Boolean, String, Number],
-		default: false
-	},
-	modelValue: {
-		type: [Boolean, String, Number],
-		default: false
-	},
-	// 未选中时的值。
-	unSelected: {
-		type: [Boolean, String, Number],
-		default: false
-	},
-	// 选中时的值。
-	selected: {
-		type: [Boolean, String, Number],
-		default: true
-	},
-	width: {
-		type: Number,
-		default: 0
-	},
-	height: {
-		type: Number,
-		default: 0
-	},
-	size: {
-		type: String,
-		default: 'normal' //mini,normal,large
-	},
-	//激活后的主题色
-	color: {
-		type: String,
-		default: 'primary'
-	},
-	//未激活的背景色
-	unCheckedColor: {
-		type: String,
-		default: 'grey-3'
-	},
-	// 小圆球冒的背景色。
-	barColor: {
-		type: String,
-		default: 'white'
-	},
-	round: {
-		type: Number,
-		default: 10
-	},
-	load: {
-		type: Boolean,
-		default: false
-	},
-	beforeChecked: {
-		type: [Function, Boolean, String],
-		default: () => false
-	},
-	/**
-	 * 自定义打开成功后的bar上的小图标。
-	 */
-	barIcon: {
-		type: String,
-		default: 'tmicon-check'
-	},
-	/**
-	 * 自定义关闭的小图标
-	 */
-	offIcon: {
-		type: String,
-		default: ''
-	},
-	disabled: {
-		type: Boolean,
-		default: false
-	},
-	label: {
-		type: Array as PropType<Array<string>>,
-		default: () => ['', '']
-	}
-})
+    /**
+     * 激活时的背景色,空值时取全局的值。
+     */
+    color: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 未激活时的背景
+     */
+    bgColor: {
+        type: String,
+        default: "info"
+    },
+    /**
+     * 未激活时的暗黑背景
+     * 空取inputDarkColor
+     */
+    darkBgColor: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 按钮的背景色
+     */
+    btnColor: {
+        type: String,
+        default: "white"
+    },
+    /**
+     * 尺寸
+     */
+    size: {
+        type: String as PropType<"small" | "normal" | "large">,
+        default: "normal"
+    },
+    /**
+     * 间隙，px单位
+     */
+    space: {
+        type: [Number, String],
+        default: "2px"
+    },
+    /**
+     * 当前打开的状态，默认为false
+     * 等同v-model=""
+     */
+    modelValue: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 是否禁用
+     */
+    disabled: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 是否加载中
+     */
+    loading: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 开关文字数组第一个为开，后一个为关
+     */
+    label: {
+        type: Array as PropType<string[]>,
+        default: (): string[] => [],
+        validator(val: string[]): boolean {
+            if (!Array.isArray(val)) return false;
+            if (val.length == 0) return true;
+            if (val.length != 2) {
+                console.error("x:必须长度为2")
+                return false;
+            }
+            return true
+        }
+    },
+    /**
+     * 圆角。空值时取全局值。
+     */
+    round: {
+        type: [String, Number],
+        default: ""
+    }
+});
 
-const viewSize = computed(() => {
-	let width = 0
-	let height = 0
-	let fontSize = 24
-	let gutter = 2
+const emit = defineEmits<{
+    /**
+     * 状态变换时触发。
+     * @param status - 当前的开关状态
+     */
+    (e: 'change', status: boolean): void;
+    /**
+     * 组件被点击时触发。
+     * @param status - 当前的开关状态，这里的状态是在变更前。
+     */
+    (e: 'click', status: boolean): void;
+    (e: 'update:modelValue', value: boolean): void;
+}>();
 
-	let round = props.round
-	if (props.width && props.height) {
-		width = props.width
-		height = props.height
-		fontSize = height * 0.45
-	} else {
-		if (props.size == 'normal') {
-			width = 100
-			height = 50
-			fontSize = 26
-		} else if (props.size == 'mini') {
-			width = 80
-			height = 40
-			fontSize = 22
-		} else if (props.size == 'large') {
-			width = 120
-			height = 60
-			fontSize = 32
-			round = 24
-		}
-	}
-	let gutterPx = gutter
-	width = Math.ceil(uni.upx2px(width))
-	height = Math.ceil(uni.upx2px(height))
-	let obj = {
-		width: width,
-		height: height,
-		innerHeight: height - gutterPx * 2,
-		innerWidth: width / 2 - gutterPx * 2,
-		coenteWidth: width - gutterPx * 2,
-		conentWidthPx: width - gutterPx * 2,
-		fontSize: fontSize,
-		round: round
-	}
+const id = ref(`tmSwitch${getUid()}`);
+const boxwidth = ref(0);
+const boxheight = ref(0);
+const opened = ref(false);
 
-	return obj
-})
-
-const _value = ref(props.defaultValue)
-const _CheckVal = computed(() => checkVal(_value.value))
-const _blackValue = _CheckVal.value
-const _load = ref(false)
-watchEffect(() => {
-	_load.value = props.load
-})
-async function switchClick() {
-	emits('click')
-	if (_load.value || props.disabled) return
-	if (typeof props.beforeChecked === 'function') {
-		_load.value = true
-		let p = await props.beforeChecked()
-		if (typeof p === 'function') {
-			p = await p()
-		}
-		_load.value = false
-		if (!p) return
-	}
-	_value.value = !_CheckVal.value ? props.selected : props.unSelected
-	spinNvueAni(_CheckVal.value)
-	emits('change', _CheckVal.value ? props.selected : props.unSelected)
-	emits('update:modelValue', _CheckVal.value ? props.selected : props.unSelected)
-}
-watch(
-	() => props.modelValue,
-	(newval: boolean | string | number) => {
-		_value.value = newval
-		spinNvueAni(_CheckVal.value)
-	}
-)
 onMounted(() => {
-	nextTick(() => spinNvueAni(_CheckVal.value))
-})
-// 检验当前是否打开还是关闭状态。
-function checkVal(nowVal?: number | string | boolean) {
-	let val = typeof nowVal !== 'undefined' ? nowVal : props.modelValue
-	if (val === props.unSelected) {
-		return false
-	} else if (val === props.selected) {
-		return true
-	}
-}
-function spinNvueAni(reveser = false) {
-	// #ifdef APP-NVUE
-	if (!proxy?.$refs['switch']) return
+    opened.value = props.modelValue;
+    getNodes();
+});
 
-	var testEl = proxy?.$refs.switch
-	animation.transition(
-		testEl,
-		{
-			styles: {
-				transform: reveser ? `translateX(${viewSize.value.innerWidth + 4}px)` : 'translateX(0px)',
-				transformOrigin: 'center center'
-			},
-			duration: 250, //ms
-			timingFunction: 'ease',
-			delay: 0 //ms
-		},
-		() => {}
-	)
-	// #endif
+const _round = computed((): string => {
+    if (props.round == "") {
+        return covetUniNumber(config.switchRadius, config.unit)
+    }
+    return covetUniNumber(props.round, config.unit)
+});
+
+const _bgColor = computed((): string => {
+    if (config.mode == 'dark') {
+        if (props.darkBgColor != '') return props.darkBgColor
+        return config.inputDarkColor;
+    }
+    return getDefaultColor(props.bgColor)
+});
+
+const _activeBgColor = computed((): string => {
+    if (props.color == "") {
+        return getDefaultColor(config.color)
+    }
+    return getDefaultColor(props.color)
+});
+
+const _btnColor = computed((): string => {
+    return getDefaultColor(props.btnColor)
+});
+
+const _size = computed((): string => {
+    if (props.size == "small") return "44rpx"
+    if (props.size == "large") return "76rpx"
+    return "60rpx"
+});
+
+const _fontSize = computed((): string => {
+    if (props.size == "small") return "20rpx"
+    if (props.size == "large") return "24rpx"
+    return "22rpx"
+});
+
+const _sizeWidth = computed((): string => {
+    if (props.size == "small") return "88rpx"
+    if (props.size == "large") return "152rpx"
+    return "120rpx"
+});
+
+const _space = computed((): number => {
+    let space = covetUniNumber(props.space)
+    let spaceUnit = getUnit(space)
+    let spacenumber = parseInt(space)
+    if (spaceUnit == 'rpx') {
+        spacenumber = uni.upx2px(parseInt(space))
+    }
+
+    return spacenumber
+});
+
+const _contentWidth = computed((): number => {
+    return boxwidth.value - _space.value * 2
+});
+
+const _contentHeight = computed((): number => {
+    return boxheight.value - _space.value * 2
+});
+
+const _maxLeftPos = computed((): number => {
+    return _contentWidth.value - _contentHeight.value
+});
+
+const _label = computed((): string[] => {
+    return props.label;
+});
+
+const _loading = computed((): boolean => {
+    return props.loading;
+});
+
+const _disabled = computed((): boolean => {
+    return props.disabled;
+});
+
+const _animationFun = computed((): string => {
+    return config.animation
+});
+
+watch(() => props.modelValue, (newvalue: boolean) => {
+    if (newvalue != opened.value) {
+        opened.value = newvalue;
+    }
+});
+
+function onClick() {
+    /**
+     * 组件被点击时触发。
+     * @param status {boolean} 当前的开关状态，这里的状态是在变更前。
+     */
+    emit("click", opened.value)
+    if (_loading.value || _disabled.value) return;
+    opened.value = !opened.value
+    /**
+     * 状态变换时触发。
+     * @param status {boolean} 当前的开关状态
+     */
+    emit("change", opened.value)
+    /**
+     * 等同v-model=""
+     */
+    emit("update:modelValue", opened.value)
+}
+
+function getNodes() {
+    let width = covetUniNumber(_sizeWidth.value)
+    let height = covetUniNumber(_size.value)
+    let widthUnit = getUnit(width)
+    let heightUnit = getUnit(height)
+    if (widthUnit == 'rpx') {
+        width = uni.upx2px(parseInt(width)) + ''
+    }
+    if (heightUnit == 'rpx') {
+        height = uni.upx2px(parseInt(height)) + ''
+    }
+    boxwidth.value = parseInt(width);
+    boxheight.value = parseInt(height);
+
 }
 </script>
+<script lang="ts">
+export default {
+    options: {
+        styleIsolation: "apply-shared",
+        virtualHost: true,
+        addGlobalClass: true,
+        multipleSlots: true,
+    },
+};
+</script>
+<template>
+    <view @click="onClick" :id="id" class="tmSwitch" ref="tmSwitch" :style="{
+        height: boxheight+'px',
+        width: boxwidth+'px',
+        backgroundColor: _bgColor,
+        borderRadius: _round
+    }">
+        <view :class="[_disabled ? 'tmSwitchDisabled' : '', opened ? 'tmSwitchBgOn' : 'tmSwitchOff']" class="tmSwitchBg"
+            :style="{ backgroundColor: _activeBgColor, borderRadius: _round, 'transition-timing-function': _animationFun }">
+        </view>
+        <view :class="[_disabled ? 'tmSwitchDisabled' : '']" class="tmSwitchWrap" :style="{
+            left: _space + 'px',
+            top: _space + 'px',
+            width: _contentWidth + 'px',
+            height: _contentHeight + 'px',
+            borderRadius: _round
+        }">
+            <view v-if="_label.length == 2" class="tmSwitchText">
+                <text class="tmSwitchTextLeft" :style="{ fontSize: _fontSize }">{{ !opened ? '' : _label[0] }}</text>
+                <text class="tmSwitchTextRight" :style="{ fontSize: _fontSize }">{{ opened ? '' : _label[1] }}</text>
+            </view>
+            <view class="tmSwitchBtn" :style="{
+                width: _contentHeight + 'px',
+                height: _contentHeight + 'px',
+                transform: `translateX(${opened ? _maxLeftPos : 0}px)`,
+                backgroundColor: _btnColor,
+                borderRadius: _round,
+                'transition-timing-function': _animationFun
+            }">
+                <tm-icon v-if="_loading" :spin="true" size="24" name="loader-line" :color="_activeBgColor"></tm-icon>
+            </view>
+        </view>
+    </view>
+</template>
+
 <style scoped>
-/* #ifndef APP-NVUE */
-.base {
-	transform: translateX(0%);
-	transition: 0.2s ease;
-	left: 0;
+.tmSwitchDisabled {
+    opacity: 0.7;
+    cursor: no-drop !important;
+    overflow: hidden;
 }
-.on {
-	left: calc(50% + 2px);
+
+.tmSwitchTextLeft {
+    color: white;
 }
-.off {
-	left: 2px;
+
+.tmSwitchTextRight {
+    color: #acacac;
 }
-/* #endif */
-</style>
-<style>
-.switchbgani {
-	transition-timing-function: ease;
-	transition-property: background-color;
-	transition-duration: 0.3s;
-	transition-delay: 0ms;
+
+.tmSwitch {
+    height: 64rpx;
+    cursor: pointer;
+    display: inline-flex;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.tmSwitchBg {
+    width: 100%;
+    height: 100%;
+    transition-duration: 350ms;
+    transition-property: opacity, transform;
+    box-sizing: border-box;
+
+}
+
+.tmSwitchBgOn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.tmSwitchOff {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.tmSwitchWrap {
+    position: absolute;
+}
+
+.tmSwitchText {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 12%;
+    box-sizing: border-box;
+}
+
+.tmSwitchBtn {
+    position: absolute;
+    transition-duration: 350ms;
+    left: 0px;
+    transition-property: transform;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    top: 0px;
 }
 </style>
