@@ -1,300 +1,351 @@
-<template>
-	<view class="flex flex-row" :style="[{  height: `${props.height}rpx`,width: `${props.width}rpx`,}]">
-		<tmSheet text class="flex-1" :transprent="props.circular" :followTheme="false" _class="flex flex-row flex-1"
-			:color="props.bgColor" :margin="[0, 0]" :padding="[0, 0]">
-			<view @click="setStep('-')" @longpress="longpressEvent('-')" @touchend="endlongpressEvent('-')"
-				:class="[!props.circular ? `` : `round-${10}`, 'overflow', _disabled || isJianDisabled ? 'opacity-5' : '']">
-				<tmSheet :followTheme="props.followTheme" :round="props.circular ? 10 : props.round"
-					:linear="props.linear" :linear-deep="props.linearDeep" _class="flex-center" :color="props.color"
-					:margin="[0, 0]" :padding="[0, 0]" :height="height" :width="height">
-					<tm-icon :userInteractionEnabled="false" :font-size="22" name="tmicon-minus"></tm-icon>
-				</tmSheet>
-			</view>
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount, watch, PropType, getCurrentInstance, ComponentInstance, onUpdated, nextTick, VueElement, inject, watchEffect } from 'vue';
+import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit, getUid } from "../../libs/tool";
+import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj, isBlackAndWhite, setBgColorLightByDark } from "../../libs/colors";
+import { useTmConfig } from "../../libs/config";
 
-			<input class="mx-4" :disabled="props.disabledInput || props.disabled" @blur="inputVal" v-model="setVal"
-				auto-blur :style="[
-					{
-						height: `${props.height}rpx`,
-						textAlign: 'center',
-						fontSize: props.fontSize + 'rpx',
-						width: `${props.width - (props.height-4)*2}rpx`,
-						color: tmcomputed.textColor,
-						
-					}
-				]" type="digit" />
-
-			<view @click="setStep('+')" @longpress="longpressEvent('+')" @touchend="endlongpressEvent('+')"
-				:class="[!props.circular ? `` : `round-${10}`, 'overflow', _disabled || isAddDisabled ? 'opacity-5' : '']">
-				<tmSheet :followTheme="props.followTheme" :round="props.circular ? 10 : props.round"
-					:linear="props.linear" :linear-deep="props.linearDeep" :_class="'flex-center'" :color="props.color"
-					:margin="[0, 0]" :padding="[0, 0]" :height="height" :width="height">
-					<tm-icon :userInteractionEnabled="false" :font-size="22" name="tmicon-plus"></tm-icon>
-				</tmSheet>
-			</view>
-		</tmSheet>
-	</view>
-</template>
-<script lang="ts" setup>
-	/**
- * 步进器
- * @description 可以根据所需要的步骤进行增加和减少。
+/**
+ * @displayName 步进器
+ * @exportName tm-stepper
+ * @category 表单组件
+ * @description 可整数，小数
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-	import { computed, Ref, ref, nextTick, watch } from 'vue'
-	import { custom_props, computedTheme, computedDark } from '../../tool/lib/minxs'
-	import { cssstyle, tmVuetify } from '../../tool/lib/interface'
-	import tmSheet from '../tm-sheet/tm-sheet.vue'
-	import tmIcon from '../tm-icon/tm-icon.vue'
-	import { useTmpiniaStore } from '../../tool/lib/tmpinia'
-	import { isNumber } from '@/tmui/tool/function/util'
-	const store = useTmpiniaStore()
-	const props = defineProps({
-		...custom_props,
-		//是否跟随全局主题的变换而变换
-		followTheme: {
-			type: [Boolean, String],
-			default: true
-		},
-		/**
-		 * 宽是input宽
-		 */
-		width: {
-			type: [Number],
-			default: 210
-		},
-		height: {
-			type: [Number],
-			default: 52
-		},
-		disabled: {
-			type: Boolean,
-			default: false
-		},
-		//禁用输入功能
-		disabledInput: {
-			type: [Boolean],
-			default: false
-		},
-		black: {
-			type: [Boolean, String],
-			default: null
-		},
+defineOptions({ name: 'TmNavbar' });
+const { config } = useTmConfig()
+const props = defineProps({
+    /**
+     * 当前值，可v-model
+     */
+    modelValue: {
+        type: Number,
+        default: 0
+    },
+    /**
+     * 最大值
+     */
+    max: {
+        type: Number,
+        default: 100
+    },
+    /**
+     * 组件宽
+     */
+    width: {
+        type: String,
+        default: "auto"
+    },
+    /**
+     * 最小值
+     */
+    min: {
+        type: Number,
+        default: 0
+    },
+    /**
+     * 是否禁用
+     */
+    disabled: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 步进值
+     */
+    step: {
+        type: Number,
+        default: 1
+    },
+    /**
+     * 如果进步值是小数位需要设置此值
+     */
+    decimalLen: {
+        type: Number,
+        default: 0
+    },
+    /**
+     * 按钮的颜色
+     */
+    btnColor: {
+        type: String,
+        default: "info"
+    },
+    /**
+     * 按钮的暗黑颜色
+     * 空值读取全局的Input暗黑背景色
+     */
+    darkBtnColor: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 输入框的背景色
+     */
+    bgColor: {
+        type: String,
+        default: "info"
+    },
+    /**
+     * 输入框的暗黑背景色
+     * 空值读取全局的Input暗黑背景色
+     */
+    darkBgColor: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 按钮的宽
+     */
+    btnWidth: {
+        type: String,
+        default: "64"
+    },
+    /**
+     * 输入框及按钮的高
+     */
+    height: {
+        type: String,
+        default: "64"
+    },
+    /**
+     * 按钮的圆角。
+     */
+    round: {
+        type: String,
+        default: "8"
+    },
+    /**
+     * 是否按钮与输入框独立开来
+     * 不和输入框粘一起。
+     */
+    splitBtn: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 按钮文本颜色，暗黑时取白色
+     */
+    btnFontColor: {
+        type: String,
+        default: "#333333"
+    },
+    /**
+     * 文本颜色,暗黑时取白色
+     */
+    fontColor: {
+        type: String,
+        default: "#333333"
+    },
+    /**
+     * 文本文字大小
+     */
+    fontSize: {
+        type: String,
+        default: "28"
+    },
+})
 
-		// 步幅，默认1
-		step: {
-			type: Number,
-			default: 1
-		},
-		//固定小数点位数，0表示整数
-		fixed: {
-			type: Number,
-			default: 0
-		},
-		//按钮的主题
-		color: {
-			type: String,
-			default: 'grey-4' //grey-2
-		},
-		bgColor: {
-			type: String,
-			default: 'grey-4'
-		},
-		linear: {
-			type: String,
-			default: ''
-		},
-		linearDeep: {
-			type: String,
-			default: 'light'
-		},
-		round: {
-			type: [String, Number],
-			default: 2
-		},
-		fontSize: {
-			type: [String, Number],
-			default: 28
-		},
-		//圆形按钮。
-		circular: {
-			type: [Boolean],
-			default: false
-		},
-		max: {
-			type: [Number],
-			default: 999
-		},
-		min: {
-			type: [Number],
-			default: 0
-		},
-		//按钮增加或者 减少前执行，返回 fase取消当前操作。
-		beforeEnter: {
-			type: [Function, Boolean],
-			default: true
-		},
-		modelValue: {
-			type: Number,
-			default: null
-		},
-		defaultValue: {
-			type: Number,
-			default: null
-		}
-	})
-	const emits = defineEmits(['update:modelValue', 'change'])
-	const setVal : Ref<number> = ref(props.defaultValue ?? '0')
-	const _min = computed(() => Number(props.min))
-	const _max = computed(() => Number(props.max))
-	const _step = computed(() => Number(props.step))
-	const _fixed = computed(() => Number(props.fixed))
+const emit = defineEmits([
+    /**
+     * 输入值或者点击按钮时触发
+     * @param {number} str - 当前的值。
+     */
+    'change', 
+    /**
+     * 等同vmodel
+     */
+    'update:modelValue'
+])
 
-	// 设置响应式全局组件库配置表。
-	const tmcfg = computed<tmVuetify>(() => store.tmStore)
-	//是否暗黑模式。
-	const isDark = computed(() => computedDark(props, tmcfg.value))
-	//计算主题
-	const tmcomputed = computed<cssstyle>(() => computedTheme({ ...props, color: props.bgColor, text: true }, isDark.value, tmcfg.value))
-	const _disabled = computed(() => props.disabled)
-	let timeid : any = NaN
-	let timeid2 : any = NaN
-	let timeid3 : any = NaN
+const _value = ref(0)
+const _input_value = ref("")
+const addDomDisabeld = ref(false)
+const surDomDisabeld = ref(false)
 
-	const isJianDisabled = computed(() => {
-		if (setVal.value <= _min.value) return true
-		return false
-	})
+const _round = computed((): string => {
+    return covetUniNumber(props.round, config.unit)
+})
 
-	const isAddDisabled = computed(() => {
-		if (setVal.value >= _max.value) return true
-		return false
-	})
-	watch(
-		() => props.modelValue,
-		(newValue, oldValue) => {
-			clearTimeout(timeid3)
-			timeid3 = setTimeout(function () {
-				let vs = forMart(props.modelValue)
-				// 多此一局的做法是在微信端值为"",0,"0"之间的变化是无法被watch监测到，也就触发不了更新函数。
-				if (setVal.value !== vs) {
-					setVal.value = null;
-					nextTick(() => {
-						setVal.value = vs;
-					})
-				}
-			}, 20);
+const _width = computed((): string => covetUniNumber(props.width, config.unit))
 
-		}
-	)
+const _fontSize = computed((): string => {
+    let fontSize = covetUniNumber(props.fontSize, config.unit);
+    if (config.fontSizeScale == 1) return fontSize;
+    let sizeNumber = parseInt(fontSize)
+    if (isNaN(sizeNumber)) {
+        sizeNumber = 14
+    }
+    return (sizeNumber * config.fontSizeScale).toString() + getUnit(fontSize)
+})
 
-	async function setStep(ty : string) {
-		if (props.disabled) return
-		if (typeof props.beforeEnter === 'function') {
-			uni.showLoading({
-				title: '...',
-				mask: true
-			})
-			let p = await props.beforeEnter(ty)
-			if (typeof p === 'function') {
-				p = await p(ty)
-			}
-			uni.hideLoading()
-			if (!p) return false
-		}
+const _unFontSize = computed((): string => props.fontSize)
 
-		let val = setVal.value
-		if (ty == "+") {
-			val = _handleIncrement(setVal.value)
-		} else if (ty == "-") {
-			val = _handleDecrement(setVal.value)
-		}
-		nextTick(function () {
-			jianchData(val)
-		})
-	}
+const _btnFontColor = computed((): string => getDefaultColor(props.btnFontColor))
 
-	function inputVal(e : any) {
-		var val = e.detail.value
-		clearTimeout(timeid2)
-		timeid2 = setTimeout(function () {
-			let rs = forMart(val);
-			jianchData(rs)
+const _fontColor = computed((): string => {
+    if (config.mode == 'dark') return '#ffffff'
+    return getDefaultColor(props.fontColor)
+})
 
-		}, 50)
-	}
+const _height = computed((): string => covetUniNumber(props.height, config.unit))
 
-	function jianchData(val : number) {
-		let vs = val.toFixed(_fixed.value)
-		let vsr = _clampValue(Number(vs))
-		if (setVal.value !== vsr) {
-			setVal.value = null;
-			nextTick(() => {
-				setVal.value = vsr;
-			})
-		}
-		emits('update:modelValue', vsr)
-		emits('change', vsr)
-	}
-	function longpressEvent(ty : string) {
-		if (props.disabled) return
-		clearInterval(timeid)
-		timeid = setInterval(async function () {
-			await setStep(ty)
-		}, 250)
-	}
+const _btnWidth = computed((): string => covetUniNumber(props.btnWidth, config.unit))
 
+const _splitBtn = computed((): boolean => props.splitBtn)
 
-	/**加 */
-	function _handleIncrement(value : number) {
-		const newValue = Math.min(value + Number(_step.value), _max.value);
-		if (_getDecimalPlaces(value)) {
-			return _clampValue(parseFloat(newValue.toFixed(_fixed.value)));
-		}
-		return _clampValue(newValue);
-	}
-	/**减 */
-	function _handleDecrement(value : number) {
-		const newValue = Math.max(value - Number(_step.value), _min.value);
-		if (_getDecimalPlaces(value)) {
-			return _clampValue(parseFloat(newValue.toFixed(_fixed.value)));
-		}
-		return _clampValue(newValue);
-	}
+const _btnColor = computed((): string => {
+    let color = getDefaultColor(props.btnColor)
+    if (config.mode == 'dark') {
+        if (props.darkBtnColor == "") {
+            color = config.inputDarkColor
+        } else {
+            color = getDefaultColor(props.darkBtnColor)
+        }
+    }
+    return color
+})
 
+const _bgColor = computed((): string => {
+    let color = getDefaultColor(props.bgColor)
+    if (config.mode == 'dark') {
+        if (props.darkBgColor == "") {
+            color = config.inputDarkColor
+        } else {
+            color = getDefaultColor(props.darkBgColor)
+        }
+    }
+    return color
+})
 
-	function _isInRange(value : number) : boolean {
-		return value >= _min.value && value <= _max.value;
-	}
-	function _clampValue(value : number) : number {
-		return Math.min(Math.max(value, _min.value), _max.value);
-	}
+const _max = computed((): number => props.max)
+const _min = computed((): number => props.min)
+const _step = computed((): number => props.step)
+const _disabled = computed((): boolean => props.disabled)
 
-	//返回正确的小数点值。
-	function _getDecimalPlaces(value : number | string) : number {
-		const match = value.toString().match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-		if (!match) {
-			return 0;
-		}
-		return Math.max(0, (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0));
-	}
+watch(() => props.modelValue, (newval: number) => {
+    if (newval == _value.value) return;
+    setValue(newval, false)
+})
 
-	function endlongpressEvent(ty : string) {
-		clearInterval(timeid)
-	}
+onMounted(() => {
+    setValue(props.modelValue, false)
+})
 
-	function forMart(val : string | number) : number {
-		val = parseFloat(typeof val === 'number' ? String(val) : val)
-		if (!isNaN(val) && _isInRange(val)) {
+const isInRange = (value: number): boolean => {
+    return value >= _min.value && value <= _max.value;
+}
 
-			if (_getDecimalPlaces(val)) {
-				val = Number(val.toFixed(_fixed.value))
-			}
-			return _clampValue(val);
-		} else {
-			let value = _clampValue(isNaN(val) ? 0 : val);
-			return _clampValue(value);
-		}
-	}
+const clampValue = (value: number): number => {
+    return Math.min(Math.max(value, _min.value), _max.value);
+}
+
+const getDecimalPlaces = (): number => {
+    return props.decimalLen;
+}
+
+/**
+ * 加
+ */
+const handleIncrement = () => {
+    const newValue = Math.min(_value.value + _step.value, props.max);
+    let val = clampValue(parseFloat(newValue.toFixed(props.decimalLen)));
+    setValue(val, true)
+}
+
+/**减 */
+const handleDecrement = () => {
+    const newValue = Math.max(_value.value - _step.value, props.min);
+    let val = clampValue(parseFloat(newValue.toFixed(props.decimalLen)));
+    setValue(val, true)
+}
+
+const handleInputChange = (event: any) => {
+    _input_value.value = event.detail.value
+}
+
+const inputBlur = () => {
+    const inputValue = parseFloat(_input_value.value);
+    if (!isNaN(inputValue)) {
+        let val = clampValue(inputValue);
+        setValue(val, true)
+    } else {
+        setValue(parseFloat(_min.value.toFixed(props.decimalLen)), true)
+    }
+}
+
+const setValue = (value: number, isEmit: boolean) => {
+    const clampedValue = clampValue(value);
+    _value.value = clampedValue;
+    _input_value.value = _value.value.toString();
+    addDomDisabeld.value = _value.value >= props.max
+    surDomDisabeld.value = _value.value <= props.min
+
+    if (isEmit) {
+        /**
+         * 等同v-model
+         */
+        emit("update:modelValue", clampedValue)
+        /**
+         * 输入值或者点击按钮时触发
+         * @param {number} 当前的值。
+         */
+        emit("change", clampedValue)
+    }
+}
 </script>
+<template>
+    <view class="xStepper" :style="{ width: _width, borderRadius: _round }">
+        <view :hover-start-time="20" :hover-stay-time="150" :hover-class="addDomDisabeld ? '' : 'xStepperHoverbtn'"
+            @click="handleDecrement" class="xStepperBtn"
+            :style="{ backgroundColor: _btnColor, height: _height, width: _btnWidth, opacity: surDomDisabeld ? 0.6 : 1, borderRadius: _splitBtn ? '50px' : '0rpx' }">
+            <tm-icon _style="pointer-events: none" :color="_btnFontColor" :size="_unFontSize"
+                name="subtract-line"></tm-icon>
+        </view>
+
+        <input @blur="inputBlur" @input="handleInputChange" :value="_input_value" class="xStepperInput"
+            :style="{ backgroundColor: _splitBtn ? 'transparent' : _btnColor, height: _height, color: _fontColor, fontSize: _fontSize }"
+            :type="decimalLen > 0 ? 'digit' : 'number'" />
+        <view :hover-start-time="20" :hover-stay-time="150" :hover-class="addDomDisabeld ? '' : 'xStepperHoverbtn'"
+            @click="handleIncrement" class="xStepperBtn"
+            :style="{ backgroundColor: _btnColor, height: _height, width: _btnWidth, borderRadius: _splitBtn ? '50px' : '0rpx' }">
+            <tm-icon :_style="` opacity: ${addDomDisabeld} ? 0.6 : 1,'pointerEvents': 'none'`" :color="_btnFontColor"
+                :size="_unFontSize" name="add-line"></tm-icon>
+        </view>
+
+    </view>
+</template>
 <style scoped>
-	.inputInit {}
+.xStepperBtnBtn {
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+.xStepperHoverbtn {
+    opacity: 0.8;
+}
+
+.xStepper {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.xStepperInput {
+    flex: 1;
+    margin: 0 1px;
+    padding: 0 5px;
+    text-align: center;
+    flex-shrink: 0;
+    min-width: 20px;
+}
+
+.xStepperBtn {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
 </style>

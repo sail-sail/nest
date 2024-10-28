@@ -1,118 +1,113 @@
-<template>
-	<view class="col" style="box-sizing: border-box">
-		<slot></slot>
-	</view>
-</template>
+<script setup lang="ts">
+import { ref, watch, provide, onBeforeMount, PropType, computed } from 'vue'
+import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, linearValid, getUnit, getUid } from "../../libs/tool";
+import { useTmConfig } from "../../libs/config";
+import { getDefaultColor, setTextColorLightByDark, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
 
-<script lang="ts" setup>
-import { watchEffect, computed, ref, provide,  Ref } from 'vue'
-import tmSheet from '../tm-sheet/tm-sheet.vue'
-const emits = defineEmits(['change', 'update:active-key'])
+/**
+ * @displayName 折叠面板
+ * @exportName tm-collapse
+ * @category 展示组件
+ * @description 可单，可多开,内部可放置tm-collapse-item子节点组件,动画采用了新css,兼容性请看这里:[点我](https://caniuse.com/?search=grid-template-rows)
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
+ */
+defineOptions({ name: 'TmCollapse' });
+
+const { config } = useTmConfig()
+
+
 const props = defineProps({
-	//当前展开并激活的面板。
-	activeKey: {
-		type: [Array],
-		default: () => []
-	},
-	//默认展开的面板
-	defaultActiveKey: {
-		type: [Array],
-		default: () => []
-	},
-	//是否设置为单个面板展开，默认fase，允许 多个面板同时展开。
-	accordion: {
-		type: [Boolean, String],
-		default: false
-	},
-	border: {
-		type: [Number, String],
-		default: 2
-	},
-	//项目展开和关闭图标的位置，可选left,right，默认是左left.
-	iconPos: {
-		type: String,
-		default: 'left'
-	},
-	//展开后的图标
-	openIcon: {
-		type: String,
-		default: 'tmicon-angle-up'
-	},
-	//关闭后的图标
-	closeIcon: {
-		type: String,
-		default: 'tmicon-angle-down'
-	}
+    /**
+     * 当前子项值。可v-model,类型兼容性高,因此不管你提供的是不是数组,最终同步时会被设置成数组
+     */
+    modelValue: {
+        type: [Array<string | number>, String, Number],
+        default: (): string[] => [] as string[]
+    },
+    /**
+     * 是否允许打开多个。
+     */
+    multiple: {
+        type: Boolean,
+        default: true
+    }
 })
 
-const _activeKey:any = ref([])
-watchEffect(() => {
-	_activeKey.value = [...props.activeKey, ...props.defaultActiveKey]
+const emit = defineEmits([
+    /**
+     * 变换时触发
+     * @param {String[]} value - 当前打开的值
+     */
+    'change',
+    'update:modelValue'
+])
+
+
+const activeName = ref<Array<string | number>>([])
+
+onBeforeMount(() => {
+    toggleActivate(props.modelValue)
 })
 
-if (props.accordion) {
-	if (_activeKey.value.length > 0) {
-		_activeKey.value = [_activeKey.value[0]]
-	}
-}
-const cacheKey: Ref<Array<string | number>> = ref([])
-const pushKey = function (key: string | number) {
-	cacheKey.value = [...new Set([...cacheKey.value, key])]
-}
-const setKey = function (key: string | number) {
-	let findkey = _activeKey.value.findIndex((el) => String(el) == String(key))
-	if (props.accordion) {
-		if (findkey > -1) {
-			_activeKey.value = []
-		} else {
-			_activeKey.value = [key]
-		}
-	} else {
-		if (findkey > -1) {
-			_activeKey.value.splice(findkey, 1)
-		} else {
-			_activeKey.value.push(key)
-		}
-	}
+provide('tmCollapseDefaultName', computed((): Array<string | number> => activeName.value))
 
-	emits('update:active-key', _activeKey.value)
-	emits('change', _activeKey.value)
-}
-emits('update:active-key', _activeKey.value)
-defineExpose({
-	tmCollapse: 'tmCollapse',
-	setKey: setKey,
-	pushKey: pushKey,
-	border: props.border
+watch(() => props.modelValue, (newValue: Array<string | number> | string | number) => {
+    if(newValue == activeName.value.join('')) return;
+    if(Array.isArray(newValue)){
+        if(newValue.join('') == activeName.value.join('')) return;
+    }
+    toggleActivate(newValue)
 })
-provide(
-	'tmCollapseKeyList',
-	computed(() => _activeKey.value)
-)
-provide(
-	'tmCollapseIconPos',
-	computed(() => props.iconPos)
-)
-provide(
-	'tmCollapseopenIcon',
-	computed(() => props.openIcon)
-)
-provide(
-	'tmCollapsecloseIcon',
-	computed(() => props.closeIcon)
-)
+/**
+ * 切换选中
+ */
+const toggleActivate = (name: Array<string | number> | string | number, isEmits = false) => {
+    let ar = [] as Array<string | number>
+    if (Array.isArray(name)) {
+        ar = name
+    } else if(name !==''&&name!=undefined&&name!=null) {
+        ar = [name]
+    }
+    
+    if (ar.length == 0) {
+        activeName.value = []
+    } else {
+        if (props.multiple) {
+            let diff = activeName.value.filter((item: string | number) => {
+                return ar.indexOf(item) == -1
+            })
+            let diffname = ar.filter((item: string | number) => {
+                return activeName.value.indexOf(item) == -1
+            })
+            activeName.value = [...diff, ...diffname].slice(0)
+        } else {
+            if (activeName.value.indexOf(ar[0]) != -1) {
+                activeName.value = []
+            } else {
+                activeName.value = [ar[0]]
+            }
+        }
+    }
+    
+    if (isEmits) {
+        let covervalue:string|number|Array<string|number> = activeName.value.slice(0)
+        emit('update:modelValue', covervalue)
+        emit('change', covervalue)
+    }
+}
+
+defineExpose({ toggleActivate })
+
 </script>
-
-<style scoped>
-.col {
-	/* #ifndef APP-NVUE */
-	display: flex;
-	flex-direction: column;
-	flex-shrink: 0;
-	flex-grow: 0;
-	flex-basis: auto;
-	align-items: stretch;
-	align-content: flex-start;
-	/* #endif */
-}
-</style>
+<template>
+    <view>
+        <!-- 
+		@slot 默认插槽，可放置tm-collapse-item子节点 
+		 -->
+        <slot></slot>
+    </view>
+</template>
+<style scoped></style>
