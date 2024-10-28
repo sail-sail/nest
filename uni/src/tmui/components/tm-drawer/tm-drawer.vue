@@ -1,570 +1,758 @@
-<template>
-	<view>
-		<!-- #ifdef APP-NVUE -->
-		<view @click="open"
-			><view :eventPenetrationEnabled="true"><slot name="trigger"></slot></view
-		></view>
-		<!-- #endif -->
-		<!-- #ifndef APP-NVUE -->
-		<view @click="open"><slot name="trigger"></slot></view>
-		<!-- #endif -->
- 
-		<tm-overlay
-			:inContent="props.inContent"
-			ref="overlayAni"
-			:duration="props.duration + 80"
-			@open="OverLayOpen"
-			@close="overclose"
-			:zIndex="props.zIndex"
-			:transprent="!props.mask"
-			@click="overlayClickFun"
-			:align="align_rp"
-			:teleport="props.teleport"
-			:overlayClick="false"
-			v-model:show="_show"
-		>
-			<tm-translate
-				:reverse="reverse_rp"
-				:width="anwidth"
-				:height="anheight"
-				ref="drawerANI"
-				:auto-play="false"
-				:name="aniname"
-				:duration="props.duration+80"
-				@end="playEndEvent"
-			>
-				<view
-					@click.stop="$event.stopPropagation()"
-					:style="[
-						{ width: anwidth, height: anheight },
-						!props.transprent ? tmcomputed.borderCss : '',
-						!props.transprent ? tmcomputed.backgroundColorCss : '',
-						!props.transprent ? tmcomputed.shadowColor : '',
-						customCSSStyle
-					]"
-					:class="[round_rp, 'flex flex-col overflow ', customClass]"
-				>	
-					
-					<view
-						v-if="!props.closeable && !props.hideHeader"
-						class="flex flex-row flex-row-center-center flex-between px-24"
-						style="height: 44px"
-					>
-						<view class="flex-4 flex-shrink">
-							<tm-text v-if="!props.hideCancel && !loading && !ok_loading" @click="cancel" :label="props.cancelText"></tm-text>
-						</view>
-						<view class="flex-8 px-32 flex-center">
-							<slot name="title"><tm-text _class="text-overflow-1 opacity-7" :label="props.title"></tm-text></slot>
-						</view>
-						<view class="flex-4 flex-shrink flex-row flex-row-center-end">
-							<tm-text :color="okColor" @click="ok" v-if="!ok_loading && !loading" :dark="props.dark" :label="props.okText"></tm-text>
-							<tm-icon
-								:color="okColor"
-								v-if="ok_loading || loading"
-								:spin="ok_loading || loading"
-								:dark="isDark"
-								:_class="isDark !== true ? 'opacity-4' : ''"
-								:fontSize="24"
-								:name="ok_loading || loading ? 'tmicon-shuaxin' : 'tmicon-times-circle-fill'"
-							></tm-icon>
-						</view>
-					</view>
-					<view
-						v-if="props.closeable && !props.hideHeader"
-						class="flex flex-row flex-row-center-center flex-between px-24"
-						style="height: 44px"
-					>
-						<view class="flex-9 pr-32">
-							<slot name="title"><tm-text _class="text-overflow-1 opacity-7" :dark="props.dark" :label="props.title"></tm-text></slot>
-						</view>
-						<view class="flex-3 flex-shrink flex-row flex-row-center-end">
-							<tm-icon
-								@click="cancel"
-								:dark="props.dark"
-								:_class="isDark !== true ? 'opacity-3' : ''"
-								:fontSize="36"
-								name="tmicon-times-circle-fill"
-							></tm-icon>
-						</view>
-					</view>
-					<!-- #ifdef APP-NVUE -->
-					<scroll-view :scroll-y="!props.disabbleScroll" :style="[{ height: contentHeight }]" class="overflow"
-						><slot name="default"></slot
-					></scroll-view>
-					<!-- #endif -->
-					<!-- #ifndef APP-NVUE -->
-					<view
-						:style="{
-							overflowY: props.disabbleScroll ? 'normal' : 'auto',
-							height: contentHeight
-						}"
-						><slot name="default"></slot
-					></view>
-					<!-- #endif -->
-					<slot name="foot"><view v-if="props.footHeight > 0" class="flex"></view></slot>
-				</view>
-			</tm-translate>
-		</tm-overlay>
-	</view>
-</template>
-
 <script lang="ts" setup>
+import { ref, computed, onMounted, onBeforeUnmount, watch, PropType, getCurrentInstance, onUpdated, nextTick } from 'vue';
+import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit, getUid } from "../../libs/tool";
+import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
+import { useTmConfig } from "../../libs/config";
+import { onPageScroll } from '@dcloudio/uni-app';
+
 /**
- * 抽屉
- * @description 别名poup弹层，提供，左，右，上，下，中弹出内容。
+ * @displayName 抽屉
+ * @exportName tm-drawer
+ * @category 反馈组件
+ * @description 提供四个方向的弹出。
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-import tmTranslate from '../tm-translate/tm-translate.vue'
-import tmText from '../tm-text/tm-text.vue'
-import tmIcon from '../tm-icon/tm-icon.vue'
-import tmOverlay from '../tm-overlay/tm-overlay.vue'
-import { getCurrentInstance, computed, ref, provide, inject, onMounted, onUnmounted, nextTick, watch } from 'vue'
-import { cssstyle, tmVuetify, colorThemeType } from '../../tool/lib/interface'
-import { custom_props, computedTheme, computedClass, computedStyle, computedDark } from '../../tool/lib/minxs'
-import { useTmpiniaStore } from '../../tool/lib/tmpinia'
-import { useWindowInfo } from '../../tool/useFun/useWindowInfo'
+defineOptions({ name: 'TmDrawer' });
+const { config } = useTmConfig()
 
-const drawerANI = ref<InstanceType<typeof tmTranslate> | null>(null)
-const overlayAni = ref<InstanceType<typeof tmOverlay> | null>(null)
-
-const store = useTmpiniaStore()
 const props = defineProps({
-	...custom_props,
-	//是否显示遮罩
-	mask: {
-		type: [Boolean, String],
-		default: true
-	},
-	//抽屉放置的位置
-	placement: {
+	/**
+	 * 自定义遮罩样式
+	 */
+	customStyle: {
 		type: String,
-		default: 'bottom' //top|left|right|bottom|center
+		default: ""
 	},
-	show: {
-		type: [Boolean],
+	/**
+	 * 标题
+	 */
+	title: {
+		type: String,
+		default: "标题"
+	},
+	/**
+	 * 显示底部操作栏
+	 */
+	showFooter: {
+		type: Boolean,
 		default: false
 	},
-	width: {
-		type: Number,
-		default: 500
+	/**
+	 * 是否显示标题
+	 */
+	showTitle: {
+		type: Boolean,
+		default: true
 	},
-	height: {
-		type: Number,
-		default: 600
+	/**
+	 * 是否显示底部关闭按钮
+	 */
+	showClose: {
+		type: Boolean,
+		default: false
 	},
-	round: {
-		type: Number,
-		default: 10
-	},
-	//弹出的动画时间单位ms.
-	duration: {
-		type: Number,
-		default: 300
-	},
-	//是否允许点击遮罩关闭
+	/**
+	 * 遮罩是否允许点击被关闭
+	 */
 	overlayClick: {
 		type: Boolean,
 		default: true
 	},
-	transprent: {
-		type: [Boolean, String],
-		default: false
-	},
-	//如果显示关闭。标题栏被替换为左标题右关闭按钮。
-	closeable: {
-		type: [Boolean, String],
-		default: false
-	},
-	color: {
-		type: String,
-		default: 'white'
-	},
-	title: [String],
-	okText: {
-		type: [String],
-		default: '完成'
-	},
-	okColor: {
-		type: [String],
-		default: 'primary'
-	},
-	//true时，确认按钮将出现加载状态。
-	okLoading: {
-		type: [Boolean, String],
-		default: false
-	},
-	cancelText: {
-		type: [String],
-		default: '取消'
-	},
-	hideCancel: {
-		type: [Boolean, String],
-		default: false
-	},
-	//隐藏工具栏，标题，取消，确认
-	hideHeader: {
-		type: [Boolean, String],
-		default: false
-	},
-	disabled: {
+	/**
+	 * 显示可v-model:show双向绑定
+	 */
+	show: {
 		type: Boolean,
 		default: false
 	},
-	zIndex: {
-		type: [Number, String],
-		default: 401
-	},
-	unit: {
-		type: String,
-		default: 'rpx'
-	},
-	disabbleScroll: {
-		type: Boolean,
-		default: false
-	},
-	/** 是否嵌入弹层，开启后将在它的父组件内执行弹层。 */
-	inContent: {
-		type: Boolean,
-		default: false
-	},
-	footHeight: {
-		type: Number,
-		default: 0
-	},
-	/** 是否使用teleport */
-	teleport: {
+	/**
+	 * 显示取消按钮
+	 */
+	showCancel: {
 		type: Boolean,
 		default: true
 	},
-	/**打开前执行 */
-	beforeOpen: {
-		type: Function,
-		default: null
+	/**
+	 * 取消按钮的文本
+	 */
+	cancelText: {
+		type: String,
+		default: "取消"
 	},
-	/**关点击ok前执行，如果返回是false，将阻止关闭. */
-	beforeOk: {
-		type: Function,
-		default: null
+	/**
+	 * 确认按钮的文本
+	 */
+	confirmText: {
+		type: String,
+		default: "确认"
 	},
-	/**点击取消前执行，如果返回fase将阻止关闭. */
-	beforeCance: {
-		type: Function,
-		default: null
+	/**
+	 * 动画时间
+	 */
+	duration: {
+		type: Number,
+		default: 300
+	},
+	/**
+	 * 打开方向。
+	 */
+	position: {
+		type: String as PropType<"top" | "bottom" | "left" | "right">,
+		default: "bottom"
+	},
+	/**
+	 * 打开方向为上和下时的圆角
+	 * 空值时，取全局配置的圆角。
+	 */
+	round: {
+		type: [String, Number],
+		default: ""
+	},
+	/**
+	 * 左右时为内容宽，
+	 * 上下时为内容高
+	 * 百分比，数字字符或者带单位,或者为auto(根据内容自动高度或者宽高)
+	 */
+	size: {
+		type: [String, Number],
+		default: "50%"
+	},
+	/**
+	 * 弹层最大的高度值，默认为屏幕的可视高
+	 * 提供值时不能为百分比，可以是px,rpx单位数字。如果你不带单位，默认转换为rpx单位。
+	 */
+	maxHeight: {
+		type: String,
+		default: ""
+	},
+	/**
+	 * 背景颜色
+	 */
+	bgColor: {
+		type: String,
+		default: 'white'
+	},
+	/**
+	 * 暗黑背景颜色，如果不提供默认读取全局的sheet配置
+	 */
+	darkBgColor: {
+		type: String,
+		default: ''
+	},
+
+	/**
+	 * 是否禁用内部的scroll标签
+	 * 禁用后内容不会滚动，如果设定了指定高，内容超出指定高，会被裁切
+	 * 但如果没有指定高，内容自动的话，高是自动的。
+	 */
+	disabledScroll: {
+		type: Boolean,
+		default: false
+	},
+	/**
+	 * 内容区域左右和下的边距。
+	 */
+	contentMargin: {
+		type: String,
+		default: '24'
+	},
+	/**
+	 * 宽屏时是否让内容剧中显示
+	 * 并限制其它宽为屏幕宽，只展示中间内容以适应宽屏。
+	 * 注意只有top,bottom才会生效。
+	 */
+	widthCoverCenter: {
+		type: Boolean,
+		default: false
+	},
+	/**
+	 * 距离顶部的偏移量
+	 */
+	offsetTop: {
+		type: [String, Number],
+		default: '0'
+	},
+	/**
+	 * 弹层的层级
+	 */
+	zIndex: {
+		type: [String, Number],
+		default: 1100
+	},
+	/**
+	 * 懒加载
+	 * 为了解决业务布局节点超多时,你可能需要内容延迟加载以免阻塞动画流畅度.
+	 * 如果你启用了lazy,每天次打开时,动画执行后才会显示内容.这样动画就流畅,不会因为节点过多造成的卡.
+	 */
+	lazy: {
+		type: Boolean,
+		default: false
+	},
+	/**
+	 * 关闭前执行，可以是异步函数，只有当用户点击confirm时才会触发。如果返回false将阻止关闭。true允许关闭。
+	 */
+	beforeClose: {
+		type: [Function,Boolean] as PropType<() => Promise<boolean>>,
+		default: true
 	}
 })
-const emits = defineEmits(['click', 'open', 'close', 'update:show', 'ok', 'cancel'])
-const proxy = getCurrentInstance()?.proxy ?? null
-const sysinfo = useWindowInfo();
-// 设置响应式全局组件库配置表。
-const tmcfg = computed<tmVuetify>(() => store.tmStore)
-//自定义样式：
-const customCSSStyle = computed(() => computedStyle(props))
-//自定类
-const customClass = computed(() => computedClass(props))
-//是否暗黑模式。
-const isDark = computed(() => computedDark(props, tmcfg.value))
-//计算主题
-const tmcomputed = computed<cssstyle>(() => computedTheme(props, isDark.value, tmcfg.value))
 
-const reverse = ref(true)
-const timeid = ref(0)
-let timerId: any = NaN
-let timerIdth: any = NaN
-let timerIdth_flas = false
-uni.hideKeyboard()
-let _show = ref(props.show)
-const isPlaying = ref(false)
-function debounce(func: Function, wait = 500, immediate = false) {
-	// 清除定时器
-	if (!isNaN(timerId)) clearTimeout(timerId)
-	// 立即执行，此类情况一般用不到
+const emit = defineEmits([
+	/**
+	 * 点击遮罩事件
+	 */
+	'click',
+	/**
+	 * 关闭是触发
+	 */
+	'close',
+	/**
+	 * 打开时触发
+	 */
+	'open',
+	/**
+	 * 打开前执行
+	 */
+	'beforeOpen',
+	/**
+	 * 关闭前执行
+	 */
+	'beforeClose',
+	/**
+	 * 等同v-model:show
+	 */
+	'update:show',
+	/**
+	 * 取消时触发
+	 */
+	'cancel',
+	/**
+	 * 确认时触发
+	 */
+	'confirm'
+])
 
-	if (immediate) {
-		timerId = setTimeout(() => {
-			timerId = NaN
-		}, wait)
-		typeof func === 'function' && func()
+const isLoading = ref(false)
+const _width = ref(0)
+const _height = ref(0)
+const showOverflay = ref(false)
+const actinon = ref(false)
+const status = ref("")
+const id = ref("tmDrawer" + getUid())
+const wrapId = ref("tmDrawerWrap" + getUid())
+const first = ref(true)
+const tid = ref(10)
+const tid2 = ref(0)
+const windtop = ref(0)
+const windtopReal = ref(0)
+const tantiaoTrue = ref(false)
+const safeFooterHeight = ref(0)
+const lezyShowModal = ref(props.lazy ? false : true)
+watch(() => props.show, (newVal) => {
+	if (newVal) {
+		showAlert()
 	} else {
-		// 设置定时器，当最后一次操作后，timeout不会再被清除，所以在延时wait毫秒后执行func回调方法
-		timerId = setTimeout(() => {
-			typeof func === 'function' && func()
-		}, wait)
+		closeAlert()
 	}
-}
+})
 
-function throttle(func: Function, wait = 500, immediate = true) {
-	if (immediate) {
-		if (!timerIdth_flas) {
-			timerIdth_flas = true
-			// 如果是立即执行，则在wait毫秒内开始时执行
-			typeof func === 'function' && func()
-
-			timerIdth = setTimeout(() => {
-				timerIdth_flas = false
-			}, wait)
-		}
-	} else {
-		if (!timerIdth_flas) {
-			timerIdth_flas = true
-			// 如果是非立即执行，则在wait毫秒内的结束处执行
-			timerIdth = setTimeout(() => {
-				timerIdth_flas = false
-				typeof func === 'function' && func()
-			}, wait)
-		}
+const _lazy = computed(() => props.lazy)
+const _customStyle = computed(() => props.customStyle)
+const _show = computed(() => props.show)
+const _widthCoverCenter = computed(() => props.widthCoverCenter)
+const _showClose = computed(() => props.showClose)
+const _duration = computed(() => props.duration)
+const _position = computed(() => props.position)
+const _title = computed(() => props.title)
+const _showTitle = computed(() => props.showTitle)
+const _round = computed(() => {
+	let round = props.round
+	if (round == "") {
+		round = config.drawerRadius
 	}
-}
+	let radius = covetUniNumber(round, config.unit)
 
-timeid.value = uni.$tm.u.getUid(4)
-if (_show.value) {
-	reverse.value = false
-}
-watch(
-	() => props.show,
-	(val) => {
-		if (val) {
-			reverse.value = true
+	let _r = "none"
+	if (props.position == 'top') {
+		_r = `0px 0px ${radius} ${radius}`
+	}
+	if (props.position == 'bottom') {
+		_r = `${radius} ${radius} 0px 0px`
+	}
+	return _r
+})
+const _offset = computed(() => {
+	let offset = covetUniNumber(props.offsetTop, config.unit)
+	let x = parseFloat(offset)
+	let unit = getUnit(offset)
+	if (unit == 'rpx') {
+		x = uni.upx2px(x)
+	}
+	return x
+})
+const _size = computed(() => covetUniNumber(props.size, config.unit))
+const _contentMargin = computed(() => covetUniNumber(props.contentMargin, config.unit))
+const _showFooter = computed(() => props.showFooter)
+const _maxHeight = computed(() => {
+	if (props.maxHeight == "") return ""
+	if (props.position == 'left' || props.position == 'right') return ""
+
+	return covetUniNumber(props.maxHeight, config.unit)
+})
+const _showCancel = computed(() => props.showCancel)
+const _cancelText = computed(() => props.cancelText)
+const _confirmText = computed(() => props.confirmText)
+const _animationFun = computed(() => config.animation)
+const _bgColor = computed(() => {
+	let bgcolor = props.bgColor
+	if (config.mode == 'dark') {
+		if (props.darkBgColor != '') {
+			bgcolor = props.darkBgColor
 		} else {
-			reverse.value = false
-			overlayAni.value?.close()
+			bgcolor = config.sheetDarkColor
 		}
-		if (_show.value !== props.show) {
-			nextTick(() => {
-				drawerANI.value?.play()
-				isPlaying.value=true;
-			})
-		}
-		_show.value = props.show
 	}
-)
+	return getDefaultColor(bgcolor)
+})
+const __height = computed(() => {
+	let h = '100%'
+	// #ifdef WEB
+	h = `calc(100% - ${windtopReal.value}px)`
+	// #endif
+	// #ifdef APP
+	if (_offset.value > 0) {
+		h = _height.value + 'px'
+	}
+	// #endif
+	return h
+})
+const _titleFontSize = computed(() => (config.fontSizeScale * 16).toString() + 'px')
+const _isDark = computed(() => config.mode == 'dark')
+
+// Lifecycle hooks
 onMounted(() => {
-	if (_show.value) {
-		open()
-	}
-})
-const ok_loading = computed(() => props.okLoading)
-const loading = ref(false)
-const round_rp = computed(() => {
-	if (aniname.value == 'left') return 'round-r-' + props.round
-	if (aniname.value == 'right') return 'round-l-' + props.round
-	if (aniname.value == 'up') return 'round-b-' + props.round
-	if (aniname.value == 'down') return 'round-t-' + props.round
-	if (aniname.value == 'zoom') return 'round-' + props.round
-})
-const reverse_rp = computed(() => {
-	if (aniname.value != 'zoom') return reverse.value
-	return !reverse.value
-})
-const aniname = computed(() => {
-	if (props.placement == 'center') return 'zoom'
-	if (props.placement == 'top') return 'up'
-	if (props.placement == 'bottom') return 'down'
-	return props.placement
-})
-const anwidth = computed(() => {
-	if (aniname.value == 'zoom') {
-		return props.width + props.unit
-	}
-	if (props.placement == 'left' || props.placement == 'right') {
-		return props.width + props.unit
-	}
-	return sysinfo.width + 'px'
-})
-const anheight = computed(() => {
-	let wucha = 0
-	if (props.placement == 'top' || props.placement == 'bottom' || aniname.value == 'zoom') {
-		return props.height + wucha + props.unit
-	}
-	return sysinfo.height + 'px'
-})
-const contentHeight = computed(() => {
-	let base_height = props.hideHeader ? 0 : 44
-	let _footerHeight = uni.$tm.u.topx(props.footHeight)
-	if (props.placement == 'top' || props.placement == 'bottom' || aniname.value == 'zoom') {
-		let h = props.height
-		if (props.unit == 'rpx') {
-			h = uni.upx2px(props.height)
-		}
-		return h - base_height - _footerHeight + 'px'
-	}
-	return sysinfo.height - base_height - _footerHeight + 'px'
-})
-const align_rp = computed(() => {
-	if (aniname.value == 'down') {
-		return 'flex-col-bottom-center'
-	}
-	if (aniname.value == 'up') {
-		return 'flex-top-custom'
-	}
-	if (aniname.value == 'left') {
-		return 'flex-row-top-start'
-	}
-	if (aniname.value == 'right') {
-		return 'flex-row-bottom-start'
-	}
-	if (aniname.value == 'zoom') {
-		return 'flex-center'
-	}
-})
-
-async function _beforeOpenFun() {
-	if (typeof props.beforeOpen === 'function') {
-		loading.value = true
-		let p = await props.beforeOpen()
-		if (typeof p === 'function') {
-			p = await p()
-		}
-		loading.value = false
-	}
-}
-
-async function _beforeOkFun() {
-	let p = true
-	if (typeof props.beforeOk === 'function') {
-		loading.value = true
-		p = await props.beforeOk()
-		if (typeof p === 'function') {
-			p = await p()
-		}
-		loading.value = false
-		if (!p) return
-	}
-	return p
-}
-
-async function _beforeCancelFun() {
-	let p = true
-	if (typeof props.beforeCance === 'function') {
-		loading.value = true
-		p = await props.beforeCance()
-		if (typeof p === 'function') {
-			p = await p()
-		}
-		loading.value = false
-		if (!p) return
-	}
-	return p
-}
-
-function OverLayOpen() {
-	// nextTick(function() {
-	// 	drawerANI.value?.play();
-	// })
-	_beforeOpenFun()
-	_show.value = true
-	emits('open')
-	emits('update:show', true)
-}
-function overclose() {
-	nextTick(() => {
-		_show.value = false
-		emits('close')
-		emits('update:show', false)
-	})
-}
-async function overlayClickFun(e: Event) {
+	lezyShowModal.value = props.lazy ? false : true
+	let sys = uni.getWindowInfo()
+	// #ifdef WEB
+	_width.value = sys.windowWidth
+	_height.value = sys.windowHeight
 	
-	if (!props.overlayClick || props.disabled || !overlayAni.value || loading.value||isPlaying.value) return
-	emits('click', e)
-	if (!(await _beforeCancelFun())) return
-	reverse.value = false
-	throttle(
-		async () => {
-			emits('cancel')
-			overlayAni.value?.close()
-			drawerANI.value?.play()
-			
-		},
-		props.duration + 80,
-		true
-	)
-}
-function playEndEvent(){
-	isPlaying.value = false
-}
-
-
-async function ok() {
-	if (props.disabled || loading.value) return
-	if (!(await _beforeOkFun())) return
-	reverse.value = false
-	debounce(
-		() => {
-			emits('ok')
-			overlayAni.value?.close()
-			drawerANI.value?.play()
-		},
-		500,
-		true
-	)
-}
-
-async function cancel() {
-	if (props.disabled || loading.value) return
-	if (!(await _beforeCancelFun())) return
-	reverse.value = false
-	debounce(
-		() => {
-			emits('cancel')
-			overlayAni.value?.close()
-			drawerANI.value?.play()
-		},
-		500,
-		true
-	)
-}
-
-//外部调用。
-function open() {
-	reverse.value = true
-	_show.value = true
-	nextTick(() => {
-		drawerANI.value?.play()
-	})
-}
-
-//外部手动调用关闭方法
-function close() {
-	reverse.value = false
-	overlayAni.value?.close()
-	drawerANI.value?.play()
-}
-
-//外部调用的方法。
-defineExpose({
-	close: close,
-	open: open
+	windtop.value = sys.windowTop + (_position.value=='bottom'?0:_offset.value)
+	windtopReal.value = _position.value=='bottom'?(sys.windowTop +_offset.value):sys.windowTop
+	// #endif
+	// #ifdef APP
+	_width.value = sys.windowWidth
+	_height.value = sys.windowHeight
+	windtop.value = _offset.value
+	// #endif
+	safeFooterHeight.value = sys.safeAreaInsets.bottom == 0 ? 16 : sys.safeAreaInsets.bottom
+	if (props.show) {
+		showAlert()
+	}
 })
+
+onBeforeUnmount(() => {
+	clearTimeout(tid.value)
+	clearTimeout(tid2.value)
+})
+
+const cancelEvt = () => {
+	emit('cancel')
+	closeAlert()
+}
+
+const confirmEvt = async () => {
+	emit('confirm')
+	let isPass = true;
+	if (typeof props.beforeClose == 'function') {
+		isLoading.value = true;
+		// @ts-ignore
+		isPass = await props.beforeClose();
+	}
+	isLoading.value = false;
+	if (!isPass) {
+		return;
+	}
+	closeAlert()
+}
+
+
+const onClickOverflowy = (evt: Event) => {
+	evt.stopPropagation()
+	/**
+	 * 点击遮罩事件
+	 */
+	emit("click")
+	if (isLoading.value) return
+	if (!props.overlayClick) {
+		clearTimeout(tid2.value)
+		tantiaoTrue.value = true
+		tid2.value = setTimeout(() => {
+			tantiaoTrue.value = false
+		}, 200);
+		return;
+	}
+	closeAlert()
+
+}
+
+const closeAlert = () => {
+	if (actinon.value || isLoading.value) return
+	if (status.value == 'close') return
+	actinon.value = true
+	status.value = 'close'
+	/**
+	 * 关闭前执行
+	 */
+	emit('beforeClose')
+
+	clearTimeout(tid.value)
+	tid.value = setTimeout(() => {
+		onEnd()
+	}, _duration.value)
+}
+
+const showAlert = () => {
+	if (actinon.value) return
+	if (status.value == 'open') return
+	showOverflay.value = true
+	actinon.value = true
+
+	/**
+	 * 打开前执行
+	 */
+	emit('beforeOpen')
+	clearTimeout(tid.value)
+	tid.value = setTimeout(() => {
+		status.value = 'open'
+		tid.value = setTimeout(() => {
+			onEnd()
+		}, _duration.value)
+	}, 50)
+}
+
+function openDrawer() {
+	showAlert();
+}
+
+function onEnd() {
+	actinon.value = false;
+
+	if (status.value === 'close') {
+		showOverflay.value = false;
+		emit('close');
+		emit('update:show', false);
+		if (_lazy.value) {
+			lezyShowModal.value = false;
+		}
+	} else {
+		emit('open');
+		if (_lazy.value) {
+			lezyShowModal.value = true;
+		}
+	}
+}
+
+
+
+function maskerMove(evt: TouchEvent) {
+	evt.preventDefault();
+}
+
+
+
 </script>
+<script lang="ts">
+export default {
+	options: {
+		styleIsolation: "apply-shared",
+		virtualHost: true,
+		addGlobalClass: true,
+		multipleSlots: true,
+	},
+};
+</script>
+<template>
+	<view>
+		<view @click="openDrawer">
+			<!--
+			标签触发显示遮罩，免于使用变量控制
+			@slot {Boolean} show - 当前是否已显示
+			-->
+			<slot name="trigger" :show="show"></slot>
+		</view>
+		<!-- #ifdef H5 -->
+		<teleport to="uni-app">
+			<!-- #endif -->
+			<!-- #ifdef MP-WEIXIN -->
+			<root-portal>
+				<!-- #endif -->
+				<view @click="onClickOverflowy" @touchmove="maskerMove" v-if="showOverflay" :id="id" ref="tmDrawerWrap"
+					class="tmDrawerWrap" :class="[
+						status == 'open' ? 'tmModalWrap_on' : 'tmModalWrap_off',
+						(_position == 'top' || _position == 'bottom') && _widthCoverCenter ? 'tmDrawerWrapContentMinwidthWrapDir' : '',
+						'tmDrawerWrap_' + _position
+					]" :style="[{
+						width: '100%',
+						top: (windtop + 'px'),
+						height: __height,
+						zIndex: zIndex,
+						'transition-timing-function': _animationFun
+					}, _customStyle]">
 
-<style scoped>
-.flex-left-custom {
-	display: flex;
-	justify-content: flex-start;
-	align-items: flex-start;
+					<view @click.stop="" ref="tmDrawerWrapContent" class="tmDrawerWrapContent" :class="[
+						(_position == 'top' || _position == 'bottom') && _widthCoverCenter ? 'tmDrawerWrapContentMinwidth' : '',
+						'tmDrawerWrapContent_' + _position + (status == 'open' ? '_on' : ''),
+						tantiaoTrue ? 'tmModalWrapContent_Tantiao' : ''
+					]" :id="wrapId" :style="{
+						width: _position == 'left' || _position == 'right' ? _size : '100%',
+						height: _position == 'left' || _position == 'right' ? '100%' : _size,
+						borderRadius: _round,
+						maxHeight: _maxHeight != '' ? _maxHeight : '100%',
+						minHeight:_size == 'auto'?'350rpx':'0px',
+						'transition-timing-function': _animationFun,
+						backgroundColor: _bgColor
+					}">
+
+						<view v-if="_showClose" class="tmDrawerXclose">
+							<tm-icon  @click="closeAlert" color="#dcdcdc" size="52"
+								name="close-circle-fill"></tm-icon>
+						</view>
+						<view>
+							<view v-if="_showTitle" class="tmDrawerTitleBox">
+								<!-- 
+								标题插槽
+								@slot {Boolean} show - 当前是否已显示
+								-->
+								<slot name="title" :show="show">
+									<text
+										:style="{ fontSize: _titleFontSize, color: _isDark ? 'white' : 'black', opacity: '0.64' }"
+										class="tmDrawertitleBox">{{ _title }}</text>
+								</slot>
+							</view>
+						</view>
+
+						<view v-if="!disabledScroll && _size != 'auto'" style="flex: 1;" class="tmModalWrapBoxContent">
+							<scroll-view style="height:100%;position:absolute;width:100%;" :scroll-y="true"
+								:rebound="false">
+								<view :style="{ padding: `0px ${_contentMargin}  0px ${_contentMargin}` }">
+									<!--
+									@slot 默认插槽
+									-->
+									<slot></slot>
+								</view>
+							</scroll-view>
+						</view>
+						<view v-else
+							:style="{ height: '100%', padding: `0px ${_contentMargin}  0px ${_contentMargin}` }">
+							<!--
+							@slot 默认插槽
+							-->
+							<slot></slot>
+						</view>
+
+
+						<view v-if="showFooter && lezyShowModal" class="tmDrawerFooter"
+							:style="{ backgroundColor: _bgColor }">
+							<view :style="{ height: _contentMargin }"></view>
+
+							<!--
+							@slot 底部操作栏
+							-->
+							<slot name="footer">
+								<view
+									style="flex-direction: row;align-items: center;justify-content: center;display:flex;">
+									<tm-button :loading="isLoading" width="0px" @click="cancelEvt" v-if="_showCancel"
+										skin="thin" style="margin-right: 16px;flex:1">{{ _cancelText }}</tm-button>
+									<tm-button :loading="isLoading" width="0px" @click="confirmEvt" style="flex:1">{{
+										_confirmText
+										}}</tm-button>
+								</view>
+							</slot>
+							<view :style="{ height: safeFooterHeight + 'px' }"></view>
+						</view>
+					</view>
+
+				</view>
+				<!-- #ifdef MP-WEIXIN -->
+			</root-portal>
+			<!-- #endif -->
+
+			<!-- #ifdef H5 -->
+		</teleport>
+		<!-- #endif -->
+	</view>
+</template>
+<style lang="scss" scoped>
+.tmDrawerFooter {
+	width: 100%;
+	padding: 0 24rpx 0px 24rpx;
+	box-sizing: border-box;
 }
 
-.flex-right-custom {
-	display: flex;
-	justify-content: flex-start;
-	align-items: flex-end;
+.tmDrawerXclose {
+	position: absolute;
+	right: 24rpx;
+	top: 18rpx;
+	z-index: 100;
 }
 
-.flex-top-custom {
+.tmDrawerTitleBox {
+	height: 50px;
 	display: flex;
-	justify-content: flex-start;
-	align-items: flex-start;
-}
-
-.flex-end-custom {
-	display: flex;
-	justify-content: flex-end;
-	align-items: flex-end;
-}
-
-.flex-center-custom {
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+    font-weight: bold;
+}
+
+.tmDrawertitleBox {
+	max-width: 175px;
+	overflow: hidden;
+	line-clamp: 1;
+	display: -webkit-box;
+	text-overflow: ellipsis;
+
+}
+
+.tmDrawerWrap_bottom {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+}
+
+.tmDrawerWrap_top {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+}
+
+.tmDrawerWrap_left {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+
+.tmDrawerWrap_right {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+}
+
+.tmDrawerWrapContent {
+	transition-duration: 350ms;
+	transition-property: transform;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+.tmDrawerWrapContentMinwidth {
+	max-width: 500px;
+}
+
+.tmDrawerWrapContentMinwidthWrapDir {
+	align-items: center;
+}
+
+.tmDrawerWrapContent_bottom {
+	transform: translate(0%, 100%);
+}
+
+@keyframes bottomAnimate3d {
+
+	0% {
+		transform: translate(0%, 100%) translate3d(0%, 20px, 0px) rotateX(45deg)
+	}
+
+	100% {
+		transform: translate(0%, 0%) translate3d(0, 0, 0px) rotateX(0deg)
+	}
+}
+
+.tmDrawerWrapContent_bottom_on {
+	transform: translate(0%, 0%);
+}
+
+.tmDrawerWrapContent_top {
+	transform: translate(0%, -100%);
+}
+
+.tmDrawerWrapContent_top_on {
+	transform: translate(0%, 0%);
+}
+
+.tmDrawerWrapContent_left {
+	transform: translate(-100%, 0%);
+}
+
+.tmDrawerWrapContent_left_on {
+	transform: translate(0%, 0%);
+}
+
+.tmDrawerWrapContent_right {
+	transform: translate(100%, 0%);
+}
+
+.tmDrawerWrapContent_right_on {
+	transform: translate(0%, 0%);
+}
+
+.tmDrawerWrap {
+	opacity: 1;
+	position: fixed;
+	left: 0;
+	top: 0px;
+	transition-duration: 350ms;
+	transition-property: background-color;
+	perspective: 1000px;
+	transform-style: preserve-3d;
+}
+
+.tmModalWrap_on {
+	background-color: rgba(0, 0, 0, 0.4);
+	backdrop-filter: blur(3px);
+}
+
+.tmModalWrap_off {
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.tmModalWrapBoxContent {
+	position: relative;
+}
+
+@keyframes tantiao {
+	0% {
+		transform: scale(1);
+		opacity: 1;
+	}
+
+	60% {
+		transform: scale(1.01);
+	}
+
+	75% {
+		transform: scale(0.97);
+		opacity: 0.9;
+
+	}
+
+	85% {
+		transform: scale(1.01);
+	}
+
+	100% {
+		transform: scale(1);
+		opacity: 1;
+
+	}
+}
+
+.tmModalWrapContent_Tantiao {
+	animation: tantiao 0.15s linear;
 }
 </style>

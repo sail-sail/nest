@@ -1,251 +1,289 @@
-<!--
- * @Date: 2022-03-29 12:54:41
- * @LastEditors: tmzdy
- * @Author: tmzdy
- * @Description: 文件
--->
 <template>
-	<view
-		:hover-class="(_props.url ? ' opacity-7 ' : '  ') + _props.hoverClass"
-		v-if="_blue_sheet"
-		:blurEffect="blurEffect"
-		@click="onClick"
-		@longpress="longpress"
-		@touchend="touchend"
-		@touchstart="touchstart"
-		@touchcancel="touchcancel"
-		@mousedown="mousedown"
-		@mouseup="mouseup"
-		@mouseleave="mouseleave"
-		:class="['flex flex-col noNvueBorder', parentClass, !isDisabledRoundAndriod ? round : '']"
-		:style="[
-			{
-				marginLeft: margin[0] + 'rpx',
-				marginTop: margin[1] + 'rpx',
-				marginRight: margin[2] + 'rpx',
-				marginBottom: margin[3] + 'rpx',
-				paddingLeft: padding[0] + 'rpx',
-				paddingTop: padding[1] + 'rpx',
-				paddingRight: padding[2] + 'rpx',
-				paddingBottom: padding[3] + 'rpx'
-			},
-			_height_real ? { height: _height + _props.unit } : '',
-			_width_real ? { width: _width + _props.unit } : '',
-			tmcomputed.borderCss,
-			blur && store.tmStore.os == 'ios' && isNvue === true ? '' : _bgcolor,
-			!transparent && _props.shadow > 0 ? tmcomputed.shadowColor : '',
-			!transparent && blur ? { backdropFilter: 'blur(6px)' } : '',
-			customCSSStyle
-		]"
-	>
-		<view :class="['flex noNvueBorder flex-col flex-1', customClass]" :style="_props.contStyle">
-			<slot></slot>
-
-		</view>
-	</view>
+  <view
+    @click="OnClick"
+    class="tmSheet"
+    @touchstart="touchStart"
+    @touchcancel="touchEnd"
+    @touchend="touchEnd"
+    @mousedown="touchStart"
+    @mouseup="touchEnd"
+    @mouseleave="touchEnd"
+    :style="[
+      {
+        width: _width,
+        height: _height,
+      },
+      buttonStyle,
+    ]"
+  >
+    <!-- @slot 默认插槽 -->
+    <slot></slot>
+    <view
+      v-if="_attrs.loading"
+      class="tmSheetLoading"
+      :style="{ borderRadius: buttonStyle.borderRadius }"
+    >
+      <tm-icon name="loader-line" size="50" spin color="primary"></tm-icon>
+    </view>
+  </view>
 </template>
+
 <script lang="ts" setup>
+import { computed, ref } from "vue";
+import { arrayNumberValid, arrayNumberValidByStyleMP, arrayNumberValidByStyleBorderColor, arrayNumberValidByStyleBorderStyle, covetUniNumber, linearValid } from "../../libs/tool";
+import { useTmConfig } from "../../libs/config";
+import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
+
 /**
- * 基础容器
- * @description 提供了基础窗口布局，以代替view进行布局，可随意修改样式。
+ * @displayName 容器
+ * @exportName tm-sheet
+ * @category 常用组件
+ * @description 像一张纸张一样，用于包裹内容区域,可塑性高,可以快速用来布局.
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-import { computed, ref, provide, watch, PropType, nextTick } from 'vue'
-import { custom_props} from '../../tool/lib/minxs'
-import { useTmpiniaStore } from '../../tool/lib/tmpinia'
-import useTheme from '../../tool/useFun/useTheme'
-const store = useTmpiniaStore()
-// 混淆props共有参数
-const props = defineProps({
-	...custom_props,
-	parenClass: {
-		type: String,
-		default: ''
-	},
-	contStyle: {
-		type: String,
-		default: ''
-	},
-	height: {
-		type: [Number],
-		default: 0
-	},
-	width: {
-		type: [Number],
-		default: 0
-	},
-	color: {
-		type: String,
-		default: 'white'
-	},
-	transprent: {
-		type: [Boolean, String],
-		default: false
-	},
+defineOptions({ name: 'TmSheet' });
 
-	border: {
-		type: [Number, String],
-		default: 0
-	},
-	margin: {
-		type: Array as PropType<Array<number>>,
-		default: () => [32]
-	},
-	padding: {
-		type: Array as PropType<Array<number>>,
-		default: () => [24]
-	},
-	unit: {
-		type: String,
-		default: 'rpx'
-	},
-	hoverClass: {
-		type: String,
-		default: 'none'
-	},
-	//暗下强制的背景色，
-	//有时自动的背景，可能不是你想要暗黑背景，此时可以使用此参数，强制使用背景色，
-	//只能是颜色值。
-	darkBgColor: {
-		type: String,
-		default: ''
-	},
-	//不是同层背景，默认是同层，为false
-	//如果输入框表单与tmshee在同一层下。他们的黑白暗黑背景色是相同的。为了区分这个问题，需要单独指示，以便区分背景同层。
-	//主意：它只在黑和白之间的色系才起作用，其它颜色下不起作用。
-	noLevel: {
-		type: Boolean,
-		default: false
-	},
-	//是否开启磨砂背景。只有是黑白灰色系才能使用。
-	blur: {
-		type: Boolean,
-		default: false
-	},
-	url: {
-		type: String,
-		default: ''
-	},
-	round: {
-		type: [Number,Array] as PropType<Array<number>|number>,
-		default: 0
-	},
+const { config } = useTmConfig()
+const emits = defineEmits([
+    /**
+     * 点击事件
+     * @property {MouseEvent} evt 事件参数
+     *  */
+    'click',
+])
+type PropsKeyType = keyof typeof attrs;
+const attrs = defineProps({
+    /**
+     * 遵循规则：
+     * string或者[x]：全部边线
+     * [x,x]左右边线，上下边线
+     * [x,x,x] 左，上，右
+     * [x,x,x,x] 左，上，右,下
+     */
+    borderColor: {
+        type: [String, Array<string>],
+        default: ""
+    },
+    darkBorderColor: {
+        type: [String, Array<string>],
+        default: "transparent"
+    },
+    /** 规则同borderColor */
+    borderWidth: {
+        type: [String, Number, Array<string | number>],
+        default: 0
+    },
+    /** 规则同borderColor */
+    borderStyle: {
+        type: [String, Array<string>],
+        default: "solid"
+    },
+    /** 规则同borderColor
+     * 左上，右上，右下，左下
+     */
+    round: {
+        type: [String, Number, Array<string | number>],
+        default: ''
+    },
+    /**
+     * 遵循规则：填写0关闭,填写空值取全局
+     * string,number,或者[x]：全部
+     * [x,x]左右，上下
+     * [x,x,x] 左，上，右
+     * [x,x,x,x] 左，上，右,下
+     */
+    margin: {
+        type: [String, Number, Array<string | number>],
+        default: ''
+    },
+    /**
+    * 遵循规则：填写0关闭,填写空值取全局
+    * string,number,或者[x]：全部
+    * [x,x]左右，上下
+    * [x,x,x] 左，上，右
+    * [x,x,x,x] 左，上，右,下
+    */
+    padding: {
+        type: [String, Number, Array<string | number>],
+        default: ''
+    },
+    width: {
+        type: [String, Number],
+        default: ""
+    },
+    height: {
+        type: [String, Number],
+        default: ""
+    },
+
+    loading: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 是否跟随主题背景色
+     * 下方的color失效
+     */
+    flowTheme: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 背景主题
+     */
+    color: {
+        type: String,
+        default: "white"
+    },
+    /**
+     * 自定义暗黑背景
+     * 空值时取全局配置
+     */
+    darkBgColor: {
+        type: String,
+        default: ""
+    },
+    /** 渐变，前面的color,bgColor,darkBgColor失效 */
+    linear: {
+        type: [Array<string>],
+        default: () => [],
+        validator: (val: string[]) => {
+            if (val.length == 0) return true;
+            let pass = val.length == 3;
+            if (!pass) {
+                console.error("tmui提醒:linear 参数格式错误，请检查,必须长度为3");
+            }
+            return pass
+        }
+    },
+    /**
+     * 数字或者字符串时自动计算投影,它会投影大小
+     * 数组时(必须为4),第一个x,第二为y,第三个为大小 ,第四个为投影颜色
+     * 空字符串时,取全局配置,如果不想投影设置为none即可.
+     */
+    shadow: {
+        type: [String, Number, Array<string>],
+        default: '',
+        validator: (val: string | number | string[]) => {
+            if (Array.isArray(val)) {
+                if (val.length != 4) {
+                    console.error("tmui提醒:shadow 第一个x,第二为y,第三个为大小 ,第四个为投影颜色");
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 })
-const emits = defineEmits(['click', 'longpress', 'touchend', 'touchstart', 'touchcancel', 'mousedown', 'mouseup', 'mouseleave']);
-
-// 设置响应式全局组件库配置表。
-const tmcfg = computed(() => store.tmStore);
-
-const {dark,isNvue,customCSSStyle,customClass,parentClass,transparent,_props,proxy,blur,
-	round,margin,padding,theme
-} = useTheme(computed(()=>props),tmcfg);
-
-//计算主题
-const tmcomputed = theme({text:blur.value && tmcfg.value.os == 'ios' && isNvue.value?true:null})
-
-const _width = computed(() => props.width + padding.value[0] + padding.value[2])
-const _height = computed(() => props.height + padding.value[1] + padding.value[3])
-const _width_real = computed(() => props.width)
-const _height_real = computed(() => props.height)
-
-const _blue_sheet = ref(true)
-const blurEffect = computed(() => {
-	if (props.blur === true && dark.value) return 'dark'
-	if (props.blur === true && !dark.value) return 'extralight'
-	return 'none'
+const _attrs = computed(() => attrs);
+const OnClick = (evt: MouseEvent) => {
+    if (_attrs.value.loading) return;
+    emits('click', evt)
+}
+const _width = computed(() => {
+    return covetUniNumber(attrs.width || 'auto')
 })
-watch(
-	() => dark.value,
-	() => {
-		// #ifdef APP-NVUE
-		//在ios下。如果切换带有磨砂效果时，如果不触发发更新视图，页面是不会更改。
-		if (store.tmStore.os == 'ios' && blur.value === true) {
-			_blue_sheet.value = false
-			nextTick(() => (_blue_sheet.value = true))
-		}
-		// #endif
-	}
-)
-const _bgcolor = computed(() => {
-	if (transparent.value === true) return `background-color:rgba(255,255,255,0);`
-	if (props.darkBgColor !== '' && dark.value === true) {
-		return `background-color:${props.darkBgColor};`
-	}
+const _height = computed(() => covetUniNumber(attrs.height || 'auto'))
 
-	if (props.linearColor.length == 2) {
-		return {
-			'background-image': `linear-gradient(${tmcomputed.value.linearDirectionStr},${props.linearColor[0]},${props.linearColor[1]})`
-		}
-	}
-	if (tmcomputed.value.gradientColor?.length == 2) {
-		return tmcomputed.value.backgroundColorCss
-	}
-
-	if (_props.value.noLevel && tmcomputed.value.isBlackAndWhite === true && dark.value === true) {
-		return `background-color: ${tmcomputed.value.inputcolor}`
-	}
-	return `background-color: ${tmcomputed.value.backgroundColor}`
-})
-//当前是否点按，因为uniapp的hover-class在安卓端有bug，因此采用自定事件来定义hover类。
-const isLongPress = ref(false)
-function longpress(e: Event) {
-	isLongPress.value = true
-	emits('longpress', e)
+const isHover = ref(false);
+const touchStart = () => {
+    isHover.value = true;
 }
-function touchstart(e: Event) {
-	isLongPress.value = true
-	emits('touchstart', e)
-}
-function touchend(e: Event) {
-	isLongPress.value = false
-	emits('touchend', e)
-}
-function touchcancel(e: Event) {
-	isLongPress.value = false
-	emits('touchcancel', e)
-}
-function mousedown(e: Event) {
-	isLongPress.value = true
-	emits('mousedown', e)
-}
-function mouseup(e: Event) {
-	isLongPress.value = false
-	emits('mouseup', e)
-}
-function mouseleave(e: Event) {
-	isLongPress.value = false
-	emits('mouseleave', e)
+const touchEnd = () => {
+    isHover.value = false;
 }
 
-function onClick(e: Event) {
-	emits('click', e)
-	if (typeof props.url === 'string' && props.url) {
-		uni.navigateTo({
-			url: props.url,
-			fail(result) {
-				console.log(result)
-			}
-		})
-	}
-}
+const buttonStyle = computed(() => {
+    let style = {
+        borderColor: ``,
+        borderWidth: ``,
+        borderStyle: ``,
+        background: ``,
+        color: ``,
+        borderRadius: ``,
+        boxShadow: `none`,
+        margin: '0px',
+        padding: '0px'
+    }
+    let isDark = config.mode == 'dark';
+
+    let background = attrs.color
+    let borderColor = arrayNumberValidByStyleBorderColor(attrs.borderColor)
+    let borderWidth = arrayNumberValidByStyleMP(attrs.borderWidth)
+    let borderStyle = arrayNumberValidByStyleBorderStyle(attrs.borderStyle)
+    let borderRadius = arrayNumberValidByStyleMP(attrs.round || config.sheetRadius)
+    let margin = arrayNumberValidByStyleMP(attrs.margin === '' ? config.sheetMargin : attrs.margin)
+    let padding = arrayNumberValidByStyleMP(attrs.padding === '' ? config.sheetPadding : attrs.padding)
+    let linear = linearValid(attrs.linear)
+
+    if (attrs.flowTheme) {
+        background = config.color
+    }
+    if (isDark) {
+        background = attrs.darkBgColor || config.sheetDarkColor
+    }
+
+    let shadow = 'none'
+    if (Array.isArray(attrs.shadow)) {
+        shadow = attrs.shadow.join(' ')
+    } else if (attrs.shadow !== '' && attrs.shadow != 'none') {
+        let obj = getDefaultColorObj(attrs.color, attrs.color)
+        shadow = `0px 0px ${covetUniNumber(attrs.shadow)} ${obj.default.shadow}`
+    } else if (attrs.shadow === '') {
+        if (Array.isArray(config.sheetShadow)) {
+            shadow = config.sheetShadow.join(' ')
+        } else if (config.sheetShadow && config.sheetShadow != 'none') {
+            let obj = getDefaultColorObj(attrs.color, attrs.color)
+            shadow = `0 4px ${covetUniNumber(config.sheetShadow)} ${obj.default.shadow}`
+        }
+    }
 
 
-// 设置响应式主题文字色。
-let textColor = computed(() => {
-	return tmcomputed.value.textColor
-})
-provide('appTextColor', textColor)
-
+    style.background = linear || getDefaultColor(background)
+    style.borderColor = borderColor.join(' ')
+    style.borderWidth = borderWidth.join(' ')
+    style.borderStyle = borderStyle.join(' ')
+    style.borderRadius = borderRadius.join(' ')
+    style.margin = margin.join(' ')
+    style.padding = padding.join(' ')
+    style.boxShadow = shadow
+    return style;
+});
 </script>
 
-<style scoped>
-/* #ifdef H5 */
-.webpc {
-	cursor: pointer;
+<script lang="ts">
+export default {
+  options: {
+    styleIsolation: "apply-shared",
+    virtualHost: true,
+    addGlobalClass: true,
+    multipleSlots: true,
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.tmSheet {
+  position: relative;
+
+  .tmSheetLoading {
+    display: flex;
+    border: 0px solid transparent;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    padding: 0px;
+    margin: 0px;
+    backdrop-filter: blur(3px);
+    background-color: rgba(125, 125, 125, 0.2);
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+  }
 }
-/* #endif */
-/* #ifndef APP-NVUE */
-.noNvueBorder {
-	box-sizing: border-box;
-}
-/* #endif */
 </style>
