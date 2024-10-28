@@ -1,220 +1,222 @@
+<script setup lang="ts">
+import { ref, computed, onMounted, watch, PropType } from 'vue'
+import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit } from "../../libs/tool";
+import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
+import { useTmConfig } from "../../libs/config";
+/**
+ * @displayName 角标
+ * @exportName tm-badge
+ * @category 展示组件
+ * @description 角标,位置丰富。
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
+ */
+defineOptions({ name: 'TmBadge' });
+const { config } = useTmConfig()
+
+const attrs = defineProps({
+    fontSize: {
+        type: [String, Number],
+        default: "20"
+    },
+    bgColor: {
+        type: String,
+        default: "error"
+    },
+    fontColor: {
+        type: String,
+        default: "white"
+    },
+    maxCount: {
+        type: [String, Number],
+        default: 99
+    },
+    /**
+     * 如果是boolean就显示角标小红点
+     * 如果是string显示文本标签
+     * 如果是数字显示数字并启用maxCount
+     */
+    label: {
+        type: [String, Number,Boolean],
+        default: ""
+    },
+    position: {
+        type: String as PropType<"right" | "left" | "bottomLeft" | "bottomRight" | 'top' | 'bottom'>,
+        default: "right"
+    },
+    offset: {
+        type: Array as PropType<number[]>,
+        default: (): number[] => [0, 0] as number[],
+        validator(val: number[]): boolean {
+            if (val.length == 0 || val.length == 2) return true
+            console.error("x:必须是长度为2的数字数组参数或者空数组")
+            return false
+        }
+    }
+})
+
+
+const _offset = computed(() => attrs.offset)
+const _isDot = computed(() => {
+    if(typeof attrs.label === 'boolean') return attrs.label
+    return false;
+})
+
+const _cStyles = computed(() => {
+    let trs = ''
+    if (attrs.position == 'right') {
+        trs = 'translate(50%, -50%)'
+    } else if (attrs.position == 'left') {
+        trs = 'translate(-50%, -50%)'
+    } else if (attrs.position == 'bottomLeft') {
+        trs = 'translate(-50%, 50%)'
+    } else if (attrs.position == 'bottomRight') {
+        trs = 'translate(50%, 50%)'
+    } else if (attrs.position == 'top') {
+        trs = 'translate(0%, -50%)'
+    } else if (attrs.position == 'bottom') {
+        trs = 'translate(0%, 50%)'
+    }
+
+    let top = ''
+    let bottom = ''
+    let left = ''
+    let right = ''
+
+    if (attrs.position == 'top') {
+        top = '0px'
+        left = 'auto'
+        right = 'auto'
+    } else if (attrs.position == 'bottom') {
+        bottom = '0px'
+        left = 'auto'
+        right = 'auto'
+    } else if (attrs.position == 'right') {
+        top = _offset.value[1].toString() + 'px'
+        right = _offset.value[0].toString() + 'px'
+    } else if (attrs.position == 'left') {
+        top = '0px'
+        left = '0px'
+    } else if (attrs.position == 'bottomLeft') {
+        bottom = '0px'
+        left = '0px'
+    } else if (attrs.position == 'bottomRight') {
+        bottom = '0px'
+        right = '0px'
+    }
+
+    let dotMapCs:{[key:string]:any} = {}
+    dotMapCs['background'] = getDefaultColor(attrs.bgColor)
+    dotMapCs['left'] = left
+    dotMapCs['right'] = right
+    dotMapCs['top'] = top
+    dotMapCs['bottom'] = bottom
+    dotMapCs['transform'] = trs
+
+    let labelMapCs:{[key:string]:any} = {}
+    labelMapCs['background'] = getDefaultColor(attrs.bgColor)
+    labelMapCs['left'] = left
+    labelMapCs['right'] = right
+    labelMapCs['top'] = top
+    labelMapCs['bottom'] = bottom
+    labelMapCs['transform'] = trs
+    labelMapCs['visibility'] = _label.value == "" ? "hidden" : "visible"
+
+    return [dotMapCs, labelMapCs]
+
+})
+
+const _fontColor = computed(() => getDefaultColor(attrs.fontColor))
+const _fontSize = computed(() => covetUniNumber(attrs.fontSize, config.unit))
+const _label = computed((): string => {
+    if(typeof attrs.label === 'boolean') return ''
+    if(typeof attrs.label === 'string') return attrs.label
+    let count = attrs.label
+    let maxCount = typeof attrs.maxCount == "number" ? attrs.maxCount : parseInt(attrs.maxCount)
+    if (count > 0 && count <= maxCount) return count.toString();
+    if (count <= 0) return ""
+    return maxCount.toString() + "+"
+})
+
+
+
+
+</script>
+<script lang="ts">
+export default {
+  options: {
+    styleIsolation: "apply-shared",
+    virtualHost: true,
+    addGlobalClass: true,
+    multipleSlots: true,
+  },
+};
+</script>
 <template>
-	<view @click="emits('click', $event)" class="flex relative" :class="[props.status ? 'flex-row flex-row-center-center mx-8' : '']">
-		<view v-if="!props.status" eventPenetrationEnabled="true">
-			<slot></slot>
-		</view>
-		<view
-			eventPenetrationEnabled="true"
-			v-if="show"
-			:class="[
-				(_dot || _count || _icon) && !props.status ? 'absolute flex-top-start-end r-0' : '',
-				props.top ? `t-${String(props.top)}` : '',
-				props.right ? `r-${String(props.right)}` : ''
-			]"
-			:style="{ zIndex: 10 }"
-		>
-			<tm-sheet
-				:color="props.color"
-				:_class="[customClass, 'flex-center flex-col']"
-				:_style="[customCSSStyle, { flexShrink: 1 }]"
-				:followTheme="props.followTheme"
-				:dark="props.dark"
-				:round="props.round"
-				:shadow="props.shadow"
-				:outlined="props.outlined"
-				:border="props.border"
-				:borderStyle="props.borderStyle"
-				:borderDirection="props.borderDirection"
-				:text="props.text"
-				:transprent="props.transprent"
-				:linear="props.linear"
-				:linearDeep="props.linearDeep"
-				:width="size.w"
-				:height="size.h"
-				:margin="props.margin"
-				:padding="props.padding"
-			>
-				<tm-text
-					color="white"
-					:font-size="props.fontSize"
-					:_class="size.h == 0 ? 'py-3 px-6' : ''"
-					v-if="_count > 0 && !istext"
-					:label="_count > props.maxCount ? props.maxCount + '+' : _count"
-				></tm-text>
-				<tm-text
-					color="white"
-					:font-size="props.fontSize"
-					:_class="size.h == 0 ? 'py-3 px-6' : ''"
-					v-if="_count && istext"
-					:label="_count"
-				></tm-text>
-				<tm-icon color="white" :font-size="props.fontSize" :name="_icon" v-if="_icon"></tm-icon>
-			</tm-sheet>
-		</view>
-		<tm-text eventPenetrationEnabled="true" :font-size="props.fontSize" _class="ml-10" v-if="props.status" :label="props.label"></tm-text>
-	</view>
+    <view class="tmBadge">
+        <view class="tmBadgeWrap">
+            <text :style='_cStyles[0]' class="tmBadge-dot" :class="[_isDot ? 'noneShow' : 'nonex']"></text>
+            <view id="tmBadge-countAndLabel" class="tmBadge-countAndLabel" :class="[_isDot ? 'nonex' : 'noneShow']"
+                :style='_cStyles[1]'>
+                <text class="tmBadge-countAndLabelText" :style='{ color: _fontColor, fontSize: _fontSize }'>{{ _label}}</text>
+            </view>
+            <!-- 
+            @slot 默认内容插槽
+             -->
+            <slot></slot>
+        </view>
+    </view>
 </template>
 
-<script lang="ts" setup>
-/**
-   * 徽标
-   * @description 可单独使用，也可使用插槽。
-   * @example <view class="flex-row flex-wrap pa-32" >
-      <tm-badge dot color="red">
-        <tm-avatar :round="0" label="A"></tm-avatar>
-      </tm-badge>
-      <tm-badge :count="5"  color="red">
-        <tm-avatar label="A"></tm-avatar>
-      </tm-badge>
-      <tm-badge dot color="red">
-        <tm-icon color="primary" name="tmicon-clock-fill"></tm-icon>
-      </tm-badge>
-      <tm-badge :count="999"  color="red">
-        <tm-avatar label="A"></tm-avatar>
-      </tm-badge>
-      <tm-badge :count="1000"  color="red">
-        <tm-avatar label="A"></tm-avatar>
-      </tm-badge>
-      <tm-badge count="HOT"  color="red">
-        <tm-avatar label="A"></tm-avatar>
-      </tm-badge>
-      <tm-badge icon="tmicon-collection-fill" color="red">
-        <tm-avatar label="A"></tm-avatar>
-      </tm-badge>
-      <tm-badge status dot  label="情况不秒呀." color="green"></tm-badge>
-    </view>
-   */
-import { computed, PropType } from 'vue'
-import { custom_props, computedTheme, computedClass, computedStyle, computedDark } from '../../tool/lib/minxs'
-import tmSheet from '../tm-sheet/tm-sheet.vue'
-import tmText from '../tm-text/tm-text.vue'
-import tmIcon from '../tm-icon/tm-icon.vue'
-const emits = defineEmits(['click'])
-const props = defineProps({
-	...custom_props,
-	round: {
-		type: [Number],
-		default: 6
-	},
-	border: {
-		type: [Number],
-		default: 0
-	},
-	margin: {
-		type: Array as PropType<Array<number>>,
-		default: () => [0, 0]
-	},
-	padding: {
-		type: Array as PropType<Array<number>>,
-		default: () => [0, 0]
-	},
-	transprent: {
-		type: [Boolean],
-		default: false
-	},
-	label: {
-		type: String,
-		default: ''
-	},
-	fontSize: {
-		type: Number,
-		default: 22
-	},
-	//为真时，隐藏插槽数据，展现状态文本模式。
-	status: {
-		type: [Boolean],
-		default: false
-	},
-	dot: {
-		type: [Boolean],
-		default: false
-	},
-	icon: {
-		type: [String],
-		default: ''
-	},
-	//如果count为数字时，显示数字角标，如果为string是显示文本角标。
-	count: {
-		type: [Number, String],
-		default: 0
-	},
-	maxCount: {
-		type: [Number],
-		default: 999
-	},
-	top: {
-		type: [Number],
-		default: 0
-	},
-	right: {
-		type: [Number],
-		default: 0
-	}
-})
-//自定义样式：
-const customCSSStyle = computed(() => computedStyle(props))
-//自定类
-const customClass = computed(() => computedClass(props))
-//让出多少蹑以显示角标。
-const istext = computed(() => {
-	return isNaN(parseInt(String(props.count)))
-})
-const show = computed(() => {
-	if (!props.dot && !props.icon && !props.count) return false
-	return true
-})
-const size = computed(() => {
-	if (props.status || props.dot) {
-		return {
-			w: 12,
-			h: 12,
-			pr: 6,
-			t: 3
-		}
-	}
-	if (props.icon) {
-		let p = props.fontSize * 1.6
-		return {
-			w: p,
-			h: p,
-			pr: 12,
-			t: 10
-		}
-	}
-	if (isNaN(parseInt(String(props.count)))) {
-		return {
-			w: 0,
-			h: 0,
-			pr: 10,
-			t: 10
-		}
-	}
-	if (props.count < 10) {
-		return {
-			w: 30,
-			h: 30,
-			pr: 12,
-			t: 10
-		}
-	}
-	if (props.count >= 10) {
-		return {
-			w: 0,
-			h: 0,
-			pr: 10,
-			t: 10
-		}
-	}
-	return {
-		w: 0,
-		h: 0,
-		pr: 0,
-		t: 0
-	}
-})
-const _icon = computed(() => props.icon)
-const _dot = computed(() => props.dot)
-const _count = computed(() => props.count)
-</script>
+<style>
+.tmBadge {
+    overflow: visible;
+    display: inline-flex;
+    position: relative;
 
-<style scoped></style>
+}
+
+.tmBadge-countAndLabel {
+    position: absolute;
+    z-index: 3;
+    border-radius: 100px;
+    min-width: 0px;
+    padding: 0rpx 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.tmBadge-countAndLabelText {
+    line-height: 1.5;
+    text-align: center;
+}
+
+.tmBadge-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 18px;
+    z-index: 3;
+    opacity: 0;
+}
+
+.noneShow {
+    opacity: 1;
+}
+
+.nonex {
+    opacity: 0;
+}
+
+.tmBadgeWrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+}
+</style>
