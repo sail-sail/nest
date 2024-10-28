@@ -63,17 +63,17 @@ pub async fn ws_upgrade(
       
       {
         let mut socket_sink_map = SOCKET_SINK_MAP.lock().await;
-        let mut old_socket = socket_sink_map.insert(
-          client_id.clone(),
-          Arc::new(Mutex::new(sink)),
-        );
-        if let Some(old_socket) = old_socket {
-          let mut old_socket = old_socket.lock().await;
-          let err = old_socket.close().await;
-          if let Err(e) = err {
-            error!("old_socket.close error: {}", e);
-          }
+        let mut socket_olds = socket_sink_map.get(&client_id).cloned();
+        if socket_olds.is_none() {
+          socket_olds = Some(Arc::new(Mutex::new(vec![])));
+          socket_sink_map.insert(
+            client_id.clone(),
+            socket_olds.clone().unwrap(),
+          );
         }
+        let mut socket_olds = socket_olds.unwrap();
+        let mut socket_olds = socket_olds.lock().await;
+        socket_olds.push(sink);
       }
       
       while let Some(result) = stream.next().await {
@@ -84,12 +84,14 @@ pub async fn ws_upgrade(
             }
             if text == "ping" {
               let mut socket_sink_map = SOCKET_SINK_MAP.lock().await;
-              let socket_ref = socket_sink_map.remove(&client_id);
-              if let Some(socket_ref) = socket_ref {
-                let mut socket_ref = socket_ref.lock().await;
-                let _ = socket_ref.send(
-                  Message::Text("pong".to_owned()),
-                ).await;
+              let sockets = socket_sink_map.get(&client_id).cloned();
+              if let Some(sockets) = sockets {
+                let mut sockets = sockets.lock().await;
+                for socket in sockets.iter_mut() {
+                  let _ = socket.send(
+                    Message::Text("pong".to_owned()),
+                  ).await;
+                }
               }
               continue;
             }
@@ -175,9 +177,9 @@ pub async fn ws_upgrade(
               let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
               let mut client_ids = vec![];
               for (client_id2, topics) in client_id_topics_map.iter() {
-                if client_id2 == &client_id {
-                  continue;
-                }
+                // if client_id2 == &client_id {
+                //   continue;
+                // }
                 if topics.contains(&topic) {
                   client_ids.push(client_id2.clone());
                 }
@@ -198,15 +200,15 @@ pub async fn ws_upgrade(
                 socket_sink_map.clone()
               };
               for client_id in client_ids {
-                let socket = socket_sink_map.get(&client_id);
-                if socket.is_none() {
-                  continue;
-                }
-                let socket = socket.unwrap().clone();
-                let mut socket = socket.lock().await;
-                let err = socket.send(Message::Text(data_str.clone())).await;
-                if let Err(e) = err {
-                  error!("socket.send error: {}", e);
+                let sockets = socket_sink_map.get(&client_id).cloned();
+                if let Some(sockets) = sockets {
+                  let mut sockets = sockets.lock().await;
+                  for socket in sockets.iter_mut() {
+                    let err = socket.send(Message::Text(data_str.clone())).await;
+                    if let Err(e) = err {
+                      error!("socket.send error: {}", e);
+                    }
+                  }
                 }
               }
             } else if action == "unSubscribe" {
@@ -241,13 +243,17 @@ pub async fn ws_upgrade(
           }
           Ok(Message::Binary(_)) => { }
           Ok(Message::Ping(_)) => {
-            let mut socket_sink_map = SOCKET_SINK_MAP.lock().await;
-            let socket_ref = socket_sink_map.remove(&client_id);
-            if let Some(socket_ref) = socket_ref {
-              let mut socket_ref = socket_ref.lock().await;
-              let _ = socket_ref.send(
-                Message::Pong("pong".as_bytes().to_vec()),
-              ).await;
+            let sockets = {
+              let socket_sink_map = SOCKET_SINK_MAP.lock().await;
+              socket_sink_map.get(&client_id).cloned()
+            };
+            if let Some(sockets) = sockets {
+              let mut sockets = sockets.lock().await;
+              for socket in sockets.iter_mut() {
+                let _ = socket.send(
+                  Message::Pong("pong".as_bytes().to_vec()),
+                ).await;
+              }
             }
           }
           Ok(Message::Pong(_)) => { }

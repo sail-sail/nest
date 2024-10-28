@@ -8,7 +8,7 @@ use poem::web::websocket::{Message, WebSocketStream};
 
 type Callback = Box<dyn Fn(String) + Send + Sync>;
 
-type SocketSinkMapType = Mutex<HashMap<String, Arc<Mutex<SplitSink<WebSocketStream, Message>>>>>;
+type SocketSinkMapType = Mutex<HashMap<String, Arc<Mutex<Vec<SplitSink<WebSocketStream, Message>>>>>>;
 
 lazy_static! {
   pub static ref CALLBACKS_MAP: Mutex<HashMap<String, Vec<Callback>>> = Mutex::new(HashMap::new());
