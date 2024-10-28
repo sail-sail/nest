@@ -1,284 +1,419 @@
-<template>
-	<view>
-		<view v-if="props.isPlace" class="statusHeight" :style="{ height: _barHeight + 'px' }"></view>
-		<view class="fixed l-0 t-0 statusHeightTop flex" :style="{ width: _width + 'px', height: _barHeight + 'px' }">
-			<tm-sheet
-				@click="emits('click', $event)"
-				:blur="_blur"
-				:color="props.color"
-				:_class="_class"
-				:_style="_style"
-				:followTheme="props.followTheme"
-				:follow-dark="props.followDark"
-				:dark="props.dark"
-				:round="props.round"
-				:shadow="props.shadow"
-				:outlined="props.outlined"
-				:border="props.border"
-				:borderStyle="props.borderStyle"
-				:borderDirection="props.borderDirection"
-				:text="props.text"
-				:transprent="props.transprent"
-				:linear="props.linear"
-				:linearDeep="props.linearDeep"
-				:margin="props.margin"
-				:padding="props.padding"
-				:height="_barHeight"
-				:width="_width"
-				unit="px"
-				:darkBgColor="props.darkBgColor"
-			>
-				<view class="statusHeight" :style="{ height: statusBarHeight + 'px' }"></view>
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount, watch, PropType, getCurrentInstance, ComponentInstance, onUpdated, nextTick, VueElement, inject, watchEffect } from 'vue';
+import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit, getUid } from "../../libs/tool";
+import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj, isBlackAndWhite, setBgColorLightByDark } from "../../libs/colors";
+import { useTmConfig } from "../../libs/config";
+import { onPageScroll } from '@dcloudio/uni-app';
 
-				<view class="flex flex-row flex-1 flex-row flex-row-center-between">
-					<view class="flex-row flex flex-row-center-start" :style="{ width: _leftWidth + 'rpx' }">
-						<!-- #ifndef MP-ALIPAY -->
-						<tm-icon
-							:unit="props.unit"
-							:font-size="props.iconFontSize"
-							_class="pointer pb-12 pt-12 px-24"
-							:color="_homeColor"
-							@click="goback"
-							v-if="_pages > 1 && !props.hideBack"
-							name="tmicon-angle-left"
-						></tm-icon>
-						<tm-icon
-							:unit="props.unit"
-							_class="pointer  pb-12 pt-12 px-24"
-							@click="backhome"
-							v-if="_pages == 1 && !hideHome"
-							:color="_homeColor"
-							:font-size="props.iconFontSize"
-							name="tmicon-md-home"
-						></tm-icon>
-						<!-- #endif -->
-						<slot name="left"></slot>
-					</view>
-					<view class="flex flex-row-center-center" :style="{ width: contentwidth + 'px' }">
-						<slot>
-							<tm-text
-								:unit="props.unit"
-								_class="text-weight-b text-overflow-1"
-								:color="_fontColor"
-								:font-size="props.fontSize"
-								:label="_title"
-							></tm-text>
-						</slot>
-					</view>
-					<view class="flex-row flex flex-row-center-end" :style="{ width: _rightWidth + 'rpx' }">
-						<slot name="right"></slot>
-					</view>
-				</view>
-			</tm-sheet>
-		</view>
-	</view>
-</template>
-<script lang="ts" setup>
 /**
- * 标题栏
- * @description 页面自定标题栏，时，请务必放置在页面的最顶部。
+ * @displayName 标题导航
+ * @exportName tm-navbar
+ * @category 导航组件
+ * @description 标题导航,用途页面头部标题。可以默认透明，滚动实现背景可变的标题导航。
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-import tmSheet from '../tm-sheet/tm-sheet.vue'
-import tmText from '../tm-text/tm-text.vue'
-import tmIcon from '../tm-icon/tm-icon.vue'
-import { custom_props } from '../../tool/lib/minxs'
-import { getCurrentInstance, computed, ref, provide, inject, onUpdated, onMounted, onUnmounted, nextTick, watch, PropType } from 'vue'
-import { useTmpiniaStore } from '../../tool/lib/tmpinia'
-const store = useTmpiniaStore()
-const emits = defineEmits(['click', 'close'])
-const proxy = getCurrentInstance()?.proxy ?? null
+defineOptions({ name: 'TmNavbar' });
+const { config } = useTmConfig()
+
+const emits = defineEmits([
+    /**
+     * 当滚动页面时，导航栏位置
+     * 与滚动之间的距离差比（0~1）
+     * 0表示在顶部，1表示已经超过了导航高
+     * 主要是用来类型滚动时设置导航顶部的一些布局变化。
+     */
+    'fiexdChange',
+    /**
+     * 初始化完成向下发送一个事件用于告知本组件实际的高
+     * @param {number} height -单位px,组件高。
+     */
+    'init'
+])
+
 const props = defineProps({
-	...custom_props,
-	followTheme: {
-		type: [Boolean, String],
-		default: true
-	},
-	transprent: {
-		type: [Boolean, String],
-		default: false
-	},
-	color: {
-		type: [String],
-		default: 'white'
-	},
-	text: {
-		type: [Boolean],
-		default: false
-	},
-	border: {
-		type: [Number],
-		default: 0
-	},
-	shadow: {
-		type: [Number],
-		default: 1
-	},
-	borderDirection: {
-		type: String as PropType<
-			| 'all'
-			| 'bottom'
-			| 'bottomleft'
-			| 'bottomright'
-			| 'left'
-			| 'leftright'
-			| 'right'
-			| 'top'
-			| 'topbottom'
-			| 'topleft'
-			| 'topright'
-			| 'x'
-			| 'y'
-		>,
-		default: 'bottom'
-	},
-	round: {
-		type: [Number],
-		default: 0
-	},
-	margin: {
-		type: Array as PropType<Array<number>>,
-		default: () => [0, 0]
-	},
-	padding: {
-		type: Array as PropType<Array<number>>,
-		default: () => [0, 0]
-	},
-	height: {
-		type: [Number],
-		default: 44
-	},
-	//指两边，左宽度除了中间，中间标题宽度为自动
-	leftWidth: {
-		type: [Number],
-		default: 220
-	},
-	//指两边，左宽度除了中间，中间标题宽度为自动
-	rightWidth: {
-		type: [Number],
-		default: 220
-	},
-	fontSize: {
-		type: [Number],
-		default: 30
-	},
-	iconFontSize: {
-		type: [Number],
-		default: 37
-	},
-	title: {
-		type: [String],
-		default: '标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题'
-	},
-	//默认为自动，提供了，将强制使用本主题色。
-	fontColor: {
-		type: [String],
-		default: ''
-	},
-	homeColor: {
-		type: [String],
-		default: ''
-	},
-	hideHome: {
-		type: Boolean,
-		default: false
-	},
-	hideBack: {
-		type: Boolean,
-		default: false
-	},
-	//返回首页的路径，默认/pages/index/index
-	homePath: {
-		type: [String],
-		default: '/pages/index/index'
-	},
-	beforeBack: {
-		type: [Boolean, Function],
-		default: () => true
-	},
-	blur: {
-		type: Boolean,
-		default: false
-	},
-	unit: {
-		type: String,
-		default: 'rpx'
-	},
-	//暗下强制的背景色，
-	//有时自动的背景，可能不是你想要暗黑背景，此时可以使用此参数，强制使用背景色，
-	//只能是颜色值。
-	darkBgColor: {
-		type: String,
-		default: ''
-	},
-	/**是否占位,如果为false,底部内容会被导航遮盖,true则会店内内容位置. */
-	isPlace: {
-		type: Boolean,
-		default: true
-	}
+    /**
+     * 是否底部占位内容，如果为false底部悬空。你的页面内容将自动压在导航栏的底部。
+     */
+    isPlace: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 背景颜色，注意这是静态时的背景色。
+     */
+    bgColor: {
+        type: String,
+        default: 'white'
+    },
+    /**
+     * 暗黑的背景颜色。
+     */
+    darkBgColor: {
+        type: String,
+        default: "#000000"
+    },
+    /**
+     * 背景颜色，这是滑动时超过指定本状态栏高度时自动渐变到此颜色
+     * 如果为空时，不会有动态背景
+     * 如果提供的是白或者黑，暗黑时自动取反。
+     */
+    activeBgColor: {
+        type: String,
+        default: ''
+    },
+    /**
+     * 返回按钮的颜色.默认是取titleColor，如果你单独定义了
+     * 以你定义的为准
+     */
+    backColor: {
+        type: String,
+        default: ''
+    },
+    /**
+     * 标题
+     */
+    title: {
+        type: String,
+        default: '标题'
+    },
+    /**
+     * 默认标题颜色，暗黑是取白，如果有其它需求建议插槽。
+     */
+    titleColor: {
+        type: String,
+        default: '#333333'
+    },
+    /**
+     * 动态悬浮时标题颜色,如果为暗黑时，你提供的颜色为白或者黑会反色
+     * 如果提供的是彩色自动加深或者提亮
+     */
+    titleActiveColor: {
+        type: String,
+        default: '#333333'
+    },
+    /**
+     * 标题文字大小
+     */
+    titleFontSize: {
+        type: String,
+        default: '34',
+    },
+    /**
+     * 右边的宽度。
+     */
+    lrWidth: {
+        type: String,
+        default: '100',
+    },
+    /**
+     * 左边的宽度。
+     */
+    llWidth: {
+        type: String,
+        default: '100',
+    },
+    /**
+     * 层级。
+     */
+    zIndex: {
+        type: Number,
+        default: 90,
+    },
+    /**
+     * 左边按钮默认点击返回上页。
+     * 但如果上页返回失败（通常见于直接程序启动本面，无法进行上页返回时）
+     * 失败后返回的页面。默认是首页。
+     */
+    backErrorPath: {
+        type: String,
+        default: '/pages/index/index'
+    },
+    /**
+     * 是否显示返回按钮。
+     */
+    showNavBack: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 渐变背景，如果提供，上面的BgColor背景和暗黑背景将失效。
+     * 例：['to right','#ff667f','#ff5416']
+     */
+    linearGradient: {
+        type: Array as PropType<string[]>,
+        default: (): string[] => [] as string[]
+    },
+    /**
+     * 动态悬浮时的渐变背景，
+     * 提供后上面的 activeBgColor的背景和暗黑背景将失效。
+     * 例：['to right','#ff667f','#ff5416']
+     */
+    linearActiveGradient: {
+        type: Array as PropType<string[]>,
+        default: (): string[] => [] as string[]
+    },
+    /**
+     * 静态在顶部时是否透明背景
+     */
+    staticTransparent: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 如果需要悬浮滚动请在外部页面中监听onPageScroll事件，并把值传到这里。
+     */
+    scrollTop:{
+        type:Number,
+        default:0
+    }
 })
 
-const _height = computed(() => props.height)
-const _width = uni.getSystemInfoSync().windowWidth
-const statusBarHeight = uni.getSystemInfoSync()?.statusBarHeight ?? 0
-const _barHeight = computed(() => statusBarHeight + _height.value)
-const _leftWidth = computed(() => props.leftWidth)
-const _rightWidth = computed(() => props.rightWidth)
-const contentwidth = computed(() => {
-	return _width - uni.upx2px(_leftWidth.value) - uni.upx2px(_rightWidth.value)
+const statusBarHeight = ref(44)
+const navbarHeight = 50
+const isFiexd = ref(false)
+const fiexRatio = ref(1)
+const _stop = computed(()=>props.scrollTop)
+
+const _linearGradient = computed((): string => {
+    if (props.linearGradient.length < 3) return '';
+    let str = props.linearGradient.join(",");
+    return `linear-gradient(${str})`
 })
-const _title = computed(() => props.title)
-const _fontColor = computed(() => props.fontColor)
-const _homeColor = computed(() => props.homeColor)
-const _blur = computed(() => props.blur)
-const _pages = ref(0)
+
+const _linearActiveGradient = computed((): string => {
+    if (props.linearActiveGradient.length < 3) return '';
+    let str = props.linearActiveGradient.join(",");
+    return `linear-gradient(${str})`
+})
+
+const _lrWidth = computed((): string => covetUniNumber(props.lrWidth, config.unit))
+const _llWidth = computed((): string => covetUniNumber(props.llWidth, config.unit))
+const _titleFontSize = computed((): string => covetUniNumber(props.titleFontSize, config.unit))
+
+const _bgColor = computed((): string => {
+    let bgcolor = props.bgColor
+    if (config.mode == 'dark') {
+        bgcolor = props.darkBgColor == "" ? "#000000" : props.darkBgColor
+    }
+    return getDefaultColor(bgcolor)
+})
+
+const _activeBgColor = computed((): string => {
+    let color = _bgColor.value
+    if (props.activeBgColor != "") {
+        color = getDefaultColor(props.activeBgColor)
+    }
+    let isba = isBlackAndWhite(props.titleActiveColor)
+    if (isba) {
+        if (config.mode == 'dark') {
+            color = setBgColorLightByDark(color)
+        }
+    }
+    return color
+})
+
+const _titleColor = computed((): string => {
+    if (config.mode == 'dark') return "#ffffff"
+    return getDefaultColor(props.titleColor)
+})
+
+const _backColor = computed((): string => {
+    if (props.backColor != '') return getDefaultColor(props.backColor)
+    return _titleColor.value
+})
+
+const _titleActiveColor = computed((): string => {
+    let isba = isBlackAndWhite(props.titleActiveColor)
+    if (isba) {
+        if (config.mode == 'dark') return "#ffffff"
+    }
+    return getDefaultColor(props.titleActiveColor)
+})
+
+const _title = computed((): string => props.title)
+
+const _styleMap = computed(() => {
+    let maps: Record<string, string | number> = {};
+    if (props.staticTransparent) {
+        maps['opacity'] = fiexRatio.value
+    } else {
+        maps['opacity'] = '1'
+
+    }
+    maps['height'] = (statusBarHeight.value + navbarHeight) + 'px'
+
+    if (isFiexd.value) {
+        if (_linearActiveGradient.value != '') {
+            maps['background-image'] = _linearActiveGradient.value
+
+        } else if (_activeBgColor.value != '') {
+            maps['background-color'] = _activeBgColor.value
+
+        } else {
+            maps['background-color'] = _bgColor.value
+
+        }
+    } else {
+        if (_linearGradient.value != '') {
+            maps['background-image'] = _linearGradient.value
+        } else {
+            maps['background-color'] = _bgColor.value
+
+        }
+    }
+
+    return maps
+})
+
 onMounted(() => {
-	_pages.value = getCurrentPages().length
+    let sys = uni.getSystemInfoSync();
+    statusBarHeight.value = sys.statusBarHeight || 0
+    emits('init', statusBarHeight.value + navbarHeight)
+    if (props.staticTransparent) {
+        fiexRatio.value = 0
+    }
 })
 
-const backhome = () => {
-	uni.reLaunch({
-		url: props.homePath
-	})
-}
-let timerId = NaN
-function debounce(func: Function, wait = 500, immediate = false) {
-	// 清除定时器
-	if (!isNaN(timerId)) clearTimeout(timerId)
-	// 立即执行，此类情况一般用不到
-	if (immediate) {
-		var callNow = !timerId
-		timerId = setTimeout(() => {
-			timerId = NaN
-		}, wait)
-		if (callNow) typeof func === 'function' && func()
-	} else {
-		// 设置定时器，当最后一次操作后，timeout不会再被清除，所以在延时wait毫秒后执行func回调方法
-		timerId = setTimeout(() => {
-			typeof func === 'function' && func()
-		}, wait)
-	}
-}
 
-const goback = () => {
-	debounce(
-		async () => {
-			if (typeof props.beforeBack === 'function') {
-				let p = await props.beforeBack()
-				if (typeof p === 'function') {
-					p = await p()
-				}
-				if (!p) return
-			}
-			uni.navigateBack({})
-		},
-		250,
-		true
-	)
+
+watchEffect(() => {
+    let barheight = statusBarHeight.value + navbarHeight;
+    isFiexd.value = _stop.value > 0
+    if (props.staticTransparent) {
+        fiexRatio.value = Math.max(Math.min(_stop.value / barheight, 1), 0)
+    }
+    emits("fiexdChange", fiexRatio.value)
+})
+
+const backGo = () => {
+    // #ifdef WEB
+    window.history.back()
+    // #endif
+    // #ifndef WEB
+    uni.navigateBack({
+        fail() {
+            uni.reLaunch({
+                url: '/pages/index/index'
+            })
+        }
+    })
+    // #endif
 }
 </script>
+<script lang="ts">
+export default {
+    options: {
+        styleIsolation: "apply-shared",
+        virtualHost: true,
+        addGlobalClass: true,
+        multipleSlots: true
+    }
+}
+</script>
+<template>
+    <view>
+        <view class="tmNavbar" :style="{ zIndex: zIndex }">
 
+            <view :key="_linearActiveGradient" :style="_styleMap" class="tmNavbarBg"></view>
+            <view class="tmNavbarContentBox">
+                <view :style="{ height: (statusBarHeight) + 'px' }"></view>
+                <view class="tmNavbarContent" :style="{ height: (navbarHeight) + 'px' }">
+                    <view class="tmNavbarLeft" :style="{ width: _llWidth }">
+                        <view v-if="showNavBack" @click="backGo" class="tmNavbarBack" style="padding-left: 8px;">
+                            <tm-icon size="52" name="arrow-left-s-line"
+                                :color="isFiexd ? _titleActiveColor : _backColor"></tm-icon>
+                        </view>
+                        <!-- 
+						 @slot 左边插槽
+						 @binding {boolean} isFiexd - 当前是处于悬浮状态还是静态顶部
+						 -->
+                        <slot name="left" :isFiexd="isFiexd"></slot>
+                    </view>
+                    <view class="tmNavbarTtitle">
+                        <!-- 
+						 @slot 标题插槽
+						 @binding {boolean} isFiexd - 当前是处于悬浮状态还是静态顶部
+						 -->
+                        <slot name="title">
+                            <text class="xNvbarTtitleOverls"
+                                :style="{ fontSize: _titleFontSize, fontWeight: 'bold', color: isFiexd ? _titleActiveColor : _titleColor }">{{
+                                    _title }}</text>
+                        </slot>
+                    </view>
+                    <view class="tmNavbarRight" :style="{ width: _lrWidth }">
+                        <!-- 
+						 @slot 右边插槽
+						 @binding {boolean} isFiexd - 当前是处于悬浮状态还是静态顶部
+						 -->
+                        <slot name="right" :isFiexd="isFiexd"></slot>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view v-if="isPlace" :style="{ height: (statusBarHeight + navbarHeight) + 'px' }"></view>
+    </view>
+</template>
 <style scoped>
-.statusHeightTop {
-	z-index: 400;
+.xNvbarTtitleOverls {
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    width: 100%;
+    text-align: center;
+}
+
+.tmNavbarContentBox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.tmNavbarBack {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.tmNavbar {
+    position: fixed;
+    width: 100%;
+}
+
+.tmNavbarContent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tmNavbarLeft {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.tmNavbarRight {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.tmNavbarTtitle {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 </style>

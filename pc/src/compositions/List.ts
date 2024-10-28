@@ -262,7 +262,12 @@ export function useSelect<T = any, Id = string>(
     }
     if (!row) {
       if (list.length === 0) {
-        selectedIds = [ ];
+        const data = tableRef.value?.data;
+        if (data) {
+          selectedIds = [
+            ...selectedIds.filter((item) => !data.some((item2) => item2[rowKey] === item)),
+          ];
+        }
       } else {
         if (!multiple) {
           tableRef.value?.clearSelection();

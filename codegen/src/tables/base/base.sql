@@ -1,4 +1,3 @@
--- Active: 1666076695194@@39.104.15.113@3389
 ------------------------------------------------------------------------ 租户
 drop table if exists `base_tenant`;
 CREATE TABLE if not exists `base_tenant` (
