@@ -1,549 +1,601 @@
-<template>
-	<view>
-		<!-- #ifdef APP-NVUE -->
-		<view @click="opens">
-			<view :eventPenetrationEnabled="true"><slot name="trigger"></slot></view>
-		</view>
-		<!-- #endif -->
-		<!-- #ifndef APP-NVUE -->
-		<view @click="opens"><slot name="trigger"></slot></view>
-		<!-- #endif -->
-		<tm-overlay
-			:zIndex="props.zIndex"
-			ref="overlayAni"
-			blur
-			:duration="props.duration"
-			@close="overclose"
-			@open="OverLayOpen"
-			@click="overlayClickFun"
-			:align="align_rp"
-			:overlayClick="false"
-			v-model:show="_show"
-			:teleport="props.teleport"
-		>
-			<tm-translate
-				:reverse="reverse_rp"
-				:width="anwidth"
-				:height="anheight"
-				ref="drawerANI"
-				:auto-play="false"
-				:name="aniname"
-				:duration="props.duration"
-			>
-				<view
-					@click.stop="$event.stopPropagation()"
-					:style="[
-						{ width: anwidth, height: anheight, boxSizing: 'border-box' },
-						!props.transprent ? tmcomputed.borderCss : '',
-						!props.transprent ? tmcomputed.backgroundColorCss : '',
-						!props.transprent ? tmcomputed.shadowColor : '',
-
-						customCSSStyle
-					]"
-					:class="[round_rp, 'flex flex-col overflow ', customClass]"
-				>
-					<view class="flex flex-row px-24" style="height: 44px" :class="[props.closeable ? 'flex-row-center-between' : 'flex-center']">
-						<slot name="title">
-							<tm-text
-								:_style="props.titleStyle"
-								:dark="props.dark"
-								:followTheme="false"
-								_class="text-overflow-1 text-weight-b text-size-m text-align-center"
-								:label="props.title"
-							></tm-text>
-						</slot>
-						<tm-icon v-if="closeable" _class="opacity-3" name="tmicon-times-circle-fill" :fontSize="32" @click="close"></tm-icon>
-					</view>
-					<scroll-view scroll-y :style="[props.height ? { height: contentHeight } : '']">
-						<view class="px-32">
-							<slot name="default">
-								<tm-text
-									:font-size="30"
-									:dark="props.dark"
-									:followTheme="false"
-									:label="props.content"
-									_style="line-height:46rpx"
-								></tm-text>
-							</slot>
-						</view>
-					</scroll-view>
-					<view class="flex flex-row" :class="[props.splitBtn ? 'pa-32' : '']">
-						<slot name="button">
-							<view v-if="!props.hideCancel" class="flex-1 overflow" style="height: 90rpx">
-								<tm-sheet
-									:dark="props.dark"
-									:followTheme="true"
-									:isDisabledRoundAndriod="true"
-									@click="cancel"
-									:height="90"
-									:linear="props.cancelLinear"
-									:linearDeep="props.cancelLlinearDeep"
-									text
-									:color="props.cancelColor"
-									:_class="['flex-center overflow flex']"
-									:paren-class="props.splitBtn ? 'round-' + props.btnRound : 'round-bl-' + props.round"
-									:margin="[0, 0]"
-									:padding="[0, 0]"
-								>
-									<tm-text
-										_class="text-weight-b"
-										_style="line-height:90rpx"
-										:dark="props.dark"
-										:followTheme="false"
-										:userInteractionEnabled="false"
-										:label="props.cancelText"
-									></tm-text>
-								</tm-sheet>
-							</view>
-							<view v-if="props.splitBtn && !props.hideCancel" class="overflow" style="width: 24rpx"></view>
-							<view class="flex-1 flex" :class="[okLoading ? 'opacity-5' : '', 'overflow']" style="height: 90rpx">
-								<tm-sheet
-									paretClass="flex-1"
-									class="flex-1"
-									:dark="props.dark"
-									:followTheme="true"
-									:isDisabledRoundAndriod="true"
-									@click="ok"
-									:height="90"
-									:linear="props.okLinear"
-									:linearDeep="props.okLlinearDeep"
-									:color="props.okColor"
-									:margin="[0, 0]"
-									:_class="['flex-center overflow']"
-									:paren-class="props.splitBtn ? 'round-' + props.btnRound : 'round-br-' + props.round"
-									:padding="[0, 0]"
-								>
-									<view :userInteractionEnabled="false" class="flex flex-row">
-										<view v-if="okLoading" class="pr-10"
-											><tm-icon :userInteractionEnabled="false" name="tmicon-shuaxin" spin></tm-icon
-										></view>
-										<tm-text
-											_class="text-weight-b"
-											:dark="props.dark"
-											:userInteractionEnabled="false"
-											:label="props.okText"
-										></tm-text>
-									</view>
-								</tm-sheet>
-							</view>
-						</slot>
-					</view>
-				</view>
-			</tm-translate>
-		</tm-overlay>
-	</view>
-</template>
-
-<script lang="ts" setup>
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount, watch, PropType, getCurrentInstance, onUpdated, nextTick } from 'vue';
+import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit, getUid } from "../../libs/tool";
+import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
+import { useTmConfig } from "../../libs/config";
+import { onPageScroll } from '@dcloudio/uni-app';
 /**
- * 对话框
- * @description 对话框
+ * @displayName 对话框
+ * @exportName tm-modal
+ * @category 反馈组件
+ * @description 可全局统一更改风格。使用时注意下：如果height:auto，将失去内容滚动效果。如果要内容滚动height必定是一个值。
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-import tmTranslate from '../tm-translate/tm-translate.vue'
-import tmText from '../tm-text/tm-text.vue'
-import tmIcon from '../tm-icon/tm-icon.vue'
-import tmOverlay from '../tm-overlay/tm-overlay.vue'
-import tmSheet from '../tm-sheet/tm-sheet.vue'
-import { getCurrentInstance, computed, ref, provide, inject, onMounted, onUnmounted, nextTick, watch, ComponentInternalInstance, toRaw } from 'vue'
-import { cssstyle, tmVuetify, colorThemeType } from '../../tool/lib/interface'
-import { custom_props, computedTheme, computedClass, computedStyle, computedDark } from '../../tool/lib/minxs'
-import { useTmpiniaStore } from '../../tool/lib/tmpinia'
+defineOptions({ name: 'TmModal' });
+const { config } = useTmConfig()
 
-const drawerANI = ref<InstanceType<typeof tmTranslate> | null>(null)
-const overlayAni = ref<InstanceType<typeof tmOverlay> | null>(null)
-
-const store = useTmpiniaStore()
 const props = defineProps({
-	...custom_props,
-	//是否显示遮罩
-	mask: {
-		type: [Boolean],
-		default: false
-	},
-
-	border: {
-		type: Number,
-		default: 2
-	},
-	show: {
-		type: [Boolean],
-		default: false
-	},
-	width: {
-		type: Number,
-		default: 600
-	},
-	height: {
-		type: Number,
-		default: 450
-	},
-	round: {
-		type: Number,
-		default: 10
-	},
-	//弹出的动画时间单位ms.
-	duration: {
-		type: Number,
-		default: 250
-	},
-	//是否允许点击遮罩关闭
-	overlayClick: {
-		type: Boolean,
-		default: true
-	},
-	transprent: {
-		type: [Boolean],
-		default: false
-	},
-	//如果显示关闭。标题栏被替换为左标题右关闭按钮。
-	closeable: {
-		type: [Boolean],
-		default: false
-	},
-	color: {
-		type: String,
-		default: 'white'
-	},
-	title: [String],
-	okText: {
-		type: [String],
-		default: '完成'
-	},
-	okColor: {
-		type: [String],
-		default: 'primary'
-	},
-	okLinear: {
-		type: [String],
-		default: '' //left:右->左，right:左->右。top:下->上，bottom:上->下。
-	},
-	// 渐变的亮浅
-	okLlinearDeep: {
-		type: [String],
-		default: 'accent' //light,dark,亮系渐变和深色渐变。
-	},
-	cancelColor: {
-		type: [String],
-		default: 'primary'
-	},
-	cancelText: {
-		type: [String],
-		default: '取消'
-	},
-	cancelLinear: {
-		type: [String],
-		default: '' //left:右->左，right:左->右。top:下->上，bottom:上->下。
-	},
-	// 渐变的亮浅
-	cancelLlinearDeep: {
-		type: [String],
-		default: 'accent' //light,dark,亮系渐变和深色渐变。
-	},
-	//只有在分享式按钮下才有作用。
-	btnRound: {
-		type: Number,
-		default: 24
-	},
-	hideCancel: {
-		type: [Boolean],
-		default: false
-	},
-	//分离式按钮。
-	splitBtn: {
-		type: Boolean,
-		default: false
-	},
-	//在关闭前执行的回调函数。返回false时即取消关闭窗体。在app端返回的是true,而非app是function,需要再次执行
-	beforeClose: {
-		type: Function,
-		default: () => {
-			return () => true
-		}
-	},
-	content: {
-		type: String,
-		default: ''
-	},
-	disabled: {
-		type: Boolean,
-		default: false
-	},
-	titleStyle: {
-		type: [Array, String, Object],
-		default: () => []
-	},
-	zIndex: {
-		type: [Number, String],
-		default: 999
-	},
-	/** 是否使用teleport */
-	teleport: {
-		type: Boolean,
-		default: true
-	}
+    /**
+     * 自定义遮罩样式
+     */
+    customStyle: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 标题
+     */
+    title: {
+        type: String,
+        default: "标题"
+    },
+    /**
+     * 显示底部操作栏
+     */
+    showFooter: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 是否显示底部关闭按钮
+     */
+    showTitle: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 是否显示底部关闭按钮
+     */
+    showClose: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 显示取消按钮
+     */
+    showCancel: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 遮罩是否允许点击被关闭
+     */
+    overlayClick: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 显示可v-model:show双向绑定
+     */
+    show: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 动画时间
+     */
+    duration: {
+        type: Number,
+        default: 250
+    },
+    /**
+     * 取消按钮的文本
+     */
+    cancelText: {
+        type: String,
+        default: "取消"
+    },
+    /**
+     * 确认按钮的文本
+     */
+    confirmText: {
+        type: String,
+        default: "确认"
+    },
+    /**
+     * 打开方向为上和下时的圆角
+     * 空值时，取全局配置的圆角。
+     */
+    round: {
+        type: [String, Number],
+        default: ""
+    },
+    /**
+     * 宽，百分比，Px,rpx，auto都支持
+     */
+    width: {
+        type: [String, Number],
+        default: "84%"
+    },
+    /**
+     * 宽，百分比，Px,rpx，auto都支持
+     */
+    height: {
+        type: [String, Number],
+        default: "350"
+    },
+    /**
+     * 可以是百分比,px,rpx单位数字。如果你不带单位，默认转换为rpx单位。
+     */
+    maxHeight: {
+        type: [String, Number],
+        default: "80%"
+    },
+    /**
+     * 是否禁用内部的scroll标签
+     * 禁用后内容不会滚动，如果设定了指定高，内容超出指定高，会被裁切
+     * 但如果没有指定高，内容自动的话，高是自动的。
+     * 有这个属性是因为截止4.03scroll-view里面放input不会上推键盘，及内部的view touchMove会失效。
+     */
+    disabledScroll: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 容器背景色
+     */
+    bgColor: {
+        type: String,
+        default: "white"
+    },
+    /**
+     * 暗黑时的容器背景色，不填写的话取sheetDarkColor
+     */
+    darkBgColor: {
+        type: String,
+        default: ""
+    },
+    zIndex: {
+        type: [String, Number],
+        default: "1105"
+    },
+    /**
+     * 内容区域的间隙
+     */
+    contentPadding: {
+        type: [String, Number],
+        default: "32"
+    }
 })
-const emits = defineEmits(['click', 'open', 'close', 'update:show', 'ok', 'cancel'])
-const proxy = getCurrentInstance()?.proxy ?? null
-// 设置响应式全局组件库配置表。
-const tmcfg = computed<tmVuetify>(() => store.tmStore)
-//自定义样式：
-const customCSSStyle = computed(() => computedStyle(props))
-//自定类
-const customClass = computed(() => computedClass(props))
-//是否暗黑模式。
-const isDark = computed(() => computedDark(props, tmcfg.value))
-//计算主题
-const tmcomputed = computed<cssstyle>(() => computedTheme(props, isDark.value, tmcfg.value))
-let rejCall: any = null
-let resCall: any = null
-let isOkClose = false
-//外部调用open或者close时将会执行相关参数函数.
-let nowCallFun: any = null
-const reverse = ref(true)
-let flag = false
-let timeid = uni.$tm.u.getUid(4)
-const okLoading = ref(false)
-let _show = ref(props.show)
-let timerId = NaN
-function debounce(func: Function, wait = 500, immediate = false) {
-	// 清除定时器
-	if (!isNaN(timerId)) clearTimeout(timerId)
-	// 立即执行，此类情况一般用不到
 
-	if (immediate) {
-		var callNow = !timerId
-		timerId = setTimeout(() => {
-			timerId = NaN
-		}, wait)
+const emit = defineEmits([
+    /**
+     * 点击遮罩事件
+     */
+    'click',
+    /**
+     * 关闭是触发
+     */
+    'close',
+    /**
+     * 打开时触发
+     */
+    'open',
+    /**
+     * 打开前执行
+     */
+    'beforeOpen',
+    /**
+     * 关闭前执行
+     */
+    'beforeClose',
+    /**
+     * 等同v-model:show
+     */
+    'update:show',
+    /**
+     * 取消时触发
+     */
+    'cancel',
+    /**
+     * 确认时触发
+     */
+    'confirm'
+])
+const _width = ref(0)
+const _height = ref(0)
+const showOverflay = ref(false)
+const actinon = ref(false)
+const status = ref("")
+const id = ref("tmModal" + getUid())
+const wrapId = ref("tmModal" + getUid())
+const tid = ref(0)
+const tid2 = ref(0)
+const windtop = ref(0)
+const tantiaoTrue = ref(false)
+const _customStyle = computed(() => props.customStyle)
+const _show = computed(() => props.show)
+const _showClose = computed(() => props.showClose)
+const _duration = computed(() => props.duration)
+const _title = computed(() => props.title)
+const _showTitle = computed(() => props.showTitle)
+const _round = computed(() => {
+    if (props.round == "") {
+        return covetUniNumber(config.modalRadius, config.unit)
+    }
+    return covetUniNumber(props.round, config.unit)
+})
+const _contentHeight = ref('auto')
+const proxy = getCurrentInstance()?.proxy;
+const _c_width = computed(() => covetUniNumber(props.width, config.unit))
+const _c_height = computed(() => covetUniNumber(props.height, config.unit))
+const _showFooter = computed(() => props.showFooter)
+const _maxHeight = computed(() => covetUniNumber(props.maxHeight, config.unit))
+const _contentPadding = computed(() => covetUniNumber(props.contentPadding, config.unit))
+const _showCancel = computed(() => props.showCancel)
+const _cancelText = computed(() => props.cancelText)
+const _confirmText = computed(() => props.confirmText)
+const _animationFun = computed(() => config.animation)
+const __height = computed(() => {
+    let h = '100%'
+    // #ifdef WEB
+    h = `calc(100% - ${windtop.value}px)`
+    // #endif
+    return h
+})
+const _bgColor = computed(() => {
+    if (config.mode == 'dark') {
+        if (props.darkBgColor != '') return getDefaultColor(props.darkBgColor)
+        return getDefaultColor(config.sheetDarkColor)
+    }
+    return getDefaultColor(props.bgColor)
+})
 
-		if (callNow) typeof func === 'function' && func()
-	} else {
-		// 设置定时器，当最后一次操作后，timeout不会再被清除，所以在延时wait毫秒后执行func回调方法
-		timerId = setTimeout(() => {
-			typeof func === 'function' && func()
-		}, wait)
-	}
-}
+watch(() => props.show, (newVal) => {
+    if (newVal) {
+        showAlert()
+    } else {
+        closeAlert()
+    }
+})
 
-function throttle(func: Function, wait = 500, immediate = true) {
-	if (immediate) {
-		if (!flag) {
-			flag = true
-			// 如果是立即执行，则在wait毫秒内开始时执行
-			typeof func === 'function' && func()
-			timeid = setTimeout(() => {
-				flag = false
-			}, wait)
-		}
-	} else {
-		if (!flag) {
-			flag = true
-			// 如果是非立即执行，则在wait毫秒内的结束处执行
-			timeid = setTimeout(() => {
-				flag = false
-				typeof func === 'function' && func()
-			}, wait)
-		}
-	}
-}
-
-watch(
-	() => props.show,
-	(val) => {
-		if (val) {
-			opens()
-		} else {
-			close()
-		}
-	}
-)
 onMounted(() => {
-	if (_show.value) {
-		opens()
-	}
+    let sys = uni.getWindowInfo()
+    // #ifndef APP
+    _width.value = sys.windowWidth
+    _height.value = sys.windowHeight - sys.windowTop
+    windtop.value = sys.windowTop
+    // #endif
+    // #ifdef APP
+    _width.value = sys.windowWidth
+    _height.value = sys.windowHeight
+    // #endif
+
+    if (_show.value) {
+        showAlert()
+    }
 })
 
-const round_rp = computed(() => {
-	return 'round-' + props.round
-})
-const reverse_rp = computed(() => {
-	if (aniname.value != 'zoom') return reverse.value
-	return !reverse.value
-})
-const aniname = computed(() => {
-	return 'zoom'
-})
-const anwidth = computed(() => {
-	return props.width + 'rpx'
-})
-const anheight = computed(() => {
-	return props.height + 'rpx'
-})
-const contentHeight = computed(() => {
-	let bas = 0
-	if (props.splitBtn) {
-		bas = uni.upx2px(64)
-	}
-	return uni.upx2px(props.height) - 44 - uni.upx2px(90) - bas + 'px'
-})
-const align_rp = computed(() => {
-	return 'flex-center'
+onBeforeUnmount(() => {
+    clearTimeout(tid.value)
+    clearTimeout(tid2.value)
 })
 
-async function ok() {
-	if (props.disabled) return
-	debounce(
-		async () => {
-			try {
-				if (typeof props.beforeClose === 'function') {
-					okLoading.value = true
-					let p = await props.beforeClose()
-					if (typeof p === 'function') {
-						p = await p()
-					}
-					okLoading.value = false
-					if (!p) return
-				}
-				emits('ok', toRaw(nowCallFun))
-				isOkClose = true
-				close()
-			} catch (e) {
-				okLoading.value = false
-			}
-		},
-		250,
-		true
-	)
+const overflayMoveTouch = (evt: TouchEvent) => {
+    evt.preventDefault()
 }
 
-function cancel() {
-	if (props.disabled) return
-	if (okLoading.value) return
-	isOkClose = false
-	emits('cancel', toRaw(nowCallFun))
+const cancelEvt = () => {
 
-	close()
+    /**
+     * 取消时触发
+     */
+    emit('cancel')
+    closeAlert()
 }
 
-function OverLayOpen() {
-	nextTick(function () {
-		drawerANI.value?.play()
-	})
-	emits('open')
-	emits('update:show', true)
-	_show.value = true
+const confirmEvt = () => {
+    /**
+     * 确认时触发
+     */
+    emit('confirm')
+    closeAlert()
 }
 
-function overclose() {
-	nextTick(() => {
-		emits('close')
-		emits('update:show', false)
-		_show.value = false
-		if (resCall && isOkClose) {
-			resCall()
-		}
-		if (rejCall && !isOkClose) {
-			rejCall()
-		}
-	})
+const onClickOverflowy = (evt: Event) => {
+    evt.stopPropagation()
+    /**
+     * 点击遮罩事件
+     */
+    emit("click")
+    if (!props.overlayClick){
+        clearTimeout(tid2.value)
+        tantiaoTrue.value = true
+        tid2.value = setTimeout(() => {
+            tantiaoTrue.value = false
+        }, 200);
+        return;
+    }
+    closeAlert()
 }
 
-// 外部调用
-function open(arg: any = null) {
-	if (okLoading.value) return
-	if (_show.value == true) return
-	return new Promise((res, rej) => {
-		throttle(
-			async () => {
-				reverse.value = true
-				overlayAni.value?.open(true)
-				nowCallFun = arg
+const closeAlert = () => {
+    if (actinon.value) return
+    if (status.value == 'close') return
+    actinon.value = true
+    status.value = 'close'
+    /**
+     * 关闭前执行
+     */
+    emit('beforeClose')
 
-				rejCall = rej
-				resCall = res
-			},
-			props.duration,
-			true
-		)
-	})
+    clearTimeout(tid.value)
+    tid.value = setTimeout(() => {
+        onEnd()
+    }, _duration.value)
 }
 
-// 内部调用
-function opens() {
-	if (props.disabled) return
-	if (okLoading.value) return
-	if (_show.value == true) return
-	debounce(
-		() => {
-			reverse.value = true
-			_show.value = true
-			overlayAni.value?.open(true)
-		},
-		props.duration,
-		true
-	)
+const showAlert = () => {
+    if (actinon.value) return
+    if (status.value == 'open') return
+    showOverflay.value = true
+    actinon.value = true
+
+    /**
+     * 打开前执行
+     */
+    emit('beforeOpen')
+    clearTimeout(tid.value)
+    tid.value = setTimeout(() => {
+        status.value = 'open'
+        tid.value = setTimeout(() => {
+            onEnd()
+        }, _duration.value)
+    }, 50)
 }
 
-//外部手动调用关闭方法
-async function close(arg: Function | null = null) {
-	reverse.value = false
-	if (!drawerANI.value) return
-	overlayAni.value?.close()
-	drawerANI.value?.play()
-}
-//内部通过点击遮罩关闭的方法.同时需要发送事件。
-function overlayClickFun(e: Event) {
-	if (_show.value == false) return
-	emits('click', e)
-	if (!props.overlayClick || props.disabled || okLoading.value || !overlayAni.value) return
-	reverse.value = false
-	throttle(
-		() => {
-			isOkClose = false
-			overlayAni.value?.close()
-			drawerANI.value?.play()
-		},
-		props.duration,
-		true
-	)
+
+const openDrawer = () => {
+    showAlert()
 }
 
-//外部调用的方法。
-defineExpose({
-	close: close,
-	open: open
-})
+const onEnd = () => {
+    actinon.value = false
+
+    if (status.value == 'close') {
+        showOverflay.value = false
+        /**
+         * 关闭时执行
+         */
+        emit('close')
+        /**
+         * 等同v-model:show
+         */
+        emit('update:show', false)
+    } else {
+        /**
+         * 打开执行的事件
+         */
+        emit('open')
+        
+    }
+}
+
+const maskerMove = (evt: TouchEvent) => {
+    evt.stopPropagation()
+    evt.preventDefault()
+}
+
+
 </script>
+<script lang="ts">
+export default {
+    options: {
+        styleIsolation: "apply-shared",
+        virtualHost: true,
+        addGlobalClass: true,
+        multipleSlots: true,
+    },
+};
+</script>
+<template>
+    <view>
+        <view @click="openDrawer">
+            <!--
+			@slot 标签触发显示遮罩，免于使用变量控制
+			@binding {Boolean} show - 当前是否已显示
+			-->
+            <slot name="trigger" :show="show"></slot>
+        </view>
+        <!-- #ifdef H5 -->
+        <teleport to="uni-app">
+            <!-- #endif -->
+            <!-- #ifdef MP-WEIXIN -->
+            <root-portal>
+                <!-- #endif -->
+                <view @click="onClickOverflowy" @touchmove="maskerMove" ref="tmModalWrap" v-if="showOverflay"
+                    :id="id" class="tmModalWrap tmModalWrap_center"
+                    :class="[status == 'open' ? 'tmModalWrap_on' : 'tmModalWrap_off']"
+                    :style="[{ top: windtop + 'px', zIndex: zIndex, width: '100%', height: __height, 'transition-timing-function': _animationFun }, _customStyle]">
 
-<style scoped>
-.flex-left-custom {
-	display: flex;
-	justify-content: flex-start;
-	align-items: flex-start;
+                    <view @click.stop="" ref="tmModalWrapContent" class="tmModalWrapContent "
+                        :class="[status == 'open' ? 'tmModalWrapContent_on' : 'tmModalWrapContent_off',tantiaoTrue?'tmModalWrapContent_Tantiao':'']" :id="wrapId"
+                        :style="{
+                            width: _c_width,
+                            height: _c_height,
+                            maxWidth: '750px',
+                            borderRadius: _round,
+                            maxHeight: _maxHeight != '' ? _maxHeight : '100%',
+                            backgroundColor: _bgColor,
+                            transitionDuration: _duration + 'ms',
+                            'transition-timing-function': _animationFun
+                        }">
+                        <view ref="tmModalWrapBox" class="tmModalWrapBox" :style="{ borderRadius: _round }">
+                            <view class="tmModalXclose">
+                                <tm-icon v-if="_showClose" @click="closeAlert" color="#dcdcdc" size="52"
+                                    name="close-circle-fill"></tm-icon>
+                            </view>
+
+                            <view>
+                                <view v-if="_showTitle" class="tmModalTitleBox">
+                                    <!-- 
+                                    @slot 标题插槽
+                                    @binding {Boolean} show - 当前是否已显示
+                                    -->
+                                    <slot name="title" :show="show">
+                                        <tm-text font-size="34" class="tmModaltitleBoxTitle">{{ _title }}</tm-text>
+                                    </slot>
+                                </view>
+                            </view>
+
+                            <view v-if="!disabledScroll&&_c_height!='auto'" style="flex: 1;" class="tmModalWrapBoxContent" >
+                                <scroll-view  style="height:100%;position:absolute;width:100%" :scroll-y="true"
+                                    :rebound="false">
+                                    <view :style="{ padding: `0px ${_contentPadding}  0px ${_contentPadding}` }">
+                                        <!--
+                                        @slot 默认插槽
+                                        -->
+                                        <slot></slot>
+                                    </view>
+                                </scroll-view>
+                            </view>
+                            <view v-else :style="{ height: '100%', padding: _contentPadding }">
+                                <!--
+                                @slot 默认插槽
+                                -->
+                                <slot></slot>
+                            </view>
+                            <view v-if="showFooter" class="tmModalFooter" :style="{ backgroundColor: _bgColor }">
+                                <!--
+                                @slot 底部操作栏
+                                -->
+                                <slot name="footer">
+                                    <tm-button @click="cancelEvt" v-if="_showCancel" skin="thin"
+                                        style="margin-right: 16px;flex:1">{{ _cancelText }}</tm-button>
+                                    <tm-button @click="confirmEvt" style="flex:1">{{ _confirmText }}</tm-button>
+                                </slot>
+                            </view>
+                        </view>
+                    </view>
+
+                </view>
+
+                <!-- #ifdef MP-WEIXIN -->
+            </root-portal>
+            <!-- #endif -->
+
+            <!-- #ifdef H5 -->
+        </teleport>
+        <!-- #endif -->
+    </view>
+</template>
+<style lang="scss" scoped>
+.tmModalWrapBox {
+    display: flex;
+    flex-direction: column;
+    /* background-color: white; */
+    height: 100%;
+    width: 100%;
+
 }
 
-.flex-right-custom {
-	display: flex;
-	justify-content: flex-start;
-	align-items: flex-end;
+.tmModalFooter {
+    display: flex;
+    width: 100%;
+    /* background-color: white; */
+    padding: 24rpx;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
 }
 
-.flex-top-custom {
-	display: flex;
-	justify-content: flex-start;
-	align-items: flex-start;
+.tmModalXclose {
+    position: absolute;
+    right: 24rpx;
+    top: 18rpx;
+    z-index: 100;
 }
 
-.flex-end-custom {
-	display: flex;
-	justify-content: flex-end;
-	align-items: flex-end;
+.tmModaltitleBoxTitle {
+    font-size: 32rpx;
 }
 
-.flex-center-custom {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: row;
+.tmModalTitleBox {
+    height: 100rpx;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.tmModaltitleBox {
+    max-width: 350px;
+    overflow: hidden;
+    lines: 1;
+    text-overflow: ellipsis;
+    font-size: 14px;
+}
+
+.tmModalWrap_center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.tmModalWrapContent {
+    transition-property: transform, opacity;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+}
+
+.tmModalWrapContent_on {
+    transform: scale(1);
+    opacity: 1;
+
+}
+
+.tmModalWrapContent_off {
+    transform: scale(0.54);
+    opacity: 0;
+}
+.tmModalWrapBoxContent{
+    position: relative;
+}
+
+.tmModalWrap {
+    opacity: 1;
+	position: fixed;
+	left: 0;
+	top: 0px;
+	transition-duration: 350ms;
+	transition-property: background-color;
+}
+
+.tmModalWrap_on {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(3px);
+}
+
+.tmModalWrap_off {
+    background-color: rgba(0, 0, 0, 0);
+}
+@keyframes tantiao {
+    0%{
+        transform: scale(1);
+    }
+    60%{
+        transform: scale(1.05);
+    }
+    75%{
+        transform: scale(0.95);
+    }
+    85%{
+        transform: scale(1.05);
+    }
+    100%{
+        transform: scale(1);
+    }
+}
+.tmModalWrapContent_Tantiao{
+    animation: tantiao 0.15s linear;
 }
 </style>

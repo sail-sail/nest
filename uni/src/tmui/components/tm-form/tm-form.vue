@@ -1,293 +1,214 @@
-<template>
-	<tm-sheet :transprent="props.transprent" :padding="props.padding"
-		:margin="props.margin">
-		<slot></slot>
-	</tm-sheet>
-</template>
+<script setup lang="ts">
+import { PropType, computed, nextTick, provide, ref } from 'vue';
+import { defaultValidator } from "./validator"
+import { useTmConfig } from "../../libs/config";
+import { deepClone } from '../../libs/tool';
 
-<script lang="ts" setup>
-	/** 
- * 表单
- * @description 注意，内部需要放置tm-form-item,不限层级，可随意布局。
- * 对以下表单类组件进行字段收集。
- * 	"tm-radio-group","tm-checkbox-box",
-	"tm-input","tm-rate","tm-slider",
-	"tm-segtab","tm-switch","tm-upload"
+/**
+ * @displayName 表单
+ * @exportName tm-form
+ * @category 表单组件
+ * @description 表单组件的校验规则现在统一放到了form组件上，form-item上不再配置校验，主要是方便统一管理校验模块，并且校验函数作了升级处理。
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-	import { computed, PropType, provide, ref, watch, Ref, toRaw, shallowReadonly, nextTick, isProxy, unref, readonly, watchEffect } from 'vue'
-	import { formItem, validateResultListType } from './interface'
-	import tmSheet from '../tm-sheet/tm-sheet.vue'
-	import { validateFunCall, getObjectVal } from '../tm-form-item/validateFunCall'
-	/**
-	 * 事件说明
-	 * @method submit 提交表单时触发。
-	 * @method reset 重置表单时触发
-	 * @method validate 校验表单时触发
-	 * @method clearValidate 清除校验状态时触发。
-	 */
-	const emits = defineEmits<{
-		(e : 'submit', event : Tmui.tmFormSubmitResult) : void
-		/**只要有数据更改就会触发校验并返回相关数据与submit相同 */
-		(e : 'validate', event : Tmui.tmFormRules) : void
-		(e : 'reset') : void
-		(e : 'clearValidate') : void
-		(e : 'update:modelValue', event : any) : void
-	}>()
-
-	const props = defineProps({
-		modelValue: {
-			type: Object as PropType<Object>,
-			default: () => {
-				return {}
-			},
-			required: true
-		},
-		margin: {
-			type: Array as PropType<Array<number>>,
-			default: () => [32, 24]
-		},
-		padding: {
-			type: Array as PropType<Array<number>>,
-			default: () => [16, 0]
-		},
-		//表单标签是竖还是横排列。
-		//vertical,horizontal
-		layout: {
-			type: String as PropType<'vertical' | 'horizontal'>,
-			default: 'horizontal'
-		},
-		//如果为0表示自动宽度。
-		labelWidth: {
-			type: Number,
-			default: 160
-		},
-		//标签对齐方式
-		labelAlign: {
-			type: String,
-			default: 'left'
-		},
-		//显示下划线。
-		border: {
-			type: Boolean,
-			default: true
-		},
-		transprent: {
-			type: Boolean,
-			default: false
-		}
-	})
-	const _modelVal = ref(uni.$tm.u.deepClone(props.modelValue))
-	//备份，重置时，使用。
-	const _backModelVal = uni.$tm.u.deepClone(props.modelValue)
-	watchEffect(() => {
-		_modelVal.value = uni.$tm.u.deepClone(props.modelValue)
-	})
-	//收集的字段。状态。它与_modelVal是有区别的，用户提供的字段，不一定就会在页面中存在，需要与已经渲染的字段进行匹配
-	const _callBackModelVal : Ref<Array<Tmui.tmFormRules>> = ref([])
-	const tmFormComnameId = 'tmFormId'
-	//允许被推送的组件清单类型.其它的组件不会被收集进行检验。
-	const safeFormCom = ref(['tm-radio-group', 'tm-checkbox-box', 'tm-input', 'tm-rate', 'tm-slider', 'tm-segtab', 'tm-switch', 'tm-upload'])
-	//需要对子级，响应的方法。
-	// 这里为了更好的性能不再使用vue2版本中children方式，而是采用了provide方式与父子间传递。
-	const formFunCallBack = ref('validate')
-	const validateResultList = ref<validateResultListType[]>([])
-	provide(
-		'tmFormFun',
-		computed(() => formFunCallBack.value)
-	)
-	provide(
-		'tmFormLabelWidth',
-		computed(() => props.labelWidth)
-	)
-	provide(
-		'tmFormLabelAlign',
-		computed(() => props.labelAlign)
-	)
-	provide(
-		'tmFormLayout',
-		computed(() => props.layout)
-	)
-	provide(
-		'tmFormBorder',
-		computed(() => props.border)
-	)
-	provide(
-		'tmFormTransprent',
-		computed(() => props.transprent)
-	)
-	provide(
-		'formCallFiled',
-		computed(() => _modelVal.value)
-	)
-	provide(
-		'validateResultList',
-		computed(() => validateResultList.value)
-	)
-	let timid : any = NaN
-	let ptimeId : any = NaN
-	watch(
-		() => _modelVal.value,
-		(newValue, oldValue) => {
-			clearTimeout(timid)
-			if (formFunCallBack.value == 'validate') {
-				timid = setTimeout(function () {
-					let vaildFileds = getChangedField(newValue,oldValue)
-					const result = validate(vaildFileds,'')
-					validateResultList.value = [...result.result]
-				}, 100)
-			}
-		},
-		{ deep: true }
-	)
-
-	function getChangedField(oldValue : any, newValue : any) : string[] {
-		const changedFields : string[] = [];
-		for (const key in oldValue) {
-			if (oldValue.hasOwnProperty(key)) {
-				if (typeof oldValue[key] === 'object' && typeof newValue[key] === 'object' && !Array.isArray(oldValue[key])) {
-					const nestedChangedFields = getChangedField(oldValue[key], newValue[key]);
-					if (nestedChangedFields.length > 0) {
-						changedFields.push(`${key}.${nestedChangedFields.join('.')}`);
-					}
-				} else if (valToval(oldValue[key]) !== valToval(newValue[key])) {
-					changedFields.push(key);
-				}
-			}
-		}
-		return changedFields;
-	}
-	function valToval(value:any){
-		if(Array.isArray(value)){
-			return value.join("")
-		}
-		return value
-	}
-	function reset() {
-		formFunCallBack.value = 'reset'
-		let dblack = uni.$tm.u.deepClone(_backModelVal)
-		emits('update:modelValue', dblack)
-		emits('reset')
-		_modelVal.value = dblack
-		
-		validateResultList.value = []
-		formFunCallBack.value = 'validate'
-	}
-	function clearValidate() {
-		formFunCallBack.value = 'clearValidate'
-		nextTick(() => {
-			emits('clearValidate')
-		})
-		validateResultList.value = []
-	}
-	function submit() {
-		formFunCallBack.value = 'validate'
-		let isPass = true
-		uni.$tm.u.throttle(
-			() => {
-				const result = validate()
-				validateResultList.value = [...result.result]
-				// @ts-ignore
-				emits('submit', { data: toRaw(_modelVal.value), ...result })
-			},
-			220,
-			false
-		)
-	}
-	/**
-	 * 执行表单检验
-	 * type 为all时会省略fileds字段，校验全部
-	 * type非all时，会校验fileds字段
-	 */
-	function validate(fileds:string[] = [],type = 'all', isShowError = true) {
-		formFunCallBack.value = 'validate'
-		let par = toRaw(_callBackModelVal.value)
-		let isPass = true
-		let list : validateResultListType[] = []
-		for (let i = 0, len = par.length; i < len; i++) {
-			let item = par[i]
-			if(type=='all'){
-				let value = getObjectVal(_modelVal.value, item.field)
-				const vallist = validateFunCall(item.rules, value)
-				let rulstVal = {
-					message: '校验通过',
-					validator: true as Function | boolean
-				} as any
-				for (let j = 0; j < vallist.length; j++) {
-					if (!vallist[j].validator) {
-						isPass = false
-						rulstVal.message = vallist[j]?.message ?? '校验通过'
-						rulstVal.validator = vallist[j]?.validator ?? true
-						break
-					}
-				}
-				list.push({ field: item.field, ...rulstVal })
-			}else if(fileds.length>0&&fileds.includes(item.field)){
-				let value = getObjectVal(_modelVal.value, item.field)
-				const vallist = validateFunCall(item.rules, value)
-				let rulstVal = {
-					message: '校验通过',
-					validator: true as Function | boolean
-				} as any
-				for (let j = 0; j < vallist.length; j++) {
-					if (!vallist[j].validator) {
-						isPass = false
-						rulstVal.message = vallist[j]?.message ?? '校验通过'
-						rulstVal.validator = vallist[j]?.validator ?? true
-						break
-					}
-				}
-				list.push({ field: item.field, ...rulstVal })
-			}
-			
-		}
-
-    if (isShowError) {
-      validateResultList.value = [...list]
+defineOptions({ name: "TmForm" });
+const { config } = useTmConfig();
+const emit = defineEmits([
+    /**
+     * 提交表单时触发.
+     * @param {TM.FORM_SUBMIT_RESULT} result 校验结果
+     */
+    "submit",
+    /**
+     * 表单数据时一定要vmodel绑定,当重置时会触发此事件。
+     */
+    "update:modelValue"
+])
+const props = defineProps({
+    // 表单数据
+    modelValue: {
+        type: Object as PropType<Record<string, any>>,
+        default: () => {
+            return {}
+        }
+    },
+    /**
+     * 表单校验规则
+     * 经过验证后，觉得把form-item的rules属性去掉,直接使用form上统一到一起rules属性,这样就可以不用写form-item了.
+     */
+    rules: {
+        type: Object as PropType<Record<string, Array<TM.FORM_RULE> | TM.FORM_RULE>>,
+        default: (): Record<string, Array<TM.FORM_RULE>> => {
+            return {}
+        }
+    },
+    /**
+     * 方向,子组件的方向会覆盖此处。
+     */
+    direction: {
+        type: String as PropType<"horizontal" | "vertical">,
+        default: "horizontal"
+    },
+    /**
+     * 方向,子组件的覆盖此处。
+     */
+    labelWidth: {
+        type: [String, Number],
+        default: "160"
+    },
+    /**
+     * 标题字号大小
+     */
+    labelFontSize: {
+        type: [String, Number],
+        default: "30"
+    },
+    /**
+     * 标题颜色
+     */
+    labelFontColor: {
+        type: [String],
+        default: "#333333"
+    },
+    /**
+     * 间隙，项目之间的间距。
+     */
+    gap: {
+        type: [String, Number],
+        default: "10"
     }
-		return { result: list, isPass, data: toRaw(_modelVal.value), validate: isPass }
-	}
-	
+})
+const ruleCover = (rule: TM.FORM_RULE): TM.FORM_RULE_TYPE => {
+    return {
+        required: rule?.required ?? false,
+        message: rule?.message ?? "请正确认选择/填写",
+        validator: rule?.validator ?? null,
+        min: rule?.min ?? 1,
+        max: rule?.max ?? -1,
+        type: rule?.type ?? 'auto',
+        rule: rule?.rule ?? null
+    }
+}
+const _rules = computed((): Record<string, Array<TM.FORM_RULE_TYPE>> => {
+    let rules: Record<string, Array<TM.FORM_RULE_TYPE>> = {};
+    let keys = Object.keys(props.modelValue)
+    for (let key in props.rules) {
+        if (keys.includes(key)) {
+            let item = props.rules[key];
+            if (Array.isArray(item)) {
+                rules[key] = item.map(item => ruleCover(item))
+            } else if (typeof props.rules[key] == 'object' && !Array.isArray(props.rules[key])) {
+                rules[key] = [ruleCover(item)]
+            }
+        }
+    }
+    return rules
+})
+const vaildTypeStr = ref('valid')
+provide("tmFormModelValue", computed(() => props.modelValue))
+provide("tmFormVaildType", computed(() => vaildTypeStr.value))
+provide("tmFormDirection", computed(() => props.direction))
+provide("tmFormLabelwidth", computed(() => props.labelWidth))
+provide("tmFormGap", computed(() => props.gap))
+provide("tmFormLabelFontSize", computed(() => props.labelFontSize))
+provide("tmFormLabelFontColor", computed(() => props.labelFontColor))
+const oldbackValue = deepClone(props.modelValue)
+// 被标记的字段
+const markedKeys:string[] = []
+/**
+ * 提交表单
+ */
+const submit = () => {
+    vaildTypeStr.value = ''
+    nextTick(() => {
+        vaildTypeStr.value = 'valid'
+    })
+    emit("submit", validate())
+}
+/**
+ * 获取校验结果,不会校验页面.
+ * 如果想触发submit事件,并校验页面提示,请使用ref函数submit()而不是此函数方法.
+ */
+const validate = (): TM.FORM_SUBMIT_RESULT => {
+    let result: TM.FORM_SUBMIT_RESULT = {
+        //整体是否校验通过
+        isPass: true,
+        //第一个校验不通过的字段
+        firstValid: null,
+        //校验结果
+        result: []
+    }
+    for (let key of markedKeys) {
+        let rules = _rules.value[key]
+        if (!rules) continue
+        for (let rule of rules) {
+            if (!defaultValidator(props.modelValue[key], rule)) {
+                result.isPass = false;
+                if (result.firstValid == null) {
+                    result.firstValid = { key, isPass: false, message: rule.message, data: props.modelValue[key] }
+                }
+                result.result.push({ key, isPass: false, message: rule.message, data: props.modelValue[key] })
+            } else {
+                result.result.push({ key, isPass: true, message: '校验通过', data: props.modelValue[key] })
+            }
+        }
+    }
+    return result
+}
+/**
+ * 重置表单,数据恢复至最开始的数据.
+ */
+const reset = () => {
+    vaildTypeStr.value = 'reset'
+    emit('update:modelValue', deepClone(oldbackValue))
+}
+/**
+ * 单个校验,子组件用。(外部请不要使用.)
+ */
+const _validate = (name: string, value: any): { validate: boolean, message: string } | boolean => {
+    let rules = _rules.value[name]
+    if (!rules) return true
+    for (let rule of rules) {
+        if (!defaultValidator(value, rule)) {
+            return { validate: false, message: rule.message }
+        }
+    }
+    return true
+}
 
-	function pushKey(item : formItem) {
-		if (!item.field) return
-		let idsIndex = _callBackModelVal.value.findIndex((el) => el.id == item.id)
-		if (idsIndex == -1) {
-			_callBackModelVal.value.push(item)
-		} else {
-			_callBackModelVal.value[idsIndex] = { ...item }
+const _setMarker = (name:string,isvisibl:boolean)=>{
+	let index = markedKeys.findIndex((el)=>el==name);
+	if(isvisibl){
+		if(index==-1){
+			markedKeys.push(name)
+		}
+	}else{
+		if(index>-1){
+			markedKeys.splice(index,1)
 		}
 	}
-	function delKey(item : formItem) {
-		let idsIndex = _callBackModelVal.value.findIndex((el) => el.id == item.id)
-		if (idsIndex > -1) {
-			_callBackModelVal.value.splice(idsIndex, 1)
-		}
-	}
-	function setObjectVal(obj : any, field = '', val : any) {
-		if (field == '') return obj
-		var arr = field.split('.')
-		while (arr.length > 1) {
-			let key = String(arr.shift())
-			obj = isProxy(obj[key]) ? toRaw(obj[key]) : obj[key]
-		}
-		return (obj[arr[0]] = isProxy(val) ? toRaw(val) : val)
-	}
-	/**
-	 * ref函数
-	 * @method submit 提交表单
-	 * @method reset 重置表单
-	 * @method validate 手动校验表单
-	 * @method clearValidate 清除校验状态
-	 */
-	defineExpose({
-		reset,
-		validate,
-		clearValidate,
-		submit,
-		pushKey,
-		delKey,
-		tmFormComnameId
-	})
+}
+
+defineExpose({
+    submit,
+    validate,
+    reset,
+    _validate,
+	_setMarker
+})
+
 </script>
+<template>
+    <view class="tmForm">
+        <!-- 
+        @slot 表单默认插槽,可以不是直接form-item直接子节点,可以根据自己需要随意布局,只要form-item在里面即可.
+         -->
+        <slot></slot>
+    </view>
+</template>
+<style scoped>
 
-<style></style>
+</style>
