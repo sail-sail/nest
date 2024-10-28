@@ -1,400 +1,339 @@
-<template>
-	<view @click="showCity = !props.disabled ? !showCity : false">
-		<!-- #ifdef APP-NVUE -->
-		<view :eventPenetrationEnabled="true">
-			<slot></slot>
-		</view>
-		<!-- #endif -->
-		<!-- #ifndef APP-NVUE -->
-		<slot></slot>
-		<!-- #endif -->
-		<tm-drawer :zIndex="props.zIndex" :inContent="props.inContent" :disabbleScroll="true" :round="props.round"
-			ref="drawer" :height="dHeight" :closeable="true" :overlayClick="aniover" @open="drawerOpen" @cancel="cancel"
-			@ok="confirm" :show="showCity" @close="closeDrawer" title="请选择" ok-text="确认">
-			<tm-picker-view v-if="showCity" :dataKey="props.mapKey || props.dataKey"
-				:map-key="props.mapKey || props.dataKey" :height="dHeight - 230" @end="aniover = true"
-				@start="aniover = false" :modelValue="_colIndex" @update:modelValue="_colIndex = $event"
-				@update:model-str="_colStr = $event" :model-str="_colStr" :default-value="_colIndex"
-				:beforeChange="props.beforeChange" :immediateChange="props.immediateChange" :columns="_data">
-			</tm-picker-view>
-			<tm-button label="确认选择" block :margin="[32, 12]" :color="props.color" :linear="props.linear"
-				:linear-deep="props.linearDeep" @click="confirm" :round="props.btnRound">
-			</tm-button>
-			<view :style="{ height: sysinfo.bottomSafe + 'px' }"></view>
-		</tm-drawer>
-	</view>
-</template>
 <script lang="ts" setup>
-	/**
- * 级联选择（弹层）
- * @description 这是弹出式级联
+import { ref, computed, onMounted, watch, PropType, nextTick } from 'vue';
+import tmPickerView from '../tm-picker-view/tm-picker-view.vue';
+type TM_PICKER_X_ITEM = Record<string, any>
+type TM_PICKER_ITEM_INFO = Record<string, any>
+const pickerView = ref<InstanceType<typeof tmPickerView> | null>(null)
+/**
+ * @displayName 选择器
+ * @exportName tm-picker
+ * @category 表单组件
+ * @description 可单列或者多列
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-	import { PropType, Ref, ref, watchEffect, onMounted, getCurrentInstance, computed, toRaw, inject, nextTick, watch } from 'vue'
-	import { custom_props } from '../../tool/lib/minxs'
-	import tmDrawer from '../tm-drawer/tm-drawer.vue'
-	import { columnsItem } from '../tm-picker-view/interface'
-	import tmPickerView from '../tm-picker-view/tm-picker-view.vue'
-	import TmSheet from '../tm-sheet/tm-sheet.vue'
-	import tmText from '../tm-text/tm-text.vue'
-	import tmButton from '../tm-button/tm-button.vue'
-	import { useWindowInfo } from '../../tool/useFun/useWindowInfo'
+defineOptions({ name: 'TmPicker' });
 
-	const drawer = ref<InstanceType<typeof tmDrawer> | null>(null)
-	const proxy = getCurrentInstance()?.proxy ?? null
+const props = defineProps({
+    /**
+     * 数据
+     */
+    list: {
+        type: Array as PropType<TM_PICKER_ITEM_INFO[]>,
+        default: (): TM_PICKER_ITEM_INFO[] => [] as TM_PICKER_ITEM_INFO[]
+    },
+    /**
+     * 当前选中项的id值
+     */
+    modelValue: {
+        type: [Array<string | number>],
+        default: (): string[] => [] as string[]
+    },
+    /**
+     * 当前选中项的回显文本等同v-model:model-str
+     * 请不要更改此值，此值只对外输出显示。
+     * 如果空值，将内部首次递归渲染回显文本。如果你后台返回，就不会计算。
+     * 因此如果对性能有要求的请务必让后台在首次显示时先回显文本，
+     * 这样内部在第一次时不会递归计算回显文本，提高性能。
+     */
+    modelStr: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 当前打开的状态。
+     * 等同v-model:model-show
+     */
+    modelShow: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 顶部标题
+     */
+    title: {
+        type: String,
+        default: "请选择"
+    },
+    /**
+     * 是否懒加载内部内容。
+     * 当前你的列表内容非常多，且影响打开的动画性能时，请务必
+     * 设置此项为true，以获得流畅视觉效果。如果选择数据较少没有必要打开
+     */
+    lazyContent: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * 显示在顶部的单位名称
+     */
+    cellUnits: {
+        type: Array as PropType<string[]>,
+        default: (): string[] => [] as string[]
+    },
+    /**
+     * 自定义标识id
+     */
+    rangKey: {
+        type: String,
+        default: "id"
+    },
+    /**
+     * 自定义标识文本字段名
+     */
+    rangText: {
+        type: String,
+        default: "title"
+    }
+});
 
-	/**
-	 * 事件说明：
-	 * v-model:show 双向绑定显示和隐藏选择器
-	 * v-model 双向绑定以selectedModel为模式的值。一般用来给数据库后台用的。
-	 * v-model:model-str 单向输出地区名称，
-	 * 一般用来绑定在Input组件或者其它组件上用来展示当前选择的地址名称，
-	 * 但我们服务器可能有的是id或者index，所以你可以v-model绑定数据，用此v-model:model-str来显示数据。
-	 * confirm 点击了确认按钮时触发，返回当前选择数据。
-	 * cancel 取消或者点击遮罩关闭了选择器都将触发。
-	 */
-	const emits = defineEmits(['update:show', 'update:modelValue', 'update:modelStr', 'confirm', 'cancel', 'close', 'open'])
-	const props = defineProps({
-		...custom_props,
+const emit = defineEmits([
+    /**
+     * 取消时触发
+     */
+    'cancel',
+    /**
+     * 确认触发
+     * @param {string[]} ids 当前选中项的id值
+     */
+    'confirm',
+    /**
+     * 滑动变换时触发
+     * @param {string[]} ids 当前选中项的id值
+     */
+    'change',
+    /**
+     * 变量控制打开状态
+     * 等同v-model:model-show
+     */
+    'update:modelShow',
+    /**
+     * 等同v-model:model-str
+     * 只对外输出当前回选区的选中项的文本，不要外部改变此值。
+     */
+    'update:modelStr',
+    'update:modelValue'
+]);
 
-		//可v-model,每一列选中的索引值
-		modelValue: {
-			type: Array as PropType<Array<number | string>>,
-			default: () => []
-		},
-		/**
-		 * 注意：这里是单向输出显示的value值，而不是modelValue的index索引值。
-		 * 这里主要是为了方便表单上页面的显示。如果真要保存到数据库，你应该保存modelValue的值。
-		 */
-		modelStr: {
-			type: [String],
-			default: ''
-		},
-		//默认选中的索引值。
-		defaultValue: {
-			type: Array as PropType<Array<number | string>>,
-			default: () => []
-		},
-		//赋值和选值方式
-		//name:名称模式赋值和选择
-		//id:id模式赋值和选择
-		//index:索引模式赋值和选择
-		selectedModel: {
-			type: String,
-			default: 'index'
-		},
-		//数据。
-		columns: {
-			type: Array as PropType<Array<columnsItem>>,
-			default: () => [],
-			required: true
-		},
-		//当columns项目中的data数据为对象时的key取值字段。
-		dataKey: {
-			type: String,
-			default: 'text'
-		},
-		//当columns项目中的data数据为对象时的key取值字段。兼容上方dataKey,因为微信dataKey与本字段重名，无法设置。
-		mapKey: {
-			type: String,
-			default: 'text'
-		},
-		//当前改变index项时，改变时执行的函数。如果返回false，将会阻止本次改变,可以是Promise
-		//提供了即将改变的数据和将要改变到目标的数据
-		//结构 为 from:{itemindex,levelIndex,data},to:{itemindex,levelIndex,data}。
-		beforeChange: {
-			type: [Boolean, Function],
-			default: () => false
-		},
-		//v-model:show来双向绑定显示和隐藏选择器。
-		show: {
-			type: [Boolean],
-			default: false
-		},
-		color: {
-			type: String,
-			default: 'primary'
-		},
-		linear: {
-			type: String,
-			default: ''
-		},
-		linearDeep: {
-			type: String,
-			default: 'light'
-		},
-		btnRound: {
-			type: Number,
-			default: 0
-		},
-		round: {
-			type: Number,
-			default: 12
-		},
-		height: {
-			type: Number,
-			default: 700
-		},
-		immediateChange: {
-			type: Boolean,
-			default: false
-		},
-		/** 是否嵌入弹层，开启后将在它的父组件内执行弹层。 */
-		inContent: {
-			type: Boolean,
-			default: false
-		},
-		/**禁用时，通过插槽点击时，不会触发显示本组件，适合表单 */
-		disabled: {
-			type: Boolean,
-			default: false
-		},
-		zIndex: {
-			type: [Number, String],
-			default: 999
-		},
-		//弹出的动画时间单位ms.
-		duration: {
-			type: Number,
-			default: 300
-		}
-	})
-	const showCity = ref(true)
-	const _colIndex : Ref<Array<number>> = ref([])
-	const _data = computed(() => props.columns)
-	const _colStr = ref(props.modelStr)
-	const aniover = ref(true)
-	const sysinfo = useWindowInfo()
+const show = ref(false);
+const nowValue = ref<Array<string | number>>([]);
+const modelStrValue = ref("");
+const yanchiDuration = ref(false);
 
-	let tmid : any = NaN
-	watchEffect(() => {
-		showCity.value = props.show
-	})
+const _list = computed(() => props.list.slice(0));
+const _lazyContent = computed(() => props.lazyContent);
+const _cellUnits = computed(() => props.cellUnits);
+watch(() => props.modelValue, (newvalue: Array<string | number>) => {
+    if (newvalue.join('') == nowValue.value.join('')) return;
+    nowValue.value = newvalue.slice(0);
 
-	watch(
-		[() => props.columns, () => props.modelValue],
-		() => {
-			clearTimeout(tmid)
-			tmid = setTimeout(function () {
-				getIndexBymodel(_data.value, props.selectedModel, 0, props.modelValue)
-				defaultModerStrGet()
-			}, 500)
-		},
-		{ deep: true }
-	)
+    if (newvalue.length > 0 && _list.value.length > 0) {
+        const { strs } = getIndexsByids(props.modelValue);
+        emit('update:modelStr', strs.join(','));
+        modelStrValue.value = strs.join(',');
+       
+    }
+});
 
-	function closeDrawer(e : boolean) {
-		showCity.value = e
-		emits('update:show', showCity.value)
-		getIndexBymodel(_data.value, props.selectedModel, 0, props.modelValue)
-		emits('close')
-	}
+watch(() => props.modelShow, (newValue: boolean) => {
+    if (newValue == show.value) return;
+    show.value = newValue;
+});
 
-	//弹层打开时触发。
-	function drawerOpen() {
-		emits('open')
-	}
-	onMounted(() => {
-		
-		// getIndexBymodel(_data.value, props.selectedModel, 0, props.defaultValue)
-		if (props.defaultValue.length > 0) {
-			getIndexBymodel(_data.value, props.selectedModel, 0, props.defaultValue)
+watch(_list, () => {
+    if (show.value) {
+        return;
+    }
+    if (_list.value.length == 0) {
+        emit('update:modelStr', '');
+        modelStrValue.value = '';
+        return;
+    }
+    if (_list.value.length > 0) {
+        onSetDefaultStr();
+    }
+});
 
+onMounted(() => {
+    nowValue.value = props.modelValue.slice(0);
+    yanchiDuration.value = _lazyContent.value ? false : true;
+    onSetDefaultStr();
+});
 
-			defaultModerStrGet()
-		}
-	})
-	//点击确认了地区。
-	function confirm() {
-		// if (!aniover.value) return
-		if (_colIndex.value.length == 0) {
-			getIndexBymodelByEmptyOnConfirm(_data.value, props.selectedModel, 0, props.defaultValue)
-		}
-		setVal()
-		nextTick(() => {
-			emits('confirm', toRaw(_colIndex.value))
-			drawer.value?.close()
-		})
-	}
-	function cancel() {
-		if (!aniover.value) return
-		emits('cancel')
-	}
-	function setVal() {
-		let val = []
-		if (props.selectedModel == 'name') {
-			val = _colStr.value.split('/') ?? []
-		} else if (props.selectedModel == 'id') {
-			val = getRouterId(_data.value, 0)
-		} else {
-			val = [..._colIndex.value]
-		}
-		emits('update:modelValue', val)
-		emits('update:modelStr', _colStr.value)
-	}
-	function defaultModerStrGet() {
-		clearTimeout(tmid)
-		tmid = setTimeout(function () {
+function onSetDefaultStr() {
+    
+    if (props.modelStr == "" && _list.value.length > 0 ) {
+        const { strs } = getIndexsByids(props.modelValue);
+        
+        emit('update:modelStr', strs.join(','));
+        modelStrValue.value = strs.join(',');
+        
+    }
+}
 
-			if (!_colStr.value && _colIndex.value.length > 0) {
-				let text = getRouterText(_data.value, 0)
-				let str = text.join('/')
-				emits('update:modelStr', str)
+function openShow() {
+    show.value = true;
+    emit('update:modelShow', true);
+}
 
-			}
-			if (_colIndex.value.length == 0) {
-				emits('update:modelStr', '')
-			}
-		}, 100)
-	}
-	//模拟模型来返回index值
-	function getIndexBymodel(vdata : Array<columnsItem> = [], model = 'name', parentIndex : number = 0, value : Array<number | string> = []) : Array<number> {
-		if (value.length == 0) {
-			_colIndex.value = []
-			return []
-		}
-		let p_colIndex = [..._colIndex.value]
-		_colIndex.value = []
+function onClose() {
+    emit('update:modelShow', false);
+    nowValue.value = props.modelValue.slice(0);
+    if (_lazyContent.value) {
+        yanchiDuration.value = false;
+    }
+}
 
+function strChange(str: string) {
+    modelStrValue.value = str;
+    
+}
 
-		if (model == 'name') {
-			let item = vdata.filter((el) => value[parentIndex] == el['text'])
-			if (item.length == 0) {
-				//    如果不存在,不再默认选中第一个,2022年10月14日修改
-				// item = vdata[0];
-				// if (item) {
-				//     value[parentIndex] = item['text'];
-				//     p_colIndex[parentIndex] = 0
-				//     if (item['children']) {
-				//         getIndexBymodel(item['children'], model, parentIndex + 1, value);
-				//     }
-				// }
-			} else {
-				item = item[0]
-				if (item) {
-					p_colIndex[parentIndex] = vdata.findIndex((el) => el['text'] == item['text'])
-					if (item['children']) {
-						getIndexBymodel(item['children'], model, parentIndex + 1, value)
-					}
-				}
-			}
-		} else if (model == 'id') {
-			let item = vdata.filter((el) => value[parentIndex] == el['id'])
+function onOpen() {
+    yanchiDuration.value = true;
+   
+}
 
-			if (item.length == 0) {
-				//    如果不存在,不再默认选中第一个,2022年10月14日修改
-				// item = vdata[0];
-				// if (item) {
-				//     value[parentIndex] = item['id'];
-				//     p_colIndex[parentIndex] = 0
-				//     if (item['children']) {
-				//         getIndexBymodel(item['children'], model, parentIndex + 1, value);
-				//     }
-				// }
-			} else {
-				item = item[0]
-				if (item) {
-					p_colIndex[parentIndex] = vdata.findIndex((el) => el['id'] == item['id'])
-					if (item['children']) {
-						getIndexBymodel(item['children'], model, parentIndex + 1, value)
-					}
-				}
-			}
-		} else {
-			p_colIndex = [...value]
-		}
-		_colIndex.value = [...p_colIndex]
+function mchange(ids: string[]) {
+    emit('change', ids.slice(0));
+}
 
-		return _colIndex.value
-	}
-	// 和上方一样的功能,区别是,当什么都不选的时候,点了确认,就要默认选中第一行数据.
-	function getIndexBymodelByEmptyOnConfirm(
-		vdata : Array<columnsItem> = [],
-		model = 'name',
-		parentIndex : number = 0,
-		value : Array<number | string> = []
-	) : Array<number> {
-		let p_colIndex = [..._colIndex.value]
-		_colIndex.value = []
-		if (model == 'name') {
-			let item = vdata.filter((el) => value[parentIndex] == el[props.mapKey])
-			if (item.length == 0) {
-				//    如果不存在,不再默认选中第一个,2022年10月14日修改
-				item = vdata[0]
-				if (item) {
-					value[parentIndex] = item[props.mapKey]
-					p_colIndex[parentIndex] = 0
-					if (item['children']) {
-						getIndexBymodel(item['children'], model, parentIndex + 1, value)
-					}
-				}
-			} else {
-				item = item[0]
-				if (item) {
-					p_colIndex[parentIndex] = vdata.findIndex((el) => el[props.mapKey] == item[props.mapKey])
-					if (item['children']) {
-						getIndexBymodel(item['children'], model, parentIndex + 1, value)
-					}
-				}
-			}
-		} else if (model == 'id') {
-			let item = vdata.filter((el) => value[parentIndex] == el['id'])
-			if (item.length == 0) {
-				//    如果不存在,不再默认选中第一个,2022年10月14日修改
-				item = vdata[0]
-				if (item) {
-					value[parentIndex] = item['id']
-					p_colIndex[parentIndex] = 0
-					if (item['children']) {
-						getIndexBymodel(item['children'], model, parentIndex + 1, value)
-					}
-				}
-			} else {
-				item = item[0]
-				if (item) {
-					p_colIndex[parentIndex] = vdata.findIndex((el) => el['id'] == item['id'])
-					if (item['children']) {
-						getIndexBymodel(item['children'], model, parentIndex + 1, value)
-					}
-				}
-			}
-		} else {
-			p_colIndex = [...value]
-		}
-		_colIndex.value = [...p_colIndex]
-		return _colIndex.value
-	}
-	//返回 一个节点从父到子的路径id组。
-	function getRouterId(list = [], parentIndex = 0) : Array<string | number> {
-		let p : Array<string | number> = []
-		for (let i = 0; i < list.length; i++) {
-			if (i == _colIndex.value[parentIndex]) {
-				p.push(list[i]['id'])
-				if (typeof _colIndex.value[parentIndex] != 'undefined') {
-					let c = getRouterId(list[i]['children'], parentIndex + 1)
-					p = [...p, ...c]
-				}
-				break
-			}
-		}
-		return p
-	}
-	//返回 一个节点从父到子的路径text组。
-	function getRouterText(list : Array<childrenData> = [], parentIndex = 0) : Array<string | number> {
-		let p : Array<string | number> = []
-		for (let i = 0; i < list.length; i++) {
-			if (i == _colIndex.value[parentIndex]) {
+function onCancel() {
+    emit('cancel');
+    nowValue.value = props.modelValue.slice(0);
+}
 
-				p.push(list[i][props.mapKey || "text"])
-				if (typeof _colIndex.value[parentIndex] != 'undefined') {
-					let c = getRouterText(list[i]['children'], parentIndex + 1)
-					p = [...p, ...c]
-				}
-				break
-			}
-		}
-		return p
-	}
-	const dHeight = computed(() => {
-		return props.height + sysinfo.bottomSafe + 80
-	})
+function onConfirm() {
+    let ids = nowValue.value.slice(0);
+    let str = [] as string[]
+   if(ids.length==0){
+    const temp = getNowCurrent();
+    ids = temp.ids
+    str = temp.strs
+   }else{
+    const temp = getIndexsByids(ids)
+    str = temp.strs
+
+   }
+
+    nowValue.value = ids;
+    modelStrValue.value = str.join(',');
+    emit('update:modelValue', ids);
+    emit('update:modelStr', modelStrValue.value);
+    emit('confirm', ids);
+}
+
+const getIndexsByids = (ids:Array<string|number>):{indexs:Array<number>,data:TM_PICKER_X_ITEM[][],strs:string[]}=> {
+    let index = 0;
+    let val = ids.slice(0)
+    let indexs = [] as number[]
+    let data = [] as TM_PICKER_X_ITEM[][]
+    let strs = [] as string[]
+
+    if(_list.value.length==0||ids.length==0) return {indexs:[],data:[],strs:[]}
+
+    function getIndex(nodes: TM_PICKER_X_ITEM[]) {
+        if (val.length <= index || val.length == 0) return;
+        let id = val[index]
+        let sindex = 0
+        for (let i = 0; i < nodes.length; i++) {
+            let item = nodes[i]
+            if (item[props.rangKey] == id) {
+                sindex = i;
+                indexs.push(sindex)
+                data.push(nodes)
+                strs.push(item[props.rangText])
+                if (item?.children?.length > 0) {
+                    index += 1
+                    getIndex(item.children)
+                }
+            }
+        }
+    }
+    getIndex(_list.value)
+    return {indexs,data,strs}
+}
+//根据索引返回ids
+const getIdsByindexs = (indexs:number[]):{ids:Array<string|number>,data:TM_PICKER_X_ITEM[][],strs:string[]} => {
+    let ids = [] as string[]
+    let data = [] as TM_PICKER_X_ITEM[][]
+    let index = 0;
+    let val = indexs.slice(0)
+    let strs = [] as string[]
+    
+    if(_list.value.length==0||indexs.length==0) return {ids:[],data:[],strs:[]}
+    function getIds(nodes: TM_PICKER_X_ITEM[]) {
+        if (val.length <= index || val.length == 0) return;
+        let currentsIndex = val[index]
+        let id = ''
+        let str = ''
+        let children = [];
+        if(nodes.length-1 >= currentsIndex){
+            id = nodes[currentsIndex][props.rangKey]
+            str = nodes[currentsIndex][props.rangText]
+            children = nodes[currentsIndex]?.children??[]
+        }else{
+            id = nodes[0][props.rangKey]
+            str = nodes[0][props.rangText]
+            children = nodes[0]?.children??[]
+        }
+        ids.push(id)
+        data.push(nodes)
+        strs.push(str)
+
+        if(children.length>0){
+            index += 1
+            getIds(children)
+        }
+    }
+    getIds(_list.value)
+    return {ids,data,strs};
+}
+const _maxDeep = computed(() => {
+    if (_list.value.length == 0) return 0;
+    function getdiepWidth(list: TM_PICKER_X_ITEM[]): number {
+        let deepIndex = 1;
+        const node = list[0];
+        if (node?.children?.length > 0) {
+            deepIndex += getdiepWidth(node.children);
+        }
+        return deepIndex;
+    }
+    return getdiepWidth(_list.value.slice(0));
+})
+const getNowCurrent = ()=>{
+    nowValue.value = props.modelValue.slice(0)
+    let currneinexs = getIndexsByids(nowValue.value).indexs;
+    let dinexs =  nowValue.value.length==0||currneinexs.length==0?new Array(_maxDeep.value).fill(0):currneinexs;
+    return  getIdsByindexs(dinexs)
+}
+
 </script>
+<script lang="ts">
+export default {
+    options: {
+        styleIsolation: "apply-shared",
+        virtualHost: true,
+        addGlobalClass: true,
+        multipleSlots: true,
+    },
+};
+</script>
+<template>
+    <view @click="openShow">
+        <!-- 
+		 @slot 插槽,默认触发打开选择器。你的默认布局可以放置在这里。
+		 @binding {boolean} show - 控制打开关闭状态
+		 -->
+        <slot></slot>
+    </view>
+    <tm-drawer @open="onOpen" :widthCoverCenter="true" :disabledScroll="true" max-height="80%" size="850" :title="title"
+        @close="onClose" @confirm="onConfirm" @cancel="onCancel" :showFooter="true" v-model:show="show"
+        :show-close="true">
+        <tm-picker-view v-if="show" ref="pickerView" :rangKey="rangKey" :rangText="rangText" :cell-units="_cellUnits"
+            @update:modelStr="strChange" @change="mchange" v-model="nowValue" :list="_list"></tm-picker-view>
+    </tm-drawer>
+</template>
+<style scoped></style>
