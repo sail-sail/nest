@@ -3,25 +3,17 @@ page {
   flex-direction: column;
   width: 100%;
   height: 100%;
-  font-size: 14px;
 }
 
-tm-app.n-flex {
-  > view {
-    flex: 1 0 0;
-    overflow: hidden;
-  }
-}
-
-tm-side-menu {
+tm-form,tm-form .tmForm {
+  display: flex;
+  flex-direction: column;
   flex: 1 0 0;
-  overflow: hidden;
-  > view {
-    flex: 1 0 0;
-    overflow: hidden;
-  }
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-// tm-sheet {
-//   display: flex;
-// }
+.tmFormItemLabel {
+  text-align: right;
+  margin-right: 24rpx;
+}
