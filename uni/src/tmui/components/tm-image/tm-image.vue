@@ -1,302 +1,399 @@
 <template>
-	<view
-		v-if="!isRmove"
-		:style="[
-			{
-				margin: props.margin[0] + props.unit + ' ' + (props.margin[1] || props.margin[0]) + props.unit
-			}
-		]"
-	>
-		<tm-translate :width="img_width + props.padding[0] * 2 + props.unit" @end="aniEnd" ref="aniplay" :autoPlay="false" name="zoom" reverse>
-			<tm-sheet
-				:margin="[0]"
-				:color="props.color"
-				:transprent="props.transprent"
-				:round="props.round"
-				:border="props.border"
-				:padding="[props.padding[0], 0]"
-				:class="['round-' + props.round]"
-				:width="img_width - props.padding[0] * 2"
-				:unit="props.unit"
-				:height="img_height - props.padding[0] * 2"
-			>
-				<view :class="[`pb-${props.padding[1]}`, 'flex flex-col flex-col-center-center', 'relative']">
-					<image
-						@load="imageLoad"
-						@error="imageError"
-						:show-menu-by-longpress="props.showMenuByLongPress"
-						@click="imageClick"
-						:class="['round-' + props.round, loading ? 'opacity-0' : '']"
-						v-if="!error"
-						:src="img_src"
-						:style="[{ width: img_width + props.unit, height: img_height + props.unit }]"
-						:mode="props.model"
-					></image>
-					<view
-						v-if="loading && !error"
-						:style="[{ width: img_width + props.unit, height: img_height + 10 + props.unit }]"
-						class="flex flex-center opacity-3 absolute l-0 t-0"
-					>
-						<slot name="load">
-							<tm-icon v-if="props.showLoad" :font-size="26" spin :name="_loadIcon"></tm-icon>
-						</slot>
-					</view>
+    <view @click="prevImage" class="tmImage" :class="[idBox]" ref="tmImage" :id="idBox"
+        :style="{ width: _place_size.width, height: _place_size.height }">
+        <!-- @vue-skip -->
+        <view class="tmImageBox"
+            :style="{ width: _img_box_size.width, height: _img_box_size.height, borderRadius: _round, pointerEvent: 'none' }">
+            <view v-if="isLoading || isError" class="tmImagePlace" :style="{ backgroundColor: _placeBgColor }">
+                <tm-icon :size="iconSize" v-if="isError" color="error" name="landscape-line"></tm-icon>
+                <tm-icon :size="iconSize" v-if="isLoading" name="loader-line" color="primary" :spin="true"></tm-icon>
+            </view>
 
-					<view
-						v-if="!loading && error"
-						:style="[{ width: img_width + props.unit, height: img_height + props.unit }]"
-						class="flex flex-col flex-center opacity-5 absolute l-0 t-0"
-					>
-						<slot name="error">
-							<view @click="reloadImg">
-								<tm-icon :userInteractionEnabled="false" :name="_errorIcon"></tm-icon>
-								<tm-text :userInteractionEnabled="false" _class="pt-10" :font-size="26" :label="props.errorLabel"></tm-text>
-							</view>
-						</slot>
-					</view>
-					<!-- extra -->
-					<view
-						:eventPenetrationEnabled="true"
-						v-if="props.extra"
-						:class="[props.extraPosition == 'in' ? 'absolute l-0 b-0 zIndex-5 ' : '', 'flex flex-col flex-col-bottom-start ']"
-						:style="[
-							props.extra && props.extraPosition == 'in' ? { height: img_height + props.unit, width: img_width + props.unit } : '',
-							props.extra && props.extraPosition == 'out' ? { width: img_width + props.unit } : ''
-						]"
-					>
-						<view
-							@click.stop="imageClick"
-							:class="['flex flex-col flex-col-bottom-start flex-1']"
-							:style="[
-								props.extra && props.extraPosition == 'in' ? { height: img_height + props.unit, width: img_width + props.unit } : '',
-								props.extra && props.extraPosition == 'out' ? { width: img_width + props.unit } : ''
-							]"
-						>
-							<slot name="extra"></slot>
-						</view>
-					</view>
-					<!-- delete 展示删除按钮。 -->
-					<view
-						v-if="props.delete"
-						class="absolute r-4 t-4 flex flex-col flex-col-center-end zIndex-10"
-						:style="[props.delete ? { width: img_width + props.unit } : '']"
-					>
-						<tm-icon @click="del" color="red" name="tmicon-times-circle-fill"></tm-icon>
-					</view>
-				</view>
-			</tm-sheet>
-		</tm-translate>
-	</view>
+            <image v-if="!isError" class="tmImageImg" :lazy-load="lazy" :draggable="draggable"
+                :showMenuByLongpress="showMenuByLongpress"
+                :class="[isLoading ? 'tmImageImgAbs' : '', fadeShow ? 'tmImageFadeShow' : '']" :mode="_model"
+                :style="[_styleMap]" :src="_src" @error="imgError">
+            </image>
+        </view>
+    </view>
 </template>
-
-<script lang="ts" setup>
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount, watch, PropType, getCurrentInstance, onUpdated, nextTick } from 'vue';
+import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit, getUid } from "../../libs/tool";
+import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
+import { useTmConfig } from "../../libs/config";
+import { onPageScroll } from '@dcloudio/uni-app';
 /**
- * 图片
- * @description 可以搭配图片组tm-image-group使用,形成一个图片相册展示。提供了预览，删除，增强内容显示。
- * @template extra图片展示的额外内容。
+ * @displayName 图片
+ * @exportName tm-image
+ * @category 展示组件
+ * @description 宽高可以设置，支持百分比，px,rpx，如果你用了auto,%这种就要注意：如果你把组件放到了容器中，容器设置为v-show,display:none,visible这种，
+ * 那你一定要跟随vif组件，不然尺寸是不对的。因为小程序无法监测这种变化的情况，导致无法设置尺寸。如果你设定了固定尺寸则不用担心这个问题。
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-import { getCurrentInstance, computed, ref, inject, watch, PropType, ComponentInternalInstance } from 'vue'
-import tmSheet from '../tm-sheet/tm-sheet.vue'
-import tmText from '../tm-text/tm-text.vue'
-import tmIcon from '../tm-icon/tm-icon.vue'
-import tmTranslate from '../tm-translate/tm-translate.vue'
-import { custom_props } from '../../tool/lib/minxs'
-const aniplay = ref<InstanceType<typeof tmTranslate> | null>(null)
-const proxy = getCurrentInstance()?.proxy ?? null
-const emits = defineEmits(['load', 'error', 'click', 'delete', 'close'])
+defineOptions({ name: 'TmBadge' });
+const { config } = useTmConfig()
 const props = defineProps({
-	...custom_props,
-	//外部间隙
-	margin: {
-		type: Array as PropType<Array<number>>,
-		default: () => [0, 0]
-	},
-	//内部间隙
-	padding: {
-		type: Array as PropType<Array<number>>,
-		default: () => [0, 0]
-	},
-	color: {
-		type: String,
-		default: 'white'
-	},
-	transprent: {
-		type: [Boolean, String],
-		default: true
-	},
-	border: {
-		type: Number,
-		default: 0
-	},
-	width: {
-		type: [Number],
-		default: 200,
-		required: true
-	},
-	height: {
-		type: [Number],
-		default: 200,
-		required: true
-	},
-	src: {
-		type: String,
-		default: '',
-		required: true
-	},
-	errorIcon: {
-		type: String,
-		default: ''
-	},
-	errorLabel: {
-		type: String,
-		default: '重新加载'
-	},
-	loadIcon: {
-		type: String,
-		default: ''
-	},
-	//是否显示加载动画。
-	showLoad: {
-		type: Boolean,
-		default: true
-	},
-	//是否开启预览。
-	preview: {
-		type: [Boolean],
-		default: false
-	},
-	//是否开启图片额外插槽显示内容。
-	extra: {
-		type: [Boolean],
-		default: false
-	},
-	extraPosition: {
-		type: String,
-		default: 'in' //in:叠加图片上显示,out：图片下方显示,
-	},
-	//展示关闭删除按钮。
-	delete: {
-		type: [Boolean],
-		default: false
-	},
-	//是否允许点击delete图标关闭自己，如果为false,将仅触发delete事件，本身图片不会被关闭。
-	allowDelete: {
-		type: [Boolean],
-		default: true
-	},
-	//图片绽放模式。
-	//同官方阅读：https://uniapp.dcloud.io/component/image.html
-	model: {
-		type: String,
-		default: 'scaleToFill'
-	},
-	unit: {
-		type: String,
-		default: 'rpx'
-	},
-	//开启长按图片显示识别小程序码菜单,与preview不冲突,可点击预览也可长按,默认不开启
-	showMenuByLongPress: {
-		type: [Boolean],
-		default: false
-	}
-})
-if (!props.height && !props.width) {
-	console.error('错误：图片宽度和高度必须设置一个')
-}
-const img_width = computed(() => {
-	return props.width
-})
-const img_height = computed(() => {
-	return props.height - props.padding[1]
-})
-const img_src = computed(() => props.src)
-const loading = ref(true)
-const error = ref(false)
-const isRmove = ref(false)
-const _loadIcon = ref(props.loadIcon || 'tmicon-shuaxin')
-const _errorIcon = ref(props.errorIcon || 'tmicon-exclamation-circle')
+    /** 
+     * 宽度，默认100%
+     * 18rpx,18px,15%支持这三种单位，如果只写"18"就表示18rpx
+     */
+    width: {
+        type: [String, Number],
+        default: "100%"
+    },
+    /** 
+     * 高度,auto,%,rpx,px,string number
+     * 18rpx,18px,15%支持这三种单位，如果只写"18"就表示18rpx
+     */
+    height: {
+        type: [String, Number],
+        default: "auto"
+    },
+    /** 图片源 */
+    src: {
+        type: String,
+        default: ""
+    },
+    /** 
+     * 模式
+     * @link https://uniapp.dcloud.net.cn/uni-app-x/component/image.html#mode-values
+     */
+    model: {
+        type: String as PropType<"fill" | "top" | "bottom" | "center" | "left" | "right" | "top left" | "top right" | "bottom left" | "bottom right" | "aspectFit" | "aspectFill" | "widthFix" | "heightFix" | "scaleToFill">,
+        default: "fill"
+    },
+    /**
+     * 点击后是否预览图片
+     */
+    preview: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 预览占位比例
+     * 宽/高，当数据没加载前，如果你设置了一项值比如宽，高会自动根据这个比例计算
+     * 当图片加载成功后，使用正确的原图片比例设置。
+     * 默认是5/4=1.25
+     */
+    ratio: {
+        type: Number,
+        default: 1.25
+    },
+    /**
+     * 圆角
+     */
+    round: {
+        type: [String, Number],
+        default: '0'
+    },
+    /**
+     * 加载和失败时的图标大小。
+     */
+    iconSize: {
+        type: [String, Number],
+        default: "36"
+    },
+    /**
+     * 占位背景色
+     */
+    placeBgColor: {
+        type: String,
+        default: "#F5F5F5"
+    },
+    /**
+     * 点位暗黑时的背景，如果不填写默认填充inputDarkBgcolor
+     */
+    placeDarkBgColor: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 是否显示过渡动画
+     */
+    fadeShow: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 图片懒加载
+     */
+    lazy: {
+        type: Boolean,
+        default: true
+    },
+    /**
+     * 是否允许拖动。
+     */
+    draggable: {
+        type: Boolean,
+        default: false
+    },
+    showMenuByLongpress: {
+        type: Boolean,
+        default: false
+    }
+});
 
-//父级方法。
-let parent: any = proxy?.$parent
+const emit = defineEmits<{
+    (e: 'click'): void
+}>();
 
-while (parent) {
-	if (parent?.tmImageGroup == 'tmImageGroup' || !parent) {
-		break
-	} else {
-		parent = parent?.$parent ?? undefined
-	}
-}
+const id = ref(`tmImage-${getUid()}`);
+const idBox = ref(`tmImage-${getUid()}`);
+const isLoading = ref(true);
+const isError = ref(false);
+const reload = ref(0);
+const imgrealWidth = ref(0);
+const imgrealHeight = ref(0);
+const boxWidth = ref(0);
+const boxHeight = ref(0);
 
-const ImagGrupList = inject(
-	'ImagGrupList',
-	computed(() => [])
-)
-//向父级报送当前图片地址
-if (parent?.pushKey) {
-	parent.pushKey({
-		width: img_width.value,
-		height: img_width.value,
-		src: props.src
-	})
-}
+const isLoaded = ref(false);
+const tid = ref(0);
+const androidAndWebUrl = ref("");
 
-watch(img_src, () => {
-	loading.value = true
-	error.value = false
-	if (parent?.pushKey) {
-		parent.pushKey({
-			width: img_width.value,
-			height: img_width.value,
-			src: props.src
-		})
-	}
-})
-function imageLoad(event: Event) {
-	loading.value = false
-	emits('load', event)
-}
+const tid2 = ref(0);
+const proxy = getCurrentInstance()?.proxy
 
-function imageError(event: Event) {
-	console.error('图片加载错:' + props.src, event)
-	error.value = true
-	loading.value = false
-	emits('error', event)
-}
+const _model = computed(() => props.model);
+const _placeBgColor = computed(() => {
+    let bgcolor = props.placeBgColor;
+    if (config.mode == 'dark') {
+        bgcolor = props.placeDarkBgColor;
+        if (props.placeDarkBgColor == '') {
+            bgcolor = config.inputDarkColor;
+        }
+    }
+    return getDefaultColor(bgcolor);
+});
 
-function imageClick(event: Event) {
-	emits('click', event)
-	if (props.preview) {
-		let list = ImagGrupList.value.length > 0 ? ImagGrupList.value : [props.src]
-		uni.previewImage({
-			urls: list,
-			current: props.src
-		})
-	}
-}
+const _round = computed(() => covetUniNumber(props.round, config.unit));
+const _src = computed(() => props.src);
 
-async function del() {
-	isRmove.value = false
-	if (!props.allowDelete) {
-		emits('delete', props.src)
-		return
-	}
-	if (aniplay.value?.play) {
-		aniplay.value?.play()
-	} else {
-		isRmove.value = true
-		emits('close', props.src)
-	}
-}
+const _place_size = computed(() => ({
+    width: covetUniNumber(props.width, config.unit),
+    height: covetUniNumber(props.height, config.unit),
+}));
 
-function aniEnd() {
-	isRmove.value = true
-	emits('close', props.src)
-}
-//出错时点击错误图标重新加载图片。
-function reloadImg() {
-	loading.value = true
-	error.value = false
-}
+
+
+const _img_box_size = computed(() => {
+    if (imgrealHeight.value > 0) {
+        return _img_size.value;
+    }
+
+    let _w = props.width;
+    let _h = props.height;
+    let us_w = covetUniNumber(props.width, config.unit);
+    let us_h = covetUniNumber(props.height, config.unit);
+
+    if (typeof props.width == 'string' && props.width.lastIndexOf('%') > -1 || props.width == 'auto') {
+        us_w = '100%';
+        _w = '100%';
+    }
+
+    if (typeof props.height == 'string' && props.height.lastIndexOf('%') > -1 || props.height == 'auto' || isError.value) {
+        if (boxHeight.value >= 5) {
+            _h = `${boxHeight.value}px`;
+        } else {
+            if (typeof props.width == 'string' &&props.width.lastIndexOf('%') > -1 || props.width == 'auto') {
+                if (props.height == '100%') {
+                    _h = `${props.ratio * boxHeight.value}px`;
+                } else {
+                    _h = `${props.ratio * boxWidth.value}px`;
+                }
+            } else {
+                _h = `${props.ratio * parseFloat(us_w)}${getUnit(us_w)}`;
+            }
+        }
+        return { width: _w, height: _h };
+    }
+
+    return { width: us_w, height: us_h };
+});
+
+const _img_size = computed(() => {
+    let us_w = covetUniNumber(props.width, config.unit);
+    let us_h = covetUniNumber(props.height, config.unit);
+
+    if (!isLoaded.value) {
+        return { width: "300px", height: "300px" };
+    }
+
+    if (boxWidth.value > 0) {
+        let ratio = boxWidth.value / imgrealWidth.value;
+
+        if (props.height == 'auto') {
+            us_h = `${ratio * imgrealHeight.value}px`;
+        }
+
+        if (props.width == 'auto') {
+            us_w = `${boxWidth.value}px`;
+        }
+
+        if (typeof props.height == 'string'&&props.height.lastIndexOf('%') > -1) {
+            us_h = `${boxHeight.value}px`;
+        }
+        if (typeof props.width == 'string'&&props.width.lastIndexOf('%') > -1) {
+            us_w = `${boxWidth.value}px`;
+        }
+    }
+
+    return { width: us_w, height: us_h };
+});
+
+const _styleMap = computed(() => {
+    let styleMap: Record<string, any> = {}
+    styleMap["width"] = _img_size.value.width
+    styleMap["height"] = _img_size.value.height
+    styleMap["transform"] = isLoading.value ? 'scale(0.1)' : 'scale(1)'
+    styleMap["visibility"] = isLoading.value ? 'visible' : (!isError.value ? 'visible' : 'hidden')
+    styleMap["opacity"] = isLoading.value ? '0' : '1'
+    styleMap["border-radius"] = _round.value
+    return styleMap;
+});
+
+const prevImage = () => {
+    emit('click');
+    if (props.preview) {
+        uni.previewImage({
+            current: props.src,
+            urls: [props.src]
+        });
+    }
+};
+
+
+
+const imgLoad = () => {
+    uni.getImageInfo({
+        src: _src.value,
+        fail(_) {
+            console.log('error');
+            isError.value = true;
+            isLoading.value = false;
+        },
+        success(result: any) {
+            isLoading.value = false;
+            isError.value = false;
+            isLoaded.value = true;
+            imgrealWidth.value = result.width;
+            imgrealHeight.value = result.height;
+            androidAndWebUrl.value = result.path;
+        }
+    });
+};
+
+const imgError = () => {
+    isError.value = true;
+    isLoading.value = false;
+};
+
+
+
+
+const getNodes = (): Promise<any> => {
+    return new Promise((res) => {
+        uni.createSelectorQuery().in(proxy)
+            .select(".tmImage")
+            .boundingClientRect().exec((ret) => {
+                let nodeinfo = ret[0] as UniApp.NodeInfo;
+                boxWidth.value = nodeinfo.width!;
+                boxHeight.value = nodeinfo.height!;
+                res(true)
+            });
+    })
+};
+
+const resize = (): Promise<any> => {
+    isLoaded.value = false;
+    return new Promise((res) => {
+        uni.createSelectorQuery().in(proxy)
+            .select(".tmImage")
+            .boundingClientRect().exec((ret) => {
+                let nodeinfo = ret[0] as UniApp.NodeInfo;
+                boxWidth.value = nodeinfo.width!;
+                boxHeight.value = nodeinfo.height!;
+                isLoaded.value = true;
+                res(true)
+            });
+    })
+};
+
+onMounted(async () => {
+    await getNodes();
+    imgLoad();
+
+
+});
+
+onBeforeUnmount(() => {
+    clearTimeout(tid.value);
+    clearTimeout(tid2.value);
+});
+
+watch(() => props.src, () => {
+    imgLoad();
+});
+
+
 </script>
+<script lang="ts">
+export default {
+  options: {
+    styleIsolation: "apply-shared",
+    virtualHost: true,
+    addGlobalClass: true,
+    multipleSlots: true,
+  },
+};
+</script>
+<style scoped>
+.tmImage {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+}
 
-<style></style>
+.tmImageBox {
+    pointer-events: none;
+    overflow: hidden;
+
+}
+
+.tmImageImg {
+    opacity: 0;
+}
+
+@keyframes animateFadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.tmImageFadeShow {
+    animation: animateFadeIn 0.2s linear forwards;
+}
+
+.tmImagePlace {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%
+}
+
+.tmImageImgAbs {
+    position: absolute;
+
+}
+</style>
