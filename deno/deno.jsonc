@@ -44,6 +44,7 @@
     "promisify": "https://deno.land/x/promisify@v0.1.0/mod.ts",
     "redis": "https://deno.land/x/redis@v0.32.4/mod.ts",
     "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts",
+    "mqtt": "jsr:@ymjacky/mqtt5",
     "@fidm/x509": "https://esm.sh/@fidm/x509@1.2.1",
     "wechatpay-node-v3": "./lib/wechatpay-node-v3/mod.ts"
   },
