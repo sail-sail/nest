@@ -62,7 +62,7 @@
     "graphql": "17.0.0-alpha.7",
     "graphql-combine-query": "1.2.4",
     "numeral": "2.0.6",
-    "pinia": "2.2.4",
+    "pinia": "2.2.5",
     "pinia-plugin-unistorage": "0.1.2",
     "vue": "3.5.12",
     "vue-demi": "0.14.10"
@@ -73,7 +73,7 @@
     "@dcloudio/uni-cli-shared": "3.0.0-4020920240930001",
     "@dcloudio/uni-stacktracey": "3.0.0-4020920240930001",
     "@dcloudio/vite-plugin-uni": "3.0.0-4020920240930001",
-    "@types/node": "22.8.2",
+    "@types/node": "22.8.4",
     "@uni-helper/uni-app-types": "1.0.0-alpha.5",
     "@unocss/preset-attributify": "0.63.6",
     "@vue-macros/reactivity-transform": "1.1.3",

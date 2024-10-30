@@ -27,7 +27,6 @@
     "fs-extra": "11.2.0",
     "mysql2": "3.11.3",
     "shelljs": "0.8.5",
-    "toml": "3.0.0",
     "uuid": "11.0.2"
   },
   "devDependencies": {
