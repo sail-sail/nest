@@ -95,9 +95,6 @@ export default defineConfig({
           "@/tmui/components/tm-form/tm-form.vue": [
             [ "default", "TmForm" ],
           ],
-          "@/tmui/components/tm-message/tm-message.vue": [
-            [ "default", "TmMessage" ],
-          ],
           "@/utils/WxWorkUtil": [
             "wxwGetAppid",
             "initWxWorkCfg",

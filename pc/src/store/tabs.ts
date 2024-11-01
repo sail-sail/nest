@@ -20,17 +20,17 @@ export default defineStore("tabs", function() {
   
   const router = useRouter();
   
-  let tabs = $ref<TabInf[]>([ ]);
+  let tabs = ref<TabInf[]>([ ]);
   
-  const actTab = $computed(() => tabs.find((item) => item.active));
+  const actTab = computed(() => tabs.value.find((item) => item.active));
   
-  let keepAliveNames = $ref<string[]>([ ]);
+  let keepAliveNames = ref<string[]>([ ]);
   
   if (config.indexIsEmpty) {
     watch(
-      () => tabs.length,
+      () => tabs.value.length,
       async () => {
-        if (tabs.length === 0) {
+        if (tabs.value.length === 0) {
           setIndexTab(true);
           return;
         }
@@ -43,9 +43,9 @@ export default defineStore("tabs", function() {
   }
   
   function clearKeepAliveNames() {
-    keepAliveNames = [ ];
-    if (actTab) {
-      keepAliveNames.push(actTab.name);
+    keepAliveNames.value = [ ];
+    if (actTab.value) {
+      keepAliveNames.value.push(actTab.value.name);
     }
   }
   
@@ -68,56 +68,56 @@ export default defineStore("tabs", function() {
   }
   
   function hasTab(tab: Pick<TabInf, "path" | "query">) {
-    return tabs.some((item) => tabEqual(item, tab));
+    return tabs.value.some((item) => tabEqual(item, tab));
   }
   
   function findTab(tab: Pick<TabInf, "path" | "query">) {
-    return tabs.find((item) => tabEqual(item, tab));
+    return tabs.value.find((item) => tabEqual(item, tab));
   }
   
   function activeTab(tab?: TabInf) {
     if (tab && tab.name) {
-      if (!keepAliveNames.includes(tab.name)) {
-        keepAliveNames.push(tab.name);
+      if (!keepAliveNames.value.includes(tab.name)) {
+        keepAliveNames.value.push(tab.name);
       }
     }
-    if (tab && actTab) {
-      if (tabEqual(tab, actTab)) {
+    if (tab && actTab.value) {
+      if (tabEqual(tab, actTab.value)) {
         return;
       }
     }
     let idx = -1;
     if (tab) {
-      idx = tabs.findIndex((item: TabInf) => {
+      idx = tabs.value.findIndex((item: TabInf) => {
         return tabEqual(item, tab);
       });
     }
-    tabs.forEach((item: TabInf) => item.active = false);
+    tabs.value.forEach((item: TabInf) => item.active = false);
     if (idx === -1) {
       if (tab && tab.lbl) {
-        tabs.push(tab);
-        if (!keepAliveNames.includes(tab.name)) {
-          keepAliveNames.push(tab.name);
+        tabs.value.push(tab);
+        if (!keepAliveNames.value.includes(tab.name)) {
+          keepAliveNames.value.push(tab.name);
         }
       }
     } else {
-      if (!keepAliveNames.includes(tabs[idx].name)) {
-        keepAliveNames.push(tabs[idx].name);
+      if (!keepAliveNames.value.includes(tabs.value[idx].name)) {
+        keepAliveNames.value.push(tabs.value[idx].name);
       }
-      tabs[idx].active = true;
-      tabs[idx].query = tab?.query;
+      tabs.value[idx].active = true;
+      tabs.value[idx].query = tab?.query;
     }
   }
   
   function unshiftTab(...tabs0: TabInf[]) {
     for (let i = 0; i < tabs0.length; i++) {
       const tab = tabs0[tabs0.length - 1 - i];
-      if (tabs.some((item) => tabEqual(item, tab))) {
+      if (tabs.value.some((item) => tabEqual(item, tab))) {
         continue;
       }
-      tabs.unshift(tab);
-      if (!keepAliveNames.includes(tab.name)) {
-        keepAliveNames.push(tab.name);
+      tabs.value.unshift(tab);
+      if (!keepAliveNames.value.includes(tab.name)) {
+        keepAliveNames.value.push(tab.name);
       }
     }
   }
@@ -129,15 +129,15 @@ export default defineStore("tabs", function() {
     if (!force && tab.closeable === false) {
       return false;
     }
-    const idx = tabs.findIndex((item: TabInf) => {
+    const idx = tabs.value.findIndex((item: TabInf) => {
       return tabEqual(item, tab);
     });
     if (tab.active) {
       if (idx !== -1) {
-        if (tabs[idx + 1]) {
-          activeTab(tabs[idx + 1]);
-        } else if (tabs[idx - 1]) {
-          activeTab(tabs[idx - 1]);
+        if (tabs.value[idx + 1]) {
+          activeTab(tabs.value[idx + 1]);
+        } else if (tabs.value[idx - 1]) {
+          activeTab(tabs.value[idx - 1]);
         } else {
           await router.replace({ path: "/", query: { } });
         }
@@ -145,11 +145,11 @@ export default defineStore("tabs", function() {
     }
     setTimeout(() => {
       if (idx !== -1) {
-        const idx2 = keepAliveNames.findIndex((item) => item === tab.name);
+        const idx2 = keepAliveNames.value.findIndex((item) => item === tab.name);
         if (idx2 !== -1) {
-          keepAliveNames.splice(idx2, 1);
+          keepAliveNames.value.splice(idx2, 1);
         }
-        tabs.splice(idx, 1);
+        tabs.value.splice(idx, 1);
       }
     }, 0);
   }
@@ -171,18 +171,18 @@ export default defineStore("tabs", function() {
   }
   
   async function closeOtherTabs(tab?: TabInf) {
-    const notCloseableTabs = tabs.filter((item) => item.closeable === false);
+    const notCloseableTabs = tabs.value.filter((item) => item.closeable === false);
     if (!tab) {
-      tabs = notCloseableTabs;
+      tabs.value = notCloseableTabs;
       await router.replace({ path: "/", query: { } });
       return;
     }
-    tabs = [ ...notCloseableTabs ];
+    tabs.value = [ ...notCloseableTabs ];
     if (!notCloseableTabs.some((item) => tab && tabEqual(item, tab))) {
-      tabs.push(tab);
+      tabs.value.push(tab);
     }
     tab.active = true;
-    keepAliveNames = [ tab.name ];
+    keepAliveNames.value = [ tab.name ];
     await router.replace({ path: tab.path, query: tab.query });
   }
   
@@ -190,9 +190,9 @@ export default defineStore("tabs", function() {
     if (oldIndex === newIndex) {
       return;
     }
-    const tab = tabs[oldIndex];
-    tabs.splice(oldIndex, 1);
-    tabs.splice(newIndex, 0, tab);
+    const tab = tabs.value[oldIndex];
+    tabs.value.splice(oldIndex, 1);
+    tabs.value.splice(newIndex, 0, tab);
   }
   
   async function refreshTab(route: RouteLocationNormalizedLoaded) {
@@ -207,15 +207,15 @@ export default defineStore("tabs", function() {
       return;
     }
     const routes = router.getRoutes();
-    if (actTab && routes.some((item) => item.path === actTab?.path)) {
-      activeTab(actTab);
+    if (actTab.value && routes.some((item) => item.path === actTab.value?.path)) {
+      activeTab(actTab.value);
       const navFail = await router.replace({
-        path: actTab.path,
-        query: actTab.query,
+        path: actTab.value.path,
+        query: actTab.value.query,
       });
       return navFail;
     }
-    const tab = tabs[0];
+    const tab = tabs.value[0];
     if (tab && routes.some((item) => item.path === tab?.path)) {
       activeTab(tab);
       const navFail = await router.replace({
@@ -270,14 +270,14 @@ export default defineStore("tabs", function() {
   }
   
   function reset() {
-    tabs = [ ];
+    tabs.value = [ ];
     const tab = setIndexTab();
     if (tab) {
       activeTab(tab);
     }
   }
   
-  return $$({
+  return {
     tabs,
     actTab,
     activeTab,
@@ -294,11 +294,11 @@ export default defineStore("tabs", function() {
     reset,
     keepAliveNames,
     clearKeepAliveNames,
-  });
+  };
   
 }, {
   persist: {
-    paths: [
+    pick: [
       "tabs",
     ],
   },
