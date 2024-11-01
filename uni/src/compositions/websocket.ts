@@ -4,11 +4,7 @@ import {
 
 const isSSL = location.protocol === 'https:';
 
-let clientId = uni.getStorageSync("websocket_clientId");
-if (!clientId) {
-  clientId = uuid();
-  uni.setStorageSync("websocket_clientId", clientId);
-}
+const clientId = uuid();
 
 const PWD = "0YSCBr1QQSOpOfi6GgH34A";
 
