@@ -41,7 +41,7 @@ export default defineStore("index", function() {
   }
   
   function addLoading() {
-    if (notLoading) {
+    if (notLoading.value) {
       return;
     }
     loading.value++;
