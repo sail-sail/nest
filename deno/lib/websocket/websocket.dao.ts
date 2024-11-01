@@ -46,21 +46,23 @@ export async function publish<T>(
     if (!topics.includes(topic)) {
       continue;
     }
-    const socket = socketMap.get(clientId);
-    if (!socket) {
+    const sockets = socketMap.get(clientId);
+    if (!sockets || sockets.length === 0) {
       continue;
     }
-    if (socket.readyState !== WebSocket.OPEN) {
-      socketMap.delete(clientId);
-      clientIdTopicsMap.delete(clientId);
-      try {
-        socket.close();
-      } catch (_err) {
-        error(_err);
+    for (const socket of sockets) {
+      if (socket.readyState !== WebSocket.OPEN) {
+        socketMap.set(clientId, sockets.filter((item) => item !== socket));
+        clientIdTopicsMap.delete(clientId);
+        try {
+          socket.close();
+        } catch (_err) {
+          error(_err);
+        }
+        continue;
       }
-      continue;
+      socket.send(dataStr);
     }
-    socket.send(dataStr);
   }
 }
 

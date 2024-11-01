@@ -73,9 +73,9 @@ export default defineStore("dirty", function() {
     };
   }
   
-  return $$({
+  return {
     fireDirty,
     onDirty,
-  });
+  };
   
 });

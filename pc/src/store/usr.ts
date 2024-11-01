@@ -8,22 +8,22 @@ export default defineStore("usr", function() {
   
   const permitsStore = usePermitStore();
   
-  let authorization = $ref("");
+  let authorization = ref("");
   
-  let isLogining = $ref(false);
+  let isLogining = ref(false);
   
-  let tenant_id = $ref<TenantId>();
-  let username = $ref<string>();
-  let usr_id = $ref<UsrId>();
+  let tenant_id = ref<TenantId>();
+  let username = ref<string>();
+  let usr_id = ref<UsrId>();
   
-  let loginInfo = $ref<GetLoginInfo>();
+  let loginInfo = ref<GetLoginInfo>();
   
-  function refreshToken(authorization0: typeof authorization) {
-    authorization = authorization0;
+  function refreshToken(authorization0: string) {
+    authorization.value = authorization0;
   }
   
-  async function login(authorization0: typeof authorization) {
-    authorization = authorization0;
+  async function login(authorization0: string) {
+    authorization.value = authorization0;
     tabsStore.clearKeepAliveNames();
     await Promise.all([
       onLoginCallbacks.filter((callback) => callback()).map((callback) => callback()),
@@ -31,24 +31,24 @@ export default defineStore("usr", function() {
   }
   
   function logout() {
-    authorization = "";
+    authorization.value = "";
     permitsStore.permits = [ ];
   }
   
-  let lang = $ref("");
+  let lang = ref("");
   
-  function setLang(lang0: typeof lang) {
-    lang = lang0;
+  function setLang(lang0: string) {
+    lang.value = lang0;
   }
   
   function clear() {
-    authorization = "",
-    lang = "";
+    authorization.value = "",
+    lang.value = "";
   }
   
   function reset() {
-    authorization = "",
-    lang = "";
+    authorization.value = "",
+    lang.value = "";
   }
   
   const onLoginCallbacks: (() => void | PromiseLike<void>)[] = [ ];
@@ -70,7 +70,7 @@ export default defineStore("usr", function() {
     }
   }
   
-  return $$({
+  return {
     authorization,
     isLogining,
     loginInfo,
@@ -85,11 +85,12 @@ export default defineStore("usr", function() {
     setLang,
     clear,
     reset,
-  });
+  };
   
-}, {
+},
+{
   persist: {
-    paths: [
+    pick: [
       "authorization",
       "username",
       "usr_id",
