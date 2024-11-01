@@ -6,14 +6,14 @@ export default defineStore("permit", function() {
   
   const usrStore = useUsrStore();
   
-  let permits = $ref<Pick<GetUsrPermits, "code" | "route_path">[]>([ ]);
+  let permits = ref<Pick<GetUsrPermits, "code" | "route_path">[]>([ ]);
   
   function getPermit(route_path?: string) {
     if (!route_path) {
       const route = useRoute();
       route_path = route.path;
     }
-    const permitObj = computed(() => permits
+    const permitObj = computed(() => permits.value
       .filter((permit) => permit.route_path === route_path)
       .map((permit) => ({
         [permit.code]: true,
@@ -28,10 +28,10 @@ export default defineStore("permit", function() {
     };
   }
   
-  return $$({
+  return {
     permits,
     getPermit,
-  });
+  };
   
 },
 {

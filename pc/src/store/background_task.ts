@@ -1,9 +1,9 @@
 export default defineStore("backgrond_task", function() {
   
-  let listDialogVisible: boolean = $ref(false);
+  let listDialogVisible = ref(false);
   
-  return $$({
+  return {
     listDialogVisible,
-  });
+  };
   
 });
