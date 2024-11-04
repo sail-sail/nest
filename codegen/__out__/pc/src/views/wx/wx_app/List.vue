@@ -128,7 +128,7 @@
           <el-checkbox
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
-            v-model="search.is_deleted as number"
+            v-model="search.is_deleted"
             :false-value="0"
             :true-value="1"
             @change="recycleChg"
@@ -753,7 +753,6 @@ const {
   initSysI18ns
 } = useI18n(pagePath);
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
@@ -1861,8 +1860,6 @@ watch(
     immediate: true,
   },
 );
-
-usrStore.onLogin(initFrame);
 
 initFrame();
 
