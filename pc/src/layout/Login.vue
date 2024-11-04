@@ -296,7 +296,7 @@ async function onLogin() {
   if (old_username !== model.username || old_tenant_id !== model.tenant_id) {
     tabsStore.tabs = [ ];
     location.href = "/";
-  } else if (import.meta.env.VITE_SERVER_I18N_ENABLE !== "false") {
+  } else {
     window.history.go(0);
   }
 }

@@ -15,13 +15,13 @@ type MenuModel = MenuModel0 & {
 export default defineStore("menu", function() {
   
   /** 菜单搜索关键字 */
-  let search = $ref("");
+  let search = ref("");
   
-  let menus = $ref<MenuModel[]>([ ]);
+  let menus = ref<MenuModel[]>([ ]);
   
-  const pathMenuMap = $computed(() => {
+  const pathMenuMap = computed(() => {
     const pathMenuMap = new Map<string, MenuModel>();
-    treeMenu(menus, (item) => {
+    treeMenu(menus.value, (item) => {
       pathMenuMap.set(item.route_path, item);
       return true;
     });
@@ -32,12 +32,12 @@ export default defineStore("menu", function() {
    * 通过当前路由获取菜单名字
    */
   function getLblByPath(path: string) {
-    const menu = pathMenuMap.get(path);
+    const menu = pathMenuMap.value.get(path);
     return menu?.lbl;
   }
   
-  function setMenus(menus0: typeof menus) {
-    menus = menus0 || [ ];
+  function setMenus(menus0: MenuModel[]) {
+    menus.value = menus0 || [ ];
   }
   
   function treeMenu(children: MenuModel[], callback: (item: MenuModel) => boolean) {
@@ -62,7 +62,7 @@ export default defineStore("menu", function() {
       const name = query["name"];
       const src = query["src"];
       let menu2: MenuModel | undefined = undefined;
-      treeMenu(menus, (item) => {
+      treeMenu(menus.value, (item) => {
         if (item.oldRoute_path === src && item.lbl === name) {
           menu2 = item;
           return false;
@@ -72,7 +72,7 @@ export default defineStore("menu", function() {
       return menu2;
     }
     let menu2: MenuModel | undefined = undefined;
-    treeMenu(menus, (item) => {
+    treeMenu(menus.value, (item) => {
       if (item.route_path === path) {
         menu2 = item;
         return false;
@@ -91,7 +91,7 @@ export default defineStore("menu", function() {
       return;
     }
     let menu2: MenuModel | undefined = undefined;
-    treeMenu(menus, (item) => {
+    treeMenu(menus.value, (item) => {
       if (item.id === id) {
         menu2 = item;
         return false;
@@ -108,7 +108,7 @@ export default defineStore("menu", function() {
    */
   function getParentIds(id: MenuId): MenuId[] {
     const parentIds: MenuId[] = [ ];
-    const menus0 = [ ...menus ];
+    const menus0 = [ ...menus.value ];
     let parentId = id;
     const tmpFn = function(menus0: MenuModel[]) {
       for (let i = 0; i < menus0.length; i++) {
@@ -143,18 +143,18 @@ export default defineStore("menu", function() {
   }
   
   function clear() {
-    menus = [ ];
+    menus.value = [ ];
   }
   
   function reset() {
-    menus = [ ];
+    menus.value = [ ];
   }
   
   let isCollapse = $ref(false);
   let hide = $ref(false);
   
   function searchMenu(search: string) {
-    treeMenu(menus, (item) => {
+    treeMenu(menus.value, (item) => {
       if (!item.route_path) {
         item._isShow = false;
         return true;
@@ -181,20 +181,20 @@ export default defineStore("menu", function() {
       if (searchTimer) {
         clearTimeout(searchTimer);
       }
-      if (isEmpty(search)) {
-        treeMenu(menus, (item) => {
+      if (isEmpty(search.value)) {
+        treeMenu(menus.value, (item) => {
           item._isShow = true;
           return true;
         });
         return;
       }
       searchTimer = setTimeout(() => {
-        searchMenu(search);
+        searchMenu(search.value);
       }, 300);
     },
   );
   
-  return $$({
+  return {
     menus,
     isCollapse,
     setMenus,
@@ -206,11 +206,11 @@ export default defineStore("menu", function() {
     hide,
     search,
     getLblByPath,
-  });
+  };
 },
 {
   persist: {
-    paths: [
+    pick: [
       "menus",
     ],
   },
