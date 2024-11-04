@@ -121,39 +121,35 @@ import type {
   LoginInput,
 } from "@/typings/types";
 
-import type {
-  TenantId,
-} from "@/typings/ids";
-
-import {
-  lang,
-} from "@/locales/index";
+// import {
+//   lang,
+// } from "@/locales/index";
 
 const indexStore = useIndexStore(cfg.pinia);
 const usrStore = useUsrStore(cfg.pinia);
 
-let safeAreaInsets = $ref(indexStore.getSystemInfo().safeAreaInsets);
+const safeAreaInsets = ref(indexStore.getSystemInfo().safeAreaInsets);
 
-let formRef = $ref<InstanceType<typeof CustomForm>>();
+const formRef = ref<InstanceType<typeof CustomForm>>();
 
-let model: LoginInput = $ref<LoginInput>({
+const model = ref<LoginInput>({
   username: "admin",
   password: "a",
   tenant_id: "" as unknown as TenantId,
-  lang,
+  // lang,
 });
 
 let redirect_uri = cfg.homePage;
 let redirect_action = "reLaunch";
 
 async function onLogin() {
-  if (!formRef) {
+  if (!formRef.value) {
     return;
   }
   
   const {
     isPass,
-  } = formRef.validate();
+  } = formRef.value.validate();
   
   if (!isPass) {
     return;
@@ -161,9 +157,9 @@ async function onLogin() {
   
   uni.setStorage({
     key: "oldLoginModel",
-    data: model,
+    data: model.value,
   });
-  const loginModel = await bindWxUsr(model);
+  const loginModel = await bindWxUsr(model.value);
   if (!loginModel.authorization) {
     return;
   }
@@ -173,9 +169,9 @@ async function onLogin() {
   });
   usrStore.setAuthorization(loginModel.authorization);
   usrStore.setUsrId(loginModel.usr_id);
-  usrStore.setUsername(model.username);
-  usrStore.setTenantId(model.tenant_id);
-  usrStore.setLang(model.lang);
+  usrStore.setUsername(model.value.username);
+  usrStore.setTenantId(model.value.tenant_id);
+  // usrStore.setLang(model.value.lang);
   if (redirect_action === "navigateBack") {
     await uni.navigateBack();
     return;
@@ -190,10 +186,10 @@ async function onLogin() {
  */
 async function getLoginTenantsEfc() {
   const tenants = await getLoginTenants({ domain: cfg.domain });
-  if (!model.tenant_id && tenants.length > 0) {
-    model.tenant_id = tenants[0].id;
-  } else if (model.tenant_id && !tenants.some((item) => item.id === model.tenant_id)) {
-    model.tenant_id = tenants[0]?.id;
+  if (!model.value.tenant_id && tenants.length > 0) {
+    model.value.tenant_id = tenants[0].id;
+  } else if (model.value.tenant_id && !tenants.some((item) => item.id === model.value.tenant_id)) {
+    model.value.tenant_id = tenants[0].id;
   }
   return tenants;
 }
@@ -211,8 +207,8 @@ async function setOldLoginModel() {
           console.error(err);
         }
       }
-      model = res.data;
-      model.lang = model.lang || lang;
+      model.value = res.data;
+      // model.value.lang = model.value.lang || lang;
     }
   } catch (err) {
   }

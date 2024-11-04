@@ -456,14 +456,14 @@ watchEffect(async () => {
     encoding_type: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("消息加解密方式") }`,
+        message: `${ await nsAsync("请选择") } ${ n("消息加解密方式") }`,
       },
     ],
     // 授权作用域
     scope: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("授权作用域") }`,
+        message: `${ await nsAsync("请选择") } ${ n("授权作用域") }`,
       },
     ],
     // 网页授权域名
