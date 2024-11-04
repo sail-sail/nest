@@ -15,11 +15,7 @@
 <script setup lang="ts">
 import AppLoading from "@/components/AppLoading/AppLoading.vue";
 
-import {
-  checkLogin,
-} from "./Api";
-
-let title = $ref("hello");
+const title = ref("hello");
 
 async function checkLoginEfc() {
   const res = await checkLogin();

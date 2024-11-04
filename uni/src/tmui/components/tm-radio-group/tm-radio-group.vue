@@ -1,108 +1,110 @@
-<template>
-	<view
-		class="flex"
-		:class="[props.direction == 'row' ? 'flex-row' : 'flex-col', props.direction == 'customCol' ? '' : _align]"
-		:style="{ flexWrap: props.direction == 'customCol' ? 'nowrap' : 'wrap' }"
-	>
-		<slot></slot>
-	</view>
-</template>
-<script lang="ts" setup>
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount, watch, PropType, getCurrentInstance, ComponentInstance, onUpdated, nextTick, provide } from 'vue';
+import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit, getUid } from "../../libs/tool";
+import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
+import { useTmConfig } from "../../libs/config";
+import { onPageScroll } from '@dcloudio/uni-app';
+import tmCheckbox from '../tm-checkbox/tm-checkbox.vue';
+
 /**
- * 单选框组
- * @description 单选框组中，只能放置tm-radio组件，且必须配合tm-radio组件一起使用，不可单独使用。
+ * @displayName 多选框组
+ * @exportName tm-radio-group
+ * @page tm-radio
+ * @category 表单组件
+ * @description 可单单独使用,也可多选组合使用
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-import { computed, nextTick, provide, ref, watch, getCurrentInstance, inject, toRaw, PropType } from 'vue'
-import { inputPushItem, rulesItem } from './../tm-form-item/interface'
-const emits = defineEmits(['update:modelValue', 'change'])
-const proxy = getCurrentInstance()?.proxy ?? null
+defineOptions({ name: 'TmRadioGroup' });
+const { config } = useTmConfig()
+
 const props = defineProps({
-	disabled: {
-		type: Boolean,
-		default: false
-	},
-	defaultValue: {
-		type: [String, Number, Boolean,null],
-		default: ''
-	},
-	modelValue: {
-		type: [String, Number, Boolean,null],
-		default: ''
-	},
-	direction: {
-		type: String as PropType<'row' | 'col' | 'customCol'>,
-		default: 'row' //row横排，col为竖排。
-	},
-	align: {
-		type: String as PropType<'left' | 'center' | 'right'>,
-		default: 'left'
-	},
-	//模式
-	/**
-	 * radio:正常的单选样式。
-	 * button:按钮单选模式
-	 */
-	model: {
-		type: String,
-		default: 'radio' // radio,button
-	}
-})
-let _cacheBoxList: Array<string | number | boolean> = []
-const _mValue = ref(props.defaultValue || props.modelValue)
+    modelValue: {
+        type: [String, Number, Boolean],
+        default: "",
+    },
+    direction: {
+        type: String as PropType<"row" | "column">,
+        default: "row",
+    },
+    align: {
+        type: String as PropType<"flex-start" | "center" | "flex-end">,
+        default: "left"
+    },
+    /**
+     * 排列时之间的间隙，如果是数组第一项是列间隙，第二项是行间隙
+     */
+    gap: {
+        type: [Number, String, Array<string | number>],
+        default: 20,
+    }
+});
 
-const _align = computed(() => {
-	let list = {
-		left: 'flex-row-center-start',
-		center: 'flex-row-center-center',
-		right: 'flex-row-center-end'
-	}
-	let listCol = {
-		left: 'flex-col-center-start',
-		center: 'flex-col-center-center',
-		right: 'flex-col-center-end'
-	}
-	return props.direction == 'row' ? list[props.align] : listCol[props.align]
-})
+const emits = defineEmits(['change', 'update:modelValue']);
 
-//组件唯一标识。
-const checkBoxkeyId = 'tmRadioBoxGroup'
-watch(
-	() => props.modelValue,
-	() => {
-		_mValue.value = props.modelValue
-	},
-	{ deep: true }
-)
-function pushKey(key: string | number | boolean) {
-	_cacheBoxList.push(key)
-}
-nextTick(() => {
-	const _filter_key = _cacheBoxList.filter((el) => el == _mValue.value)
-	if (_filter_key.length > 0) {
-		_mValue.value = _filter_key[0]
-	}
-	emits('update:modelValue', _mValue.value)
-})
-//更新值、
-function addKey(key: string | number | boolean) {
-	_mValue.value = key
-	emits('update:modelValue', _mValue.value)
-	// console.log(new Date().getSeconds(),'----3')
+const checkvaluelist = ref<string | number | boolean>("");
+const isDestroy = ref(false);
+const id = "tmRadioGroup-" + getUid();
 
-	nextTick(() => {
-		emits('change', _mValue.value)
-	})
+const _max = 1
+const _gap = computed(() => arrayNumber(props.gap).join(" "))
+watch(() => props.modelValue, (newValue) => {
+    checkvaluelist.value = newValue;
+
+});
+
+onBeforeUnmount(() => {
+    isDestroy.value = true;
+});
+
+onMounted(() => {
+    checkvaluelist.value = props.modelValue;
+    isDestroy.value = false;
+});
+
+function addItem(item: string | number | boolean, ischange: boolean) {
+    checkvaluelist.value = item
+    if (ischange) {
+        emits("update:modelValue", checkvaluelist.value);
+        emits("change", checkvaluelist.value);
+    }
 }
 
-provide(
-	'tmRadioBoxDisabled',
-	computed(() => props.disabled)
-)
-provide('tmRadioBoxVal', _mValue)
-provide(
-	'tmRadioBoxModel',
-	computed(() => props.model == 'radio')
-)
-provide('tmCheckedBoxDir', props.direction)
-defineExpose({ pushKey: pushKey, addKey: addKey, checkBoxkeyId: checkBoxkeyId })
+function removeItem(item: string | number | boolean) {
+    if (checkvaluelist.value !== item) {
+        checkvaluelist.value = item;
+        emits("update:modelValue", checkvaluelist.value);
+        emits("change", checkvaluelist.value);
+    }
+
+}
+
+provide("tmRadioGroupValue", computed(() => checkvaluelist.value))
+
+defineExpose({ addItem, removeItem })
 </script>
+<script lang="ts">
+export default {
+    options: {
+        styleIsolation: "apply-shared",
+        virtualHost: true,
+        addGlobalClass: true,
+        multipleSlots: true,
+    },
+};
+</script>
+<template>
+    <view class="tmCheckboxGroup"
+        :style="{ 'flex-direction': direction, 'align-items': direction == 'row' ? 'flex-start' : undefined, 'justify-content': align, gap: _gap }">
+        <slot></slot>
+    </view>
+</template>
+
+<style>
+.tmCheckboxGroup {
+    display: flex;
+    flex-wrap: wrap;
+}
+</style>

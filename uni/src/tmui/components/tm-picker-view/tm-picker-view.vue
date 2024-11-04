@@ -1,198 +1,276 @@
-<template>
-	<view class="flex flex-row">
-		<pickerPanelVue
-			:immediateChange="props.immediateChange"
-			:followTheme="props.followTheme"
-			@end="emits('end')"
-			@start="emits('start')"
-			:dataKey="props.mapKey || props.dataKey"
-			:mapKey="props.mapKey || props.dataKey"
-			@change="pickerChange($event, index)"
-			:col="_colIndex[index]"
-			v-for="(item, index) in _data"
-			:data="item"
-			:key="index"
-			:height="props.height"
-			class="flex-1"
-		></pickerPanelVue>
-	</view>
-</template>
 <script lang="ts" setup>
+import { ref, computed, onMounted, onBeforeUnmount, watch, PropType, getCurrentInstance, ComponentInstance, onUpdated, nextTick, VueElement, inject } from 'vue';
+import { arrayNumberValid, arrayNumberValidByStyleMP, covetUniNumber, arrayNumberValidByStyleBorderColor, linearValid, getUnit, getUid } from "../../libs/tool";
+import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorObj, getThinColorObj } from "../../libs/colors";
+import { useTmConfig } from "../../libs/config";
+import pickerItem from './picker-item.vue';
+type TM_PICKER_X_ITEM = Record<string, any>
+type TM_PICKER_ITEM_INFO = Record<string, any>
+const proxy = getCurrentInstance()?.proxy ?? null;
+
 /**
- * 级联选择(滚选)
- * @description 嵌入在页面的级联选择(滚选)
+ * @displayName 选择器容器
+ * @exportName tm-picker-view
+ * @category 表单组件
+ * @description 可单列或者多列
+ * @constant 平台兼容
+ *	| H5 | uniAPP | 小程序 | version |
+    | --- | --- | --- | --- |
+    | ☑️| ☑️ | ☑️ | ☑️ | ☑️ | 1.0.0 |
  */
-import { computed, PropType, watchEffect, ref, toRaw, onMounted, nextTick, watch, Ref } from 'vue'
-import { columnsItem } from './interface'
-import pickerPanelVue from './picker-panel.vue'
-/**
- * 事件说明
- * change 每一项滑动时会触发事件，并返回父索引levelIndex：当前第几列，子项目索引itemindex：当前列中的第几项被选中。
- * v-model:双向绑定返回当前选中的索引数组。
- * v-model:modelStr 单向输出索引字符串，与v-model区别一个显示索引，一个显示text文本，这个用处主要是用来绑定显示文本用，但与后台交互时可能只需索引。所以它只用来展示用比较方便。
- * start和end分别 为开始选择和结束选择触发的事件，目前在cli 8001结尾的版本（至2022/5/1此事件不会触发系hbx的bug）
- */
-const emits = defineEmits(['change', 'update:modelValue', 'update:modelStr', 'end', 'start'])
+defineOptions({ name: 'TmPickerView' });
+const { config } = useTmConfig()
+const nowValue = ref<Array<string | number>>([])
+const _modelValueIndex = ref<Array<number>>([])
+const tid = ref(0)
+const emits = defineEmits([
+    /**
+     * 选项变化时触发
+     * @param {string[]} ids - 当前选中项的id
+     */
+    'change',
+    /**
+     * 等同v-model:model-str
+     * 只对外输出当前回选区的选中项的文本，不要外部改变此值。
+     */
+    'update:modelStr',
+
+    'update:modelValue'
+
+])
+
+
 const props = defineProps({
-	followTheme: {
-		type: [Boolean],
-		default: true
-	},
-	height: {
-		type: Number,
-		default: 450
-	},
-	//可v-model,每一列选中的索引值
-	modelValue: {
-		type: Array as PropType<Array<number>>,
-		default: () => []
-	},
-	/**
-	 * 注意：这里是单向输出显示的value值，而不是modelValue的index索引值。
-	 * 这里主要是为了方便表单上页面的显示。如果真要保存到数据库，你应该保存modelValue的值。
-	 */
-	modelStr: {
-		type: [String],
-		default: ''
-	},
-	//默认选中的索引值。
-	defaultValue: {
-		type: Array as PropType<Array<number>>,
-		default: () => []
-	},
-	columns: {
-		type: Array as PropType<Array<columnsItem>>,
-		default: () => [],
-		required: true
-	},
-	//当columns项目中的data数据为对象时的key取值字段。
-	dataKey: {
-		type: String,
-		default: 'text'
-	},
-	//当columns项目中的data数据为对象时的key取值字段。兼容上方dataKey,因为微信dataKey与本字段重名，无法设置。
-	mapKey: {
-		type: String,
-		default: 'text'
-	},
-	//当前改变index项时，改变时执行的函数。如果返回false，将会阻止本次改变,可以是Promise
-	//提供了即将改变的数据和将要改变到目标的数据
-	//结构 为 from:{itemindex,levelIndex,data},to:{itemindex,levelIndex,data}。
-	beforeChange: {
-		type: [Boolean, Function],
-		default: () => false
-	},
-	immediateChange: {
-		type: Boolean,
-		default: false
-	}
-})
-const _colIndex = ref([...props.defaultValue])
-const _data: Ref<Array<Array<columnsItem>>> = ref([])
-const _modelStr = computed(() => {
-	let str: Array<string | number> = []
-	_data.value.forEach((el, index) => {
-		let item = el[_colIndex.value[index]]
-		if (typeof item == 'undefined') return
-		str.push(item[props.mapKey || props.dataKey] ?? '')
-	})
-	return str.join('/')
+
+    /**
+     * 数据项
+     * 格式类型为：PICKER_ITEM_INFO
+     */
+    list: {
+        type: Array as PropType<TM_PICKER_ITEM_INFO[]>,
+        default: (): TM_PICKER_ITEM_INFO[] => [] as TM_PICKER_ITEM_INFO[]
+    },
+    /**
+     * 当前选中项的id值
+     */
+    modelValue: {
+        type: Array<string|number>,
+        default: (): string[] => [] as string[]
+    },
+    /**
+     * 当前选中项的标题文本组
+     */
+    modelStr: {
+        type: String,
+        default: ""
+    },
+    /**
+     * 显示在顶部的单位名称
+     */
+    cellUnits: {
+        type: Array as PropType<string[]>,
+        default: (): string[] => [] as string[]
+    },
+    /**
+     * 项目的字体号大小
+     */
+    fontSize: {
+        type: String,
+        default: "32"
+    },
+    /**
+     * 自定义标识id
+     */
+    rangKey: {
+        type: String,
+        default: "id"
+    },
+    /**
+     * 自定义标识文本字段名
+     */
+    rangText: {
+        type: String,
+        default: "title"
+    }
 })
 
-watch(
-	() => _colIndex.value,
-	() => {
-		nextTick(() => {
-			emits('update:modelStr', _modelStr.value)
-		})
-	},
-	{ deep: true }
-)
-//循环获取子级
-function getIndexLoop(defaultindex = 0, data: Array<columnsItem>): Array<Array<columnsItem>> {
-	let ds: Array<Array<columnsItem>> = []
-	if (data.length == 0) return []
-	if (typeof _colIndex.value[defaultindex] == 'undefined') {
-		_colIndex.value.push(0)
-	}
-	let nowData = data[_colIndex.value[defaultindex]]
-	if (!nowData) {
-		_colIndex.value[defaultindex] = 0
-		nowData = data[_colIndex.value[defaultindex]]
-	}
-	if (nowData && nowData?.children && Array.isArray(nowData?.children) && nowData?.children?.length > 0) {
-		ds.push(data)
-		let dy = getIndexLoop(defaultindex + 1, nowData?.children)
-		ds = [...ds, ...dy]
-	} else {
-		if (data?.length > 0 && Array.isArray(data) && data) {
-			ds.push(data)
-		}
-	}
-	return ds
+const _cellUnits = computed(() => props.cellUnits)
+const _list = computed(() => props.list)
+const _nowShowList = ref<Record<string,any>[][]>([])
+const _maxDeep = computed(() => {
+    if (_list.value.length == 0) return 0;
+    function getdiepWidth(list: TM_PICKER_X_ITEM[]): number {
+        let deepIndex = 1;
+        const node = list[0];
+        if (node?.children?.length > 0) {
+            deepIndex += getdiepWidth(node.children);
+        }
+        return deepIndex;
+    }
+    return getdiepWidth(_list.value.slice(0));
+})
+
+
+const oninitFun = () => {
+    nowValue.value = props.modelValue.slice(0)
+    let currneinexs = getIndexsByids(nowValue.value).indexs;
+    _modelValueIndex.value =  nowValue.value.length==0||currneinexs.length==0?new Array(_maxDeep.value).fill(0):currneinexs;
+    const {data,strs,ids} = getIdsByindexs(_modelValueIndex.value)
+    _nowShowList.value = data.slice(0)
+    if(nowValue.value.length==0){
+        nowValue.value  = ids.slice(0)
+       nextTick(()=>{
+        emits('update:modelStr', strs.join(","))
+        emits('update:modelValue', ids.slice(0))
+      
+       })
+
+    }
+   
+    
 }
-_data.value = getIndexLoop(0, props.columns)
+const change = (ixs: number[]) => {
+    
+    const {ids,data,strs} = getIdsByindexs(ixs)
+    _modelValueIndex.value = getIndexsByids(ids).indexs;
+    _nowShowList.value = data.slice(0)
+    nowValue.value = ids;
+    
+    /**
+     * 等同v-model
+     */
+    emits('update:modelValue', ids.slice(0))
+    emits('update:modelStr', strs.join(","))
 
-watch(
-	() => props.columns,
-	() => {
-		_data.value = getIndexLoop(0, props.columns)
-	},
-	{ deep: true }
-)
-watch(
-	() => props.modelValue,
-	() => {
-		_colIndex.value = props.modelValue
-		_data.value = getIndexLoop(0, props.columns)
-	},
-	{ deep: true }
-)
-//itemindex 子级索引
-//levelIndex 父级索引
-async function pickerChange(itemindex: number, levelIndex: number) {
-	let isActive = true
-	let toItem = _data.value[levelIndex][itemindex]
-	const params = {
-		from: {
-			itemindex: _colIndex.value[levelIndex],
-			levelIndex: levelIndex,
-			data: _data.value[levelIndex][_colIndex.value[levelIndex]]
-		},
-		to: { itemindex: itemindex, levelIndex: levelIndex, data: toItem }
-	}
-
-	_colIndex.value.splice(levelIndex, 1, itemindex)
-	if (typeof props.beforeChange === 'function') {
-		uni.showLoading({ title: '...', mask: true })
-		let p = await props.beforeChange(params)
-		if (typeof p === 'function') {
-			p = await p(params)
-		}
-		if (!p) {
-			isActive = false
-			nextTick(() => {
-				_colIndex.value.splice(levelIndex, 1, params.from.itemindex)
-			})
-			uni.hideLoading()
-		}
-	}
-	if (toItem?.disabled == true) {
-		isActive = false
-		nextTick(() => {
-			_colIndex.value.splice(levelIndex, 1, params.from.itemindex)
-		})
-	}
-
-	if (isActive) {
-		_data.value = getIndexLoop(0, props.columns)
-		emits('change', levelIndex, itemindex)
-		emits('update:modelValue', toRaw(_colIndex.value))
-	}
+    if (strs.join('') == props.modelValue.join('')) return;
+    emits('change', ids.slice(0))
 }
 
-nextTick(() => {
-	emits('update:modelValue', toRaw(_colIndex.value))
-	emits('update:modelStr', _modelStr.value || props.modelStr)
+
+// 根据id返回索引
+const getIndexsByids = (ids:Array<string|number>):{indexs:Array<number>,data:TM_PICKER_X_ITEM[][],strs:string[]}=> {
+    let index = 0;
+    let val = ids.slice(0)
+    let indexs = [] as number[]
+    let data = [] as TM_PICKER_X_ITEM[][]
+    let strs = [] as string[]
+
+    if(_list.value.length==0||ids.length==0) return {indexs:[],data:[],strs:[]}
+
+    function getIndex(nodes: TM_PICKER_X_ITEM[]) {
+        if (val.length <= index || val.length == 0) return;
+        let id = val[index]
+        let sindex = 0
+        for (let i = 0; i < nodes.length; i++) {
+            let item = nodes[i]
+            if (item[props.rangKey] == id) {
+                sindex = i;
+                indexs.push(sindex)
+                data.push(nodes)
+                strs.push(item[props.rangText])
+                if (item?.children?.length > 0) {
+                    index += 1
+                    getIndex(item.children)
+                }
+            }
+        }
+    }
+    getIndex(_list.value)
+    return {indexs,data,strs}
+}
+//根据索引返回ids
+const getIdsByindexs = (indexs:number[]):{ids:Array<string|number>,data:TM_PICKER_X_ITEM[][],strs:string[]} => {
+    let ids = [] as string[]
+    let data = [] as TM_PICKER_X_ITEM[][]
+    let index = 0;
+    let val = indexs.slice(0)
+    let strs = [] as string[]
+    
+    if(_list.value.length==0||indexs.length==0) return {ids:[],data:[],strs:[]}
+    function getIds(nodes: TM_PICKER_X_ITEM[]) {
+        if (val.length <= index || val.length == 0) return;
+        let currentsIndex = val[index]
+        let id = ''
+        let str = ''
+        let children = [];
+        if(nodes.length-1 >= currentsIndex){
+            id = nodes[currentsIndex][props.rangKey]
+            str = nodes[currentsIndex][props.rangText]
+            children = nodes[currentsIndex]?.children??[]
+        }else{
+            id = nodes[0][props.rangKey]
+            str = nodes[0][props.rangText]
+            children = nodes[0]?.children??[]
+        }
+        ids.push(id)
+        data.push(nodes)
+        strs.push(str)
+
+        if(children.length>0){
+            index += 1
+            getIds(children)
+        }
+    }
+    getIds(_list.value)
+    return {ids,data,strs};
+}
+
+const getNowCurrent = ()=>{
+    return  getIdsByindexs(_modelValueIndex.value)
+}
+// 获取相关数据。
+
+
+
+onMounted(() => {
+    oninitFun();
+    uni.$on('onResize', oninitFun)
 })
+onBeforeUnmount(() => {
+    clearTimeout(tid.value);
+    uni.$off('onResize', oninitFun)
+})
+watch(() => props.modelValue, (newValue: Array<string | number>) => {
+    if (newValue.join('') == nowValue.value.join('')) return;
+    nowValue.value = newValue.slice(0);
+    
+    let defauleindexs =  nowValue.value.length==0?new Array(_maxDeep.value).fill(0):getIndexsByids(nowValue.value).indexs;
+    _modelValueIndex.value = defauleindexs;
+
+    const {data,strs} = getIdsByindexs(_modelValueIndex.value)
+    _nowShowList.value = data.slice(0)
+    emits('update:modelStr', strs.join(","))
+
+
+}, { deep: true })
+
+watch(() => props.list, (newValue) => {
+    oninitFun()
+}, { deep: true })
+
+defineExpose({getIndexsByids,getIdsByindexs,getNowCurrent,onInit:oninitFun})
+
 </script>
+<script lang="ts">
+export default {
+    options: {
+        styleIsolation: "apply-shared",
+        virtualHost: true,
+        addGlobalClass: true,
+        multipleSlots: true,
+    },
+};
+</script>
+<template>
+    <view class="tmPickerView">
+        <picker-item :rangKey="props.rangKey" :rangText="props.rangText" 
+            :font-size="props.fontSize" :cellUnits="_cellUnits" @changeDeep="change"
+            :selectedIndex="_modelValueIndex" :list="_nowShowList"
+            class="tmPickerViewItem"></picker-item>
+    </view>
+</template>
+<style scoped>
+.tmPickerView {
+    
+}
+</style>

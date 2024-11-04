@@ -96,8 +96,7 @@ console.log(publishPath);
   if (commands.length === 0) {
     try {
       let cmd = "";
-      cmd += `rm -rf ${ publishPath }/docs`;
-      cmd += ` ; pm2 stop ${ projectName }`;
+      cmd += `pm2 stop ${ projectName }`;
       cmd += ` ; rm -rf ${ publishPath }/pc`
       cmd += ` ; rm -rf ${ publishPath }/deno`
       cmd += ` ; rm -rf ${ publishPath }/uni`
@@ -123,6 +122,7 @@ console.log(publishPath);
       cmd += ` ; pm2 stop ${ projectName }`;
       cmd += ` ; rm -rf ${ publishPath }/deno`
       cmd += ` ; mkdir -p ${ publishPath }/deno`;
+      cmd += ` ; cp ${ publishPathTmp }/deno/.env.${ env } ${ publishPath }/deno/`;
       cmd += ` ; mv -f ${ publishPathTmp }/deno/* ${ publishPath }/deno/`;
       cmd += ` ; chmod -R 755 ${ publishPath }/deno/${ projectName }`;
       cmd += ` ; cd ${ publishPath }/deno/ && pm2 start`;

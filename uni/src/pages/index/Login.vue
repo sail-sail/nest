@@ -1,26 +1,24 @@
 <template>
-<tm-app
+<view
   un-flex="~ [1_0_0] col"
   un-overflow-hidden
+  un-p="4"
+  un-box-border
 >
   <tm-form
-    ref="formRef"
     v-model="model"
     :label-width="120"
-    :margin="[0, 0]"
+    :rules="form_rules"
     
     un-flex="~ [1_0_0] col"
     un-overflow="y-auto x-hidden"
+    
+    @submit="onLogin"
   >
-      
+    
     <tm-form-item
       label="租户"
-      field="tenant_id"
-      :rules="{
-        required: true,
-        message: '请选择 租户',
-      }"
-      required
+      name="tenant_id"
     >
       <CustomSelect
         v-model="model.tenant_id"
@@ -32,7 +30,6 @@
         <template #left>
           <i
             un-i="iconfont-tenant"
-            un-m="r-2"
           ></i>
         </template>
       </CustomSelect>
@@ -40,12 +37,7 @@
     
     <tm-form-item
       label="用户名"
-      field="username"
-      :rules="{
-        required: true,
-        message: '请输入 用户名',
-      }"
-      required
+      name="username"
     >
       <CustomInput
         v-model="model.username"
@@ -56,7 +48,6 @@
         <template #left>
           <i
             un-i="iconfont-user"
-            un-m="r-2"
           ></i>
         </template>
       </CustomInput>
@@ -64,12 +55,7 @@
     
     <tm-form-item
       label="密码"
-      field="password"
-      :rules="{
-        required: true,
-        message: '请输入 密码',
-      }"
-      required
+      name="password"
     >
       <CustomInput
         v-model="model.password"
@@ -80,30 +66,31 @@
         <template #left>
           <i
             un-i="iconfont-password"
-            un-m="r-2"
           ></i>
         </template>
       </CustomInput>
     </tm-form-item>
+    
+    <view
+      un-flex="~ [1_0_0] col"
+      un-overflow-hidden
+    ></view>
+    
+    <view
+      un-m="x-2"
+    >
+      <tm-button
+        form-type="submit"
+        block
+      >
+        登录
+      </tm-button>
+    </view>
       
   </tm-form>
   
-  <view
-    un-m="x-2"
-  >
-    <tm-button
-      @click="onLogin"
-      label="登录"
-      block
-    ></tm-button>
-  </view>
-  
   <AppLoading></AppLoading>
-  <tm-message
-    ref="msgRef"
-    :lines="2"
-  ></tm-message>
-</tm-app>
+</view>
 </template>
 
 <script setup lang="ts">
@@ -121,36 +108,50 @@ import type {
 
 const usrStore = useUsrStore(cfg.pinia);
 
-let formRef = $ref<InstanceType<typeof TmForm>>();
-
 let tenants: GetLoginTenants[] = [ ];
 
-let model: LoginInput = $ref<LoginInput>({
+const model = ref<LoginInput>({
   username: "admin",
   password: "a",
   tenant_id: "" as unknown as TenantId,
 });
 
+const form_rules: Record<string, TM.FORM_RULE[]> = {
+  tenant_id: [
+    {
+      required: true,
+      message: "请选择 租户",
+    },
+  ],
+  username: [
+    {
+      required: true,
+      message: "请输入 用户名",
+    },
+  ],
+  password: [
+    {
+      required: true,
+      message: "请输入 密码",
+    },
+  ],
+};
+
 let redirect_uri = cfg.homePage;
 
-async function onLogin() {
-  if (!formRef) {
-    return;
-  }
-  
-  const {
+async function onLogin(
+  {
     isPass,
-  } = formRef.validate();
-  
+  }: TM.FORM_SUBMIT_RESULT,
+) {
   if (!isPass) {
     return;
   }
-  
   uni.setStorage({
     key: "oldLoginModel",
-    data: model,
+    data: model.value,
   });
-  const loginModel = await login(model);
+  const loginModel = await login(model.value);
   if (!loginModel.authorization) {
     return;
   }
@@ -169,10 +170,10 @@ async function onLogin() {
  */
 async function getLoginTenantsEfc() {
   const tenants = await getLoginTenants({ domain: cfg.domain });
-  if (!model.tenant_id && tenants.length > 0) {
-    model.tenant_id = tenants[0].id;
-  } else if (model.tenant_id && !tenants.some((item) => item.id === model.tenant_id)) {
-    model.tenant_id = tenants[0]?.id;
+  if (!model.value.tenant_id && tenants.length > 0) {
+    model.value.tenant_id = tenants[0].id;
+  } else if (model.value.tenant_id && !tenants.some((item) => item.id === model.value.tenant_id)) {
+    model.value.tenant_id = tenants[0].id;
   }
   return tenants;
 }
@@ -190,9 +191,9 @@ async function setOldLoginModel() {
           console.error(err);
         }
       }
-      model = res.data;
-      if (!tenants.some((item) => item.id === model.tenant_id)) {
-        model.tenant_id = tenants[0]?.id;
+      model.value = res.data;
+      if (!tenants.some((item) => item.id === model.value.tenant_id)) {
+        model.value.tenant_id = tenants[0]?.id;
       }
     }
   } catch (err) {

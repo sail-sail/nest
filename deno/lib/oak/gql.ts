@@ -322,9 +322,11 @@ async function handleGraphql(
           }
         }
       }
-      result.errors.push({
-        message: msgArr.join("\n"),
-      });
+      if (msgArr.length > 0) {
+        result.errors.push({
+          message: msgArr.join("\n"),
+        });
+      }
     }
   } catch (err) {
     error(err);
@@ -352,7 +354,8 @@ gqlRouter.post("/graphql", async function(ctx) {
   const gqlObj = await body.json();
   try {
     response.body = await handleGraphql(ctx, gqlObj);
-  } catch (err) {
+  } catch (err0) {
+    const err = err0 as Error;
     error(err);
     response.body = {
       errors: [
@@ -389,7 +392,8 @@ gqlRouter.get("/graphql", async function(ctx) {
         variables,
       },
     );
-  } catch (err) {
+  } catch (err0) {
+    const err = err0 as Error;
     error(err);
     response.body = {
       errors: [

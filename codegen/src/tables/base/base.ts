@@ -11,7 +11,24 @@ export default defineConfig({
     },
     columns: [
       {
+        COLUMN_NAME: "code_seq",
+        onlyCodegenDeno: true,
+      },
+      {
+        COLUMN_NAME: "code",
+        align: "center",
+        width: 120,
+        readonly: true,
+        readonlyPlaceholder: "(自动生成)",
+        autoCode: {
+          prefix: "JS",
+          seq: "code_seq",
+          seqPadStart0: 3,
+        },
+      },
+      {
         COLUMN_NAME: "lbl",
+        align: "center",
       },
       {
         COLUMN_NAME: "home_url",
@@ -116,6 +133,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "lang_id",
         align: "center",
+        modelLabel: "lang_id_lbl",
       },
       {
         COLUMN_NAME: "is_locked",
@@ -278,6 +296,10 @@ export default defineConfig({
           },
         },
         align: "left",
+      },
+      {
+        COLUMN_NAME: "type",
+        width: 120,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -560,6 +582,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "menu_id",
         search: true,
+        require: false,
       },
       {
         COLUMN_NAME: "code",

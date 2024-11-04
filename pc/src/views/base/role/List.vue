@@ -29,6 +29,19 @@
       @keydown.enter="onSearch(true)"
     >
       
+      <template v-if="(builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null))">
+        <el-form-item
+          :label="n('编码')"
+          prop="code_like"
+        >
+          <CustomInput
+            v-model="search.code_like"
+            :placeholder="`${ ns('请输入') } ${ n('编码') }`"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
         <el-form-item
           :label="n('名称')"
@@ -520,8 +533,17 @@
           :key="col.prop"
         >
           
+          <!-- 编码 -->
+          <template v-if="'code' === col.prop && (showBuildIn || builtInSearch?.code == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 名称 -->
-          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -905,6 +927,8 @@ const props = defineProps<{
   selectedIds?: RoleId[]; //已选择行的id列表
   isMultiple?: Boolean; //是否多选
   id?: RoleId; // ID
+  code?: string; // 编码
+  code_like?: string; // 编码
   lbl?: string; // 名称
   lbl_like?: string; // 名称
   menu_ids?: string|string[]; // 菜单权限
@@ -1172,10 +1196,19 @@ let tableData = $ref<RoleModel[]>([ ]);
 function getTableColumns(): ColumnType[] {
   return [
     {
+      label: "编码",
+      prop: "code",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+      fixed: "left",
+    },
+    {
       label: "名称",
       prop: "lbl",
       width: 200,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
@@ -1959,6 +1992,7 @@ async function onRevertByIds() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
+    "编码",
     "名称",
     "首页",
     "菜单权限",
@@ -2029,8 +2063,6 @@ watch(
     immediate: true,
   },
 );
-
-usrStore.onLogin(initFrame);
 
 initFrame();
 

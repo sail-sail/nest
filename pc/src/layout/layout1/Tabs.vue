@@ -18,22 +18,36 @@
     >
       <template #default>
         <div
-          class="tab_label"
+          :class="{
+            tab_label: !item?.icon,
+            tab_icon: item?.icon,
+          }"
           :title="item.lbl"
         >
-          <span
-            v-if="!item?.icon"
-          >
-            {{ item.lbl }}
-          </span>
           <div
-            v-else-if="item?.icon === 'iconfont-home-fill' && !config.indexIsEmpty"
+            v-if="!item?.icon"
+            class="tab_label"
+          >
+            <span
+            >
+              {{ item.lbl }}
+            </span>
+          </div>
+          <div
+            v-else-if="item?.icon && (item?.icon === 'iconfont-home-fill' && !config.indexIsEmpty)"
             class="tab_icon"
+            :style="{
+              paddingLeft: item.closeable !== false ? '6px' : undefined,
+            }"
+            un-box-border
           >
             <el-icon
               size="20"
             >
-              <i un-i="iconfont-home-fill"></i>
+              <i
+                v-if="item?.icon === 'iconfont-home-fill'"
+                un-i="iconfont-home-fill"
+              ></i>
             </el-icon>
           </div>
         </div>
