@@ -20,7 +20,7 @@ export function createApp() {
   }
   cfg.pinia = pinia;
   Pinia.setActivePinia(pinia);
-  app.use(tmui, { } as Tmui.tmuiConfig);
+  app.use(tmui);
   return {
     app,
     Pinia,

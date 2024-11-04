@@ -43,7 +43,8 @@
     "mnemonist": "npm:mnemonist@0.39.8",
     "promisify": "https://deno.land/x/promisify@v0.1.0/mod.ts",
     "redis": "https://deno.land/x/redis@v0.32.4/mod.ts",
-    "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts"
+    "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts",
+    "mqtt": "jsr:@ymjacky/mqtt5"
   },
   "tasks": {
     "update": "deno run --allow-read=./ --allow-net --allow-write=./ https://deno.land/x/deno_outdated@0.2.5/cli.ts"

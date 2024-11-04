@@ -4,11 +4,7 @@ import {
 
 const isSSL = location.protocol === 'https:';
 
-let clientId = localStorage.getItem("websocket_clientId");
-if (!clientId) {
-  clientId = uuid();
-  localStorage.setItem("websocket_clientId", clientId);
-}
+const clientId = uuid();
 
 const PWD = "0YSCBr1QQSOpOfi6GgH34A";
 

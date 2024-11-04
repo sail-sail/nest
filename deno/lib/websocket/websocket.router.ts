@@ -20,27 +20,23 @@ const router = new Router({
 });
 
 function onopen(socket: WebSocket, clientId: string) {
-  const socketOld = socketMap.get(clientId);
-  if (socketOld) {
-    if (socketOld.readyState === WebSocket.OPEN) {
-      const msg = `websocket: clientId ${ clientId } close and reconnect`;
-      // log(msg);
-      socketOld.close(1000, msg);
-    }
-    // else {
-    //   const msg = `websocket: clientId ${ clientId } reconnect`;
-    //   log(msg);
-    // }
-    socketMap.delete(clientId);
-    // clientIdTopicsMap.delete(clientId);
+  let socketOlds = socketMap.get(clientId);
+  if (!socketOlds) {
+    socketOlds = [ ];
+    socketMap.set(clientId, socketOlds);
   }
-  // log(`websocket: clientId ${ clientId } onopen`);
-  socketMap.set(clientId, socket);
+  socketOlds.push(socket);
+  
+  for (const socket2 of socketOlds) {
+    if (socket2.readyState !== WebSocket.OPEN) {
+      socket2.close(1000, `websocket: clientId ${ clientId } reconnect`);
+    }
+  }
 }
 
 const PWD = "0YSCBr1QQSOpOfi6GgH34A";
 
-router.get("upgrade", async function(ctx) {
+router.get("upgrade", function(ctx) {
   const request = ctx.request;
   const response = ctx.response;
   const pwd = request.url.searchParams.get("pwd");
@@ -63,7 +59,7 @@ router.get("upgrade", async function(ctx) {
     };
     return;
   }
-  const socket = await ctx.upgrade();
+  const socket = ctx.upgrade();
   socket.onopen = function() {
     try {
       onopen(socket, clientId);
@@ -71,7 +67,7 @@ router.get("upgrade", async function(ctx) {
       const err = err0 as Error;
       error(err);
       try {
-        if (socket.readyState === WebSocket.OPEN) {
+        if (socket.readyState !== WebSocket.OPEN) {
           socket.close(1000, err.message);
         }
       } catch (_err) {
@@ -81,7 +77,12 @@ router.get("upgrade", async function(ctx) {
   };
   socket.onclose = function() {
     // log(`websocket: clientId ${ clientId } onclose`);
-    socketMap.delete(clientId);
+    // socketMap.delete(clientId);
+    for (const [ clientId2, sockets ] of socketMap) {
+      if (sockets.includes(socket)) {
+        socketMap.set(clientId2, sockets.filter((item) => item !== socket));
+      }
+    }
     clientIdTopicsMap.delete(clientId);
   };
   socket.onerror = function(err0) {
@@ -95,7 +96,12 @@ router.get("upgrade", async function(ctx) {
     } catch (_err) {
       // error(_err);
     }
-    socketMap.delete(clientId);
+    // socketMap.delete(clientId);
+    for (const [ clientId2, sockets ] of socketMap) {
+      if (sockets.includes(socket)) {
+        socketMap.set(clientId2, sockets.filter((item) => item !== socket));
+      }
+    }
     clientIdTopicsMap.delete(clientId);
   }
   socket.onmessage = async function(event) {
@@ -143,27 +149,29 @@ router.get("upgrade", async function(ctx) {
         }
         const dataStr = JSON.stringify(data);
         for (const [ clientId2, topics ] of clientIdTopicsMap) {
-          if (clientId2 === clientId) {
-            continue;
-          }
+          // if (clientId2 === clientId) {
+          //   continue;
+          // }
           if (!topics.includes(topic)) {
             continue;
           }
-          const socket = socketMap.get(clientId2);
-          if (!socket) {
+          const sockets = socketMap.get(clientId2);
+          if (!sockets || sockets.length === 0) {
             continue;
           }
-          if (socket.readyState !== WebSocket.OPEN) {
-            socketMap.delete(clientId2);
-            clientIdTopicsMap.delete(clientId2);
-            try {
-              socket.close();
-            } catch (_err) {
-              error(_err);
+          for (const socket2 of sockets) {
+            if (socket2.readyState !== WebSocket.OPEN) {
+              socketMap.set(clientId2, sockets.filter((item) => item !== socket2));
+              clientIdTopicsMap.delete(clientId2);
+              try {
+                socket2.close();
+              } catch (_err) {
+                error(_err);
+              }
+              continue;
             }
-            continue;
+            socket2.send(dataStr);
           }
-          socket.send(dataStr);
         }
         return;
       } else if (action === "unSubscribe") {

@@ -95,9 +95,6 @@ export default defineConfig({
           "@/tmui/components/tm-form/tm-form.vue": [
             [ "default", "TmForm" ],
           ],
-          "@/tmui/components/tm-message/tm-message.vue": [
-            [ "default", "TmMessage" ],
-          ],
         },
       ],
       resolvers: [
@@ -111,7 +108,7 @@ export default defineConfig({
     Components({
       dirs: [
         // "./src/components",
-        // "./src/tmui/components",
+        "./src/tmui/components",
       ],
       resolvers: [
         IconsResolver({

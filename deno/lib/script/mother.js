@@ -211,7 +211,7 @@ function start() {
     "run",
     "--unstable-hmr",
     "--inspect",
-    "--unstable-ffi",
+    // "--unstable-ffi",
     "-A",
     // `--allow-read=${ allowReads.join(",") }`,
     // `--allow-write=${ allowWrites.join(",") }`,
