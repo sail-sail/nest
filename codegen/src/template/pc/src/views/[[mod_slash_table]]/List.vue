@@ -1839,8 +1839,12 @@ const {
   initI18ns,
   initSysI18ns
 } = useI18n(pagePath);
-
-const usrStore = useUsrStore();
+<#
+if (mod === "base" && table === "role") {
+#>
+const usrStore = useUsrStore();<#
+}
+#>
 const permitStore = usePermitStore();
 const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
@@ -3845,8 +3849,6 @@ watch(
     immediate: true,
   },
 );
-
-usrStore.onLogin(initFrame);
 
 initFrame();<#
 for (let i = 0; i < columns.length; i++) {

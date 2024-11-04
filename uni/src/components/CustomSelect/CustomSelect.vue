@@ -9,6 +9,8 @@
     un-items="center"
     @click="onClick"
     un-h="full"
+    un-p="l-3"
+    un-box-border
   >
     <text
       v-if="modelLabels[0] || ''"
@@ -26,95 +28,85 @@
       un-overflow-hidden
     ></view>
     <tm-icon
-      :user-interaction-enabled="false"
-      :font-size="24"
-      name="tmicon-angle-right"
+      :size="42"
+      color="#b1b1b1"
+      name="arrow-right-s-line"
     ></tm-icon>
   </view>
   <view
     @click="onClear"
-    un-p="l-2"
+    un-p="r-2.65"
+    un-box-border
     v-if="props.showClear && !isValueEmpty"
   >
     <tm-icon
       _style="transition:color 0.24s"
-      :user-interaction-enabled="false"
-      :font-size="30"
-      name="tmicon-times-circle-fill"
+      :size="30"
+      color="#b1b1b1"
+      name="close-circle-fill"
     >
     </tm-icon>
   </view>
   <slot name="right"></slot>
 </view>
-<tm-picker
-  v-if="!props.multiple"
-  :columns="options4SelectV2"
-  map-key="label"
+<tm-drawer
   v-bind="$attrs"
-  v-model="pickerValue"
-  :disabled="props.disabled"
   v-model:show="showPicker"
-  :height="height"
-  @confirm="onConfirm"
+  :closeable="true"
+  :height="dHeight"
+  :title="props.placeholder || '请选择'"
+  disabledScroll
+  showClose
 >
-</tm-picker>
-<template
-  v-else
->
-  <tm-drawer
-    v-bind="$attrs"
-    v-model:show="showPicker"
-    :closeable="true"
-    :height="dHeight"
-    :title="props.placeholder || '请选择'"
-    ok-text="确认"
+  <view
+    un-flex="~ [1_0_0] col"
+    un-overflow-hidden
+    un-h="full"
   >
-    <view
+    <scroll-view
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
-      un-h="full"
+      :scroll-y="true"
+      :rebound="false"
     >
       <view
-        un-flex="~ [1_0_0] col"
-        un-overflow-auto
-        un-p="y-2 x-4"
+        un-p="y-1"
         un-box-border
       >
         <tm-cell
           v-for="item in options4SelectV2"
           :key="item.value"
-          :margin="[0, 0]"
           :title="item.label"
-          un-rounded="md"
-          un-flex="shrink-0"
-          un-box-border
-          :bottom-border="true"
-          :border="1"
+          :link="false"
+          showBottomBorder
+          :card="false"
+          @click="onSelect(item.value)"
         >
           <template #right>
             <i
-              v-if="modelValueMuti.includes(item.value)"
+              v-if="selectedValueMuti.includes(item.value)"
               un-i="iconfont-check"
               un-text="[var(--primary-color)]"
             ></i>
           </template>
         </tm-cell>
       </view>
-      <view
-        un-m="x-2"
+    </scroll-view>
+    <view
+      un-m="x-2 y-4"
+    >
+      <tm-button
+        @click="onConfirm"
+        block
       >
-        <tm-button
-          @click="onConfirm"
-          label="确定选择"
-          block
-        ></tm-button>
-      </view>
-      <view
-        :style="{ height: sysinfo.bottom + 'px' }"
-      ></view>
+        确定
+      </tm-button>
     </view>
-  </tm-drawer>
-</template>
+    <view
+      :style="{ height: sysinfo.bottom + 'px' }"
+    ></view>
+  </view>
+</tm-drawer>
 </template>
 
 <script lang="ts" setup>
@@ -184,16 +176,16 @@ const dHeight = computed(() => {
   return props.height + sysinfo.value.bottom + 80;
 });
 
-let inited = $ref(false);
-let data = $ref<any[]>([ ]);
-let options4SelectV2 = $ref<OptionType[]>(props.options4SelectV2 || [ ]);
-  
-let modelValue = $ref(props.modelValue);
+let inited = ref(false);
+let data = ref<any[]>([ ]);
+let options4SelectV2 = ref<OptionType[]>(props.options4SelectV2 || [ ]);
 
+const selectedValue = ref(props.modelValue);
+  
 watch(
   () => props.modelValue,
-  () => {
-    modelValue = props.modelValue;
+  (val) => {
+    selectedValue.value = val;
   },
 );
 
@@ -201,72 +193,64 @@ watch(
   () => props.disabled,
   () => {
     if (props.disabled) {
-      showPicker = false;
+      showPicker.value = false;
     }
   },
 );
 
-let modelValueMuti = $computed(() => {
-  if (!modelValue) {
+let selectedValueMuti = computed(() => {
+  if (!selectedValue.value) {
     return [ ];
   }
   if (props.multiple) {
-    if (Array.isArray(modelValue)) {
-      return modelValue as string[];
+    if (Array.isArray(selectedValue.value)) {
+      return selectedValue.value as string[];
     } else {
-      return [ modelValue as string ];
+      return [ selectedValue.value as string ];
     }
   }
-  return [ modelValue as string ];
+  return [ selectedValue.value as string ];
 });
 
-let isValueEmpty = $computed(() => {
-  if (!modelValue) {
+function onSelect(value: string) {
+  if (props.multiple) {
+    if (selectedValueMuti.value.includes(value)) {
+      selectedValue.value = selectedValueMuti.value.filter((item) => item !== value);
+    } else {
+      selectedValue.value = [ ...selectedValueMuti.value, value ];
+    }
+  } else {
+    selectedValue.value = value;
+  }
+}
+
+let isValueEmpty = computed(() => {
+  if (!selectedValue.value) {
     return true;
   }
   if (props.multiple) {
-    return !modelValue || (modelValue as string[]).length === 0;
+    return !selectedValue.value || (selectedValue.value as string[]).length === 0;
   }
   return false;
 });
 
-let showPicker = $ref(false);
+let showPicker = ref(false);
 
-let pickerValue = $computed({
-  get() {
-    const value: number[] = [ ];
-    const idx = options4SelectV2.findIndex((item) => item.value === modelValue);
-    if (idx !== -1) {
-      value.push(idx);
-    }
-    return value;
-  },
-  set(idxs: number[]) {
-    if (idxs.length === 0) {
-      modelValue = undefined;
-      return;
-    }
-    const idx = idxs[0];
-    modelValue = options4SelectV2[idx].value;
-    onChange();
-  },
-});
-
-let modelLabels = $computed(() => {
-  if (!modelValue) {
+let modelLabels = computed(() => {
+  if (!props.modelValue) {
     return "";
   }
   if (!props.multiple) {
-    const model = data.find((item) => props.optionsMap(item).value === modelValue);
+    const model = data.value.find((item) => props.optionsMap(item).value === props.modelValue);
     if (!model) {
       return "";
     }
     return [ props.optionsMap(model).label || "" ];
   }
   let labels: string[] = [ ];
-  let modelValues = (modelValue || [ ]) as string[];
+  let modelValues = (props.modelValue || [ ]) as string[];
   for (const value of modelValues) {
-    const model = data.find((item) => props.optionsMap(item).value === value);
+    const model = data.value.find((item) => props.optionsMap(item).value === value);
     if (!model) {
       continue;
     }
@@ -277,20 +261,21 @@ let modelLabels = $computed(() => {
 
 function onClick() {
   if (props.disabled || props.readonly) {
+    showPicker.value = false;
     return;
   }
-  showPicker = true;
+  showPicker.value = true;
 }
 
 function onChange() {
-  let modelValueArr: string[] = [ ];
+  let selectedValueArr: string[] = [ ];
   if (props.multiple) {
-    modelValueArr = (modelValue || [ ]) as string[];
-  } else if (modelValue) {
-    modelValueArr = [ modelValue as string ];
+    selectedValueArr = (selectedValue.value || [ ]) as string[];
+  } else if (selectedValue.value) {
+    selectedValueArr = [ selectedValue.value as string ];
   }
-  const models = modelValueArr.map((modelValue) => {
-    const model = data.find((item) => props.optionsMap(item).value === modelValue)!;
+  const models = selectedValueArr.map((selectedValue) => {
+    const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
     return model;
   });
   if (props.multiple) {
@@ -302,38 +287,38 @@ function onChange() {
 
 function onClear() {
   if (!props.multiple) {
-    modelValue = "";
+    selectedValue.value = "";
   } else {
-    modelValue = [ ];
+    selectedValue.value = [ ];
   }
-  emit("update:modelValue", modelValue);
+  emit("update:modelValue", selectedValue.value);
   emit("clear");
 }
 
 function onConfirm() {
-  showPicker = false;
-  emit("update:modelValue", modelValue);
+  showPicker.value = false;
+  emit("update:modelValue", selectedValue.value);
 }
 
 async function refreshEfc() {
   const method = props.method;
   if (!method) {
-    if (!options4SelectV2 || options4SelectV2.length === 0) {
-      inited = false;
+    if (!options4SelectV2 || options4SelectV2.value.length === 0) {
+      inited.value = false;
     } else {
-      inited = true;
+      inited.value = true;
     }
     return;
   }
-  if (!options4SelectV2 || options4SelectV2.length === 0) {
-    inited = false;
+  if (!options4SelectV2 || options4SelectV2.value.length === 0) {
+    inited.value = false;
   } else {
-    inited = true;
+    inited.value = true;
   }
-  data = await method();
-  emit("data", data);
-  options4SelectV2 = data.map(props.optionsMap);
-  inited = true;
+  data.value = await method();
+  emit("data", data.value);
+  options4SelectV2.value = data.value.map(props.optionsMap);
+  inited.value = true;
 }
 
 if (props.init) {
@@ -358,7 +343,7 @@ defineExpose({
   // border: 0px solid rgba(230,230,230,1);
   // background-color: rgba(245,245,245,1);
   transition: border 0.24s;
-  height: 35px;
+  height: 88rpx;
   display: flex;
   align-items: center;
   // border-radius: 4px;

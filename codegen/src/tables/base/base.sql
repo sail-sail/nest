@@ -1,10 +1,10 @@
--- Active: 1666076695194@@39.104.15.113@3389
 ------------------------------------------------------------------------ 租户
 drop table if exists `base_tenant`;
 CREATE TABLE if not exists `base_tenant` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `lang_id` varchar(22) NOT NULL DEFAULT '' COMMENT '语言',
+  `lang_id_lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '语言',
   `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
@@ -93,6 +93,7 @@ CREATE TABLE if not exists `base_usr` (
   `username` varchar(45) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` varchar(43) NOT NULL DEFAULT '' COMMENT '密码',
   `default_org_id` varchar(22) NOT NULL DEFAULT '' COMMENT '默认组织',
+  `type` varchar(10) NOT NULL DEFAULT 'login' COMMENT '类型,dict:usr_type',
   `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
@@ -142,12 +143,15 @@ CREATE TABLE if not exists `base_login_log` (
 drop table if exists `base_role`;
 CREATE TABLE if not exists `base_role` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `code_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '卡号-序列号',
+  `code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `home_url` varchar(200) NOT NULL DEFAULT '' COMMENT '首页',
   `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
   `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `is_sys` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '系统记录,dict:is_sys',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
@@ -159,6 +163,7 @@ CREATE TABLE if not exists `base_role` (
   `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
   `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`code`, `tenant_id`, `is_deleted`),
   INDEX (`lbl`, `tenant_id`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='角色';

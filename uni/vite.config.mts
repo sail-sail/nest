@@ -38,6 +38,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
+        api: "modern-compiler",
         additionalData: `@import "@/assets/style/uni.scss";`,
       },
     },
@@ -57,7 +58,6 @@ export default defineConfig({
         "vue",
         "uni-app",
         "pinia",
-        "@vueuse/core",
         {
           "numeral": [
             [ "default", "numeral" ]
@@ -95,9 +95,6 @@ export default defineConfig({
           "@/tmui/components/tm-form/tm-form.vue": [
             [ "default", "TmForm" ],
           ],
-          "@/tmui/components/tm-message/tm-message.vue": [
-            [ "default", "TmMessage" ],
-          ],
           "@/utils/WxoUtil": [
             [ "wxoGetAppid", "wxwGetAppid" ],
             "initWxoCfg",
@@ -114,6 +111,8 @@ export default defineConfig({
     }),
     Components({
       dirs: [
+        // "./src/components",
+        "./src/tmui/components",
       ],
       resolvers: [
         IconsResolver({

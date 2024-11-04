@@ -40,6 +40,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     :clearable="false"
     class="select_input"
     :placeholder="props.placeholder"
+    :readonly-placeholder="props.placeholder"
     @keydown.enter="onEnter"
   >
     <template
@@ -239,7 +240,7 @@ async function refreshInputValue() {
     oldInputValue = inputValue;
     return;
   }
-  let models: CardModel[];
+  let models: <#=modelName#>[];
   if (selectedValue && Array.isArray(selectedValue)) {
     models = selectedValue.filter((item) => item != null);
   } else if (selectedValue) {

@@ -756,7 +756,6 @@ const {
   initSysI18ns
 } = useI18n(pagePath);
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
@@ -1870,8 +1869,6 @@ watch(
     immediate: true,
   },
 );
-
-usrStore.onLogin(initFrame);
 
 initFrame();
 

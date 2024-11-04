@@ -258,7 +258,7 @@ watchEffect(async () => {
     type: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("类型") }`,
+        message: `${ await nsAsync("请选择") } ${ n("类型") }`,
       },
     ],
     // 用户名
@@ -277,7 +277,7 @@ watchEffect(async () => {
     is_succ: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("登录成功") }`,
+        message: `${ await nsAsync("请选择") } ${ n("登录成功") }`,
       },
     ],
   };
