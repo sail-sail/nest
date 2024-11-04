@@ -84,7 +84,7 @@
               v-model="dialogModel.lbl"
               :placeholder="`${ ns('请输入') } ${ n('订单号') }`"
               :readonly="true"
-              :readonly-placeholder="ns('(自动生成)')"
+              :readonly-placeholder="n('(自动生成)')"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -411,7 +411,7 @@ watchEffect(async () => {
     status: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("订单状态") }`,
+        message: `${ await nsAsync("请选择") } ${ n("订单状态") }`,
       },
     ],
     // 用户
@@ -439,7 +439,7 @@ watchEffect(async () => {
     type: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("订单类别") }`,
+        message: `${ await nsAsync("请选择") } ${ n("订单类别") }`,
       },
     ],
   };

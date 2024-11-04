@@ -333,6 +333,20 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 卡号
+    card_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("卡号") }`,
+      },
+    ],
+    // 用户
+    usr_id: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("用户") }`,
+      },
+    ],
   };
 });
 

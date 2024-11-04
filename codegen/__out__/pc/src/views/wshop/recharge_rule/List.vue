@@ -692,7 +692,6 @@ const {
   initSysI18ns
 } = useI18n(pagePath);
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
@@ -1161,8 +1160,8 @@ async function useFindCount(
 }
 
 const _defaultSort: Sort = {
-  prop: "order_by",
-  order: "ascending",
+  prop: "create_time",
+  order: "descending",
 };
 
 const defaultSort: Sort = $computed(() => {
@@ -1772,8 +1771,6 @@ watch(
     immediate: true,
   },
 );
-
-usrStore.onLogin(initFrame);
 
 initFrame();
 

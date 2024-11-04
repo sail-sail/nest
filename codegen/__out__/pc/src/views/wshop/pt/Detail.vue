@@ -461,7 +461,7 @@ watchEffect(async () => {
     is_new: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("新品") }`,
+        message: `${ await nsAsync("请选择") } ${ n("新品") }`,
       },
     ],
     // 排序
