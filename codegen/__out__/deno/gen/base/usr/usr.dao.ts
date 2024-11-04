@@ -79,7 +79,6 @@ import {
 import type {
   PageInput,
   SortInput,
-  UsrType,
 } from "/gen/types.ts";
 
 import {
@@ -823,7 +822,7 @@ export async function setIdByLbl(
   if (isNotEmpty(input.type_lbl) && input.type == null) {
     const val = typeDict.find((itemTmp) => itemTmp.lbl === input.type_lbl)?.val;
     if (val != null) {
-      input.type = val as UsrType;
+      input.type = val;
     }
   } else if (isEmpty(input.type_lbl) && input.type != null) {
     const lbl = typeDict.find((itemTmp) => itemTmp.val === input.type)?.lbl || "";

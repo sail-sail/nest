@@ -84,7 +84,7 @@
               v-model="dialogModel.lbl"
               :placeholder="`${ ns('请输入') } ${ n('卡号') }`"
               :readonly="true"
-              :readonly-placeholder="ns('(自动生成)')"
+              :readonly-placeholder="n('(自动生成)')"
             ></CustomInput>
           </el-form-item>
         </template>
@@ -421,7 +421,7 @@ watchEffect(async () => {
     grade: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("会员等级") }`,
+        message: `${ await nsAsync("请选择") } ${ n("会员等级") }`,
       },
     ],
     // 姓名
@@ -452,7 +452,7 @@ watchEffect(async () => {
     is_default_card: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("默认") }`,
+        message: `${ await nsAsync("请选择") } ${ n("默认") }`,
       },
     ],
   };

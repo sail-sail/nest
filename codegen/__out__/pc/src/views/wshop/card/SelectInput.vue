@@ -19,6 +19,7 @@
     :clearable="false"
     class="select_input"
     :placeholder="props.placeholder"
+    :readonly-placeholder="props.placeholder"
     @keydown.enter="onEnter"
   >
     <template

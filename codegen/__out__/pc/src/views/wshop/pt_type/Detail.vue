@@ -344,14 +344,14 @@ watchEffect(async () => {
     is_home: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("首页显示") }`,
+        message: `${ await nsAsync("请选择") } ${ n("首页显示") }`,
       },
     ],
     // 推荐
     is_recommend: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("推荐") }`,
+        message: `${ await nsAsync("请选择") } ${ n("推荐") }`,
       },
     ],
     // 排序

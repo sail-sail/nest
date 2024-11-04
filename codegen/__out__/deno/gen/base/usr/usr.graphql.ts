@@ -6,14 +6,6 @@ import * as resolver from "./usr.resolver.ts";
 defineGraphql(resolver, /* GraphQL */ `
 scalar UsrId
 
-"用户类型"
-enum UsrType {
-  "登录用户"
-  login
-  "第三方接口"
-  api
-}
-
 type UsrModel {
   "ID"
   id: UsrId!
@@ -42,7 +34,7 @@ type UsrModel {
   "默认组织"
   default_org_id_lbl: String!
   "类型"
-  type: UsrType!
+  type: String!
   "类型"
   type_lbl: String!
   "锁定"
@@ -162,7 +154,7 @@ input UsrInput {
   "默认组织"
   default_org_id_lbl: String
   "类型"
-  type: UsrType
+  type: String
   "类型"
   type_lbl: String
   "锁定"
