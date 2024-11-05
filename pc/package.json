@@ -51,7 +51,7 @@
   "devDependencies": {
     "@plugin-web-update-notification/vite": "1.7.1",
     "@types/file-saver": "2.0.7",
-    "@types/node": "22.8.7",
+    "@types/node": "22.9.0",
     "@types/sortablejs": "1.15.8",
     "@unocss/preset-rem-to-px": "0.63.6",
     "@vitejs/plugin-vue": "5.1.4",
