@@ -19,7 +19,7 @@
     "dayjs": "1.11.13",
     "graphql": "17.0.0-alpha.7",
     "mnemonist": "0.39.8",
-    "mysql2": "3.11.3",
+    "mysql2": "3.11.4",
     "path-to-regexp": "6.2.1"
   },
   "devDependencies": {
