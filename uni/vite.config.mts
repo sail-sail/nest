@@ -139,12 +139,12 @@ export default defineConfig({
     cors: true,
     proxy: {
       "/api": {
-        target: "http://localhost:4001",
+        target: "http://127.0.0.1:4001",
         changeOrigin: true,
         secure: false,
       },
       "/graphql": {
-        target: "http://localhost:4001",
+        target: "http://127.0.0.1:4001",
         changeOrigin: true,
         secure: false,
       },
