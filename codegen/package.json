@@ -25,12 +25,12 @@
     "ejsexcel": "4.2.2",
     "fast-csv": "5.0.2",
     "fs-extra": "11.2.0",
-    "mysql2": "3.11.3",
+    "mysql2": "3.11.4",
     "shelljs": "0.8.5",
-    "uuid": "11.0.2"
+    "uuid": "11.0.3"
   },
   "devDependencies": {
-    "@swc/wasm": "1.8.0",
+    "@swc/wasm": "1.9.2",
     "@types/fs-extra": "11.0.4",
     "@types/node": "22.9.0",
     "@types/shelljs": "0.8.15",
