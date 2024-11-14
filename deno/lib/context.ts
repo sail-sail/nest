@@ -934,7 +934,7 @@ export async function query<T = any>(
   }
   if (context.is_tran) {
     const conn = await beginTran();
-    if (!opt || opt.debug !== false) {
+    if (opt?.debug === true) {
       const debugSql = getDebugQuery(sql, args) + " /* "+ conn.threadId +" */";
       log(debugSql);
     }
@@ -947,7 +947,7 @@ export async function query<T = any>(
       throw err;
     }
   } else {
-    if (!opt || opt.debug !== false) {
+    if (opt?.debug === true) {
       const debugSql = getDebugQuery(sql, args);
       log(debugSql);
     }
@@ -999,12 +999,12 @@ export async function execute(
   let result: any;
   if (context.is_tran) {
     const conn = await beginTran();
-    if (!opt || opt.debug !== false) {
+    if (opt?.debug === true) {
       log(getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
     }
     result = await conn.query(sql, args);
   } else {
-    if (!opt || opt.debug !== false) {
+    if (opt?.debug === true) {
       log(getDebugQuery(sql, args));
     }
     try {
