@@ -934,10 +934,10 @@ export async function query<T = any>(
   }
   if (context.is_tran) {
     const conn = await beginTran();
-    // if (!opt || opt.debug !== false) {
-    //   debugSql = getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */";
-    //   log(debugSql);
-    // }
+    if (!opt || opt.debug !== false) {
+      const debugSql = getDebugQuery(sql, args) + " /* "+ conn.threadId +" */";
+      log(debugSql);
+    }
     try {
       const res = await conn.query(sql, args);
       // deno-lint-ignore no-explicit-any
@@ -947,10 +947,10 @@ export async function query<T = any>(
       throw err;
     }
   } else {
-    // if (!opt || opt.debug !== false) {
-    //   debugSql = getDebugQuery(sql, args);
-    //   log(debugSql);
-    // }
+    if (!opt || opt.debug !== false) {
+      const debugSql = getDebugQuery(sql, args);
+      log(debugSql);
+    }
     const pool = await getMysqlPool(opt?.database_name);
     try {
       const res = await pool.query(sql, args);
