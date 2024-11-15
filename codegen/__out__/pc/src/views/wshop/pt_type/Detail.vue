@@ -82,6 +82,8 @@
           >
             <UploadImage
               v-model="dialogModel.img"
+              db="wshop_pt_type.img"
+              :is-public="false"
               :readonly="isLocked || isReadonly"
               :inited
             ></UploadImage>

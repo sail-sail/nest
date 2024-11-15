@@ -83,7 +83,9 @@
           >
             <UploadImage
               v-model="dialogModel.img"
+              db="wshop_pt.img"
               :max-size="4"
+              :is-public="false"
               :readonly="isLocked || isReadonly"
               :inited
             ></UploadImage>
@@ -234,7 +236,9 @@
           >
             <UploadImage
               v-model="dialogModel.detail_top_img"
+              db="wshop_pt.detail_top_img"
               :max-size="8"
+              :is-public="false"
               :readonly="isLocked || isReadonly"
               :inited
             ></UploadImage>
@@ -249,7 +253,9 @@
           >
             <UploadImage
               v-model="dialogModel.detail_bottom_img"
+              db="wshop_pt.detail_bottom_img"
               :max-size="8"
+              :is-public="false"
               :readonly="isLocked || isReadonly"
               :inited
             ></UploadImage>
