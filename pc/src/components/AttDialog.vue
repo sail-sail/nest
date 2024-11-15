@@ -336,6 +336,8 @@ type DialogModel = {
   maxFileSize?: number,
   readonly?: boolean,
   accept?: string,
+  db?: string,
+  isPublic?: boolean,
 }
 
 let dialogModel = $ref<DialogModel>({
@@ -344,6 +346,8 @@ let dialogModel = $ref<DialogModel>({
   maxFileSize: 1024 * 1024 * 50,
   readonly: false,
   accept: "",
+  db: undefined,
+  isPublic: false,
 });
 
 let inited = $ref(false);
@@ -403,7 +407,11 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 // 打开对话框
 async function showDialog(
-  { model }: { model?: typeof dialogModel },
+  {
+    model,
+  }: {
+    model?: typeof dialogModel,
+  },
 ): Promise<void> {
   inited = false;
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
@@ -596,7 +604,10 @@ async function inputChg() {
     ElMessage.error(await nsAsync(`文件大小不能超过 {0}M`, dialogModel.maxFileSize / 1024 / 1024));
     return;
   }
-  const id = await uploadFile(file);
+  const id = await uploadFile(file, undefined, {
+    db: dialogModel.db,
+    isPublic: dialogModel.isPublic,
+  });
   if (!id) {
     return;
   }
