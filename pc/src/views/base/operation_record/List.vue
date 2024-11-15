@@ -224,61 +224,6 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <el-dropdown
-        trigger="click"
-        un-m="x-3"
-      >
-        
-        <el-button
-          plain
-        >
-          <span
-            v-if="exportExcel.workerStatus === 'RUNNING'"
-            un-text="red"
-          >
-            {{ ns('正在导出') }}
-          </span>
-          <span
-            v-else-if="exportExcel.loading"
-            un-text="red"
-          >
-            {{ ns('正在为导出加载数据') }}
-          </span>
-          <span
-            v-else
-          >
-            {{ ns('更多操作') }}
-          </span>
-          <el-icon>
-            <ElIconArrowDown />
-          </el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu
-            un-min="w-20"
-            un-whitespace-nowrap
-          >
-            
-            <el-dropdown-item
-              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
-              un-justify-center
-              @click="onExport"
-            >
-              <span>{{ ns('导出') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-else-if="!exportExcel.loading"
-              un-justify-center
-              @click="onCancelExport"
-            >
-              <span un-text="red">{{ ns('取消导出') }}</span>
-            </el-dropdown-item>
-            
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      
     </template>
     
     <template v-else>
@@ -326,60 +271,6 @@
         </template>
         <span>{{ ns('刷新') }}</span>
       </el-button>
-      
-      <el-dropdown
-        trigger="click"
-        un-m="x-3"
-      >
-        
-        <el-button
-          plain
-        >
-          <span
-            v-if="exportExcel.workerStatus === 'RUNNING'"
-          >
-            {{ ns('正在导出') }}
-          </span>
-          <span
-            v-else-if="exportExcel.loading"
-            un-text="red"
-          >
-            {{ ns('正在为导出加载数据') }}
-          </span>
-          <span
-            v-else
-          >
-            {{ ns('更多操作') }}
-          </span>
-          <el-icon>
-            <ElIconArrowDown />
-          </el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu
-            un-min="w-20"
-            un-whitespace-nowrap
-          >
-            
-            <el-dropdown-item
-              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
-              un-justify-center
-              @click="onExport"
-            >
-              <span>{{ ns('导出') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-else-if="!exportExcel.loading"
-              un-justify-center
-              @click="onCancelExport"
-            >
-              <span un-text="red">{{ ns('取消导出') }}</span>
-            </el-dropdown-item>
-            
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
       
     </template>
     
@@ -598,7 +489,6 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
-  useExportExcel,
 } from "./Api";
 
 defineOptions({
@@ -1106,23 +996,6 @@ async function onSortChange(
   sort.prop = prop2;
   sort.order = order || "ascending";
   await dataGrid();
-}
-
-let exportExcel = $ref(useExportExcel(pagePath));
-
-/** 导出Excel */
-async function onExport() {
-  const search2 = getDataSearch();
-  await exportExcel.workerFn(
-    toExcelColumns(tableColumns),
-    search2,
-    [ sort ],
-  );
-}
-
-/** 取消导出Excel */
-async function onCancelExport() {
-  exportExcel.workerTerminate();
 }
 
 /** 键盘回车按键 */

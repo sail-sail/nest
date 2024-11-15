@@ -82,6 +82,8 @@
           >
             <UploadImage
               v-model="dialogModel.img"
+              db="base_usr.img"
+              :is-public="false"
               :readonly="isLocked || isReadonly"
               :inited
             ></UploadImage>
