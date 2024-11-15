@@ -127,7 +127,7 @@
       un-rounded
       un-h="full"
       un-w="full"
-      @click="uploadClk"
+      @click="onUpload"
     >
       <el-icon
         color="gray"
@@ -191,6 +191,8 @@ const props = withDefaults(
     maxImageHeight?: number;
     itemHeight?: number;
     inited?: boolean;
+    db?: string;
+    isPublic?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -203,6 +205,8 @@ const props = withDefaults(
     maxImageHeight: 1080,
     itemHeight: 100,
     inited: false,
+    db: "",
+    isPublic: false,
   },
 );
 
@@ -287,7 +291,10 @@ async function onInput() {
   let id = undefined;
   loading = true;
   try {
-    id = await uploadFile(file);
+    id = await uploadFile(file, undefined, {
+      db: props.db,
+      isPublic: props.isPublic,
+    });
   } finally {
     loading = false;
   }
@@ -307,7 +314,7 @@ async function onInput() {
 }
 
 // 点击上传图片
-async function uploadClk() {
+async function onUpload() {
   if (!fileRef) {
     return;
   }
