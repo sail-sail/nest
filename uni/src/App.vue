@@ -39,9 +39,9 @@ onLaunch((async(options?: App.LaunchShowOption) => {
 </script>
 <style lang="scss">
 /* 图标必须 */
-@import url(./tmui/css/remixicon.min.css);
+@import url(./uni_modules/tmui/css/remixicon.min.css);
 /* 自定预处理类，可选 */
-@import url(./tmui/css/tmui.css);
+@import url(./uni_modules/tmui/css/tmui.css);
 
 @import "./assets/style/common.scss";
 </style>
