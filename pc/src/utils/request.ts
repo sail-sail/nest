@@ -147,13 +147,23 @@ export async function uploadFile(
     notLoading?: boolean;
     showErrMsg?: boolean;
     duration?: number;
+    db?: string;
+    isPublic?: boolean;
   },
 ) {
   const indexStore = useIndexStore(cfg.pinia);
   const usrStore = useUsrStore(cfg.pinia);
   config = config || { };
   config.type = config.type || "oss";
-  config.url = config.url || `${ baseURL }/api/${ config.type }/upload`;
+  if (!config.url) {
+    let url = baseURL;
+    if (config?.isPublic) {
+      url += `/api/${ config.type }/uploadPublic`;
+    } else {
+      url += `/api/${ config.type }/upload`;
+    }
+    config.url = url;
+  }
   config.method = config.method || "post";
   const formData = new FormData();
   formData.append("file", file);
@@ -172,6 +182,9 @@ export async function uploadFile(
     if (authorization) {
       config.header.set("authorization", authorization);
     }
+  }
+  if (config.db) {
+    config.url += `?db=${ encodeURIComponent(config.db) }`;
   }
   let err: any = undefined;
   let res: any = undefined;
@@ -256,7 +269,7 @@ export function getDownloadUrl(
   } | string,
   type: "oss" | "tmpfile" = "tmpfile",
 ): string {
-  const usrStore = useUsrStore();
+  const usrStore = useUsrStore(cfg.pinia);
   const params = new URLSearchParams();
   if (typeof model === "string") {
     model = { id: model };
@@ -267,6 +280,9 @@ export function getDownloadUrl(
   }
   if (model.inline != null) {
     params.set("inline", model.inline);
+  }
+  if (usrStore.authorization) {
+    params.set("authorization", usrStore.authorization);
   }
   return `${ baseURL }/api/${ type }/download/${ model.filename || "" }?${ params.toString() }`;
 }
@@ -285,6 +301,7 @@ export function getImgUrl(
     inline?: "0"|"1";
   } | string,
 ) {
+  const usrStore = useUsrStore(cfg.pinia);
   const params = new URLSearchParams();
   if (typeof model === "string") {
     model = {
@@ -310,6 +327,9 @@ export function getImgUrl(
   }
   if (model.quality) {
     params.set("q", model.quality.toString());
+  }
+  if (usrStore.authorization) {
+    params.set("authorization", usrStore.authorization);
   }
   return `${ baseURL }/api/oss/img?${ params.toString() }`;
 }
