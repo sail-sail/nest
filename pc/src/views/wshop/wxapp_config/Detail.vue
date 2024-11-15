@@ -82,7 +82,9 @@
           >
             <UploadImage
               v-model="dialogModel.img"
+              db="wshop_wxapp_config.img"
               :max-size="4"
+              :is-public="false"
               :readonly="isLocked || isReadonly"
               :inited
             ></UploadImage>
