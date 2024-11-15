@@ -3,7 +3,7 @@ import App from "./App.vue";
 import * as Pinia from "pinia";
 import cfg from "@/utils/config";
 
-import tmui from "./tmui";
+import tmui from "./uni_modules/tmui";
 
 import "virtual:uno.css";
 
