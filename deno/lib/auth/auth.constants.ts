@@ -13,7 +13,7 @@ import {
 export const SECRET_KEY = "38e52379-9e94-467c-8e63-17ad318fc845";
 export const NOT_VERIFY_TOKEN = "not_verify_token";
 export const TENANT_ID = "tenant_id";
-export const AUTHORIZATION = "Authorization";
+export const AUTHORIZATION = "authorization";
 
 export interface AuthModel extends JWTPayload {
   id: UsrId;

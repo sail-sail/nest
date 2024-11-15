@@ -15,11 +15,53 @@ import {
   handleRequestId,
 } from "/lib/oak/request_id.ts";
 
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
 const router = new Router({
   prefix: "/api/oss/",
 });
 
 router.post("upload", async function(ctx) {
+  const request = ctx.request;
+  const response = ctx.response;
+  if (await handleRequestId(
+    response,
+    request.headers.get("x-request-id"),
+  )) {
+    return;
+  }
+  const searchParams = request.url.searchParams;
+  const db = searchParams.get("db") ?? undefined;
+  const body = request.body;
+  const contentType = body.type().toLocaleLowerCase();
+  if (!request.hasBody || contentType !== "form-data") {
+    response.status = 415;
+    return;
+  }
+  const formData = await body.formData();
+  const file = formData.get("file");
+  if (!file || !(file instanceof File)) {
+    throw new Error("file must a form-data file!");
+  }
+  const {
+    upload
+  } = await import("./oss.service.ts");
+  const auth_model = await getAuthModel();
+  const tenant_id = auth_model?.tenant_id;
+  const id = await upload(file, {
+    is_public: false,
+    tenant_id,
+    db,
+  });
+  response.body = {
+    code: 0,
+    data: id,
+  };
+});
+
+router.post("uploadPublic", async function(ctx) {
   const request = ctx.request;
   const response = ctx.response;
   if (await handleRequestId(
@@ -42,7 +84,9 @@ router.post("upload", async function(ctx) {
   const {
     upload
   } = await import("./oss.service.ts");
-  const id = await upload(file);
+  const id = await upload(file, {
+    is_public: true,
+  });
   response.body = {
     code: 0,
     data: id,
@@ -73,6 +117,15 @@ async function download(ctx: RouterContext<any>) {
       filename = encodeURIComponent(filename);
     }
     const stats = await statObject(id);
+    const meta = stats?.meta;
+    if (meta && meta.is_public === "0") {
+      const auth_model = await getAuthModel(true);
+      const tenant_id = auth_model?.tenant_id;
+      if (meta.tenant_id !== tenant_id) {
+        response.status = 404;
+        return;
+      }
+    }
     if (stats) {
       if (stats.contentType) {
         response.headers.set("Content-Type", stats.contentType);
@@ -106,9 +159,7 @@ async function download(ctx: RouterContext<any>) {
     const err = err0 as Error;
     // deno-lint-ignore no-explicit-any
     if ((err as any).code === "NotFound") {
-      const errMsg = "文件不存在!";
       response.status = 404;
-      response.body = errMsg;
       return;
     }
     error(err);
@@ -151,6 +202,17 @@ router.get("img", async function(ctx) {
       filename = encodeURIComponent(filename);
     }
     const stats = await statObject(id);
+    const meta = stats?.meta;
+    if (meta && meta.is_public === "0") {
+      const auth_model = await getAuthModel(true);
+      const tenant_id = auth_model?.tenant_id;
+      if (meta.tenant_id !== tenant_id) {
+        const err = new Error("NotFound");
+        // deno-lint-ignore no-explicit-any
+        (err as any).code = "NotFound";
+        throw err;
+      }
+    }
     if (!stats) {
       const err = new Error("NotFound");
       // deno-lint-ignore no-explicit-any
@@ -329,9 +391,7 @@ router.get("img", async function(ctx) {
     const err = err0 as Error;
     // deno-lint-ignore no-explicit-any
     if ((err as any).code === "NotFound") {
-      const errMsg = "文件不存在!";
       response.status = 404;
-      response.body = errMsg;
       return;
     }
     error(err);
