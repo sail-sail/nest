@@ -254,7 +254,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             if (column.isImg) {
             #>
             <UploadImage
-              v-model="dialogModel.<#=column_name#>"<#
+              v-model="dialogModel.<#=column_name#>"
+              db="<#=table_name#>.<#=column_name#>"<#
               if (column.attMaxSize > 1) {
               #>
               :max-size="<#=column.attMaxSize#>"<#
@@ -268,6 +269,14 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               if (column.attAccept) {
               #>
               accept="<#=column.attAccept#>"<#
+              }
+              #><#
+              if (column.isPublicAtt) {
+              #>
+              :is-public="true"<#
+              } else {
+              #>
+              :is-public="false"<#
               }
               #><#
               if (column.readonly) {
@@ -1356,7 +1365,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                   if (column.isImg) {
                   #>
                   <UploadImage
-                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
+                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"
+                    db="<#=table_name#>.<#=column_name#>"<#
                     if (column.attMaxSize > 1) {
                     #>
                     :max-size="<#=column.attMaxSize#>"<#
@@ -1370,6 +1380,14 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     if (column.attAccept) {
                     #>
                     accept="<#=column.attAccept#>"<#
+                    }
+                    #><#
+                    if (column.isPublicAtt) {
+                    #>
+                    :is-public="true"<#
+                    } else {
+                    #>
+                    :is-public="false"<#
                     }
                     #><#
                     if (column.readonly) {

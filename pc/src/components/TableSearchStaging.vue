@@ -30,16 +30,36 @@
         <el-dropdown-item
           v-for="(item, i) in searchList"
           :key="item.name + i"
-          @click="onSearch(item.value as T)"
+          un-flex="~"
         >
-          <span>
-            {{ i + 1 }}.
-          </span>
-          <span
-            un-m="l-1"
+          <div
+            un-flex="1"
+            @click="onSearch(item.value as T)"
           >
-            {{ item.name }}
-          </span>
+            <span>
+              {{ i + 1 }}.
+            </span>
+            <span
+              un-m="l-1"
+            >
+              {{ item.name }}
+            </span>
+          </div>
+          <div
+            un-m="l-2"
+          >
+            <el-button
+              plain
+              link
+              @click.stop="onDelete(i)"
+            >
+              <el-icon
+                un-text="red"
+              >
+                <ElIconCircleClose />
+              </el-icon>
+            </el-button>
+          </div>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
@@ -118,6 +138,11 @@ async function onOpenAdd() {
 function onSearch(searchStaging: T) {
   searchStaging = searchStaging ?? props.search;
   emit("search", searchStaging);
+}
+
+function onDelete(index: number) {
+  searchList.splice(index, 1);
+  localStorage.setItem(persistKey, JSON.stringify(searchList));
 }
 
 function onRefresh() {
