@@ -897,6 +897,7 @@ export default defineConfig({
       noAdd: true,
       noEdit: true,
       noImport: true,
+      noExport: true,
       defaultSort: {
         prop: "create_time",
         order: "descending",
@@ -939,7 +940,6 @@ export default defineConfig({
         width: 100,
         noAdd: true,
         noEdit: true,
-        noExport: true,
       },
       {
         COLUMN_NAME: "new_data",
@@ -947,7 +947,6 @@ export default defineConfig({
         width: 100,
         noAdd: true,
         noEdit: true,
-        noExport: true,
       },
       {
         COLUMN_NAME: "create_usr_id",
