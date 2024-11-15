@@ -28,6 +28,8 @@ const props = withDefaults(
     maxFileSize?: number;
     readonly?: boolean;
     accept?: string;
+    db?: string;
+    isPublic?: boolean;
   }>(),
   {
     modelValue: "",
@@ -35,6 +37,8 @@ const props = withDefaults(
     maxFileSize: 1024 * 1024 * 50,
     readonly: false,
     accept: "",
+    db: undefined,
+    isPublic: false,
   },
 );
 
@@ -74,6 +78,8 @@ async function linkClk(e?: MouseEvent) {
       maxFileSize: props.maxFileSize,
       readonly: props.readonly,
       accept: props.accept,
+      db: props.db,
+      isPublic: props.isPublic,
     },
   });
 }
