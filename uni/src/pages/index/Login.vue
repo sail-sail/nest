@@ -2,8 +2,6 @@
 <view
   un-flex="~ [1_0_0] col"
   un-overflow-hidden
-  un-p="4"
-  un-box-border
 >
   <tm-form
     v-model="model"
@@ -11,73 +9,78 @@
     :rules="form_rules"
     
     un-flex="~ [1_0_0] col"
-    un-overflow="y-auto x-hidden"
+    un-overflow-hidden
     
     @submit="onLogin"
   >
     
-    <tm-form-item
-      label="租户"
-      name="tenant_id"
-    >
-      <CustomSelect
-        v-model="model.tenant_id"
-        :method="getLoginTenantsEfc"
-        @data="(e) => tenants = e"
-        placeholder="请选择 租户"
-        :multiple="false"
-      >
-        <template #left>
-          <i
-            un-i="iconfont-tenant"
-          ></i>
-        </template>
-      </CustomSelect>
-    </tm-form-item>
-    
-    <tm-form-item
-      label="用户名"
-      name="username"
-    >
-      <CustomInput
-        v-model="model.username"
-        :type="'text'"
-        :show-clear="true"
-        placeholder="请输入 用户名"
-      >
-        <template #left>
-          <i
-            un-i="iconfont-user"
-          ></i>
-        </template>
-      </CustomInput>
-    </tm-form-item>
-    
-    <tm-form-item
-      label="密码"
-      name="password"
-    >
-      <CustomInput
-        v-model="model.password"
-        :type="'password'"
-        :show-clear="true"
-        placeholder="请输入 密码"
-      >
-        <template #left>
-          <i
-            un-i="iconfont-password"
-          ></i>
-        </template>
-      </CustomInput>
-    </tm-form-item>
-    
     <view
       un-flex="~ [1_0_0] col"
-      un-overflow-hidden
-    ></view>
+      un-overflow="y-auto x-hidden"
+      un-p="2"
+      un-box-border
+    >
+      
+      <tm-form-item
+        label="租户"
+        name="tenant_id"
+      >
+        <CustomSelect
+          v-model="model.tenant_id"
+          :method="getLoginTenantsEfc"
+          @data="(e) => tenants = e"
+          placeholder="请选择 租户"
+          :multiple="false"
+        >
+          <template #left>
+            <i
+              un-i="iconfont-tenant"
+            ></i>
+          </template>
+        </CustomSelect>
+      </tm-form-item>
+      
+      <tm-form-item
+        label="用户名"
+        name="username"
+      >
+        <CustomInput
+          v-model="model.username"
+          :type="'text'"
+          :show-clear="true"
+          placeholder="请输入 用户名"
+        >
+          <template #left>
+            <i
+              un-i="iconfont-user"
+            ></i>
+          </template>
+        </CustomInput>
+      </tm-form-item>
+      
+      <tm-form-item
+        label="密码"
+        name="password"
+      >
+        <CustomInput
+          v-model="model.password"
+          :type="'password'"
+          :show-clear="true"
+          placeholder="请输入 密码"
+        >
+          <template #left>
+            <i
+              un-i="iconfont-password"
+            ></i>
+          </template>
+        </CustomInput>
+      </tm-form-item>
+      
+    </view>
     
     <view
-      un-m="x-2"
+      un-p="2"
+      un-box-border
     >
       <tm-button
         form-type="submit"
@@ -86,7 +89,7 @@
         登录
       </tm-button>
     </view>
-      
+    
   </tm-form>
   
   <AppLoading></AppLoading>
