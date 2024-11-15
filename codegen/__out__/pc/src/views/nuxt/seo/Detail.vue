@@ -121,6 +121,8 @@
           >
             <UploadImage
               v-model="dialogModel.og_image"
+              db="nuxt_seo.og_image"
+              :is-public="false"
               :readonly="isLocked || isReadonly"
               :inited
             ></UploadImage>

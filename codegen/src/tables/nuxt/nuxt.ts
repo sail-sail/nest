@@ -27,6 +27,7 @@ export default defineConfig({
       {
         COLUMN_NAME: "og_image",
         isImg: true,
+        isPublicAtt: true,
       },
       {
         COLUMN_NAME: "og_title",
