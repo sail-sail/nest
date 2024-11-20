@@ -299,8 +299,15 @@ impl Ctx {
     CtxBuilder::new(ctx.into())
   }
   
-  pub fn resful_builder<'a>() -> CtxBuilder<'a> {
-    CtxBuilder::new(None)
+  pub fn resful_builder(
+    req: Option<&poem::Request>,
+  ) -> CtxBuilder<'_> {
+    if let Some(req) = req {
+      CtxBuilder::new(None)
+        .with_resful_req(req)
+    } else {
+      CtxBuilder::new(None)
+    }
   }
   
   pub fn set_auth_model(
@@ -1074,6 +1081,10 @@ pub struct Ctx {
   
   tran: Arc<Mutex<Option<PoolConnection<MySql>>>>,
   
+  is_resful: bool,
+  
+  auth_token: Option<String>,
+  
   auth_model: Option<AuthModel>,
   
   now: NaiveDateTime,
@@ -1101,8 +1112,67 @@ impl Ctx {
     CTX.scope(ctx, async move {
       let res = f.await;
       let ctx = CTX.with(|ctx| ctx.clone());
+      if ctx.is_resful {
+        return Err(anyhow!("must use resful_scope()"));
+      }
       // info!("{} {}", ctx.req_id, serde_json::to_string(&res).unwrap_or_default());
       ctx.ok(res).await
+    }).await
+  }
+  
+  pub async fn resful_scope<F>(self, f: F) -> Result<poem::Response>
+    where
+      F: core::future::Future<Output = poem::Response>,
+  {
+    let ctx = Arc::new(self);
+    CTX.scope(ctx, async move {
+      let mut res = f.await;
+      let ctx = CTX.with(|ctx| ctx.clone());
+      if let Some(auth_token) = ctx.auth_token.as_deref() {
+        res.headers_mut()
+          .insert(AUTHORIZATION, auth_token.parse().unwrap());
+      }
+      let status_code = res.status();
+      let is_success = status_code.is_success();
+      let extensions = res.extensions();
+      let is_rollback = extensions.get::<bool>().copied().unwrap_or(true);
+      {
+        let mut tran = ctx.tran.lock().await;
+        let tran = tran.take();
+        if let Some(mut tran) = tran {
+          let connection_id: u64 = tran
+            .fetch_one("select connection_id()").await?
+            .try_get(0)?;
+          if is_rollback {
+            if is_success {
+              info!(
+                "{req_id} commit; -- {connection_id}",
+                req_id = ctx.req_id,
+              );
+              tran.execute("commit").await?;
+            } else {
+              info!(
+                "{req_id} rollback; -- {connection_id}",
+                req_id = ctx.req_id,
+              );
+              tran.execute("rollback").await?;
+            }
+          } else {
+            info!(
+              "{req_id} commit; -- {connection_id}",
+              req_id = ctx.req_id,
+            );
+            tran.execute("commit").await?;
+          }
+        } else if !is_success {
+          error!(
+            "{} {}",
+            ctx.req_id,
+            status_code,
+          );
+        }
+      }
+      Ok(res)
     }).await
   }
   
@@ -1614,7 +1684,11 @@ pub struct CtxBuilder<'a> {
   
   gql_ctx: Option<&'a async_graphql::Context<'a>>,
   
+  resful_req: Option<&'a poem::Request>,
+  
   is_tran: Option<bool>,
+  
+  auth_token: Option<String>,
   
   auth_model: Option<AuthModel>,
   
@@ -1639,7 +1713,9 @@ impl <'a> CtxBuilder<'a> {
     let req_id = now.and_utc().timestamp_millis().to_string();
     CtxBuilder {
       gql_ctx,
+      resful_req: None,
       is_tran: None,
+      auth_token: None,
       auth_model: None,
       req_id,
       now,
@@ -1649,7 +1725,13 @@ impl <'a> CtxBuilder<'a> {
     }
   }
   
-  // 开启事务
+  /// 设置restful请求, 从而获取token
+  fn with_resful_req(mut self, resful_req: &'a poem::Request) -> CtxBuilder<'a> {
+    self.resful_req = Some(resful_req);
+    self
+  }
+  
+  /// 开启事务
   pub fn with_tran(mut self) -> Result<CtxBuilder<'a>> {
     self.is_tran = Some(true);
     Ok(self)
@@ -1661,18 +1743,26 @@ impl <'a> CtxBuilder<'a> {
       gql_ctx.data_opt
         ::<super::auth::auth_model::AuthToken>()
         .map(ToString::to_string)
+    } else if let Some(resful_req) = self.resful_req {
+      resful_req
+        .headers()
+        .get(AUTHORIZATION)
+        .and_then(|value| value.to_str().ok())
+        .map(ToString::to_string)
     } else {
       None
     }
   }
   
   /// 设置token, graphql跟restful的设置方式不一样
-  fn set_auth_token(&self, auth_token: &str) -> Result<()> {
+  fn set_auth_token(&mut self, auth_token: String) -> Result<()> {
     if let Some(gql_ctx) = self.gql_ctx {
       gql_ctx.insert_http_header(
         AUTHORIZATION.parse::<HeaderName>()?,
         auth_token.parse::<HeaderValue>()?,
       );
+    } else {
+      self.auth_token = Some(auth_token);
     }
     Ok(())
   }
@@ -1703,7 +1793,7 @@ impl <'a> CtxBuilder<'a> {
       }
       auth_model.exp = now_sec + server_tokentimeout;
       let auth_token = get_token_by_auth_model(&auth_model)?;
-      self.set_auth_token(&auth_token)?;
+      self.set_auth_token(auth_token)?;
     }
     self.auth_model = Some(auth_model);
     Ok(self)
@@ -1754,6 +1844,8 @@ impl <'a> CtxBuilder<'a> {
       is_tran: self.is_tran.unwrap_or_default(),
       req_id: Arc::new(self.req_id),
       tran: Arc::new(Mutex::new(None)),
+      is_resful: self.resful_req.is_some(),
+      auth_token: self.auth_token,
       auth_model: self.auth_model,
       now: self.now,
       is_debug: self.is_debug,

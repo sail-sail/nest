@@ -198,6 +198,11 @@ async fn main() -> Result<(), std::io::Error> {
       post(common::oss::oss_router::upload),
     );
     
+    app = app.at(
+      "/api/oss/uploadPublic",
+      post(common::oss::oss_router::upload_public),
+    );
+    
     // 删除附件
     app = app.at(
       "/api/oss/delete",

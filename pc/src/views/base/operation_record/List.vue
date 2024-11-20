@@ -129,7 +129,7 @@
           <el-checkbox
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
-            v-model="search.is_deleted as number"
+            v-model="search.is_deleted"
             :false-value="0"
             :true-value="1"
             @change="recycleChg"
@@ -224,61 +224,6 @@
         <span>{{ ns('刷新') }}</span>
       </el-button>
       
-      <el-dropdown
-        trigger="click"
-        un-m="x-3"
-      >
-        
-        <el-button
-          plain
-        >
-          <span
-            v-if="exportExcel.workerStatus === 'RUNNING'"
-            un-text="red"
-          >
-            {{ ns('正在导出') }}
-          </span>
-          <span
-            v-else-if="exportExcel.loading"
-            un-text="red"
-          >
-            {{ ns('正在为导出加载数据') }}
-          </span>
-          <span
-            v-else
-          >
-            {{ ns('更多操作') }}
-          </span>
-          <el-icon>
-            <ElIconArrowDown />
-          </el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu
-            un-min="w-20"
-            un-whitespace-nowrap
-          >
-            
-            <el-dropdown-item
-              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
-              un-justify-center
-              @click="onExport"
-            >
-              <span>{{ ns('导出') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-else-if="!exportExcel.loading"
-              un-justify-center
-              @click="onCancelExport"
-            >
-              <span un-text="red">{{ ns('取消导出') }}</span>
-            </el-dropdown-item>
-            
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      
     </template>
     
     <template v-else>
@@ -326,60 +271,6 @@
         </template>
         <span>{{ ns('刷新') }}</span>
       </el-button>
-      
-      <el-dropdown
-        trigger="click"
-        un-m="x-3"
-      >
-        
-        <el-button
-          plain
-        >
-          <span
-            v-if="exportExcel.workerStatus === 'RUNNING'"
-          >
-            {{ ns('正在导出') }}
-          </span>
-          <span
-            v-else-if="exportExcel.loading"
-            un-text="red"
-          >
-            {{ ns('正在为导出加载数据') }}
-          </span>
-          <span
-            v-else
-          >
-            {{ ns('更多操作') }}
-          </span>
-          <el-icon>
-            <ElIconArrowDown />
-          </el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu
-            un-min="w-20"
-            un-whitespace-nowrap
-          >
-            
-            <el-dropdown-item
-              v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
-              un-justify-center
-              @click="onExport"
-            >
-              <span>{{ ns('导出') }}</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-else-if="!exportExcel.loading"
-              un-justify-center
-              @click="onCancelExport"
-            >
-              <span un-text="red">{{ ns('取消导出') }}</span>
-            </el-dropdown-item>
-            
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
       
     </template>
     
@@ -598,7 +489,6 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
-  useExportExcel,
 } from "./Api";
 
 defineOptions({
@@ -618,7 +508,6 @@ const {
   initSysI18ns
 } = useI18n(pagePath);
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
@@ -1109,23 +998,6 @@ async function onSortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel(pagePath));
-
-/** 导出Excel */
-async function onExport() {
-  const search2 = getDataSearch();
-  await exportExcel.workerFn(
-    toExcelColumns(tableColumns),
-    search2,
-    [ sort ],
-  );
-}
-
-/** 取消导出Excel */
-async function onCancelExport() {
-  exportExcel.workerTerminate();
-}
-
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
   if (props.selectedIds != null && !isLocked) {
@@ -1471,8 +1343,6 @@ watch(
     immediate: true,
   },
 );
-
-usrStore.onLogin(initFrame);
 
 initFrame();
 

@@ -4,8 +4,16 @@ import * as ossDao from "./oss.dao.ts";
  * 上传文件
  * @param {File} file
  */
-export async function upload(file: File) {
-  const result = await ossDao.upload(file);
+export async function upload(
+  file: File,
+  opt?: {
+    once?: number,
+    is_public?: boolean,
+    tenant_id?: string,
+    db?: string,
+  },
+) {
+  const result = await ossDao.upload(file, opt);
   return result;
 }
 

@@ -240,7 +240,7 @@ async function refreshInputValue() {
     oldInputValue = inputValue;
     return;
   }
-  let models: CardModel[];
+  let models: <#=modelName#>[];
   if (selectedValue && Array.isArray(selectedValue)) {
     models = selectedValue.filter((item) => item != null);
   } else if (selectedValue) {
