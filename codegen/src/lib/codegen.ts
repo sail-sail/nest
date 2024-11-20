@@ -3,7 +3,7 @@ import * as ejsexcel from "ejsexcel";
 import { Context, getAllTables, getDictModels, getDictbizModels } from "./information_schema";
 import { includeFtl, isEmpty as isEmpty0, uniqueID as uniqueID0, formatMsg as formatMsg0 } from "./StringUitl";
 import { basename, dirname, resolve, normalize } from "path";
-import * as chalk from "chalk";
+import { Chalk } from "chalk";
 import * as shelljs from "shelljs";
 import * as uuid from "uuid";
 import tables from "../tables/tables";
@@ -21,6 +21,8 @@ if (!shelljs.which("git")) {
 //   shelljs.echo("请先设置全局环境变量 LESSCHARSET 为 utf-8");
 //   process.exit(1);
 // }
+
+const chalk = new Chalk();
 
 const out = resolve(`${ __dirname }/../../__out__/`).replace(/\\/gm, "/");
 const rootPh = resolve(`${ __dirname }/../template`).replace(/\\/gm, "/");

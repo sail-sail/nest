@@ -66,8 +66,13 @@ async function parseEnv() {
   } else {
     envPath = `${ cwd }/.env.${ envKey }`;
   }
-  if (!envPath) {
-    throw new Error("envPath is empty");
+  try {
+    await Deno.stat(envPath);
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      return { };
+    }
+    throw err;
   }
   const str = await Deno.readTextFile(envPath);
   parsedEnv = parseDotenv(str);
@@ -92,6 +97,10 @@ export async function getEnv(key: string): Promise<string> {
 }
 
 export function getParsedEnv(key: string): string {
+  const val = Deno.env.get(key);
+  if (val != null) {
+    return val;
+  }
   return parsedEnv[key];
 }
 
