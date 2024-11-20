@@ -1,5 +1,5 @@
 <template>
-<tm-app
+<view
   un-flex="~ [1_0_0] col"
   un-overflow-hidden
 >
@@ -24,7 +24,7 @@
     </view>
   </view>
   <AppLoading></AppLoading>
-</tm-app>
+</view>
 </template>
 
 <script lang="ts" setup>
