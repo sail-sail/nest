@@ -42,7 +42,7 @@
     "**/*.vue"
   ],
   "exclude": [
-    "src/tmui/**/*.ts",
-    "src/tmui/**/*.vue"
+    "src/uni_modules/tmui/**/*.ts",
+    "src/uni_modules/tmui/**/*.vue"
   ]
 }
