@@ -128,7 +128,7 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.lang_id == null)">
+        <template v-if="isI18n && (showBuildIn || builtInModel?.lang_id == null)">
           <el-form-item
             :label="n('语言')"
             prop="lang_id"
@@ -335,6 +335,8 @@ const domainPermit = permitStore.getPermit("/base/domain");
 
 let inited = $ref(false);
 
+const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false" || import.meta.env.DEV;
+
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
@@ -398,6 +400,9 @@ watchEffect(async () => {
       },
     ],
   };
+  if (!isI18n) {
+    delete form_rules.lang_id;
+  }
 });
 
 // 域名

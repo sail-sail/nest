@@ -17,14 +17,14 @@ import Inspector from "vite-plugin-vue-inspector";
 
 import reactivityTransform from "@vue-macros/reactivity-transform/vite";
 
-import TurboConsole from "unplugin-turbo-console/vite";
+// import TurboConsole from "unplugin-turbo-console/vite";
 
 const pluginsH5: PluginOption[] = [ ];
 
 const isH5 = process.env.UNI_PLATFORM === "h5";
 
 if (isH5) {
-  pluginsH5.push(TurboConsole());
+  // pluginsH5.push(TurboConsole());
   pluginsH5.push(
     Inspector({
       toggleButtonPos: "top-left",
@@ -95,9 +95,6 @@ export default defineConfig({
           "@/tmui/components/tm-form/tm-form.vue": [
             [ "default", "TmForm" ],
           ],
-          "@/tmui/components/tm-message/tm-message.vue": [
-            [ "default", "TmMessage" ],
-          ],
           "@/utils/WxWorkUtil": [
             "wxwGetAppid",
             "initWxWorkCfg",
@@ -146,12 +143,12 @@ export default defineConfig({
     cors: true,
     proxy: {
       "/api": {
-        target: "http://localhost:4001",
+        target: "http://127.0.0.1:4001",
         changeOrigin: true,
         secure: false,
       },
       "/graphql": {
-        target: "http://localhost:4001",
+        target: "http://127.0.0.1:4001",
         changeOrigin: true,
         secure: false,
       },

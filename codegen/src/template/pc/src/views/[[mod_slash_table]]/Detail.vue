@@ -254,7 +254,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             if (column.isImg) {
             #>
             <UploadImage
-              v-model="dialogModel.<#=column_name#>"<#
+              v-model="dialogModel.<#=column_name#>"
+              db="<#=table_name#>.<#=column_name#>"<#
               if (column.attMaxSize > 1) {
               #>
               :max-size="<#=column.attMaxSize#>"<#
@@ -268,6 +269,14 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               if (column.attAccept) {
               #>
               accept="<#=column.attAccept#>"<#
+              }
+              #><#
+              if (column.isPublicAtt) {
+              #>
+              :is-public="true"<#
+              } else {
+              #>
+              :is-public="false"<#
               }
               #><#
               if (column.readonly) {
@@ -284,7 +293,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
               :inited
@@ -353,7 +362,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #><#
               if (mod === "cron" && table === "cron_job" && column_name === "job_id") {
@@ -415,7 +424,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
               @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -461,7 +470,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #><#
               if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
@@ -503,7 +512,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
             ></DictSelect><#
@@ -533,7 +542,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
             ></DictbizSelect><#
@@ -573,7 +582,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
             ></CustomDatePicker><#
@@ -597,7 +606,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
             >
@@ -622,7 +631,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
             ></CustomInputNumber><#
@@ -664,7 +673,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
             ></CustomInputNumber><#
@@ -700,7 +709,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               #><#
               if (readonlyPlaceholder) {
               #>
-              :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #><#
               if (mod === "cron" && table === "cron_job" && column_name === "cron") {
@@ -863,7 +872,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomSelect><#
@@ -899,7 +908,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                       @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -946,7 +955,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomTreeSelect><#
@@ -976,7 +985,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></DictSelect><#
@@ -1006,7 +1015,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></DictbizSelect><#
@@ -1046,7 +1055,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomDatePicker><#
@@ -1070,7 +1079,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     >
@@ -1096,7 +1105,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -1138,7 +1147,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -1167,7 +1176,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInput><#
@@ -1356,7 +1365,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                   if (column.isImg) {
                   #>
                   <UploadImage
-                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
+                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"
+                    db="<#=table_name#>.<#=column_name#>"<#
                     if (column.attMaxSize > 1) {
                     #>
                     :max-size="<#=column.attMaxSize#>"<#
@@ -1370,6 +1380,14 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     if (column.attAccept) {
                     #>
                     accept="<#=column.attAccept#>"<#
+                    }
+                    #><#
+                    if (column.isPublicAtt) {
+                    #>
+                    :is-public="true"<#
+                    } else {
+                    #>
+                    :is-public="false"<#
                     }
                     #><#
                     if (column.readonly) {
@@ -1386,7 +1404,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                     :inited
@@ -1455,7 +1473,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #><#
                     if (mod === "cron" && table === "cron_job" && column_name === "job_id") {
@@ -1517,7 +1535,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                     @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -1563,7 +1581,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #><#
                     if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
@@ -1605,7 +1623,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   ></DictSelect><#
@@ -1635,7 +1653,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   ></DictbizSelect><#
@@ -1675,7 +1693,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   ></CustomDatePicker><#
@@ -1699,7 +1717,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   >
@@ -1724,7 +1742,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   ></CustomInputNumber><#
@@ -1766,7 +1784,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
                   ></CustomInputNumber><#
@@ -1802,7 +1820,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     #><#
                     if (readonlyPlaceholder) {
                     #>
-                    :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #><#
                     if (mod === "cron" && table === "cron_job" && column_name === "cron") {
@@ -1998,7 +2016,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomSelect><#
@@ -2034,7 +2052,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                       @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -2081,7 +2099,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomTreeSelect><#
@@ -2111,7 +2129,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></DictSelect><#
@@ -2141,7 +2159,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></DictbizSelect><#
@@ -2181,7 +2199,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomDatePicker><#
@@ -2205,7 +2223,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     >
@@ -2231,7 +2249,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -2273,7 +2291,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -2302,7 +2320,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       #><#
                       if (readonlyPlaceholder) {
                       #>
-                      :readonly-placeholder="ns('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                       }
                       #>
                     ></CustomInput><#

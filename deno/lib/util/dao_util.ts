@@ -218,8 +218,8 @@ try {
   if (database_crypto_key_path) {
     database_crypto_key = await Deno.readFile(database_crypto_key_path);
   }
-} catch (error) {
-  console.error(error);
+} catch (_) {
+  // console.error(error);
 }
 
 if (database_crypto_key) {

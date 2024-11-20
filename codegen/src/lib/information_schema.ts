@@ -88,7 +88,7 @@ async function getSchema0(
     allTableSchemaRecords = <TableCloumn[]>result[0];
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
-  const hasOrderBy = records.some((item) => item.COLUMN_NAME === 'order_by' && !item.onlyCodegenDeno);
+  const hasOrderBy = tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "order_by" && !item.onlyCodegenDeno);
   // 是否有系统字段 is_sys
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
   // 是否有隐藏字段

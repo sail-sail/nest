@@ -1,109 +1,99 @@
 <template>
-<tm-app
+<view
   un-flex="~ [1_0_0] col"
   un-overflow-hidden
 >
   <tm-form
-    ref="formRef"
     v-model="model"
     :label-width="120"
-    :margin="[0, 0]"
+    :rules="form_rules"
     
     un-flex="~ [1_0_0] col"
-    un-overflow="y-auto x-hidden"
+    un-overflow-hidden
+    
+    @submit="onLogin"
   >
-      
-    <tm-form-item
-      label="租户"
-      field="tenant_id"
-      :rules="{
-        required: true,
-        message: '请选择 租户',
-      }"
-      required
-    >
-      <CustomSelect
-        v-model="model.tenant_id"
-        :method="getLoginTenantsEfc"
-        @data="(e) => tenants = e"
-        placeholder="请选择 租户"
-        :multiple="false"
-      >
-        <template #left>
-          <i
-            un-i="iconfont-tenant"
-            un-m="r-2"
-          ></i>
-        </template>
-      </CustomSelect>
-    </tm-form-item>
     
-    <tm-form-item
-      label="用户名"
-      field="username"
-      :rules="{
-        required: true,
-        message: '请输入 用户名',
-      }"
-      required
+    <view
+      un-flex="~ [1_0_0] col"
+      un-overflow="y-auto x-hidden"
+      un-p="2"
+      un-box-border
     >
-      <CustomInput
-        v-model="model.username"
-        :type="'text'"
-        :show-clear="true"
-        placeholder="请输入 用户名"
-      >
-        <template #left>
-          <i
-            un-i="iconfont-user"
-            un-m="r-2"
-          ></i>
-        </template>
-      </CustomInput>
-    </tm-form-item>
-    
-    <tm-form-item
-      label="密码"
-      field="password"
-      :rules="{
-        required: true,
-        message: '请输入 密码',
-      }"
-      required
-    >
-      <CustomInput
-        v-model="model.password"
-        :type="'password'"
-        :show-clear="true"
-        placeholder="请输入 密码"
-      >
-        <template #left>
-          <i
-            un-i="iconfont-password"
-            un-m="r-2"
-          ></i>
-        </template>
-      </CustomInput>
-    </tm-form-item>
       
+      <tm-form-item
+        label="租户"
+        name="tenant_id"
+      >
+        <CustomSelect
+          v-model="model.tenant_id"
+          :method="getLoginTenantsEfc"
+          @data="(e) => tenants = e"
+          placeholder="请选择 租户"
+          :multiple="false"
+        >
+          <template #left>
+            <i
+              un-i="iconfont-tenant"
+            ></i>
+          </template>
+        </CustomSelect>
+      </tm-form-item>
+      
+      <tm-form-item
+        label="用户名"
+        name="username"
+      >
+        <CustomInput
+          v-model="model.username"
+          :type="'text'"
+          :show-clear="true"
+          placeholder="请输入 用户名"
+        >
+          <template #left>
+            <i
+              un-i="iconfont-user"
+            ></i>
+          </template>
+        </CustomInput>
+      </tm-form-item>
+      
+      <tm-form-item
+        label="密码"
+        name="password"
+      >
+        <CustomInput
+          v-model="model.password"
+          :type="'password'"
+          :show-clear="true"
+          placeholder="请输入 密码"
+        >
+          <template #left>
+            <i
+              un-i="iconfont-password"
+            ></i>
+          </template>
+        </CustomInput>
+      </tm-form-item>
+      
+    </view>
+    
+    <view
+      un-p="2"
+      un-box-border
+    >
+      <tm-button
+        form-type="submit"
+        block
+      >
+        登录
+      </tm-button>
+    </view>
+    
   </tm-form>
   
-  <view
-    un-m="x-2"
-  >
-    <tm-button
-      @click="onLogin"
-      label="登录"
-      block
-    ></tm-button>
-  </view>
-  
   <AppLoading></AppLoading>
-  <tm-message
-    ref="msgRef"
-    :lines="2"
-  ></tm-message>
-</tm-app>
+</view>
 </template>
 
 <script setup lang="ts">
@@ -121,8 +111,6 @@ import type {
 
 const usrStore = useUsrStore(cfg.pinia);
 
-const formRef = ref<InstanceType<typeof TmForm>>();
-
 let tenants: GetLoginTenants[] = [ ];
 
 const model = ref<LoginInput>({
@@ -131,21 +119,37 @@ const model = ref<LoginInput>({
   tenant_id: "" as unknown as TenantId,
 });
 
+const form_rules: Record<string, TM.FORM_RULE[]> = {
+  tenant_id: [
+    {
+      required: true,
+      message: "请选择 租户",
+    },
+  ],
+  username: [
+    {
+      required: true,
+      message: "请输入 用户名",
+    },
+  ],
+  password: [
+    {
+      required: true,
+      message: "请输入 密码",
+    },
+  ],
+};
+
 let redirect_uri = cfg.homePage;
 
-async function onLogin() {
-  if (!formRef.value) {
-    return;
-  }
-  
-  const {
+async function onLogin(
+  {
     isPass,
-  } = formRef.value.validate();
-  
+  }: TM.FORM_SUBMIT_RESULT,
+) {
   if (!isPass) {
     return;
   }
-  
   uni.setStorage({
     key: "oldLoginModel",
     data: model.value,

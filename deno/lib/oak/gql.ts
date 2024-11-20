@@ -322,9 +322,11 @@ async function handleGraphql(
           }
         }
       }
-      result.errors.push({
-        message: msgArr.join("\n"),
-      });
+      if (msgArr.length > 0) {
+        result.errors.push({
+          message: msgArr.join("\n"),
+        });
+      }
     }
   } catch (err) {
     error(err);
