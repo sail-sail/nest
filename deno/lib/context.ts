@@ -559,7 +559,8 @@ export async function setCache(
   const str = JSON.stringify(data);
   const client = await redisClient();
   if (!client) return;
-  await client.hset(cacheKey1, cacheKey2, str);
+  // await client.hset(cacheKey1, cacheKey2, str);
+  await client.sendCommand("HSET", [ cacheKey1, cacheKey2, str ]);
 }
 
 /**
@@ -587,7 +588,8 @@ export async function delCache(
   log(`delCache: ${ cacheKey1 }`);
   const client = await redisClient();
   if (!client) return;
-  await client.del(cacheKey1);
+  // await client.del(cacheKey1);
+  await client.sendCommand("DEL", [ cacheKey1 ]);
   context.cacheKey1s = context.cacheKey1s.filter((item) => item !== cacheKey1);
 }
 
@@ -606,7 +608,8 @@ export async function clearCache(): Promise<void> {
   log(`clearCache`);
   const client = await redisClient();
   if (!client) return;
-  await client.flushdb();
+  // await client.flushdb();
+  await client.sendCommand("FLUSHDB");
 }
 
 /**
@@ -681,9 +684,10 @@ export async function getCache(
   }
   const client = await redisClient();
   if (!client) return;
-  const str = await client.hget(cacheKey1, cacheKey2);
+  // const str = await client.hget(cacheKey1, cacheKey2);
+  const str = await client.sendCommand("HGET", [ cacheKey1, cacheKey2 ]);
   if (str) {
-    const data = JSON.parse(str);
+    const data = JSON.parse(str.toString());
     // log(`getCache: ${ cacheKey1 }: `, data);
     // log(`getCache: ${ cacheKey1 }`);
     return data;
@@ -930,10 +934,10 @@ export async function query<T = any>(
   }
   if (context.is_tran) {
     const conn = await beginTran();
-    // if (!opt || opt.debug !== false) {
-    //   debugSql = getDebugQuery(sql, args) + " /* "+ await conn.threadId() +" */";
-    //   log(debugSql);
-    // }
+    if (opt?.debug === true) {
+      const debugSql = getDebugQuery(sql, args) + " /* "+ conn.threadId +" */";
+      log(debugSql);
+    }
     try {
       const res = await conn.query(sql, args);
       // deno-lint-ignore no-explicit-any
@@ -943,10 +947,10 @@ export async function query<T = any>(
       throw err;
     }
   } else {
-    // if (!opt || opt.debug !== false) {
-    //   debugSql = getDebugQuery(sql, args);
-    //   log(debugSql);
-    // }
+    if (opt?.debug === true) {
+      const debugSql = getDebugQuery(sql, args);
+      log(debugSql);
+    }
     const pool = await getMysqlPool(opt?.database_name);
     try {
       const res = await pool.query(sql, args);
@@ -995,12 +999,12 @@ export async function execute(
   let result: any;
   if (context.is_tran) {
     const conn = await beginTran();
-    if (!opt || opt.debug !== false) {
+    if (opt?.debug === true) {
       log(getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
     }
     result = await conn.query(sql, args);
   } else {
-    if (!opt || opt.debug !== false) {
+    if (opt?.debug === true) {
       log(getDebugQuery(sql, args));
     }
     try {

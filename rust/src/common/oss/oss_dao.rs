@@ -4,6 +4,8 @@ use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Comma
 use s3::request::tokio_backend::HyperRequest;
 use s3::request::Request;
 
+use crate::gen::base::tenant::tenant_model::TenantId;
+
 #[derive(Debug)]
 pub struct StatObject {
   pub last_modified: Option<String>,
@@ -11,6 +13,8 @@ pub struct StatObject {
   pub content_length: Option<i64>,
   pub filename: String,
   pub etag: Option<String>,
+  pub is_public: String,
+  pub tenant_id: Option<String>,
 }
 
 #[allow(dead_code)]
@@ -58,9 +62,21 @@ pub async fn put_object<S: AsRef<str>>(
   content: &[u8],
   content_type: &str,
   filename: &str,
+  is_public: Option<&str>,
+  tenant_id: Option<TenantId>,
+  db: Option<&str>,
 ) -> Result<bool> {
   let mut bucket = new_bucket()?;
   bucket.add_header("x-amz-meta-filename", urlencoding::encode(filename).as_ref());
+  if let Some(is_public) = is_public {
+    bucket.add_header("x-amz-meta-is_public", is_public);
+  }
+  if let Some(tenant_id) = tenant_id {
+    bucket.add_header("x-amz-meta-tenant_id", urlencoding::encode(tenant_id.as_str()).as_ref());
+  }
+  if let Some(db) = db {
+    bucket.add_header("x-amz-meta-db", urlencoding::encode(db).as_ref());
+  }
   bucket.put_object_with_content_type(path.as_ref(), content, content_type).await?;
   Ok(true)
 }
@@ -81,25 +97,42 @@ pub async fn head_object(
     }
   };
   let filename: String = {
-    if let Some(metadata) = res.metadata {
+    if let Some(metadata) = res.metadata.as_ref() {
       if let Some(f) = metadata.get("filename") {
         f.to_owned()
       } else {
-        "".to_owned()
+        "1".to_owned()
       }
     } else {
-      "".to_owned()
+      "1".to_owned()
     }
   };
-  if res.content_length.is_none() || res.content_length.unwrap() <= 0 {
-    return Ok(None);
-  }
+  let is_public = {
+    if let Some(metadata) = res.metadata.as_ref() {
+      if let Some(f) = metadata.get("is_public") {
+        f.to_owned()
+      } else {
+        "1".to_owned()
+      }
+    } else {
+      "1".to_owned()
+    }
+  };
+  let tenant_id = {
+    if let Some(metadata) = res.metadata.as_ref() {
+      metadata.get("tenant_id").map(|f| f.to_owned())
+    } else {
+      None
+    }
+  };
   let stat = StatObject {
     last_modified: res.last_modified,
     content_type: res.content_type,
     content_length: res.content_length,
     filename,
     etag: res.e_tag,
+    is_public,
+    tenant_id,
   };
   Ok(stat.into())
 }

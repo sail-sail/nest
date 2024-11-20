@@ -2,6 +2,8 @@ use anyhow::Result;
 
 use super::oss_dao::{self, StatObject};
 
+use crate::gen::base::tenant::tenant_model::TenantId;
+
 /**
  * 上传文件
  */
@@ -10,8 +12,14 @@ pub async fn put_object<S: AsRef<str>>(
   content: &[u8],
   content_type: &str,
   filename: &str,
+  is_public: Option<&str>,
+  tenant_id: Option<TenantId>,
+  db: Option<&str>,
 ) -> Result<bool> {
-  let res = oss_dao::put_object(path, content, content_type, filename).await?;
+  let res = oss_dao::put_object(
+    path, content, content_type, filename,
+    is_public, tenant_id, db,
+  ).await?;
   Ok(res)
 }
 

@@ -38,6 +38,9 @@
   },
   "include": [
     "**/*.ts",
+    "src/uni_modules/**/*.ts",
+    "src/uni_modules/**/*.d.ts",
+    "src/uni_modules/**/*.vue",
     "**/*.d.ts",
     "**/*.tsx",
     "**/*.vue"

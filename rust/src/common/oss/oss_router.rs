@@ -13,12 +13,94 @@ use image::ImageFormat;
 use image::imageops::FilterType;
 use image::GenericImageView;
 
-use crate::common::{context::get_short_uuid, tmpfile::tmpfile_dao};
+use crate::common::context::{
+  Ctx,
+  get_auth_model,
+  get_auth_model_err,
+  get_short_uuid,
+};
+
+use crate::common::tmpfile::tmpfile_dao;
 
 use super::oss_service;
 
+#[derive(Deserialize)]
+struct UploadQuery {
+  db: Option<String>,
+}
+
+async fn _upload(
+  mut multipart: Multipart,
+  db: Option<String>,
+) -> Response {
+  let mut file_name = String::new();
+  let mut content_type: Option<String> = None;
+  let mut content: Option<Vec<u8>> = None;
+  while let Ok(Some(field)) = multipart.next_field().await {
+    let name = field.name();
+    if name != Some("file") {
+      continue;
+    }
+    file_name = field.file_name().map(ToString::to_string).unwrap_or("".to_owned());
+    content_type = field.content_type().map(ToString::to_string);
+    if let Ok(bytes) = field.bytes().await {
+      content = Some(bytes.to_vec());
+      break;
+    }
+  }
+  if content.is_none() {
+    let mut response = Response::builder();
+    response = response.header("Content-Type", "application/json");
+    let response = response.body(json!({
+      "code": 1,
+      "msg": "upload failed",
+      "data": null,
+    }).to_string());
+    return response;
+  }
+  let content = content.unwrap();
+  let content_type = content_type.unwrap_or("application/octet-stream".to_owned());
+  let id = get_short_uuid();
+  let auth_model = get_auth_model();
+  let tenant_id = auth_model.map(|x| x.tenant_id);
+  let res = oss_service::put_object(
+    id.as_str(), &content, &content_type, &file_name,
+    None, tenant_id, db.as_deref(),
+  ).await;
+  if let Err(err) = res {
+    let mut response = Response::builder();
+    response = response.header("Content-Type", "application/json");
+    let response = response.body(json!({
+      "code": 1,
+      "msg": err.to_string(),
+      "data": null,
+    }).to_string());
+    return response;
+  }
+  let mut response = Response::builder();
+  response = response.header("Content-Type", "application/json");
+  response.body(json!({
+    "code": 0,
+    "data": id,
+  }).to_string())
+}
+
 #[handler]
 pub async fn upload(
+  req: &poem::Request,
+  mut multipart: Multipart,
+  Query(UploadQuery { db }): Query<UploadQuery>,
+) -> Result<Response> {
+  Ctx::resful_builder(Some(req))
+    .with_auth()?
+    .build()
+    .resful_scope({
+      _upload(multipart, db)
+    }).await
+}
+
+#[handler]
+pub async fn upload_public(
   mut multipart: Multipart,
 ) -> Result<Response> {
   let mut file_name = String::new();
@@ -41,7 +123,7 @@ pub async fn upload(
     response = response.header("Content-Type", "application/json");
     let response = response.body(json!({
       "code": 1,
-      "msg": "上传失败",
+      "msg": "upload failed",
       "data": null,
     }).to_string());
     return Ok(response);
@@ -49,7 +131,10 @@ pub async fn upload(
   let content = content.unwrap();
   let content_type = content_type.unwrap_or("application/octet-stream".to_owned());
   let id = get_short_uuid();
-  oss_service::put_object(id.as_str(), &content, &content_type, &file_name).await?;
+  oss_service::put_object(
+    id.as_str(), &content, &content_type, &file_name,
+    Some("1"), None, None,
+  ).await?;
   let mut response = Response::builder();
   response = response.header("Content-Type", "application/json");
   let response = response.body(json!({
@@ -97,6 +182,15 @@ async fn _download(
     return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
   }
   let stat = stat.unwrap();
+  if stat.is_public == "0" {
+    let auth_model = get_auth_model_err()?;
+    if stat.tenant_id.is_none() {
+      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    }
+    if stat.tenant_id.unwrap() != auth_model.tenant_id.as_str() {
+      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    }
+  }
   let mut response = Response::builder();
   if let Some(content_length) = stat.content_length {
     if content_length <= 0 {
@@ -197,6 +291,15 @@ pub async fn img(
     return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
   }
   let stat = stat.unwrap();
+  if stat.is_public == "0" {
+    let auth_model = get_auth_model_err()?;
+    if stat.tenant_id.is_none() {
+      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    }
+    if stat.tenant_id.unwrap() != auth_model.tenant_id.as_str() {
+      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    }
+  }
   let mut response = Response::builder();
   if let Some(content_length) = stat.content_length {
     if content_length <= 0 {

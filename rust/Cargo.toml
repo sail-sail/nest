@@ -19,8 +19,8 @@ futures-util = "0.3"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
-tokio = { version = "1.40", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
-poem = { version = "3.1.3", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "tokio-metrics", "websocket"], default-features = false }
+tokio = { version = "1.41", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
+poem = { version = "3.1.4", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "tokio-metrics", "websocket"], default-features = false }
 async-graphql = { version = "7.0.11", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str"] }
 smol_str = { version = "0.3", features = ["serde"] }
 slab = "0.4"
@@ -41,16 +41,16 @@ hex = "0.4"
 base64 = "0.21"
 utf8_slice = "1.0"
 derive-new = "0.6"
-reqwest = { version = "0.12.8", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
+reqwest = { version = "0.12.9", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
 encoding_rs = "0.8"
 urlencoding = "2.1"
 # sqlformat = "0.2.3"
 smallvec = { version = "1.13", features = ["union", "serde"] }
 # downcast-rs = "1.2"
-uuid = { version = "1.10", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "1.11", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12"
 deadpool-redis = "0.18"
-redis = { version = "0.26", features = ["tokio-comp"], default-features = false }
+redis = { version = "0.27", features = ["tokio-comp"], default-features = false }
 # pin-project = "1.1"
 bigdecimal = "0.4"
 time = "0.3"
@@ -59,9 +59,9 @@ rust_decimal_macros = "1.36"
 # enum_dispatch = "0.3"
 # pin-project-lite = "0.2"
 # rayon = "1.10"
-regex = "1.10"
+regex = "1.11"
 # yarte = "0.15"
-image = { version = "0.25.4", features = ["webp"] }
+image = { version = "0.25.5", features = ["webp"] }
 delay_timer = "0.11.6"
 num-traits = "0.2"
 fast_chemail = "0.9"

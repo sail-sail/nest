@@ -18,8 +18,7 @@
   >
     <div
       un-h="10"
-      un-bg="[#072540] dark:[black]"
-      un-text="[#FFF]"
+      un-text="gray-500 dark:gray-300"
       un-flex="~ col"
       un-pos-relative
     >
@@ -37,8 +36,7 @@
     <div
       ref="tabs_divRef"
       un-h="10"
-      un-bg="[#072540] dark:[black]"
-      un-text="white"
+      un-text="gray-500 dark:gray-300"
       un-flex="~ row"
       un-pos-relative
     >
@@ -123,7 +121,7 @@
                 un-whitespace-nowrap
               >
                 <el-dropdown-item
-                  @click="deptSelectClk()"
+                  @click="onDeptSelect()"
                 >
                   <div
                     :style="{
@@ -155,7 +153,7 @@
                   :key="item.id"
                 >
                   <el-dropdown-item
-                    @click="deptSelectClk(item.id)"
+                    @click="onDeptSelect(item.id)"
                   >
                     <div
                       :style="{
@@ -202,7 +200,7 @@
           >
             <div
               un-flex="~"
-              un-text="white hover:[var(--el-color-primary)]"
+              un-text="3 gray-500 dark:gray-300 hover:[var(--el-color-primary)]"
             >
               <div>
                 {{ loginInfo?.lbl }}
@@ -272,7 +270,7 @@
                 
                 <el-dropdown-item
                   divided
-                  @click="logoutClk"
+                  @click="onLogout"
                 >
                   <ElIcon>
                     <div un-i="iconfont-logout"></div>
@@ -290,6 +288,7 @@
       un-h="0.5"
       un-w="full"
       un-pos-relative
+      un-top="-.5"
     >
       <div
         ref="tab_active_lineRef"
@@ -344,7 +343,6 @@ import {
   getLoginInfo,
   deptLoginSelect,
   clearCache,
-  selectLang,
   getUsrPermits,
 } from "./Api";
 
@@ -541,7 +539,7 @@ async function onClearCache() {
   window.location.reload();
 }
 
-async function logoutClk() {
+async function onLogout() {
   try {
     await ElMessageBox.confirm(await nsAsync("确定退出登录?"), await nsAsync("提示"), {
       confirmButtonText: await nsAsync("确定"),
@@ -556,18 +554,7 @@ async function logoutClk() {
 
 let loginInfo = $ref(usrStore.loginInfo);
 
-async function selectLangClk(lang: string) {
-  const authorization = await selectLang({
-    lang,
-  });
-  if (authorization) {
-    usrStore.authorization = authorization;
-    usrStore.setLang(lang);
-    window.location.reload();
-  }
-}
-
-async function deptSelectClk(org_id?: OrgId) {
+async function onDeptSelect(org_id?: OrgId) {
   if (!loginInfo) {
     return;
   }
