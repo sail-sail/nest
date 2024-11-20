@@ -386,6 +386,11 @@ export interface TableCloumn {
   isAtt?: boolean,
   
   /**
+   * 附件或者图片是否公开的, 不需要token就能访问的, 默认为false
+   */
+  isPublicAtt?: boolean,
+  
+  /**
    * 附件或者图片的最大个数, 默认为1
    */
   attMaxSize?: number,
