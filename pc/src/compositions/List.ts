@@ -319,6 +319,9 @@ export function useSelect<T = any, Id = string>(
    * 键盘按键向上按键
    */
   function onRowUp(e: KeyboardEvent) {
+    if (e.altKey) {
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     if (e.ctrlKey) {
@@ -475,6 +478,9 @@ export function useSelect<T = any, Id = string>(
    * 键盘按键向下按键
    */
   function onRowDown(e: KeyboardEvent) {
+    if (e.altKey) {
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     if (e.ctrlKey) {
@@ -526,6 +532,9 @@ export function useSelect<T = any, Id = string>(
    * 键盘按键向左按键
    */
   function onRowLeft(e: KeyboardEvent) {
+    if (e.altKey) {
+      return;
+    }
     if (!tableRef.value) {
       return;
     }
@@ -552,6 +561,9 @@ export function useSelect<T = any, Id = string>(
    * 键盘按键向右按键
    */
   function onRowRight(e: KeyboardEvent) {
+    if (e.altKey) {
+      return;
+    }
     if (!tableRef.value) {
       return;
     }
@@ -709,6 +721,9 @@ export function useSelect<T = any, Id = string>(
    * 点击一行
    */
   function onRow(row: T, column?: TableColumnCtx<T>, e?: PointerEvent) {
+    if (e && e.altKey) {
+      return;
+    }
     if (column && column.type !== "selection") {
       if (e && e.ctrlKey) {
         onRowCtrl(row, column, e);

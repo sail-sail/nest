@@ -123,7 +123,7 @@
           <el-checkbox
             v-if="!isLocked"
             :set="search.is_deleted = search.is_deleted ?? 0"
-            v-model="search.is_deleted as number"
+            v-model="search.is_deleted"
             :false-value="0"
             :true-value="1"
             @change="recycleChg"
@@ -574,7 +574,7 @@
           </template>
           
           <!-- 语言 -->
-          <template v-else-if="'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
+          <template v-else-if="isI18n && 'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -801,7 +801,6 @@ const {
   initSysI18ns
 } = useI18n(pagePath);
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
@@ -905,6 +904,8 @@ const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
+
+const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false" || import.meta.env.DEV;
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
@@ -1967,8 +1968,6 @@ watch(
     immediate: true,
   },
 );
-
-usrStore.onLogin(initFrame);
 
 initFrame();
 
