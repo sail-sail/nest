@@ -366,7 +366,6 @@ async fn _img(
     }
     id
   };
-  let f_is_none = f.is_none();
   let format = f.unwrap_or("webp".to_owned());
   let output_format = match format.as_str() {
     "webp" => ImageFormat::WebP,
@@ -418,7 +417,7 @@ async fn _img(
     },
     None => false,
   };
-  if f_is_none || !is_img {
+  if !is_img {
     response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
     let content = oss_service::get_object(&id).await;
     if let Err(err) = content {
