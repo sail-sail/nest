@@ -5,7 +5,7 @@ import { getDefaultColor, getDefaultColorObj, getOutlineColorObj, getTextColorOb
 import { useTmConfig } from "../../libs/config";
 import { onPageScroll } from '@dcloudio/uni-app';
 import tmCheckboxGroup from '../tm-checkbox-group/tm-checkbox-group.vue';
-import tmCheckbox from '.tm-checkbox.vue';
+import tmCheckbox from './tm-checkbox.vue';
 const proxy = getCurrentInstance()?.proxy as InstanceType<typeof tmCheckbox> | null;
 
 /**
@@ -134,6 +134,13 @@ const props = defineProps({
     labelFontSize: {
         type: [String, Number],
         default: "30"
+    },
+    /**
+     * 如果不要显示label时设置为false可以隐藏label并把label间隙删除，
+     */
+    showLabel:{
+        type:Boolean,
+        default:true
     }
 });
 
@@ -146,6 +153,7 @@ const _color = computed(() => {
     if (props.color == "") return getDefaultColor(config.color);
     return getDefaultColor(props.color);
 });
+const _showLabel = computed(()=>props.showLabel)
 
 const _unCheckColor = computed(() => {
     if (config.mode == 'dark' && props.darkUnCheckColor != '') {
@@ -195,10 +203,13 @@ onMounted(() => {
     let t = this;
     isDestroy.value = false;
     nextTick(() => {
-        nowValue.value = props.modelValue;
-        if (nowValue.value !== props.unCheckValue) {
-            pushDataToParent(false);
+        let parent = findParent(proxy)
+        if(!parent){
+            nowValue.value = props.modelValue;
         }
+        // if (nowValue.value !== props.unCheckValue) {
+        //     pushDataToParent(false);
+        // }
     });
 });
 
@@ -299,7 +310,7 @@ export default {
             </view>
 
         </view>
-        <view class="checkboxLabelBox" :class="[!hiddenCheckbox ? 'checkboxLabelBoxLeftSpace' : '']">
+        <view v-if="_showLabel" class="checkboxLabelBox" :class="[!hiddenCheckbox ? 'checkboxLabelBoxLeftSpace' : '']">
             <!-- 
 			 默认文本插槽
 			 @binding {boolean} checked - 是否选中

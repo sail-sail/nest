@@ -1,5 +1,7 @@
 use std::borrow::Cow;
 use std::env;
+use std::collections::HashMap;
+
 use tracing::{info, error, event_enabled, Level};
 use anyhow::{Result, anyhow};
 use async_graphql::SimpleObject;
@@ -1133,7 +1135,7 @@ impl Ctx {
           .insert(AUTHORIZATION, auth_token.parse().unwrap());
       }
       let status_code = res.status();
-      let is_success = status_code.is_success();
+      let is_success = status_code.is_success() || status_code.is_redirection() || status_code.is_informational();
       let extensions = res.extensions();
       let is_rollback = extensions.get::<bool>().copied().unwrap_or(true);
       {
@@ -1744,11 +1746,20 @@ impl <'a> CtxBuilder<'a> {
         ::<super::auth::auth_model::AuthToken>()
         .map(ToString::to_string)
     } else if let Some(resful_req) = self.resful_req {
-      resful_req
+      let auth_token = resful_req
         .headers()
         .get(AUTHORIZATION)
         .and_then(|value| value.to_str().ok())
-        .map(ToString::to_string)
+        .map(ToString::to_string);
+      if auth_token.is_some()  {
+        return auth_token;
+      }
+      let query = resful_req.uri().query().map(|q| {
+        url::form_urlencoded::parse(q.as_bytes())
+          .into_owned()
+          .collect::<HashMap<String, String>>()
+      }).unwrap_or_default();
+      query.get(AUTHORIZATION).cloned()
     } else {
       None
     }
