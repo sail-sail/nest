@@ -118,7 +118,7 @@ console.log(publishPath);
       cmd += ` ; mkdir -p ${ publishPath }`;
       cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
       cmd += ` ; rm -rf ${ publishPathTmp }`;
-      cmd += ` ; chmod -R 755 ${ publishPath }/rust/${ projectName }`;
+      cmd += ` ; chmod -R 755 ${ publishPath }/rust/${ ecosystem.apps[0].name.replaceAll("{env}", "") }`;
       cmd += ` ; cd ${ publishPath }/rust/ && pm2 start`;
       let data;
       try {

@@ -85,7 +85,7 @@ async function uni() {
 
 async function docs() {
   console.log("docs");
-  child_process.execSync("npm run docs:build", {
+  child_process.execSync(`npm run build-${ env }`, {
     cwd: `${ projectDir }/`,
     stdio: "inherit",
   });
