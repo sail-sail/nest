@@ -4,6 +4,8 @@ use anyhow::Result;
 use deadpool_redis::{redis, Config, Runtime, Pool};
 use tracing::info;
 
+use crate::common::context::get_req_id;
+
 lazy_static! {
   static ref CACHE_POOL: Option<Pool> = init_cache_pool();
 }
@@ -129,40 +131,40 @@ pub async fn expire(
 
 pub async fn del_cache(
   cache_key1: &str,
-) -> Result<String> {
+) -> Result<()> {
   if CACHE_POOL.is_none() {
-    return Ok(String::new());
+    return Ok(());
   }
-  info!("del_cache: {}", cache_key1);
+  info!("del_cache: {}: {}", get_req_id(), cache_key1);
   let cache_pool = CACHE_POOL.as_ref().unwrap();
   let mut conn = cache_pool.get().await?;
-  let res = redis::cmd("DEL")
+  redis::cmd("DEL")
     .arg(&[cache_key1])
-    .query_async::<String>(&mut conn).await?;
-  Ok(res)
+    .query_async::<()>(&mut conn).await?;
+  Ok(())
 }
 
 pub async fn del_caches(
   del_cache_key1s: &[&str],
-) -> Result<String> {
+) -> Result<()> {
   if CACHE_POOL.is_none() {
-    return Ok(String::new());
+    return Ok(());
   }
-  info!("del_caches: {:?}", del_cache_key1s);
+  info!("del_caches: {}: {:?}", get_req_id(), del_cache_key1s);
   let cache_pool = CACHE_POOL.as_ref().unwrap();
   let mut conn = cache_pool.get().await?;
   let mut pipe: redis::Pipeline = redis::pipe();
   let pipe = pipe.atomic();
   pipe.cmd("DEL").arg(del_cache_key1s).ignore();
-  let res = pipe.query_async::<String>(&mut conn).await?;
-  Ok(res)
+  pipe.query_async::<()>(&mut conn).await?;
+  Ok(())
 }
 
 pub async fn flash_db() -> Result<String> {
   if CACHE_POOL.is_none() {
     return Ok(String::new());
   }
-  info!("flash_db");
+  info!("flash_db: {}", get_req_id());
   let cache_pool = CACHE_POOL.as_ref().unwrap();
   let mut conn = cache_pool.get().await?;
   let res = redis::cmd("FLUSHDB")
