@@ -25,6 +25,7 @@ use poem::{
   middleware::{TokioMetrics, Tracing},
   EndpointExt, Route, Server,
 };
+use crate::common::gql::server_timing::ServerTiming;
 
 use dotenv::dotenv;
 use tracing::info;
@@ -252,6 +253,7 @@ async fn main() -> Result<(), std::io::Error> {
   };
   let app = app
     .with(Tracing)
+    .with(ServerTiming)
     .data(schema);
   
   let server_port = env::var("server_port").unwrap_or("4001".to_owned());
