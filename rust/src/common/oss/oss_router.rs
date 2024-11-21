@@ -16,7 +16,6 @@ use image::GenericImageView;
 use crate::common::context::{
   Ctx,
   get_auth_model,
-  get_auth_model_err,
   get_short_uuid,
 };
 
@@ -65,7 +64,7 @@ async fn _upload(
   let tenant_id = auth_model.map(|x| x.tenant_id);
   let res = oss_service::put_object(
     id.as_str(), &content, &content_type, &file_name,
-    None, tenant_id, db.as_deref(),
+    Some("0"), tenant_id, db.as_deref(),
   ).await;
   if let Err(err) = res {
     let mut response = Response::builder();
@@ -167,9 +166,9 @@ async fn _download(
   id: String,
   inline: Option<String>,
   req: &poem::Request,
-) -> Result<Response> {
+) -> Response {
   if id.is_empty() {
-    return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    return Response::builder().status(StatusCode::NOT_FOUND).finish();
   }
   let if_none_match = req.header("if-none-match");
   let inline = inline.unwrap_or("1".to_owned());
@@ -177,24 +176,27 @@ async fn _download(
     "1" => "inline",
     _ => "attachment",
   };
-  let stat = oss_service::head_object(&id).await?;
+  let stat = oss_service::head_object(&id).await
+    .ok()
+    .flatten();
   if stat.is_none() {
-    return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    return Response::builder().status(StatusCode::NOT_FOUND).finish();
   }
   let stat = stat.unwrap();
   if stat.is_public == "0" {
-    let auth_model = get_auth_model_err()?;
-    if stat.tenant_id.is_none() {
-      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    let auth_model = get_auth_model();
+    if auth_model.is_none() || stat.tenant_id.is_none() {
+      return Response::builder().status(StatusCode::NOT_FOUND).finish();
     }
+    let auth_model = auth_model.unwrap();
     if stat.tenant_id.unwrap() != auth_model.tenant_id.as_str() {
-      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+      return Response::builder().status(StatusCode::NOT_FOUND).finish();
     }
   }
   let mut response = Response::builder();
   if let Some(content_length) = stat.content_length {
     if content_length <= 0 {
-      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+      return Response::builder().status(StatusCode::NOT_FOUND).finish();
     }
   }
   if let Some(content_type) = &stat.content_type {
@@ -225,15 +227,20 @@ async fn _download(
   if let Some(if_none_match) = if_none_match {
     if let Some(etag) = stat.etag {
       if if_none_match == etag {
-        response = response.status(StatusCode::from_u16(304)?);
-        return Ok(response.finish());
+        response = response.status(StatusCode::NOT_MODIFIED);
+        return response.finish();
       }
     }
   }
-  let content = oss_service::get_object(&id).await?;
+  let content = oss_service::get_object(&id).await;
+  if let Err(err) = content {
+    return Response::builder()
+      .status(StatusCode::INTERNAL_SERVER_ERROR)
+      .body(err.to_string());
+  }
+  let content = content.unwrap();
   response = response.header("Content-Length", content.len().to_string());
-  let response = response.body(content);
-  Ok(response)
+  response.body(content)
 }
 
 #[handler]
@@ -242,7 +249,12 @@ pub async fn download_filename(
   Query(DownloadQuery { id, inline }): Query<DownloadQuery>,
   req: &poem::Request,
 ) -> Result<Response> {
-  _download(filename, id, inline, req).await
+  Ctx::resful_builder(Some(req))
+    .with_auth_optional()?
+    .build()
+    .resful_scope({
+      _download(filename, id, inline, req)
+    }).await
 }
 
 #[handler]
@@ -251,7 +263,12 @@ pub async fn download(
   req: &poem::Request,
 ) -> Result<Response> {
   let filename = "".to_owned();
-  _download(filename, id, inline, req).await
+  Ctx::resful_builder(Some(req))
+    .with_auth_optional()?
+    .build()
+    .resful_scope({
+      _download(filename, id, inline, req)
+    }).await
 }
 
 #[derive(Deserialize, Serialize)]
@@ -264,21 +281,22 @@ pub struct ImgQuery {
   q: Option<u8>,
 }
 
-#[handler]
-pub async fn img(
-  Query(ImgQuery {
+async fn _img(
+  ImgQuery {
     id,
     inline,
     f,
     w,
     h,
     q,
-  }): Query<ImgQuery>,
+  }: ImgQuery,
   req: &poem::Request,
-) -> Result<Response> {
+) -> Response {
+  
   if id.is_empty() {
-    return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    return Response::builder().status(StatusCode::NOT_FOUND).finish();
   }
+  
   let if_none_match = req.header("if-none-match");
   let mut filename = "".to_owned();
   let inline = inline.unwrap_or("1".to_owned());
@@ -286,24 +304,31 @@ pub async fn img(
     "1" => "inline",
     _ => "attachment",
   };
-  let stat = oss_service::head_object(&id).await?;
+  let stat = oss_service::head_object(&id).await;
+  if let Err(err) = stat {
+    return Response::builder()
+      .status(StatusCode::INTERNAL_SERVER_ERROR)
+      .body(err.to_string());
+  }
+  let stat = stat.unwrap();
   if stat.is_none() {
-    return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    return Response::builder().status(StatusCode::NOT_FOUND).finish();
   }
   let stat = stat.unwrap();
   if stat.is_public == "0" {
-    let auth_model = get_auth_model_err()?;
-    if stat.tenant_id.is_none() {
-      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+    let auth_model = get_auth_model();
+    if auth_model.is_none() || stat.tenant_id.is_none() {
+      return Response::builder().status(StatusCode::NOT_FOUND).finish();
     }
+    let auth_model = auth_model.unwrap();
     if stat.tenant_id.unwrap() != auth_model.tenant_id.as_str() {
-      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+      return Response::builder().status(StatusCode::NOT_FOUND).finish();
     }
   }
   let mut response = Response::builder();
   if let Some(content_length) = stat.content_length {
     if content_length <= 0 {
-      return Ok(Response::builder().status(StatusCode::from_u16(404)?).finish());
+      return Response::builder().status(StatusCode::NOT_FOUND).finish();
     }
   }
   if let Some(content_type) = &stat.content_type {
@@ -341,7 +366,6 @@ pub async fn img(
     }
     id
   };
-  let f_is_none = f.is_none();
   let format = f.unwrap_or("webp".to_owned());
   let output_format = match format.as_str() {
     "webp" => ImageFormat::WebP,
@@ -380,8 +404,8 @@ pub async fn img(
           response = response.header("ETag", etag);
         }
         response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
-        response = response.status(StatusCode::from_u16(304)?);
-        return Ok(response.finish());
+        response = response.status(StatusCode::NOT_MODIFIED);
+        return response.finish();
       } else if !etag.is_empty() {
         response = response.header("ETag", etag);
       }
@@ -393,9 +417,15 @@ pub async fn img(
     },
     None => false,
   };
-  if f_is_none || !is_img {
+  if !is_img {
     response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
-    let content = oss_service::get_object(&id).await?;
+    let content = oss_service::get_object(&id).await;
+    if let Err(err) = content {
+      return Response::builder()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(err.to_string());
+    }
+    let content = content.unwrap();
     let len = content.len();
     response = response.header("Content-Length", len.to_string());
     if let Some(last_modified) = &stat.last_modified {
@@ -408,11 +438,12 @@ pub async fn img(
         response = response.header("ETag", etag);
       }
     }
-    let response = response.body(content);
-    return Ok(response);
+    return response.body(content);
   }
   
-  let stat = tmpfile_dao::head_object(&cache_id).await?;
+  let stat = tmpfile_dao::head_object(&cache_id).await
+    .ok()
+    .flatten();
   if let Some(stat) = stat {
     if let Some(content_type) = &stat.content_type {
       if !content_type.is_empty() {
@@ -439,8 +470,8 @@ pub async fn img(
             response = response.header("ETag", etag);
           }
           response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
-          response = response.status(StatusCode::from_u16(304)?);
-          return Ok(response.finish());
+          response = response.status(StatusCode::NOT_MODIFIED);
+          return response.finish();
         } else if !etag.is_empty() {
           response = response.header("ETag", etag);
         }
@@ -451,17 +482,41 @@ pub async fn img(
         response = response.header("ETag", etag);
       }
     }
-    let content = tmpfile_dao::get_object(&cache_id).await?;
+    let content = tmpfile_dao::get_object(&cache_id).await;
+    if let Err(err) = content {
+      return Response::builder()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .body(err.to_string());
+    }
+    let content = content.unwrap();
     response = response.header("Content-Length", content.len().to_string());
     response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
     response = response.content_type(content_type);
-    let response = response.body(content);
-    return Ok(response);
+    return response.body(content);
   }
-  let content = oss_service::get_object(&id).await?;
+  let content = oss_service::get_object(&id).await;
+  if let Err(err) = content {
+    return Response::builder()
+      .status(StatusCode::INTERNAL_SERVER_ERROR)
+      .body(err.to_string());
+  }
+  let content = content.unwrap();
   let len = content.len();
-  let img = ImageReader::new(Cursor::new(&content)).with_guessed_format()?.decode()?;
-  let (width, height) = img.dimensions();
+  let small_img = ImageReader::new(Cursor::new(&content)).with_guessed_format();
+  if let Err(err) = small_img {
+    return Response::builder()
+      .status(StatusCode::INTERNAL_SERVER_ERROR)
+      .body(err.to_string());
+  }
+  let small_img = small_img.unwrap();
+  let small_img = small_img.decode();
+  if let Err(err) = small_img {
+    return Response::builder()
+      .status(StatusCode::INTERNAL_SERVER_ERROR)
+      .body(err.to_string());
+  }
+  let small_img = small_img.unwrap();
+  let (width, height) = small_img.dimensions();
   let mut nwidth = w.unwrap_or(width);
   let mut nheight = h.unwrap_or(height);
   if nwidth > width {
@@ -476,22 +531,35 @@ pub async fn img(
   //   return Ok(response);
   // }
   drop(content);
-  let img = img.resize(nwidth, nheight, FilterType::Lanczos3);
-  // let img = img.into_rgba8();
+  let small_img = small_img.resize(nwidth, nheight, FilterType::Lanczos3);
+  // let small_img = small_img.into_rgba8();
   let mut content: Vec<u8> = Vec::with_capacity(len);
-  img.write_to(&mut Cursor::new(&mut content), output_format)?;
+  let res = small_img.write_to(&mut Cursor::new(&mut content), output_format);
+  if let Err(err) = res {
+    return Response::builder()
+      .status(StatusCode::INTERNAL_SERVER_ERROR)
+      .body(err.to_string());
+  }
   
   let len = content.len();
   
   // 缓存图片到tmpfile
-  tmpfile_dao::put_object(
+  let res = tmpfile_dao::put_object(
     &cache_id,
     &content,
     content_type,
     &filename,
-  ).await?;
+  ).await;
   
-  let stat = tmpfile_dao::head_object(&cache_id).await?;
+  if let Err(err) = res {
+    return Response::builder()
+      .status(StatusCode::INTERNAL_SERVER_ERROR)
+      .body(err.to_string());
+  }
+  
+  let stat = tmpfile_dao::head_object(&cache_id).await
+    .ok()
+    .flatten();
   
   if let Some(stat) = &stat {
     if let Some(if_none_match) = if_none_match {
@@ -508,8 +576,8 @@ pub async fn img(
           response = response.header("Content-Length", len.to_string());
           response = response.content_type(content_type);
           response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
-          response = response.status(StatusCode::from_u16(304)?);
-          return Ok(response.finish());
+          response = response.status(StatusCode::NOT_MODIFIED);
+          return response.finish();
         } else if !etag.is_empty() {
           response = response.header("ETag", etag);
         }
@@ -526,6 +594,32 @@ pub async fn img(
   response = response.header("Content-Length", len.to_string());
   response = response.content_type(content_type);
   response = response.header("Content-Disposition", format!("{attachment}; filename=\"{filename}\""));
-  let response = response.body(content);
-  Ok(response)
+  response.body(content)
+}
+
+#[handler]
+pub async fn img(
+  Query(ImgQuery {
+    id,
+    inline,
+    f,
+    w,
+    h,
+    q,
+  }): Query<ImgQuery>,
+  req: &poem::Request,
+) -> Result<Response> {
+  Ctx::resful_builder(Some(req))
+    .with_auth_optional()?
+    .build()
+    .resful_scope({
+      _img(ImgQuery {
+        id,
+        inline,
+        f,
+        w,
+        h,
+        q,
+      }, req)
+    }).await
 }

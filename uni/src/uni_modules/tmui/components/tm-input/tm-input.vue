@@ -35,10 +35,11 @@
                 :style="[_attrs.type != 'textarea' ? { height: _minHeight } : { minHeight: _minHeight }]">
                 <input v-if="_attrs.type != 'textarea'" @keyboardheightchange="onkeyboardheightchange"
                     @confirm="onconfirm" @focus="onfocus" @blur="onblur" @input="oninput" :value="nowValue"
+                    @change="onchange"
                     :password="_attrs.password&&showPasswordEye" :disabled="_attrs.disabled" :maxlength="_attrs.maxlength"
                     :cursorSpacing="_attrs.cursorSpacing" :focus="_attrs.focus" :confirmType="_attrs.confirmType"
-                    :confirmHld="_attrs.confirmHold" :cursor="_attrs.cursor"
-                    :cursorColor="_attrs.cursorColor || config.color" :selectionStart="_attrs.selectionStart"
+                    :confirmHld="_attrs.confirmHold" :cursor="_attrs.cursor" :type="_attrs.type"
+                    :cursorColor="_currorColor" :selectionStart="_attrs.selectionStart"
                     :selectionEnd="_attrs.selectionEnd" :adjustPosition="_attrs.adjustPosition"
                     :autoBlur="_attrs.autoBlur" :ignoreCompositionEvent="_attrs.ignoreCompositionEvent"
                     :alwaysEmbed="_attrs.alwaysEmbed" :holdKeyboard="_attrs.holdKeyboard"
@@ -53,6 +54,7 @@
                             textAlign: _attrs.align,
                             padding: `0px ${_inputPadding}`,
                             color: _inputFontColor,
+                            fontSize:_fontSize
                         },
                         _attrs.inputStyle
 
@@ -63,7 +65,7 @@
                     :fixed="_attrs.fixed" :showConfirmBar="_attrs.showConfirmBar" :value="nowValue"
                     :disabled="_attrs.disabled" :maxlength="_attrs.maxlength" :cursorSpacing="_attrs.cursorSpacing"
                     :focus="_attrs.focus" :confirmHld="_attrs.confirmHold" :cursor="_attrs.cursor"
-                    :cursorColor="_attrs.cursorColor || config.color" :selectionStart="_attrs.selectionStart"
+                    :cursorColor="_currorColor" :selectionStart="_attrs.selectionStart"
                     :selectionEnd="_attrs.selectionEnd" :adjustPosition="_attrs.adjustPosition"
                     :autoBlur="_attrs.autoBlur" :ignoreCompositionEvent="_attrs.ignoreCompositionEvent"
                     :holdKeyboard="_attrs.holdKeyboard" :inputmode="_attrs.inputmode"
@@ -75,12 +77,13 @@
                             textAlign: _attrs.align,
                             padding: `${_inputPadding}`,
                             color: _inputFontColor,
+                            fontSize:_fontSize
+
                         },
                         _attrs.autoHeight ? { minHeight: _attrs.autoHeight } : { height: _minHeight },
                         _attrs.inputStyle
-                        ]">
-
-                    </textarea>
+                        ]"
+					/>
                 <!-- <view class="tmInputPlaceholder" :class="[showPlaceholder&&!isFocus?'tmInputPlaceholderOn':'tmInputPlaceholderOff',_attrs.placeholderClass]" :style="[
                     {
                         textAlign: _attrs.align,
@@ -599,6 +602,9 @@ const _fontColor = computed(() => {
     }
     return getDefaultColor(fontColor)
 })
+const _currorColor = computed(()=>{
+    return getDefaultColor(_attrs.value.cursorColor || config.color)
+})
 const _inputFontColor = computed(() => {
     if (!isFocus.value) return _fontColor.value
     if (attrs.fontColor == 'none') return _fontColor.value;
@@ -672,6 +678,15 @@ const onkeyboardheightchange = (evt: any) => {
 };
 const onlinechange = (evt: any) => {
     emits('linechange', evt.detail);
+}
+const onchange = (evt:any)=>{
+    // 用来监测微信输入昵称的值。
+    let val = evt.detail.value;
+    if(_attrs.value.type=='nickname'&&val!=nowValue.value&&val){
+        nowValue.value = val;
+        emits("input", val);
+        emits("update:modelValue", val);
+    }
 }
 watchEffect(() => {
     // if(nowValue.value==attrs.modelValue) return;
