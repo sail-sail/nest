@@ -35,17 +35,17 @@ jwt = "0.16"
 sha2 = "0.10"
 sha1 = "0.10"
 hmac = { version = "0.12", features = ["reset"] }
-# protobuf = "3.5.1"
+# protobuf = "3.7.1"
 hex-literal = "0.4"
 hex = "0.4"
-base64 = "0.21"
+base64 = "0.22"
 utf8_slice = "1.0"
 derive-new = "0.6"
 reqwest = { version = "0.12.9", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
 encoding_rs = "0.8"
 urlencoding = "2.1"
 url = "2.5"
-# sqlformat = "0.2.3"
+# sqlformat = "0.3.1"
 smallvec = { version = "1.13", features = ["union", "serde"] }
 # downcast-rs = "1.2"
 uuid = { version = "1.11", features = ["serde", "v4", "fast-rng"] }
@@ -82,11 +82,10 @@ color-backtrace = "0.6.1"
 # self_cell = "1.0"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
-tikv-jemallocator = "0.5"
+tikv-jemallocator = "0.6.0"
 
 # [build.dependencies]
-# protobuf = "3.5.1"
-# protobuf-codegen = "3.5.1"
+# protobuf-codegen = "3.7.1"
 
 [[bin]]
 name = "rust"
