@@ -3,12 +3,10 @@
   un-flex="~ col"
   un-overflow-hidden
   un-w="full"
-  un-bg="[#072540] dark:black"
 >
   <div
     un-flex="~"
     un-overflow-hidden
-    un-text="white"
     un-h="8"
     un-justify-end
     un-items-center
@@ -26,7 +24,7 @@
         un-flex="~ [1_0_0]"
         un-justify-center
         un-items-center
-        un-b="1 solid gray-600 hover:[var(--el-color-primary)]"
+        un-b="1 solid gray-200 dark:gray-600 hover:[var(--el-color-primary)]"
         un-m="l-2"
         un-rounded="md"
         un-text="3 gray hover:[var(--el-color-primary)]"
@@ -59,8 +57,8 @@
           un-w="full"
           un-h="full"
           un-rounded="md"
-          un-text="3 white center"
-          un-b="none"
+          un-text="3 center"
+          un-b="0"
           un-p="l-4 r-6"
           un-bg="transparent"
           clearable
@@ -87,7 +85,7 @@
         un-p="x-2"
         un-box-border
         un-cursor-pointer
-        un-text="hover:[var(--el-color-primary)]"
+        un-text="gray-400 hover:[var(--el-color-primary)]"
         @click="menuStore.isCollapse = !menuStore.isCollapse"
       >
         <el-icon
@@ -256,20 +254,12 @@ initFrame();
 </script>
 
 <style lang="scss" scoped>
-.dark .AppMenu {
-  --el-menu-bg-color: black;
-}
 .AppMenu {
-  --el-menu-bg-color: #072540;
-  --el-menu-border-color: var(--el-border-color-lighter);
-  --el-menu-text-color: #FFF;
   --el-menu-item-height: 40px;
   --el-menu-sub-item-height: var(--el-menu-item-height);
-  --el-menu-active-color: var(--el-color-primary);
-  --el-menu-hover-bg-color: var(--el-color-black);
   border: 0;
   :deep(.el-menu-item.is-active) {
-    background-color: var(--el-color-black);
+    background-color: var(--el-menu-hover-bg-color);
   }
   :deep(.el-menu-item.is-active:after) {
     content: "";
