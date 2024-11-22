@@ -130,26 +130,3 @@ export async function deptLoginSelect(
   }, opt);
   return data.orgLoginSelect;
 }
-
-/**
- * 切换语言
- */
-export async function selectLang(
-  variables: {
-    lang: string;
-  },
-  opt?: GqlOpt,
-) {
-  const res: {
-    selectLang: Mutation["selectLang"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($lang: String!) {
-        selectLang(lang: $lang)
-      }
-    `,
-    variables,
-  }, opt);
-  const data = res.selectLang;
-  return data;
-}
