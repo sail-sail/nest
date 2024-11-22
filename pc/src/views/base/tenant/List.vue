@@ -574,7 +574,7 @@
           </template>
           
           <!-- 语言 -->
-          <template v-else-if="'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
+          <template v-else-if="isI18n && 'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -904,6 +904,8 @@ const isLocked = $computed(() => props.isLocked === "1");
 /** 是否 focus, 默认为 true */
 const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
+
+const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false" || import.meta.env.DEV;
 
 /** 表格 */
 let tableRef = $ref<InstanceType<typeof ElTable>>();
