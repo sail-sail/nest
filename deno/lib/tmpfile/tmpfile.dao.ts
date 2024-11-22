@@ -39,12 +39,28 @@ export async function getBucket() {
 
 export async function upload(
   file: File,
+  opt?: {
+    once?: number;
+    is_public?: boolean;
+    tenant_id?: string;
+    db?: string;
+  },
 ) {
   
   const content = await file.arrayBuffer();
+  const db = opt?.db;
+  const is_public = opt?.is_public ? "1" : "0";
+  const tenant_id = opt?.tenant_id;
   const meta: {
     filename?: string;
-  } = { };
+    db?: string;
+    is_public: "0" | "1";
+    tenant_id?: string;
+  } = {
+    db,
+    is_public,
+    tenant_id,
+  };
   if (file.name) {
     meta.filename = encodeURIComponent(file.name);
   }

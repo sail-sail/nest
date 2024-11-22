@@ -11,11 +11,53 @@ import {
   handleRequestId,
 } from "/lib/oak/request_id.ts";
 
+import {
+  getAuthModel,
+} from "/lib/auth/auth.dao.ts";
+
 const router = new Router({
   prefix: "/api/tmpfile/",
 });
 
 router.post("upload", async function(ctx) {
+  const request = ctx.request;
+  const response = ctx.response;
+  if (await handleRequestId(
+    response,
+    request.headers.get("x-request-id"),
+  )) {
+    return;
+  }
+  const searchParams = request.url.searchParams;
+  const db = searchParams.get("db") ?? undefined;
+  const body = request.body;
+  const contentType = body.type().toLocaleLowerCase();
+  if (!request.hasBody || contentType !== "form-data") {
+    response.status = 415;
+    return;
+  }
+  const formData = await body.formData();
+  const file = formData.get("file");
+  if (!file || !(file instanceof File)) {
+    throw new Error("file must a form-data file!");
+  }
+  const {
+    upload
+  } = await import("./tmpfile.service.ts");
+  const auth_model = await getAuthModel();
+  const tenant_id = auth_model?.tenant_id;
+  const id = await upload(file, {
+    is_public: false,
+    tenant_id,
+    db,
+  });
+  response.body = {
+    code: 0,
+    data: id,
+  };
+});
+
+router.post("uploadPublic", async function(ctx) {
   const request = ctx.request;
   const response = ctx.response;
   if (await handleRequestId(
@@ -38,7 +80,9 @@ router.post("upload", async function(ctx) {
   const {
     upload
   } = await import("./tmpfile.service.ts");
-  const id = await upload(file);
+  const id = await upload(file, {
+    is_public: true,
+  });
   response.body = {
     code: 0,
     data: id,
