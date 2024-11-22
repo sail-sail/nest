@@ -52,7 +52,6 @@ pub async fn graphql_handler_get(
   };
   let ip = crate::common::gql::model::Ip(ip);
   
-  let now0 = Instant::now();
   let query = gql_params.query.replace("\\n", " ");
   let mut gql_req = Request::new(query);
   match req.header(AUTHORIZATION).map(ToString::to_string) {
@@ -91,23 +90,6 @@ pub async fn graphql_handler_get(
   let mut response = Response::builder()
     .header(header::CONTENT_TYPE, "application/json; charset=utf-8")
     .body(data);
-  let headers = response.headers_mut();
-  for (key, value) in gql_res.http_headers.iter() {
-    headers.insert(key, value.to_owned());
-  }
-  let now1 = Instant::now();
-  let response_time = format!("app;dur={}", now1.saturating_duration_since(now0).as_millis());
-  let response_time = poem::http::header::HeaderValue::from_str(&response_time);
-  let response_time = match response_time {
-    Ok(response_time) => response_time,
-    Err(err) => {
-      error!("{}", err);
-      return Response::builder()
-        .status(StatusCode::INTERNAL_SERVER_ERROR)
-        .body(err.to_string())
-    }
-  };
-  headers.insert("Server-Timing", response_time);
   response
 }
 
