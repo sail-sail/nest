@@ -1,5 +1,7 @@
 export { }
 
+export * from "@/uni_modules/tmui/interface";
+
 declare global {
   
   type PartialNull<T> = {
