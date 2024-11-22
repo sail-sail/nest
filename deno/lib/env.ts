@@ -68,7 +68,7 @@ async function parseEnv() {
   }
   try {
     await Deno.stat(envPath);
-  } catch (err) {
+  } catch (err: any) {
     if (err.code === "ENOENT") {
       return { };
     }
