@@ -17,14 +17,14 @@ import Inspector from "vite-plugin-vue-inspector";
 
 import reactivityTransform from "@vue-macros/reactivity-transform/vite";
 
-import TurboConsole from "unplugin-turbo-console/vite";
+// import TurboConsole from "unplugin-turbo-console/vite";
 
 const pluginsH5: PluginOption[] = [ ];
 
 const isH5 = process.env.UNI_PLATFORM === "h5";
 
 if (isH5) {
-  pluginsH5.push(TurboConsole());
+  // pluginsH5.push(TurboConsole());
   pluginsH5.push(
     Inspector({
       toggleButtonPos: "top-left",
@@ -108,7 +108,7 @@ export default defineConfig({
     Components({
       dirs: [
         // "./src/components",
-        "./src/tmui/components",
+        // "./src/tmui/components",
       ],
       resolvers: [
         IconsResolver({
