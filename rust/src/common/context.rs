@@ -1122,13 +1122,15 @@ impl Ctx {
     }).await
   }
   
-  pub async fn resful_scope<F>(self, f: F) -> Result<poem::Response>
+  pub async fn resful_scope<F, R>(self, f: F) -> Result<poem::Response>
     where
-      F: core::future::Future<Output = poem::Response>,
+      F: core::future::Future<Output = R>,
+      R: poem::IntoResponse,
   {
     let ctx = Arc::new(self);
     CTX.scope(ctx, async move {
-      let mut res = f.await;
+      let res = f.await;
+      let mut res = res.into_response();
       let ctx = CTX.with(|ctx| ctx.clone());
       if let Some(auth_token) = ctx.auth_token.as_deref() {
         res.headers_mut()
