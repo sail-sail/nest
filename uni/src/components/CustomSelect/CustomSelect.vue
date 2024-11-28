@@ -1,6 +1,9 @@
 <template>
 <view
   class="custom_select"
+  :class="{
+    'custom_select_readonly': props.readonly
+  }"
 >
   <slot name="left"></slot>
   <view

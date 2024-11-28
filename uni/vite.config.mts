@@ -108,7 +108,7 @@ export default defineConfig({
     Components({
       dirs: [
         // "./src/components",
-        // "./src/tmui/components",
+        // "./src/uni_modules/tmui/components",
       ],
       resolvers: [
         IconsResolver({

@@ -17,3 +17,9 @@ tm-form,tm-form .tmForm {
   text-align: right;
   margin-right: 24rpx;
 }
+
+// .tmFormItem:has(.tmFormItemWrapContent .custom_input_readonly) {
+//   .tmFormItemWrap>.tmFormItemLabel>.tmFormRequired {
+//     color: gray;
+//   }
+// }

@@ -1,6 +1,9 @@
 <template>
 <tm-input
   class="custom_input n-w-full"
+  :class="{
+    'custom_input_readonly': props.readonly
+  }"
   :transprent="true"
   :show-bottom-botder="false"
   v-bind="$attrs"
