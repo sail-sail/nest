@@ -10,6 +10,7 @@ declare module 'vue' {
     AppLoading: typeof import('./../components/AppLoading/AppLoading.vue')['default']
     CustomSelect: typeof import('./../components/CustomSelect/CustomSelect.vue')['default']
     CustomInput: typeof import('./../components/CustomInput/CustomInput.vue')['default']
+    CustomDivider: typeof import('./../components/CustomDivider/CustomDivider.vue')['default']
     TmAlert: typeof import('./../uni_modules/tmui/components/tm-alert/tm-alert.vue')['default']
     TmBadge: typeof import('./../uni_modules/tmui/components/tm-badge/tm-badge.vue')['default']
     TmBetweenTime: typeof import('./../uni_modules/tmui/components/tm-between-time/tm-between-time.vue')['default']
