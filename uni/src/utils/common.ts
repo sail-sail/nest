@@ -1,6 +1,7 @@
+
 import type {
   Query,
-} from "#/types";
+} from "#/types.ts";
 
 export async function getDict(
   codes: string[],
@@ -92,45 +93,4 @@ export function list2tree<
   }
   treeFn("", treeData);
   return treeData;
-}
-  
-
-export function showUploadMsg(
-  succNum: number,
-  failNum: number,
-  failErrMsgs: string[],
-) {
-  let msgArr: VNode[] = [ ];
-  
-  msgArr.push(
-    h("div", { style: { color: "green" } }, `导入成功 ${ succNum } 条`),
-  );
-  if (failNum > 0) {
-    msgArr.push(
-      h("div", { style: { color: "red", marginTop: "4px", marginBottom: "4px" } }, `导入失败 ${ failNum } 条:`),
-    );
-  }
-  for (let i = 0; i < failErrMsgs.length; i++) {
-    msgArr.push(
-      h("div", { style: { color: "gray", fontSize: "12px", marginTop: "4px" } }, failErrMsgs[i]),
-    );
-  }
-  let msg: VNode | undefined = undefined;
-  if (msgArr.length > 0) {
-    msg = h("div", { style: { color: "red" } }, msgArr);
-  }
-  
-  return {
-    succNum,
-    failNum,
-    msg,
-  };
-}
-
-export async function copyText(text: string) {
-  try {
-    await navigator.clipboard.writeText(text);
-  } catch (err) {
-    console.error(err);
-  }
 }

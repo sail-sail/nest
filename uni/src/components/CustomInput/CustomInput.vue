@@ -14,6 +14,7 @@
   :disabled="props.readonly"
   :placeholder="props.readonly ? '' : props.placeholder"
   :color="props.color"
+  :font-color="props.readonly ? '#666' : undefined"
 >
   <template #left>
     <slot name="left"></slot>

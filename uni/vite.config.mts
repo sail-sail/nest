@@ -65,6 +65,11 @@ export default defineConfig({
           "dayjs": [
             [ "default", "dayjs" ]
           ],
+          "@/utils/common": [
+            "getDict",
+            "getDictbiz",
+            "list2tree",
+          ],
           "@/store/usr": [
             [ "default", "useUsrStore" ],
           ],

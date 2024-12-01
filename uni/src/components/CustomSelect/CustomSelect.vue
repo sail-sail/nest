@@ -31,6 +31,7 @@
       un-overflow-hidden
     ></view>
     <tm-icon
+      v-if="!props.disabled && !props.readonly"
       :size="42"
       color="#b1b1b1"
       name="arrow-right-s-line"
@@ -40,7 +41,7 @@
     @click="onClear"
     un-p="r-2.65"
     un-box-border
-    v-if="props.showClear && !isValueEmpty"
+    v-if="props.clearable && !isValueEmpty"
   >
     <tm-icon
       _style="transition:color 0.24s"
@@ -115,13 +116,13 @@
 <script lang="ts" setup>
 type OptionType = {
   label: string;
-  value: string;
+  value: any;
 };
 
 type OptionsMap = (item: any) => OptionType;
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: string | string[] | null): void,
+  (e: "update:modelValue", value?: any): void,
   (e: "data", data: any[]): void,
   (e: "change", value?: any | any[] | null): void,
   (e: "clear"): void,
@@ -131,12 +132,12 @@ const props = withDefaults(
   defineProps<{
     method: () => Promise<any[]>; // 用于获取数据的方法
     optionsMap?: OptionsMap;
-    modelValue?: string | string[] | null;
+    modelValue?: any;
     options4SelectV2?: OptionType[];
     placeholder?: string;
     height?: number;
     init?: boolean;
-    showClear?: boolean;
+    clearable?: boolean;
     multiple?: boolean;
     disabled?: boolean;
     readonly?: boolean;
@@ -154,7 +155,7 @@ const props = withDefaults(
     placeholder: "",
     height: 700,
     init: true,
-    showClear: true,
+    clearable: true,
     multiple: false,
     disabled: false,
     readonly: false,
@@ -202,7 +203,7 @@ watch(
 );
 
 let selectedValueMuti = computed(() => {
-  if (!selectedValue.value) {
+  if (selectedValue.value == null) {
     return [ ];
   }
   if (props.multiple) {
@@ -240,7 +241,7 @@ let isValueEmpty = computed(() => {
 let showPicker = ref(false);
 
 let modelLabels = computed(() => {
-  if (!props.modelValue) {
+  if (props.modelValue == null) {
     return "";
   }
   if (!props.multiple) {
@@ -303,7 +304,7 @@ function onConfirm() {
   emit("update:modelValue", selectedValue.value);
 }
 
-async function refreshEfc() {
+async function onRefresh() {
   const method = props.method;
   if (!method) {
     if (!options4SelectV2 || options4SelectV2.value.length === 0) {
@@ -325,11 +326,11 @@ async function refreshEfc() {
 }
 
 if (props.init) {
-  refreshEfc();
+  onRefresh();
 }
 
 defineExpose({
-  refresh: refreshEfc,
+  refresh: onRefresh,
 });
 </script>
 
