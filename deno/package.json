@@ -19,14 +19,14 @@
     "dayjs": "1.11.13",
     "graphql": "17.0.0-alpha.7",
     "mnemonist": "0.39.8",
-    "mysql2": "3.11.4",
+    "mysql2": "3.11.5",
     "path-to-regexp": "6.2.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.3",
     "@graphql-codegen/typescript": "4.1.2",
     "@graphql-codegen/typescript-operations": "4.4.0",
-    "@types/node": "22.10.0",
+    "@types/node": "22.10.1",
     "chokidar": "3.6.0",
     "commander": "12.1.0",
     "cross-env": "7.0.3",
