@@ -26,9 +26,9 @@
     "@std/crypto": "jsr:@std/crypto@1.0.3",
     "@std/dotenv": "jsr:@std/dotenv@0.225.2",
     "@std/encoding": "jsr:@std/encoding@1.0.5",
-    "@std/fs": "jsr:@std/fs@1.0.5",
+    "@std/fs": "jsr:@std/fs@1.0.6",
     "@std/io": "jsr:@std/io@0.225.0",
-    "@std/log": "jsr:@std/log@0.224.10",
+    "@std/log": "jsr:@std/log@0.224.11",
     "@std/path": "jsr:@std/path@1.0.8",
     "mysql2": "npm:mysql2@3.11.5",
     "S3": "https://deno.land/x/s3@0.5.0/mod.ts",
@@ -42,8 +42,5 @@
     "redis": "https://deno.land/x/redis@v0.34.0/mod.ts",
     "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts",
     "mqtt": "jsr:@ymjacky/mqtt5@0.0.18"
-  },
-  "tasks": {
-    "update": "deno run --allow-read=./ --allow-net --allow-write=./ https://deno.land/x/deno_outdated@0.2.5/cli.ts"
   }
 }
