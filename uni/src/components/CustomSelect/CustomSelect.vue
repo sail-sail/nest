@@ -124,7 +124,7 @@ type OptionsMap = (item: any) => OptionType;
 const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
   (e: "data", data: any[]): void,
-  (e: "change", value?: any | any[] | null): void,
+  (e: "change", value: any): void,
   (e: "clear"): void,
 }>();
 
