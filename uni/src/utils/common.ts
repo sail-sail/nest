@@ -10,6 +10,8 @@ export async function getDict(
   if (!codes || codes.length === 0) {
     return [ ];
   }
+  opt = opt || { };
+  opt.notLoading = true;
   const data: {
     getDict: Query["getDict"];
   } = await query({
@@ -39,6 +41,8 @@ export async function getDictbiz(
   if (!codes || codes.length === 0) {
     return [ ];
   }
+  opt = opt || { };
+  opt.notLoading = true;
   const data: {
     getDictbiz: Query["getDictbiz"];
   } = await query({
