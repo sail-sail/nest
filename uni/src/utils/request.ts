@@ -465,12 +465,20 @@ export async function uniLogin() {
 async function redirectToLogin() {
   const pages = getCurrentPages();
   const page = pages[pages.length - 1];
-  const redirect_uri: string | undefined = "/" + page?.route;
+  let redirect_uri: string | undefined;
+  if (page) {
+    const fullPath = (page as any).$page?.fullPath;
+    if (fullPath) {
+      redirect_uri = fullPath;
+    } else {
+      redirect_uri = "/" + page.route;
+    }
+  }
   let url = `/pages/index/Login`;
   if (redirect_uri) {
     url += `?redirect_uri=${ encodeURIComponent(redirect_uri) }`;
   }
-  await uni.redirectTo({
+  await uni.reLaunch({
     url,
   });
 }
