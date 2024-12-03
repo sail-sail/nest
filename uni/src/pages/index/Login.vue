@@ -209,7 +209,7 @@ async function initFrame() {
 
 onLoad(async function(query) {
   if (query?.redirect_uri) {
-    redirect_uri = query.redirect_uri;
+    redirect_uri = decodeURIComponent(query.redirect_uri);
   }
   await initFrame();
 });
