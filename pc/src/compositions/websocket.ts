@@ -27,6 +27,9 @@ async function reConnect() {
   if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
     return socket;
   }
+  if (topicCallbackMap.size === 0) {
+    return;
+  }
   reConnectNum++;
   let time = 200;
   if (reConnectNum > 10) {
@@ -118,6 +121,10 @@ export async function subscribe<T>(
   topic: string,
   callback: ((data: T | undefined) => void),
 ) {
+  if (closeSocketTimeout) {
+    clearTimeout(closeSocketTimeout);
+    closeSocketTimeout = undefined;
+  }
   let socket: WebSocket | undefined;
   socket = await connect();
   if (!socket) {
@@ -142,6 +149,10 @@ export async function unSubscribe(
   topic: string,
   callback: Function,
 ) {
+  if (closeSocketTimeout) {
+    clearTimeout(closeSocketTimeout);
+    closeSocketTimeout = undefined;
+  }
   const callbacks = topicCallbackMap.get(topic);
   if (callbacks && callbacks.length > 0) {
     const index = callbacks.indexOf(callback as any);
@@ -162,7 +173,21 @@ export async function unSubscribe(
       },
     }));
   }
+  
+  closeSocketTimeout = setTimeout(() => {
+    if (topicCallbackMap.size === 0) {
+      try {
+        socket?.close();
+      } catch (err) {
+        console.log(err);
+      } finally {
+        socket = undefined;
+      }
+    }
+  }, 600000);
 }
+
+let closeSocketTimeout: NodeJS.Timeout | undefined = undefined;
 
 /** 发布消息 */
 export async function publish(
@@ -172,6 +197,10 @@ export async function publish(
   },
   isValidCurrClientId?: boolean,
 ) {
+  if (closeSocketTimeout) {
+    clearTimeout(closeSocketTimeout);
+    closeSocketTimeout = undefined;
+  }
   if (isValidCurrClientId) {
     const callbacks = topicCallbackMap.get(data.topic);
     if (callbacks && callbacks.length > 0) {
@@ -180,12 +209,21 @@ export async function publish(
       }
     }
   }
-  const socket = await connect();
-  if (!socket) {
-    return;
-  }
-  socket.send(JSON.stringify({
+  const socket0 = await connect();
+  socket0?.send(JSON.stringify({
     action: "publish",
     data,
   }));
+  
+  closeSocketTimeout = setTimeout(() => {
+    if (topicCallbackMap.size === 0) {
+      try {
+        socket?.close();
+      } catch (err) {
+        console.log(err);
+      } finally {
+        socket = undefined;
+      }
+    }
+  }, 600000);
 }

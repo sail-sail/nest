@@ -19,6 +19,7 @@
     "skipLibCheck": true,
     "lib": [ "esnext", "dom" ],
     "types": [
+      "@vue-macros/reactivity-transform/macros-global",
       "node",
       "vite/client",
       "@dcloudio/types",
@@ -42,6 +43,7 @@
     "**/*.vue"
   ],
   "exclude": [
+    "src/typings/components.d.ts",
     "src/uni_modules/tmui/**/*.ts",
     "src/uni_modules/tmui/**/*.vue"
   ]
