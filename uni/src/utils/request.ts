@@ -427,33 +427,36 @@ export async function uniLogin() {
   const indexStore = useIndexStore(cfg.pinia);
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWxwork || userAgent.isWechat) {
+    if (typeof wxwGetAppid === "undefined") {
+      await redirectToLogin();
+      return false;
+    }
     const url = new URL(location.href);
     const code = url.searchParams.get("code");
     if (!code && !location.href.startsWith("https://open.weixin.qq.com")) {
       const state = uniqueID();
       localStorage.setItem("oauth2_state", state);
       const redirect_uri = location.href;
-      const {
-        appid,
-        agentid,
-      } = await wxwGetAppid();
-      if (appid && agentid) {
-        let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
-          encodeURIComponent(appid)
-        }`;
-        if (agentid) {
-          url += `&agentid=${ encodeURIComponent(agentid) }`;
-        }
-        url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
-        url += `&response_type=code`;
-        url += `&scope=snsapi_base`;
-        url += `&state=${ encodeURIComponent(state) }`;
-        url += "#wechat_redirect";
-        alert(url);
-        console.log(url);
-        location.replace(url);
+      const res = await wxwGetAppid();
+      const appid = res?.appid;
+      const agentid = res?.agentid;
+      if (!appid) {
+        await redirectToLogin();
         return false;
       }
+      let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
+        encodeURIComponent(appid)
+      }`;
+      if (agentid) {
+        url += `&agentid=${ encodeURIComponent(agentid) }`;
+      }
+      url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
+      url += `&response_type=code`;
+      url += `&scope=snsapi_base`;
+      url += `&state=${ encodeURIComponent(state) }`;
+      url += "#wechat_redirect";
+      location.replace(url);
+      return false;
     }
   } else {
     await redirectToLogin();
