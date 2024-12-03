@@ -192,12 +192,18 @@ export async function publish(
       }
     }
   }
-  const socket = await connect();
-  if (!socket) {
-    return;
-  }
-  socket.send(JSON.stringify({
+  const socket0 = await connect();
+  socket0?.send(JSON.stringify({
     action: "publish",
     data,
   }));
+  if (topicCallbackMap.size === 0) {
+    try {
+      socket?.close();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      socket = undefined;
+    }
+  }
 }
