@@ -89,10 +89,10 @@
     "unplugin-icons": "0.20.2",
     "unplugin-turbo-console": "1.10.6",
     "unplugin-vue-components": "0.27.5",
-    "vite": "6.0.1",
+    "vite": "6.0.2",
     "vite-plugin-inspect": "0.10.2",
     "vite-plugin-vue-inspector": "5.3.1",
-    "vitest": "2.1.6",
+    "vitest": "2.1.8",
     "vue-router": "4.5.0",
     "vue-tsc": "2.1.10"
   }

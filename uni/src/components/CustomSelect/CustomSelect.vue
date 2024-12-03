@@ -73,38 +73,78 @@
       :scroll-y="true"
       :rebound="false"
     >
-      <view
-        un-p="y-1"
-        un-box-border
-      >
-        <tm-cell
+      <view>
+        <view
           v-for="item in options4SelectV2"
           :key="item.value"
           :title="item.label"
-          :link="false"
-          showBottomBorder
-          :card="false"
           @click="onSelect(item.value)"
+          un-p="y-4"
+          un-box-border
+          un-flex="~"
+          un-items="center"
+          un-gap="2"
+          un-b="0 b-1 solid #e6e6e6"
+          :style="{
+            'color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
+            'border-color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
+          }"
         >
-          <template #right>
-            <i
+          
+          <view
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-items="center"
+            un-m="l-4"
+          >
+            {{ item.label }}
+          </view>
+          
+          <view
+            style="width: 1.2rem;height: 1.2rem;"
+            un-m="r-4"
+          >
+            <view
               v-if="selectedValueMuti.includes(item.value)"
               un-i="iconfont-check"
-              un-text="[var(--primary-color)]"
-            ></i>
-          </template>
-        </tm-cell>
+            ></view>
+          </view>
+          
+        </view>
       </view>
     </scroll-view>
     <view
-      un-m="x-2 y-4"
+      un-p="x-2 y-4"
+      un-box-border
+      un-flex="~"
+      un-w="full"
+      un-items="center"
+      un-gap="4"
     >
-      <tm-button
-        @click="onConfirm"
-        block
+      
+      <view
+        un-flex="~ [1_0_0]"
       >
-        确定
-      </tm-button>
+        <tm-button
+          @click="onCancel"
+          color="info"
+          width="100%"
+        >
+          取消
+        </tm-button>
+      </view>
+      
+      <view
+        un-flex="~ [1_0_0]"
+      >
+        <tm-button
+          @click="onConfirm"
+          width="100%"
+        >
+          确定
+        </tm-button>
+      </view>
+      
     </view>
     <view
       :style="{ height: sysinfo.bottom + 'px' }"
@@ -304,6 +344,10 @@ function onConfirm() {
   emit("update:modelValue", selectedValue.value);
 }
 
+function onCancel() {
+  showPicker.value = false;
+}
+
 async function onRefresh() {
   const method = props.method;
   if (!method) {
@@ -334,7 +378,7 @@ defineExpose({
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .custom_select {
   margin-left: 0px;
   margin-top: 0px;

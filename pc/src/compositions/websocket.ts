@@ -27,6 +27,9 @@ async function reConnect() {
   if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
     return socket;
   }
+  if (topicCallbackMap.size === 0) {
+    return;
+  }
   reConnectNum++;
   let time = 200;
   if (reConnectNum > 10) {
@@ -161,6 +164,15 @@ export async function unSubscribe(
         topics: [ topic ],
       },
     }));
+  }
+  if (topicCallbackMap.size === 0) {
+    try {
+      socket?.close();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      socket = undefined;
+    }
   }
 }
 

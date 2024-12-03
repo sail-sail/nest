@@ -2,30 +2,39 @@ import {
   uuid,
 } from "@/utils/StringUtil";
 
-const isSSL = location.protocol === 'https:';
+import cfg from "@/utils/config";
+
+import type {
+  SocketTask,
+} from "@uni-helper/uni-use";
 
 const clientId = uuid();
 
 const PWD = "0YSCBr1QQSOpOfi6GgH34A";
 
-const url = (isSSL ? 'wss://' : 'ws://') + location.host + '/api/websocket/upgrade?pwd='+ PWD + '&clientId=' + encodeURIComponent(clientId);
+const url = cfg.wss + '/api/websocket/upgrade?pwd='+ PWD + '&clientId=' + encodeURIComponent(clientId);
 
-let socket: WebSocket | undefined = undefined;
+let socket: SocketTask | undefined = undefined;
 const topicCallbackMap = new Map<string, ((data: any) => void)[]>();
 
 let reConnectNum = 0;
 
-function socketPing() {
-  if (socket && socket.readyState === WebSocket.OPEN) {
-    socket.send("ping");
+async function socketPing() {
+  if (socket) {
+    socket.send({
+      data: "ping",
+    });
   }
   setTimeout(socketPing, 60000);
 }
 socketPing();
 
 async function reConnect() {
-  if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
+  if (socket) {
     return socket;
+  }
+  if (topicCallbackMap.size === 0) {
+    return;
   }
   reConnectNum++;
   let time = 200;
@@ -37,15 +46,31 @@ async function reConnect() {
   await new Promise((resolve) => setTimeout(resolve, time));
   await connect();
 }
-  
+
 async function connect() {
-  if (!socket || (socket.readyState !== WebSocket.OPEN && socket.readyState !== WebSocket.CONNECTING)) {
-    // console.log(url);
-    socket = new WebSocket(url);
-    socket.onmessage = function(event) {
-      // console.log(`websocket: clientId ${ clientId } onmessage`);
+  let isNewSocket = false;
+  if (!socket) {
+    await new Promise((resolve) => {
+      socket = uni.connectSocket({
+        url,
+        success() {
+        },
+        fail() {
+          socket = undefined;
+        },
+      });
+      socket.onOpen(() => {
+        resolve(undefined);
+      });
+    });
+    isNewSocket = true;
+  }
+  if (!socket) {
+    return;
+  }
+  if (isNewSocket) {
+    socket.onMessage(function(event) {
       const eventData = event.data;
-      // console.log(eventData);
       if (typeof eventData !== "string") {
         return;
       }
@@ -61,53 +86,27 @@ async function connect() {
           callback(payload);
         }
       }
-    };
-    socket.onclose = function() {
-      // console.log('websocket: onclose');
+    });
+    socket.onClose(function() {
       socket = undefined;
       reConnect();
-    };
-    socket.onerror = function(err0) {
-      const err = err0 as ErrorEvent;
+    });
+    socket.onError(function(err) {
       try {
-        socket!.close();
+        socket?.close({ });
       } catch (_err) {
+        console.log(_err);
       }
-      socket = undefined;
-      reConnect();
-    };
-    await new Promise((resolve) => {
-      if (!socket) {
-        resolve(undefined);
-        return;
-      }
-      if (socket.readyState === WebSocket.OPEN) {
-        resolve(undefined);
-        return;
-      }
-      socket.onopen = function() {
-        // console.log('websocket: onopen');
-        resolve(undefined);
-      };
     });
     for (const [ topic ] of topicCallbackMap) {
-      socket?.send(JSON.stringify({
-        action: "subscribe",
-        data: {
-          topics: [ topic ],
-        },
-      }));
-    }
-  }
-  if (!socket || (socket.readyState !== WebSocket.OPEN && socket.readyState !== WebSocket.CONNECTING)) {
-    return;
-  }
-  if (socket && socket.readyState === WebSocket.CONNECTING) {
-    while (true) {
-      if (!socket || socket.readyState !== WebSocket.CONNECTING) {
-        break;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      socket.send({
+        data: JSON.stringify({
+          action: "subscribe",
+          data: {
+            topics: [ topic ],
+          },
+        }),
+      });
     }
   }
   return socket;
@@ -118,7 +117,7 @@ export async function subscribe<T>(
   topic: string,
   callback: ((data: T | undefined) => void),
 ) {
-  let socket: WebSocket | undefined;
+  let socket: SocketTask | undefined;
   socket = await connect();
   if (!socket) {
     return;
@@ -129,12 +128,14 @@ export async function subscribe<T>(
     topicCallbackMap.set(topic, callbacks);
   }
   callbacks.push(callback);
-  socket.send(JSON.stringify({
-    action: "subscribe",
-    data: {
-      topics: [ topic ],
-    },
-  }));
+  socket.send({
+    data: JSON.stringify({
+      action: "subscribe",
+      data: {
+        topics: [ topic ],
+      },
+    }),
+  });
 }
 
 /** 取消订阅 */
@@ -155,12 +156,23 @@ export async function unSubscribe(
     if (!socket) {
       return;
     }
-    socket.send(JSON.stringify({
-      action: "unSubscribe",
-      data: {
-        topics: [ topic ],
-      },
-    }));
+    socket.send({
+      data: JSON.stringify({
+        action: "unSubscribe",
+        data: {
+          topics: [ topic ],
+        },
+      }),
+    });
+  }
+  if (topicCallbackMap.size === 0) {
+    try {
+      socket?.close({ });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      socket = undefined;
+    }
   }
 }
 
@@ -184,8 +196,10 @@ export async function publish(
   if (!socket) {
     return;
   }
-  socket.send(JSON.stringify({
-    action: "publish",
-    data,
-  }));
+  socket.send({
+    data: JSON.stringify({
+      action: "publish",
+      data,
+    }),
+  });
 }
