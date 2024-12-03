@@ -117,6 +117,10 @@ export async function subscribe<T>(
   topic: string,
   callback: ((data: T | undefined) => void),
 ) {
+  if (closeSocketTimeout) {
+    clearTimeout(closeSocketTimeout);
+    closeSocketTimeout = undefined;
+  }
   let socket: SocketTask | undefined;
   socket = await connect();
   if (!socket) {
@@ -143,6 +147,10 @@ export async function unSubscribe(
   topic: string,
   callback: Function,
 ) {
+  if (closeSocketTimeout) {
+    clearTimeout(closeSocketTimeout);
+    closeSocketTimeout = undefined;
+  }
   const callbacks = topicCallbackMap.get(topic);
   if (callbacks && callbacks.length > 0) {
     const index = callbacks.indexOf(callback as any);
@@ -165,16 +173,21 @@ export async function unSubscribe(
       }),
     });
   }
-  if (topicCallbackMap.size === 0) {
-    try {
-      socket?.close({ });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      socket = undefined;
+  
+  closeSocketTimeout = setTimeout(() => {
+    if (topicCallbackMap.size === 0) {
+      try {
+        socket?.close({ });
+      } catch (err) {
+        console.log(err);
+      } finally {
+        socket = undefined;
+      }
     }
-  }
+  }, 600000);
 }
+
+let closeSocketTimeout: NodeJS.Timeout | undefined = undefined;
 
 /** 发布消息 */
 export async function publish(
@@ -184,6 +197,10 @@ export async function publish(
   },
   isValidCurrClientId?: boolean,
 ) {
+  if (closeSocketTimeout) {
+    clearTimeout(closeSocketTimeout);
+    closeSocketTimeout = undefined;
+  }
   if (isValidCurrClientId) {
     const callbacks = topicCallbackMap.get(data.topic);
     if (callbacks && callbacks.length > 0) {
@@ -199,13 +216,16 @@ export async function publish(
       data,
     }),
   });
-  if (topicCallbackMap.size === 0) {
-    try {
-      socket?.close({ });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      socket = undefined;
+  
+  closeSocketTimeout = setTimeout(() => {
+    if (topicCallbackMap.size === 0) {
+      try {
+        socket?.close({ });
+      } catch (err) {
+        console.log(err);
+      } finally {
+        socket = undefined;
+      }
     }
-  }
+  }, 600000);
 }
