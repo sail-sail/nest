@@ -79,7 +79,7 @@
     class="custom_select_readonly"
     :class="{
       'custom_select_placeholder': shouldShowPlaceholder,
-      'custom_select_isShowModelLabel': isShowModelLabel,
+      'custom_select_isShowModelLabel': isShowModelLabel && inited,
     }"
     v-bind="$attrs"
   >
@@ -187,7 +187,7 @@
     class="custom_select_readonly"
     :class="{
       'custom_select_placeholder': shouldShowPlaceholder,
-      custom_select_isShowModelLabel: isShowModelLabel,
+      'custom_select_isShowModelLabel': isShowModelLabel && inited,
     }"
     v-bind="$attrs"
   >
