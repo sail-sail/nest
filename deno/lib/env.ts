@@ -68,7 +68,7 @@ async function parseEnv() {
   }
   try {
     await Deno.stat(envPath);
-  } catch (err) {
+  } catch (err: any) {
     if (err.code === "ENOENT") {
       return { };
     }
@@ -87,7 +87,7 @@ async function parseEnv() {
  */
 export async function getEnv(key: string): Promise<string> {
   const val = Deno.env.get(key);
-  if (val != null) {
+  if (val) {
     return val;
   }
   if (!parsedEnv) {
@@ -98,7 +98,7 @@ export async function getEnv(key: string): Promise<string> {
 
 export function getParsedEnv(key: string): string {
   const val = Deno.env.get(key);
-  if (val != null) {
+  if (val) {
     return val;
   }
   return parsedEnv[key];
