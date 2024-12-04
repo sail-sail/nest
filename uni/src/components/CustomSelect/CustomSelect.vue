@@ -1,6 +1,9 @@
 <template>
 <view
   class="custom_select"
+  :class="{
+    'custom_select_readonly': props.readonly
+  }"
 >
   <slot name="left"></slot>
   <view
@@ -28,6 +31,7 @@
       un-overflow-hidden
     ></view>
     <tm-icon
+      v-if="!props.disabled && !props.readonly"
       :size="42"
       color="#b1b1b1"
       name="arrow-right-s-line"
@@ -37,7 +41,7 @@
     @click="onClear"
     un-p="r-2.65"
     un-box-border
-    v-if="props.showClear && !isValueEmpty"
+    v-if="props.clearable && !isValueEmpty"
   >
     <tm-icon
       _style="transition:color 0.24s"
@@ -69,38 +73,78 @@
       :scroll-y="true"
       :rebound="false"
     >
-      <view
-        un-p="y-1"
-        un-box-border
-      >
-        <tm-cell
+      <view>
+        <view
           v-for="item in options4SelectV2"
           :key="item.value"
           :title="item.label"
-          :link="false"
-          showBottomBorder
-          :card="false"
           @click="onSelect(item.value)"
+          un-p="y-4"
+          un-box-border
+          un-flex="~"
+          un-items="center"
+          un-gap="2"
+          un-b="0 b-1 solid #e6e6e6"
+          :style="{
+            'color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
+            'border-color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
+          }"
         >
-          <template #right>
-            <i
+          
+          <view
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-items="center"
+            un-m="l-4"
+          >
+            {{ item.label }}
+          </view>
+          
+          <view
+            style="width: 1.2rem;height: 1.2rem;"
+            un-m="r-4"
+          >
+            <view
               v-if="selectedValueMuti.includes(item.value)"
               un-i="iconfont-check"
-              un-text="[var(--primary-color)]"
-            ></i>
-          </template>
-        </tm-cell>
+            ></view>
+          </view>
+          
+        </view>
       </view>
     </scroll-view>
     <view
-      un-m="x-2 y-4"
+      un-p="x-2 y-4"
+      un-box-border
+      un-flex="~"
+      un-w="full"
+      un-items="center"
+      un-gap="4"
     >
-      <tm-button
-        @click="onConfirm"
-        block
+      
+      <view
+        un-flex="~ [1_0_0]"
       >
-        确定
-      </tm-button>
+        <tm-button
+          @click="onCancel"
+          color="info"
+          width="100%"
+        >
+          取消
+        </tm-button>
+      </view>
+      
+      <view
+        un-flex="~ [1_0_0]"
+      >
+        <tm-button
+          @click="onConfirm"
+          width="100%"
+        >
+          确定
+        </tm-button>
+      </view>
+      
     </view>
     <view
       :style="{ height: sysinfo.bottom + 'px' }"
@@ -112,15 +156,15 @@
 <script lang="ts" setup>
 type OptionType = {
   label: string;
-  value: string;
+  value: any;
 };
 
 type OptionsMap = (item: any) => OptionType;
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value?: string | string[] | null): void,
+  (e: "update:modelValue", value?: any): void,
   (e: "data", data: any[]): void,
-  (e: "change", value?: any | any[] | null): void,
+  (e: "change", value: any): void,
   (e: "clear"): void,
 }>();
 
@@ -128,12 +172,12 @@ const props = withDefaults(
   defineProps<{
     method: () => Promise<any[]>; // 用于获取数据的方法
     optionsMap?: OptionsMap;
-    modelValue?: string | string[] | null;
+    modelValue?: any;
     options4SelectV2?: OptionType[];
     placeholder?: string;
     height?: number;
     init?: boolean;
-    showClear?: boolean;
+    clearable?: boolean;
     multiple?: boolean;
     disabled?: boolean;
     readonly?: boolean;
@@ -151,7 +195,7 @@ const props = withDefaults(
     placeholder: "",
     height: 700,
     init: true,
-    showClear: true,
+    clearable: true,
     multiple: false,
     disabled: false,
     readonly: false,
@@ -199,7 +243,7 @@ watch(
 );
 
 let selectedValueMuti = computed(() => {
-  if (!selectedValue.value) {
+  if (selectedValue.value == null) {
     return [ ];
   }
   if (props.multiple) {
@@ -237,7 +281,7 @@ let isValueEmpty = computed(() => {
 let showPicker = ref(false);
 
 let modelLabels = computed(() => {
-  if (!props.modelValue) {
+  if (props.modelValue == null) {
     return "";
   }
   if (!props.multiple) {
@@ -300,7 +344,11 @@ function onConfirm() {
   emit("update:modelValue", selectedValue.value);
 }
 
-async function refreshEfc() {
+function onCancel() {
+  showPicker.value = false;
+}
+
+async function onRefresh() {
   const method = props.method;
   if (!method) {
     if (!options4SelectV2 || options4SelectV2.value.length === 0) {
@@ -322,15 +370,15 @@ async function refreshEfc() {
 }
 
 if (props.init) {
-  refreshEfc();
+  onRefresh();
 }
 
 defineExpose({
-  refresh: refreshEfc,
+  refresh: onRefresh,
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .custom_select {
   margin-left: 0px;
   margin-top: 0px;
