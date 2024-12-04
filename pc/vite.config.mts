@@ -318,8 +318,5 @@ export default defineConfig({
         secure: false,
       },
     },
-    fs: {
-      cachedChecks: true,
-    },
   },
 });
