@@ -30,10 +30,12 @@ export async function publish<T>(
     topic: string;
     payload: T;
   },
-  isValidCurrClientId?: boolean,
+  option?: {
+    isValidCurrClientId?: boolean;
+  },
 ) {
   const topic = data.topic;
-  if (isValidCurrClientId) {
+  if (option?.isValidCurrClientId) {
     const callbacks = callbacksMap.get(topic);
     if (callbacks && callbacks.length > 0) {
       for (const callback of callbacks) {
