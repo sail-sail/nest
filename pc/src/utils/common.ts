@@ -4,6 +4,7 @@ import type {
 
 export async function getDict(
   codes: string[],
+  opt?: GqlOpt,
 ) {
   if (!codes || codes.length === 0) {
     return [ ];
@@ -25,13 +26,14 @@ export async function getDict(
     variables: {
       codes,
     },
-  });
+  }, opt);
   const result = data.getDict;
   return result;
 }
 
 export async function getDictbiz(
   codes: string[],
+  opt?: GqlOpt,
 ) {
   if (!codes || codes.length === 0) {
     return [ ];
@@ -53,7 +55,7 @@ export async function getDictbiz(
     variables: {
       codes,
     },
-  });
+  }, opt);
   const result = data.getDictbiz;
   return result;
 }
@@ -125,11 +127,10 @@ export function showUploadMsg(
   };
 }
 
-export function copyText(text: string) {
-  const textarea = document.createElement("textarea");
-  textarea.value = text;
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand("copy");
-  document.body.removeChild(textarea);
+export async function copyText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (err) {
+    console.error(err);
+  }
 }

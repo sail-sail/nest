@@ -224,15 +224,12 @@ defineExpose({ tabs_divRef: $$(tabs_divRef) });
 }
 .tab_div:hover {
   transition: width 1s;
-  background-color: #041c31;
+  background-color: var(--el-menu-hover-bg-color);
   .tab_close {
     opacity: 1;
   }
 }
 .tab_active {
-  // color: #EEE;
-  background-color: rgba(0,0,0,.8);
-  box-shadow: inset 0px 0px 2px #34404a;
   .tab_label {
     color: var(--el-menu-active-color);
   }
@@ -240,9 +237,6 @@ defineExpose({ tabs_divRef: $$(tabs_divRef) });
     opacity: 1;
     color: var(--el-menu-active-color);
   }
-}
-.tab_div.tab_active:hover {
-  background-color: rgba(0,0,0,.8);
 }
 .tab_label {
   min-width: 80px;
@@ -252,27 +246,25 @@ defineExpose({ tabs_divRef: $$(tabs_divRef) });
   justify-content: center;
   align-items: center;
   white-space: nowrap;
-  color: #FFF;
 }
 .tab_icon {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #FFF;
 }
 .tab_close_div {
   display: flex;
   align-items: flex-start;
   justify-content: center;
   margin-top: 3px;
-  margin-right: -2px;
-  width: 13px;
-  height: 13px;
+  margin-right: -3px;
+  width: 15px;
+  height: 15px;
 }
 .tab_close {
   opacity: 0;
   transition: opacity .5s,background-color .5s;
-  font-size: 12px;
+  font-size: 13px;
   width: 100%;
   height: 100%;
   cursor: pointer;
@@ -280,6 +272,6 @@ defineExpose({ tabs_divRef: $$(tabs_divRef) });
 }
 .tab_close:hover {
   color: red;
-  background-color: #FFF;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 </style>
