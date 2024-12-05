@@ -3240,6 +3240,57 @@ export async function findAutoCode(
 }
 #>
 
+// MARK: createReturn
+/** 创建 <#=table_comment#> */
+export async function createReturn(
+  input: Readonly<<#=inputName#>>,
+  options?: {
+    is_debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+    is_silent_mode?: boolean;
+  },
+): Promise<<#=modelName#>> {
+  
+  const table = "<#=mod#>_<#=table#>";
+  const method = "createReturn";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
+  }
+  
+  const [
+    id,
+  ] = await _creates([ input ], options);
+  
+  const model = await validateOption(
+    await findOne(
+      {
+        id,
+      },
+      undefined,
+      options,
+    ),
+  );
+  
+  return model;
+}
+
 // MARK: create
 /** 创建 <#=table_comment#> */
 export async function create(
@@ -3281,6 +3332,43 @@ export async function create(
   return id;
 }
 
+// MARK: createsReturn
+/** 批量创建 用户 */
+export async function createsReturn(
+  inputs: <#=inputName#>[],
+  options?: {
+    is_debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+    is_silent_mode?: boolean;
+  },
+): Promise<<#=modelName#>[]> {
+  
+  const table = "<#=mod#>_<#=table#>";
+  const method = "createsReturn";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const ids = await _creates(inputs, options);
+  
+  const models = await findByIds(ids, options);
+  
+  return models;
+}
+
 // MARK: creates
 /** 批量创建 <#=table_comment#> */
 export async function creates(
@@ -3309,24 +3397,7 @@ export async function creates(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
-  }<#
-  if (autoCodeColumn) {
-  #>
-  
-  // 设置自动编码
-  for (const input of inputs) {
-    if (input.<#=autoCodeColumn.COLUMN_NAME#>) {
-      continue;
-    }
-    const {
-      <#=autoCodeColumn.autoCode.seq#>,
-      <#=autoCodeColumn.COLUMN_NAME#>,
-    } = await findAutoCode(options);
-    input.<#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>;
-    input.<#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.COLUMN_NAME#>;
-  }<#
   }
-  #>
   
   const ids = await _creates(inputs, options);
   
@@ -3345,7 +3416,24 @@ async function _creates(
   
   if (inputs.length === 0) {
     return [ ];
+  }<#
+  if (autoCodeColumn) {
+  #>
+  
+  // 设置自动编码
+  for (const input of inputs) {
+    if (input.<#=autoCodeColumn.COLUMN_NAME#>) {
+      continue;
+    }
+    const {
+      <#=autoCodeColumn.autoCode.seq#>,
+      <#=autoCodeColumn.COLUMN_NAME#>,
+    } = await findAutoCode(options);
+    input.<#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>;
+    input.<#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.COLUMN_NAME#>;
+  }<#
   }
+  #>
   
   const table = "<#=mod#>_<#=table#>";
   
