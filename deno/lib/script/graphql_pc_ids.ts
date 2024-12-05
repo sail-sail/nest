@@ -128,6 +128,18 @@ export function getScalars() {
       "output": "UsrId",
     },
     
+    // 短信应用
+    "SmsAppId": {
+      "input": "SmsAppId",
+      "output": "SmsAppId",
+    },
+    
+    // 短信发送记录
+    "SmsSendRecordId": {
+      "input": "SmsSendRecordId",
+      "output": "SmsSendRecordId",
+    },
+    
   };
   return scalars;
 }

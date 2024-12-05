@@ -1,0 +1,2 @@
+id,code,lbl,type,order_by,is_locked,is_sys
+civYPrDkROmykcnzBeqiRw,submail_sms_send_record_status,短信发送记录-状态,string,101,1,1

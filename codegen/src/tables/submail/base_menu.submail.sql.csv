@@ -1,0 +1,3 @@
+id,parent_id,lbl,route_path,route_query,is_enabled,is_hidden,order_by
+/GzRjCyZQaGRr5MFcBrtKA,6ZeQOSTtRpGy+467HJZuBw,短信应用,/submail/sms_app,,1,0,10070
+iXI672RUQ5qgXtKm5r+lNg,6ZeQOSTtRpGy+467HJZuBw,短信发送记录,/submail/sms_send_record,,1,0,10071
