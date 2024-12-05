@@ -1294,6 +1294,57 @@ export async function findAutoCode(
   };
 }
 
+// MARK: createReturn
+/** 创建 角色 */
+export async function createReturn(
+  input: Readonly<RoleInput>,
+  options?: {
+    is_debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+    is_silent_mode?: boolean;
+  },
+): Promise<RoleModel> {
+  
+  const table = "base_role";
+  const method = "createReturn";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
+  }
+  
+  const [
+    id,
+  ] = await _creates([ input ], options);
+  
+  const model = await validateOption(
+    await findOne(
+      {
+        id,
+      },
+      undefined,
+      options,
+    ),
+  );
+  
+  return model;
+}
+
 // MARK: create
 /** 创建 角色 */
 export async function create(
@@ -1335,6 +1386,43 @@ export async function create(
   return id;
 }
 
+// MARK: createsReturn
+/** 批量创建 用户 */
+export async function createsReturn(
+  inputs: RoleInput[],
+  options?: {
+    is_debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+    is_silent_mode?: boolean;
+  },
+): Promise<RoleModel[]> {
+  
+  const table = "base_role";
+  const method = "createsReturn";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const ids = await _creates(inputs, options);
+  
+  const models = await findByIds(ids, options);
+  
+  return models;
+}
+
 // MARK: creates
 /** 批量创建 角色 */
 export async function creates(
@@ -1365,19 +1453,6 @@ export async function creates(
     options.is_debug = false;
   }
   
-  // 设置自动编码
-  for (const input of inputs) {
-    if (input.code) {
-      continue;
-    }
-    const {
-      code_seq,
-      code,
-    } = await findAutoCode(options);
-    input.code_seq = code_seq;
-    input.code = code;
-  }
-  
   const ids = await _creates(inputs, options);
   
   return ids;
@@ -1395,6 +1470,19 @@ async function _creates(
   
   if (inputs.length === 0) {
     return [ ];
+  }
+  
+  // 设置自动编码
+  for (const input of inputs) {
+    if (input.code) {
+      continue;
+    }
+    const {
+      code_seq,
+      code,
+    } = await findAutoCode(options);
+    input.code_seq = code_seq;
+    input.code = code;
   }
   
   const table = "base_role";
