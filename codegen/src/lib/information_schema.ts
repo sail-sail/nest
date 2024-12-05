@@ -88,6 +88,9 @@ async function getSchema0(
     allTableSchemaRecords = <TableCloumn[]>result[0];
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
+  if (!tables[table_name].columns) {
+    throw new Error(`table: ${ table_name } columns is empty!`);
+  }
   const hasOrderBy = tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "order_by" && !item.onlyCodegenDeno);
   // 是否有系统字段 is_sys
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));

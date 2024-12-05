@@ -82,3 +82,11 @@ type TenantId = Distinct<string, typeof tenantId>;
 declare const usrId: unique symbol;
 /** 用户 */
 type UsrId = Distinct<string, typeof usrId>;
+
+declare const sms_appId: unique symbol;
+/** 短信应用 */
+type SmsAppId = Distinct<string, typeof sms_appId>;
+
+declare const sms_send_recordId: unique symbol;
+/** 短信发送记录 */
+type SmsSendRecordId = Distinct<string, typeof sms_send_recordId>;

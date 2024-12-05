@@ -254,4 +254,28 @@ export const routesGen: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/submail/sms_app",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "短信应用",
+        component: () => import("@/views/submail/sms_app/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/submail/sms_send_record",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "短信发送记录",
+        component: () => import("@/views/submail/sms_send_record/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
 ];
