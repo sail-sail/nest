@@ -477,8 +477,8 @@
             </el-table-column>
           </template>
           
-          <!-- 日志 -->
-          <template v-else-if="'log' === col.prop">
+          <!-- 消息 -->
+          <template v-else-if="'msg' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -901,8 +901,8 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "日志",
-      prop: "log",
+      label: "消息",
+      prop: "msg",
       width: 200,
       align: "left",
       headerAlign: "center",
@@ -1270,7 +1270,7 @@ async function initI18nsEfc() {
     "状态",
     "发送时间",
     "标签",
-    "日志",
+    "消息",
     "创建人",
     "创建时间",
   ];

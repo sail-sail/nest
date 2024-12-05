@@ -133,6 +133,9 @@ async function getWhereQuery(
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
   }
+  if (search?.is_paused != null) {
+    whereQuery += ` and t.is_paused in (${ args.push(search.is_paused) })`;
+  }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
       whereQuery += ` and t.order_by>=${ args.push(search.order_by[0]) }`;
@@ -312,6 +315,17 @@ export async function findAll(
       throw new Error(`search.is_enabled.length > ${ ids_limit }`);
     }
   }
+  // 暂停发送
+  if (search && search.is_paused != null) {
+    const len = search.is_paused.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_paused.length > ${ ids_limit }`);
+    }
+  }
   // 创建人
   if (search && search.create_usr_id != null) {
     const len = search.create_usr_id.length;
@@ -395,9 +409,11 @@ export async function findAll(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_pausedDict, // 暂停发送
   ] = await getDict([
     "is_locked",
     "is_enabled",
+    "yes_no",
   ]);
   
   for (let i = 0; i < result.length; i++) {
@@ -422,6 +438,16 @@ export async function findAll(
       }
     }
     model.is_enabled_lbl = is_enabled_lbl || "";
+    
+    // 暂停发送
+    let is_paused_lbl = model.is_paused?.toString() || "";
+    if (model.is_paused != null) {
+      const dictItem = is_pausedDict.find((dictItem) => dictItem.val === String(model.is_paused));
+      if (dictItem) {
+        is_paused_lbl = dictItem.lbl;
+      }
+    }
+    model.is_paused_lbl = is_paused_lbl || "";
     
     // 创建时间
     if (model.create_time) {
@@ -464,9 +490,11 @@ export async function setIdByLbl(
   const [
     is_lockedDict, // 锁定
     is_enabledDict, // 启用
+    is_pausedDict, // 暂停发送
   ] = await getDict([
     "is_locked",
     "is_enabled",
+    "yes_no",
   ]);
   
   // 锁定
@@ -490,6 +518,17 @@ export async function setIdByLbl(
     const lbl = is_enabledDict.find((itemTmp) => itemTmp.val === String(input.is_enabled))?.lbl || "";
     input.is_enabled_lbl = lbl;
   }
+  
+  // 暂停发送
+  if (isNotEmpty(input.is_paused_lbl) && input.is_paused == null) {
+    const val = is_pausedDict.find((itemTmp) => itemTmp.lbl === input.is_paused_lbl)?.val;
+    if (val != null) {
+      input.is_paused = Number(val);
+    }
+  } else if (isEmpty(input.is_paused_lbl) && input.is_paused != null) {
+    const lbl = is_pausedDict.find((itemTmp) => itemTmp.val === String(input.is_paused))?.lbl || "";
+    input.is_paused_lbl = lbl;
+  }
 }
 
 // MARK: getFieldComments
@@ -505,6 +544,8 @@ export async function getFieldComments(): Promise<SmsAppFieldComment> {
     is_locked_lbl: await n("锁定"),
     is_enabled: await n("启用"),
     is_enabled_lbl: await n("启用"),
+    is_paused: await n("暂停发送"),
+    is_paused_lbl: await n("暂停发送"),
     order_by: await n("排序"),
     rem: await n("备注"),
     create_usr_id: await n("创建人"),
@@ -1104,7 +1145,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into submail_sms_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,appid,appkey,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into submail_sms_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,appid,appkey,is_locked,is_enabled,is_paused,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1224,6 +1265,11 @@ async function _creates(
       }
       if (input.is_enabled != null) {
         sql += `,${ args.push(input.is_enabled) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.is_paused != null) {
+        sql += `,${ args.push(input.is_paused) }`;
       } else {
         sql += ",default";
       }
@@ -1409,6 +1455,12 @@ export async function updateById(
   if (input.is_enabled != null) {
     if (input.is_enabled != oldModel.is_enabled) {
       sql += `is_enabled=${ args.push(input.is_enabled) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.is_paused != null) {
+    if (input.is_paused != oldModel.is_paused) {
+      sql += `is_paused=${ args.push(input.is_paused) },`;
       updateFldNum++;
     }
   }

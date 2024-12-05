@@ -23,6 +23,10 @@ type SmsAppModel {
   is_enabled: Int!
   "启用"
   is_enabled_lbl: String!
+  "暂停发送"
+  is_paused: Int!
+  "暂停发送"
+  is_paused_lbl: String!
   "排序"
   order_by: Int!
   "备注"
@@ -63,6 +67,10 @@ type SmsAppFieldComment {
   is_enabled: String!
   "启用"
   is_enabled_lbl: String!
+  "暂停发送"
+  is_paused: String!
+  "暂停发送"
+  is_paused_lbl: String!
   "排序"
   order_by: String!
   "备注"
@@ -101,6 +109,10 @@ input SmsAppInput {
   is_enabled: Int
   "启用"
   is_enabled_lbl: String
+  "暂停发送"
+  is_paused: Int
+  "暂停发送"
+  is_paused_lbl: String
   "排序"
   order_by: Int
   "备注"

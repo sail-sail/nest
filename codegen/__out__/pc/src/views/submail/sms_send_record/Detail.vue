@@ -162,14 +162,14 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.log == null)">
+        <template v-if="(showBuildIn || builtInModel?.msg == null)">
           <el-form-item
-            :label="n('日志')"
-            prop="log"
+            :label="n('消息')"
+            prop="msg"
           >
             <CustomInput
-              v-model="dialogModel.log"
-              :placeholder="`${ ns('请输入') } ${ n('日志') }`"
+              v-model="dialogModel.msg"
+              :placeholder="`${ ns('请输入') } ${ n('消息') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -683,7 +683,7 @@ async function onInitI18ns() {
     "状态",
     "发送时间",
     "标签",
-    "日志",
+    "消息",
     "创建人",
     "创建时间",
   ];

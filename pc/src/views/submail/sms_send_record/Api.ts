@@ -45,8 +45,8 @@ export function intoInput(
     send_time_save_null: model?.send_time_save_null,
     // 标签
     tag: model?.tag,
-    // 日志
-    log: model?.log,
+    // 消息
+    msg: model?.msg,
   };
   return input;
 }
@@ -299,7 +299,7 @@ export function useDownloadImportTemplate(routePath: string) {
             status_lbl
             send_time_lbl
             tag
-            log
+            msg
           }
           findAllSmsApp {
             id

@@ -1,5 +1,6 @@
 import {
   log,
+  error,
 } from "/lib/context.ts";
 
 import {
@@ -26,13 +27,14 @@ const SMS_URL = "https://api-v4.mysubmail.com/sms/send.json";
  * @param to 接收人手机号
  * @param content 短信内容
  * @param tag 短信标签
+ * @returns 是否真正发送成功, 如果处于暂停状态, 则不发送, 返回false, 但会记录发送记录
  */
 export async function sendSms(
   to: string,
   content: string,
   tag?: string,
   is_log = true,
-) {
+): Promise<boolean> {
   if (!to) {
     throw new Error("手机号不能为空");
   }
@@ -56,6 +58,7 @@ export async function sendSms(
   const signature = sms_app_model.appkey;
   const sms_app_id = sms_app_model.id;
   const sms_app_id_lbl = sms_app_model.lbl;
+  const is_paused = sms_app_model.is_paused;
   const body = {
     appid,
     signature,
@@ -66,6 +69,18 @@ export async function sendSms(
   const bodyStr = JSON.stringify(body);
   log("sendSms.body", bodyStr);
   
+  if (is_paused && is_log) {
+    await createSmsSendRecord({
+      sms_app_id,
+      sms_app_id_lbl,
+      to,
+      content,
+      tag,
+      status: SmsSendRecordStatus.Paused,
+    });
+    return false;
+  }
+  
   let sms_send_record_id: SmsSendRecordId | undefined;
   
   if (is_log) {
@@ -75,22 +90,43 @@ export async function sendSms(
       to,
       content,
       tag,
-      status: SmsSendRecordStatus.Failure,
+      status: SmsSendRecordStatus.Sending,
     });
   }
   
-  const res = await fetch(SMS_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: bodyStr,
-  });
-  const dataStr = await res.text();
-  log("sendSms.return", dataStr);
-  const data = JSON.parse(dataStr);
+  let data: {
+    status: "success" | "error";
+    msg?: string;
+  } | undefined;
   
-  if (sms_send_record_id) {
+  try {
+    const res = await fetch(SMS_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: bodyStr,
+    });
+    const dataStr = await res.text();
+    log("sendSms.return", dataStr);
+    data = JSON.parse(dataStr);
+  } catch (err) {
+    if (sms_send_record_id) {
+      const send_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
+      await updateByIdSmsSendRecord(
+        sms_send_record_id,
+        {
+          status: SmsSendRecordStatus.Failure,
+          send_time,
+          msg: err.message,
+        },
+      );
+    }
+    error("sendSms.error", err);
+    return false;
+  }
+  
+  if (sms_send_record_id && data) {
     const send_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
     if (data.status === "success") {
       await updateByIdSmsSendRecord(
@@ -100,15 +136,17 @@ export async function sendSms(
           send_time,
         },
       );
-    } else {
-      await updateByIdSmsSendRecord(
-        sms_send_record_id,
-        {
-          status: SmsSendRecordStatus.Failure,
-          send_time,
-          log: data.msg,
-        },
-      );
+      return true;
     }
+    await updateByIdSmsSendRecord(
+      sms_send_record_id,
+      {
+        status: SmsSendRecordStatus.Failure,
+        send_time,
+        msg: data.msg,
+      },
+    );
+    return false;
   }
+  return true;
 }

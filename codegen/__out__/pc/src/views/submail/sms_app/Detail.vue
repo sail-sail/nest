@@ -114,6 +114,21 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.is_paused == null)">
+          <el-form-item
+            :label="n('暂停发送')"
+            prop="is_paused"
+          >
+            <DictSelect
+              :set="dialogModel.is_paused = dialogModel.is_paused ?? undefined"
+              v-model="dialogModel.is_paused"
+              code="yes_no"
+              :placeholder="`${ ns('请选择') } ${ n('暂停发送') }`"
+              :readonly="isLocked || isReadonly"
+            ></DictSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
             :label="n('排序')"
@@ -321,6 +336,13 @@ watchEffect(async () => {
         type: "string",
         max: 22,
         message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+      },
+    ],
+    // 暂停发送
+    is_paused: [
+      {
+        required: true,
+        message: `${ await nsAsync("请选择") } ${ n("暂停发送") }`,
       },
     ],
     // 排序
@@ -669,6 +691,20 @@ async function nextId() {
   return true;
 }
 
+watch(
+  () => [
+    dialogModel.is_paused,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.is_paused) {
+      dialogModel.is_paused_lbl = "";
+    }
+  },
+);
+
 /** 快捷键ctrl+shift+回车 */
 async function onSaveAndCopyKeydown(e: KeyboardEvent) {
   e.preventDefault();
@@ -837,6 +873,7 @@ async function onInitI18ns() {
     "appkey",
     "锁定",
     "启用",
+    "暂停发送",
     "排序",
     "备注",
     "创建人",
