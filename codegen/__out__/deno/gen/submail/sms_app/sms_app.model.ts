@@ -27,6 +27,8 @@ declare global {
     appkey_like?: string;
     /** 锁定 */
     is_locked?: number[];
+    /** 暂停发送 */
+    is_paused?: number[];
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */

@@ -39,8 +39,8 @@ export const smsSendRecordFields = [
   "send_time_lbl",
   // 标签
   "tag",
-  // 日志
-  "log",
+  // 消息
+  "msg",
   // 创建人
   "create_usr_id",
   "create_usr_id_lbl",

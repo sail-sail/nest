@@ -31,6 +31,9 @@ export default defineConfig({
         COLUMN_NAME: "is_enabled",
       },
       {
+        COLUMN_NAME: "is_paused",
+      },
+      {
         COLUMN_NAME: "order_by",
       },
       {
@@ -90,7 +93,7 @@ export default defineConfig({
         align: "center",
       },
       {
-        COLUMN_NAME: "log",
+        COLUMN_NAME: "msg",
         width: 200,
         align: "left",
       },

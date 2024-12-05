@@ -31,9 +31,9 @@ declare global {
     /** 标签 */
     tag?: string;
     tag_like?: string;
-    /** 日志 */
-    log?: string;
-    log_like?: string;
+    /** 消息 */
+    msg?: string;
+    msg_like?: string;
     tenant_id?: TenantId | null;
   }
 

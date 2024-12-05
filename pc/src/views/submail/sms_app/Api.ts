@@ -41,6 +41,9 @@ export function intoInput(
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
+    // 暂停发送
+    is_paused: model?.is_paused,
+    is_paused_lbl: model?.is_paused_lbl,
     // 排序
     order_by: model?.order_by,
     // 备注
@@ -370,8 +373,15 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             appid
             appkey
+            is_paused_lbl
             order_by
             rem
+          }
+          getDict(codes: [
+            "yes_no",
+          ]) {
+            code
+            lbl
           }
         }
       `,
@@ -435,6 +445,7 @@ export function useExportExcel(routePath: string) {
             getDict(codes: [
               "is_locked",
               "is_enabled",
+              "yes_no",
             ]) {
               code
               lbl
@@ -555,6 +566,7 @@ export async function getDefaultInput() {
   const defaultInput: SmsAppInput = {
     is_locked: 0,
     is_enabled: 1,
+    is_paused: 0,
     order_by: 1,
   };
   return defaultInput;

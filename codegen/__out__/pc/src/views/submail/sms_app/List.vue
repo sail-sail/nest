@@ -558,6 +558,22 @@
             </el-table-column>
           </template>
           
+          <!-- 暂停发送 -->
+          <template v-else-if="'is_paused_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_paused"
+                  @change="onIs_paused(row.id, row.is_paused)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
           <!-- 排序 -->
           <template v-else-if="'order_by' === col.prop">
             <el-table-column
@@ -1032,6 +1048,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
+      label: "暂停发送",
+      prop: "is_paused_lbl",
+      sortBy: "is_paused",
+      width: 85,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
+    },
+    {
       label: "排序",
       prop: "order_by",
       width: 100,
@@ -1364,6 +1389,7 @@ async function onImportExcel() {
     [ await nAsync("appkey") ]: "appkey",
     [ await nAsync("锁定") ]: "is_locked_lbl",
     [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("暂停发送") ]: "is_paused_lbl",
     [ await nAsync("排序") ]: "order_by",
     [ await nAsync("备注") ]: "rem",
   };
@@ -1392,6 +1418,7 @@ async function onImportExcel() {
           "appkey": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
+          "is_paused_lbl": "string",
           "order_by": "number",
           "rem": "string",
         },
@@ -1454,6 +1481,30 @@ async function onIs_enabled(id: SmsAppId, is_enabled: 0 | 1) {
   await enableByIds(
     [ id ],
     is_enabled,
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}
+
+/** 暂停发送 */
+async function onIs_paused(id: SmsAppId, is_paused: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await updateById(
+    id,
+    {
+      is_paused,
+    },
     {
       notLoading,
     },
@@ -1747,6 +1798,7 @@ async function initI18nsEfc() {
     "appkey",
     "锁定",
     "启用",
+    "暂停发送",
     "排序",
     "备注",
     "创建人",

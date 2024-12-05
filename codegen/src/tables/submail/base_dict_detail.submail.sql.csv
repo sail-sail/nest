@@ -1,3 +1,5 @@
 id,dict_id,_dict_lbl,lbl,val,order_by,is_locked,is_sys
 H11gbStqSI63GsiUazHNdw,civYPrDkROmykcnzBeqiRw,短信发送记录-状态,成功,success,1,1,1
 NjWlh8D9SY+YqxBrpwtqPg,civYPrDkROmykcnzBeqiRw,,失败,failure,2,1,1
+pji1ocaqTKu2AyXAaeigUw,civYPrDkROmykcnzBeqiRw,,发送中,sending,3,1,1
+SFnkTc4qRfWznGDKRnBb4w,civYPrDkROmykcnzBeqiRw,,暂停发送,paused,4,1,1

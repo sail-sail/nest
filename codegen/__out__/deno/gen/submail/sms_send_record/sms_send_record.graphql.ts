@@ -12,6 +12,10 @@ enum SmsSendRecordStatus {
   success
   "失败"
   failure
+  "发送中"
+  sending
+  "暂停发送"
+  paused
 }
 
 type SmsSendRecordModel {
@@ -35,8 +39,8 @@ type SmsSendRecordModel {
   send_time_lbl: String!
   "标签"
   tag: String!
-  "日志"
-  log: String!
+  "消息"
+  msg: String!
   "创建人"
   create_usr_id: UsrId!
   "创建人"
@@ -69,8 +73,8 @@ type SmsSendRecordFieldComment {
   send_time_lbl: String!
   "标签"
   tag: String!
-  "日志"
-  log: String!
+  "消息"
+  msg: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -103,8 +107,8 @@ input SmsSendRecordInput {
   send_time_save_null: Boolean
   "标签"
   tag: String
-  "日志"
-  log: String
+  "消息"
+  msg: String
 }
 input SmsSendRecordSearch {
   "已删除"

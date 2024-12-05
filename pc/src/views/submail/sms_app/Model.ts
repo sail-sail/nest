@@ -36,6 +36,9 @@ export const smsAppFields = [
   // 启用
   "is_enabled",
   "is_enabled_lbl",
+  // 暂停发送
+  "is_paused",
+  "is_paused_lbl",
   // 排序
   "order_by",
   // 备注
