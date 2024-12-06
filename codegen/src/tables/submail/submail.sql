@@ -32,7 +32,7 @@ CREATE TABLE if not exists `submail_sms_send_record` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `sms_app_id` varchar(22) NOT NULL DEFAULT '' COMMENT '短信应用',
   `sms_app_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '短信应用',
-  `to` varchar(20) NOT NULL DEFAULT '' COMMENT '接收人',
+  `send_to` varchar(20) NOT NULL DEFAULT '' COMMENT '接收人',
   `content` varchar(1000) NOT NULL DEFAULT '' COMMENT '内容',
   `status` varchar(10) NOT NULL DEFAULT 'success' COMMENT '状态,dict:submail_sms_send_record_status',
   `status_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '状态',

@@ -26,7 +26,7 @@ type SmsSendRecordModel {
   "短信应用"
   sms_app_id_lbl: String!
   "接收人"
-  to: String!
+  send_to: String!
   "内容"
   content: String!
   "状态"
@@ -60,7 +60,7 @@ type SmsSendRecordFieldComment {
   "短信应用"
   sms_app_id_lbl: String!
   "接收人"
-  to: String!
+  send_to: String!
   "内容"
   content: String!
   "状态"
@@ -92,7 +92,7 @@ input SmsSendRecordInput {
   "短信应用"
   sms_app_id_lbl: String
   "接收人"
-  to: String
+  send_to: String
   "内容"
   content: String
   "状态"
@@ -126,8 +126,8 @@ input SmsSendRecordSearch {
   "短信应用"
   sms_app_id_lbl_like: String
   "接收人"
-  to: String
-  to_like: String
+  send_to: String
+  send_to_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"

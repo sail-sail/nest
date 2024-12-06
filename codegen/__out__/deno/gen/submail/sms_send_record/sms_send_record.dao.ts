@@ -124,11 +124,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.sms_app_id_lbl_like)) {
     whereQuery += ` and t.sms_app_id_lbl like ${ args.push("%" + sqlLike(search.sms_app_id_lbl_like) + "%") }`;
   }
-  if (search?.to != null) {
-    whereQuery += ` and t.to=${ args.push(search.to) }`;
+  if (search?.send_to != null) {
+    whereQuery += ` and t.send_to=${ args.push(search.send_to) }`;
   }
-  if (isNotEmpty(search?.to_like)) {
-    whereQuery += ` and t.to like ${ args.push("%" + sqlLike(search?.to_like) + "%") }`;
+  if (isNotEmpty(search?.send_to_like)) {
+    whereQuery += ` and t.send_to like ${ args.push("%" + sqlLike(search?.send_to_like) + "%") }`;
   }
   if (search?.content != null) {
     whereQuery += ` and t.content=${ args.push(search.content) }`;
@@ -474,7 +474,7 @@ export async function getFieldComments(): Promise<SmsSendRecordFieldComment> {
     id: await n("ID"),
     sms_app_id: await n("短信应用"),
     sms_app_id_lbl: await n("短信应用"),
-    to: await n("接收人"),
+    send_to: await n("接收人"),
     content: await n("内容"),
     status: await n("状态"),
     status_lbl: await n("状态"),
@@ -841,9 +841,9 @@ export async function validate(
   
   // 接收人
   await validators.chars_max_length(
-    input.to,
+    input.send_to,
     20,
-    fieldComments.to,
+    fieldComments.send_to,
   );
   
   // 内容
@@ -1109,7 +1109,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into submail_sms_send_record(id,create_time,tenant_id,create_usr_id,create_usr_id_lbl,sms_app_id_lbl,sms_app_id,to,content,status_lbl,status,send_time,tag,msg)values";
+  let sql = "insert into submail_sms_send_record(id,create_time,tenant_id,create_usr_id,create_usr_id_lbl,sms_app_id_lbl,sms_app_id,send_to,content,status_lbl,status,send_time,tag,msg)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1202,8 +1202,8 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.to != null) {
-        sql += `,${ args.push(input.to) }`;
+      if (input.send_to != null) {
+        sql += `,${ args.push(input.send_to) }`;
       } else {
         sql += ",default";
       }
@@ -1383,9 +1383,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.to != null) {
-    if (input.to != oldModel.to) {
-      sql += `to=${ args.push(input.to) },`;
+  if (input.send_to != null) {
+    if (input.send_to != oldModel.send_to) {
+      sql += `send_to=${ args.push(input.send_to) },`;
       updateFldNum++;
     }
   }

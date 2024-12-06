@@ -29,13 +29,13 @@
       @keydown.enter="onSearch(true)"
     >
       
-      <template v-if="(builtInSearch?.to == null && (showBuildIn || builtInSearch?.to_like == null))">
+      <template v-if="(builtInSearch?.send_to == null && (showBuildIn || builtInSearch?.send_to_like == null))">
         <el-form-item
           :label="n('接收人')"
-          prop="to_like"
+          prop="send_to_like"
         >
           <CustomInput
-            v-model="search.to_like"
+            v-model="search.send_to_like"
             :placeholder="`${ ns('请输入') } ${ n('接收人') }`"
             @clear="onSearchClear"
           ></CustomInput>
@@ -433,7 +433,7 @@
           </template>
           
           <!-- 接收人 -->
-          <template v-else-if="'to' === col.prop && (showBuildIn || builtInSearch?.to == null)">
+          <template v-else-if="'send_to' === col.prop && (showBuildIn || builtInSearch?.send_to == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -613,8 +613,8 @@ const props = defineProps<{
   id?: SmsSendRecordId; // ID
   sms_app_id?: string|string[]; // 短信应用
   sms_app_id_lbl?: string; // 短信应用
-  to?: string; // 接收人
-  to_like?: string; // 接收人
+  send_to?: string; // 接收人
+  send_to_like?: string; // 接收人
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -860,7 +860,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "接收人",
-      prop: "to",
+      prop: "send_to",
       width: 120,
       align: "center",
       headerAlign: "center",

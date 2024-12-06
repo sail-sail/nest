@@ -33,7 +33,7 @@ export function intoInput(
     sms_app_id: model?.sms_app_id,
     sms_app_id_lbl: model?.sms_app_id_lbl,
     // 接收人
-    to: model?.to,
+    send_to: model?.send_to,
     // 内容
     content: model?.content,
     // 状态
@@ -294,7 +294,7 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsSmsSendRecord {
             sms_app_id_lbl
-            to
+            send_to
             content
             status_lbl
             send_time_lbl
