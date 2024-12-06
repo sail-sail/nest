@@ -91,13 +91,13 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.to == null)">
+        <template v-if="(showBuildIn || builtInModel?.send_to == null)">
           <el-form-item
             :label="n('接收人')"
-            prop="to"
+            prop="send_to"
           >
             <CustomInput
-              v-model="dialogModel.to"
+              v-model="dialogModel.send_to"
               :placeholder="`${ ns('请输入') } ${ n('接收人') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>

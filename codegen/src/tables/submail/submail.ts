@@ -70,7 +70,7 @@ export default defineConfig({
         modelLabel: "sms_app_id_lbl",
       },
       {
-        COLUMN_NAME: "to",
+        COLUMN_NAME: "send_to",
         search: true,
         width: 120,
       },

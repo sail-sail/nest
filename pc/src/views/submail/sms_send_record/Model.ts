@@ -28,7 +28,7 @@ export const smsSendRecordFields = [
   "sms_app_id",
   "sms_app_id_lbl",
   // 接收人
-  "to",
+  "send_to",
   // 内容
   "content",
   // 状态

@@ -24,18 +24,18 @@ const SMS_URL = "https://api-v4.mysubmail.com/sms/send.json";
 /**
  * 发送短信
  * https://www.mysubmail.com/documents/FppOR3
- * @param to 接收人手机号
+ * @param send_to 接收人手机号
  * @param content 短信内容
  * @param tag 短信标签
  * @returns 是否真正发送成功, 如果处于暂停状态, 则不发送, 返回false, 但会记录发送记录
  */
 export async function sendSms(
-  to: string,
+  send_to: string,
   content: string,
   tag?: string,
   is_log = true,
 ): Promise<boolean> {
-  if (!to) {
+  if (!send_to) {
     throw new Error("手机号不能为空");
   }
   if (!content) {
@@ -62,7 +62,7 @@ export async function sendSms(
   const body = {
     appid,
     signature,
-    to,
+    send_to,
     content,
     tag,
   };
@@ -73,7 +73,7 @@ export async function sendSms(
     await createSmsSendRecord({
       sms_app_id,
       sms_app_id_lbl,
-      to,
+      send_to,
       content,
       tag,
       status: SmsSendRecordStatus.Paused,
@@ -87,7 +87,7 @@ export async function sendSms(
     sms_send_record_id = await createSmsSendRecord({
       sms_app_id,
       sms_app_id_lbl,
-      to,
+      send_to,
       content,
       tag,
       status: SmsSendRecordStatus.Sending,
