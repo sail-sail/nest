@@ -115,7 +115,7 @@ export async function sendSms(
     const body = {
       appid,
       signature,
-      send_to,
+      to: send_to,
       content,
       tag,
     };
