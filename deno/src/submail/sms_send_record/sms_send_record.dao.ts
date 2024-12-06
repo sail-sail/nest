@@ -19,6 +19,10 @@ import {
 
 import dayjs from "dayjs";
 
+import {
+  getDict,
+} from "/src/base/dict_detail/dict_detail.dao.ts";
+
 const SMS_URL = "https://api-v4.mysubmail.com/sms/send.json";
 
 /**
@@ -44,6 +48,13 @@ export async function sendSms(
   if (content.length > 1000) {
     throw new Error("短信内容不能超过 1000 个字符");
   }
+  
+  const [
+    status_dict_models,
+  ] = await getDict([
+    "submail_sms_send_record_status",
+  ]);
+  
   const sms_app_model = await validateOptionSmsSendRecord(
     await findOneSmsSendRecord(
       {
@@ -59,24 +70,21 @@ export async function sendSms(
   const sms_app_id = sms_app_model.id;
   const sms_app_id_lbl = sms_app_model.lbl;
   const is_paused = sms_app_model.is_paused;
-  const body = {
-    appid,
-    signature,
-    send_to,
-    content,
-    tag,
-  };
-  const bodyStr = JSON.stringify(body);
-  log("sendSms.body", bodyStr);
+  const tenant_id = sms_app_model.tenant_id;
   
   if (is_paused && is_log) {
+    const status = SmsSendRecordStatus.Paused;
+    const status_lbl = status_dict_models.find((item) => item.val === status)?.lbl;
     await createSmsSendRecord({
       sms_app_id,
       sms_app_id_lbl,
       send_to,
+      send_time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
       content,
       tag,
-      status: SmsSendRecordStatus.Paused,
+      status,
+      status_lbl,
+      tenant_id,
     });
     return false;
   }
@@ -84,13 +92,17 @@ export async function sendSms(
   let sms_send_record_id: SmsSendRecordId | undefined;
   
   if (is_log) {
+    const status = SmsSendRecordStatus.Sending;
+    const status_lbl = status_dict_models.find((item) => item.val === status)?.lbl;
     sms_send_record_id = await createSmsSendRecord({
       sms_app_id,
       sms_app_id_lbl,
       send_to,
       content,
       tag,
-      status: SmsSendRecordStatus.Sending,
+      status,
+      status_lbl,
+      tenant_id,
     });
   }
   
@@ -100,6 +112,15 @@ export async function sendSms(
   } | undefined;
   
   try {
+    const body = {
+      appid,
+      signature,
+      send_to,
+      content,
+      tag,
+    };
+    const bodyStr = JSON.stringify(body);
+    log("sendSms.body", bodyStr);
     const res = await fetch(SMS_URL, {
       method: "POST",
       headers: {
@@ -113,10 +134,13 @@ export async function sendSms(
   } catch (err) {
     if (sms_send_record_id) {
       const send_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
+      const status = SmsSendRecordStatus.Failure;
+      const status_lbl = status_dict_models.find((item) => item.val === status)?.lbl;
       await updateByIdSmsSendRecord(
         sms_send_record_id,
         {
-          status: SmsSendRecordStatus.Failure,
+          status,
+          status_lbl,
           send_time,
           msg: err.message,
         },
@@ -129,19 +153,25 @@ export async function sendSms(
   if (sms_send_record_id && data) {
     const send_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
     if (data.status === "success") {
+      const status = SmsSendRecordStatus.Success;
+      const status_lbl = status_dict_models.find((item) => item.val === status)?.lbl;
       await updateByIdSmsSendRecord(
         sms_send_record_id,
         {
-          status: SmsSendRecordStatus.Success,
+          status,
+          status_lbl,
           send_time,
         },
       );
       return true;
     }
+    const status = SmsSendRecordStatus.Failure;
+    const status_lbl = status_dict_models.find((item) => item.val === status)?.lbl;
     await updateByIdSmsSendRecord(
       sms_send_record_id,
       {
-        status: SmsSendRecordStatus.Failure,
+        status,
+        status_lbl,
         send_time,
         msg: data.msg,
       },
