@@ -1550,7 +1550,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
   }
   
   return id;
@@ -1601,7 +1601,7 @@ export async function deleteByIds(
       continue;
     }
     if (!is_silent_mode) {
-      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+      log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
     }
     const args = new QueryArgs();
     let sql = `update base_options set is_deleted=1`;
