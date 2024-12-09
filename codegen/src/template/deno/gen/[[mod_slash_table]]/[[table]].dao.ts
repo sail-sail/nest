@@ -5080,7 +5080,7 @@ export async function updateById(
   #>
   
   if (!is_silent_mode) {
-    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
   }<#
   if (opts?.history_table) {
   #>
@@ -5189,7 +5189,7 @@ export async function deleteByIds(
       continue;
     }
     if (!is_silent_mode) {
-      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+      log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
     }<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>

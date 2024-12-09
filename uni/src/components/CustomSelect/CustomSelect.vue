@@ -24,7 +24,7 @@
       v-else
       un-text="gray"
     >
-      {{ props.placeholder || '' }}
+      {{ (props.pageInited && inited) ? (props.placeholder || '') : '' }}
     </text>
     <view
       un-flex="[1_0_0]"
@@ -176,7 +176,8 @@ const props = withDefaults(
     options4SelectV2?: OptionType[];
     placeholder?: string;
     height?: number;
-    init?: boolean;
+    initData?: boolean;
+    pageInited?: boolean;
     clearable?: boolean;
     multiple?: boolean;
     disabled?: boolean;
@@ -194,7 +195,8 @@ const props = withDefaults(
     options4SelectV2: undefined,
     placeholder: "",
     height: 700,
-    init: true,
+    initData: true,
+    pageInited: true,
     clearable: true,
     multiple: false,
     disabled: false,
@@ -369,7 +371,7 @@ async function onRefresh() {
   inited.value = true;
 }
 
-if (props.init) {
+if (props.initData) {
   onRefresh();
 }
 
