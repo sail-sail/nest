@@ -1317,7 +1317,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
   }
   
   return id;
@@ -1369,7 +1369,7 @@ export async function deleteByIds(
       continue;
     }
     if (!is_silent_mode) {
-      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+      log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
     }
     const args = new QueryArgs();
     const sql = `delete from base_permit where id=${ args.push(id) } limit 1`;
