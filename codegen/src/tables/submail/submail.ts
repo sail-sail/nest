@@ -76,7 +76,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "content",
-        width: 220,
+        width: 320,
         align: "left",
       },
       {
