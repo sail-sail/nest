@@ -869,7 +869,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "内容",
       prop: "content",
-      width: 220,
+      width: 320,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
