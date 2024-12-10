@@ -6,9 +6,9 @@ use std::sync::Arc;
 
 use poem::web::websocket::{Message, WebSocketStream};
 
-type Callback = Box<dyn Fn(Option<serde_json::Value>) + Send + Sync>;
+pub type Callback = Box<dyn Fn(Option<serde_json::Value>) + Send + Sync>;
 
-type SocketSinkMapType = Mutex<HashMap<String, Arc<Mutex<Vec<SplitSink<WebSocketStream, Message>>>>>>;
+pub type SocketSinkMapType = Mutex<HashMap<String, Arc<Mutex<Vec<SplitSink<WebSocketStream, Message>>>>>>;
 
 lazy_static! {
   pub static ref CALLBACKS_MAP: Mutex<HashMap<String, Vec<Callback>>> = Mutex::new(HashMap::new());
