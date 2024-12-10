@@ -1397,7 +1397,7 @@ pub async fn set_id_by_lbl(
 
 // MARK: creates_return
 /// 批量创建业务字典明细并返回
-#[allow(unused_variables)]
+#[allow(dead_code)]
 pub async fn creates_return(
   inputs: Vec<DictbizDetailInput>,
   options: Option<Options>,

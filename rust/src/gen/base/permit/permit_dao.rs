@@ -985,7 +985,7 @@ pub async fn set_id_by_lbl(
 
 // MARK: creates_return
 /// 批量创建按钮权限并返回
-#[allow(unused_variables)]
+#[allow(dead_code)]
 pub async fn creates_return(
   inputs: Vec<PermitInput>,
   options: Option<Options>,
