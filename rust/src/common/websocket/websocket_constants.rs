@@ -6,7 +6,7 @@ use std::sync::Arc;
 
 use poem::web::websocket::{Message, WebSocketStream};
 
-type Callback = Box<dyn Fn(String) + Send + Sync>;
+type Callback = Box<dyn Fn(Option<serde_json::Value>) + Send + Sync>;
 
 type SocketSinkMapType = Mutex<HashMap<String, Arc<Mutex<Vec<SplitSink<WebSocketStream, Message>>>>>>;
 

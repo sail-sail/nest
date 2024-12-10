@@ -14,7 +14,7 @@ use tokio::sync::Mutex;
 
 use super::websocket_constants::SOCKET_SINK_MAP;
 use super::websocket_constants::CLIENT_ID_TOPICS_MAP;
-// use super::websocket_constants::CALLBACKS_MAP;
+use super::websocket_constants::CALLBACKS_MAP;
 
 const PWD: &str = "0YSCBr1QQSOpOfi6GgH34A";
 
@@ -152,27 +152,21 @@ pub async fn ws_upgrade(
                 continue;
               }
               let topic = topic.unwrap();
-              let topic = serde_json::from_value::<String>(topic.clone())
-                .unwrap_or("".to_owned());
+              let topic = serde_json::from_value::<String>(topic.to_owned())
+                .unwrap_or_default();
               if topic.is_empty() {
                 continue;
               }
-              // let payload = data.get("payload");
-              // let payload = payload
-              //   .map(|payload|
-              //     serde_json::from_value::<String>(payload.clone())
-              //       .unwrap_or("".to_owned())
-              //   )
-              //   .unwrap_or("".to_owned());
-              // {
-              //   let callbacks_map = CALLBACKS_MAP.lock().await;
-              //   let callbacks = callbacks_map.get(&topic);
-              //   if let Some(callbacks) = callbacks {
-              //     for callback in callbacks {
-              //       callback(payload.clone());
-              //     }
-              //   }
-              // }
+              let payload = data.get("payload");
+              {
+                let callbacks_map = CALLBACKS_MAP.lock().await;
+                let callbacks = callbacks_map.get(&topic);
+                if let Some(callbacks) = callbacks {
+                  for callback in callbacks {
+                    callback(payload.cloned());
+                  }
+                }
+              }
               
               let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
               let mut client_ids = vec![];
