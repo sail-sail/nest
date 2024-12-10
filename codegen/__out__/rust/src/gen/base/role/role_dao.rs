@@ -1699,20 +1699,6 @@ pub async fn creates(
     );
   }
   
-  // 设置自动编码
-  let mut inputs = inputs;
-  for input in &mut inputs {
-    if input.code.is_some() && !input.code.as_ref().unwrap().is_empty() {
-      continue;
-    }
-    let (
-      code_seq,
-      code,
-    ) = find_auto_code(options.clone()).await?;
-    input.code_seq = Some(code_seq);
-    input.code = Some(code);
-  }
-  
   let ids = _creates(
     inputs,
     options,
@@ -1737,6 +1723,20 @@ async fn _creates(
       item.get_unique_type()
     )
     .unwrap_or_default();
+  
+  // 设置自动编码
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.code.is_some() && !input.code.as_ref().unwrap().is_empty() {
+      continue;
+    }
+    let (
+      code_seq,
+      code,
+    ) = find_auto_code(options.clone()).await?;
+    input.code_seq = Some(code_seq);
+    input.code = Some(code);
+  }
   
   let mut ids2: Vec<RoleId> = vec![];
   let mut inputs2: Vec<RoleInput> = vec![];

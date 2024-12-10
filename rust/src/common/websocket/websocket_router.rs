@@ -127,7 +127,7 @@ pub async fn ws_upgrade(
               if topics.is_empty() {
                 continue;
               }
-              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
+              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
               let old_topics = client_id_topics_map.get(&client_id).cloned();
               if old_topics.is_none() {
                 client_id_topics_map.insert(client_id.clone(), vec![]);
@@ -159,7 +159,7 @@ pub async fn ws_upgrade(
               }
               let payload = data.get("payload");
               {
-                let callbacks_map = CALLBACKS_MAP.lock().await;
+                let callbacks_map = CALLBACKS_MAP.read().await;
                 let callbacks = callbacks_map.get(&topic);
                 if let Some(callbacks) = callbacks {
                   for callback in callbacks {
@@ -168,7 +168,7 @@ pub async fn ws_upgrade(
                 }
               }
               
-              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
+              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
               let mut client_ids = vec![];
               for (client_id2, topics) in client_id_topics_map.iter() {
                 // if client_id2 == &client_id {
@@ -220,7 +220,7 @@ pub async fn ws_upgrade(
               if topics.is_empty() {
                 continue;
               }
-              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
+              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
               let old_topics = client_id_topics_map.get(&client_id).cloned();
               if old_topics.is_none() {
                 continue;
@@ -261,7 +261,7 @@ pub async fn ws_upgrade(
                 error!("socket_ref.close error: {}", e);
               }
             }
-            let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
+            let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
             client_id_topics_map.remove(&client_id);
           }
           Err(e) => {
@@ -275,7 +275,7 @@ pub async fn ws_upgrade(
                 error!("socket_ref.close error: {}", e);
               }
             }
-            let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
+            let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
             client_id_topics_map.remove(&client_id);
           }
         }

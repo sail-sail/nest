@@ -24,7 +24,7 @@ pub async fn subscribe(
     error!("websocket.dao.subscribe {} topic is empty", get_req_id());
     return;
   }
-  let mut callbacks_map = CALLBACKS_MAP.lock().await;
+  let mut callbacks_map = CALLBACKS_MAP.write().await;
   let callbacks =  callbacks_map.get_mut(topic.as_str());
   if callbacks.is_none() {
     callbacks_map.insert(topic, vec![callback]);
@@ -45,7 +45,7 @@ pub async fn publish(
     return;
   }
   
-  let callbacks_map = CALLBACKS_MAP.lock().await;
+  let callbacks_map = CALLBACKS_MAP.read().await;
   let callbacks =  callbacks_map.get(topic.as_str());
   if let Some(callbacks) = callbacks {
     for callback in callbacks {
@@ -53,7 +53,7 @@ pub async fn publish(
     }
   }
   
-  let client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await.clone();
+  let client_id_topics_map = CLIENT_ID_TOPICS_MAP.read().await;
   
   let mut client_ids = vec![];
   for (client_id2, topics) in client_id_topics_map.iter() {
@@ -99,7 +99,7 @@ pub async fn un_subscribe(
     error!("websocket.dao.unsubscribe {} topic is empty", get_req_id());
     return;
   }
-  let mut callbacks_map = CALLBACKS_MAP.lock().await;
+  let mut callbacks_map = CALLBACKS_MAP.write().await;
   let callbacks =  callbacks_map.get_mut(topic);
   if callbacks.is_none() {
     return;
@@ -114,6 +114,6 @@ pub async fn un_subscribe(
 /// 关闭客户端
 #[allow(dead_code)]
 pub async fn close_client() {
-  let mut callbacks_map = CALLBACKS_MAP.lock().await;
+  let mut callbacks_map = CALLBACKS_MAP.write().await;
   callbacks_map.clear();
 }
