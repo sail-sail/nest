@@ -1455,6 +1455,7 @@ pub async fn set_id_by_lbl(
 
 // MARK: creates_return
 /// 批量创建系统字典并返回
+#[allow(unused_variables)]
 pub async fn creates_return(
   inputs: Vec<DictInput>,
   options: Option<Options>,

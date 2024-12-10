@@ -1486,6 +1486,7 @@ pub async fn set_id_by_lbl(
 
 // MARK: creates_return
 /// 批量创建菜单并返回
+#[allow(unused_variables)]
 pub async fn creates_return(
   inputs: Vec<MenuInput>,
   options: Option<Options>,
