@@ -1143,7 +1143,7 @@ export async function validate(
 }
 
 // MARK: createReturn
-/** 创建 部门 */
+/** 创建 部门 并返回 */
 export async function createReturn(
   input: Readonly<DeptInput>,
   options?: {
@@ -1235,7 +1235,7 @@ export async function create(
 }
 
 // MARK: createsReturn
-/** 批量创建 用户 */
+/** 批量创建 部门 并返回 */
 export async function createsReturn(
   inputs: DeptInput[],
   options?: {

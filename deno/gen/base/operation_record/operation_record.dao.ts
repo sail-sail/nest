@@ -815,7 +815,7 @@ export async function validate(
 }
 
 // MARK: createReturn
-/** 创建 操作记录 */
+/** 创建 操作记录 并返回 */
 export async function createReturn(
   input: Readonly<OperationRecordInput>,
   options?: {
@@ -907,7 +907,7 @@ export async function create(
 }
 
 // MARK: createsReturn
-/** 批量创建 用户 */
+/** 批量创建 操作记录 并返回 */
 export async function createsReturn(
   inputs: OperationRecordInput[],
   options?: {

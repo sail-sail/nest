@@ -1078,7 +1078,7 @@ export async function validate(
 }
 
 // MARK: createReturn
-/** 创建 菜单 */
+/** 创建 菜单 并返回 */
 export async function createReturn(
   input: Readonly<MenuInput>,
   options?: {
@@ -1170,7 +1170,7 @@ export async function create(
 }
 
 // MARK: createsReturn
-/** 批量创建 用户 */
+/** 批量创建 菜单 并返回 */
 export async function createsReturn(
   inputs: MenuInput[],
   options?: {
