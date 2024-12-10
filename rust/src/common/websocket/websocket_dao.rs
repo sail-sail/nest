@@ -27,7 +27,7 @@ pub async fn subscribe(
   let mut callbacks_map = CALLBACKS_MAP.lock().await;
   let callbacks =  callbacks_map.get_mut(topic.as_str());
   if callbacks.is_none() {
-    callbacks_map.insert(topic.into(), vec![callback]);
+    callbacks_map.insert(topic, vec![callback]);
   } else {
     let callbacks = callbacks.unwrap();
     callbacks.push(callback);
