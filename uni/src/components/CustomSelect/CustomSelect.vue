@@ -4,6 +4,7 @@
   :class="{
     'custom_select_readonly': props.readonly
   }"
+  v-bind="$attrs"
 >
   <slot name="left"></slot>
   <view
@@ -54,7 +55,6 @@
   <slot name="right"></slot>
 </view>
 <tm-drawer
-  v-bind="$attrs"
   v-model:show="showPicker"
   :closeable="true"
   :height="dHeight"
@@ -344,6 +344,9 @@ function onClear() {
 function onConfirm() {
   showPicker.value = false;
   emit("update:modelValue", selectedValue.value);
+  if (selectedValue.value !== props.modelValue) {
+    onChange();
+  }
 }
 
 function onCancel() {

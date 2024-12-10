@@ -1134,7 +1134,7 @@ export async function validate(
 }
 
 // MARK: createReturn
-/** 创建 租户 */
+/** 创建 租户 并返回 */
 export async function createReturn(
   input: Readonly<TenantInput>,
   options?: {
@@ -1226,7 +1226,7 @@ export async function create(
 }
 
 // MARK: createsReturn
-/** 批量创建 用户 */
+/** 批量创建 租户 并返回 */
 export async function createsReturn(
   inputs: TenantInput[],
   options?: {

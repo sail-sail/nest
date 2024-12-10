@@ -3241,7 +3241,7 @@ export async function findAutoCode(
 #>
 
 // MARK: createReturn
-/** 创建 <#=table_comment#> */
+/** 创建 <#=table_comment#> 并返回 */
 export async function createReturn(
   input: Readonly<<#=inputName#>>,
   options?: {
@@ -3333,7 +3333,7 @@ export async function create(
 }
 
 // MARK: createsReturn
-/** 批量创建 用户 */
+/** 批量创建 <#=table_comment#> 并返回 */
 export async function createsReturn(
   inputs: <#=inputName#>[],
   options?: {

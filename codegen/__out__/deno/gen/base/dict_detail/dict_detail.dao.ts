@@ -1045,7 +1045,7 @@ export async function validate(
 }
 
 // MARK: createReturn
-/** 创建 系统字典明细 */
+/** 创建 系统字典明细 并返回 */
 export async function createReturn(
   input: Readonly<DictDetailInput>,
   options?: {
@@ -1137,7 +1137,7 @@ export async function create(
 }
 
 // MARK: createsReturn
-/** 批量创建 用户 */
+/** 批量创建 系统字典明细 并返回 */
 export async function createsReturn(
   inputs: DictDetailInput[],
   options?: {
