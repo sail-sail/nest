@@ -1349,6 +1349,57 @@ export async function validate(
   
 }
 
+// MARK: createReturn
+/** 创建 用户 */
+export async function createReturn(
+  input: Readonly<UsrInput>,
+  options?: {
+    is_debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+    is_silent_mode?: boolean;
+  },
+): Promise<UsrModel> {
+  
+  const table = "base_usr";
+  const method = "createReturn";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (input) {
+      msg += ` input:${ JSON.stringify(input) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  if (!input) {
+    throw new Error(`input is required in dao: ${ table }`);
+  }
+  
+  const [
+    id,
+  ] = await _creates([ input ], options);
+  
+  const model = await validateOption(
+    await findOne(
+      {
+        id,
+      },
+      undefined,
+      options,
+    ),
+  );
+  
+  return model;
+}
+
 // MARK: create
 /** 创建 用户 */
 export async function create(
@@ -1388,6 +1439,43 @@ export async function create(
   ] = await _creates([ input ], options);
   
   return id;
+}
+
+// MARK: createsReturn
+/** 批量创建 用户 */
+export async function createsReturn(
+  inputs: UsrInput[],
+  options?: {
+    is_debug?: boolean;
+    uniqueType?: UniqueType;
+    hasDataPermit?: boolean;
+    is_silent_mode?: boolean;
+  },
+): Promise<UsrModel[]> {
+  
+  const table = "base_usr";
+  const method = "createsReturn";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (inputs) {
+      msg += ` inputs:${ JSON.stringify(inputs) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const ids = await _creates(inputs, options);
+  
+  const models = await findByIds(ids, options);
+  
+  return models;
 }
 
 // MARK: creates
@@ -2032,7 +2120,7 @@ export async function updateById(
   }
   
   if (!is_silent_mode) {
-    log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+    log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
   }
   
   return id;
@@ -2083,7 +2171,7 @@ export async function deleteByIds(
       continue;
     }
     if (!is_silent_mode) {
-      log(`${ table }.${ method }: ${ JSON.stringify(oldModel) }`);
+      log(`${ table }.${ method }.old_model: ${ JSON.stringify(oldModel) }`);
     }
     const args = new QueryArgs();
     let sql = `update base_usr set is_deleted=1`;

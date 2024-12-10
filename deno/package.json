@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node lib/script/mother.js",
     "gqlgen": "npx graphql-codegen --config ./lib/script/graphql_codegen_config.ts",
-    "typecheck": "deno check --unstable-ffi ./mod.ts",
+    "typecheck": "deno check ./mod.ts",
     "build-prod": "deno run -A ./lib/script/build.ts --target linux --env prod",
     "build-test": "deno run -A ./lib/script/build.ts --target linux --env test",
     "publish": "node lib/script/publish.js",
@@ -19,18 +19,18 @@
     "dayjs": "1.11.13",
     "graphql": "17.0.0-alpha.7",
     "mnemonist": "0.39.8",
-    "mysql2": "3.11.4",
+    "mysql2": "3.11.5",
     "path-to-regexp": "6.2.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "5.0.3",
     "@graphql-codegen/typescript": "4.1.2",
     "@graphql-codegen/typescript-operations": "4.4.0",
-    "@types/node": "22.9.4",
+    "@types/node": "22.10.1",
     "chokidar": "3.6.0",
     "commander": "12.1.0",
     "cross-env": "7.0.3",
-    "dotenv": "16.4.5",
+    "dotenv": "16.4.7",
     "graphql-ts-client-codegen": "3.1.17",
     "ssh2-promise": "1.0.3",
     "typescript": "5.6.3"
