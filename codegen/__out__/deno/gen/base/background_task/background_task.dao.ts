@@ -994,7 +994,7 @@ export async function validate(
 }
 
 // MARK: createReturn
-/** 创建 后台任务 */
+/** 创建 后台任务 并返回 */
 export async function createReturn(
   input: Readonly<BackgroundTaskInput>,
   options?: {
@@ -1086,7 +1086,7 @@ export async function create(
 }
 
 // MARK: createsReturn
-/** 批量创建 用户 */
+/** 批量创建 后台任务 并返回 */
 export async function createsReturn(
   inputs: BackgroundTaskInput[],
   options?: {
