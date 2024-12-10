@@ -156,13 +156,10 @@ async fn main() -> Result<(), std::io::Error> {
       .arg("--config")
       .arg("src/common/script/graphql_codegen_config.ts")
       .arg("--watch")
-      .spawn()
-      .expect("graphql-codegen watch failed")
-      .wait();
+      .spawn();
 
     match status {
-      Ok(status) if status.success() => (),
-      Ok(status) => eprintln!("Process exited with status: {}", status),
+      Ok(_) => (),
       Err(err) => eprintln!("Failed to run process: {}", err),
     }
   }

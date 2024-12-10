@@ -3198,25 +3198,7 @@ pub async fn creates(
       "{req_id} {msg}",
       req_id = get_req_id(),
     );
-  }<#
-  if (autoCodeColumn) {
-  #>
-  
-  // 设置自动编码
-  let mut inputs = inputs;
-  for input in &mut inputs {
-    if input.<#=autoCodeColumn.COLUMN_NAME#>.is_some() && !input.<#=autoCodeColumn.COLUMN_NAME#>.as_ref().unwrap().is_empty() {
-      continue;
-    }
-    let (
-      <#=autoCodeColumn.autoCode.seq#>,
-      <#=autoCodeColumn.COLUMN_NAME#>,
-    ) = find_auto_code(options.clone()).await?;
-    input.<#=autoCodeColumn.autoCode.seq#> = Some(<#=autoCodeColumn.autoCode.seq#>);
-    input.<#=autoCodeColumn.COLUMN_NAME#> = Some(<#=autoCodeColumn.COLUMN_NAME#>);
-  }<#
   }
-  #>
   
   let ids = _creates(
     inputs,
@@ -3241,7 +3223,25 @@ async fn _creates(
     .and_then(|item|
       item.get_unique_type()
     )
-    .unwrap_or_default();
+    .unwrap_or_default();<#
+  if (autoCodeColumn) {
+  #>
+  
+  // 设置自动编码
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.<#=autoCodeColumn.COLUMN_NAME#>.is_some() && !input.<#=autoCodeColumn.COLUMN_NAME#>.as_ref().unwrap().is_empty() {
+      continue;
+    }
+    let (
+      <#=autoCodeColumn.autoCode.seq#>,
+      <#=autoCodeColumn.COLUMN_NAME#>,
+    ) = find_auto_code(options.clone()).await?;
+    input.<#=autoCodeColumn.autoCode.seq#> = Some(<#=autoCodeColumn.autoCode.seq#>);
+    input.<#=autoCodeColumn.COLUMN_NAME#> = Some(<#=autoCodeColumn.COLUMN_NAME#>);
+  }<#
+  }
+  #>
   
   let mut ids2: Vec<<#=Table_Up#>Id> = vec![];
   let mut inputs2: Vec<<#=tableUP#>Input> = vec![];
