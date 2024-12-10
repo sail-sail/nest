@@ -884,7 +884,7 @@ export async function validate(
 }
 
 // MARK: createReturn
-/** 创建 短信发送记录 */
+/** 创建 短信发送记录 并返回 */
 export async function createReturn(
   input: Readonly<SmsSendRecordInput>,
   options?: {
@@ -976,7 +976,7 @@ export async function create(
 }
 
 // MARK: createsReturn
-/** 批量创建 用户 */
+/** 批量创建 短信发送记录 并返回 */
 export async function createsReturn(
   inputs: SmsSendRecordInput[],
   options?: {
