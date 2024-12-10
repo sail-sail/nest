@@ -4,6 +4,7 @@
     "custom": {
       "^App(.*)": "@/components/App$1/App$1.vue",
       "^Custom(.*)": "@/components/Custom$1/Custom$1.vue",
+      "^Dict(.*)": "@/components/Dict$1/Dict$1.vue",
       "^tm-(.*)": "@/uni_modules/tmui/components/tm-$1/tm-$1.vue"
     }
   },
