@@ -151,13 +151,17 @@ async fn main() -> Result<(), std::io::Error> {
       let mut writer = std::io::BufWriter::new(std::fs::File::create(file_path).unwrap());
       writer.write_all(schema.as_bytes()).unwrap();
     }
-    std::process::Command::new("node")
+    let status = std::process::Command::new("node")
       .arg("node_modules/@graphql-codegen/cli/cjs/bin.js")
       .arg("--config")
-      .arg("src/common/script/graphql_codegen_config.ts",)
+      .arg("src/common/script/graphql_codegen_config.ts")
       .arg("--watch")
-      .spawn()
-      .unwrap();
+      .spawn();
+
+    match status {
+      Ok(_) => (),
+      Err(err) => eprintln!("Failed to run process: {}", err),
+    }
   }
   
   let metrics_graphql = TokioMetrics::new();

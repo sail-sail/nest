@@ -3176,6 +3176,44 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
+// MARK: creates_return
+/// 批量创建<#=table_comment#>并返回
+#[allow(dead_code)]
+pub async fn creates_return(
+  inputs: Vec<<#=tableUP#>Input>,
+  options: Option<Options>,
+) -> Result<Vec<<#=Table_Up#>Model>> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let method = "creates_return";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" inputs: {:?}", &inputs);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let ids = _creates(
+    inputs.clone(),
+    options.clone(),
+  ).await?;
+  
+  let models = find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
 // MARK: creates
 /// 批量创建<#=table_comment#>
 pub async fn creates(
@@ -3198,25 +3236,7 @@ pub async fn creates(
       "{req_id} {msg}",
       req_id = get_req_id(),
     );
-  }<#
-  if (autoCodeColumn) {
-  #>
-  
-  // 设置自动编码
-  let mut inputs = inputs;
-  for input in &mut inputs {
-    if input.<#=autoCodeColumn.COLUMN_NAME#>.is_some() && !input.<#=autoCodeColumn.COLUMN_NAME#>.as_ref().unwrap().is_empty() {
-      continue;
-    }
-    let (
-      <#=autoCodeColumn.autoCode.seq#>,
-      <#=autoCodeColumn.COLUMN_NAME#>,
-    ) = find_auto_code(options.clone()).await?;
-    input.<#=autoCodeColumn.autoCode.seq#> = Some(<#=autoCodeColumn.autoCode.seq#>);
-    input.<#=autoCodeColumn.COLUMN_NAME#> = Some(<#=autoCodeColumn.COLUMN_NAME#>);
-  }<#
   }
-  #>
   
   let ids = _creates(
     inputs,
@@ -3241,7 +3261,25 @@ async fn _creates(
     .and_then(|item|
       item.get_unique_type()
     )
-    .unwrap_or_default();
+    .unwrap_or_default();<#
+  if (autoCodeColumn) {
+  #>
+  
+  // 设置自动编码
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.<#=autoCodeColumn.COLUMN_NAME#>.is_some() && !input.<#=autoCodeColumn.COLUMN_NAME#>.as_ref().unwrap().is_empty() {
+      continue;
+    }
+    let (
+      <#=autoCodeColumn.autoCode.seq#>,
+      <#=autoCodeColumn.COLUMN_NAME#>,
+    ) = find_auto_code(options.clone()).await?;
+    input.<#=autoCodeColumn.autoCode.seq#> = Some(<#=autoCodeColumn.autoCode.seq#>);
+    input.<#=autoCodeColumn.COLUMN_NAME#> = Some(<#=autoCodeColumn.COLUMN_NAME#>);
+  }<#
+  }
+  #>
   
   let mut ids2: Vec<<#=Table_Up#>Id> = vec![];
   let mut inputs2: Vec<<#=tableUP#>Input> = vec![];
@@ -4028,6 +4066,32 @@ pub async fn find_auto_code(
 }<#
 }
 #>
+
+// MARK: create_return
+/// 创建<#=table_comment#>并返回
+#[allow(dead_code)]
+pub async fn create_return(
+  #[allow(unused_mut)]
+  mut input: <#=tableUP#>Input,
+  options: Option<Options>,
+) -> Result<<#=Table_Up#>Model> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  
+  let id = create(input.clone(), options.clone()).await?;
+  
+  let model = find_by_id(
+    id,
+    options,
+  ).await?;
+  
+  if model.is_none() {
+    return Err(anyhow!("create_return: Create failed in dao: {table}"));
+  }
+  let model = model.unwrap();
+  
+  Ok(model)
+}
 
 // MARK: create
 /// 创建<#=table_comment#>

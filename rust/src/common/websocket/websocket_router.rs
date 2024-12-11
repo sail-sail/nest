@@ -14,7 +14,7 @@ use tokio::sync::Mutex;
 
 use super::websocket_constants::SOCKET_SINK_MAP;
 use super::websocket_constants::CLIENT_ID_TOPICS_MAP;
-// use super::websocket_constants::CALLBACKS_MAP;
+use super::websocket_constants::CALLBACKS_MAP;
 
 const PWD: &str = "0YSCBr1QQSOpOfi6GgH34A";
 
@@ -127,7 +127,7 @@ pub async fn ws_upgrade(
               if topics.is_empty() {
                 continue;
               }
-              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
+              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
               let old_topics = client_id_topics_map.get(&client_id).cloned();
               if old_topics.is_none() {
                 client_id_topics_map.insert(client_id.clone(), vec![]);
@@ -152,29 +152,23 @@ pub async fn ws_upgrade(
                 continue;
               }
               let topic = topic.unwrap();
-              let topic = serde_json::from_value::<String>(topic.clone())
-                .unwrap_or("".to_owned());
+              let topic = serde_json::from_value::<String>(topic.to_owned())
+                .unwrap_or_default();
               if topic.is_empty() {
                 continue;
               }
-              // let payload = data.get("payload");
-              // let payload = payload
-              //   .map(|payload|
-              //     serde_json::from_value::<String>(payload.clone())
-              //       .unwrap_or("".to_owned())
-              //   )
-              //   .unwrap_or("".to_owned());
-              // {
-              //   let callbacks_map = CALLBACKS_MAP.lock().await;
-              //   let callbacks = callbacks_map.get(&topic);
-              //   if let Some(callbacks) = callbacks {
-              //     for callback in callbacks {
-              //       callback(payload.clone());
-              //     }
-              //   }
-              // }
+              let payload = data.get("payload");
+              {
+                let callbacks_map = CALLBACKS_MAP.read().await;
+                let callbacks = callbacks_map.get(&topic);
+                if let Some(callbacks) = callbacks {
+                  for callback in callbacks {
+                    callback(payload.cloned());
+                  }
+                }
+              }
               
-              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
+              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
               let mut client_ids = vec![];
               for (client_id2, topics) in client_id_topics_map.iter() {
                 // if client_id2 == &client_id {
@@ -226,7 +220,7 @@ pub async fn ws_upgrade(
               if topics.is_empty() {
                 continue;
               }
-              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
+              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
               let old_topics = client_id_topics_map.get(&client_id).cloned();
               if old_topics.is_none() {
                 continue;
@@ -267,7 +261,7 @@ pub async fn ws_upgrade(
                 error!("socket_ref.close error: {}", e);
               }
             }
-            let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
+            let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
             client_id_topics_map.remove(&client_id);
           }
           Err(e) => {
@@ -281,7 +275,7 @@ pub async fn ws_upgrade(
                 error!("socket_ref.close error: {}", e);
               }
             }
-            let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.lock().await;
+            let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
             client_id_topics_map.remove(&client_id);
           }
         }
