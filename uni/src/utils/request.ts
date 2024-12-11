@@ -87,6 +87,8 @@ export async function uploadFile(config: {
       if (await uniLogin()) {
         config.notLogin = true;
         return await uploadFile(config);
+      } else {
+        throw "refresh_token_expired";
       }
     }
   }
@@ -333,6 +335,8 @@ export async function request<T>(
       if (await uniLogin()) {
         config.notLogin = true;
         return await request(config);
+      } else {
+        throw "refresh_token_expired";
       }
     }
   }
@@ -365,14 +369,14 @@ async function code2Session(
   },
 ) {
   const appid = getAppid();
-  const loginModel: LoginModel = await request({
-    url: `wx_usr/code2Session`,
+  const loginModel: LoginModel | undefined = await request({
+    url: "wx_usr/code2Session",
     method: "POST",
     data: {
       appid,
       ...model,
     },
-    showErrMsg: true,
+    showErrMsg: false,
     notLogin: true,
     notLoading: true,
   });
@@ -398,61 +402,86 @@ export async function uniLogin() {
     const loginRes = await uni.login({ provider: "weixin" });
     const code = loginRes?.code;
     if (code) {
-      const loginModel = await code2Session({
-        code,
-        lang: appLanguage,
-      });
-      usrStore.setAuthorization(loginModel.authorization);
-      usrStore.setUsrId(loginModel.usr_id);
-      usrStore.setUsername(loginModel.username);
-      usrStore.setTenantId(loginModel.tenant_id);
-      usrStore.setLang(loginModel.lang);
-      return true;
+      let login_model: LoginModel | undefined;
+      try {
+        login_model = await code2Session({
+          code,
+          lang: appLanguage,
+        });
+      } catch(err) {
+        console.error(err);
+      }
+      if (login_model) {
+        usrStore.setAuthorization(login_model.authorization);
+        usrStore.setUsrId(login_model.usr_id);
+        usrStore.setUsername(login_model.username);
+        usrStore.setTenantId(login_model.tenant_id);
+        usrStore.setLang(login_model.lang);
+        return true;
+      }
     }
+    await redirectToLogin();
     return false;
   }
   // #ifdef H5
   const indexStore = useIndexStore(cfg.pinia);
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWxwork || userAgent.isWechat) {
+    if (typeof wxwGetAppid === "undefined") {
+      await redirectToLogin();
+      return false;
+    }
     const url = new URL(location.href);
     const code = url.searchParams.get("code");
     if (!code && !location.href.startsWith("https://open.weixin.qq.com")) {
       const state = uniqueID();
       localStorage.setItem("oauth2_state", state);
       const redirect_uri = location.href;
-      const {
-        appid,
-        agentid,
-      } = await wxwGetAppid();
-      if (appid && agentid) {
-        let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
-          encodeURIComponent(appid)
-        }`;
-        if (agentid) {
-          url += `&agentid=${ encodeURIComponent(agentid) }`;
-        }
-        url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
-        url += `&response_type=code`;
-        url += `&scope=snsapi_base`;
-        url += `&state=${ encodeURIComponent(state) }`;
-        url += "#wechat_redirect";
-        alert(url);
-        console.log(url);
-        location.replace(url);
+      const res = await wxwGetAppid();
+      const appid = res?.appid;
+      const agentid = res?.agentid;
+      if (!appid) {
+        await redirectToLogin();
         return false;
       }
+      let url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${
+        encodeURIComponent(appid)
+      }`;
+      if (agentid) {
+        url += `&agentid=${ encodeURIComponent(agentid) }`;
+      }
+      url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
+      url += `&response_type=code`;
+      url += `&scope=snsapi_base`;
+      url += `&state=${ encodeURIComponent(state) }`;
+      url += "#wechat_redirect";
+      location.replace(url);
+      return false;
     }
   } else {
-    const redirect_uri = location.hash.substring(1);
-    let url = `/pages/index/Login`;
-    if (redirect_uri) {
-      url += `?redirect_uri=${ encodeURIComponent(redirect_uri) }`;
-    }
-    await uni.redirectTo({
-      url,
-    });
+    await redirectToLogin();
   }
   // #endif
   return false;
+}
+
+async function redirectToLogin() {
+  const pages = getCurrentPages();
+  const page = pages[pages.length - 1];
+  let redirect_uri: string | undefined;
+  if (page) {
+    const fullPath = (page as any).$page?.fullPath;
+    if (fullPath) {
+      redirect_uri = fullPath;
+    } else {
+      redirect_uri = "/" + page.route;
+    }
+  }
+  let url = `/pages/index/Login`;
+  if (redirect_uri) {
+    url += `?redirect_uri=${ encodeURIComponent(redirect_uri) }`;
+  }
+  await uni.reLaunch({
+    url,
+  });
 }

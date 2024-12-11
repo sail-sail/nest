@@ -87,10 +87,9 @@ pub async fn graphql_handler_get(
         .body(err.to_string())
     }
   };
-  let mut response = Response::builder()
+  Response::builder()
     .header(header::CONTENT_TYPE, "application/json; charset=utf-8")
-    .body(data);
-  response
+    .body(data)
 }
 
 #[handler]
