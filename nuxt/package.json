@@ -25,7 +25,7 @@
     "@unocss/nuxt": "0.65.1",
     "@unocss/preset-rem-to-px": "0.65.1",
     "@unocss/transformer-directives": "0.65.1",
-    "@vue-macros/nuxt": "1.12.9",
+    "@vue-macros/nuxt": "1.12.10",
     "@vue-macros/reactivity-transform": "1.1.3",
     "nuxt": "3.14.1592",
     "sass": "1.82.0",
