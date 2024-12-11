@@ -30,15 +30,12 @@ export async function publish<T>(
     topic: string;
     payload: T;
   },
-  isValidCurrClientId?: boolean,
 ) {
   const topic = data.topic;
-  if (isValidCurrClientId) {
-    const callbacks = callbacksMap.get(topic);
-    if (callbacks && callbacks.length > 0) {
-      for (const callback of callbacks) {
-        await callback(data.payload);
-      }
+  const callbacks = callbacksMap.get(topic);
+  if (callbacks && callbacks.length > 0) {
+    for (const callback of callbacks) {
+      await callback(data.payload);
     }
   }
   const dataStr = JSON.stringify(data);
