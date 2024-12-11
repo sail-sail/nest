@@ -246,7 +246,7 @@ async function handleGraphql(
                 }
                 const args2 = args[2].fieldNodes[0].arguments;
                 // deno-lint-ignore no-explicit-any
-                const cbArgs = args2.map((item: any) => args[0][item.name.value]);
+                const cbArgs = args2?.map((item: any) => args[0][item.name.value]);
                 const context = newContext(oakCtx);
                 return runInAsyncHooks(context, async function() {
                   // deno-lint-ignore no-explicit-any

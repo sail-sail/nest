@@ -279,8 +279,7 @@ export default defineConfig({
     sourcemap: false,
   },
   define: {
-    // __VUE_OPTIONS_API__: !process.env.NODE_ENV || process.env.NODE_ENV === "development",
-    __VUE_OPTIONS_API__: true,
+    __VUE_OPTIONS_API__: false,
   },
   preview: {
     port: 4000,
@@ -317,9 +316,6 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
-    },
-    fs: {
-      cachedChecks: true,
     },
   },
 });

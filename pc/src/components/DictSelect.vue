@@ -5,7 +5,7 @@
   un-w="full"
   class="custom_select_div"
   :class="{
-    custom_select_isShowModelLabel: isShowModelLabel && inited,
+    'dict_select_isShowModelLabel': isShowModelLabel && inited,
   }"
 >
   <ElSelectV2
@@ -25,7 +25,7 @@
     :loading="!inited"
     class="dict_select"
     :class="{
-      dict_select_isShowModelLabel: isShowModelLabel && inited,
+      'dict_select_isShowModelLabel': isShowModelLabel && inited,
     }"
     @change="onValueChange"
     :multiple="props.multiple"
@@ -176,7 +176,7 @@
     class="dict_select_readonly"
     :class="{
       'dict_select_placeholder': shouldShowPlaceholder,
-      dict_select_isShowModelLabel: isShowModelLabel,
+      'dict_select_isShowModelLabel': isShowModelLabel && inited,
     }"
     v-bind="$attrs"
   >

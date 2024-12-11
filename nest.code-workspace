@@ -47,6 +47,7 @@
       "added": true
     },
     "scm.diffDecorationsIgnoreTrimWhitespace": "true",
-    "diffEditor.ignoreTrimWhitespace": true
+    "diffEditor.ignoreTrimWhitespace": true,
+    "explorer.copyRelativePathSeparator": "/"
   }
 }

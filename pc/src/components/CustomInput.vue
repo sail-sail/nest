@@ -57,7 +57,7 @@
         'custom_input_placeholder': shouldShowPlaceholder
       }"
       :style="{
-        height: textareaHeight != null ? textareaHeight + 'px' : undefined,
+        'min-height': textareaHeight != null ? textareaHeight + 'px' : undefined,
       }"
       v-bind="$attrs"
     >
