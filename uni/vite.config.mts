@@ -17,14 +17,14 @@ import Inspector from "vite-plugin-vue-inspector";
 
 import reactivityTransform from "@vue-macros/reactivity-transform/vite";
 
-// import TurboConsole from "unplugin-turbo-console/vite";
+import TurboConsole from "unplugin-turbo-console/vite";
 
 const pluginsH5: PluginOption[] = [ ];
 
 const isH5 = process.env.UNI_PLATFORM === "h5";
 
 if (isH5) {
-  // pluginsH5.push(TurboConsole());
+  pluginsH5.push(TurboConsole());
   pluginsH5.push(
     Inspector({
       toggleButtonPos: "top-left",
@@ -64,6 +64,11 @@ export default defineConfig({
           ],
           "dayjs": [
             [ "default", "dayjs" ]
+          ],
+          "@/utils/common": [
+            "getDict",
+            "getDictbiz",
+            "list2tree",
           ],
           "@/store/usr": [
             [ "default", "useUsrStore" ],
@@ -112,7 +117,7 @@ export default defineConfig({
     Components({
       dirs: [
         // "./src/components",
-        // "./src/tmui/components",
+        // "./src/uni_modules/tmui/components",
       ],
       resolvers: [
         IconsResolver({
@@ -146,6 +151,7 @@ export default defineConfig({
         target: "http://127.0.0.1:4001",
         changeOrigin: true,
         secure: false,
+        ws: true,
       },
       "/graphql": {
         target: "http://127.0.0.1:4001",

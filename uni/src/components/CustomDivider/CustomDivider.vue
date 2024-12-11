@@ -1,0 +1,29 @@
+<template>
+<view
+  un-w="full"
+  un-flex="~"
+  un-justify="center"
+  un-items="center"
+  un-gap="3"
+  un-p="4"
+  un-box-border
+>
+  <view
+    un-flex="[1_0_0]"
+    un-overflow-hidden
+    un-b="0 b-1 solid gray-200"
+    un-h="1"
+  ></view>
+  <text
+    un-text="2.75 gray-300"
+  >
+    此处是底线
+  </text>
+  <view
+    un-flex="[1_0_0]"
+    un-overflow-hidden
+    un-b="0 b-1 solid gray-200"
+    un-h="1"
+  ></view>
+</view>
+</template>

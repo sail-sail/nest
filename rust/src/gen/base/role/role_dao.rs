@@ -1675,6 +1675,44 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
+// MARK: creates_return
+/// 批量创建角色并返回
+#[allow(dead_code)]
+pub async fn creates_return(
+  inputs: Vec<RoleInput>,
+  options: Option<Options>,
+) -> Result<Vec<RoleModel>> {
+  
+  let table = "base_role";
+  let method = "creates_return";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" inputs: {:?}", &inputs);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let ids = _creates(
+    inputs.clone(),
+    options.clone(),
+  ).await?;
+  
+  let models = find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
 // MARK: creates
 /// 批量创建角色
 pub async fn creates(
@@ -1697,20 +1735,6 @@ pub async fn creates(
       "{req_id} {msg}",
       req_id = get_req_id(),
     );
-  }
-  
-  // 设置自动编码
-  let mut inputs = inputs;
-  for input in &mut inputs {
-    if input.code.is_some() && !input.code.as_ref().unwrap().is_empty() {
-      continue;
-    }
-    let (
-      code_seq,
-      code,
-    ) = find_auto_code(options.clone()).await?;
-    input.code_seq = Some(code_seq);
-    input.code = Some(code);
   }
   
   let ids = _creates(
@@ -1737,6 +1761,20 @@ async fn _creates(
       item.get_unique_type()
     )
     .unwrap_or_default();
+  
+  // 设置自动编码
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.code.is_some() && !input.code.as_ref().unwrap().is_empty() {
+      continue;
+    }
+    let (
+      code_seq,
+      code,
+    ) = find_auto_code(options.clone()).await?;
+    input.code_seq = Some(code_seq);
+    input.code = Some(code);
+  }
   
   let mut ids2: Vec<RoleId> = vec![];
   let mut inputs2: Vec<RoleInput> = vec![];
@@ -2167,6 +2205,32 @@ pub async fn find_auto_code(
   let code = format!("JS{:03}", code_seq);
   
   Ok((code_seq, code))
+}
+
+// MARK: create_return
+/// 创建角色并返回
+#[allow(dead_code)]
+pub async fn create_return(
+  #[allow(unused_mut)]
+  mut input: RoleInput,
+  options: Option<Options>,
+) -> Result<RoleModel> {
+  
+  let table = "base_role";
+  
+  let id = create(input.clone(), options.clone()).await?;
+  
+  let model = find_by_id(
+    id,
+    options,
+  ).await?;
+  
+  if model.is_none() {
+    return Err(anyhow!("create_return: Create failed in dao: {table}"));
+  }
+  let model = model.unwrap();
+  
+  Ok(model)
 }
 
 // MARK: create

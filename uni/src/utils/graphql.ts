@@ -324,6 +324,8 @@ export async function gqlQuery(
           config = config || { };
           config.notLogin = true;
           return await gqlQuery(gqlArg, config);
+        } else {
+          throw "refresh_token_expired";
         }
       }
     }
