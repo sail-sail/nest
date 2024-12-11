@@ -4,7 +4,6 @@
   :class="{
     'custom_select_readonly': props.readonly
   }"
-  v-bind="$attrs"
 >
   <slot name="left"></slot>
   <view
