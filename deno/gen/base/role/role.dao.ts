@@ -1295,7 +1295,7 @@ export async function findAutoCode(
 }
 
 // MARK: createReturn
-/** 创建 角色 */
+/** 创建 角色 并返回 */
 export async function createReturn(
   input: Readonly<RoleInput>,
   options?: {
@@ -1387,7 +1387,7 @@ export async function create(
 }
 
 // MARK: createsReturn
-/** 批量创建 用户 */
+/** 批量创建 角色 并返回 */
 export async function createsReturn(
   inputs: RoleInput[],
   options?: {
