@@ -951,7 +951,7 @@ export async function validate(
 }
 
 // MARK: createReturn
-/** 创建 业务选项 */
+/** 创建 业务选项 并返回 */
 export async function createReturn(
   input: Readonly<OptbizInput>,
   options?: {
@@ -1043,7 +1043,7 @@ export async function create(
 }
 
 // MARK: createsReturn
-/** 批量创建 用户 */
+/** 批量创建 业务选项 并返回 */
 export async function createsReturn(
   inputs: OptbizInput[],
   options?: {
