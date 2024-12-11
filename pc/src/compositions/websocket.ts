@@ -195,18 +195,15 @@ export async function publish(
     topic: string;
     payload: any;
   },
-  isValidCurrClientId?: boolean,
 ) {
   if (closeSocketTimeout) {
     clearTimeout(closeSocketTimeout);
     closeSocketTimeout = undefined;
   }
-  if (isValidCurrClientId) {
-    const callbacks = topicCallbackMap.get(data.topic);
-    if (callbacks && callbacks.length > 0) {
-      for (const callback of callbacks) {
-        callback(data.payload);
-      }
+  const callbacks = topicCallbackMap.get(data.topic);
+  if (callbacks && callbacks.length > 0) {
+    for (const callback of callbacks) {
+      callback(data.payload);
     }
   }
   const socket0 = await connect();
