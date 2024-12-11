@@ -268,7 +268,7 @@ export function getQueryUrl(gqlArg: GqlArg, opt?: GqlOpt, authorization0?: strin
   if (opt && opt.isMutation) {
     request_id = opt["Request-ID"] || uuid();
   }
-  let url = `/graphql?query=${ encodeURIComponent(gqlArg.query) }&variables=${ encodeURIComponent(JSON.stringify(gqlArg.variables)) }`;
+  let url = `/api/graphql?query=${ encodeURIComponent(gqlArg.query) }&variables=${ encodeURIComponent(JSON.stringify(gqlArg.variables)) }`;
   if (request_id) {
     url += `&request_id=${ request_id }`;
   }

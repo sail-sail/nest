@@ -14,7 +14,16 @@ export default defineNuxtConfig({
   modules: [
     "@unocss/nuxt",
     "@vue-macros/nuxt",
+    "@nuxt/icon",
   ],
+  icon: {
+    customCollections: [
+      {
+        prefix: "iconfont",
+        dir: "./assets/iconfont",
+      },
+    ],
+  },
   macros: {
     reactivityTransform: true,
   },
@@ -29,4 +38,5 @@ export default defineNuxtConfig({
       },
     },
   },
+  compatibilityDate: "2024-12-11",
 });
