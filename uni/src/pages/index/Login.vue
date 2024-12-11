@@ -27,6 +27,7 @@
       >
         <CustomSelect
           v-model="model.tenant_id"
+          :page-inited="inited"
           :method="getLoginTenantsEfc"
           @data="(e) => tenants = e"
           placeholder="请选择 租户"
@@ -111,6 +112,8 @@ import type {
 
 const usrStore = useUsrStore(cfg.pinia);
 
+let inited = $ref(false);
+
 let tenants: GetLoginTenants[] = [ ];
 
 const model = ref<LoginInput>({
@@ -143,11 +146,9 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {
 let redirect_uri = cfg.homePage;
 
 async function onLogin(
-  {
-    isPass,
-  }: TM.FORM_SUBMIT_RESULT,
+  formSubmitResult?: TM.FORM_SUBMIT_RESULT,
 ) {
-  if (!isPass) {
+  if (formSubmitResult?.isPass === false) {
     return;
   }
   uni.setStorage({
@@ -184,7 +185,7 @@ async function getLoginTenantsEfc() {
 async function setOldLoginModel() {
   try {
     let res = await uni.getStorage({
-      key: "oldLoginModel",
+      key: "login.oldLoginModel",
     });
     if (res) {
       if (typeof res.data === "string") {
@@ -204,7 +205,8 @@ async function setOldLoginModel() {
 }
 
 async function initFrame() {
-  setOldLoginModel();
+  await setOldLoginModel();
+  inited = true;
 }
 
 onLoad(async function(query) {
