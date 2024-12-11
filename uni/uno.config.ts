@@ -43,7 +43,7 @@ const presets = [
   presetAttributify({
     prefix: "u",
     prefixedOnly: true,
-  }) as any,
+  }),
   presetRemRpx(),
 ];
 
