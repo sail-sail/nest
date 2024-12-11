@@ -1252,6 +1252,44 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
+// MARK: creates_return
+/// 批量创建企微用户并返回
+#[allow(dead_code)]
+pub async fn creates_return(
+  inputs: Vec<WxwUsrInput>,
+  options: Option<Options>,
+) -> Result<Vec<WxwUsrModel>> {
+  
+  let table = "wxwork_wxw_usr";
+  let method = "creates_return";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" inputs: {:?}", &inputs);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let ids = _creates(
+    inputs.clone(),
+    options.clone(),
+  ).await?;
+  
+  let models = find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
 // MARK: creates
 /// 批量创建企微用户
 pub async fn creates(
@@ -1624,6 +1662,32 @@ async fn _creates(
   }
   
   Ok(ids2)
+}
+
+// MARK: create_return
+/// 创建企微用户并返回
+#[allow(dead_code)]
+pub async fn create_return(
+  #[allow(unused_mut)]
+  mut input: WxwUsrInput,
+  options: Option<Options>,
+) -> Result<WxwUsrModel> {
+  
+  let table = "wxwork_wxw_usr";
+  
+  let id = create(input.clone(), options.clone()).await?;
+  
+  let model = find_by_id(
+    id,
+    options,
+  ).await?;
+  
+  if model.is_none() {
+    return Err(anyhow!("create_return: Create failed in dao: {table}"));
+  }
+  let model = model.unwrap();
+  
+  Ok(model)
 }
 
 // MARK: create
