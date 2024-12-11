@@ -440,6 +440,7 @@ export async function uniLogin() {
       const res = await wxwGetAppid();
       const appid = res?.appid;
       const agentid = res?.agentid;
+      const scope = res?.scope;
       if (!appid) {
         await redirectToLogin();
         return false;
@@ -452,7 +453,7 @@ export async function uniLogin() {
       }
       url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
       url += `&response_type=code`;
-      url += `&scope=snsapi_base`;
+      url += `&scope=${ (scope || "snsapi_base") }`;
       url += `&state=${ encodeURIComponent(state) }`;
       url += "#wechat_redirect";
       location.replace(url);
