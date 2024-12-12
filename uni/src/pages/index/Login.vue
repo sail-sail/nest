@@ -4,7 +4,7 @@
   un-overflow-hidden
 >
   <tm-form
-    v-model="model"
+    v-model="login_input"
     :label-width="120"
     :rules="form_rules"
     
@@ -26,7 +26,7 @@
         name="tenant_id"
       >
         <CustomSelect
-          v-model="model.tenant_id"
+          v-model="login_input.tenant_id"
           :page-inited="inited"
           :method="getLoginTenantsEfc"
           @data="(e) => tenants = e"
@@ -46,7 +46,7 @@
         name="username"
       >
         <CustomInput
-          v-model="model.username"
+          v-model="login_input.username"
           :type="'text'"
           :show-clear="true"
           placeholder="请输入 用户名"
@@ -64,7 +64,7 @@
         name="password"
       >
         <CustomInput
-          v-model="model.password"
+          v-model="login_input.password"
           :type="'password'"
           :show-clear="true"
           placeholder="请输入 密码"
@@ -116,7 +116,7 @@ let inited = $ref(false);
 
 let tenants: GetLoginTenants[] = [ ];
 
-const model = ref<LoginInput>({
+const login_input = ref<LoginInput>({
   username: "admin",
   password: "a",
   tenant_id: "" as unknown as TenantId,
@@ -153,9 +153,9 @@ async function onLogin(
   }
   uni.setStorage({
     key: "oldLoginModel",
-    data: model.value,
+    data: login_input.value,
   });
-  const loginModel = await login(model.value);
+  const loginModel = await login(login_input.value);
   if (!loginModel.authorization) {
     return;
   }
@@ -174,10 +174,10 @@ async function onLogin(
  */
 async function getLoginTenantsEfc() {
   const tenants = await getLoginTenants({ domain: cfg.domain });
-  if (!model.value.tenant_id && tenants.length > 0) {
-    model.value.tenant_id = tenants[0].id;
-  } else if (model.value.tenant_id && !tenants.some((item) => item.id === model.value.tenant_id)) {
-    model.value.tenant_id = tenants[0].id;
+  if (!login_input.value.tenant_id && tenants.length > 0) {
+    login_input.value.tenant_id = tenants[0].id;
+  } else if (login_input.value.tenant_id && !tenants.some((item) => item.id === login_input.value.tenant_id)) {
+    login_input.value.tenant_id = tenants[0].id;
   }
   return tenants;
 }
@@ -195,9 +195,9 @@ async function setOldLoginModel() {
           console.error(err);
         }
       }
-      model.value = res.data;
-      if (!tenants.some((item) => item.id === model.value.tenant_id)) {
-        model.value.tenant_id = tenants[0]?.id;
+      login_input.value = res.data;
+      if (!tenants.some((item) => item.id === login_input.value.tenant_id)) {
+        login_input.value.tenant_id = tenants[0]?.id;
       }
     }
   } catch (err) {
