@@ -22,7 +22,7 @@ use async_graphql::{
 use poem::{
   get, post,
   listener::TcpListener,
-  middleware::{TokioMetrics, Tracing},
+  middleware::{CatchPanic, TokioMetrics, Tracing},
   EndpointExt, Route, Server,
 };
 use crate::common::gql::server_timing::ServerTiming;
@@ -258,6 +258,7 @@ async fn main() -> Result<(), std::io::Error> {
   let app = app
     .with(Tracing)
     .with(ServerTiming)
+    .with(CatchPanic::new())
     .data(schema);
   
   let server_port = env::var("server_port").unwrap_or("4001".to_owned());
@@ -266,6 +267,11 @@ async fn main() -> Result<(), std::io::Error> {
   info!("app started: {}", server_port);
   
   Server::new(TcpListener::bind(format!("{server_host}:{server_port}")))
-    .run(app)
-    .await
+    .run_with_graceful_shutdown(
+      app,
+      async {
+        let _ = tokio::signal::ctrl_c().await;
+      },
+      None,
+    ).await
 }
