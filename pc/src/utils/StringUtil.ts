@@ -12,7 +12,7 @@ export function uniqueID() {
   return (UID++).toString(36);
 }
 
-const _randomUUID: any = window.crypto?.randomUUID;
+const _randomUUID: unknown = window.crypto?.randomUUID;
 
 export function uuid() {
   if (typeof crypto !== "undefined" && _randomUUID) {

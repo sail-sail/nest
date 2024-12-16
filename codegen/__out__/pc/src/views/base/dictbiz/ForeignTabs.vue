@@ -83,14 +83,14 @@ let inited = $ref(false);
 
 let dialogAction = $ref<"list">("list");
 
-let dialogModel = $ref<{
+const dialogModel = $ref<{
   id?: DictbizId,
   is_deleted?: number | null,
 }>({ });
 
 let tabGroup = $ref("");
 
-let tabName = $ref<string>();
+const tabName = $ref<string>();
 
 let dictbiz_detail_total = $ref<number>();
 
@@ -123,7 +123,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
 async function showDialog(

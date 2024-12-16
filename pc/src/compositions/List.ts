@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   useI18n,
 } from "@/locales/i18n";
@@ -81,6 +82,7 @@ export function initBuiltInModel<T>(
 }
 
 export function usePage<T>(
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   dataGrid: Function,
   opt?: {
     pageSizes?: number[],
@@ -88,10 +90,10 @@ export function usePage<T>(
   },
 ) {
   
-  let pageSizes = $ref(opt?.pageSizes || [ 20, 50, 100 ]);
+  const pageSizes = $ref(opt?.pageSizes || [ 20, 50, 100 ]);
   
   // 分页
-  let page = $ref({
+  const page = $ref({
     size: pageSizes[0],
     current: 1,
     total: 0,
@@ -248,7 +250,7 @@ export function useSelect<T = any, Id = string>(
   /**
    * 多行或单行勾选
    */
-  function selectChg(list: T[], row?: T) {
+  function onSelect(list: T[], row?: T) {
     const rowKey = getRowKey();
     if (!rowKey) {
       return;
@@ -886,9 +888,9 @@ export function useSelect<T = any, Id = string>(
     watch3Stop();
   });
   
-  return $$({
-    selectedIds,
-    selectChg,
+  return {
+    selectedIds: $$(selectedIds),
+    onSelect,
     onRow,
     onRowUp,
     onRowDown,
@@ -898,7 +900,7 @@ export function useSelect<T = any, Id = string>(
     onRowEnd,
     rowClassName,
     tableFocus,
-  });
+  };
 }
 
 export function useSelectOne<T>(
@@ -994,7 +996,7 @@ export function useSelectOne<T>(
   /**
    * 多行或单行勾选
    */
-  function selectChg(list: T[], row?: T) {
+  function onSelect(list: T[], row?: T) {
     const rowKey = getRowKey();
     if (!rowKey) {
       return;
@@ -1075,7 +1077,7 @@ export function useSelectOne<T>(
   
   return $$({
     selectedIds,
-    selectChg,
+    onSelect,
     onRow,
     rowClassName,
     tableFocus,
@@ -1095,7 +1097,7 @@ export function useTableColumns<T>(
 ) {
   const route = useRoute();
   
-  let tableColumns: Ref<ColumnType[]> = _tableColumns;
+  const tableColumns: Ref<ColumnType[]> = _tableColumns;
   
   let routePath = "";
   let persistKey = "";

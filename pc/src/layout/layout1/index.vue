@@ -92,9 +92,9 @@
         <template
           v-if="
             loginInfo &&
-            loginInfo.org_id_models &&
-            loginInfo.org_id_models.length > 0 &&
-            !(loginInfo.org_id_models.length === 1 && loginInfo.org_id_models[0].lbl === '默认组织')
+              loginInfo.org_id_models &&
+              loginInfo.org_id_models.length > 0 &&
+              !(loginInfo.org_id_models.length === 1 && loginInfo.org_id_models[0].lbl === '默认组织')
           "
         >
           <el-dropdown
@@ -408,9 +408,9 @@ watch(
 
 let inited = $ref(false);
 
-let tabs_divRef = $ref<HTMLDivElement>();
-let tabsRef = $ref<InstanceType<typeof Tabs>>();
-let tab_active_lineRef = $ref<HTMLDivElement>();
+const tabs_divRef = $ref<HTMLDivElement>();
+const tabsRef = $ref<InstanceType<typeof Tabs>>();
+const tab_active_lineRef = $ref<HTMLDivElement>();
 
 let scrollLeftVisible = $ref(false);
 let scrollRightVisible = $ref(false);
@@ -478,7 +478,9 @@ function refreshTab_active_line() {
     return;
   }
   tab_active_lineRef.style.display = "block";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if ((tab_activeEl as any).scrollIntoViewIfNeeded) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (tab_activeEl as any).scrollIntoViewIfNeeded(true);
   } else {
     tab_activeEl.scrollIntoView({ block: "center", inline: "center" });
@@ -573,7 +575,7 @@ async function onDeptSelect(org_id?: OrgId) {
   }
 }
 
-let changePasswordRef = $ref<InstanceType<typeof ChangePassword>>();
+const changePasswordRef = $ref<InstanceType<typeof ChangePassword>>();
 
 /** 修改密码 */
 async function onChangePassword() {
