@@ -3,7 +3,7 @@ import * as appService from "./app.service.ts";
 import * as authService from "/lib/auth/auth.service.ts";
 
 export function generateId() {
-  return appService.generateId();
+  return appService.generateId<string>();
 }
 
 /**

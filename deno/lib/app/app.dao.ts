@@ -4,8 +4,8 @@ import {
 
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
-export function generateId() {
-  return shortUuidV4();
+export function generateId<T>() {
+  return shortUuidV4<T>();
 }
 
 /**
