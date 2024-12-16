@@ -129,8 +129,8 @@
             prop="timezone"
           >
             <DictSelect
-              :set="dialogModel.timezone = dialogModel.timezone ?? undefined"
               v-model="dialogModel.timezone"
+              :set="dialogModel.timezone = dialogModel.timezone ?? undefined"
               code="cron_job_timezone"
               :placeholder="`${ ns('请选择') } ${ n('时区') }`"
               :readonly="isLocked || isReadonly"
@@ -161,9 +161,9 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
+              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -330,7 +330,7 @@ let ids = $ref<CronJobId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<CronJobId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -411,7 +411,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 
@@ -574,7 +574,7 @@ function onJobId(jobModel?: JobModel) {
   job_lbl = jobModel?.lbl || "";
 }
 
-let cron_lbl = $computed(() => {
+const cron_lbl = $computed(() => {
   if (!dialogModel.cron) {
     return "";
   }

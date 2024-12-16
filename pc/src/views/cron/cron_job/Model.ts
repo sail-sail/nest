@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   CronJobInput as CronJobInputType,
   CronJobModel as CronJobModelType,
