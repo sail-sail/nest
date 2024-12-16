@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node lib/script/mother.js",
     "gqlgen": "npx graphql-codegen --config ./lib/script/graphql_codegen_config.ts",
-    "typecheck": "deno check ./mod.ts",
+    "typecheck": "deno check ./mod.ts && deno lint",
+    "lint": "deno lint",
     "build-prod": "deno run -A ./lib/script/build.ts --target linux --env prod",
     "build-test": "deno run -A ./lib/script/build.ts --target linux --env test",
     "publish": "node lib/script/publish.js",

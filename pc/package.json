@@ -10,7 +10,7 @@
     "build-test": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && vite build --mode test --emptyOutDir && node src/utils/postbuild.js",
     "permit": "node src/utils/permit_scan.js",
     "rsw:build": "rsw && npm run build",
-    "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && vue-tsc --noEmit --skipLibCheck",
+    "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && vue-tsc --noEmit --skipLibCheck && eslint .",
     "lint": "eslint .",
     "codegen": "cd .. && npm run codegen",
     "preinstall": "npx only-allow pnpm",
@@ -90,5 +90,10 @@
     "vite-plugin-wasm": "3.3.0",
     "vitest": "2.1.8",
     "vue-tsc": "2.1.10"
+  },
+  "lint-staged": {
+    "*.{ts,vue}": [
+      "npm run typecheck"
+    ]
   }
 }

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni -p mp-weixin",
-    "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && vue-tsc --noEmit --skipLibCheck --project tsconfig_tc.json",
+    "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && vue-tsc --noEmit --skipLibCheck --project tsconfig_tc.json && eslint .",
     "lint": "eslint .",
     "build:h5-test": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni build --mode test",
     "build:h5-prod": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni build",
