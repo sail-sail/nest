@@ -10,6 +10,7 @@
     "mother": "cd nest && node src/Mother.js",
     "codegen": "cd codegen && npm run codegen",
     "gqlgen": "cd deno && npm run gqlgen",
+    "lint-staged": "cd deno && npm run lint-staged && cd ../pc && npm run lint-staged && cd ../uni && npm run lint-staged",
     "codeapply": "cd codegen && node -r ts-node/register src/bin/codeapply.ts",
     "coderemove": "cd codegen && node -r ts-node/register src/bin/coderemove.ts",
     "initdb": "cd codegen && node -r ts-node/register src/util/npmInitDB.ts",
@@ -25,6 +26,10 @@
     "db_charset": "cd codegen && ts-node src/util/npmDbCharset.ts",
     "dev:mp-weixin": "cd uni && npx uni -p mp-weixin",
     "dev:h5": "cd uni && npx uni",
+    "prepare": "husky",
     "preinstall": "npx only-allow pnpm"
+  },
+  "devDependencies": {
+    "husky": "9.1.7"
   }
 }
