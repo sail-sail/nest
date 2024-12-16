@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   JobInput as JobInputType,
   JobModel as JobModelType,
