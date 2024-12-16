@@ -25,7 +25,7 @@ export class UserAgent {
    */
   constructor(userAgent0: string) {
     this.#userAgent = userAgent0;
-    let userAgent = userAgent0.toLowerCase();
+    const userAgent = userAgent0.toLowerCase();
     if (userAgent.includes("windows")) {
       this.os = "windows";
     } else if (userAgent.includes("android")) {

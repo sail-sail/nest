@@ -20,7 +20,8 @@
     ".eslintrc-auto-import.json": true,
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true,
-    "public/ejsexcel.min.js": true
+    "public/ejsexcel.min.js": true,
+    "**/.husky": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -43,7 +44,8 @@
     ".eslintrc-auto-import.json": true,
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true,
-    "public/ejsexcel.min.js": true
+    "public/ejsexcel.min.js": true,
+    "**/.husky": true
   },
   "git.timeline.showUncommitted": true,
   "scm.showHistoryGraph": false,

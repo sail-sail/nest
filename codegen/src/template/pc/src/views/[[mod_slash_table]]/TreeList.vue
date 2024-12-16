@@ -173,7 +173,7 @@ let inited = $ref(false);
 
 let parent_id = $ref(props.parent_id);
 
-let treeRef = $ref<InstanceType<typeof ElTree>>();
+const treeRef = $ref<InstanceType<typeof ElTree>>();
 
 watch(
   () => props.parent_id,
@@ -228,7 +228,7 @@ function filterNode(value: string, data: ModelTree) {<#
   return data.lbl.includes(value);
 }
 
-function nodeClass(data: TreeNodeData, _: any): string {
+function nodeClass(data: TreeNodeData): string {
   if (data.id === parent_id) {
     return "is-current";
   }

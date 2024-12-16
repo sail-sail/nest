@@ -8,10 +8,19 @@
     "noUnusedParameters": false,
     "lib": [
       "esnext",
-      "deno.window"
+      "deno.window",
+      "deno.ns"
     ],
     "types": [
       "./typings/types.ts"
+    ]
+  },
+  "lint": {
+    "include": [
+      "src/"
+    ],
+    "exclude": [
+      "src/**/*.test.ts"
     ]
   },
   "npmRegistry": "https://registry.npmmirror.com",

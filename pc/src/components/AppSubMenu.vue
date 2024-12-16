@@ -63,8 +63,8 @@ const props = withDefaults(
   },
 );
 
-let menus = $ref(toRef(props, "children"));
-let openedIndex = $ref(toRef(props, "openedIndex"));
+const menus = $ref(toRef(props, "children"));
+const openedIndex = $ref(toRef(props, "openedIndex"));
 let lvl = $ref(props.lvl);
 lvl++;
 

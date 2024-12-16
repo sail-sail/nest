@@ -107,8 +107,8 @@
             prop="type"
           >
             <DictSelect
-              :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
+              :set="dialogModel.type = dialogModel.type ?? undefined"
               code="dict_type"
               :placeholder="`${ ns('请选择') } ${ n('数据类型') }`"
               :readonly="isLocked || isReadonly"
@@ -139,9 +139,9 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
+              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -430,7 +430,7 @@ let ids = $ref<DictbizId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<DictbizId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -504,7 +504,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 
@@ -882,6 +882,7 @@ async function save() {
       dictbiz_detail: [
         ...(dialogModel.dictbiz_detail || [ ]).map((item) => ({
           ...item,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           order_by: (item as any)._seq,
           _seq: undefined,
           _type: undefined,
@@ -904,6 +905,7 @@ async function save() {
       dictbiz_detail: [
         ...(dialogModel.dictbiz_detail || [ ]).map((item) => ({
           ...item,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           order_by: (item as any)._seq,
           _seq: undefined,
           _type: undefined,
@@ -983,12 +985,12 @@ async function onSave() {
   });
 }
 
-let inlineForeignTabLabel = $ref("业务字典明细");
+const inlineForeignTabLabel = $ref("业务字典明细");
 
 // 业务字典明细
-let dictbiz_detailRef = $ref<InstanceType<typeof ElTable>>();
+const dictbiz_detailRef = $ref<InstanceType<typeof ElTable>>();
 
-let dictbiz_detailData = $computed(() => {
+const dictbiz_detailData = $computed(() => {
   if (!isLocked && !isReadonly) {
     return [
       ...dialogModel.dictbiz_detail ?? [ ],
@@ -1030,6 +1032,7 @@ watch(
     }
     for (let i = 0; i < dialogModel.dictbiz_detail.length; i++) {
       const item = dialogModel.dictbiz_detail[i];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (item as any)._seq = i + 1;
     }
   },
