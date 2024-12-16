@@ -1,10 +1,11 @@
 export function getLocale(): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let usr: any = { };
   const usrStr = uni.getStorageSync("usr");
   if (usrStr) {
     try {
       usr = JSON.parse(usrStr);
-    } catch (e) { }
+    } catch (e) { /* empty */ }
   }
   let lang = usr?.lang?.toLowerCase();
   if (lang) {

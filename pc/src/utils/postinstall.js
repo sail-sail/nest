@@ -1,4 +1,3 @@
-/* eslint-disable */
 const fs = require("fs");
 try {
   fs.unlinkSync(`${ __dirname }/../../public/ejsexcel.min.js`);

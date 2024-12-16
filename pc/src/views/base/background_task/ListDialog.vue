@@ -38,12 +38,15 @@
 import useBackground_taskStore from "@/store/background_task";
 import List from "./List.vue";
 
-let { fullscreen, setFullscreen } = $(useFullscreenEfc());
+const {
+  fullscreen,
+  setFullscreen,
+} = $(useFullscreenEfc());
 
 let dialogTitle = $ref("后台任务列表");
 let dialogVisible = $ref(false);
 
-let background_taskStore = useBackground_taskStore();
+const background_taskStore = useBackground_taskStore();
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";

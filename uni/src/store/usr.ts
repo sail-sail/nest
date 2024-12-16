@@ -4,11 +4,11 @@ import type {
 
 export default defineStore("usr", function() {
   
-  let authorization = ref(uni.getStorageSync("authorization") || "");
-  let usr_id = ref<UsrId>(uni.getStorageSync("usr_id"));
-  let tenant_id = ref<TenantId>(uni.getStorageSync("tenant_id"));
-  let username = ref<string>(uni.getStorageSync("username"));
-  let loginInfo = ref<GetLoginInfo>(uni.getStorageSync("loginInfo"));
+  const authorization = ref(uni.getStorageSync("authorization") || "");
+  const usr_id = ref<UsrId>(uni.getStorageSync("usr_id"));
+  const tenant_id = ref<TenantId>(uni.getStorageSync("tenant_id"));
+  const username = ref<string>(uni.getStorageSync("username"));
+  const loginInfo = ref<GetLoginInfo>(uni.getStorageSync("loginInfo"));
   
   function setAuthorization(authorization0: string) {
     if (authorization.value !== authorization0) {
@@ -30,7 +30,7 @@ export default defineStore("usr", function() {
     return usr_id.value;
   }
   
-  let showAuth = ref(false);
+  const showAuth = ref(false);
   
   function setShowAuth(showAuth1: boolean) {
     showAuth.value = showAuth1;
@@ -40,7 +40,7 @@ export default defineStore("usr", function() {
     return showAuth.value;
   }
   
-  let lang = ref("");
+  const lang = ref("");
   
   function setLang(lang0: string) {
     lang.value = lang0;

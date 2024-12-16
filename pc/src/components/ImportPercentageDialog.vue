@@ -1,6 +1,6 @@
 <template>
 <el-dialog
-  v-model="dialogVisible"
+  v-model="dialogVisible1"
   draggable
   append-to-body
   class="custom_dialog auto_dialog"
@@ -48,7 +48,7 @@ const {
 
 const props = defineProps<{
   percentage: number;
-  dialog_visible: boolean;
+  dialogVisible: boolean;
 }>();
 
 const emit = defineEmits<
@@ -57,13 +57,13 @@ const emit = defineEmits<
   ) => void
 >();
 
-let dialogTitle = $ref(ns("正在导入"));
-let dialogVisible = $ref(false);
+const dialogTitle = $ref(ns("正在导入"));
+let dialogVisible1 = $ref(false);
 
 watch(
-  () => props.dialog_visible,
+  () => props.dialogVisible,
   () => {
-    dialogVisible = props.dialog_visible;
+    dialogVisible1 = props.dialogVisible;
   },
 );
 
@@ -78,7 +78,7 @@ async function beforeClose(done: (stop: boolean) => void) {
     return;
   }
   done(false);
-  dialogVisible = false;
+  dialogVisible1 = false;
   emit("stop");
 }
 </script>

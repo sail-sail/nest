@@ -4,7 +4,7 @@ import {
 
 export default defineStore("field_permit", function() {
   
-  let field_permits = ref<{
+  const field_permits = ref<{
     [route_path: string]: string[] | null;
   }>({ });
   

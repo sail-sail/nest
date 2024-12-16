@@ -1,5 +1,6 @@
 <template>
 <tm-input
+  v-model.lazy="modelValue"
   class="custom_input n-w-full"
   :class="{
     'custom_input_readonly': props.readonly
@@ -7,14 +8,13 @@
   :transprent="true"
   :show-bottom-botder="false"
   v-bind="$attrs"
-  v-model.lazy="modelValue"
   :show-clear="props.readonly ? false : props.showClear"
-  @change="onChange"
-  @clear="onClear"
   :disabled="props.readonly"
   :placeholder="(props.readonly || !props.pageInited) ? '' : props.placeholder"
   :color="props.color"
   :font-color="props.readonly ? '#666' : undefined"
+  @change="onChange"
+  @clear="onClear"
 >
   <template #left>
     <slot name="left"></slot>
@@ -27,13 +27,16 @@
 
 <script lang="ts" setup>
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
 
 const props = withDefaults(
   defineProps<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     disabled?: boolean;
     readonly?: boolean;
@@ -53,7 +56,7 @@ const props = withDefaults(
   },
 );
 
-let modelValue = ref(props.modelValue);
+const modelValue = ref(props.modelValue);
 
 watch(
   () => props.modelValue,
