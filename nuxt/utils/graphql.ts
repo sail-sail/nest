@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { uniqueID, uuid } from "./StringUtil";
 
 import {
@@ -7,7 +8,8 @@ import {
   Kind,
   parse,
   print,
-// @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
 } from "graphql/index.mjs";
 
 import combinedQuery from "graphql-combine-query";
@@ -260,7 +262,7 @@ export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
 }
 
 export function getQueryUrl(gqlArg: GqlArg, opt?: GqlOpt, authorization0?: string): string {
-  let authorization = $(useAuthorization());
+  const authorization = $(useAuthorization());
   if (authorization0 == null) {
     authorization0 = authorization;
   }
@@ -353,6 +355,7 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     }
   }
   if (errMsg) {
+    // eslint-disable-next-line no-empty
     if (!opt || opt.showErrMsg !== false) {
     }
     if (errMsg.startsWith("Error: ")) {
