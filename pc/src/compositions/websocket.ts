@@ -11,7 +11,7 @@ const PWD = "0YSCBr1QQSOpOfi6GgH34A";
 const url = (isSSL ? 'wss://' : 'ws://') + location.host + '/api/websocket/upgrade?pwd='+ PWD + '&clientId=' + encodeURIComponent(clientId);
 
 let socket: WebSocket | undefined = undefined;
-const topicCallbackMap = new Map<string, ((data: any) => void)[]>();
+const topicCallbackMap = new Map<string, ((data: unknown) => void)[]>();
 
 let reConnectNum = 0;
 
@@ -74,8 +74,7 @@ async function connect() {
       const err = err0 as ErrorEvent;
       try {
         socket!.close();
-      } catch (_err) {
-      }
+      } catch (_err) { /* empty */ }
       socket = undefined;
       reConnect();
     };
@@ -125,8 +124,7 @@ export async function subscribe<T>(
     clearTimeout(closeSocketTimeout);
     closeSocketTimeout = undefined;
   }
-  let socket: WebSocket | undefined;
-  socket = await connect();
+  const socket = await connect();
   if (!socket) {
     return;
   }
@@ -135,7 +133,8 @@ export async function subscribe<T>(
     callbacks = [ ];
     topicCallbackMap.set(topic, callbacks);
   }
-  callbacks.push(callback);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  callbacks.push(callback as any);
   socket.send(JSON.stringify({
     action: "subscribe",
     data: {
@@ -147,7 +146,8 @@ export async function subscribe<T>(
 /** 取消订阅 */
 export async function unSubscribe(
   topic: string,
-  callback: Function,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  callback: ((data: any) => void),
 ) {
   if (closeSocketTimeout) {
     clearTimeout(closeSocketTimeout);
@@ -155,7 +155,7 @@ export async function unSubscribe(
   }
   const callbacks = topicCallbackMap.get(topic);
   if (callbacks && callbacks.length > 0) {
-    const index = callbacks.indexOf(callback as any);
+    const index = callbacks.indexOf(callback);
     if (index >= 0) {
       callbacks.splice(index, 1);
     }
@@ -193,6 +193,7 @@ let closeSocketTimeout: NodeJS.Timeout | undefined = undefined;
 export async function publish(
   data: {
     topic: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     payload: any;
   },
 ) {

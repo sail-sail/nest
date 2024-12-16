@@ -199,23 +199,23 @@ type DialogAction = "pwd";
 let dialogAction = $ref<DialogAction>("pwd");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
-let dialogNotice = $ref("");
+const dialogNotice = $ref("");
 
 type SetTenantAdminPwdInput = Partial<SetTenantAdminPwdInput0>;
 
 let dialogModel: SetTenantAdminPwdInput = $ref({
 } as SetTenantAdminPwdInput);
 
-let lblModel = $ref({
+const lblModel = $ref({
   tenant_lbl: "",
   usr_username: "admin",
 });
 
 let ids = $ref<TenantId[]>([ ]);
-let is_deleted = $ref<number>(0);
+const is_deleted = $ref<number>(0);
 let changedIds = $ref<TenantId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -249,7 +249,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
 async function showDialog(

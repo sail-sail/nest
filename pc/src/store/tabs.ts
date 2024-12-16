@@ -9,6 +9,7 @@ export interface TabInf {
   lbl?: string,
   path: string,
   active?: boolean,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query?: { [key: string]: any },
   _hasPermit?: boolean, // 当前选项卡是否有权限打开
   fixed?: boolean, // 是否固定选项卡
@@ -20,11 +21,11 @@ export default defineStore("tabs", function() {
   
   const router = useRouter();
   
-  let tabs = ref<TabInf[]>([ ]);
+  const tabs = ref<TabInf[]>([ ]);
   
   const actTab = computed(() => tabs.value.find((item) => item.active));
   
-  let keepAliveNames = ref<string[]>([ ]);
+  const keepAliveNames = ref<string[]>([ ]);
   
   if (config.indexIsEmpty) {
     watch(

@@ -3,11 +3,13 @@ import type {
   Mutation,
   Query,
   GetMenus,
+  MenuModel as MenuModel0,
 } from "#/types";
 
-type MenuModel = GetMenus & {
+export type MenuModel = MenuModel0 & {
   children?: MenuModel[];
-  oldRoute_path?: string;
+  oldRoute_path: string;
+  _isShow?: boolean;
 }
 
 function treeMenusUrl(children: MenuModel[]) {
@@ -25,11 +27,10 @@ function treeMenusUrl(children: MenuModel[]) {
 }
 
 export async function getMenus(
-  variables?: { },
   opt?: GqlOpt,
-): Promise<any> {
+) {
   const res: {
-    getMenus: Query["getMenus"]
+    getMenus: MenuModel[];
   } = await query({
     query: /* GraphQL */ `
       fragment GetMenusFragment on GetMenus {
@@ -45,7 +46,6 @@ export async function getMenus(
         }
       }
     `,
-    variables,
   }, opt);
   const data = res.getMenus;
   const dataTree = list2tree(data);
@@ -55,24 +55,25 @@ export async function getMenus(
 
 // 清空缓存
 export async function clearCache(
-  variables?: { [key: string]: any; },
   opt?: GqlOpt,
-): Promise<any> {
-  const data = await mutation({
+) {
+  const res: {
+    clearCache: Mutation["clearCache"];
+  } = await mutation({
     query: /* GraphQL */ `
       mutation {
         clearCache
       }
     `,
-    variables,
   }, opt);
-  return data?.clearCache;
+  const data = res.clearCache;
+  return data;
 }
 
 export async function getLoginInfo(
   opt?: GqlOpt,
 ) {
-  const data: {
+  const res: {
     getLoginInfo: GetLoginInfo;
   } = await query({
     query: /* GraphQL */ `
@@ -90,14 +91,15 @@ export async function getLoginInfo(
       }
     `,
   }, opt);
-  return data.getLoginInfo;
+  const data = res.getLoginInfo;
+  return data;
 }
 
 /** 获取当前用户的权限列表 */
 export async function getUsrPermits(
   opt?: GqlOpt,
 ) {
-  const data: {
+  const res: {
     getUsrPermits: Query["getUsrPermits"],
   } = await query({
     query: /* GraphQL */ `
@@ -109,7 +111,8 @@ export async function getUsrPermits(
       }
     `,
   }, opt);
-  return data.getUsrPermits;
+  const data = res.getUsrPermits;
+  return data;
 }
 
 export async function deptLoginSelect(
@@ -118,7 +121,7 @@ export async function deptLoginSelect(
   },
   opt?: GqlOpt,
 ) {
-  const data: {
+  const res: {
     orgLoginSelect: Mutation["orgLoginSelect"];
   } = await mutation({
     query: /* GraphQL */ `
@@ -128,5 +131,6 @@ export async function deptLoginSelect(
     `,
     variables,
   }, opt);
-  return data.orgLoginSelect;
+  const data = res.orgLoginSelect;
+  return data;
 }

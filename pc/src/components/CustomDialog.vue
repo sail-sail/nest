@@ -1,5 +1,6 @@
 <template>
 <el-dialog
+  ref="dialogRef"
   v-model="dialogVisible"
   :fullscreen="isFullscreen"
   append-to-body
@@ -16,7 +17,6 @@
   :before-close="beforeClose"
   v-bind="$attrs"
   :style="{ height: isFullscreen ? undefined : props.height }"
-  ref="dialogRef"
 >
   <template #header>
     <div
@@ -72,10 +72,10 @@ import type {
   WatchStopHandle,
 } from "vue";
 
-let {
+const {
   fullscreen: isFullscreen,
   setFullscreen,
-} = $(useFullscreenEfc());
+} = useFullscreenEfc();
 
 export type CustomDialogType = "auto" | "medium" | "large" | "default";
 
@@ -87,13 +87,13 @@ let dialogType = $ref<CustomDialogType>("default");
 
 let pointerPierce = $ref(false);
 
-let dialogRef = $ref<InstanceType<typeof ElDialog>>();
+const dialogRef = $ref<InstanceType<typeof ElDialog>>();
 
 watch(
   () => dialogVisible,
   () => {
     if (dialogVisible) {
-      isFullscreen = false;
+      isFullscreen.value = false;
     }
   },
 );
