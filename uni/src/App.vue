@@ -15,8 +15,7 @@ onLaunch((async(options?: App.LaunchShowOption) => {
     _uid = (await uni.getStorage({
       key: "_uid"
     })).data;
-  } catch (err) {
-  }
+  } catch (err) { /* empty */ }
   if (!_uid) {
     _uid = uniqueID();
     await uni.setStorage({

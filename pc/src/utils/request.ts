@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ElMessage } from "element-plus";
 import useUsrStore from "../store/usr";
 import useIndexStore from "../store/index";
@@ -169,7 +170,7 @@ export async function uploadFile(
   formData.append("file", file);
   if (data) {
     for (const key in data) {
-      if (data.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
         formData.append(key, data[key]);
       }
     }
