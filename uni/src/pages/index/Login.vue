@@ -29,9 +29,9 @@
           v-model="login_input.tenant_id"
           :page-inited="inited"
           :method="getLoginTenantsEfc"
-          @data="(e) => tenants = e"
           placeholder="请选择 租户"
           :multiple="false"
+          @data="(e) => tenants = e"
         >
           <template #left>
             <i
@@ -114,7 +114,7 @@ const usrStore = useUsrStore(cfg.pinia);
 
 let inited = $ref(false);
 
-let tenants: GetLoginTenants[] = [ ];
+const tenants: GetLoginTenants[] = [ ];
 
 const login_input = ref<LoginInput>({
   username: "admin",
@@ -184,7 +184,7 @@ async function getLoginTenantsEfc() {
 
 async function setOldLoginModel() {
   try {
-    let res = await uni.getStorage({
+    const res = await uni.getStorage({
       key: "login.oldLoginModel",
     });
     if (res) {
@@ -200,8 +200,7 @@ async function setOldLoginModel() {
         login_input.value.tenant_id = tenants[0]?.id;
       }
     }
-  } catch (err) {
-  }
+  } catch (err) { /* empty */ }
 }
 
 async function initFrame() {

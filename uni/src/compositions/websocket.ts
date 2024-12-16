@@ -15,6 +15,7 @@ const PWD = "0YSCBr1QQSOpOfi6GgH34A";
 const url = cfg.wss + '/api/websocket/upgrade?pwd='+ PWD + '&clientId=' + encodeURIComponent(clientId);
 
 let socket: SocketTask | undefined = undefined;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const topicCallbackMap = new Map<string, ((data: any) => void)[]>();
 
 let reConnectNum = 0;
@@ -121,8 +122,7 @@ export async function subscribe<T>(
     clearTimeout(closeSocketTimeout);
     closeSocketTimeout = undefined;
   }
-  let socket: SocketTask | undefined;
-  socket = await connect();
+  const socket = await connect();
   if (!socket) {
     return;
   }
@@ -145,6 +145,7 @@ export async function subscribe<T>(
 /** 取消订阅 */
 export async function unSubscribe(
   topic: string,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   callback: Function,
 ) {
   if (closeSocketTimeout) {
@@ -153,6 +154,7 @@ export async function unSubscribe(
   }
   const callbacks = topicCallbackMap.get(topic);
   if (callbacks && callbacks.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const index = callbacks.indexOf(callback as any);
     if (index >= 0) {
       callbacks.splice(index, 1);
@@ -193,6 +195,7 @@ let closeSocketTimeout: NodeJS.Timeout | undefined = undefined;
 export async function publish(
   data: {
     topic: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     payload: any;
   },
 ) {

@@ -6,7 +6,7 @@ export default defineStore("permit", function() {
   
   const usrStore = useUsrStore();
   
-  let permits = ref<Pick<GetUsrPermits, "code" | "route_path">[]>([ ]);
+  const permits = ref<Pick<GetUsrPermits, "code" | "route_path">[]>([ ]);
   
   function getPermit(route_path?: string) {
     if (!route_path) {

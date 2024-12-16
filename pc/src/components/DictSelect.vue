@@ -16,23 +16,23 @@
     collapse-tags-tooltip
     default-first-option
     :height="props.height"
-    @visible-change="handleVisibleChange"
-    @clear="onClear"
     un-w="full"
     v-bind="$attrs"
     :model-value="modelValueComputed"
-    @update:model-value="modelValueUpdate"
     :loading="!inited"
     class="dict_select"
     :class="{
       'dict_select_isShowModelLabel': isShowModelLabel && inited,
     }"
-    @change="onValueChange"
     :multiple="props.multiple"
     :clearable="!props.disabled"
     :disabled="props.disabled"
     :readonly="props.readonly"
     :placeholder="((isShowModelLabel && props.multiple) ? props.modelLabel : props.placeholder) ?? undefined"
+    @visible-change="handleVisibleChange"
+    @clear="onClear"
+    @update:model-value="modelValueUpdate"
+    @change="onValueChange"
     @keyup.enter.stop
     @keydown.ctrl.c.stop="copyModelLabel"
   >
@@ -123,8 +123,8 @@
             <el-tag
               type="info"
               :disable-transitions="true"
-              @click="() => readonlyCollapseTags = false"
               un-cursor-pointer
+              @click="() => readonlyCollapseTags = false"
             >
               {{ `+${ modelLabels.length - props.readonlyMaxCollapseTags }` }}
             </el-tag>
@@ -182,7 +182,7 @@
   >
     <template
       v-if="!modelLabels[0]"
-  >
+    >
       <span
         class="dict_select_placeholder"
       >
@@ -228,8 +228,10 @@ const t = getCurrentInstance();
 
 const emit = defineEmits<{
   (e: "data", value?: DictModel[]): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
   (e: "update:modelLabel", value?: string | null): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
@@ -241,6 +243,7 @@ const props = withDefaults(
     code: string;
     optionsMap?: OptionsMap;
     height?: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     modelLabel?: string;
     autoWidth?: boolean;
@@ -321,10 +324,10 @@ watch(
   },
 );
 
-let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
-let selectDivRef = $ref<HTMLDivElement>();
+const selectRef = $ref<InstanceType<typeof ElSelectV2>>();
+const selectDivRef = $ref<HTMLDivElement>();
 
-let isSelectAll = $computed({
+const isSelectAll = $computed({
   get() {
     if (!modelValue) {
       return false;
@@ -421,7 +424,7 @@ const isShowModelLabel = $computed(() => {
   return modelValueComputed === modelLabel;
 });
 
-let shouldShowPlaceholder = $computed(() => {
+const shouldShowPlaceholder = $computed(() => {
   if (props.multiple) {
     return modelValue == null || modelValue.length === 0;
   }
@@ -460,6 +463,7 @@ function getModelsByValue() {
     return findModelById(modelValue as string);
   }
   const modelValues = (modelValue || [ ]) as string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const models: any[] = [ ];
   for (const id of modelValues) {
     const model = findModelById(id);
@@ -490,6 +494,7 @@ async function refreshDropdownWidth() {
     return;
   }
   await nextTick();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const selectRef = t.refs.selectRef as any;
   if (!selectRef) {
     return;
@@ -539,8 +544,8 @@ const modelLabels: string[] = $computed(() => {
     }
     return [ props.optionsMap(model).label ?? "" ];
   }
-  let labels: string[] = [ ];
-  let modelValues = (modelValue || [ ]) as string[];
+  const labels: string[] = [ ];
+  const modelValues = (modelValue || [ ]) as string[];
   for (const value of modelValues) {
     const model = data.find((item) => value != null && String(props.optionsMap(item).value) == String(value));
     if (!model) {

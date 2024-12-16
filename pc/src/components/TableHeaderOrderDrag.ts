@@ -17,6 +17,7 @@ function getTextWidth(textContent: string) {
 }
 
 export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   const bindVal: Function = binding.value;
   if (!bindVal) {
     console.error("请设置正确的 v-header-order-drag 参数值!", el, binding.value);

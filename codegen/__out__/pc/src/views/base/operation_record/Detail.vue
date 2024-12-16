@@ -264,7 +264,7 @@ let ids = $ref<OperationRecordId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<OperationRecordId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -312,7 +312,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 
