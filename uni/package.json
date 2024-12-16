@@ -5,6 +5,7 @@
     "start": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni -p mp-weixin",
     "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && vue-tsc --noEmit --skipLibCheck --project tsconfig_tc.json && eslint .",
     "lint": "eslint .",
+    "lint-staged": "lint-staged",
     "build:h5-test": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni build --mode test",
     "build:h5-prod": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni build",
     "dev:app": "uni -p app",
@@ -37,7 +38,8 @@
     "build:quickapp-webview": "uni build -p quickapp-webview",
     "build:quickapp-webview-huawei": "uni build -p quickapp-webview-huawei",
     "build:quickapp-webview-union": "uni build -p quickapp-webview-union",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "prepare": "husky"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4030620241128001",
@@ -103,5 +105,10 @@
     "vitest": "2.1.8",
     "vue-router": "4.5.0",
     "vue-tsc": "2.1.10"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "npm run typecheck"
+    ]
   }
 }

@@ -12,7 +12,9 @@
     "rsw:build": "rsw && npm run build",
     "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && vue-tsc --noEmit --skipLibCheck && eslint .",
     "lint": "eslint .",
+    "lint-staged": "lint-staged",
     "codegen": "cd .. && npm run codegen",
+    "prepare": "husky",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "node src/utils/postinstall.js"
   },
