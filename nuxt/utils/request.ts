@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { saveAs } from "file-saver";
 import { useLoading } from "@/store/index";
 import { useAuthorization } from "@/store/usr";
@@ -101,8 +102,7 @@ export async function request<T>(
   
   if (err != null && (!config || config.showErrMsg !== false)) {
     const errMsg = (err as any).errMsg || err.toString();
-    if (errMsg) {
-    }
+    if (errMsg) { /* empty */ }
     throw err;
   }
   const data = res!.data;
@@ -151,7 +151,7 @@ export async function uploadFile(
   formData.append("file", file);
   if (data) {
     for (const key in data) {
-      if (data.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
         formData.append(key, data[key]);
       }
     }

@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     "@unocss/nuxt",
     "@vue-macros/nuxt",
     "@nuxt/icon",
+    "@nuxt/eslint",
   ],
   icon: {
     customCollections: [

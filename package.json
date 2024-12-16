@@ -10,7 +10,7 @@
     "mother": "cd nest && node src/Mother.js",
     "codegen": "cd codegen && npm run codegen",
     "gqlgen": "cd deno && npm run gqlgen",
-    "lint-staged": "cd deno && npm run lint-staged && cd ../pc && npm run lint-staged && cd ../uni && npm run lint-staged",
+    "lint-staged": "cd deno && npm run lint-staged && cd ../pc && npm run lint-staged && cd ../uni && npm run lint-staged && cd ../nuxt && npm run lint-staged",
     "codeapply": "cd codegen && node -r ts-node/register src/bin/codeapply.ts",
     "coderemove": "cd codegen && node -r ts-node/register src/bin/coderemove.ts",
     "initdb": "cd codegen && node -r ts-node/register src/util/npmInitDB.ts",

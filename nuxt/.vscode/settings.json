@@ -19,7 +19,10 @@
     "**/__unconfig_vite.config.ts": true,
     ".eslintrc-auto-import.json": true,
     "**/vite.config.mts.timestamp-*.mjs": true,
-    "**/.npmrc": true
+    "**/.npmrc": true,
+    "**/.husky": true,
+    ".nuxt": true,
+    ".output": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -41,7 +44,10 @@
     "**/__unconfig_vite.config.ts": true,
     ".eslintrc-auto-import.json": true,
     "**/vite.config.mts.timestamp-*.mjs": true,
-    "**/.npmrc": true
+    "**/.npmrc": true,
+    "**/.husky": true,
+    ".nuxt": true,
+    ".output": true
   },
   "deno.enable": false,
   "css.validate": false,

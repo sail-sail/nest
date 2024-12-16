@@ -11,7 +11,7 @@ export const useMsgs = () => {
   
   const msgs = useState<Message[]>("msg/msgs", () => [ ]);
   
-  let duration = 3000;
+  const duration = 3000;
   
   const showMsg = (msg: {
     type?: "info" | "error";

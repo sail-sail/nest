@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export function isEmpty(str?: string | null): boolean {
   return str === undefined || str === null || str === "" || str.trim() === "";
 }
