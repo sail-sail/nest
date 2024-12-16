@@ -20,7 +20,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: WxwMsgInput,
 ) {
   const input: WxwMsgInput = {
     // ID
