@@ -1,7 +1,9 @@
 <template>
 <view class="content">
   <view class="text-area">
-    <text class="title text-[#0FF]">{{ title }}</text>
+    <text class="title text-[#0FF]">
+      {{ title }}
+    </text>
     <button
       @click="checkLoginEfc"
     >

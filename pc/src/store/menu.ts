@@ -15,9 +15,9 @@ type MenuModel = MenuModel0 & {
 export default defineStore("menu", function() {
   
   /** 菜单搜索关键字 */
-  let search = ref("");
+  const search = ref("");
   
-  let menus = ref<MenuModel[]>([ ]);
+  const menus = ref<MenuModel[]>([ ]);
   
   const pathMenuMap = computed(() => {
     const pathMenuMap = new Map<string, MenuModel>();
@@ -128,7 +128,7 @@ export default defineStore("menu", function() {
   }
   
   function getParentMenus(id: MenuId): MenuModel[] {
-    let parentMenus: MenuModel[] = [ ];
+    const parentMenus: MenuModel[] = [ ];
     let parent_id = id;
     while (parent_id) {
       const parentMenu = getMenuById(parent_id);
@@ -150,8 +150,8 @@ export default defineStore("menu", function() {
     menus.value = [ ];
   }
   
-  let isCollapse = $ref(false);
-  let hide = $ref(false);
+  const isCollapse = ref(false);
+  const hide = ref(false);
   
   function searchMenu(search: string) {
     treeMenu(menus.value, (item) => {

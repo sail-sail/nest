@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   OperationRecordInput as OperationRecordInputType,
   OperationRecordModel as OperationRecordModelType,

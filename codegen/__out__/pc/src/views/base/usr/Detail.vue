@@ -122,9 +122,9 @@
             prop="password"
           >
             <CustomInput
+              v-model="dialogModel.password"
               type="password"
               show-password
-              v-model="dialogModel.password"
               :placeholder="`${ ns('请输入') } ${ n('密码') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
@@ -137,8 +137,8 @@
             prop="role_ids"
           >
             <CustomSelect
-              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               v-model="dialogModel.role_ids"
+              :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               :method="getRoleList"
               :options-map="((item: RoleModel) => {
                 return {
@@ -159,8 +159,8 @@
             prop="dept_ids"
           >
             <CustomTreeSelect
-              :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
               v-model="dialogModel.dept_ids"
+              :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
               :method="getDeptTree"
               :placeholder="`${ ns('请选择') } ${ n('所属部门') }`"
               multiple
@@ -175,8 +175,8 @@
             prop="org_ids"
           >
             <CustomSelect
-              :set="dialogModel.org_ids = dialogModel.org_ids ?? [ ]"
               v-model="dialogModel.org_ids"
+              :set="dialogModel.org_ids = dialogModel.org_ids ?? [ ]"
               :method="getOrgList"
               :options-map="((item: OrgModel) => {
                 return {
@@ -198,9 +198,8 @@
           >
             <CustomSelect
               ref="default_org_idRef"
-              :init="false"
-              @change="old_default_org_id = dialogModel.default_org_id;"
               v-model="dialogModel.default_org_id"
+              :init="false"
               :method="getOrgListApi"
               :options-map="((item: OrgModel) => {
                 return {
@@ -210,6 +209,7 @@
               })"
               :placeholder="`${ ns('请选择') } ${ n('默认组织') }`"
               :readonly="isLocked || isReadonly"
+              @change="old_default_org_id = dialogModel.default_org_id;"
             ></CustomSelect>
           </el-form-item>
         </template>
@@ -220,8 +220,8 @@
             prop="type"
           >
             <DictSelect
-              :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
+              :set="dialogModel.type = dialogModel.type ?? undefined"
               code="usr_type"
               :placeholder="`${ ns('请选择') } ${ n('类型') }`"
               :readonly="isLocked || isReadonly"
@@ -252,9 +252,9 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
+              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -426,7 +426,7 @@ let ids = $ref<UsrId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<UsrId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -500,7 +500,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 
@@ -971,11 +971,11 @@ async function onSave() {
   });
 }
 
-let default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
+const default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
 let old_default_org_id: OrgId | null | undefined = undefined;
 
 async function getOrgListApi() {
-  let org_ids = dialogModel.org_ids || [ ];
+  const org_ids = dialogModel.org_ids || [ ];
   if (!dialogModel.default_org_id && old_default_org_id) {
     if (org_ids.includes(old_default_org_id)) {
       dialogModel.default_org_id = old_default_org_id;

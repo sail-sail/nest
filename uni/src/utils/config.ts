@@ -9,8 +9,8 @@ let port: string | undefined = undefined;
 let protocol = "http:";
 let domain = "";
 let wsProt = "ws:";
-let appid = "wx28e52faff22e8837";
-let agentid = "";
+const appid = "wx28e52faff22e8837";
+const agentid = "";
 
 const homePage = `/${pages.pages[0]?.path}`;
 
