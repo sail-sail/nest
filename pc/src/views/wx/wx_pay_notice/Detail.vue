@@ -141,8 +141,8 @@
             prop="trade_type"
           >
             <DictSelect
-              :set="dialogModel.trade_type = dialogModel.trade_type ?? undefined"
               v-model="dialogModel.trade_type"
+              :set="dialogModel.trade_type = dialogModel.trade_type ?? undefined"
               code="wx_unified_order_trade_type"
               :placeholder="`${ ns('请选择') } ${ n('交易类型') }`"
               :readonly="isLocked || isReadonly"
@@ -156,8 +156,8 @@
             prop="trade_state"
           >
             <DictSelect
-              :set="dialogModel.trade_state = dialogModel.trade_state ?? undefined"
               v-model="dialogModel.trade_state"
+              :set="dialogModel.trade_state = dialogModel.trade_state ?? undefined"
               code="wx_pay_notice_trade_state"
               :placeholder="`${ ns('请选择') } ${ n('交易状态') }`"
               :readonly="isLocked || isReadonly"
@@ -252,8 +252,8 @@
             prop="currency"
           >
             <DictSelect
-              :set="dialogModel.currency = dialogModel.currency ?? undefined"
               v-model="dialogModel.currency"
+              :set="dialogModel.currency = dialogModel.currency ?? undefined"
               code="wx_pay_notice_currency"
               :placeholder="`${ ns('请选择') } ${ n('货币类型') }`"
               :readonly="isLocked || isReadonly"
@@ -267,8 +267,8 @@
             prop="payer_currency"
           >
             <DictSelect
-              :set="dialogModel.payer_currency = dialogModel.payer_currency ?? undefined"
               v-model="dialogModel.payer_currency"
+              :set="dialogModel.payer_currency = dialogModel.payer_currency ?? undefined"
               code="wx_pay_notice_currency"
               :placeholder="`${ ns('请选择') } ${ n('用户支付币种') }`"
               :readonly="isLocked || isReadonly"
@@ -299,9 +299,9 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
+              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -435,7 +435,7 @@ let ids = $ref<WxPayNoticeId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<WxPayNoticeId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -499,7 +499,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 
