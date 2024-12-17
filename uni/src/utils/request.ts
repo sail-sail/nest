@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import cfg from "./config";
 
 import {
@@ -22,7 +23,7 @@ export async function uploadFile(config: {
 }): Promise<string> {
   const indexStore = useIndexStore(cfg.pinia);
   const usrStore = useUsrStore(cfg.pinia);
-  let err: any = undefined;
+  const err: any = undefined;
   let res: any = undefined;
   try {
     if (!config.notLoading) {
@@ -389,8 +390,7 @@ export async function uniLogin() {
   try {
     const providerInfo = await uni.getProvider({ service: "oauth" });
     providers = providerInfo.provider;
-  } catch (err) {
-  }
+  } catch (err) { /* empty */ }
   if (providers && providers.includes("weixin")) {
     const systemInfo = uni.getSystemInfoSync();
     let appLanguage = systemInfo.appLanguage || "zh-CN";

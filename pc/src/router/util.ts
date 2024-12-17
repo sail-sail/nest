@@ -86,6 +86,7 @@ export function getRouterPaths(
 
 export async function getComponent(path0: string): Promise<Component> {
   const router = getRouter(path0);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const compFn = router?.components?.default as any;
   if (compFn instanceof Function) {
     const comp = await compFn();

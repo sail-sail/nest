@@ -17,6 +17,8 @@ import { draggable } from "./components/draggable";
 import { tableDataSortable } from "./components/TableDataSortable";
 import { searchFormItemWidthAuto } from "./components/SearchFormItemWidthAutoDirective";
 
+import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
+
 import cfg from "@/utils/config";
 
 const app = createApp(App);
@@ -32,5 +34,7 @@ app.directive("header-order-drag", headerOrderDrag);
 app.directive("draggable", draggable);
 app.directive("table-data-sortable", tableDataSortable);
 app.directive("search-form-item-width-auto", searchFormItemWidthAuto);
+
+app.use(autoAnimatePlugin);
 
 app.mount("#app");
