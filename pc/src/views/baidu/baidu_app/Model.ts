@@ -15,6 +15,7 @@ declare global {
   }
 
   interface BaiduAppSearch extends BaiduAppSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface BaiduAppFieldComment extends BaiduAppFieldCommentType {
