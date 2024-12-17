@@ -17,6 +17,7 @@ declare global {
   }
 
   interface LangSearch extends LangSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface LangFieldComment extends LangFieldCommentType {

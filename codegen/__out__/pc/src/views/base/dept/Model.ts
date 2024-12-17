@@ -15,6 +15,7 @@ declare global {
   }
 
   interface DeptSearch extends DeptSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface DeptFieldComment extends DeptFieldCommentType {

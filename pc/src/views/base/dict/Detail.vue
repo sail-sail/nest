@@ -427,7 +427,7 @@ let dialogModel: DictInput = $ref({
 } as DictInput);
 
 let ids = $ref<DictId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DictId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -520,7 +520,7 @@ async function showDialog(
     model?: {
       id?: DictId;
       ids?: DictId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;
