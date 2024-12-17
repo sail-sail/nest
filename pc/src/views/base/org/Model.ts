@@ -15,6 +15,7 @@ declare global {
   }
 
   interface OrgSearch extends OrgSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface OrgFieldComment extends OrgFieldCommentType {

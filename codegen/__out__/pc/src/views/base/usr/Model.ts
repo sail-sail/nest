@@ -17,6 +17,7 @@ declare global {
   }
 
   interface UsrSearch extends UsrSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface UsrFieldComment extends UsrFieldCommentType {

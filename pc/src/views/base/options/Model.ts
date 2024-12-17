@@ -17,6 +17,7 @@ declare global {
   }
 
   interface OptionsSearch extends OptionsSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface OptionsFieldComment extends OptionsFieldCommentType {
