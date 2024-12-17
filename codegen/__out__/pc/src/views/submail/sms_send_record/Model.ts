@@ -15,6 +15,7 @@ declare global {
   }
 
   interface SmsSendRecordSearch extends SmsSendRecordSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface SmsSendRecordFieldComment extends SmsSendRecordFieldCommentType {

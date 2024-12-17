@@ -15,6 +15,7 @@ declare global {
   }
 
   interface SmsAppSearch extends SmsAppSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface SmsAppFieldComment extends SmsAppFieldCommentType {
