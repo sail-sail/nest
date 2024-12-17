@@ -322,7 +322,7 @@ let dialogModel: BaiduAppInput = $ref({
 } as BaiduAppInput);
 
 let ids = $ref<BaiduAppId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<BaiduAppId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -432,7 +432,7 @@ async function showDialog(
     model?: {
       id?: BaiduAppId;
       ids?: BaiduAppId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;
