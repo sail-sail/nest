@@ -2,11 +2,9 @@ import {
   UserAgent,
 } from "@/utils/UserAgent";
 
-import { defineStore } from "pinia";
-
 export default defineStore("index", function() {
   
-  let loading = ref(0);
+  const loading = ref(0);
   
   function addLoading() {
     loading.value++;
@@ -45,11 +43,12 @@ export default defineStore("index", function() {
     if (!systemInfo) {
       throw new Error("systemInfo is not set!");
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     userAgent = new UserAgent((systemInfo as any).ua);
     return userAgent;
   }
   
-  let launchOptions = ref<App.LaunchShowOption>();
+  const launchOptions = ref<App.LaunchShowOption>();
   
   function setLaunchOptions(options?: App.LaunchShowOption) {
     launchOptions.value = options;
@@ -59,7 +58,7 @@ export default defineStore("index", function() {
     return launchOptions.value!;
   }
   
-  let uid = ref("");
+  const uid = ref("");
   
   function setUid(uid0: string) {
     uid.value = uid0;
