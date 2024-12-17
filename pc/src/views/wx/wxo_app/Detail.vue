@@ -159,8 +159,8 @@
             prop="encoding_type"
           >
             <DictSelect
-              :set="dialogModel.encoding_type = dialogModel.encoding_type ?? undefined"
               v-model="dialogModel.encoding_type"
+              :set="dialogModel.encoding_type = dialogModel.encoding_type ?? undefined"
               code="wxo_app_encoding_type"
               :placeholder="`${ ns('请选择') } ${ n('消息加解密方式') }`"
               :readonly="isLocked || isReadonly"
@@ -174,8 +174,8 @@
             prop="scope"
           >
             <DictSelect
-              :set="dialogModel.scope = dialogModel.scope ?? undefined"
               v-model="dialogModel.scope"
+              :set="dialogModel.scope = dialogModel.scope ?? undefined"
               code="wxo_app_scope"
               :placeholder="`${ ns('请选择') } ${ n('授权作用域') }`"
               :readonly="isLocked || isReadonly"
@@ -226,9 +226,9 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
+              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -392,7 +392,7 @@ let ids = $ref<WxoAppId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<WxoAppId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -504,7 +504,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 

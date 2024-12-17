@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   WxoUsrInput as WxoUsrInputType,
   WxoUsrModel as WxoUsrModelType,
