@@ -111,7 +111,7 @@ const {
   nsAsync,
 } = useI18n();
 
-let tableSearchStagingDialogRef = $ref<InstanceType<typeof TableSearchStagingDialog>>();
+const tableSearchStagingDialogRef = $ref<InstanceType<typeof TableSearchStagingDialog>>();
 
 let searchList = $ref<SearchStagingType[]>([ ]);
 
