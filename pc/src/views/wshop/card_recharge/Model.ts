@@ -23,6 +23,7 @@ declare global {
   }
 
   interface CardRechargeSearch extends CardRechargeSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface CardRechargeFieldComment extends CardRechargeFieldCommentType {

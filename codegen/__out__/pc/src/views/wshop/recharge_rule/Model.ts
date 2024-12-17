@@ -19,6 +19,7 @@ declare global {
   }
 
   interface RechargeRuleSearch extends RechargeRuleSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface RechargeRuleFieldComment extends RechargeRuleFieldCommentType {

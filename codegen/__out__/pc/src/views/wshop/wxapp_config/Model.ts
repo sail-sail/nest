@@ -19,6 +19,7 @@ declare global {
   }
 
   interface WxappConfigSearch extends WxappConfigSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface WxappConfigFieldComment extends WxappConfigFieldCommentType {

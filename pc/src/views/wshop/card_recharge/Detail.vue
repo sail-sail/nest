@@ -318,7 +318,7 @@ let dialogModel: CardRechargeInput = $ref({
 } as CardRechargeInput);
 
 let ids = $ref<CardRechargeId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<CardRechargeId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -373,7 +373,7 @@ async function showDialog(
     model?: {
       id?: CardRechargeId;
       ids?: CardRechargeId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;

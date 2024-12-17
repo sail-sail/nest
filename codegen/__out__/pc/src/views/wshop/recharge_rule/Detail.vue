@@ -285,7 +285,7 @@ let dialogModel: RechargeRuleInput = $ref({
 } as RechargeRuleInput);
 
 let ids = $ref<RechargeRuleId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<RechargeRuleId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -366,7 +366,7 @@ async function showDialog(
     model?: {
       id?: RechargeRuleId;
       ids?: RechargeRuleId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;
