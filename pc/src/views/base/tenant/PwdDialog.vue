@@ -212,7 +212,7 @@ const lblModel = $ref({
 });
 
 let ids = $ref<TenantId[]>([ ]);
-const is_deleted = $ref<number>(0);
+const is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<TenantId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
