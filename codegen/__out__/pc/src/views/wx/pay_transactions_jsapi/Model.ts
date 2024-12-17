@@ -15,6 +15,7 @@ declare global {
   }
 
   interface PayTransactionsJsapiSearch extends PayTransactionsJsapiSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface PayTransactionsJsapiFieldComment extends PayTransactionsJsapiFieldCommentType {
