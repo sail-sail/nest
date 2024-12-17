@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   PermitInput as PermitInputType,
   PermitModel as PermitModelType,

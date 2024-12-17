@@ -307,22 +307,25 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             <CustomSelect<#
               if (mod === "base" && table === "usr" && column_name === "default_org_id") {
               #>
-              ref="default_org_idRef"
-              :init="false"
-              @change="old_default_org_id = dialogModel.default_org_id;"<#
+              ref="default_org_idRef"<#
               }
               #><#
               if (foreignKey.hasSelectAdd && !(mod === "base" && table === "usr" && column_name === "default_org_id")) {
               #>
               ref="<#=column_name#>Ref"<#
               }
+              #>
+              v-model="dialogModel.<#=column_name#>"<#
+              if (mod === "base" && table === "usr" && column_name === "default_org_id") {
+              #>
+              :init="false"<#
+              }
               #><#
               if (foreignKey.multiple) {
               #>
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
               }
-              #>
-              v-model="dialogModel.<#=column_name#>"<#
+              #><#
               if (modelLabel) {
               #>
               v-model:model-label="dialogModel.<#=modelLabel#>"<#
@@ -363,6 +366,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               if (readonlyPlaceholder) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              }
+              #><#
+              if (mod === "base" && table === "usr" && column_name === "default_org_id") {
+              #>
+              @change="old_default_org_id = dialogModel.default_org_id;"<#
               }
               #><#
               if (mod === "cron" && table === "cron_job" && column_name === "job_id") {
@@ -434,13 +442,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               && !foreignSchema.opts?.onlyCodegenDeno
             ) {
             #>
-            <CustomTreeSelect<#
+            <CustomTreeSelect
+              v-model="dialogModel.<#=column_name#>"<#
               if (foreignKey.multiple) {
               #>
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
               }
               #>
-              v-model="dialogModel.<#=column_name#>"
               :method="get<#=Foreign_Table_Up#>Tree"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
               if (foreignKey.lbl !== "lbl") {
@@ -489,8 +497,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             } else if (column.dict) {
             #>
             <DictSelect
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
-              v-model="dialogModel.<#=column_name#>"<#
+              v-model="dialogModel.<#=column_name#>"
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"<#
               if (modelLabel) {
               #>
               v-model:model-label="dialogModel.<#=modelLabel#>"<#
@@ -679,19 +687,18 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             ></CustomInputNumber><#
             } else {
             #>
-            <CustomInput<#
+            <CustomInput
+              v-model="dialogModel.<#=column_name#>"<#
               if (isPassword) {
               #>
               type="password"
               show-password<#
               }
-              #>
-              v-model="dialogModel.<#=column_name#>"<#
+              #><#
               if (column.isTextarea) {
               #>
               type="textarea"
-              :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop<#
+              :autosize="{ minRows: 2, maxRows: 5 }"<#
               }
               #>
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
@@ -715,6 +722,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               if (mod === "cron" && table === "cron_job" && column_name === "cron") {
               #>
               :title="cron_lbl"<#
+              }
+              #><#
+              if (column.isTextarea) {
+              #>
+              @keyup.enter.stop<#
               }
               #>
             ></CustomInput><#
@@ -833,13 +845,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       && !foreignSchema?.opts?.list_tree
                     ) {
                     #>
-                    <CustomSelect<#
+                    <CustomSelect
+                      v-model="row.<#=column_name#>"<#
                       if (foreignKey.multiple) {
                       #>
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
                       }
-                      #>
-                      v-model="row.<#=column_name#>"<#
+                      #><#
                       if (modelLabel) {
                       #>
                       v-model:model-label="row.<#=modelLabel#>"<#
@@ -1418,19 +1430,12 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                   <CustomSelect<#
                     if (mod === "base" && table === "usr" && column_name === "default_org_id") {
                     #>
-                    ref="default_org_idRef"
-                    :init="false"
-                    @change="old_default_org_id = dialogModel.<#=inline_column_name#>.default_org_id;"<#
+                    ref="default_org_idRef"<#
                     }
                     #><#
                     if (foreignKey.hasSelectAdd && !(mod === "base" && table === "usr" && column_name === "default_org_id")) {
                     #>
                     ref="<#=column_name#>Ref"<#
-                    }
-                    #><#
-                    if (foreignKey.multiple) {
-                    #>
-                    :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? [ ]"<#
                     }
                     #>
                     v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
@@ -1439,8 +1444,14 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     v-model:model-label="dialogModel.<#=inline_column_name#>.<#=modelLabel#>"<#
                     }
                     #><#
+                    if (foreignKey.multiple) {
+                    #>
+                    :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? [ ]"<#
+                    }
+                    #><#
                     if (mod === "base" && table === "usr" && column_name === "default_org_id") {
                     #>
+                    :init="false"
                     :method="getOrgListApi"<#
                     } else {
                     #>
@@ -1474,6 +1485,11 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     if (readonlyPlaceholder) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    }
+                    #><#
+                    if (mod === "base" && table === "usr" && column_name === "default_org_id") {
+                    #>
+                    @change="old_default_org_id = dialogModel.<#=inline_column_name#>.default_org_id;"<#
                     }
                     #><#
                     if (mod === "cron" && table === "cron_job" && column_name === "job_id") {
@@ -1977,13 +1993,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                       && !foreignSchema?.opts?.list_tree
                     ) {
                     #>
-                    <CustomSelect<#
+                    <CustomSelect
+                      v-model="row.<#=column_name#>"<#
                       if (foreignKey.multiple) {
                       #>
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
                       }
-                      #>
-                      v-model="row.<#=column_name#>"<#
+                      #><#
                       if (modelLabel) {
                       #>
                       v-model:model-label="row.<#=modelLabel#>"<#
@@ -3242,7 +3258,7 @@ let ids = $ref<<#=Table_Up#>Id[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -3643,8 +3659,8 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 // <#=foreignSchema.opts.table_comment#>
-let <#=foreignSchema.opts.table#>DetailDialogRef = $ref<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>();
-let <#=column_name#>Ref = $ref<InstanceType<typeof CustomSelect>>();
+const <#=foreignSchema.opts.table#>DetailDialogRef = $ref<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>();
+const <#=column_name#>Ref = $ref<InstanceType<typeof CustomSelect>>();
 
 /** 打开新增 <#=foreignSchema.opts.table_comment#> 对话框 */
 async function <#=column_name#>OpenAddDialog() {
@@ -3700,7 +3716,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 
@@ -4347,7 +4363,7 @@ function onJobId(jobModel?: JobModel) {
   job_lbl = jobModel?.lbl || "";
 }
 
-let cron_lbl = $computed(() => {
+const cron_lbl = $computed(() => {
   if (!dialogModel.cron) {
     return "";
   }
@@ -4992,6 +5008,7 @@ async function save() {
           ...item,<#
           if (hasOrderBy) {
           #>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           order_by: (item as any)._seq,<#
           }
           #>
@@ -5065,6 +5082,7 @@ async function save() {
           ...item,<#
           if (hasOrderBy) {
           #>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           order_by: (item as any)._seq,<#
           }
           #>
@@ -5239,11 +5257,11 @@ async function onSave() {
 if (mod === "base" && table === "usr") {
 #>
 
-let default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
+const default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
 let old_default_org_id: OrgId | null | undefined = undefined;
 
 async function getOrgListApi() {
-  let org_ids = dialogModel.org_ids || [ ];
+  const org_ids = dialogModel.org_ids || [ ];
   if (!dialogModel.default_org_id && old_default_org_id) {
     if (org_ids.includes(old_default_org_id)) {
       dialogModel.default_org_id = old_default_org_id;
@@ -5276,7 +5294,7 @@ watch(
 if (hasInlineForeignTabs) {
 #>
 
-let inlineForeignTabLabel = $ref("<#=inlineForeignTabs[0].label#>");<#
+const inlineForeignTabLabel = $ref("<#=inlineForeignTabs[0].label#>");<#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
@@ -5294,9 +5312,9 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 // <#=inlineForeignTab.label#>
-let <#=inline_column_name#>Ref = $ref<InstanceType<typeof ElTable>>();
+const <#=inline_column_name#>Ref = $ref<InstanceType<typeof ElTable>>();
 
-let <#=inline_column_name#>Data = $computed(() => {
+const <#=inline_column_name#>Data = $computed(() => {
   if (!isLocked && !isReadonly) {
     return [
       ...dialogModel.<#=inline_column_name#> ?? [ ],
@@ -5338,6 +5356,7 @@ watch(
     }
     for (let i = 0; i < dialogModel.<#=inline_column_name#>.length; i++) {
       const item = dialogModel.<#=inline_column_name#>[i];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (item as any)._seq = i + 1;
     }
   },
@@ -5483,8 +5502,8 @@ for (let i = 0; i < columns.length; i++) {
   const inlineMany2manyColumns = inlineMany2manySchema.columns;
 #>
 
-let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
-let <#=column_name#>_<#=table#>Ref = $ref<InstanceType<typeof ElTable>>();
+const <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+const <#=column_name#>_<#=table#>Ref = $ref<InstanceType<typeof ElTable>>();
 
 async function <#=column_name#>Select() {
   if (!<#=column_name#>ListSelectDialogRef) {

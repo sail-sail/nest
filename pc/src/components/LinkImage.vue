@@ -90,6 +90,7 @@ const props = withDefaults(
   }>(),
   {
     modelValue: "",
+    width: undefined,
     format: "webp",
     height: 32,
     quality: 60,
@@ -100,11 +101,11 @@ const {
   ns,
 } = useI18n();
 
-let urlList = $computed(() => {
+const urlList = $computed(() => {
   const list: string[] = [];
   if (!props.modelValue) return list;
-  let ids = props.modelValue.split(",").filter((x) => x);
-  for (let id of ids) {
+  const ids = props.modelValue.split(",").filter((x) => x);
+  for (const id of ids) {
     const url = getImgUrl({
       id,
       format: "webp",
@@ -117,11 +118,11 @@ let urlList = $computed(() => {
   return list;
 });
 
-let originalUrlList = $computed(() => {
+const originalUrlList = $computed(() => {
   const list: string[] = [];
   if (!props.modelValue) return list;
-  let ids = props.modelValue.split(",").filter((x) => x);
-  for (let id of ids) {
+  const ids = props.modelValue.split(",").filter((x) => x);
+  for (const id of ids) {
     const url = getImgUrl({
       id,
       format: "webp",

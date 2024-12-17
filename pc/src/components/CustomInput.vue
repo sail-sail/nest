@@ -8,9 +8,9 @@
 >
   <el-input
     ref="inputRef"
+    v-model="modelValue"
     :type="props.type"
     v-bind="$attrs"
-    v-model="modelValue"
     class="flex-[1_0_0] overflow-hidden"
     :clearable="props.disabled === true ? false : props.clearable"
     :disabled="props.disabled"
@@ -88,13 +88,16 @@
 
 <script lang="ts" setup>
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
 
 const props = withDefaults(
   defineProps<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     type?: string;
     clearable?: boolean;
@@ -134,13 +137,14 @@ watch(
   },
 );
 
-let shouldShowPlaceholder = $computed<boolean>(() => {
+const shouldShowPlaceholder = $computed<boolean>(() => {
   return modelValue == null || modelValue === "";
 });
 
-let inputRef = $ref<InstanceType<typeof ElInput>>();
+const inputRef = $ref<InstanceType<typeof ElInput>>();
 let textareaHeight = $shallowRef<number>();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 useResizeObserver($$(inputRef) as any, (entries) => {
   if (props.type !== "textarea") {
     return;
