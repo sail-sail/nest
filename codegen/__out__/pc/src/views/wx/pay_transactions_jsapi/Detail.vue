@@ -413,7 +413,7 @@ let dialogModel: PayTransactionsJsapiInput = $ref({
 } as PayTransactionsJsapiInput);
 
 let ids = $ref<PayTransactionsJsapiId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<PayTransactionsJsapiId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -489,7 +489,7 @@ async function showDialog(
     model?: {
       id?: PayTransactionsJsapiId;
       ids?: PayTransactionsJsapiId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;

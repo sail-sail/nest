@@ -15,6 +15,7 @@ declare global {
   }
 
   interface WxoUsrSearch extends WxoUsrSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface WxoUsrFieldComment extends WxoUsrFieldCommentType {
