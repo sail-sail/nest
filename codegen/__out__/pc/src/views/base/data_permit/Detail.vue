@@ -299,7 +299,7 @@ let dialogModel: DataPermitInput = $ref({
 } as DataPermitInput);
 
 let ids = $ref<DataPermitId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DataPermitId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -375,7 +375,7 @@ async function showDialog(
     model?: {
       id?: DataPermitId;
       ids?: DataPermitId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;
