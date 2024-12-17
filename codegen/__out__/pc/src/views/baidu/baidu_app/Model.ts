@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   BaiduAppInput as BaiduAppInputType,
   BaiduAppModel as BaiduAppModelType,
