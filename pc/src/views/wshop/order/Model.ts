@@ -25,6 +25,7 @@ declare global {
   }
 
   interface OrderSearch extends OrderSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface OrderFieldComment extends OrderFieldCommentType {

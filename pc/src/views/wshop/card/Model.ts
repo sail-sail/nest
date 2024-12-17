@@ -21,6 +21,7 @@ declare global {
   }
 
   interface CardSearch extends CardSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface CardFieldComment extends CardFieldCommentType {

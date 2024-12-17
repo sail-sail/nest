@@ -17,6 +17,7 @@ declare global {
   }
 
   interface PtTypeSearch extends PtTypeSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface PtTypeFieldComment extends PtTypeFieldCommentType {

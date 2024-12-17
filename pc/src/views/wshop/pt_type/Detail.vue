@@ -315,7 +315,7 @@ let dialogModel: PtTypeInput = $ref({
 } as PtTypeInput);
 
 let ids = $ref<PtTypeId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<PtTypeId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -403,7 +403,7 @@ async function showDialog(
     model?: {
       id?: PtTypeId;
       ids?: PtTypeId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;
