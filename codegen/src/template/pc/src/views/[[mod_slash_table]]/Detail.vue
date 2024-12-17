@@ -497,13 +497,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             } else if (column.dict) {
             #>
             <DictSelect
-              v-model="dialogModel.<#=column_name#>"
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"<#
+              v-model="dialogModel.<#=column_name#>"<#
               if (modelLabel) {
               #>
               v-model:model-label="dialogModel.<#=modelLabel#>"<#
               }
               #>
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               code="<#=column.dict#>"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
               if (column.readonly) {
@@ -527,13 +527,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             } else if (column.dictbiz) {
             #>
             <DictbizSelect
-              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               v-model="dialogModel.<#=column_name#>"<#
               if (modelLabel) {
               #>
               v-model:model-label="dialogModel.<#=modelLabel#>"<#
               }
               #>
+              :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
               code="<#=column.dictbiz#>"
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
               if (column.readonly) {
@@ -974,13 +974,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     } else if (column.dict) {
                     #>
                     <DictSelect
-                      :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
                       v-model="row.<#=column_name#>"<#
                       if (modelLabel) {
                       #>
                       v-model:model-label="row.<#=modelLabel#>"<#
                       }
                       #>
+                      :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
                       code="<#=column.dict#>"
                       placeholder=" "<#
                       if (column.readonly) {
@@ -1004,13 +1004,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     } else if (column.dictbiz) {
                     #>
                     <DictbizSelect
-                      :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
                       v-model="row.<#=column_name#>"<#
                       if (modelLabel) {
                       #>
                       v-model:model-label="row.<#=modelLabel#>"<#
                       }
                       #>
+                      :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
                       code="<#=column.dictbiz#>"
                       placeholder=" "<#
                       if (column.readonly) {
@@ -1616,13 +1616,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                   } else if (column.dict) {
                   #>
                   <DictSelect
-                    :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? undefined"
                     v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
                     if (modelLabel) {
                     #>
                     v-model:model-label="dialogModel.<#=inline_column_name#>.<#=modelLabel#>"<#
                     }
                     #>
+                    :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? undefined"
                     code="<#=column.dict#>"
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
                     if (column.readonly) {
@@ -1646,13 +1646,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                   } else if (column.dictbiz) {
                   #>
                   <DictbizSelect
-                    :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? undefined"
                     v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
                     if (modelLabel) {
                     #>
                     v-model:model-label="dialogModel.<#=inline_column_name#>.<#=modelLabel#>"<#
                     }
                     #>
+                    :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? undefined"
                     code="<#=column.dictbiz#>"
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
                     if (column.readonly) {
@@ -2122,13 +2122,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     } else if (column.dict) {
                     #>
                     <DictSelect
-                      :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
                       v-model="row.<#=column_name#>"<#
                       if (modelLabel) {
                       #>
                       v-model:model-label="row.<#=modelLabel#>"<#
                       }
                       #>
+                      :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
                       code="<#=column.dict#>"
                       placeholder=" "<#
                       if (column.readonly) {
@@ -2152,13 +2152,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     } else if (column.dictbiz) {
                     #>
                     <DictbizSelect
-                      :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
                       v-model="row.<#=column_name#>"<#
                       if (modelLabel) {
                       #>
                       v-model:model-label="row.<#=modelLabel#>"<#
                       }
                       #>
+                      :set="row.<#=column_name#> = row.<#=column_name#> ?? undefined"
                       code="<#=column.dictbiz#>"
                       placeholder=" "<#
                       if (column.readonly) {
