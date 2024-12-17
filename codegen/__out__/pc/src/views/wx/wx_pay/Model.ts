@@ -15,6 +15,7 @@ declare global {
   }
 
   interface WxPaySearch extends WxPaySearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface WxPayFieldComment extends WxPayFieldCommentType {

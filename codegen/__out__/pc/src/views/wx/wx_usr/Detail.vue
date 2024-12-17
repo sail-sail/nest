@@ -413,7 +413,7 @@ let dialogModel: WxUsrInput = $ref({
 } as WxUsrInput);
 
 let ids = $ref<WxUsrId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<WxUsrId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -494,7 +494,7 @@ async function showDialog(
     model?: {
       id?: WxUsrId;
       ids?: WxUsrId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;
