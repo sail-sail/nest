@@ -15,6 +15,7 @@ declare global {
   }
 
   interface CronJobSearch extends CronJobSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface CronJobFieldComment extends CronJobFieldCommentType {
