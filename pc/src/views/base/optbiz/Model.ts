@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   OptbizInput as OptbizInputType,
   OptbizModel as OptbizModelType,

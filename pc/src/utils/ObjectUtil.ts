@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export function deepCompare(a: any, b: any, strict = false, excludeKeys: string[] = [ ]): boolean {
   if (!strict) {
