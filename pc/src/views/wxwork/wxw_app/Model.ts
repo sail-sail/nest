@@ -15,6 +15,7 @@ declare global {
   }
 
   interface WxwAppSearch extends WxwAppSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface WxwAppFieldComment extends WxwAppFieldCommentType {
