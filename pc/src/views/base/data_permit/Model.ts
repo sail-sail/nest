@@ -17,6 +17,7 @@ declare global {
   }
 
   interface DataPermitSearch extends DataPermitSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface DataPermitFieldComment extends DataPermitFieldCommentType {

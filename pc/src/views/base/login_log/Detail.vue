@@ -250,7 +250,7 @@ let dialogModel: LoginLogInput = $ref({
 } as LoginLogInput);
 
 let ids = $ref<LoginLogId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<LoginLogId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -331,7 +331,7 @@ async function showDialog(
     model?: {
       id?: LoginLogId;
       ids?: LoginLogId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;
