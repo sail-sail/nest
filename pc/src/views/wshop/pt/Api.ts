@@ -74,7 +74,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: PtInput,
 ) {
   const input: PtInput = {
     // ID
