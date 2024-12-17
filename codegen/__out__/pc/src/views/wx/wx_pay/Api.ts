@@ -24,7 +24,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: WxPayInput,
 ) {
   const input: WxPayInput = {
     // ID
