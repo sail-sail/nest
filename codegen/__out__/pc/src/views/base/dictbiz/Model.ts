@@ -21,6 +21,7 @@ declare global {
   }
 
   interface DictbizSearch extends DictbizSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface DictbizFieldComment extends DictbizFieldCommentType {

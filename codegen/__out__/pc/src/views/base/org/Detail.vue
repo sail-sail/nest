@@ -269,7 +269,7 @@ let dialogModel: OrgInput = $ref({
 } as OrgInput);
 
 let ids = $ref<OrgId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<OrgId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -343,7 +343,7 @@ async function showDialog(
     model?: {
       id?: OrgId;
       ids?: OrgId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;

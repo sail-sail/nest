@@ -15,6 +15,7 @@ declare global {
   }
 
   interface MenuSearch extends MenuSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface MenuFieldComment extends MenuFieldCommentType {

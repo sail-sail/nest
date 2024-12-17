@@ -1920,13 +1920,13 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           >
             <el-table
               ref="<#=column_name#>_<#=table#>Ref"
+              v-table-data-sortable="<#=column_name#>TableDataSortableOptions"
               un-m="t-2"
               size="default"
               height="100%"
               :data="<#=column_name#>_<#=table#>_models"
               class="inlineMany2manyTab_table"
               :cell-class-name="<#=column_name#>TableCellClassName"
-              v-table-data-sortable="<#=column_name#>TableDataSortableOptions"
             >
               
               <el-table-column
@@ -2587,8 +2587,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
   <!-- <#=column_comment#> -->
   <ListSelectDialog
     ref="<#=column_name#>ListSelectDialogRef"
-    :is-locked="isLocked"
     v-slot="listSelectProps"
+    :is-locked="isLocked"
   >
     <<#=foreignTable_Up#>List
       v-bind="(listSelectProps as any)"
@@ -3255,7 +3255,7 @@ let isEditableDataPermit = $ref(true);<#
 #>
 
 let ids = $ref<<#=Table_Up#>Id[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -3732,7 +3732,7 @@ async function showDialog(
     model?: {
       id?: <#=Table_Up#>Id;
       ids?: <#=Table_Up#>Id[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;
