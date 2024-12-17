@@ -15,6 +15,7 @@ declare global {
   }
 
   interface DomainSearch extends DomainSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface DomainFieldComment extends DomainFieldCommentType {
