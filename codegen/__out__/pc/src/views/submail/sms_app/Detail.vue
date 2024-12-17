@@ -120,8 +120,8 @@
             prop="is_paused"
           >
             <DictSelect
-              :set="dialogModel.is_paused = dialogModel.is_paused ?? undefined"
               v-model="dialogModel.is_paused"
+              :set="dialogModel.is_paused = dialogModel.is_paused ?? undefined"
               code="yes_no"
               :placeholder="`${ ns('请选择') } ${ n('暂停发送') }`"
               :readonly="isLocked || isReadonly"
@@ -152,9 +152,9 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
+              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -314,7 +314,7 @@ let ids = $ref<SmsAppId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<SmsAppId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -376,7 +376,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 
