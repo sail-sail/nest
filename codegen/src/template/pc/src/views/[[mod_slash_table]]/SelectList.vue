@@ -43,10 +43,10 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     <List
       v-bind="$attrs"
       :selected-ids="selectedIds"
-      @selected-ids-chg="selectedIdsChg"
       :is-multiple="multiple"
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
+      @selected-ids-chg="selectedIdsChg"
       @row-enter="onRowEnter"
       @row-dblclick="onRowDblclick"
     ></List><#
@@ -132,14 +132,14 @@ export type OnCloseResolveType = {
   selectedIds: <#=Table_Up#>Id[];
 };
 export type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
-export type OnBeforeChangeFnType = (value: any) => Promise<boolean | undefined>;
+export type OnBeforeChangeFnType = (value: <#=modelName#>[]) => Promise<boolean | undefined>;
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
 let onBeforeClose: OnBeforeCloseFnType | undefined = undefined;
 let onBeforeChange: OnBeforeChangeFnType | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let selectedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
@@ -215,12 +215,12 @@ async function onRowEnter(e?: KeyboardEvent) {
 }
 
 /** 双击行 */
-async function onRowDblclick(row: { id: any }) {
+async function onRowDblclick(row: { id: <#=Table_Up#>Id }) {
   selectedIds = [ row.id ];
   await onSave();
 }
 
-let listRef = $ref<InstanceType<typeof List>>();
+const listRef = $ref<InstanceType<typeof List>>();
 
 /** 刷新 */
 async function onRefresh() {

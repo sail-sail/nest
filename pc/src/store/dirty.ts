@@ -1,7 +1,7 @@
 
 export default defineStore("dirty", function() {
   
-  let dirtyRoutePath = ref("");
+  const dirtyRoutePath = ref("");
   
   async function fireDirty(
     routePath: string,
@@ -25,8 +25,8 @@ export default defineStore("dirty", function() {
         throw new Error("routePath is empty");
       }
     }
-    let isDirty = ref(false);
-    let isActivated = ref(false);
+    const isDirty = ref(false);
+    const isActivated = ref(false);
     
     const dirtyWatch = watch(
       dirtyRoutePath,

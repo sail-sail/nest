@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   OrgInput as OrgInputType,
   OrgModel as OrgModelType,

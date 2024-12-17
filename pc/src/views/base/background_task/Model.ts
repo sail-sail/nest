@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   BackgroundTaskInput as BackgroundTaskInputType,
   BackgroundTaskModel as BackgroundTaskModelType,

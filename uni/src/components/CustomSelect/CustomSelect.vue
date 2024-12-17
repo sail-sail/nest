@@ -10,10 +10,10 @@
     un-flex="~ [1_0_0]"
     un-overflow-hidden
     un-items="center"
-    @click="onClick"
     un-h="full"
     un-p="l-3"
     un-box-border
+    @click="onClick"
   >
     <text
       v-if="modelLabels[0] || ''"
@@ -38,10 +38,10 @@
     ></tm-icon>
   </view>
   <view
-    @click="onClear"
+    v-if="props.clearable && !isValueEmpty"
     un-p="r-2.65"
     un-box-border
-    v-if="props.clearable && !isValueEmpty"
+    @click="onClear"
   >
     <tm-icon
       _style="transition:color 0.24s"
@@ -58,8 +58,8 @@
   :closeable="true"
   :height="dHeight"
   :title="props.placeholder || '请选择'"
-  disabledScroll
-  showClose
+  disabled-scroll
+  show-close
 >
   <view
     un-flex="~ [1_0_0] col"
@@ -77,7 +77,6 @@
           v-for="item in options4SelectV2"
           :key="item.value"
           :title="item.label"
-          @click="onSelect(item.value)"
           un-p="y-4"
           un-box-border
           un-flex="~"
@@ -88,6 +87,7 @@
             'color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
             'border-color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
           }"
+          @click="onSelect(item.value)"
         >
           
           <view
@@ -125,9 +125,9 @@
         un-flex="~ [1_0_0]"
       >
         <tm-button
-          @click="onCancel"
           color="info"
           width="100%"
+          @click="onCancel"
         >
           取消
         </tm-button>
@@ -137,8 +137,8 @@
         un-flex="~ [1_0_0]"
       >
         <tm-button
-          @click="onConfirm"
           width="100%"
+          @click="onConfirm"
         >
           确定
         </tm-button>
@@ -155,22 +155,29 @@
 <script lang="ts" setup>
 type OptionType = {
   label: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type OptionsMap = (item: any) => OptionType;
 
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", data: any[]): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value: any): void,
   (e: "clear"): void,
 }>();
 
 const props = withDefaults(
   defineProps<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     method: () => Promise<any[]>; // 用于获取数据的方法
     optionsMap?: OptionsMap;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     options4SelectV2?: OptionType[];
     placeholder?: string;
@@ -183,6 +190,7 @@ const props = withDefaults(
     readonly?: boolean;
   }>(),
   {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
       const item2 = item as { lbl: string; id: string; };
       return {
@@ -221,9 +229,10 @@ const dHeight = computed(() => {
   return props.height + sysinfo.value.bottom + 80;
 });
 
-let inited = ref(false);
-let data = ref<any[]>([ ]);
-let options4SelectV2 = ref<OptionType[]>(props.options4SelectV2 || [ ]);
+const inited = ref(false);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const data = ref<any[]>([ ]);
+const options4SelectV2 = ref<OptionType[]>(props.options4SelectV2 || [ ]);
 
 const selectedValue = ref(props.modelValue);
   
@@ -243,7 +252,7 @@ watch(
   },
 );
 
-let selectedValueMuti = computed(() => {
+const selectedValueMuti = computed(() => {
   if (selectedValue.value == null) {
     return [ ];
   }
@@ -269,7 +278,7 @@ function onSelect(value: string) {
   }
 }
 
-let isValueEmpty = computed(() => {
+const isValueEmpty = computed(() => {
   if (!selectedValue.value) {
     return true;
   }
@@ -279,9 +288,9 @@ let isValueEmpty = computed(() => {
   return false;
 });
 
-let showPicker = ref(false);
+const showPicker = ref(false);
 
-let modelLabels = computed(() => {
+const modelLabels = computed(() => {
   if (props.modelValue == null) {
     return "";
   }
@@ -292,8 +301,8 @@ let modelLabels = computed(() => {
     }
     return [ props.optionsMap(model).label || "" ];
   }
-  let labels: string[] = [ ];
-  let modelValues = (props.modelValue || [ ]) as string[];
+  const labels: string[] = [ ];
+  const modelValues = (props.modelValue || [ ]) as string[];
   for (const value of modelValues) {
     const model = data.value.find((item) => props.optionsMap(item).value === value);
     if (!model) {

@@ -82,8 +82,8 @@
         size="large"
         type="primary"
         style="width: 100%;margin-top: 20px;opacity: .7;"
-        @click="onLogin"
         :loading="!usrStore.isLogining"
+        @click="onLogin"
       >
         <span
           v-if="usrStore.isLogining"
@@ -150,9 +150,9 @@ let model = $ref<MutationLoginArgs["input"]>({
 
 const app_title = import.meta.env.VITE_APP_TITLE;
 
-let loginRef = $ref<InstanceType<typeof HTMLDivElement>>();
+const loginRef = $ref<InstanceType<typeof HTMLDivElement>>();
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
 
@@ -170,7 +170,7 @@ watchEffect(() => {
   };
 });
 
-let oldLoginModelKey = "oldLoginModelPc";
+const oldLoginModelKey = "oldLoginModelPc";
 
 let tenants = $ref<{
   id: TenantId;
@@ -185,6 +185,7 @@ try {
 }
 
 const oldLoginModelStr = localStorage.getItem(oldLoginModelKey);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let oldLoginModel: any = undefined;
 if (oldLoginModelStr) {
   try {
@@ -202,7 +203,7 @@ if (oldLoginModel) {
 
 if (!model.tenant_id && tenants.length > 0) {
   let tenant_id = tenants[0].id;
-  for (let item of tenants) {
+  for (const item of tenants) {
     if (item.lang === lang) {
       tenant_id = item.id;
       break;
@@ -308,7 +309,7 @@ async function getLoginTenantsEfc() {
   tenants = await getLoginTenants({ domain: window.location.host });
   if (!model.tenant_id && tenants.length > 0) {
     let tenant_id = tenants[0].id;
-    for (let item of tenants) {
+    for (const item of tenants) {
       if (item.lang === lang) {
         tenant_id = item.id;
         break;

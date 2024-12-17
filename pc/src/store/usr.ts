@@ -8,15 +8,15 @@ export default defineStore("usr", function() {
   
   const permitsStore = usePermitStore();
   
-  let authorization = ref("");
+  const authorization = ref("");
   
-  let isLogining = ref(false);
+  const isLogining = ref(false);
   
-  let tenant_id = ref<TenantId>();
-  let username = ref<string>();
-  let usr_id = ref<UsrId>();
+  const tenant_id = ref<TenantId>();
+  const username = ref<string>();
+  const usr_id = ref<UsrId>();
   
-  let loginInfo = ref<GetLoginInfo>();
+  const loginInfo = ref<GetLoginInfo>();
   
   function refreshToken(authorization0: string) {
     authorization.value = authorization0;
@@ -35,19 +35,19 @@ export default defineStore("usr", function() {
     permitsStore.permits = [ ];
   }
   
-  let lang = ref("");
+  const lang = ref("");
   
   function setLang(lang0: string) {
     lang.value = lang0;
   }
   
   function clear() {
-    authorization.value = "",
+    authorization.value = "";
     lang.value = "";
   }
   
   function reset() {
-    authorization.value = "",
+    authorization.value = "";
     lang.value = "";
   }
   
