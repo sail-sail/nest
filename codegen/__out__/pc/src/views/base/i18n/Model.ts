@@ -15,6 +15,7 @@ declare global {
   }
 
   interface I18nSearch extends I18nSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface I18nFieldComment extends I18nFieldCommentType {

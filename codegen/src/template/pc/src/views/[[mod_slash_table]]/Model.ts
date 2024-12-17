@@ -141,7 +141,12 @@ declare global {
     #>
   }
 
-  interface <#=searchName#> extends <#=searchName#>Type {
+  interface <#=searchName#> extends <#=searchName#>Type {<#
+    if (hasIsDeleted) {
+    #>
+    is_deleted?: 0 | 1;<#
+    }
+    #>
   }
 
   interface <#=fieldCommentName#> extends <#=fieldCommentName#>Type {
