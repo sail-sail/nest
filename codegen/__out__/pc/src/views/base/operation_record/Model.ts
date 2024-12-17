@@ -15,6 +15,7 @@ declare global {
   }
 
   interface OperationRecordSearch extends OperationRecordSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface OperationRecordFieldComment extends OperationRecordFieldCommentType {
