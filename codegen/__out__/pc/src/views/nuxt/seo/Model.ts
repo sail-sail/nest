@@ -17,6 +17,7 @@ declare global {
   }
 
   interface SeoSearch extends SeoSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface SeoFieldComment extends SeoFieldCommentType {
