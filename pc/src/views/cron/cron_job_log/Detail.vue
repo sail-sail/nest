@@ -260,7 +260,7 @@ let dialogModel: CronJobLogInput = $ref({
 } as CronJobLogInput);
 
 let ids = $ref<CronJobLogId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<CronJobLogId[]>([ ]);
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -329,7 +329,7 @@ async function showDialog(
     model?: {
       id?: CronJobLogId;
       ids?: CronJobLogId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;

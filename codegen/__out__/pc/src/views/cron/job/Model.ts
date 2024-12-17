@@ -17,6 +17,7 @@ declare global {
   }
 
   interface JobSearch extends JobSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface JobFieldComment extends JobFieldCommentType {
