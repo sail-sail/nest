@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   CompanyInput as CompanyInputType,
   CompanyModel as CompanyModelType,
