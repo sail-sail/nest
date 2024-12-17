@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);

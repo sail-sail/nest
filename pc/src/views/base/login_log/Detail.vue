@@ -76,8 +76,8 @@
             prop="type"
           >
             <DictSelect
-              :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
+              :set="dialogModel.type = dialogModel.type ?? undefined"
               code="login_log_type"
               :placeholder="`${ ns('请选择') } ${ n('类型') }`"
               :readonly="isLocked || isReadonly"
@@ -104,8 +104,8 @@
             prop="is_succ"
           >
             <DictSelect
-              :set="dialogModel.is_succ = dialogModel.is_succ ?? undefined"
               v-model="dialogModel.is_succ"
+              :set="dialogModel.is_succ = dialogModel.is_succ ?? undefined"
               code="yes_no"
               :placeholder="`${ ns('请选择') } ${ n('登录成功') }`"
               :readonly="isLocked || isReadonly"
@@ -253,7 +253,7 @@ let ids = $ref<LoginLogId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<LoginLogId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -315,7 +315,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 

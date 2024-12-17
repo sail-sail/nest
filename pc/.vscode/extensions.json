@@ -33,6 +33,8 @@
     "jacobpfeifer.pfeifer-hurl",
     "ms-vscode.vscode-speech",
     "yoavbls.pretty-ts-errors",
-    "hongyan-prettyjson.pretty-json-vscode"
+    "hongyan-prettyjson.pretty-json-vscode",
+    "dbaeumer.vscode-eslint",
+    "maggie.eslint-rules-zh-plugin"
   ]
 }
