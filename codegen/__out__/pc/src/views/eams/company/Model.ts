@@ -15,6 +15,7 @@ declare global {
   }
 
   interface CompanySearch extends CompanySearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface CompanyFieldComment extends CompanyFieldCommentType {

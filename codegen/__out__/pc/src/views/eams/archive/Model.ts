@@ -15,6 +15,7 @@ declare global {
   }
 
   interface ArchiveSearch extends ArchiveSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface ArchiveFieldComment extends ArchiveFieldCommentType {
