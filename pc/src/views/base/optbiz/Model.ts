@@ -17,6 +17,7 @@ declare global {
   }
 
   interface OptbizSearch extends OptbizSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface OptbizFieldComment extends OptbizFieldCommentType {
