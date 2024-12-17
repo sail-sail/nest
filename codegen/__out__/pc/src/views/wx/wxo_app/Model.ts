@@ -15,6 +15,7 @@ declare global {
   }
 
   interface WxoAppSearch extends WxoAppSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface WxoAppFieldComment extends WxoAppFieldCommentType {
