@@ -16,6 +16,7 @@ declare global {
   }
 
   interface LoginLogSearch extends LoginLogSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface LoginLogFieldComment extends LoginLogFieldCommentType {
