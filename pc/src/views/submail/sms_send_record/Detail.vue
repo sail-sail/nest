@@ -123,9 +123,9 @@
             prop="status"
           >
             <DictSelect
-              :set="dialogModel.status = dialogModel.status ?? undefined"
               v-model="dialogModel.status"
               v-model:model-label="dialogModel.status_lbl"
+              :set="dialogModel.status = dialogModel.status ?? undefined"
               code="submail_sms_send_record_status"
               :placeholder="`${ ns('请选择') } ${ n('状态') }`"
               :readonly="isLocked || isReadonly"
@@ -295,7 +295,7 @@ let ids = $ref<SmsSendRecordId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<SmsSendRecordId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -345,7 +345,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 
