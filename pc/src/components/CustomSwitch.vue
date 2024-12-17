@@ -1,12 +1,12 @@
 <template>
 <el-switch
   v-if="readonly !== true"
+  v-model="modelValue"
   class="custom_switch"
   :set="0"
   v-bind="$attrs"
   :active-value="props.activeValue"
   :inactive-value="props.inactiveValue"
-  v-model="modelValue"
   :disabled="props.disabled"
   @change="onChange"
 >
@@ -37,16 +37,21 @@ const {
 } = useI18n("/base/usr");
 
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
 }>();
 
 const props = withDefaults(
   defineProps<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     disabled?: boolean;
     readonly?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     activeValue?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     inactiveValue?: any;
     trueReadonlyLabel?: string;
     falseReadonlyLabel?: string;
@@ -78,7 +83,7 @@ function onChange() {
   emit("change", modelValue);
 }
 
-let modelLabel = $computed(() => {
+const modelLabel = $computed(() => {
   if (modelValue == 1) {
     return props.trueReadonlyLabel || ns("是");
   }

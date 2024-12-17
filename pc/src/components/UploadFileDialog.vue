@@ -159,7 +159,10 @@ const {
   nsAsync,
 } = useI18n();
 
-let { fullscreen, setFullscreen } = $(useFullscreenEfc());
+const {
+  fullscreen,
+  setFullscreen,
+} = $(useFullscreenEfc());
 
 let dialogTitle = $ref(ns("上传"));
 let dialogVisible = $ref(false);
@@ -172,7 +175,7 @@ const emit = defineEmits<{
   downloadImportTemplate: [],
 }>();
 
-let fileRef = $ref<HTMLInputElement>();
+const fileRef = $ref<HTMLInputElement>();
 
 let fileObj: File;
 let fileInfo = $ref({
@@ -210,6 +213,7 @@ async function showDialog(
   } else {
     nextTick(() => {
       if (fileRef) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (fileRef as any).value = "";
       }
     });

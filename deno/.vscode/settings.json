@@ -20,7 +20,8 @@
     "**/__unconfig_vite.config.ts": true,
     "tmp/**": true,
     "**/.eslintrc-auto-import.json": true,
-    "**/.npmrc": true
+    "**/.npmrc": true,
+    "**/.husky": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -45,8 +46,10 @@
     "**/.nuxt/**": true,
     "**/*/types.ts": true,
     "**/.eslintrc-auto-import.json": true,
-    "**/.npmrc": true
+    "**/.npmrc": true,
+    "**/.husky": true
   },
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
   "git.timeline.showUncommitted": true,
   "scm.showHistoryGraph": false,
   "typescript.inlayHints.parameterTypes.enabled": false,
@@ -54,7 +57,6 @@
   "npm.updateStrategy": "LATEST",
   "deno.enable": true,
   "deno.lint": true,
-  "deno.unstable": true,
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,

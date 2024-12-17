@@ -9,8 +9,8 @@ import {
   validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
-export function generateId() {
-  return appDao.generateId();
+export function generateId<T>() {
+  return appDao.generateId<T>();
 }
 
 /**

@@ -132,7 +132,7 @@ let dialogModel = $ref({
 
 let persistKey = "";
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -160,15 +160,16 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
-let inputRef = $ref<InstanceType<typeof ElInput>>();
+const inputRef = $ref<InstanceType<typeof ElInput>>();
 
 async function showDialog(
   arg?: {
     title?: string;
     model: {
       persistKey: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       search: any;
     },
   },
@@ -221,6 +222,7 @@ function onOpened() {
 
 export type SearchStagingType = {
   name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
 };
 
@@ -264,7 +266,7 @@ async function onDelete(name: string, k: number) {
   // } catch(err) {
   //   return;
   // }
-  let searchList2 = [ ];
+  const searchList2 = [ ];
   for (let i = 0; i < searchList.length; i++) {
     const item = searchList[i];
     if (i === k) {
