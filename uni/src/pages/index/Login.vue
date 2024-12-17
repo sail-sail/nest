@@ -114,7 +114,8 @@ const usrStore = useUsrStore(cfg.pinia);
 
 let inited = $ref(false);
 
-const tenants: GetLoginTenants[] = [ ];
+// eslint-disable-next-line prefer-const
+let tenants: GetLoginTenants[] = [ ];
 
 const login_input = ref<LoginInput>({
   username: "admin",
