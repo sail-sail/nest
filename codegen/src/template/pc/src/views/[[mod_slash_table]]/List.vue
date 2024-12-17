@@ -1140,8 +1140,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             >
               <template #default="{ row, column }">
                 <LinkAtt
-                  v-model="row[column.property]"
-                  @change="linkAttChg(row, column.property)"<#
+                  v-model="row[column.property]"<#
                   if (column.attMaxSize > 1) {
                   #>
                   :max-size="<#=column.attMaxSize#>"<#
@@ -1157,7 +1156,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                   accept="<#=column.attAccept#>"<#
                   }
                   #>
-                  :isLocked="isLocked"
+                  :is-locked="isLocked"
+                  @change="onLinkAtt(row, column.property)"
                 ></LinkAtt>
               </template>
             </el-table-column>
@@ -2854,7 +2854,7 @@ async function onCancelExport() {
 if (hasAtt) {
 #>
 
-async function linkAttChg(row: any, key: any) {<#
+async function onLinkAtt(row: <#=modelName#>, key: keyof <#=modelName#>) {<#
     if (opts.noEdit !== true) {
 #>
   await updateById(row.id!, { [key]: row[key] });<#

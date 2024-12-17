@@ -15,6 +15,7 @@ declare global {
   }
 
   interface BackgroundTaskSearch extends BackgroundTaskSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface BackgroundTaskFieldComment extends BackgroundTaskFieldCommentType {
