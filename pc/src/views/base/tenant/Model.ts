@@ -17,6 +17,7 @@ declare global {
   }
 
   interface TenantSearch extends TenantSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface TenantFieldComment extends TenantFieldCommentType {

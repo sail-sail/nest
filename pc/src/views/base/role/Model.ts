@@ -18,6 +18,7 @@ declare global {
   }
 
   interface RoleSearch extends RoleSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface RoleFieldComment extends RoleFieldCommentType {
