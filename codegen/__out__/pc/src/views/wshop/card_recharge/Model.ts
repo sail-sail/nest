@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   CardRechargeInput as CardRechargeInputType,
   CardRechargeModel as CardRechargeModelType,

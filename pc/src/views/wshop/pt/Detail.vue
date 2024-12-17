@@ -111,8 +111,8 @@
             prop="pt_type_ids"
           >
             <CustomSelect
-              :set="dialogModel.pt_type_ids = dialogModel.pt_type_ids ?? [ ]"
               v-model="dialogModel.pt_type_ids"
+              :set="dialogModel.pt_type_ids = dialogModel.pt_type_ids ?? [ ]"
               :method="getPtTypeList"
               :options-map="((item: PtTypeModel) => {
                 return {
@@ -176,8 +176,8 @@
             prop="is_new"
           >
             <DictSelect
-              :set="dialogModel.is_new = dialogModel.is_new ?? undefined"
               v-model="dialogModel.is_new"
+              :set="dialogModel.is_new = dialogModel.is_new ?? undefined"
               code="yes_no"
               :placeholder="`${ ns('请选择') } ${ n('新品') }`"
               :readonly="isLocked || isReadonly"
@@ -221,9 +221,9 @@
               v-model="dialogModel.detail"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('详情') }`"
               :readonly="isLocked || isReadonly"
+              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -272,9 +272,9 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
+              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -439,7 +439,7 @@ let ids = $ref<PtId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<PtId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -501,7 +501,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   CardConsumeInput as CardConsumeInputType,
   CardConsumeModel as CardConsumeModelType,

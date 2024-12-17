@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   PtInput as PtInputType,
   PtModel as PtModelType,

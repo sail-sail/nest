@@ -121,8 +121,8 @@
             prop="status"
           >
             <DictbizSelect
-              :set="dialogModel.status = dialogModel.status ?? undefined"
               v-model="dialogModel.status"
+              :set="dialogModel.status = dialogModel.status ?? undefined"
               code="order_status"
               :placeholder="`${ ns('请选择') } ${ n('订单状态') }`"
               :readonly="isLocked || isReadonly"
@@ -185,8 +185,8 @@
             prop="type"
           >
             <DictbizSelect
-              :set="dialogModel.type = dialogModel.type ?? undefined"
               v-model="dialogModel.type"
+              :set="dialogModel.type = dialogModel.type ?? undefined"
               code="order_type"
               :placeholder="`${ ns('请选择') } ${ n('订单类别') }`"
               :readonly="isLocked || isReadonly"
@@ -204,9 +204,9 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
+              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -371,7 +371,7 @@ let ids = $ref<OrderId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<OrderId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -466,7 +466,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 

@@ -115,8 +115,8 @@
             prop="grade"
           >
             <DictbizSelect
-              :set="dialogModel.grade = dialogModel.grade ?? undefined"
               v-model="dialogModel.grade"
+              :set="dialogModel.grade = dialogModel.grade ?? undefined"
               code="card_grade"
               :placeholder="`${ ns('请选择') } ${ n('会员等级') }`"
               :readonly="isLocked || isReadonly"
@@ -214,8 +214,8 @@
             prop="is_default_card"
           >
             <DictSelect
-              :set="dialogModel.is_default_card = dialogModel.is_default_card ?? undefined"
               v-model="dialogModel.is_default_card"
+              :set="dialogModel.is_default_card = dialogModel.is_default_card ?? undefined"
               code="is_default"
               :placeholder="`${ ns('请选择') } ${ n('默认') }`"
               :readonly="isLocked || isReadonly"
@@ -233,9 +233,9 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              @keyup.enter.stop
               :placeholder="`${ ns('请输入') } ${ n('备注') }`"
               :readonly="isLocked || isReadonly"
+              @keyup.enter.stop
             ></CustomInput>
           </el-form-item>
         </template>
@@ -398,7 +398,7 @@ let ids = $ref<CardId[]>([ ]);
 let is_deleted = $ref<number>(0);
 let changedIds = $ref<CardId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -479,7 +479,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 

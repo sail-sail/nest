@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   OrderInput as OrderInputType,
   OrderModel as OrderModelType,

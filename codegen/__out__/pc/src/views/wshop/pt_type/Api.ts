@@ -32,7 +32,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: PtTypeInput,
 ) {
   const input: PtTypeInput = {
     // ID

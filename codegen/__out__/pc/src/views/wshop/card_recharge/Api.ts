@@ -72,7 +72,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: CardRechargeInput,
 ) {
   const input: CardRechargeInput = {
     // ID
