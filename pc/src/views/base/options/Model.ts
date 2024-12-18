@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   OptionsInput as OptionsInputType,
   OptionsModel as OptionsModelType,
@@ -16,6 +17,7 @@ declare global {
   }
 
   interface OptionsSearch extends OptionsSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface OptionsFieldComment extends OptionsFieldCommentType {

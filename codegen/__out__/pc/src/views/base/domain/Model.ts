@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   DomainInput as DomainInputType,
   DomainModel as DomainModelType,
@@ -14,6 +15,7 @@ declare global {
   }
 
   interface DomainSearch extends DomainSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface DomainFieldComment extends DomainFieldCommentType {

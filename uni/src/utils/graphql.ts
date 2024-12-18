@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { uniqueID, uuid } from "./StringUtil";
 import { request, uniLogin } from "./request";
 import cfg from "./config"

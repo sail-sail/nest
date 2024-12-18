@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   OperationRecordInput as OperationRecordInputType,
   OperationRecordModel as OperationRecordModelType,
@@ -14,6 +15,7 @@ declare global {
   }
 
   interface OperationRecordSearch extends OperationRecordSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface OperationRecordFieldComment extends OperationRecordFieldCommentType {

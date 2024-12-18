@@ -28,7 +28,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: FieldPermitInput,
 ) {
   const input: FieldPermitInput = {
     // ID

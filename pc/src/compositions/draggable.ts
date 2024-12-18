@@ -1,4 +1,3 @@
-import type { ComputedRef, Ref } from 'vue';
 
 function addUnit(value: string | number, defaultUnit = 'px') {
   if (!value) return '';

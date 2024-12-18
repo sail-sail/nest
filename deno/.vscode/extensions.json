@@ -33,6 +33,10 @@
     "tmui-helper.tmui-helper",
     "ms-vscode.vscode-speech",
     "yoavbls.pretty-ts-errors",
-    "hongyan-prettyjson.pretty-json-vscode"
+    "hongyan-prettyjson.pretty-json-vscode",
+    "emeraldwalk.runonsave"
+  ],
+  "unwantedRecommendations": [
+    "mattpocock.ts-error-translator"
   ]
 }

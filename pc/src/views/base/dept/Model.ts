@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   DeptInput as DeptInputType,
   DeptModel as DeptModelType,
@@ -14,6 +15,7 @@ declare global {
   }
 
   interface DeptSearch extends DeptSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface DeptFieldComment extends DeptFieldCommentType {

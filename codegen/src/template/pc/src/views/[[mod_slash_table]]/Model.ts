@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 <#
 const hasOrderBy = columns.some((column) => column.COLUMN_NAME === 'order_by');
 const hasPassword = columns.some((column) => column.isPassword);
@@ -140,7 +141,12 @@ declare global {
     #>
   }
 
-  interface <#=searchName#> extends <#=searchName#>Type {
+  interface <#=searchName#> extends <#=searchName#>Type {<#
+    if (hasIsDeleted) {
+    #>
+    is_deleted?: 0 | 1;<#
+    }
+    #>
   }
 
   interface <#=fieldCommentName#> extends <#=fieldCommentName#>Type {
