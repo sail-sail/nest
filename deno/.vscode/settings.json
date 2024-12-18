@@ -21,7 +21,8 @@
     "tmp/**": true,
     "**/.eslintrc-auto-import.json": true,
     "**/.npmrc": true,
-    "**/.husky": true
+    "**/.husky": true,
+    "graphql.config.js": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -47,7 +48,8 @@
     "**/*/types.ts": true,
     "**/.eslintrc-auto-import.json": true,
     "**/.npmrc": true,
-    "**/.husky": true
+    "**/.husky": true,
+    "graphql.config.js": true
   },
   "terminal.integrated.defaultProfile.windows": "Command Prompt",
   "git.timeline.showUncommitted": true,

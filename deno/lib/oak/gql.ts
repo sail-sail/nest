@@ -35,7 +35,7 @@ import {
 
 const gqlRouter = new Router();
 
-const _gqlSchemaStr = /* GraphQL */`
+const _gqlSchemaStr = /* GraphQL */ `
 scalar JSON
 scalar NaiveDateTime
 scalar NaiveDate
