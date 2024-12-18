@@ -26,6 +26,10 @@ import {
 } from "graphql";
 
 import {
+  LRUCache,
+} from "lru-cache";
+
+import {
   ServiceException,
 } from "/lib/exceptions/service.exception.ts";
 
@@ -168,10 +172,17 @@ ${ mutationStr }
   return gqlSchemaStr2;
 }
 
-const queryCacheMap = new Map<string, {
+// const queryCacheMap = new Map<string, {
+//   document: DocumentNode,
+//   validationErrors: readonly GraphQLError[],
+// }>();
+
+const queryCacheMap = new LRUCache<string, {
   document: DocumentNode,
   validationErrors: readonly GraphQLError[],
-}>();
+}>({
+  max: 10000,
+});
 
 async function handleGraphql(
   oakCtx: OakContext,
