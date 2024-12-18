@@ -260,6 +260,8 @@ async function handleGraphql(
                 const cbArgs = args2?.map((item: any) => args[0][item.name.value]);
                 const context = newContext(oakCtx);
                 return runInAsyncHooks(context, async function() {
+                  log("");
+                  log(`resolver: ${ prop }: ${ JSON.stringify(cbArgs) }`);
                   // deno-lint-ignore no-explicit-any
                   let res: any;
                   let isRollback = false;
