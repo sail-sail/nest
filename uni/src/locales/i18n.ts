@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import cfg from "@/utils/config";
 
 import {
@@ -107,8 +108,7 @@ function initI18nLblsLang() {
     if (i18nsLangStr) {
       try {
         i18nLblsLang = JSON.parse(i18nsLangStr);
-      } catch (e) {
-      }
+      } catch (e) { /* empty */ }
     }
     const __version = uni.getStorageSync("__i18n_version");
     if (i18nLblsLang?.__version !== __version) {

@@ -99,7 +99,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
 async function showDialog(
@@ -131,7 +131,7 @@ async function showDialog(
   return await dialogRes.dialogPrm;
 }
 
-let iframeRef = $ref<HTMLIFrameElement>();
+const iframeRef = $ref<HTMLIFrameElement>();
 
 let iframeLoaded = $ref(false);
 

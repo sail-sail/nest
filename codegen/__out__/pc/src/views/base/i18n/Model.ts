@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   I18nInput as I18nInputType,
   I18nModel as I18nModelType,
@@ -14,6 +15,7 @@ declare global {
   }
 
   interface I18nSearch extends I18nSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface I18nFieldComment extends I18nFieldCommentType {

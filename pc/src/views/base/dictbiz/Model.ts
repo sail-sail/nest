@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   DictbizInput as DictbizInputType,
   DictbizModel as DictbizModelType,
@@ -20,6 +21,7 @@ declare global {
   }
 
   interface DictbizSearch extends DictbizSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface DictbizFieldComment extends DictbizFieldCommentType {

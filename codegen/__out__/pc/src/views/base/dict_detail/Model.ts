@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   DictDetailInput as DictDetailInputType,
   DictDetailModel as DictDetailModelType,
@@ -16,6 +17,7 @@ declare global {
   }
 
   interface DictDetailSearch extends DictDetailSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface DictDetailFieldComment extends DictDetailFieldCommentType {

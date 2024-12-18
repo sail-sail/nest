@@ -1,5 +1,6 @@
 <template>
 <div
+  ref="uploadImageRef"
   un-w="full"
   un-flex="~ [1_0_0] row wrap"
   un-overflow="auto"
@@ -11,7 +12,6 @@
     'min-height': `${ (props.itemHeight + 4) }px`,
   }"
   v-bind="$attrs"
-  ref="uploadImageRef"
 >
   <div
     v-for="(item, i) in thumbList"
@@ -20,7 +20,6 @@
     class="upload_image_item"
   >
     <div
-      @click="onView(i)"
       un-cursor-pointer
       un-rounded
       un-b="1 solid transparent hover:gray-700 hover:dark:gray-300"
@@ -28,6 +27,7 @@
       un-p="0.25"
       un-box-border
       un-text="0"
+      @click="onView(i)"
     >
       <el-image
         :src="item"
@@ -139,11 +139,11 @@
   </div>
 </div>
 <input
+  ref="fileRef"
   type="file"
   :accept="accept"
-  @change="onInput"
   style="display: none;"
-  ref="fileRef"
+  @change="onInput"
 />
 <Teleport to="body">
   <el-image-viewer
@@ -210,22 +210,22 @@ const props = withDefaults(
   },
 );
 
-let modelValue = $ref(props.modelValue);
+let modelValue1 = $ref(props.modelValue);
 
 watch(() => props.modelValue, (newVal) => {
-  if (modelValue !== newVal) {
-    modelValue = newVal;
+  if (modelValue1 !== newVal) {
+    modelValue1 = newVal;
     nowIndex = 0;
   }
 });
 
 let nowIndex = $ref(0);
 
-let urlList = $computed(() => {
-  if (!modelValue) {
+const urlList = $computed(() => {
+  if (!modelValue1) {
     return [ ];
   }
-  const ids = modelValue.split(",").filter((x) => x);
+  const ids = modelValue1.split(",").filter((x) => x);
   return ids.map((id) => {
     const url = getDownloadUrl({
       id,
@@ -236,11 +236,11 @@ let urlList = $computed(() => {
 });
 
 
-let thumbList = $computed(() => {
-  if (!modelValue) {
+const thumbList = $computed(() => {
+  if (!modelValue1) {
     return [ ];
   }
-  const ids = modelValue.split(",").filter((x) => x);
+  const ids = modelValue1.split(",").filter((x) => x);
   return ids.map((id) => {
     const url = getImgUrl({
       id,
@@ -250,7 +250,7 @@ let thumbList = $computed(() => {
   });
 });
 
-let fileRef = $ref<HTMLInputElement>();
+const fileRef = $ref<HTMLInputElement>();
 
 let loading = $ref(false);
 
@@ -259,8 +259,8 @@ async function onInput() {
     return;
   }
   let idArr: string[] = [ ];
-  if (modelValue) {
-    idArr = modelValue.split(",").filter((x) => x);
+  if (modelValue1) {
+    idArr = modelValue1.split(",").filter((x) => x);
   }
   if (props.maxSize > 1) {
     if (idArr.length >= props.maxSize) {
@@ -303,14 +303,14 @@ async function onInput() {
   }
   if (props.maxSize === 1) {
     idArr = [ id ];
-    modelValue = id;
+    modelValue1 = id;
     nowIndex = 0;
   } else {
     idArr.push(id);
-    modelValue = idArr.join(",");
+    modelValue1 = idArr.join(",");
     nowIndex = idArr.length - 1;
   }
-  emit("update:modelValue", modelValue);
+  emit("update:modelValue", modelValue1);
 }
 
 // 点击上传图片
@@ -319,8 +319,8 @@ async function onUpload() {
     return;
   }
   let idArr: string[] = [ ];
-  if (modelValue) {
-    idArr = modelValue.split(",").filter((x) => x);
+  if (modelValue1) {
+    idArr = modelValue1.split(",").filter((x) => x);
   }
   if (props.maxSize > 1) {
     if (idArr.length >= props.maxSize) {
@@ -342,17 +342,17 @@ async function onDelete(
     return;
   }
   let idArr: string[] = [ ];
-  if (modelValue) {
-    idArr = modelValue.split(",").filter((x) => x).filter((_, i) => i !== nowIndex);
+  if (modelValue1) {
+    idArr = modelValue1.split(",").filter((x) => x).filter((_, i) => i !== nowIndex);
   }
-  modelValue = idArr.join(",");
+  modelValue1 = idArr.join(",");
   if (nowIndex >= idArr.length) {
     nowIndex = idArr.length - 1;
   } else if (nowIndex > 0) {
     nowIndex--;
   }
   // ElMessage.success("删除成功!");
-  emit("update:modelValue", modelValue);
+  emit("update:modelValue", modelValue1);
 }
 
 let showImageViewer = $ref(false);
@@ -364,7 +364,7 @@ function onView(i?: number) {
   showImageViewer = !showImageViewer;
 }
 
-let uploadImageRef = $ref<HTMLDivElement>();
+const uploadImageRef = $ref<HTMLDivElement>();
 
 watch(
   () => props.inited,
@@ -381,16 +381,16 @@ watch(
         animation: 150,
         draggable: ".upload_image_item",
         onEnd: function (event: SortableEvent) {
-          let { oldIndex, newIndex } = event;
+          const { oldIndex, newIndex } = event;
           if (oldIndex == null || newIndex == null) {
             return;
           }
-          modelValue = modelValue || "";
-          const ids = modelValue.split(",").filter((x) => x);
+          modelValue1 = modelValue1 || "";
+          const ids = modelValue1.split(",").filter((x) => x);
           const id = ids.splice(oldIndex, 1)[0];
           ids.splice(newIndex, 0, id);
-          modelValue = ids.join(",");
-          emit("update:modelValue", modelValue);
+          modelValue1 = ids.join(",");
+          emit("update:modelValue", modelValue1);
         },
         filter: function(_, el) {
           if (!el) {

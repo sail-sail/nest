@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   LangInput as LangInputType,
   LangModel as LangModelType,
@@ -16,6 +17,7 @@ declare global {
   }
 
   interface LangSearch extends LangSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface LangFieldComment extends LangFieldCommentType {

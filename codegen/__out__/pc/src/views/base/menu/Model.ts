@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   MenuInput as MenuInputType,
   MenuModel as MenuModelType,
@@ -14,6 +15,7 @@ declare global {
   }
 
   interface MenuSearch extends MenuSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface MenuFieldComment extends MenuFieldCommentType {
