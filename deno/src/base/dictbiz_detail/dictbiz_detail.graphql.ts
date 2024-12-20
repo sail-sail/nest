@@ -2,7 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 
 import * as resolvers from "./dictbiz_detail.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */`
+defineGraphql(resolvers, /* GraphQL */ `
 
   type GetDictbiz {
     "业务字典ID"
