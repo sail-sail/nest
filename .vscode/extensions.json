@@ -33,6 +33,10 @@
     "antfu.pair-diff",
     "jacobpfeifer.pfeifer-hurl",
     "tmui-helper.tmui-helper",
-    "ms-vscode.vscode-speech"
+    "ms-vscode.vscode-speech",
+    "emeraldwalk.runonsave"
+  ],
+  "unwantedRecommendations": [
+    "mattpocock.ts-error-translator"
   ]
 }
