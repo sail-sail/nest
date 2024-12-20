@@ -2,7 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 
 import * as menuResolver from "./menu.resolver.ts";
 
-defineGraphql(menuResolver, /* GraphQL */`
+defineGraphql(menuResolver, /* GraphQL */ `
   
   type GetMenus {
     id: MenuId!
