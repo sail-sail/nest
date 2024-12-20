@@ -2,7 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 
 import * as resolvers from "./dict_detail.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */`
+defineGraphql(resolvers, /* GraphQL */ `
 
   type GetDict {
     "字典ID"
