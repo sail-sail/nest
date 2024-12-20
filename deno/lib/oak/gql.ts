@@ -26,6 +26,10 @@ import {
 } from "graphql";
 
 import {
+  LRUCache,
+} from "lru-cache";
+
+import {
   ServiceException,
 } from "/lib/exceptions/service.exception.ts";
 
@@ -35,7 +39,7 @@ import {
 
 const gqlRouter = new Router();
 
-const _gqlSchemaStr = /* GraphQL */`
+const _gqlSchemaStr = /* GraphQL */ `
 scalar JSON
 scalar NaiveDateTime
 scalar NaiveDate
@@ -168,10 +172,17 @@ ${ mutationStr }
   return gqlSchemaStr2;
 }
 
-const queryCacheMap = new Map<string, {
+// const queryCacheMap = new Map<string, {
+//   document: DocumentNode,
+//   validationErrors: readonly GraphQLError[],
+// }>();
+
+const queryCacheMap = new LRUCache<string, {
   document: DocumentNode,
   validationErrors: readonly GraphQLError[],
-}>();
+}>({
+  max: 10000,
+});
 
 async function handleGraphql(
   oakCtx: OakContext,
@@ -249,6 +260,8 @@ async function handleGraphql(
                 const cbArgs = args2?.map((item: any) => args[0][item.name.value]);
                 const context = newContext(oakCtx);
                 return runInAsyncHooks(context, async function() {
+                  log("");
+                  log(`resolver: ${ prop }: ${ JSON.stringify(cbArgs) }`);
                   // deno-lint-ignore no-explicit-any
                   let res: any;
                   let isRollback = false;
