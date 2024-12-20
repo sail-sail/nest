@@ -22,7 +22,8 @@
     ".eslintrc-auto-import.json": true,
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true,
-    "**/.husky": true
+    "**/.husky": true,
+    "graphql.config.js": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -47,7 +48,8 @@
     ".eslintrc-auto-import.json": true,
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true,
-    "**/.husky": true
+    "**/.husky": true,
+    "graphql.config.js": true
   },
   "git.timeline.showUncommitted": true,
   "scm.showHistoryGraph": false,
