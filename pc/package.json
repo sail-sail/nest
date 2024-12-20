@@ -89,7 +89,7 @@
     "vite-plugin-pwa": "0.21.1",
     "vite-plugin-vue-devtools": "7.6.8",
     "vite-plugin-vue-inspector": "5.3.1",
-    "vite-plugin-wasm": "3.4.0",
+    "vite-plugin-wasm": "3.3.0",
     "vitest": "2.1.8",
     "vue-tsc": "2.1.10"
   },
