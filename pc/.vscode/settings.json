@@ -21,7 +21,8 @@
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true,
     "public/ejsexcel.min.js": true,
-    "**/.husky": true
+    "**/.husky": true,
+    "graphql.config.js": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -45,7 +46,8 @@
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true,
     "public/ejsexcel.min.js": true,
-    "**/.husky": true
+    "**/.husky": true,
+    "graphql.config.js": true
   },
   "git.timeline.showUncommitted": true,
   "scm.showHistoryGraph": false,
