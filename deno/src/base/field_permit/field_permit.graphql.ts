@@ -2,7 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 
 import * as resolvers from "./field_permit.resolver.ts";
 
-defineGraphql(resolvers, /* GraphQL */`
+defineGraphql(resolvers, /* GraphQL */ `
 
 type Query {
   
