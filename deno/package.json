@@ -15,7 +15,6 @@
     "build:win": "deno run -A ./lib/script/build.ts",
     "codegen": "cd .. && npm run codegen",
     "db_gen_crypto_key": "deno run -A ./lib/script/db_gen_crypto_key.ts",
-    "prepare": "husky",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
