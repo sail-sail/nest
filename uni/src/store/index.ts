@@ -5,6 +5,10 @@ import {
 const loading = ref(0);
   
 let windowInfo: UniApp.GetWindowInfoResult | undefined;
+
+let menuButtonBoundingClientRect: UniApp.GetMenuButtonBoundingClientRectRes | undefined;
+
+let appBaseInfo: UniApp.GetAppBaseInfoResult | undefined;
   
 let userAgent: UserAgent | undefined;
   
@@ -36,6 +40,20 @@ export default function() {
     return windowInfo;
   }
   
+  function getMenuButtonBoundingClientRect() {
+    if (!menuButtonBoundingClientRect) {
+      const windowInfo = getWindowInfo();
+      menuButtonBoundingClientRect = uni.getMenuButtonBoundingClientRect?.() || {
+        ...windowInfo.safeArea,
+        height: 0,
+        width: 0,
+        bottom: windowInfo.safeArea.top,
+        left: windowInfo.safeArea.right,
+      };
+    }
+    return menuButtonBoundingClientRect;
+  }
+  
   function getUserAgent(): UserAgent {
     if (userAgent) {
       return userAgent;
@@ -46,6 +64,13 @@ export default function() {
     // #endif
     userAgent = new UserAgent(ua);
     return userAgent;
+  }
+  
+  function getAppBaseInfo() {
+    if (!appBaseInfo) {
+      appBaseInfo = uni.getAppBaseInfo();
+    }
+    return appBaseInfo;
   }
   
   function setLaunchOptions(options?: App.LaunchShowOption) {
@@ -74,6 +99,8 @@ export default function() {
     setLaunchOptions,
     getLaunchOptions,
     getWindowInfo,
+    getMenuButtonBoundingClientRect,
+    getAppBaseInfo,
     getUserAgent,
   };
 };

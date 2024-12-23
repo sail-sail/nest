@@ -154,6 +154,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      "/img": {
+        target: "http://localhost:4000",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 });

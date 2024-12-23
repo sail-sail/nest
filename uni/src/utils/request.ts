@@ -385,6 +385,7 @@ async function code2Session(
 }
 
 export async function uniLogin() {
+  const indexStore = useIndexStore();
   const usrStore = useUsrStore();
   let providers: string[] = [ ];
   try {
@@ -392,8 +393,8 @@ export async function uniLogin() {
     providers = providerInfo.provider;
   } catch (err) { /* empty */ }
   if (providers && providers.includes("weixin")) {
-    const systemInfo = uni.getSystemInfoSync();
-    let appLanguage = systemInfo.appLanguage || "zh-CN";
+    const appBaseInfo = indexStore.getAppBaseInfo();
+    let appLanguage = appBaseInfo.appLanguage || "zh-CN";
     if (appLanguage === "en") {
       appLanguage = "en-US";
     } else if (["zh", "zh-hans", "zh-hant", "zh-hans-cn"].includes(appLanguage?.toLocaleLowerCase())) {
@@ -424,7 +425,6 @@ export async function uniLogin() {
     return false;
   }
   // #ifdef H5
-  const indexStore = useIndexStore();
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWxwork || userAgent.isWechat) {
     if (typeof wxwGetAppid === "undefined") {
