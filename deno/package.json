@@ -20,6 +20,7 @@
   "dependencies": {
     "dayjs": "1.11.13",
     "graphql": "16.10.0",
+    "lru-cache": "11.0.2",
     "mnemonist": "0.39.8",
     "mysql2": "3.11.5",
     "path-to-regexp": "6.2.1"
