@@ -262,7 +262,7 @@ async fn main() -> Result<(), std::io::Error> {
     .data(schema);
   
   let server_port = env::var("server_port").unwrap_or("4001".to_owned());
-  let server_host = env::var("server_host").unwrap_or("127.0.0.1".to_owned());
+  let server_host = env::var("server_host").unwrap_or("localhost".to_owned());
   
   info!("app started: {}", server_port);
   
