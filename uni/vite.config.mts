@@ -7,9 +7,6 @@ import uni from "@dcloudio/vite-plugin-uni";
 
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
-import Icons from "unplugin-icons/vite";
-import IconsResolver from "unplugin-icons/resolver";
-import { FileSystemIconLoader } from "unplugin-icons/loaders";
 
 import Unocss from "unocss/vite";
 
@@ -47,12 +44,6 @@ export default defineConfig({
     (uni as any).default(),
     reactivityTransform(),
     ...pluginsH5,
-    Icons({
-      compiler: "vue3",
-      customCollections: {
-        font: FileSystemIconLoader("src/assets/iconfont/"),
-      },
-    }),
     AutoImport({
       imports: [
         "vue",
@@ -102,29 +93,18 @@ export default defineConfig({
           ],
         },
       ],
-      resolvers: [
-        IconsResolver(),
-      ],
       dts: "./src/typings/auto-imports.d.ts",
       ignore: [
         "RouterLink",
       ],
     }),
-    Components({
-      dirs: [
-        // "./src/components",
-        // "./src/uni_modules/tmui/components",
-      ],
-      resolvers: [
-        IconsResolver({
-          prefix: "icon",
-          customCollections: [
-            "font",
-          ],
-        }),
-      ],
-      dts: "./src/typings/components.d.ts",
-    }),
+    // Components({
+    //   dirs: [
+    //     "./src/components",
+    //     "./src/uni_modules/tmui/components",
+    //   ],
+    //   dts: "./src/typings/components.d.ts",
+    // }),
     Unocss({
       configFile: "./uno.config.ts",
     }),
