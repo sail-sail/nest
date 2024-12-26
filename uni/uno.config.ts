@@ -45,7 +45,8 @@ const presets = [
     prefixedOnly: true,
   }),
   presetRemRpx(),
-];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+] as any;
 
 export default defineConfig({
   shortcuts: {
@@ -64,7 +65,8 @@ export default defineConfig({
     transformerAttributify({
       prefix: "u",
       prefixedOnly: true,
-    }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }) as any,
   ],
   rules: [
     [

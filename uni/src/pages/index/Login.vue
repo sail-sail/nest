@@ -110,7 +110,7 @@ import type {
   LoginInput,
 } from "@/typings/types";
 
-const usrStore = useUsrStore(cfg.pinia);
+const usrStore = useUsrStore();
 
 let inited = $ref(false);
 
