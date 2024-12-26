@@ -1,109 +1,101 @@
 <template>
-<tm-app
+<view
   un-flex="~ [1_0_0] col"
   un-overflow-hidden
 >
   <tm-form
-    ref="formRef"
-    v-model="model"
+    v-model="login_input"
     :label-width="120"
+    :rules="form_rules"
+    
     un-flex="~ [1_0_0] col"
-    un-overflow-auto
+    un-overflow-hidden
+    
+    @submit="onLogin"
   >
+    
+    <view
+      un-flex="~ [1_0_0] col"
+      un-overflow="y-auto x-hidden"
+      un-p="2"
+      un-box-border
+    >
+    
+      <tm-form-item
+        label="租户"
+        name="tenant_id"
+      >
+        <CustomSelect
+          v-model="login_input.tenant_id"
+          :method="getLoginTenantsEfc"
+          placeholder="请选择 租户"
+          :multiple="false"
+        >
+          <template #left>
+            <i
+              un-i="iconfont-user"
+              un-m="r-2"
+            ></i>
+          </template>
+        </CustomSelect>
+      </tm-form-item>
       
-    <tm-form-item
-      label="租户"
-      field="tenant_id"
-      :rules="{
-        required: true,
-        message: '请选择 租户',
-      }"
-      required
-    >
-      <CustomSelect
-        v-model="model.tenant_id"
-        :method="getLoginTenantsEfc"
-        placeholder="请选择 租户"
-        :multiple="false"
+      <tm-form-item
+        label="用户名"
+        name="username"
       >
-        <template #left>
-          <i
-            un-i="iconfont-user"
-            un-m="r-2"
-          ></i>
-        </template>
-      </CustomSelect>
-    </tm-form-item>
+        <CustomInput
+          v-model="login_input.username"
+          :type="'text'"
+          :show-clear="true"
+          placeholder="请输入 用户名"
+        >
+          <template #left>
+            <i
+              un-i="iconfont-user"
+              un-m="r-2"
+            ></i>
+          </template>
+        </CustomInput>
+      </tm-form-item>
+      
+      <tm-form-item
+        label="密码"
+        name="password"
+      >
+        <CustomInput
+          v-model="login_input.password"
+          :type="'password'"
+          :show-clear="true"
+          placeholder="请输入 密码"
+        >
+          <template #left>
+            <i
+              un-i="iconfont-password"
+              un-m="r-2"
+            ></i>
+          </template>
+        </CustomInput>
+      </tm-form-item>
+      
+    </view>
     
-    <tm-form-item
-      label="用户名"
-      field="username"
-      :rules="{
-        required: true,
-        message: '请输入 用户名',
-      }"
-      required
+    <view
+      un-p="2"
+      un-box-border
     >
-      <CustomInput
-        v-model="model.username"
-        :type="'text'"
-        :show-clear="true"
-        placeholder="请输入 用户名"
+      <tm-button
+        form-type="submit"
+        block
       >
-        <template #left>
-          <i
-            un-i="iconfont-user"
-            un-m="r-2"
-          ></i>
-        </template>
-      </CustomInput>
-    </tm-form-item>
-    
-    <tm-form-item
-      label="密码"
-      field="password"
-      :rules="{
-        required: true,
-        message: '请输入 密码',
-      }"
-      required
-    >
-      <CustomInput
-        v-model="model.password"
-        :type="'password'"
-        :show-clear="true"
-        placeholder="请输入 密码"
-      >
-        <template #left>
-          <i
-            un-i="iconfont-password"
-            un-m="r-2"
-          ></i>
-        </template>
-      </CustomInput>
-    </tm-form-item>
+        绑定
+      </tm-button>
+    </view>
       
   </tm-form>
   
-  <view
-    un-m="x-2"
-    :style="{
-      marginBottom: (safeAreaInsets?.bottom || 0) + 'px',
-    }"
-  >
-    <tm-button
-      @click="onLogin"
-      label="登录"
-      block
-    ></tm-button>
-  </view>
-  
   <AppLoading></AppLoading>
-  <tm-message
-    ref="msgRef"
-    :lines="2"
-  ></tm-message>
-</tm-app>
+</view>
 </template>
 
 <script setup lang="ts">
@@ -121,53 +113,56 @@ import type {
   LoginInput,
 } from "@/typings/types";
 
-// import {
-//   lang,
-// } from "@/locales/index";
+const usrStore = useUsrStore();
 
-const indexStore = useIndexStore(cfg.pinia);
-const usrStore = useUsrStore(cfg.pinia);
-
-const safeAreaInsets = ref(indexStore.getSystemInfo().safeAreaInsets);
-
-const formRef = ref<InstanceType<typeof CustomForm>>();
-
-const model = ref<LoginInput>({
+const login_input = ref<LoginInput>({
   username: "admin",
   password: "a",
   tenant_id: "" as unknown as TenantId,
-  // lang,
 });
+
+const form_rules: Record<string, TM.FORM_RULE[]> = {
+  tenant_id: [
+    {
+      required: true,
+      message: "请选择 租户",
+    },
+  ],
+  username: [
+    {
+      required: true,
+      message: "请输入 用户名",
+    },
+  ],
+  password: [
+    {
+      required: true,
+      message: "请输入 密码",
+    },
+  ],
+};
 
 let redirect_uri = cfg.homePage;
 let redirect_action = "reLaunch";
 
-async function onLogin() {
-  if (!formRef.value) {
+async function onLogin(
+  formSubmitResult?: TM.FORM_SUBMIT_RESULT,
+) {
+  if (formSubmitResult?.isPass === false) {
     return;
   }
-  
-  const {
-    isPass,
-  } = formRef.value.validate();
-  
-  if (!isPass) {
-    return;
-  }
-  
   uni.setStorage({
     key: "oldLoginModel",
-    data: model.value,
+    data: login_input.value,
   });
-  const loginModel = await bindWxUsr(model.value);
+  const loginModel = await bindWxUsr(login_input.value);
   if (!loginModel.authorization) {
     return;
   }
   usrStore.setAuthorization(loginModel.authorization);
   usrStore.setUsrId(loginModel.usr_id);
-  usrStore.setUsername(model.value.username);
-  usrStore.setTenantId(model.value.tenant_id);
-  // usrStore.setLang(model.value.lang);
+  usrStore.setUsername(login_input.value.username);
+  usrStore.setTenantId(login_input.value.tenant_id);
   if (redirect_action === "navigateBack") {
     await uni.navigateBack();
     return;
@@ -182,17 +177,17 @@ async function onLogin() {
  */
 async function getLoginTenantsEfc() {
   const tenants = await getLoginTenants({ domain: cfg.domain });
-  if (!model.value.tenant_id && tenants.length > 0) {
-    model.value.tenant_id = tenants[0].id;
-  } else if (model.value.tenant_id && !tenants.some((item) => item.id === model.value.tenant_id)) {
-    model.value.tenant_id = tenants[0].id;
+  if (!login_input.value.tenant_id && tenants.length > 0) {
+    login_input.value.tenant_id = tenants[0].id;
+  } else if (login_input.value.tenant_id && !tenants.some((item) => item.id === login_input.value.tenant_id)) {
+    login_input.value.tenant_id = tenants[0].id;
   }
   return tenants;
 }
 
 async function setOldLoginModel() {
   try {
-    let res = await uni.getStorage({
+    const res = await uni.getStorage({
       key: "oldLoginModel",
     });
     if (res) {
@@ -203,11 +198,9 @@ async function setOldLoginModel() {
           console.error(err);
         }
       }
-      model.value = res.data;
-      // model.value.lang = model.value.lang || lang;
+      login_input.value = res.data;
     }
-  } catch (err) {
-  }
+  } catch (err) { /* empty */ }
 }
 
 async function initFrame() {
@@ -216,10 +209,10 @@ async function initFrame() {
 
 onLoad(async function(query) {
   if (query?.redirect_uri) {
-    redirect_uri = query.redirect_uri;
+    redirect_uri = decodeURIComponent(query.redirect_uri);
   }
   if (query?.redirect_action) {
-    redirect_action = query.redirect_action;
+    redirect_action = decodeURIComponent(query.redirect_action);
   }
   await initFrame();
 });

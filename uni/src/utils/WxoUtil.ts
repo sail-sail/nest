@@ -43,8 +43,8 @@ export async function wxoGetAppid() {
 }
  
 export async function initWxoCfg() {
-  const indexStore = useIndexStore(cfg.pinia);
-  const usrStore = useUsrStore(cfg.pinia);
+  const indexStore = useIndexStore();
+  const usrStore = useUsrStore();
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWechat) {
     const wxoAppid = await wxoGetAppid();
