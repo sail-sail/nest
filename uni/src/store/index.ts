@@ -1,10 +1,22 @@
 import {
   UserAgent,
 } from "@/utils/UserAgent";
-
-export default defineStore("index", function() {
   
-  const loading = ref(0);
+const loading = ref(0);
+  
+let windowInfo: UniApp.GetWindowInfoResult | undefined;
+
+let menuButtonBoundingClientRect: UniApp.GetMenuButtonBoundingClientRectRes | undefined;
+
+let appBaseInfo: UniApp.GetAppBaseInfoResult | undefined;
+  
+let userAgent: UserAgent | undefined;
+  
+let launchOptions: App.LaunchShowOption | undefined;
+  
+let uid = "";
+
+export default function() {
   
   function addLoading() {
     loading.value++;
@@ -21,51 +33,62 @@ export default defineStore("index", function() {
     return loading.value;
   }
   
-  let systemInfo: UniApp.GetSystemInfoResult | undefined;
-  
-  function setSystemInfo(sys: UniApp.GetSystemInfoResult) {
-    systemInfo = sys;
-  }
-  
-  function getSystemInfo() {
-    if (!systemInfo) {
-      throw new Error("systemInfo is not set!");
+  function getWindowInfo() {
+    if (!windowInfo) {
+      windowInfo = uni.getWindowInfo();
     }
-    return systemInfo;
+    return windowInfo;
   }
   
-  let userAgent: UserAgent | undefined;
+  function getMenuButtonBoundingClientRect() {
+    if (!menuButtonBoundingClientRect) {
+      const windowInfo = getWindowInfo();
+      menuButtonBoundingClientRect = uni.getMenuButtonBoundingClientRect?.() || {
+        ...windowInfo.safeArea,
+        height: 0,
+        width: 0,
+        bottom: windowInfo.safeArea.top,
+        left: windowInfo.safeArea.right,
+      };
+    }
+    return menuButtonBoundingClientRect;
+  }
   
   function getUserAgent(): UserAgent {
     if (userAgent) {
       return userAgent;
     }
-    if (!systemInfo) {
-      throw new Error("systemInfo is not set!");
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    userAgent = new UserAgent((systemInfo as any).ua);
+    let ua = "";
+    // #ifndef MP
+    ua = navigator.userAgent;
+    // #endif
+    userAgent = new UserAgent(ua);
     return userAgent;
   }
   
-  const launchOptions = ref<App.LaunchShowOption>();
+  function getAppBaseInfo() {
+    if (!appBaseInfo) {
+      appBaseInfo = uni.getAppBaseInfo();
+    }
+    return appBaseInfo;
+  }
   
   function setLaunchOptions(options?: App.LaunchShowOption) {
-    launchOptions.value = options;
+    launchOptions = options;
   }
   
   function getLaunchOptions() {
-    return launchOptions.value!;
-  }
-  
-  const uid = ref("");
-  
-  function setUid(uid0: string) {
-    uid.value = uid0;
+    return launchOptions!;
   }
   
   function getUid() {
-    return uid.value;
+    uid = uni.getStorageSync("_uid");
+    if (uid) {
+      return uid;
+    }
+    uid = uniqueID();
+    uni.setStorageSync("_uid", uid);
+    return uid;
   }
   
   return {
@@ -73,11 +96,11 @@ export default defineStore("index", function() {
     getLoading,
     addLoading,
     minusLoading,
-    setUid,
     setLaunchOptions,
     getLaunchOptions,
-    getSystemInfo,
-    setSystemInfo,
+    getWindowInfo,
+    getMenuButtonBoundingClientRect,
+    getAppBaseInfo,
     getUserAgent,
   };
-});
+};
