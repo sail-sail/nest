@@ -1,80 +1,80 @@
 import type {
   GetLoginInfo,
 } from "@/typings/types";
-
-export default defineStore("usr", function() {
   
-  const authorization = ref(uni.getStorageSync("authorization") || "");
-  const usr_id = ref<UsrId>(uni.getStorageSync("usr_id"));
-  const tenant_id = ref<TenantId>(uni.getStorageSync("tenant_id"));
-  const username = ref<string>(uni.getStorageSync("username"));
-  const loginInfo = ref<GetLoginInfo>(uni.getStorageSync("loginInfo"));
+let authorization: string = uni.getStorageSync("authorization") || "";
+let usr_id: UsrId = uni.getStorageSync("usr_id");
+let tenant_id: TenantId = uni.getStorageSync("tenant_id");
+let username: string = uni.getStorageSync("username");
+let loginInfo: GetLoginInfo = uni.getStorageSync("loginInfo");
+  
+let showAuth = false;
+  
+let lang = "";
+
+export default function() {
   
   function setAuthorization(authorization0: string) {
-    if (authorization.value !== authorization0) {
-      authorization.value = authorization0;
+    if (authorization !== authorization0) {
+      authorization = authorization0;
       uni.setStorageSync("authorization", authorization0);
     }
   }
   
   function getAuthorization() {
-    return authorization.value;
+    return authorization;
   }
   
   function setUsrId(usr_id0: UsrId) {
-    usr_id.value = usr_id0;
+    usr_id = usr_id0;
     uni.setStorageSync("usr_id", usr_id0);
   }
   
   function getUsrId() {
-    return usr_id.value;
+    return usr_id;
   }
   
-  const showAuth = ref(false);
-  
-  function setShowAuth(showAuth1: boolean) {
-    showAuth.value = showAuth1;
+  function setShowAuth(showAuth0: boolean) {
+    showAuth = showAuth0;
   }
   
   function getShowAuth() {
-    return showAuth.value;
+    return showAuth;
   }
   
-  const lang = ref("");
-  
   function setLang(lang0: string) {
-    lang.value = lang0;
+    lang = lang0;
   }
   
   function getLang() {
-    return lang.value;
+    return lang;
   }
   
   function setLoginInfo(loginInfo0: GetLoginInfo) {
-    loginInfo.value = loginInfo0;
+    loginInfo = loginInfo0;
     uni.setStorageSync("loginInfo", loginInfo0);
   }
   
   function getLoginInfo() {
-    return loginInfo.value;
+    return loginInfo;
   }
   
   function setUsername(username0: string) {
-    username.value = username0;
+    username = username0;
     uni.setStorageSync("username", username0);
   }
   
   function getUsername() {
-    return username.value;
+    return username;
   }
   
   function setTenantId(tenant_id0: TenantId) {
-    tenant_id.value = tenant_id0;
+    tenant_id = tenant_id0;
     uni.setStorageSync("tenant_id", tenant_id0);
   }
   
   function getTenantId() {
-    return tenant_id.value;
+    return tenant_id;
   }
   
   return {
@@ -93,4 +93,4 @@ export default defineStore("usr", function() {
     getTenantId,
     setTenantId,
   };
-});
+};

@@ -21,10 +21,8 @@
     ]
   },
   "include": [
-    "src/bin/**/*.ts",
-    "src/lib/**/*.ts",
-    "src/tables/**/*.ts",
-    "src/util/**/*.ts"
+    "**/*.ts",
+    "**/*.vue"
   ],
   "exclude": [
     "node_modules",
