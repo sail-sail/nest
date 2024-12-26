@@ -68,7 +68,7 @@ async function initI18ns(
 }
 
 export function useI18n(routePath?: string | null) {
-  const usrStore = useUsrStore(cfg.pinia);
+  const usrStore = useUsrStore();
   const lang = usrStore.getLang();
   return {
     n(code: string, ...args: any[]) {
@@ -101,7 +101,7 @@ export function useI18n(routePath?: string | null) {
 }
 
 function initI18nLblsLang() {
-  const usrStore = useUsrStore(cfg.pinia);
+  const usrStore = useUsrStore();
   const lang = usrStore.getLang();
   if (!i18nLblsLang) {
     const i18nsLangStr = uni.getStorageSync(`i18nLblsLang`);
