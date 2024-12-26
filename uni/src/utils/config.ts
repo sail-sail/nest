@@ -17,7 +17,7 @@ const homePage = `/${pages.pages[0]?.path}`;
 if (import.meta.env.MODE === "development") {
   // #ifndef H5
   host = "localhost";
-  port = "4001";
+  port = "4000";
   domain = `${ host }${ port ? `:${ port }` : "" }`;
   protocol = "http:";
   wsProt = "ws:";
@@ -37,7 +37,7 @@ if (import.meta.env.MODE === "development") {
 } else if (import.meta.env.MODE === "test") {
   // #ifndef H5
   host = "localhost";
-  port = "4001";
+  port = "4000";
   domain = `${ host }${ port ? `:${ port }` : "" }`;
   protocol = "http:";
   wsProt = "ws:";
