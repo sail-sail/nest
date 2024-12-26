@@ -269,7 +269,7 @@ const _styleMap = computed(() => {
 })
 
 onMounted(() => {
-    let sys = uni.getSystemInfoSync();
+    const sys = uni.getWindowInfo();
     statusBarHeight.value = sys.statusBarHeight || 0
     emits('init', statusBarHeight.value + navbarHeight)
     if (props.staticTransparent) {

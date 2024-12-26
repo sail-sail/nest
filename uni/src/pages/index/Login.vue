@@ -110,7 +110,7 @@ import type {
   LoginInput,
 } from "@/typings/types";
 
-const usrStore = useUsrStore(cfg.pinia);
+const usrStore = useUsrStore();
 
 let inited = $ref(false);
 
@@ -145,6 +145,7 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {
 };
 
 let redirect_uri = cfg.homePage;
+let redirect_action = "reLaunch";
 
 async function onLogin(
   formSubmitResult?: TM.FORM_SUBMIT_RESULT,
@@ -164,7 +165,10 @@ async function onLogin(
   usrStore.setUsrId(loginModel.usr_id);
   usrStore.setUsername(loginModel.username);
   usrStore.setTenantId(loginModel.tenant_id);
-  usrStore.setLang(loginModel.lang);
+  if (redirect_action === "navigateBack") {
+    await uni.navigateBack();
+    return;
+  }
   await uni.reLaunch({
     url: redirect_uri,
   });
@@ -212,6 +216,9 @@ async function initFrame() {
 onLoad(async function(query) {
   if (query?.redirect_uri) {
     redirect_uri = decodeURIComponent(query.redirect_uri);
+  }
+  if (query?.redirect_action) {
+    redirect_action = decodeURIComponent(query.redirect_action);
   }
   await initFrame();
 });
