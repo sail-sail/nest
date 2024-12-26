@@ -43,7 +43,7 @@
     "**/*.vue"
   ],
   "exclude": [
-    "src/typings/components.d.ts",
+    "src/typings/components2.d.ts",
     "src/uni_modules/tmui/**/*.ts",
     "src/uni_modules/tmui/**/*.vue"
   ]

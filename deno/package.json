@@ -15,14 +15,14 @@
     "build:win": "deno run -A ./lib/script/build.ts",
     "codegen": "cd .. && npm run codegen",
     "db_gen_crypto_key": "deno run -A ./lib/script/db_gen_crypto_key.ts",
-    "prepare": "husky",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "dayjs": "1.11.13",
     "graphql": "16.10.0",
+    "lru-cache": "11.0.2",
     "mnemonist": "0.39.8",
-    "mysql2": "3.11.5",
+    "mysql2": "3.12.0",
     "path-to-regexp": "6.2.1"
   },
   "devDependencies": {
@@ -38,7 +38,7 @@
     "husky": "9.1.7",
     "lint-staged": "15.2.11",
     "ssh2-promise": "1.0.3",
-    "typescript": "5.6.3"
+    "typescript": "5.7.2"
   },
   "lint-staged": {
     "*.ts": [
