@@ -6,7 +6,7 @@ import {
 import uni from "@dcloudio/vite-plugin-uni";
 
 import AutoImport from "unplugin-auto-import/vite";
-import Components from "unplugin-vue-components/vite";
+// import Components from "unplugin-vue-components/vite";
 
 import Unocss from "unocss/vite";
 
