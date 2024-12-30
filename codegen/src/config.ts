@@ -761,6 +761,11 @@ export interface TablesConfigItem {
     noAdd?: boolean;
     
     /**
+     * 不显示复制按钮
+     */
+    noCopy?: boolean;
+    
+    /**
      * 不允许导入
      */
     noImport?: boolean;
