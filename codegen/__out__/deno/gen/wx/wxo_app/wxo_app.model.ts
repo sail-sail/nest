@@ -94,7 +94,9 @@ export const canSortInApiWxoApp = {
 
 /** 公众号设置 检测字段是否允许前端排序 */
 export function checkSortWxoApp(sort?: SortInput[]) {
-  if (!sort) return;
+  if (!sort) {
+    return;
+  }
   for (const item of sort) {
     const order = item.order;
     if (
