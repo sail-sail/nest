@@ -17,7 +17,7 @@
   @clear="onClear"
 >
   <template
-    v-for="(item, key, index) in $slots"
+    v-for="(key, index) in keys"
     :key="index"
     #[key]
   >
@@ -27,7 +27,13 @@
 </template>
 
 <script lang="ts" setup>
-import type { ElDatePicker } from "element-plus";
+import type {
+  ElDatePicker,
+} from "element-plus";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const keys = Object.keys(slots);
 
 type DatePickerType = InstanceType<typeof ElDatePicker>;
 
