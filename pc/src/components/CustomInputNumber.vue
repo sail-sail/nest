@@ -16,7 +16,7 @@
   @change="onChange"
 >
   <template
-    v-for="(item, key, index) in $slots"
+    v-for="(key, index) in keys"
     :key="index"
     #[key]
   >
@@ -59,6 +59,10 @@
 
 <script lang="ts" setup>
 import Decimal from "decimal.js";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const keys = Object.keys(slots);
 
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

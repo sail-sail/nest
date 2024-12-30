@@ -262,7 +262,7 @@ initFrame();
   :deep(.el-menu-item.is-active) {
     background-color: var(--el-menu-hover-bg-color);
   }
-  :deep(.el-sub-menu.is-active .el-sub-menu__title) {
+  :deep(.el-sub-menu.is-active>.el-sub-menu__title) {
     color: var(--el-color-primary);
   }
   :deep(.el-menu-item.is-active:after) {
