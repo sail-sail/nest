@@ -109,6 +109,8 @@ declare global {
 
 /** 微信支付通知 前端允许排序的字段 */
 export const canSortInApiWxPayNotice = {
+  // 微信支付订单号
+  "transaction_id": true,
   // 创建时间
   "create_time": true,
   // 更新时间
@@ -117,7 +119,9 @@ export const canSortInApiWxPayNotice = {
 
 /** 微信支付通知 检测字段是否允许前端排序 */
 export function checkSortWxPayNotice(sort?: SortInput[]) {
-  if (!sort) return;
+  if (!sort) {
+    return;
+  }
   for (const item of sort) {
     const order = item.order;
     if (
