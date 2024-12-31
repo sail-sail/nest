@@ -154,8 +154,6 @@ function copyModelLabel() {
   ElMessage.success(`${ text } 复制成功!`);
 }
 
-const usrStore = useUsrStore();
-
 let inited = $ref(false);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
