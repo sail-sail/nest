@@ -91,7 +91,7 @@
     "sass": "1.78.0",
     "tmui-cli": "1.2.8",
     "typescript": "5.7.2",
-    "typescript-eslint": "8.18.2",
+    "typescript-eslint": "8.19.0",
     "unocss": "0.64.1",
     "unocss-applet": "0.8.5",
     "unplugin-auto-import": "0.19.0",

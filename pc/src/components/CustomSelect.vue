@@ -737,8 +737,6 @@ async function initFrame() {
 
 initFrame();
 
-usrStore.onLogin(refreshEfc);
-
 onMounted(() => {
   refreshWrapperHeight();
 });

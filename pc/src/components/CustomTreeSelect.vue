@@ -325,8 +325,6 @@ if (props.init) {
   refreshEfc();
 }
 
-usrStore.onLogin(refreshEfc);
-
 defineExpose({
   refresh: refreshEfc,
 });
