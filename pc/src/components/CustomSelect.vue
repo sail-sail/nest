@@ -242,8 +242,6 @@ const keys = Object.keys(slots);
 
 const t = getCurrentInstance();
 
-const usrStore = useUsrStore();
-
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", value: any[]): void;
@@ -281,6 +279,7 @@ const props = withDefaults(
     multiple?: boolean;
     showSelectAll?: boolean;
     init?: boolean;
+    pageInited?: boolean;
     disabled?: boolean;
     readonly?: boolean;
     placeholder?: string | null;
@@ -306,6 +305,7 @@ const props = withDefaults(
     multiple: false,
     showSelectAll: true,
     init: true,
+    pageInited: undefined,
     disabled: undefined,
     readonly: undefined,
     placeholder: undefined,
