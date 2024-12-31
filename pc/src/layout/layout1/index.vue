@@ -628,8 +628,6 @@ async function initFrame() {
   inited = true;
 }
 
-usrStore.onLogin(initFrame);
-
 initFrame();
 
 // onMounted(async () => {
