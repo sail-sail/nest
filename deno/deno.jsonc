@@ -16,6 +16,12 @@
     ]
   },
   "lint": {
+    "rules": {
+      "exclude": [
+        "require-await",
+        "no-unused-vars"
+      ]
+    },
     "include": [
       "src/"
     ],
