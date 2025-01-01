@@ -1,3 +1,5 @@
+use std::sync::OnceLock;
+
 use anyhow::{Result, anyhow};
 use serde::{Serialize, Deserialize};
 use smol_str::SmolStr;
@@ -29,8 +31,10 @@ use crate::common::context::{
   get_short_uuid,
 };
 
-lazy_static! {
-  static ref CRYPTO_KEY: Option<&'static [u8]> = init_crypto_key();
+static CRYPTO_KEY: OnceLock<Option<&'static [u8]>> = OnceLock::new();
+
+fn crypto_key() -> Option<&'static [u8]> {
+  *CRYPTO_KEY.get_or_init(init_crypto_key)
 }
 
 fn init_crypto_key() -> Option<&'static [u8]> {
@@ -66,10 +70,11 @@ fn init_crypto_key() -> Option<&'static [u8]> {
 pub fn encrypt(
   str: &str,
 ) -> String {
-  if CRYPTO_KEY.is_none() {
+  let crypto_key = crypto_key();
+  if crypto_key.is_none() {
     return "".to_owned();
   }
-  let crypto_key = CRYPTO_KEY.unwrap();
+  let crypto_key = crypto_key.unwrap();
   let salt = get_short_uuid();
   let iv_str = get_short_uuid();
   let salt = &salt.as_str()[..16];
@@ -101,10 +106,11 @@ pub fn encrypt(
 pub fn decrypt(
   str: &str,
 ) -> String {
-  if CRYPTO_KEY.is_none() || str.len() < 16 {
+  let crypto_key = crypto_key();
+  if crypto_key.is_none() {
     return "".to_owned();
   }
-  let crypto_key = CRYPTO_KEY.unwrap();
+  let crypto_key = crypto_key.unwrap();
   let iv_str = &str[..16];
   let iv = iv_str.as_bytes();
   let ct = &str[16..];

@@ -5,6 +5,8 @@ use std::ops::Deref;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
 
 use anyhow::{Result,anyhow};
@@ -34,14 +36,16 @@ use crate::common::gql::model::SortInput;
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-lazy_static! {
-  /// 后台任务 前端允许排序的字段
-  static ref CAN_SORT_IN_API_BACKGROUND_TASK: [&'static str; 4] = [
+static CAN_SORT_IN_API_BACKGROUND_TASK: OnceLock<[&'static str; 4]> = OnceLock::new();
+
+/// 后台任务 前端允许排序的字段
+fn get_can_sort_in_api_background_task() -> &'static [&'static str; 4] {
+  CAN_SORT_IN_API_BACKGROUND_TASK.get_or_init(|| [
     "begin_time",
     "end_time",
     "create_time",
     "update_time",
-  ];
+  ])
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -925,12 +929,14 @@ pub fn check_sort_background_task(
   }
   let sort = sort.unwrap();
   
+  let get_can_sort_in_api_background_task = get_can_sort_in_api_background_task();
+  
   for item in sort {
     let prop = item.prop.as_str();
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_BACKGROUND_TASK.contains(&prop) {
+    if !get_can_sort_in_api_background_task.contains(&prop) {
       return Err(anyhow!("check_sort_background_task: {}", serde_json::to_string(item)?));
     }
   }

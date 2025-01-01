@@ -67,6 +67,8 @@ use std::ops::Deref;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
 
 use anyhow::{Result,anyhow};
@@ -229,41 +231,43 @@ use crate::src::base::field_permit::field_permit_service::get_field_permit;<#
 }
 #>
 
-lazy_static! {
-  /// <#=table_comment#> 前端允许排序的字段<#
-  const can_sort_in_api_props = [ ];
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    const column_name = column.COLUMN_NAME;
-    if (
-      column_name === "tenant_id" ||
-      column_name === "is_sys" ||
-      column_name === "is_deleted" ||
-      column_name === "is_hidden"
-    ) continue;
-    const data_type = column.DATA_TYPE;
-    const column_comment = column.COLUMN_COMMENT;
-    const foreignKey = column.foreignKey;
-    const foreignTable = foreignKey && foreignKey.table;
-    const canSortInApi = column.canSortInApi;
-    if (!canSortInApi) continue;
-    if (foreignKey && foreignKey.type === "multiple") continue;
-    let sortBy = column_name;
-    if (foreignKey) {
-      sortBy = sortBy + "_lbl";
-    }
-    can_sort_in_api_props.push(sortBy);
+<#
+const can_sort_in_api_props = [ ];
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  const column_name = column.COLUMN_NAME;
+  if (
+    column_name === "tenant_id" ||
+    column_name === "is_sys" ||
+    column_name === "is_deleted" ||
+    column_name === "is_hidden"
+  ) continue;
+  const data_type = column.DATA_TYPE;
+  const column_comment = column.COLUMN_COMMENT;
+  const foreignKey = column.foreignKey;
+  const foreignTable = foreignKey && foreignKey.table;
+  const canSortInApi = column.canSortInApi;
+  if (!canSortInApi) continue;
+  if (foreignKey && foreignKey.type === "multiple") continue;
+  let sortBy = column_name;
+  if (foreignKey) {
+    sortBy = sortBy + "_lbl";
   }
-  #>
-  static ref CAN_SORT_IN_API_<#=table.toUpperCase()#>: [&'static str; <#=can_sort_in_api_props.length#>] = [<#
+  can_sort_in_api_props.push(sortBy);
+}
+#>static CAN_SORT_IN_API_<#=table.toUpperCase()#>: OnceLock<[&'static str; <#=can_sort_in_api_props.length#>]> = OnceLock::new();
+
+/// <#=table_comment#> 前端允许排序的字段
+fn get_can_sort_in_api_<#=table#>() -> &'static [&'static str; <#=can_sort_in_api_props.length#>] {
+  CAN_SORT_IN_API_<#=table.toUpperCase()#>.get_or_init(|| [<#
     for (let i = 0; i < can_sort_in_api_props.length; i++) {
       const prop = can_sort_in_api_props[i];
     #>
     "<#=prop#>",<#
     }
     #>
-  ];
+  ])
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -3060,12 +3064,14 @@ pub fn check_sort_<#=table#>(
   }
   let sort = sort.unwrap();
   
+  let get_can_sort_in_api_<#=table#> = get_can_sort_in_api_<#=table#>();
+  
   for item in sort {
     let prop = item.prop.as_str();
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_<#=table.toUpperCase()#>.contains(&prop) {
+    if !get_can_sort_in_api_<#=table#>.contains(&prop) {
       return Err(anyhow!("check_sort_<#=table#>: {}", serde_json::to_string(item)?));
     }
   }
