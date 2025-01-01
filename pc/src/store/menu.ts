@@ -176,7 +176,7 @@ export default defineStore("menu", function() {
   let searchTimer: NodeJS.Timeout | undefined = undefined;
   
   watch(
-    () => search,
+    () => search.value,
     () => {
       if (searchTimer) {
         clearTimeout(searchTimer);
