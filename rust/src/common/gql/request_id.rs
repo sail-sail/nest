@@ -1,11 +1,12 @@
-use poem::Response;
 use std::env;
 use std::collections::HashMap;
 use chrono::{NaiveDateTime, Local};
 
-use lazy_static::lazy_static;
+use std::sync::OnceLock;
 use std::sync::Arc;
 use tokio::sync::Mutex;
+
+use poem::Response;
 
 use crate::common::cache::cache_dao::{
   exists as cache_exists,
@@ -13,12 +14,17 @@ use crate::common::cache::cache_dao::{
   expire as cache_expire,
 };
 
-lazy_static! {
-  static ref REQUEST_ID_MAP: Arc<Mutex<HashMap<String, NaiveDateTime>>> = Arc::new(Mutex::new(HashMap::new()));
-  static ref CACHE_X_REQUEST_ID: String = env::var("cache_x_request_id").unwrap_or_default();
-}
+static REQUEST_ID_MAP: OnceLock<Arc<Mutex<HashMap<String, NaiveDateTime>>>> = OnceLock::new();
+static CACHE_X_REQUEST_ID: OnceLock<String> = OnceLock::new();
 
 const REQUEST_TIMEOUT: u32 = 60;
+
+fn request_id_map() -> &'static Arc<Mutex<HashMap<String, NaiveDateTime>>> {
+  REQUEST_ID_MAP.get_or_init(|| Arc::new(Mutex::new(HashMap::new())))
+}
+fn cache_x_request_id() -> &'static str {
+  CACHE_X_REQUEST_ID.get_or_init(|| env::var("cache_x_request_id").unwrap_or_default()).as_str()
+}
 
 pub async fn handle_request_id(
     request_id: Option<String>,
@@ -35,7 +41,7 @@ pub async fn handle_request_id(
   let now = Local::now().naive_local();
   
   {
-    let request_id_map = REQUEST_ID_MAP.clone();
+    let request_id_map = request_id_map().clone();
     let mut request_id_map = request_id_map.lock().await;
     
     // 删除过期的 request_id
@@ -59,7 +65,7 @@ pub async fn handle_request_id(
     request_id_map.insert(request_id.clone(), now);
   }
   
-  let cache_request_id = CACHE_X_REQUEST_ID.as_str();
+  let cache_request_id = cache_x_request_id();
   
   if cache_request_id.is_empty() {
     return None;

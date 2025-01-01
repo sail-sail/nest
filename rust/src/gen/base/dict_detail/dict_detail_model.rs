@@ -5,6 +5,8 @@ use std::ops::Deref;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
 
 use anyhow::{Result,anyhow};
@@ -35,13 +37,15 @@ use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 use crate::r#gen::base::dict::dict_model::DictId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-lazy_static! {
-  /// 系统字典明细 前端允许排序的字段
-  static ref CAN_SORT_IN_API_DICT_DETAIL: [&'static str; 3] = [
+static CAN_SORT_IN_API_DICT_DETAIL: OnceLock<[&'static str; 3]> = OnceLock::new();
+
+/// 系统字典明细 前端允许排序的字段
+fn get_can_sort_in_api_dict_detail() -> &'static [&'static str; 3] {
+  CAN_SORT_IN_API_DICT_DETAIL.get_or_init(|| [
     "order_by",
     "create_time",
     "update_time",
-  ];
+  ])
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -694,12 +698,14 @@ pub fn check_sort_dict_detail(
   }
   let sort = sort.unwrap();
   
+  let get_can_sort_in_api_dict_detail = get_can_sort_in_api_dict_detail();
+  
   for item in sort {
     let prop = item.prop.as_str();
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_DICT_DETAIL.contains(&prop) {
+    if !get_can_sort_in_api_dict_detail.contains(&prop) {
       return Err(anyhow!("check_sort_dict_detail: {}", serde_json::to_string(item)?));
     }
   }

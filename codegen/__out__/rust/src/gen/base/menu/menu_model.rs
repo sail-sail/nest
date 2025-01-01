@@ -5,6 +5,8 @@ use std::ops::Deref;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
 
 use anyhow::{Result,anyhow};
@@ -34,14 +36,16 @@ use crate::common::gql::model::SortInput;
 use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-lazy_static! {
-  /// 菜单 前端允许排序的字段
-  static ref CAN_SORT_IN_API_MENU: [&'static str; 4] = [
+static CAN_SORT_IN_API_MENU: OnceLock<[&'static str; 4]> = OnceLock::new();
+
+/// 菜单 前端允许排序的字段
+fn get_can_sort_in_api_menu() -> &'static [&'static str; 4] {
+  CAN_SORT_IN_API_MENU.get_or_init(|| [
     "parent_id_lbl",
     "order_by",
     "create_time",
     "update_time",
-  ];
+  ])
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -744,12 +748,14 @@ pub fn check_sort_menu(
   }
   let sort = sort.unwrap();
   
+  let get_can_sort_in_api_menu = get_can_sort_in_api_menu();
+  
   for item in sort {
     let prop = item.prop.as_str();
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_MENU.contains(&prop) {
+    if !get_can_sort_in_api_menu.contains(&prop) {
       return Err(anyhow!("check_sort_menu: {}", serde_json::to_string(item)?));
     }
   }

@@ -8,9 +8,6 @@ static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 #[macro_use]
 extern crate derive_new;
 
-#[macro_use]
-extern crate lazy_static;
-
 mod common;
 mod gen;
 mod src;
