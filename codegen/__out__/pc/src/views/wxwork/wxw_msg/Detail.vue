@@ -96,8 +96,8 @@
             prop="errcode"
           >
             <DictSelect
-              :set="dialogModel.errcode = dialogModel.errcode ?? undefined"
               v-model="dialogModel.errcode"
+              :set="dialogModel.errcode = dialogModel.errcode ?? undefined"
               code="wxw_msg_errcode"
               :placeholder="`${ ns('请选择') } ${ n('发送状态') }`"
               :readonly="isLocked || isReadonly"
@@ -287,10 +287,10 @@ let dialogModel: WxwMsgInput = $ref({
 } as WxwMsgInput);
 
 let ids = $ref<WxwMsgId[]>([ ]);
-let is_deleted = $ref<number>(0);
+let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<WxwMsgId[]>([ ]);
 
-let formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $ref<InstanceType<typeof ElForm>>();
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -340,7 +340,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 let findOneModel = findOne;
 
@@ -356,7 +356,7 @@ async function showDialog(
     model?: {
       id?: WxwMsgId;
       ids?: WxwMsgId[];
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     findOne?: typeof findOne;
     action: DialogAction;
