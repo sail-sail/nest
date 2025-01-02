@@ -5,6 +5,8 @@ use std::ops::Deref;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
 
 use anyhow::{Result,anyhow};
@@ -35,13 +37,15 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::cron::job::job_model::JobId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-lazy_static! {
-  /// 定时任务 前端允许排序的字段
-  static ref CAN_SORT_IN_API_CRON_JOB: [&'static str; 3] = [
+static CAN_SORT_IN_API_CRON_JOB: OnceLock<[&'static str; 3]> = OnceLock::new();
+
+/// 定时任务 前端允许排序的字段
+fn get_can_sort_in_api_cron_job() -> &'static [&'static str; 3] {
+  CAN_SORT_IN_API_CRON_JOB.get_or_init(|| [
     "order_by",
     "create_time",
     "update_time",
-  ];
+  ])
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -735,12 +739,14 @@ pub fn check_sort_cron_job(
   }
   let sort = sort.unwrap();
   
+  let get_can_sort_in_api_cron_job = get_can_sort_in_api_cron_job();
+  
   for item in sort {
     let prop = item.prop.as_str();
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_CRON_JOB.contains(&prop) {
+    if !get_can_sort_in_api_cron_job.contains(&prop) {
       return Err(anyhow!("check_sort_cron_job: {}", serde_json::to_string(item)?));
     }
   }
