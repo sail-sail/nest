@@ -53,7 +53,7 @@
       </el-checkbox>
     </template>
     <template
-      v-for="(item, key, index) in $slots"
+      v-for="(key, index) in keys"
       :key="index"
       #[key]
     >
@@ -221,6 +221,10 @@ import type {
 import {
   copyText,
 } from "@/utils/common";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const keys = Object.keys(slots);
 
 export type DictbizModel = GetDictbiz;
 
