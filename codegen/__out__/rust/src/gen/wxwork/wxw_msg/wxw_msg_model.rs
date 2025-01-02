@@ -5,6 +5,8 @@ use std::ops::Deref;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
 
 use anyhow::{Result,anyhow};
@@ -35,12 +37,14 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-lazy_static! {
-  /// 企微消息 前端允许排序的字段
-  static ref CAN_SORT_IN_API_WXW_MSG: [&'static str; 2] = [
+static CAN_SORT_IN_API_WXW_MSG: OnceLock<[&'static str; 2]> = OnceLock::new();
+
+/// 企微消息 前端允许排序的字段
+fn get_can_sort_in_api_wxw_msg() -> &'static [&'static str; 2] {
+  CAN_SORT_IN_API_WXW_MSG.get_or_init(|| [
     "create_time",
     "update_time",
-  ];
+  ])
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -740,12 +744,14 @@ pub fn check_sort_wxw_msg(
   }
   let sort = sort.unwrap();
   
+  let get_can_sort_in_api_wxw_msg = get_can_sort_in_api_wxw_msg();
+  
   for item in sort {
     let prop = item.prop.as_str();
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_WXW_MSG.contains(&prop) {
+    if !get_can_sort_in_api_wxw_msg.contains(&prop) {
       return Err(anyhow!("check_sort_wxw_msg: {}", serde_json::to_string(item)?));
     }
   }
