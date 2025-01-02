@@ -113,7 +113,9 @@ export const canSortInApiCard = {
 
 /** 会员卡 检测字段是否允许前端排序 */
 export function checkSortCard(sort?: SortInput[]) {
-  if (!sort) return;
+  if (!sort) {
+    return;
+  }
   for (const item of sort) {
     const order = item.order;
     if (
