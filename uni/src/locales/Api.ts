@@ -1,5 +1,5 @@
-import {
-  type Query,
+import type {
+  Query,
 } from "#/types";
 
 /**

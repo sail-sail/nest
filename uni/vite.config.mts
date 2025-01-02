@@ -6,10 +6,7 @@ import {
 import uni from "@dcloudio/vite-plugin-uni";
 
 import AutoImport from "unplugin-auto-import/vite";
-import Components from "unplugin-vue-components/vite";
-import Icons from "unplugin-icons/vite";
-import IconsResolver from "unplugin-icons/resolver";
-import { FileSystemIconLoader } from "unplugin-icons/loaders";
+// import Components from "unplugin-vue-components/vite";
 
 import Unocss from "unocss/vite";
 
@@ -24,11 +21,11 @@ const pluginsH5: PluginOption[] = [ ];
 const isH5 = process.env.UNI_PLATFORM === "h5";
 
 if (isH5) {
-  pluginsH5.push(TurboConsole());
+  pluginsH5.push(TurboConsole() as any);
   pluginsH5.push(
     Inspector({
       toggleButtonPos: "top-left",
-    }),
+    }) as any,
   );
 }
 
@@ -39,7 +36,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: "modern-compiler",
-        additionalData: `@import "@/assets/style/uni.scss";`,
+        additionalData: `@use "@/assets/style/uni.scss";`,
       },
     },
   },
@@ -47,12 +44,6 @@ export default defineConfig({
     (uni as any).default(),
     reactivityTransform(),
     ...pluginsH5,
-    Icons({
-      compiler: "vue3",
-      customCollections: {
-        font: FileSystemIconLoader("src/assets/iconfont/"),
-      },
-    }),
     AutoImport({
       imports: [
         "vue",
@@ -106,29 +97,18 @@ export default defineConfig({
           ],
         },
       ],
-      resolvers: [
-        IconsResolver(),
-      ],
       dts: "./src/typings/auto-imports.d.ts",
       ignore: [
         "RouterLink",
       ],
     }),
-    Components({
-      dirs: [
-        // "./src/components",
-        // "./src/uni_modules/tmui/components",
-      ],
-      resolvers: [
-        IconsResolver({
-          prefix: "icon",
-          customCollections: [
-            "font",
-          ],
-        }),
-      ],
-      dts: "./src/typings/components.d.ts",
-    }),
+    // Components({
+    //   dirs: [
+    //     "./src/components",
+    //     "./src/uni_modules/tmui/components",
+    //   ],
+    //   dts: "./src/typings/components.d.ts",
+    // }),
     Unocss({
       configFile: "./uno.config.ts",
     }),
@@ -148,13 +128,18 @@ export default defineConfig({
     cors: true,
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:4001",
+        target: "http://localhost:4001",
         changeOrigin: true,
         secure: false,
         ws: true,
       },
       "/graphql": {
-        target: "http://127.0.0.1:4001",
+        target: "http://localhost:4001",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/img": {
+        target: "http://localhost:4000",
         changeOrigin: true,
         secure: false,
       },

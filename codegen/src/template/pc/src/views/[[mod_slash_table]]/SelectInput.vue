@@ -33,14 +33,14 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   <CustomInput
     v-bind="$attrs"
     ref="inputRef"
-    @click="onInput('input')"
     v-model="inputValue"
-    @clear="(onClear as any)"
     :readonly="props.labelReadonly"
     :clearable="false"
     class="select_input"
     :placeholder="props.placeholder"
     :readonly-placeholder="props.placeholder"
+    @click="onInput('input')"
+    @clear="onClear"
     @keydown.enter="onEnter"
   >
     <template
@@ -53,8 +53,8 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
       ></slot>
     </template>
     <template
-      #suffix
       v-if="!$slots.suffix"
+      #suffix
     >
       <template
         v-if="!props.disabled"
@@ -63,10 +63,10 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
           v-if="modelValue && modelValue.length > 0 && props.labelReadonly"
         >
           <el-icon
-            @click="onClear"
-            un-cursor-pointer
+            un-cursor="pointer"
             un-m="r-0.5"
             size="14"
+            @click="onClear"
           >
             <ElIconCircleClose
               v-if="isHover"
@@ -80,10 +80,10 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
           v-else
         >
           <el-icon
-            @click="onInput('icon')"
-            un-cursor-pointer
+            un-cursor="pointer"
             un-m="r-0.5"
             size="14"
+            @click="onInput('icon')"
           >
             <ElIconArrowDown />
           </el-icon>
@@ -125,7 +125,7 @@ import {
   getPagePath,
 } from "./Api";
 
-let emit = defineEmits<{
+const emit = defineEmits<{
   (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null): void,
@@ -264,7 +264,7 @@ function onClear(e?: PointerEvent) {
 }
 
 
-let selectListRef = $ref<InstanceType<typeof SelectList>>();
+const selectListRef = $ref<InstanceType<typeof SelectList>>();
 
 async function onInput(
   clickType: "input" | "icon",
@@ -303,7 +303,7 @@ async function onInput(
   emit("update:modelValue", modelValue);
 }
 
-let inputRef = $ref<InstanceType<typeof ElInput>>();
+const inputRef = $ref<InstanceType<typeof ElInput>>();
 
 function focus() {
   if (!inputRef) {

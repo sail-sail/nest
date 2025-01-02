@@ -15,11 +15,9 @@
 </template>
 
 <script lang="ts" setup>
-import cfg from "@/utils/config";
+const indexStore = useIndexStore();
 
-const indexStore = useIndexStore(cfg.pinia);
-
-let loading = computed(() => {
+const loading = computed(() => {
   return indexStore.getLoading();
 });
 </script>

@@ -11,10 +11,10 @@
     @dblclick="onClose(item)"
   >
     <el-dropdown
+      ref="dropdownRef"
       trigger="contextmenu"
       @command="menuCommand($event, item)"
       @visible-change="visibleChange($event, i)"
-      ref="dropdownRef"
     >
       <template #default>
         <div
@@ -28,8 +28,7 @@
             v-if="!item?.icon"
             class="tab_label"
           >
-            <span
-            >
+            <span>
               {{ item.lbl }}
             </span>
           </div>
@@ -120,9 +119,9 @@ const props = withDefaults(
   },
 );
 
-let tabs_divRef = $ref<HTMLDivElement>();
+const tabs_divRef = $ref<HTMLDivElement>();
 
-let tabs = $ref(toRef(props, "tabs"));
+const tabs = $ref(toRef(props, "tabs"));
 
 async function activeTab(tab: TabInf) {
   tabsStore.activeTab(tab);
@@ -153,7 +152,7 @@ async function menuCommand(command: string, tab: TabInf) {
   }
 }
 
-let dropdownRef = $ref<InstanceType<typeof ElDropdown>[]>([ ]);
+const dropdownRef = $ref<InstanceType<typeof ElDropdown>[]>([ ]);
 
 function visibleChange(visible: boolean, index: number) {
   if (!visible) {
@@ -177,7 +176,7 @@ function initTabsSort() {
     {
       animation: 150,
       async onEnd(event: SortableEvent) {
-        let { oldIndex, newIndex } = event;
+        const { oldIndex, newIndex } = event;
         if (oldIndex == null || newIndex == null) {
           return;
         }

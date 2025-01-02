@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import cfg from "@/utils/config";
 
 import {
@@ -67,7 +68,7 @@ async function initI18ns(
 }
 
 export function useI18n(routePath?: string | null) {
-  const usrStore = useUsrStore(cfg.pinia);
+  const usrStore = useUsrStore();
   const lang = usrStore.getLang();
   return {
     n(code: string, ...args: any[]) {
@@ -100,15 +101,14 @@ export function useI18n(routePath?: string | null) {
 }
 
 function initI18nLblsLang() {
-  const usrStore = useUsrStore(cfg.pinia);
+  const usrStore = useUsrStore();
   const lang = usrStore.getLang();
   if (!i18nLblsLang) {
     const i18nsLangStr = uni.getStorageSync(`i18nLblsLang`);
     if (i18nsLangStr) {
       try {
         i18nLblsLang = JSON.parse(i18nsLangStr);
-      } catch (e) {
-      }
+      } catch (e) { /* empty */ }
     }
     const __version = uni.getStorageSync("__i18n_version");
     if (i18nLblsLang?.__version !== __version) {

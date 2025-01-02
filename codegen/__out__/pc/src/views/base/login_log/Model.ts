@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   LoginLogInput as LoginLogInputType,
   LoginLogModel as LoginLogModelType,
@@ -14,6 +15,7 @@ declare global {
   }
 
   interface LoginLogSearch extends LoginLogSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface LoginLogFieldComment extends LoginLogFieldCommentType {

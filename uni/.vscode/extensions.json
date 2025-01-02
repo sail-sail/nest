@@ -13,6 +13,12 @@
     "uni-helper.uni-app-schemas-vscode",
     "uni-helper.uni-highlight-vscode",
     "yoavbls.pretty-ts-errors",
-    "hongyan-prettyjson.pretty-json-vscode"
+    "hongyan-prettyjson.pretty-json-vscode",
+    "dbaeumer.vscode-eslint",
+    "maggie.eslint-rules-zh-plugin",
+    "emeraldwalk.runonsave"
+  ],
+  "unwantedRecommendations": [
+    "mattpocock.ts-error-translator"
   ]
 }

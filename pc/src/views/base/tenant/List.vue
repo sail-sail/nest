@@ -12,9 +12,9 @@
     un-overflow-auto
   >
     <el-form
+      ref="searchFormRef"
       v-search-form-item-width-auto="inited"
       
-      ref="searchFormRef"
       size="default"
       :model="search"
       inline-message
@@ -70,9 +70,9 @@
         >
           <DictSelect
             :model-value="is_enabled_search[0]"
-            @update:model-value="($event != null && $event !== '') ? is_enabled_search = [ $event ] : is_enabled_search = [ ]"
             code="is_enabled"
             :placeholder="`${ ns('请选择') } ${ n('启用') }`"
+            @update:model-value="($event != null && $event !== '') ? is_enabled_search = [ $event ] : is_enabled_search = [ ]"
             @change="onSearch(false)"
           ></DictSelect>
         </el-form-item>
@@ -122,8 +122,8 @@
           
           <el-checkbox
             v-if="!isLocked"
-            :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
+            :set="search.is_deleted = search.is_deleted ?? 0"
             :false-value="0"
             :true-value="1"
             @change="recycleChg"
@@ -500,8 +500,8 @@
         row-key="id"
         :default-sort="defaultSort"
         :empty-text="inited ? undefined : ns('加载中...')"
-        @select="selectChg"
-        @select-all="selectChg"
+        @select="onSelect"
+        @select-all="onSelect"
         @row-click="onRow"
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
@@ -561,7 +561,7 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row, column }">
+              <template #default="{ row }">
                 <el-link
                   type="primary"
                   un-min="w-7.5"
@@ -724,8 +724,8 @@
   <!-- 菜单权限 -->
   <ListSelectDialog
     ref="menu_idsListSelectDialogRef"
-    :is-locked="isLocked"
     v-slot="listSelectProps"
+    :is-locked="isLocked"
   >
     <MenuTreeList
       is_enabled="1"
@@ -745,7 +745,7 @@
   
   <ImportPercentageDialog
     :percentage="importPercentage"
-    :dialog_visible="isImporting"
+    :dialog-visible="isImporting"
     @stop="stopImport"
   ></ImportPercentageDialog>
   
@@ -833,7 +833,7 @@ const props = defineProps<{
   isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: TenantId[]; //已选择行的id列表
-  isMultiple?: Boolean; //是否多选
+  isMultiple?: boolean; //是否多选
   id?: TenantId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
@@ -908,7 +908,7 @@ const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false" || import.meta.env.DEV;
 
 /** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();
+const tableRef = $ref<InstanceType<typeof ElTable>>();
 
 /** 查询 */
 function initSearch() {
@@ -918,6 +918,7 @@ function initSearch() {
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
       const key = props.propsNotReset[i];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (search as any)[key] = (builtInSearch as any)[key];
     }
   }
@@ -1013,7 +1014,7 @@ async function onIdsChecked() {
 }
 
 /** 分页功能 */
-let {
+const {
   page,
   pageSizes,
   pgSizeChg,
@@ -1028,9 +1029,16 @@ let {
 ));
 
 /** 表格选择功能 */
-let {
-  selectedIds,
-  selectChg,
+const tableSelected = useSelect<TenantModel, TenantId>(
+  $$(tableRef),
+  {
+    multiple: $$(multiple),
+    isListSelectDialog,
+  },
+);
+
+const {
+  onSelect,
   rowClassName,
   onRow,
   onRowUp,
@@ -1040,13 +1048,9 @@ let {
   onRowHome,
   onRowEnd,
   tableFocus,
-} = $(useSelect<TenantModel, TenantId>(
-  $$(tableRef),
-  {
-    multiple: $$(multiple),
-    isListSelectDialog,
-  },
-));
+} = tableSelected;
+
+let selectedIds = $(tableSelected.selectedIds);
 
 watch(
   () => selectedIds,
@@ -1212,7 +1216,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-let tableColumns = $ref<ColumnType[]>(getTableColumns());
+const tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列标签国际化 */
 watchEffect(() => {
@@ -1227,7 +1231,7 @@ watchEffect(() => {
 });
 
 /** 表格列 */
-let {
+const {
   headerDragend,
   resetColumns,
   storeColumns,
@@ -1239,10 +1243,10 @@ let {
   },
 ));
 
-let detailRef = $ref<InstanceType<typeof Detail>>();
+const detailRef = $ref<InstanceType<typeof Detail>>();
 
 // 设置租户管理员密码
-let pwdDialogRef = $ref<InstanceType<typeof PwdDialog>>();
+const pwdDialogRef = $ref<InstanceType<typeof PwdDialog>>();
 
 /** 刷新表格 */
 async function dataGrid(
@@ -1364,7 +1368,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-let exportExcel = $ref(useExportExcel(pagePath));
+const exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {
@@ -1460,7 +1464,7 @@ async function onInsert() {
   await openAdd();
 }
 
-let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+const uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -1971,7 +1975,7 @@ watch(
 
 initFrame();
 
-let menu_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+const menu_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
 
 async function onMenu_ids(row: TenantModel) {
   if (!menu_idsListSelectDialogRef) {

@@ -1,4 +1,3 @@
-import cfg from "@/utils/config";
 
 import {
   UniqueType,
@@ -31,11 +30,11 @@ async function setLblById(
   if (!model) {
     return;
   }
-  (model as any).home_url_lbl = homeUrlMap.find((item) => item.id === model.home_url)?.lbl || model.home_url;
+  model.home_url_lbl = homeUrlMap.find((item) => item.id === model.home_url)?.lbl || model.home_url;
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: RoleInput,
 ) {
   const input: RoleInput = {
     // ID

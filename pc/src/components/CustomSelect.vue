@@ -16,23 +16,23 @@
     collapse-tags-tooltip
     default-first-option
     :height="props.height"
-    @visible-change="handleVisibleChange"
-    @clear="onClear"
     un-w="full"
     v-bind="$attrs"
     :model-value="modelValueComputed"
-    @update:model-value="modelValueUpdate"
     :loading="!inited"
     class="custom_select"
     :class="{
       'custom_select_space_normal': true,
     }"
-    @change="onValueChange"
     :multiple="props.multiple"
     :clearable="!props.disabled"
     :disabled="props.disabled"
     :readonly="props.readonly"
     :placeholder="((isShowModelLabel && props.multiple) ? props.modelLabel : props.placeholder) ?? undefined"
+    @visible-change="handleVisibleChange"
+    @change="onValueChange"
+    @clear="onClear"
+    @update:model-value="modelValueUpdate"
     @keyup.enter.stop
     @keydown.ctrl.c.stop="copyModelLabel"
   >
@@ -53,7 +53,7 @@
       </el-checkbox>
     </template>
     <template
-      v-for="(item, key, index) in $slots"
+      v-for="(key, index) in keys"
       :key="index"
       #[key]
     >
@@ -135,8 +135,8 @@
               <el-tag
                 type="info"
                 :disable-transitions="true"
-                @click="() => readonlyCollapseTags = false"
                 un-cursor-pointer
+                @click="() => readonlyCollapseTags = false"
               >
                 {{ `+${ modelLabels.length - props.readonlyMaxCollapseTags }` }}
               </el-tag>
@@ -236,14 +236,18 @@ import {
   copyText,
 } from "@/utils/common";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const keys = Object.keys(slots);
+
 const t = getCurrentInstance();
 
-const usrStore = useUsrStore();
-
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", value: any[]): void;
   (e: "update:modelValue", value?: string | string[] | null): void;
   (e: "update:modelLabel", value?: string | null): void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any | any[] | null): void;
   (e: "clear"): void;
 }>();
@@ -255,12 +259,15 @@ const {
 
 let inited = $ref(false);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type OptionsMap = (item: any) => OptionType;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let data = $ref<any[]>([ ]);
 
 const props = withDefaults(
   defineProps<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     method: () => Promise<any[]>; // 用于获取数据的方法
     optionsMap?: OptionsMap;
     height?: number;
@@ -272,6 +279,7 @@ const props = withDefaults(
     multiple?: boolean;
     showSelectAll?: boolean;
     init?: boolean;
+    pageInited?: boolean;
     disabled?: boolean;
     readonly?: boolean;
     placeholder?: string | null;
@@ -280,6 +288,7 @@ const props = withDefaults(
     readonlyMaxCollapseTags?: number;
   }>(),
   {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
       const item2 = item as { lbl: string; id: string; };
       return {
@@ -296,6 +305,7 @@ const props = withDefaults(
     multiple: false,
     showSelectAll: true,
     init: true,
+    pageInited: undefined,
     disabled: undefined,
     readonly: undefined,
     placeholder: undefined,
@@ -341,10 +351,10 @@ watch(
   },
 );
 
-let selectRef = $ref<InstanceType<typeof ElSelectV2>>();
-let selectDivRef = $ref<HTMLDivElement>();
+const selectRef = $ref<InstanceType<typeof ElSelectV2>>();
+const selectDivRef = $ref<HTMLDivElement>();
 
-let isSelectAll = $computed({
+const isSelectAll = $computed({
   get() {
     if (!modelValue) {
       return false;
@@ -481,8 +491,8 @@ function getModelLabelById() {
     }
     return item.label;
   }
-  let labels: string[] = [ ];
-  let modelValues = (modelValue || [ ]) as string[];
+  const labels: string[] = [ ];
+  const modelValues = (modelValue || [ ]) as string[];
   for (const value of modelValues) {
     const item = options4SelectV2.find((item: OptionType) => item.value === value);
     if (!item) {
@@ -498,7 +508,7 @@ function refreshModelLabel() {
   emit("update:modelLabel", modelLabel);
 }
 
-let shouldShowPlaceholder = $computed(() => {
+const shouldShowPlaceholder = $computed(() => {
   if (props.multiple) {
     return modelValue == null || modelValue.length === 0;
   }
@@ -534,7 +544,7 @@ const modelLabels: string[] = $computed(() => {
     return [ props.optionsMap(model).label || "" ];
   }
   const labels: string[] = [ ];
-  let modelValues = (modelValue || [ ]) as string[];
+  const modelValues = (modelValue || [ ]) as string[];
   for (const value of modelValues) {
     const model = data.find((item) => props.optionsMap(item).value === value);
     if (!model) {
@@ -581,6 +591,7 @@ async function refreshDropdownWidth() {
     return;
   }
   await nextTick();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const selectRef = t.refs.selectRef as any;
   if (!selectRef) {
     return;
@@ -668,6 +679,7 @@ function getModelsByValue() {
     return findModelById(modelValue as string);
   }
   const modelValues = (modelValue || [ ]) as string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const models: any[] = [ ];
   for (const id of modelValues) {
     const model = findModelById(id);
@@ -724,8 +736,6 @@ async function initFrame() {
 }
 
 initFrame();
-
-usrStore.onLogin(refreshEfc);
 
 onMounted(() => {
   refreshWrapperHeight();

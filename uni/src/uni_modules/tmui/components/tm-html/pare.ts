@@ -76,12 +76,10 @@ const config = {
 	}
 }
 const tagSelector = {}
-const {
-	windowWidth,
-	// #ifdef MP-WEIXIN
-	system
-	// #endif
-} = uni.getSystemInfoSync()
+const windowWidth = uni.getWindowInfo().windowWidth
+// #ifdef MP-WEIXIN
+const system = uni.getDeviceInfo().system
+// #endif
 const blankChar = makeMap(' ,\r,\n,\t,\f')
 let idIndex = 0
 

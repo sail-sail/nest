@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   DataPermitInput as DataPermitInputType,
   DataPermitModel as DataPermitModelType,
@@ -16,6 +17,7 @@ declare global {
   }
 
   interface DataPermitSearch extends DataPermitSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface DataPermitFieldComment extends DataPermitFieldCommentType {

@@ -16,12 +16,16 @@ const messages = {
 };
 
 export function getLocale(): string {
-  let usr: any = { };
+  let usr: {
+    lang?: string;
+  } = {
+    lang: undefined,
+  };
   const usrStr = localStorage.getItem("usr");
   if (usrStr) {
     try {
       usr = JSON.parse(usrStr);
-    } catch (e) { }
+    } catch (e) { /* empty */ }
   }
   let lang = usr?.lang;
   if (lang) {

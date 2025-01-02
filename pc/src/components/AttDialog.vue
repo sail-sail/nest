@@ -143,7 +143,7 @@
           <!-- 判断是否为xlsx文件 -->
           <template
             v-else-if="fileStats[i]?.contentType?.startsWith('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            || fileStats[i]?.contentType?.startsWith('application/vnd.ms-excel.sheet')"
+              || fileStats[i]?.contentType?.startsWith('application/vnd.ms-excel.sheet')"
           >
             <VueOfficeExcel
               v-if="iframeShoweds[i]"
@@ -158,7 +158,7 @@
           <!-- 判断是否为docx文件 -->
           <template
             v-else-if="fileStats[i]?.contentType?.startsWith('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-            || fileStats[i]?.contentType?.startsWith('application/msword')"
+              || fileStats[i]?.contentType?.startsWith('application/msword')"
           >
             <VueOfficeDocx
               v-if="iframeShoweds[i]"
@@ -299,8 +299,8 @@ import {
   getStatsOss,
 } from "./Api";
 
-const VueOfficeExcel = defineAsyncComponent(() => import("@vue-office/excel")) as any;
-const VueOfficeDocx = defineAsyncComponent(() => import("@vue-office/docx")) as any;
+import VueOfficeExcel from "@vue-office/excel";
+import VueOfficeDocx from "@vue-office/docx";
 
 const {
   ns,
@@ -320,7 +320,7 @@ let fileStats = $ref<{
 }[]>();
 
 // 当前弹出框的标题
-let dialogTitle = $computed(() => {
+const dialogTitle = $computed(() => {
   let title = "";
   const fileStat = fileStats?.[nowIndex];
   if (fileStat) {
@@ -356,9 +356,9 @@ let nowIndex = $ref(0);
 
 let iframeLoading = $ref(false);
 
-let backgroundColor = $ref<string | undefined>("#000000");
+const backgroundColor = $ref<string | undefined>("#000000");
 
-let predefineColors = $ref([
+const predefineColors = $ref([
   '#ff4500',
   '#ff8c00',
   '#ffd700',
@@ -376,10 +376,10 @@ let modelValue = $ref<string | null>();
 
 // let tenantHost = $ref("");
 
-let urlList = $computed(() => {
+const urlList = $computed(() => {
   const list: string[] = [];
   if (!modelValue) return list;
-  let ids = modelValue.split(",").filter((x) => x);
+  const ids = modelValue.split(",").filter((x) => x);
   
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
@@ -388,7 +388,7 @@ let urlList = $computed(() => {
     if (lbl.length > 45) {
       lbl = lbl.substring(0, 45) + "...";
     }
-    let url = `${ baseURL }/api/oss/download/${ encodeURIComponent(lbl) }?id=${ encodeURIComponent(id) }`;
+    const url = `${ baseURL }/api/oss/download/${ encodeURIComponent(lbl) }?id=${ encodeURIComponent(id) }`;
     list.push(url);
   }
   return list;
@@ -397,7 +397,7 @@ let urlList = $computed(() => {
 // 已经加载过的iframe索引
 let iframeShoweds = $ref<boolean[]>([ ]);
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 type OnCloseResolveType = {
   type: "ok" | "cancel";
@@ -531,7 +531,7 @@ function initIframeEl(iframeRef: HTMLIFrameElement) {
   if (!iframeDocument) {
     return;
   }
-  let cssText = `
+  const cssText = `
     ::-webkit-scrollbar-track-piece {
       background-color: transparent;
     }
@@ -569,7 +569,7 @@ function downloadClk() {
   if (!modelValue) {
     return;
   }
-  let ids = modelValue.split(",").filter((x) => x);
+  const ids = modelValue.split(",").filter((x) => x);
   const id = ids[nowIndex];
   const url = `${ baseURL }/api/oss/download/?inline=0&id=${ encodeURIComponent(id) }`;
   window.location.href = url;
@@ -586,7 +586,7 @@ function printClk() {
   }
 }
 
-let fileRef: HTMLInputElement|undefined = $ref(undefined);
+const fileRef = $ref<HTMLInputElement>();
 
 async function inputChg() {
   if (!fileRef) return;

@@ -1,4 +1,3 @@
-import cfg from "@/utils/config";
 
 import {
   UniqueType,
@@ -28,7 +27,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: MenuInput,
 ) {
   const input: MenuInput = {
     // ID
@@ -447,6 +446,7 @@ export function useMenuTreeFilter(_value: string, model: MenuModel): boolean {
   if (!route_path) {
     return false;
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isPermit = (menuDataPermit as any)[route_path];
   return isPermit;
 }

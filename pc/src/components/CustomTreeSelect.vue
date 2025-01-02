@@ -1,6 +1,7 @@
 <template>
 <el-tree-select
   v-if="readonly !== true"
+  v-model="modelValue"
   filterable
   collapse-tags
   collapse-tags-tooltip
@@ -22,17 +23,16 @@
   un-w="full"
   v-bind="$attrs"
   :loading="!inited"
-  v-model="modelValue"
+  :clearable="!props.disabled"
   @keyup.enter.stop
   @clear="onClear"
   @change="onChange"
   @check-change="onCheck"
-  :clearable="!props.disabled"
   @node-click="onNodeClick"
   @keydown.ctrl.c.stop="copyModelLabel"
 >
   <template
-    v-for="(item, key, index) in $slots"
+    v-for="(key, index) in keys"
     :key="index"
     #[key]
   >
@@ -100,15 +100,22 @@ import {
   copyText,
 } from "@/utils/common";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const keys = Object.keys(slots);
+
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", value: any[]): void;
   (e: "update:modelValue", value?: string | string[] | null): void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any | any[] | null): void;
   (e: "clear"): void;
 }>();
 
 const props = withDefaults(
   defineProps<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     method: () => Promise<any[]>; // 用于获取数据的方法
     height?: number;
     modelValue?: string | string[] | null;
@@ -147,10 +154,9 @@ function copyModelLabel() {
   ElMessage.success(`${ text } 复制成功!`);
 }
 
-const usrStore = useUsrStore();
-
 let inited = $ref(false);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let data = $ref<any[]>([ ]);
 
 let modelValue = $ref(props.modelValue);
@@ -184,8 +190,8 @@ const modelLabels: string[] = $computed(() => {
     }
     return [ label(data, model) || "" ];
   }
-  let models: string[] = [ ];
-  let modelValues = (modelValue || [ ]) as string[];
+  const models: string[] = [ ];
+  const modelValues = (modelValue || [ ]) as string[];
   for (const id of modelValues) {
     const model = findModelById(data, id);
     if (!model) {
@@ -245,6 +251,7 @@ function getModelsByValue() {
     return findModelById(data, modelValue as string);
   }
   const modelValues = (modelValue || [ ]) as string[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const models: any[] = [ ];
   for (const id of modelValues) {
     const model = findModelById(data, id);
@@ -255,7 +262,9 @@ function getModelsByValue() {
   return models;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function onNodeClick(data: any, node: TreeNode) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let disabled = props.props.disabled as any;
   if (disabled instanceof Function) {
     disabled = disabled(data);
@@ -264,6 +273,7 @@ function onNodeClick(data: any, node: TreeNode) {
     return;
   }
   if (props.multiple) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const modelValueArr: any = Array.isArray(modelValue) ? modelValue : [ modelValue ];
     if (modelValueArr.includes(data.id)) {
       modelValue = modelValueArr.filter((id: string) => id !== data.id);
@@ -312,8 +322,6 @@ async function refreshEfc() {
 if (props.init) {
   refreshEfc();
 }
-
-usrStore.onLogin(refreshEfc);
 
 defineExpose({
   refresh: refreshEfc,

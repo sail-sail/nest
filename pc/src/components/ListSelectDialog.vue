@@ -1,5 +1,6 @@
 <template>
 <el-dialog
+  ref="dialogRef"
   v-model="dialogVisible"
   :fullscreen="fullscreen"
   append-to-body
@@ -12,7 +13,6 @@
   }"
   top="0"
   :before-close="beforeClose"
-  ref="dialogRef"
 >
   <template #header>
     <div
@@ -44,12 +44,12 @@
       <slot
         v-bind="$attrs"
         :selected-ids="oldSelectedIds"
+        :is-locked="isLocked ? '1' : '0'"
+        is-list-select-dialog="1"
         @selected-ids-chg="selectedIdsChg"
         @before-search-reset="onRevert"
         @row-enter="onRowEnter"
         @row-dblclick="onRowDblclick"
-        :is-locked="isLocked ? '1' : '0'"
-        is-list-select-dialog="1"
       ></slot>
     </div>
     <div
@@ -103,11 +103,14 @@ const {
   ns,
 } = useI18n("/base/usr");
 
-let { fullscreen, setFullscreen } = $(useFullscreenEfc());
+const {
+  fullscreen,
+  setFullscreen,
+} = $(useFullscreenEfc());
 
 let inited = $ref(false);
 
-let dialogRef = $ref<InstanceType<typeof ElDialog>>();
+const dialogRef = $ref<InstanceType<typeof ElDialog>>();
 
 export type CustomDialogType = "auto" | "medium" | "large" | "default";
 
@@ -119,7 +122,7 @@ let dialogType = $ref<CustomDialogType>("default");
 let selectedIds = $ref<string[] | undefined>([ ]);
 let oldSelectedIds = $ref<string[] | undefined>([ ]);
 
-let isLocked = $computed(() => {
+const isLocked = $computed(() => {
   return argIsLocked || props.isLocked || false;
 });
 
@@ -127,6 +130,7 @@ let argIsLocked = $ref<boolean>();
 
 type OnCloseResolveType = {
   action: typeof dialogAction;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   selectedIds?: any[];
 };
 
@@ -138,6 +142,7 @@ async function showDialog(
     type?: typeof dialogType;
     title?: string;
     action?: "select";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     selectedIds: any[];
     isLocked?: boolean;
   },
@@ -211,6 +216,7 @@ async function onRowEnter(e?: KeyboardEvent) {
   await onSave();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function onRowDblclick(row: { id: any }) {
   selectedIds = [ row.id ];
   await onSave();

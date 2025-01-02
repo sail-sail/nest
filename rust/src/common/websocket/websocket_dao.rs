@@ -9,9 +9,9 @@ use crate::common::context::get_req_id;
 
 use super::websocket_constants::{
   Callback,
-  CALLBACKS_MAP,
-  SOCKET_SINK_MAP,
-  CLIENT_ID_TOPICS_MAP,
+  callbacks_map,
+  socket_sink_map,
+  client_id_topics_map,
 };
 
 /// 订阅主题topic
@@ -24,7 +24,7 @@ pub async fn subscribe(
     error!("websocket.dao.subscribe {} topic is empty", get_req_id());
     return;
   }
-  let mut callbacks_map = CALLBACKS_MAP.write().await;
+  let mut callbacks_map = callbacks_map().write().await;
   let callbacks =  callbacks_map.get_mut(topic.as_str());
   if callbacks.is_none() {
     callbacks_map.insert(topic, vec![callback]);
@@ -45,7 +45,7 @@ pub async fn publish(
     return;
   }
   
-  let callbacks_map = CALLBACKS_MAP.read().await;
+  let callbacks_map = callbacks_map().read().await;
   let callbacks =  callbacks_map.get(topic.as_str());
   if let Some(callbacks) = callbacks {
     for callback in callbacks {
@@ -53,7 +53,7 @@ pub async fn publish(
     }
   }
   
-  let client_id_topics_map = CLIENT_ID_TOPICS_MAP.read().await;
+  let client_id_topics_map = client_id_topics_map().read().await;
   
   let mut client_ids = vec![];
   for (client_id2, topics) in client_id_topics_map.iter() {
@@ -64,7 +64,7 @@ pub async fn publish(
   drop(client_id_topics_map);
   
   let socket_sink_map = {
-    let socket_sink_map = SOCKET_SINK_MAP.lock().await;
+    let socket_sink_map = socket_sink_map().lock().await;
     socket_sink_map.clone()
   };
   
@@ -99,7 +99,7 @@ pub async fn un_subscribe(
     error!("websocket.dao.unsubscribe {} topic is empty", get_req_id());
     return;
   }
-  let mut callbacks_map = CALLBACKS_MAP.write().await;
+  let mut callbacks_map = callbacks_map().write().await;
   let callbacks =  callbacks_map.get_mut(topic);
   if callbacks.is_none() {
     return;
@@ -114,6 +114,6 @@ pub async fn un_subscribe(
 /// 关闭客户端
 #[allow(dead_code)]
 pub async fn close_client() {
-  let mut callbacks_map = CALLBACKS_MAP.write().await;
+  let mut callbacks_map = callbacks_map().write().await;
   callbacks_map.clear();
 }

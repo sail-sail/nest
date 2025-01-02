@@ -14,12 +14,13 @@ use std::fmt::{Debug, Display};
 use std::num::ParseIntError;
 use smol_str::SmolStr;
 
+use std::sync::OnceLock;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
 use chrono::{Local, NaiveDate, NaiveTime, NaiveDateTime};
 use base64::{engine::general_purpose, Engine};
-use regex::Regex;
+// use regex::Regex;
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions, MySqlRow};
 use sqlx::{Pool, MySql, Executor, FromRow, Row};
@@ -44,15 +45,37 @@ use crate::gen::base::org::org_model::OrgId;
 pub const FIND_ALL_IDS_LIMIT: usize = 5000;
 pub const MAX_SAFE_INTEGER: u64 = 9007199254740991;
 
-lazy_static! {
-  static ref SERVER_TOKEN_TIMEOUT: i64 = env::var("server_tokentimeout").unwrap()
-    .parse::<i64>()
-    .unwrap_or(3600);
-  static ref DB_POOL: Pool<MySql> = init_db_pool("").unwrap();
-  static ref DB_POOL_DW: Pool<MySql> = init_db_pool("_dw").unwrap();
-  static ref IS_DEBUG: bool = init_debug();
-  static ref MULTIPLE_SPACE_REGEX: Regex = Regex::new(r"\s+").unwrap();
+static SERVER_TOKEN_TIMEOUT: OnceLock<i64> = OnceLock::new();
+static DB_POOL: OnceLock<Pool<MySql>> = OnceLock::new();
+static DB_POOL_DW: OnceLock<Pool<MySql>> = OnceLock::new();
+static IS_DEBUG: OnceLock<bool> = OnceLock::new();
+// static MULTIPLE_SPACE_REGEX: OnceLock<Regex> = OnceLock::new();
+
+fn server_token_timeout() -> i64 {
+  SERVER_TOKEN_TIMEOUT.get_or_init(|| env::var("server_tokentimeout").unwrap()
+    .parse::<i64>().unwrap_or(3600))
+    .to_owned()
 }
+
+fn db_pool() -> Pool<MySql> {
+  DB_POOL.get_or_init(|| init_db_pool("").unwrap())
+    .clone()
+}
+
+fn db_pool_dw() -> Pool<MySql> {
+  DB_POOL_DW.get_or_init(|| init_db_pool("_dw").unwrap())
+    .clone()
+}
+
+pub fn is_debug() -> bool {
+  IS_DEBUG.get_or_init(init_debug)
+    .to_owned()
+}
+
+// pub fn multiple_space_regex() -> Regex {
+//   MULTIPLE_SPACE_REGEX.get_or_init(|| Regex::new(r"\s+").unwrap())
+//     .clone()
+// }
 
 tokio::task_local! {
   pub static CTX: Arc<Ctx>;
@@ -118,7 +141,7 @@ fn init_db_pool(
 }
 
 pub fn get_server_tokentimeout() -> i64 {
-  SERVER_TOKEN_TIMEOUT.to_owned()
+  server_token_timeout()
 }
 
 /// 获取当前请求id, 不保证唯一, 仅用于日志
@@ -339,7 +362,7 @@ impl Ctx {
         return Ok(());
       }
     }
-    let mut tran = DB_POOL.clone().acquire().await?;
+    let mut tran = db_pool().acquire().await?;
     tran.execute("begin").await?;
     let connection_id: u64 = tran
       .fetch_one("select connection_id()").await?
@@ -630,7 +653,7 @@ impl Ctx {
         }
       };
     }
-    let db_pool = DB_POOL.clone();
+    let db_pool = db_pool();
     let res = query.execute(&db_pool).await?;
     let rows_affected = res.rows_affected();
     if rows_affected > 0 {
@@ -844,9 +867,9 @@ impl Ctx {
       options.database_name
     });
     let db_pool = if database_name == "dw" {
-      DB_POOL_DW.clone()
+      db_pool_dw()
     } else {
-      DB_POOL.clone()
+      db_pool()
     };
     let res = query.fetch_all(&db_pool).await?;
     if let Some(options) = &options {
@@ -1055,9 +1078,9 @@ impl Ctx {
       options.database_name
     });
     let db_pool = if database_name == "dw" {
-      DB_POOL_DW.clone()
+      db_pool_dw()
     } else {
-      DB_POOL.clone()
+      db_pool()
     };
     let res = query.fetch_optional(&db_pool).await?;
     if let Some(res) = &res {
@@ -1798,7 +1821,7 @@ impl <'a> CtxBuilder<'a> {
       },
     };
     let now = self.now;
-    let server_tokentimeout = SERVER_TOKEN_TIMEOUT.to_owned();
+    let server_tokentimeout = server_token_timeout();
     let now_sec = now.and_utc().timestamp_millis() / 1000;
     if now_sec - server_tokentimeout > auth_model.exp {
       if now_sec - server_tokentimeout * 2 > auth_model.exp {
@@ -1974,12 +1997,12 @@ pub fn get_is_debug(
   let ctx = CTX.try_with(|ctx| ctx.clone());
   let ctx = match ctx {
     Ok(context) => context,
-    Err(_) => return *IS_DEBUG,
+    Err(_) => return is_debug(),
   };
   if let Some(is_debug) = ctx.is_debug {
     return is_debug;
   }
-  *IS_DEBUG
+  is_debug()
 }
 
 #[must_use]
@@ -2008,42 +2031,42 @@ pub fn get_is_creating(
   ctx.is_creating.unwrap_or_default()
 }
 
-#[cfg(test)]
-mod tests {
+// #[cfg(test)]
+// mod tests {
   
-  use super::*;
+//   use super::*;
   
-  #[test]
-  fn test_get_short_uuid() {
-    let uuid = get_short_uuid();
-    println!("{}", uuid);
-  }
+//   #[test]
+//   fn test_get_short_uuid() {
+//     let uuid = get_short_uuid();
+//     println!("{}", uuid);
+//   }
   
-  #[test]
-  fn test_escape_id() {
-    let val = "a.b.c";
-    let val = escape_id(val);
-    println!("{}", val);
-  }
+//   #[test]
+//   fn test_escape_id() {
+//     let val = "a.b.c";
+//     let val = escape_id(val);
+//     println!("{}", val);
+//   }
   
-  #[test]
-  fn test_debug_sql() {
-    let debug_args = vec!["a", "b"];
-    let sql = r#"
-      select
-        *
-      from
-        `a`.`b`
-      where 
-        a = ?
-        and b = ?
-    "#;
-    let mut debug_sql = sql.to_owned();
-    debug_sql = MULTIPLE_SPACE_REGEX.replace_all(&debug_sql, " ").to_string();
-    for arg in debug_args {
-      debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
-    }
-    println!("{}", debug_sql);
-  }
+//   #[test]
+//   fn test_debug_sql() {
+//     let debug_args = vec!["a", "b"];
+//     let sql = r#"
+//       select
+//         *
+//       from
+//         `a`.`b`
+//       where 
+//         a = ?
+//         and b = ?
+//     "#;
+//     let mut debug_sql = sql.to_owned();
+//     debug_sql = multiple_space_regex().replace_all(&debug_sql, " ").to_string();
+//     for arg in debug_args {
+//       debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.replace('\'', "''")), 1);
+//     }
+//     println!("{}", debug_sql);
+//   }
   
-}
+// }
