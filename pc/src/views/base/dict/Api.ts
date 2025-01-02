@@ -1,4 +1,3 @@
-import cfg from "@/utils/config";
 
 import {
   UniqueType,
