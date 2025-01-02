@@ -1,4 +1,4 @@
-import cfg from "@/utils/config";
+
 
 import type {
   Query,
@@ -20,7 +20,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: CronJobLogDetailInput,
 ) {
   const input: CronJobLogDetailInput = {
     // ID

@@ -1,4 +1,4 @@
-import cfg from "@/utils/config";
+
 
 import {
   CronJobLogExecState,
@@ -24,7 +24,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: CronJobLogInput,
 ) {
   const input: CronJobLogInput = {
     // ID

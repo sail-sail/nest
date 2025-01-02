@@ -83,14 +83,14 @@ let inited = $ref(false);
 
 let dialogAction = $ref<"list">("list");
 
-let dialogModel = $ref<{
+const dialogModel = $ref<{
   id?: CronJobLogId,
-  is_deleted?: number | null,
+  is_deleted?: 0 | 1,
 }>({ });
 
 let tabGroup = $ref("");
 
-let tabName = $ref<string>();
+const tabName = $ref<string>();
 
 let cron_job_log_detail_total = $ref<number>();
 
@@ -123,7 +123,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-let customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
 
 /** 打开对话框 */
 async function showDialog(
@@ -132,7 +132,7 @@ async function showDialog(
     tabGroup: string;
     model?: {
       id?: CronJobLogId;
-      is_deleted?: number | null;
+      is_deleted?: 0 | 1;
     };
     action?: typeof dialogAction;
   },

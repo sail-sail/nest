@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   JobInput as JobInputType,
   JobModel as JobModelType,
@@ -16,6 +17,7 @@ declare global {
   }
 
   interface JobSearch extends JobSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface JobFieldComment extends JobFieldCommentType {

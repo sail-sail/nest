@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   CronJobInput as CronJobInputType,
   CronJobModel as CronJobModelType,
@@ -14,6 +15,7 @@ declare global {
   }
 
   interface CronJobSearch extends CronJobSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface CronJobFieldComment extends CronJobFieldCommentType {
