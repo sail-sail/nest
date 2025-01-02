@@ -173,15 +173,18 @@ export function useSelect<T = any, Id = string>(
     },
   );
   
-  function getRowKey() {
+  function getRowKey(row?: T) {
     const rowKey = tableRef.value?.rowKey;
     if (!rowKey) {
-      return;
+      return "";
     }
     if (typeof rowKey === "string") {
       return rowKey;
     }
-    throw new Error("暂不支持 function 类型的 rowKey");
+    if (typeof rowKey === "function") {
+      return rowKey(row);
+    }
+    return "";
   }
   
   /** 当前多行选中的数据 */
@@ -192,14 +195,12 @@ export function useSelect<T = any, Id = string>(
     if (!tableRef.value || !tableRef.value.data) {
       return;
     }
-    const rowKey = getRowKey();
-    if (!rowKey) {
-      return;
-    }
-    const newSelectList: any[] = [ ];
-    const select2falseList: any[] = [ ];
+    
+    const newSelectList: T[] = [ ];
+    const select2falseList: T[] = [ ];
     for (let i = 0; i < tableRef.value.data.length; i++) {
       const item = tableRef.value.data[i];
+      const rowKey = getRowKey(item);
       if (selectedIds.includes(item[rowKey])) {
         newSelectList.push(item);
       } else if (prevSelectedIds.includes(item[rowKey])) {
@@ -251,10 +252,7 @@ export function useSelect<T = any, Id = string>(
    * 多行或单行勾选
    */
   function onSelect(list: T[], row?: T) {
-    const rowKey = getRowKey();
-    if (!rowKey) {
-      return;
-    }
+    const rowKey = getRowKey(row);
     let multiple = true;
     if (opts?.multiple === false) {
       multiple = false;
