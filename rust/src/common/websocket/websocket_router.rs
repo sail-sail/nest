@@ -12,9 +12,11 @@ use serde_json::json;
 use tracing::error;
 use tokio::sync::Mutex;
 
-use super::websocket_constants::SOCKET_SINK_MAP;
-use super::websocket_constants::CLIENT_ID_TOPICS_MAP;
-use super::websocket_constants::CALLBACKS_MAP;
+use super::websocket_constants::{
+  callbacks_map,
+  socket_sink_map,
+  client_id_topics_map,
+};
 
 const PWD: &str = "0YSCBr1QQSOpOfi6GgH34A";
 
@@ -62,7 +64,7 @@ pub async fn ws_upgrade(
       ) = socket.split();
       
       {
-        let mut socket_sink_map = SOCKET_SINK_MAP.lock().await;
+        let mut socket_sink_map = socket_sink_map().lock().await;
         let mut socket_olds = socket_sink_map.get(&client_id).cloned();
         if socket_olds.is_none() {
           socket_olds = Some(Arc::new(Mutex::new(vec![])));
@@ -83,7 +85,7 @@ pub async fn ws_upgrade(
               continue;
             }
             if text == "ping" {
-              let mut socket_sink_map = SOCKET_SINK_MAP.lock().await;
+              let mut socket_sink_map = socket_sink_map().lock().await;
               let sockets = socket_sink_map.get(&client_id).cloned();
               if let Some(sockets) = sockets {
                 let mut sockets = sockets.lock().await;
@@ -127,7 +129,7 @@ pub async fn ws_upgrade(
               if topics.is_empty() {
                 continue;
               }
-              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
+              let mut client_id_topics_map = client_id_topics_map().write().await;
               let old_topics = client_id_topics_map.get(&client_id).cloned();
               if old_topics.is_none() {
                 client_id_topics_map.insert(client_id.clone(), vec![]);
@@ -159,7 +161,7 @@ pub async fn ws_upgrade(
               }
               let payload = data.get("payload");
               {
-                let callbacks_map = CALLBACKS_MAP.read().await;
+                let callbacks_map = callbacks_map().read().await;
                 let callbacks = callbacks_map.get(&topic);
                 if let Some(callbacks) = callbacks {
                   for callback in callbacks {
@@ -168,7 +170,7 @@ pub async fn ws_upgrade(
                 }
               }
               
-              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
+              let mut client_id_topics_map = client_id_topics_map().write().await;
               let mut client_ids = vec![];
               for (client_id2, topics) in client_id_topics_map.iter() {
                 // if client_id2 == &client_id {
@@ -190,7 +192,7 @@ pub async fn ws_upgrade(
               let data_str = data_str.unwrap();
               
               let socket_sink_map = {
-                let socket_sink_map = SOCKET_SINK_MAP.lock().await;
+                let socket_sink_map = socket_sink_map().lock().await;
                 socket_sink_map.clone()
               };
               for client_id in client_ids {
@@ -220,7 +222,7 @@ pub async fn ws_upgrade(
               if topics.is_empty() {
                 continue;
               }
-              let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
+              let mut client_id_topics_map = client_id_topics_map().write().await;
               let old_topics = client_id_topics_map.get(&client_id).cloned();
               if old_topics.is_none() {
                 continue;
@@ -238,7 +240,7 @@ pub async fn ws_upgrade(
           Ok(Message::Binary(_)) => { }
           Ok(Message::Ping(_)) => {
             let sockets = {
-              let socket_sink_map = SOCKET_SINK_MAP.lock().await;
+              let socket_sink_map = socket_sink_map().lock().await;
               socket_sink_map.get(&client_id).cloned()
             };
             if let Some(sockets) = sockets {
@@ -252,7 +254,7 @@ pub async fn ws_upgrade(
           }
           Ok(Message::Pong(_)) => { }
           Ok(Message::Close(_)) => {
-            let mut socket_sink_map = SOCKET_SINK_MAP.lock().await;
+            let mut socket_sink_map = socket_sink_map().lock().await;
             let socket_ref = socket_sink_map.remove(&client_id);
             if let Some(socket_ref) = socket_ref {
               let mut socket_ref = socket_ref.lock().await;
@@ -261,12 +263,12 @@ pub async fn ws_upgrade(
                 error!("socket_ref.close error: {}", e);
               }
             }
-            let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
+            let mut client_id_topics_map = client_id_topics_map().write().await;
             client_id_topics_map.remove(&client_id);
           }
           Err(e) => {
             error!("websocket error: {}", e);
-            let mut socket_sink_map = SOCKET_SINK_MAP.lock().await;
+            let mut socket_sink_map = socket_sink_map().lock().await;
             let socket_ref = socket_sink_map.remove(&client_id);
             if let Some(socket_ref) = socket_ref {
               let mut socket_ref = socket_ref.lock().await;
@@ -275,7 +277,7 @@ pub async fn ws_upgrade(
                 error!("socket_ref.close error: {}", e);
               }
             }
-            let mut client_id_topics_map = CLIENT_ID_TOPICS_MAP.write().await;
+            let mut client_id_topics_map = client_id_topics_map().write().await;
             client_id_topics_map.remove(&client_id);
           }
         }

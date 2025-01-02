@@ -5,6 +5,8 @@ use std::ops::Deref;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
 
 use anyhow::{Result,anyhow};
@@ -35,12 +37,14 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::menu::menu_model::MenuId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-lazy_static! {
-  /// 数据权限 前端允许排序的字段
-  static ref CAN_SORT_IN_API_DATA_PERMIT: [&'static str; 2] = [
+static CAN_SORT_IN_API_DATA_PERMIT: OnceLock<[&'static str; 2]> = OnceLock::new();
+
+/// 数据权限 前端允许排序的字段
+fn get_can_sort_in_api_data_permit() -> &'static [&'static str; 2] {
+  CAN_SORT_IN_API_DATA_PERMIT.get_or_init(|| [
     "create_time",
     "update_time",
-  ];
+  ])
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -800,12 +804,14 @@ pub fn check_sort_data_permit(
   }
   let sort = sort.unwrap();
   
+  let get_can_sort_in_api_data_permit = get_can_sort_in_api_data_permit();
+  
   for item in sort {
     let prop = item.prop.as_str();
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_DATA_PERMIT.contains(&prop) {
+    if !get_can_sort_in_api_data_permit.contains(&prop) {
       return Err(anyhow!("check_sort_data_permit: {}", serde_json::to_string(item)?));
     }
   }

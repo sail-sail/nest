@@ -2,7 +2,7 @@ import { defineGraphql } from "/lib/context.ts";
 
 import * as usrResolver from "./usr.resolver.ts";
 
-defineGraphql(usrResolver, /* GraphQL */`
+defineGraphql(usrResolver, /* GraphQL */ `
 
   type GetLoginInfoOrgIdModels {
     id: OrgId!

@@ -1,4 +1,3 @@
-import cfg from "@/utils/config";
 
 import {
   UniqueType,
@@ -28,7 +27,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: RoleInput,
 ) {
   const input: RoleInput = {
     // ID

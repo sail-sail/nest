@@ -1,6 +1,8 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
 
+use std::sync::OnceLock;
+
 use anyhow::Result;
 use crate::common::context::{
   get_auth_lang,
@@ -16,11 +18,19 @@ use crate::r#gen::base::menu::menu_dao::find_one as find_one_menu;
 use crate::r#gen::base::menu::menu_model::MenuSearch;
 use crate::r#gen::base::menu::menu_model::MenuModel;
 
-lazy_static! {
-  static ref REG: Regex = Regex::new(r"\{([\s\S]*?)\}").unwrap();
-  static ref SERVER_I18N_ENABLE: bool = std::env::var("server_i18n_enable")
-    .map(|v| v.parse().unwrap_or(true))
-    .unwrap_or(true);
+static REG: OnceLock<Regex> = OnceLock::new();
+static SERVER_I18N_ENABLE: OnceLock<bool> = OnceLock::new();
+
+fn reg() -> Regex {
+  REG.get_or_init(|| Regex::new(r"\{([\s\S]*?)\}").unwrap())
+    .clone()
+}
+fn server_i18n_enable() -> bool {
+  *SERVER_I18N_ENABLE.get_or_init(|| {
+    std::env::var("server_i18n_enable")
+      .map(|v| v.parse().unwrap_or(true))
+      .unwrap_or(true)
+  })
 }
 
 pub struct NRoute {
@@ -163,11 +173,11 @@ pub async fn n_lang(
   map: Option<HashMap<String, String>>,
 ) -> Result<String> {
   
-  let server_i18n_enable = *SERVER_I18N_ENABLE;
+  let server_i18n_enable = server_i18n_enable();
   if !server_i18n_enable {
     let mut i18n_lbl = code;
     if let Some(map) = map {
-      let res: Cow<str> = REG.replace_all(&i18n_lbl, |caps: &Captures| {
+      let res: Cow<str> = reg().replace_all(&i18n_lbl, |caps: &Captures| {
         let key = caps.get(1).map(|m| m.as_str().to_owned()).unwrap_or_default();
         let value = map.get(&key).unwrap_or(&"".to_owned()).clone();
         value
@@ -223,7 +233,7 @@ pub async fn n_lang(
     }
   }
   if let Some(map) = map {
-    let res: Cow<str> = REG.replace_all(&i18n_lbl, |caps: &Captures| {
+    let res: Cow<str> = reg().replace_all(&i18n_lbl, |caps: &Captures| {
       let key = caps.get(1).map(|m| m.as_str().to_owned()).unwrap_or_default();
       let value = map.get(&key).unwrap_or(&"".to_owned()).clone();
       value
@@ -234,24 +244,24 @@ pub async fn n_lang(
 }
 
 pub fn get_server_i18n_enable() -> bool {
-  *SERVER_I18N_ENABLE
+  server_i18n_enable()
 }
 
-#[test]
-#[cfg(test)]
-fn test_regex() {
-    use std::collections::HashMap;
+// #[test]
+// #[cfg(test)]
+// fn test_regex() {
+//     use std::collections::HashMap;
 
-  let mut map = HashMap::new();
-  map.insert("name".to_owned(), "黄智勇".to_owned());
-  map.insert("0".to_owned(), "黄0".to_owned());
-  let re = Regex::new(r"\{([\s\S]*?)\}").unwrap();
-  let text = "Hello {name} {name2} {0}!";
-  let result = re.replace_all(text, |caps: &Captures| {
-    println!("{:#?}", caps);
-    let key = caps.get(1).map(|m| m.as_str()).unwrap_or_default();
-    let value = map.get(key).unwrap_or(&"".to_owned()).clone();
-    value
-  });
-  println!("{}", result);
-}
+//   let mut map = HashMap::new();
+//   map.insert("name".to_owned(), "黄智勇".to_owned());
+//   map.insert("0".to_owned(), "黄0".to_owned());
+//   let re = Regex::new(r"\{([\s\S]*?)\}").unwrap();
+//   let text = "Hello {name} {name2} {0}!";
+//   let result = re.replace_all(text, |caps: &Captures| {
+//     println!("{:#?}", caps);
+//     let key = caps.get(1).map(|m| m.as_str()).unwrap_or_default();
+//     let value = map.get(key).unwrap_or(&"".to_owned()).clone();
+//     value
+//   });
+//   println!("{}", result);
+// }

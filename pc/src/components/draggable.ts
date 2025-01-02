@@ -17,8 +17,8 @@ function getParentEl(el: HTMLElement, clazz: string) {
 }
 
 function updatedFn(el: HTMLElement, binding: DirectiveBinding) {
-  let targetRef: Ref<HTMLElement | undefined> = ref();
-  let dragRef: Ref<HTMLElement | undefined> = ref();
+  const targetRef: Ref<HTMLElement | undefined> = ref();
+  const dragRef: Ref<HTMLElement | undefined> = ref();
   let isDraggable0 = false;
   if (binding.value === false) {
     isDraggable0 = false;

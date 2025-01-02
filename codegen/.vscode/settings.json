@@ -18,7 +18,8 @@
     "**/node_modules/**": true,
     "**/__unconfig_vite.config.ts": true,
     "**/.npmrc": true,
-    "cache": true
+    "cache": true,
+    "**/.husky": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -39,7 +40,8 @@
     "**/node_modules/**": true,
     "**/__unconfig_vite.config.ts": true,
     "**/.npmrc": true,
-    "cache": true
+    "cache": true,
+    "**/.husky": true
   },
   "git.timeline.showUncommitted": true,
   "scm.showHistoryGraph": false,

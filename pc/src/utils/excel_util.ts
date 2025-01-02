@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import saveAs from "file-saver";
 
 import dayjs from "dayjs";

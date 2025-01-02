@@ -53,6 +53,7 @@
         </div>
         <input
           v-show="menuStore.search || menuSearchForcused"
+          ref="menuSearchInputRef"
           v-model="menuStore.search"
           un-w="full"
           un-h="full"
@@ -66,9 +67,8 @@
           un-pos-absolute
           un-left="0"
           un-top="0"
-          @blur="menuSearchBlur"
-          ref="menuSearchInputRef"
           un-box-border
+          @blur="menuSearchBlur"
         />
         <el-icon
           v-show="menuStore.search"
@@ -155,7 +155,7 @@ const {
 let inited = $ref(false);
 
 let menuSearchForcused = $ref(false);
-let menuSearchInputRef = $ref<HTMLInputElement>();
+const menuSearchInputRef = $ref<HTMLInputElement>();
 
 function menuSearchClk() {
   menuSearchForcused = true;
@@ -223,6 +223,7 @@ async function menuSelect(id: MenuId) {
       query,
     });
     if (hasTab) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const comp = route.matched[1].instances?.default as any;
       await comp?.refresh?.();
     }
@@ -248,8 +249,6 @@ async function initFrame() {
   }
 }
 
-usrStore.onLogin(initFrame);
-
 initFrame();
 </script>
 
@@ -261,7 +260,7 @@ initFrame();
   :deep(.el-menu-item.is-active) {
     background-color: var(--el-menu-hover-bg-color);
   }
-  :deep(.el-sub-menu.is-active .el-sub-menu__title) {
+  :deep(.el-sub-menu.is-active>.el-sub-menu__title) {
     color: var(--el-color-primary);
   }
   :deep(.el-menu-item.is-active:after) {

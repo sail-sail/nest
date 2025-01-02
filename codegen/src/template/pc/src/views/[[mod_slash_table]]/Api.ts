@@ -62,10 +62,45 @@ for (let i = 0; i < columns.length; i++) {
   }
   hasDecimal = true;
 }
-#>import cfg from "@/utils/config";<#
+#><#
+let hasUsrStore = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (
+    [
+      "id",
+      "is_default",
+      "is_deleted",
+      "tenant_id",
+    ].includes(column_name)
+  ) {
+    continue;
+  }
+  if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
+  let defaultValue = column.COLUMN_DEFAULT.toString();
+  if (
+    [
+      "CURRENT_USR_ID",
+      "CURRENT_ORG_ID",
+      "CURRENT_TENANT_ID",
+      "CURRENT_USERNAME",
+    ].includes(defaultValue)
+  ) {
+    hasUsrStore = true;
+    break;
+  }
+}
+#><#
+if (hasUsrStore) {
+#>import cfg from "@/utils/config";
+<#
+}
+#><#
 if (opts.noAdd !== true || opts.noEdit !== true) {
 #>
-
 import {
   UniqueType,
 } from "#/types";<#
@@ -425,7 +460,7 @@ async function setLblById(
 }
 
 export function intoInput(
-  model?: Record<string, any>,
+  model?: <#=inputName#>,
 ) {
   const input: <#=inputName#> = {<#
     for (let i = 0; i < columns.length; i++) {
@@ -1204,6 +1239,7 @@ export function useMenuTreeFilter(_value: string, model: MenuModel): boolean {
   if (!route_path) {
     return false;
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isPermit = (menuDataPermit as any)[route_path];
   return isPermit;
 }<#
@@ -1940,37 +1976,6 @@ export function getPagePath() {
 
 /** 新增时的默认值 */
 export async function getDefaultInput() {<#
-  let hasUsrStore = false;
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
-    if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
-    const column_name = column.COLUMN_NAME;
-    if (
-      [
-        "id",
-        "is_default",
-        "is_deleted",
-        "tenant_id",
-      ].includes(column_name)
-    ) {
-      continue;
-    }
-    if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
-    let defaultValue = column.COLUMN_DEFAULT.toString();
-    if (
-      [
-        "CURRENT_USR_ID",
-        "CURRENT_ORG_ID",
-        "CURRENT_TENANT_ID",
-        "CURRENT_USERNAME",
-      ].includes(defaultValue)
-    ) {
-      hasUsrStore = true;
-      break;
-    }
-  }
-  #><#
   if (hasUsrStore) {
   #>
   const usrStore = useUsrStore(cfg.pinia);<#

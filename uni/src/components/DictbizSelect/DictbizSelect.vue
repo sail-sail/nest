@@ -19,6 +19,7 @@ import {
 
 const emit = defineEmits<{
   (e: "data", data: GetDictbiz[]): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value: any): void,
 }>();
 

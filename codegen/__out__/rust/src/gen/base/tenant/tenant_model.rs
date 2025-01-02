@@ -5,6 +5,8 @@ use std::ops::Deref;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
 
 use anyhow::{Result,anyhow};
@@ -35,13 +37,15 @@ use crate::r#gen::base::menu::menu_model::MenuId;
 use crate::r#gen::base::lang::lang_model::LangId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-lazy_static! {
-  /// 租户 前端允许排序的字段
-  static ref CAN_SORT_IN_API_TENANT: [&'static str; 3] = [
+static CAN_SORT_IN_API_TENANT: OnceLock<[&'static str; 3]> = OnceLock::new();
+
+/// 租户 前端允许排序的字段
+fn get_can_sort_in_api_tenant() -> &'static [&'static str; 3] {
+  CAN_SORT_IN_API_TENANT.get_or_init(|| [
     "order_by",
     "create_time",
     "update_time",
-  ];
+  ])
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -793,12 +797,14 @@ pub fn check_sort_tenant(
   }
   let sort = sort.unwrap();
   
+  let get_can_sort_in_api_tenant = get_can_sort_in_api_tenant();
+  
   for item in sort {
     let prop = item.prop.as_str();
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_TENANT.contains(&prop) {
+    if !get_can_sort_in_api_tenant.contains(&prop) {
       return Err(anyhow!("check_sort_tenant: {}", serde_json::to_string(item)?));
     }
   }

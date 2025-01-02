@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   RoleInput as RoleInputType,
   RoleModel as RoleModelType,
@@ -8,6 +9,7 @@ import type {
 declare global {
   
   interface RoleModel extends RoleModelType {
+    home_url_lbl: string;
   }
 
   interface RoleInput extends RoleInputType {
@@ -16,6 +18,7 @@ declare global {
   }
 
   interface RoleSearch extends RoleSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface RoleFieldComment extends RoleFieldCommentType {

@@ -72,7 +72,7 @@ const props = withDefaults(
   },
 );
 
-let dropdownRef = $ref<InstanceType<typeof ElDropdown>>();
+const dropdownRef = $ref<InstanceType<typeof ElDropdown>>();
 
 function handleCommand(command: { action: "reset"|"item", item?: ColumnType }) {
   const action = command.action;
@@ -82,7 +82,7 @@ function handleCommand(command: { action: "reset"|"item", item?: ColumnType }) {
     }
     emit("resetColumns");
   } else {
-    let tableColumns = [ ...props.tableColumns ];
+    const tableColumns = [ ...props.tableColumns ];
     const item = command.item;
     if (!item) {
       return;

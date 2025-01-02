@@ -57,8 +57,8 @@ onDeactivated(function() {
   }
 });
 
-let urlPath = $ref("");
-let iframeRef = $ref<HTMLIFrameElement>();
+const urlPath = $ref("");
+const iframeRef = $ref<HTMLIFrameElement>();
 
 function iframeLoad() {
   try {
@@ -99,7 +99,7 @@ function initIframeEl() {
   `);
 }
 
-let src = $computed(() => {
+const src = $computed(() => {
   return route.query.src ? (route.query.src as string).replace("$", "#") : urlPath;
 });
 </script>

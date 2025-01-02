@@ -5,6 +5,8 @@ use std::ops::Deref;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
 
 use anyhow::{Result,anyhow};
@@ -34,12 +36,14 @@ use crate::common::gql::model::SortInput;
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-lazy_static! {
-  /// 操作记录 前端允许排序的字段
-  static ref CAN_SORT_IN_API_OPERATION_RECORD: [&'static str; 2] = [
+static CAN_SORT_IN_API_OPERATION_RECORD: OnceLock<[&'static str; 2]> = OnceLock::new();
+
+/// 操作记录 前端允许排序的字段
+fn get_can_sort_in_api_operation_record() -> &'static [&'static str; 2] {
+  CAN_SORT_IN_API_OPERATION_RECORD.get_or_init(|| [
     "create_time",
     "update_time",
-  ];
+  ])
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -677,12 +681,14 @@ pub fn check_sort_operation_record(
   }
   let sort = sort.unwrap();
   
+  let get_can_sort_in_api_operation_record = get_can_sort_in_api_operation_record();
+  
   for item in sort {
     let prop = item.prop.as_str();
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_OPERATION_RECORD.contains(&prop) {
+    if !get_can_sort_in_api_operation_record.contains(&prop) {
       return Err(anyhow!("check_sort_operation_record: {}", serde_json::to_string(item)?));
     }
   }
