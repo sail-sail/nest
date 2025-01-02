@@ -55,7 +55,7 @@
     "@eslint/js": "9.17.0",
     "@plugin-web-update-notification/vite": "1.7.1",
     "@types/file-saver": "2.0.7",
-    "@types/node": "22.10.2",
+    "@types/node": "22.10.3",
     "@types/sortablejs": "1.15.8",
     "@unocss/preset-rem-to-px": "0.65.3",
     "@vitejs/plugin-vue": "5.2.1",
