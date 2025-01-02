@@ -829,7 +829,12 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                 const isPassword = column.isPassword;
               #>
               
-              <el-table-column
+              <el-table-column<#
+                if (column.noAdd === true) {
+                #>
+                v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+                }
+                #>
                 prop="<#=column_name#>"
                 :label="n('<#=column_comment#>')"
                 width="<#=width#>"
@@ -1977,7 +1982,12 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                 if (many2many.column2 !== column_name) {
               #>
               
-              <el-table-column
+              <el-table-column<#
+                if (column.noAdd === true) {
+                #>
+                v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+                }
+                #>
                 prop="<#=column_name#>"
                 :label="n('<#=column_comment#>')"
                 width="<#=width#>"
@@ -2348,7 +2358,12 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                 } else {
               #>
               
-              <el-table-column
+              <el-table-column<#
+                if (column.noAdd === true) {
+                #>
+                v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
+                }
+                #>
                 prop="<#=column_name#>_lbl"
                 :label="n('<#=column_comment#>')"
                 width="<#=width#>"
@@ -2419,7 +2434,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
         </template>
         <span>{{ ns('关闭') }}</span>
       </el-button><#
-      if (!opts.noAdd) {
+      if (!opts.noAdd && !opts.hideSaveAndCopy) {
       #>
       
       <el-button
