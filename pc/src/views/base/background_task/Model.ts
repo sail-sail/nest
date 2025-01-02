@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   BackgroundTaskInput as BackgroundTaskInputType,
   BackgroundTaskModel as BackgroundTaskModelType,
@@ -14,6 +15,7 @@ declare global {
   }
 
   interface BackgroundTaskSearch extends BackgroundTaskSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface BackgroundTaskFieldComment extends BackgroundTaskFieldCommentType {

@@ -1,6 +1,7 @@
 <template>
 <el-input-number
   v-if="readonly !== true"
+  v-model="modelValueComputed"
   un-w="full"
   class="custom_input_number"
   :precision="props.precision"
@@ -9,14 +10,13 @@
   :min="props.min"
   :controls="props.controls"
   v-bind="$attrs"
-  v-model="modelValueComputed"
   :clearable="!props.disabled && props.clearable"
   :disabled="props.disabled"
   :placeholder="props.placeholder"
   @change="onChange"
 >
   <template
-    v-for="(item, key, index) in $slots"
+    v-for="(key, index) in keys"
     :key="index"
     #[key]
   >
@@ -60,14 +60,21 @@
 <script lang="ts" setup>
 import Decimal from "decimal.js";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const keys = Object.keys(slots);
+
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
 
 const props = withDefaults(
   defineProps<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     precision?: number;
     step?: number;

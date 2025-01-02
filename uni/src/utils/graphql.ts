@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { uniqueID, uuid } from "./StringUtil";
 import { request, uniLogin } from "./request";
 import cfg from "./config"
@@ -317,7 +318,7 @@ export async function gqlQuery(
       return false;
     });
     if (is_token_expired) {
-      const usrStore = useUsrStore(cfg.pinia);
+      const usrStore = useUsrStore();
       usrStore.setAuthorization("");
       if (!config.notLogin) {
         if (await uniLogin()) {

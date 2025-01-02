@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   OrgInput as OrgInputType,
   OrgModel as OrgModelType,
@@ -14,6 +15,7 @@ declare global {
   }
 
   interface OrgSearch extends OrgSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface OrgFieldComment extends OrgFieldCommentType {

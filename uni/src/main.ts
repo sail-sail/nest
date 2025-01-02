@@ -1,7 +1,6 @@
 import { createSSRApp } from "vue";
 import App from "./App.vue";
 import * as Pinia from "pinia";
-import cfg from "@/utils/config";
 
 import tmui from "./uni_modules/tmui";
 
@@ -18,7 +17,6 @@ export function createApp() {
     app.config.globalProperties.$pinia = pinia;
     app.use(pinia);
   }
-  cfg.pinia = pinia;
   Pinia.setActivePinia(pinia);
   app.use(tmui);
   return {

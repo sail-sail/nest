@@ -69,10 +69,8 @@ import type {
   Component,
 } from "vue";
 
-// @ts-ignore
 import { Pagination, A11y } from "swiper/modules";
 
-// @ts-ignore
 import { Swiper, SwiperSlide } from "swiper/vue";
 
 import { getComponent } from "@/router/util";
@@ -91,12 +89,12 @@ const tabStore = useTabsStore();
 
 let inited = $ref(false);
 
-let tabLen = $computed(() => tabStore.tabs.length);
+const tabLen = $computed(() => tabStore.tabs.length);
 
 let errMsg = $ref("正在加载...");
 
 let myComponents = $shallowRef<Component[]>([ ]);
-let homeUrls = $shallowRef<string[]>([ ]);
+const homeUrls = $shallowRef<string[]>([ ]);
 
 async function onGetHomeUrls() {
   const homeUrls = await getHomeUrls({
@@ -126,9 +124,8 @@ async function initFrame() {
   }
 }
 
-usrStore.onLogin(initFrame);
-
 initFrame();
+
 </script>
 
 <style scoped>

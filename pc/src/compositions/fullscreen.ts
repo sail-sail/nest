@@ -12,7 +12,10 @@ function getParentEl(el: HTMLElement, clazz: string) {
 export function useFullscreenEfc() {
   let fullscreen = $ref(false);
   let isDraggable = $ref(false);
-  function setFullscreen(e: any) {
+  function setFullscreen(e: MouseEvent) {
+    if (!e.target || !(e.target instanceof HTMLElement)) {
+      return;
+    }
     const dialogHeaderEl = getParentEl(e.target, "el-dialog__header");
     if (!dialogHeaderEl) {
       return;

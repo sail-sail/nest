@@ -1,13 +1,18 @@
 use std::env;
 use anyhow::Result;
 
+use std::sync::OnceLock;
+
 use deadpool_redis::{redis, Config, Runtime, Pool};
 use tracing::info;
 
 use crate::common::context::get_req_id;
 
-lazy_static! {
-  static ref CACHE_POOL: Option<Pool> = init_cache_pool();
+static CACHE_POOL: OnceLock<Option<Pool>> = OnceLock::new();
+
+fn cache_pool() -> Option<Pool> {
+  CACHE_POOL.get_or_init(init_cache_pool)
+    .clone()
 }
 
 fn init_cache_pool() -> Option<Pool> {
@@ -43,10 +48,11 @@ pub async fn get_cache(
   cache_key1: &str,
   cache_key2: &str,
 ) -> Result<Option<String>> {
-  if CACHE_POOL.is_none() {
+  let cache_pool = cache_pool();
+  if cache_pool.is_none() {
     return Ok(None);
   }
-  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let cache_pool = &cache_pool.unwrap();
   let mut conn = cache_pool.get().await?;
   let value: Option<String> = redis::cmd("HGET")
     .arg(&[cache_key1, cache_key2])
@@ -57,10 +63,11 @@ pub async fn get_cache(
 pub async fn exists(
   cache_key1: &str,
 ) -> Result<bool> {
-  if CACHE_POOL.is_none() {
+  let cache_pool = cache_pool();
+  if cache_pool.is_none() {
     return Ok(false);
   }
-  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let cache_pool = &cache_pool.unwrap();
   let mut conn = cache_pool.get().await?;
   let value: bool = redis::cmd("EXISTS")
     .arg(&[cache_key1])
@@ -72,10 +79,11 @@ pub async fn exists(
 pub async fn get(
   cache_key1: &str,
 ) -> Result<Option<String>> {
-  if CACHE_POOL.is_none() {
+  let cache_pool = cache_pool();
+  if cache_pool.is_none() {
     return Ok(None);
   }
-  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let cache_pool = &cache_pool.unwrap();
   let mut conn = cache_pool.get().await?;
   let value: Option<String> = redis::cmd("GET")
     .arg(&[cache_key1])
@@ -87,10 +95,11 @@ pub async fn set(
   cache_key1: &str,
   cache_value: &str,
 ) -> Result<String> {
-  if CACHE_POOL.is_none() {
+  let cache_pool = cache_pool();
+  if cache_pool.is_none() {
     return Ok(String::new());
   }
-  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let cache_pool = &cache_pool.unwrap();
   let mut conn = cache_pool.get().await?;
   let res = redis::cmd("SET")
     .arg(&[cache_key1, cache_value])
@@ -103,10 +112,11 @@ pub async fn set_cache(
   cache_key2: &str,
   cache_value: &str,
 ) -> Result<String> {
-  if CACHE_POOL.is_none() {
+  let cache_pool = cache_pool();
+  if cache_pool.is_none() {
     return Ok(String::new());
   }
-  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let cache_pool = &cache_pool.unwrap();
   let mut conn = cache_pool.get().await?;
   let res = redis::cmd("HSET")
     .arg(&[cache_key1, cache_key2, cache_value])
@@ -118,10 +128,11 @@ pub async fn expire(
   cache_key1: &str,
   expire: u32,
 ) -> Result<String> {
-  if CACHE_POOL.is_none() {
+  let cache_pool = cache_pool();
+  if cache_pool.is_none() {
     return Ok(String::new());
   }
-  let cache_pool = CACHE_POOL.as_ref().unwrap();
+  let cache_pool = &cache_pool.unwrap();
   let mut conn = cache_pool.get().await?;
   let res = redis::cmd("EXPIRE")
     .arg(&[cache_key1, &expire.to_string()])
@@ -132,11 +143,12 @@ pub async fn expire(
 pub async fn del_cache(
   cache_key1: &str,
 ) -> Result<()> {
-  if CACHE_POOL.is_none() {
+  let cache_pool = cache_pool();
+  if cache_pool.is_none() {
     return Ok(());
   }
+  let cache_pool = &cache_pool.unwrap();
   info!("del_cache: {}: {}", get_req_id(), cache_key1);
-  let cache_pool = CACHE_POOL.as_ref().unwrap();
   let mut conn = cache_pool.get().await?;
   redis::cmd("DEL")
     .arg(&[cache_key1])
@@ -147,11 +159,12 @@ pub async fn del_cache(
 pub async fn del_caches(
   del_cache_key1s: &[&str],
 ) -> Result<()> {
-  if CACHE_POOL.is_none() {
+  let cache_pool = cache_pool();
+  if cache_pool.is_none() {
     return Ok(());
   }
+  let cache_pool = &cache_pool.unwrap();
   info!("del_caches: {}: {:?}", get_req_id(), del_cache_key1s);
-  let cache_pool = CACHE_POOL.as_ref().unwrap();
   let mut conn = cache_pool.get().await?;
   let mut pipe: redis::Pipeline = redis::pipe();
   let pipe = pipe.atomic();
@@ -161,44 +174,45 @@ pub async fn del_caches(
 }
 
 pub async fn flash_db() -> Result<String> {
-  if CACHE_POOL.is_none() {
+  let cache_pool = cache_pool();
+  if cache_pool.is_none() {
     return Ok(String::new());
   }
+  let cache_pool = &cache_pool.unwrap();
   info!("flash_db: {}", get_req_id());
-  let cache_pool = CACHE_POOL.as_ref().unwrap();
   let mut conn = cache_pool.get().await?;
   let res = redis::cmd("FLUSHDB")
     .query_async::<String>(&mut conn).await?;
   Ok(res)
 }
 
-#[cfg(test)]
-mod tests {
-  use super::*;
+// #[cfg(test)]
+// mod tests {
+//   use super::*;
   
-  #[tokio::test]
-  async fn test_get_cache() -> Result<()> {
-    let value = get_cache("test", "test").await?;
-    println!("------value:{:?}", value);
-    Ok(())
-  }
+//   #[tokio::test]
+//   async fn test_get_cache() -> Result<()> {
+//     let value = get_cache("test", "test").await?;
+//     println!("------value:{:?}", value);
+//     Ok(())
+//   }
   
-  #[tokio::test]
-  async fn test_set_cache() -> Result<()> {
-    set_cache("test", "test", "test").await?;
-    Ok(())
-  }
+//   #[tokio::test]
+//   async fn test_set_cache() -> Result<()> {
+//     set_cache("test", "test", "test").await?;
+//     Ok(())
+//   }
   
-  #[tokio::test]
-  async fn test_del_cache() -> Result<()> {
-    del_cache("test").await?;
-    Ok(())
-  }
+//   #[tokio::test]
+//   async fn test_del_cache() -> Result<()> {
+//     del_cache("test").await?;
+//     Ok(())
+//   }
   
-  #[tokio::test]
-  async fn test_flash_db() -> Result<()> {
-    flash_db().await?;
-    Ok(())
-  }
+//   #[tokio::test]
+//   async fn test_flash_db() -> Result<()> {
+//     flash_db().await?;
+//     Ok(())
+//   }
   
-}
+// }

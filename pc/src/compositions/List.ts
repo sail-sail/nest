@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   useI18n,
 } from "@/locales/i18n";
@@ -81,6 +82,7 @@ export function initBuiltInModel<T>(
 }
 
 export function usePage<T>(
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   dataGrid: Function,
   opt?: {
     pageSizes?: number[],
@@ -88,10 +90,10 @@ export function usePage<T>(
   },
 ) {
   
-  let pageSizes = $ref(opt?.pageSizes || [ 20, 50, 100 ]);
+  const pageSizes = $ref(opt?.pageSizes || [ 20, 50, 100 ]);
   
   // 分页
-  let page = $ref({
+  const page = $ref({
     size: pageSizes[0],
     current: 1,
     total: 0,
@@ -171,15 +173,18 @@ export function useSelect<T = any, Id = string>(
     },
   );
   
-  function getRowKey() {
+  function getRowKey(row?: T) {
     const rowKey = tableRef.value?.rowKey;
     if (!rowKey) {
-      return;
+      return "";
     }
     if (typeof rowKey === "string") {
       return rowKey;
     }
-    throw new Error("暂不支持 function 类型的 rowKey");
+    if (typeof rowKey === "function") {
+      return rowKey(row);
+    }
+    return "";
   }
   
   /** 当前多行选中的数据 */
@@ -190,14 +195,12 @@ export function useSelect<T = any, Id = string>(
     if (!tableRef.value || !tableRef.value.data) {
       return;
     }
-    const rowKey = getRowKey();
-    if (!rowKey) {
-      return;
-    }
-    const newSelectList: any[] = [ ];
-    const select2falseList: any[] = [ ];
+    
+    const newSelectList: T[] = [ ];
+    const select2falseList: T[] = [ ];
     for (let i = 0; i < tableRef.value.data.length; i++) {
       const item = tableRef.value.data[i];
+      const rowKey = getRowKey(item);
       if (selectedIds.includes(item[rowKey])) {
         newSelectList.push(item);
       } else if (prevSelectedIds.includes(item[rowKey])) {
@@ -248,11 +251,8 @@ export function useSelect<T = any, Id = string>(
   /**
    * 多行或单行勾选
    */
-  function selectChg(list: T[], row?: T) {
-    const rowKey = getRowKey();
-    if (!rowKey) {
-      return;
-    }
+  function onSelect(list: T[], row?: T) {
+    const rowKey = getRowKey(row);
     let multiple = true;
     if (opts?.multiple === false) {
       multiple = false;
@@ -886,9 +886,9 @@ export function useSelect<T = any, Id = string>(
     watch3Stop();
   });
   
-  return $$({
-    selectedIds,
-    selectChg,
+  return {
+    selectedIds: $$(selectedIds),
+    onSelect,
     onRow,
     onRowUp,
     onRowDown,
@@ -898,7 +898,7 @@ export function useSelect<T = any, Id = string>(
     onRowEnd,
     rowClassName,
     tableFocus,
-  });
+  };
 }
 
 export function useSelectOne<T>(
@@ -994,7 +994,7 @@ export function useSelectOne<T>(
   /**
    * 多行或单行勾选
    */
-  function selectChg(list: T[], row?: T) {
+  function onSelect(list: T[], row?: T) {
     const rowKey = getRowKey();
     if (!rowKey) {
       return;
@@ -1075,7 +1075,7 @@ export function useSelectOne<T>(
   
   return $$({
     selectedIds,
-    selectChg,
+    onSelect,
     onRow,
     rowClassName,
     tableFocus,
@@ -1095,7 +1095,7 @@ export function useTableColumns<T>(
 ) {
   const route = useRoute();
   
-  let tableColumns: Ref<ColumnType[]> = _tableColumns;
+  const tableColumns: Ref<ColumnType[]> = _tableColumns;
   
   let routePath = "";
   let persistKey = "";

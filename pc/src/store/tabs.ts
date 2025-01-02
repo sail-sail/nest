@@ -1,30 +1,40 @@
 import type {
   RouteLocationNormalizedLoaded,
+  RouteMeta,
 } from "vue-router";
 
 import config from "@/utils/config";
+
+import {
+  getRouterByName,
+} from "@/router/util";
 
 export interface TabInf {
   name: string,
   lbl?: string,
   path: string,
   active?: boolean,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   query?: { [key: string]: any },
   _hasPermit?: boolean, // 当前选项卡是否有权限打开
   fixed?: boolean, // 是否固定选项卡
   closeable?: boolean, // 是否可关闭
   icon?: string, // 图标
+  meta?: RouteMeta,
 }
 
 export default defineStore("tabs", function() {
   
   const router = useRouter();
+  const routeNow = useRoute();
   
-  let tabs = ref<TabInf[]>([ ]);
+  const menuStore = useMenuStore();
+  
+  const tabs = ref<TabInf[]>([ ]);
   
   const actTab = computed(() => tabs.value.find((item) => item.active));
   
-  let keepAliveNames = ref<string[]>([ ]);
+  const keepAliveNames = ref<string[]>([ ]);
   
   if (config.indexIsEmpty) {
     watch(
@@ -269,6 +279,54 @@ export default defineStore("tabs", function() {
     }
   }
   
+  async function openPageByRouteName(
+    routeName: string,
+    tabName?: string,
+    query?: { [key: string]: string },
+  ) {
+    const route = getRouterByName(router, routeName);
+    if (!route) {
+      ElMessage.error(`未找到对应的路由 ${ routeName }`);
+      return;
+    }
+    const menuLbl = menuStore.getLblByPath(route.path);
+    const name = route.name as string;
+    let lbl = menuLbl || (route.meta?.name as string) || name || "";
+    if (tabName) {
+      lbl = `${ lbl } - ${ tabName }`;
+    }
+    const tab: TabInf = {
+      name,
+      lbl,
+      active: true,
+      path: route.path,
+      query: { },
+      meta: route.meta,
+    };
+    if (query) {
+      tab.query = {
+        ...query,
+      };
+    }
+    const isHasTab = hasTab({
+      path: route.path,
+      query,
+    });
+    if (isHasTab) {
+      activeTab(tab);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const comp = routeNow.matched[1].instances?.default as any;
+      await comp?.refresh?.();
+      return;
+    }
+    activeTab(tab);
+    const navFail = await router.push({
+      path: tab.path,
+      query: tab.query,
+    });
+    return navFail;
+  }
+  
   function reset() {
     tabs.value = [ ];
     const tab = setIndexTab();
@@ -294,6 +352,7 @@ export default defineStore("tabs", function() {
     reset,
     keepAliveNames,
     clearKeepAliveNames,
+    openPageByRouteName,
   };
   
 }, {

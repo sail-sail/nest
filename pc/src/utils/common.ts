@@ -62,8 +62,10 @@ export async function getDictbiz(
 
 export function list2tree<
   R extends {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     id: any;
     lbl: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parent_id: any;
   },
 >(
@@ -91,7 +93,7 @@ export function list2tree<
     }
   }
   treeFn("", treeData);
-  return treeData;
+  return treeData as T[];
 }
   
 
@@ -100,7 +102,7 @@ export function showUploadMsg(
   failNum: number,
   failErrMsgs: string[],
 ) {
-  let msgArr: VNode[] = [ ];
+  const msgArr: VNode[] = [ ];
   
   msgArr.push(
     h("div", { style: { color: "green" } }, `导入成功 ${ succNum } 条`),

@@ -11,6 +11,13 @@ const os = require("os");
 
 process.title = "deno";
 
+process.on("SIGINT", function() {
+  if (ls) {
+    ls.kill("SIGINT");
+  }
+  process.exit();
+});
+
 function graphqlCodegen() {
   const arr = [
     "node_modules/@graphql-codegen/cli/cjs/bin.js",
@@ -103,7 +110,7 @@ function watchFn() {
       }
       filenames = [ ];
       if (ls) {
-        ls.kill(9);
+        ls.kill("SIGINT");
       }
       delete(ls);
       start();
