@@ -68,9 +68,9 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
     un-overflow-auto
   >
     <el-form
+      ref="searchFormRef"
       v-search-form-item-width-auto="inited"
       
-      ref="searchFormRef"
       size="default"
       :model="search"
       inline-message
@@ -279,9 +279,9 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           #>
           <DictSelect
             :model-value="<#=column_name#>_search[0]"
-            @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             code="<#=column.dict#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             @change="onSearch(false)"
           ></DictSelect><#
           }
@@ -312,9 +312,9 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           #>
           <DictbizSelect
             :model-value="<#=column_name#>_search[0]"
-            @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             code="<#=column.dictbiz#>"
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             @change="onSearch(false)"
           ></DictbizSelect><#
           }
@@ -332,7 +332,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           :label="n('<#=column_comment#>')"
           prop="<#=column_name#>"
         >
-          <CustomDatePicker<#
+          <CustomDatePicker
+            v-model="<#=column_name#>_search"<#
             if (column.isMonth) {
             #>
             type="monthrange"<#
@@ -341,7 +342,6 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             type="daterange"<#
             }
             #>
-            v-model="<#=column_name#>_search"
             :start-placeholder="ns('开始')"
             :end-placeholder="ns('结束')"
             @clear="onSearchClear"
@@ -361,8 +361,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           prop="<#=column_name#>"
         >
           <el-checkbox
-            un-w="full"
             v-model="search.<#=column_name#>"
+            un-w="full"
             :false-value="0"
             :true-value="1"
           >{{ n('<#=column_comment#>') }}</el-checkbox>
@@ -484,8 +484,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           
           <el-checkbox
             v-if="!isLocked"
-            :set="search.is_deleted = search.is_deleted ?? 0"
             v-model="search.is_deleted"
+            :set="search.is_deleted = search.is_deleted ?? 0"
             :false-value="0"
             :true-value="1"
             @change="recycleChg"
@@ -579,7 +579,9 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           <ElIconCirclePlus />
         </template>
         <span>{{ ns('新增') }}</span>
-      </el-button>
+      </el-button><#
+        if (opts.noCopy !== true) {
+      #>
       
       <el-button
         v-if="permit('add') && !isLocked"
@@ -592,6 +594,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
         </template>
         <span>{{ ns('复制') }}</span>
       </el-button><#
+        }
+      #><#
       }
       #><#
       if (opts.noEdit !== true) {
@@ -980,8 +984,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
         :summary-method="summaryMethod"<#
         }
         #>
-        @select="selectChg"
-        @select-all="selectChg"
+        @select="onSelect"
+        @select-all="onSelect"
         @row-click="onRow"
         @sort-change="onSortChange"
         @header-dragend="headerDragend"
@@ -1140,8 +1144,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
             >
               <template #default="{ row, column }">
                 <LinkAtt
-                  v-model="row[column.property]"
-                  @change="linkAttChg(row, column.property)"<#
+                  v-model="row[column.property]"<#
                   if (column.attMaxSize > 1) {
                   #>
                   :max-size="<#=column.attMaxSize#>"<#
@@ -1157,7 +1160,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                   accept="<#=column.attAccept#>"<#
                   }
                   #>
-                  :isLocked="isLocked"
+                  :is-locked="isLocked"
+                  @change="onLinkAtt(row, column.property)"
                 ></LinkAtt>
               </template>
             </el-table-column>
@@ -1362,7 +1366,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               </template><#
               } else if (foreignKey.multiple && foreignKey.showType === "dialog") {
               #>
-              <template #default="{ row, column }">
+              <template #default="{ row }">
                 <el-link
                   type="primary"
                   un-min="w-7.5"
@@ -1373,7 +1377,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               </template><#
               } else if (column.inlineMany2manyTab) {
               #>
-              <template #default="{ row, column }">
+              <template #default="{ row }">
                 <el-link
                   type="primary"
                   un-min="w-7.5"
@@ -1496,8 +1500,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
   <!-- <#=column_comment#> -->
   <ListSelectDialog
     ref="<#=column_name#>ListSelectDialogRef"
-    :is-locked="isLocked"
     v-slot="listSelectProps"
+    :is-locked="isLocked"
   >
     <<#=Foreign_Table_Up#>List<#
       if (mod === "base" && table === "role" && column_name === "menu_ids") {
@@ -1523,8 +1527,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
   <!-- <#=column_comment#> -->
   <ListSelectDialog
     ref="<#=column_name#>ListSelectDialogRef"
-    :is-locked="isLocked"
     v-slot="listSelectProps"
+    :is-locked="isLocked"
   >
     <<#=Foreign_Table_Up#>TreeList<#
       if (mod === "base" && table === "role" && column_name === "menu_ids") {
@@ -1567,7 +1571,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
   
   <ImportPercentageDialog
     :percentage="importPercentage"
-    :dialog_visible="isImporting"
+    :dialog-visible="isImporting"
     @stop="stopImport"
   ></ImportPercentageDialog><#
     }
@@ -1886,7 +1890,7 @@ const props = defineProps<{<#
   isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: <#=Table_Up#>Id[]; //已选择行的id列表
-  isMultiple?: Boolean; //是否多选<#
+  isMultiple?: boolean; //是否多选<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -2085,7 +2089,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-let tableRef = $ref<InstanceType<typeof ElTable>>();<#
+const tableRef = $ref<InstanceType<typeof ElTable>>();<#
 if (opts?.isRealData) {
 #>
 
@@ -2141,6 +2145,7 @@ function initSearch() {
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
       const key = props.propsNotReset[i];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (search as any)[key] = (builtInSearch as any)[key];
     }
   }
@@ -2268,7 +2273,7 @@ async function onIdsChecked() {
 }
 
 /** 分页功能 */
-let {
+const {
   page,<#
   if (list_page) {
   #>
@@ -2293,19 +2298,7 @@ function tableSelectable(model: <#=modelName#>, index: number) {<#=opts?.tableSe
 #>
 
 /** 表格选择功能 */
-let {
-  selectedIds,
-  selectChg,
-  rowClassName,
-  onRow,
-  onRowUp,
-  onRowDown,
-  onRowLeft,
-  onRowRight,
-  onRowHome,
-  onRowEnd,
-  tableFocus,
-} = $(useSelect<<#=modelName#>, <#=Table_Up#>Id>(
+const tableSelected = useSelect<<#=modelName#>, <#=Table_Up#>Id>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -2316,7 +2309,22 @@ let {
     }
     #>
   },
-));
+);
+
+const {
+  onSelect,
+  rowClassName,
+  onRow,
+  onRowUp,
+  onRowDown,
+  onRowLeft,
+  onRowRight,
+  onRowHome,
+  onRowEnd,
+  tableFocus,
+} = tableSelected;
+
+let selectedIds = $(tableSelected.selectedIds);
 
 watch(
   () => selectedIds,
@@ -2620,7 +2628,7 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-let tableColumns = $ref<ColumnType[]>(getTableColumns());
+const tableColumns = $ref<ColumnType[]>(getTableColumns());
 
 /** 表格列标签国际化 */
 watchEffect(() => {
@@ -2635,7 +2643,7 @@ watchEffect(() => {
 });
 
 /** 表格列 */
-let {
+const {
   headerDragend,
   resetColumns,
   storeColumns,
@@ -2647,7 +2655,7 @@ let {
   },
 ));
 
-let detailRef = $ref<InstanceType<typeof Detail>>();
+const detailRef = $ref<InstanceType<typeof Detail>>();
 
 /** 刷新表格 */
 async function dataGrid(
@@ -2829,7 +2837,7 @@ async function onSortChange(
   if (opts.noExport !== true) {
 #>
 
-let exportExcel = $ref(useExportExcel(pagePath));
+const exportExcel = $ref(useExportExcel(pagePath));
 
 /** 导出Excel */
 async function onExport() {
@@ -2850,7 +2858,7 @@ async function onCancelExport() {
 if (hasAtt) {
 #>
 
-async function linkAttChg(row: any, key: any) {<#
+async function onLinkAtt(row: <#=modelName#>, key: keyof <#=modelName#>) {<#
     if (opts.noEdit !== true) {
 #>
   await updateById(row.id!, { [key]: row[key] });<#
@@ -2970,7 +2978,7 @@ async function onInsert() {
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
 #>
 
-let uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+const uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -3306,22 +3314,28 @@ async function onRowEnter(e: KeyboardEvent) {
   if (props.selectedIds != null && !isLocked) {
     emit("rowEnter", e);
     return;
-  }
-  if (e.ctrlKey) {<#
-    if (opts.noEdit !== true) {
-    #>
-    await openEdit();<#
-    }
-    #>
-  } else if (e.shiftKey) {<#
-    if (opts.noAdd !== true) {
-    #>
-    await openCopy();<#
-    }
-    #>
+  }<#
+  if (opts.noEdit !== true && opts.noAdd !== true) {
+  #>
+  if (e.ctrlKey) {
+    await openEdit();
+  } else if (e.shiftKey) {
+    await openCopy();
   } else {
     await openView();
+  }<#
+  } else if (opts.noEdit !== true) {
+  #>
+  if (e.ctrlKey) {
+    await openEdit();
+  } else {
+    await openView();
+  }<#
+  } else {
+  #>
+  await openView();<#
   }
+  #>
 }
 
 /** 双击行 */
@@ -3635,7 +3649,7 @@ async function getDetailByModule(
 if (hasForeignTabs) {
 #>
 
-let foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();<#
+const foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();<#
 if (hasForeignTabsButton || hasForeignTabsMore) {
 #>
 
@@ -3876,7 +3890,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
 
-let <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+const <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
 
 async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row: <#=modelName#>) {
   if (!<#=column_name#>ListSelectDialogRef) {
@@ -3938,7 +3952,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   if (foreignKey && foreignKey.isLinkForeignTabs) {
 #>
 
-let <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs>>();
+const <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs>>();
 
 async function open<#=Foreign_Table_Up#>ForeignTabs(id: <#=Table_Up#>Id, title: string) {
   await <#=foreignTable#>ForeignTabsRef?.showDialog({

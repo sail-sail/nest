@@ -12,16 +12,16 @@ let elLoading: ReturnType<typeof ElLoading.service>|undefined;
 
 export default defineStore("index", function() {
   
-  let notLoading = ref(false);
+  const notLoading = ref(false);
   
-  let loading = ref(0);
+  const loading = ref(0);
   
-  let mutationLoading = ref(0);
+  const mutationLoading = ref(0);
   
-  let version = ref(localStorage.getItem("__version"));
+  const version = ref(localStorage.getItem("__version"));
   
   /** 国际化版本号 */
-  let i18n_version = ref(localStorage.getItem("__i18n_version"));
+  const i18n_version = ref(localStorage.getItem("__i18n_version"));
   
   /**
    * 获取 i18n 版本

@@ -26,7 +26,7 @@ async-graphql = { version = "7.0.13", features = ["decimal", "bigdecimal", "time
 smol_str = { version = "0.3", features = ["serde"] }
 slab = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
-lazy_static = "1.5"
+# lazy_static = "1.5"
 anyhow = "1.0"
 sqlx = { version = "0.8.2", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15"

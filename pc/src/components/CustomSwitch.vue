@@ -1,17 +1,20 @@
 <template>
 <el-switch
   v-if="readonly !== true"
+  v-model="modelValue"
   class="custom_switch"
   :set="0"
   v-bind="$attrs"
   :active-value="props.activeValue"
   :inactive-value="props.inactiveValue"
-  v-model="modelValue"
   :disabled="props.disabled"
+  :style="{
+    '--el-transition-duration': transitionDuration,
+  }"
   @change="onChange"
 >
   <template
-    v-for="(item, key, index) in $slots"
+    v-for="(key, index) in keys"
     :key="index"
     #[key]
   >
@@ -31,26 +34,36 @@
 </template>
 
 <script lang="ts" setup>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const keys = Object.keys(slots);
+
 const {
   ns,
   initSysI18ns,
 } = useI18n("/base/usr");
 
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
 }>();
 
 const props = withDefaults(
   defineProps<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     disabled?: boolean;
     readonly?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     activeValue?: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     inactiveValue?: any;
     trueReadonlyLabel?: string;
     falseReadonlyLabel?: string;
     notBorder?: boolean;
+    pageInited?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -61,6 +74,7 @@ const props = withDefaults(
     trueReadonlyLabel: "是",
     falseReadonlyLabel: "否",
     notBorder: undefined,
+    pageInited: undefined,
   },
 );
 
@@ -73,12 +87,23 @@ watch(
   },
 );
 
+let transitionDuration = $ref<"0s" | undefined>();
+
+watch(
+  () => props.pageInited,
+  async () => {
+    transitionDuration = "0s";
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    transitionDuration = props.pageInited === false ? "0s" : undefined;
+  },
+);
+
 function onChange() {
   emit("update:modelValue", modelValue);
   emit("change", modelValue);
 }
 
-let modelLabel = $computed(() => {
+const modelLabel = $computed(() => {
   if (modelValue == 1) {
     return props.trueReadonlyLabel || ns("是");
   }

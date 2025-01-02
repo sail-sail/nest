@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   UsrInput as UsrInputType,
   UsrModel as UsrModelType,
@@ -16,6 +17,7 @@ declare global {
   }
 
   interface UsrSearch extends UsrSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface UsrFieldComment extends UsrFieldCommentType {

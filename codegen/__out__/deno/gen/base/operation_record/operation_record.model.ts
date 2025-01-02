@@ -88,7 +88,9 @@ export const canSortInApiOperationRecord = {
 
 /** 操作记录 检测字段是否允许前端排序 */
 export function checkSortOperationRecord(sort?: SortInput[]) {
-  if (!sort) return;
+  if (!sort) {
+    return;
+  }
   for (const item of sort) {
     const order = item.order;
     if (

@@ -42,13 +42,13 @@ const props = withDefaults(
   },
 );
 
-let modelValue: string = $ref("");
+let modelValue1 = $ref("");
 
 watch(
   () => props.modelValue,
   (newVal) => {
-    if (modelValue !== newVal) {
-      modelValue = newVal || "";
+    if (modelValue1 !== newVal) {
+      modelValue1 = newVal || "";
     }
   },
   {
@@ -56,12 +56,12 @@ watch(
   },
 );
 
-let attLen = $computed(() => {
-  if (!modelValue) return 0;
-  return modelValue.split(",").length;
+const attLen = $computed(() => {
+  if (!modelValue1) return 0;
+  return modelValue1.split(",").length;
 });
 
-let attDialogRef = $ref<InstanceType<typeof AttDialog>>();
+const attDialogRef = $ref<InstanceType<typeof AttDialog>>();
 
 async function linkClk(e?: MouseEvent) {
   if (e) {
@@ -73,7 +73,7 @@ async function linkClk(e?: MouseEvent) {
   }
   await attDialogRef.showDialog({
     model: {
-      modelValue,
+      modelValue: modelValue1,
       maxSize: props.maxSize,
       maxFileSize: props.maxFileSize,
       readonly: props.readonly,
@@ -89,6 +89,3 @@ function attDialogChg(modelValue: string) {
   emit("change", modelValue);
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

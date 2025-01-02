@@ -1,5 +1,6 @@
 <template>
 <el-date-picker
+  v-model="modelValue"
   class="custom_date_picker w-full"
   :class="{
     'custom_date_picker_range': props.type?.endsWith('range'),
@@ -7,7 +8,6 @@
   }"
   v-bind="$attrs"
   :type="props.type"
-  v-model="modelValue"
   :format="props.format"
   :clearable="!props.disabled"
   :disabled="props.disabled"
@@ -17,7 +17,7 @@
   @clear="onClear"
 >
   <template
-    v-for="(item, key, index) in $slots"
+    v-for="(key, index) in keys"
     :key="index"
     #[key]
   >
@@ -27,12 +27,20 @@
 </template>
 
 <script lang="ts" setup>
-import type { ElDatePicker } from "element-plus";
+import type {
+  ElDatePicker,
+} from "element-plus";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const keys = Object.keys(slots);
 
 type DatePickerType = InstanceType<typeof ElDatePicker>;
 
 const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "update:modelValue", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
@@ -40,6 +48,7 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     type?: DatePickerType["type"];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
     format?: string;
     disabled?: boolean;

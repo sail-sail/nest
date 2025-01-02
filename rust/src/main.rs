@@ -8,9 +8,6 @@ static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 #[macro_use]
 extern crate derive_new;
 
-#[macro_use]
-extern crate lazy_static;
-
 mod common;
 mod gen;
 mod src;
@@ -22,7 +19,7 @@ use async_graphql::{
 use poem::{
   get, post,
   listener::TcpListener,
-  middleware::{TokioMetrics, Tracing},
+  middleware::{CatchPanic, TokioMetrics, Tracing},
   EndpointExt, Route, Server,
 };
 use crate::common::gql::server_timing::ServerTiming;
@@ -273,14 +270,20 @@ async fn main() -> Result<(), std::io::Error> {
   let app = app
     .with(Tracing)
     .with(ServerTiming)
+    .with(CatchPanic::new())
     .data(schema);
   
   let server_port = env::var("server_port").unwrap_or("4001".to_owned());
-  let server_host = env::var("server_host").unwrap_or("127.0.0.1".to_owned());
+  let server_host = env::var("server_host").unwrap_or("localhost".to_owned());
   
   info!("app started: {}", server_port);
   
   Server::new(TcpListener::bind(format!("{server_host}:{server_port}")))
-    .run(app)
-    .await
+    .run_with_graceful_shutdown(
+      app,
+      async {
+        let _ = tokio::signal::ctrl_c().await;
+      },
+      None,
+    ).await
 }

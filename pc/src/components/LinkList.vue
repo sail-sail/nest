@@ -6,7 +6,7 @@
   un-box-border
 >
   <template
-    v-if="collapseTags && modelValue && modelValue.length > maxSize"
+    v-if="collapseTags && modelValue1 && modelValue1.length > maxSize"
   >
     <el-tag
       v-for="item in labelValue"
@@ -27,7 +27,7 @@
           un-cursor-pointer
           @click="() => collapseTags = false"
         >
-          +{{ modelValue.length - maxSize }}
+          +{{ modelValue1.length - maxSize }}
         </el-tag>
       </template>
       <div
@@ -37,7 +37,7 @@
         un-box-border
       >
         <el-tag
-          v-for="item in modelValue.slice(maxSize)"
+          v-for="item in modelValue1.slice(maxSize)"
           :key="item"
           type="info"
           :disable-transitions="true"
@@ -51,7 +51,7 @@
   </template>
   <template v-else>
     <el-tag
-      v-for="item in modelValue"
+      v-for="item in modelValue1"
       :key="item"
       type="info"
       :disable-transitions="true"
@@ -74,17 +74,17 @@ const props = withDefaults(
   },
 );
 
-let collapseTags = $ref(true);
+const collapseTags = $ref(true);
 
-let maxSize = $toRef(props, "maxSize");
+const maxSize = $toRef(props, "maxSize");
 
-let modelValue = $ref<string[]>();
+let modelValue1 = $ref<string[]>();
 let labelValue = $ref<string[]>();
 
 watch(
   () => props.modelValue,
   (newVal) => {
-    modelValue = newVal;
+    modelValue1 = newVal;
     if (newVal) {
       labelValue = newVal.slice(0, maxSize);
     }

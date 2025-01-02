@@ -23,7 +23,25 @@ if (isNaN(port) || port < 1024) {
 }
 console.log(`app started: ${ port }`);
 
+const controller = new AbortController();
+const { signal } = controller;
+
+Deno.addSignalListener("SIGINT", () => {
+  console.log("SIGINT");
+  controller.abort();
+  Deno.exit();
+});
+
+if (Deno.build.os !== "windows") {
+  Deno.addSignalListener("SIGTERM", () => {
+    console.log("SIGTERM");
+    controller.abort();
+    Deno.exit();
+  });
+}
+
 await app.listen({
   port,
   hostname: await getEnv("server_host"),
+  signal,
 });

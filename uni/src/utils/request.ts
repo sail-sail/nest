@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import cfg from "./config";
 
 import {
@@ -20,9 +21,9 @@ export async function uploadFile(config: {
   notLogin?: boolean;
   type?: "oss" | "tmpfile";
 }): Promise<string> {
-  const indexStore = useIndexStore(cfg.pinia);
-  const usrStore = useUsrStore(cfg.pinia);
-  let err: any = undefined;
+  const indexStore = useIndexStore();
+  const usrStore = useUsrStore();
+  const err: any = undefined;
   let res: any = undefined;
   try {
     if (!config.notLoading) {
@@ -281,8 +282,8 @@ export async function request<T>(
     data?: any;
   },
 ): Promise<T> {
-  const indexStore = useIndexStore(cfg.pinia);
-  const usrStore = useUsrStore(cfg.pinia);
+  const indexStore = useIndexStore();
+  const usrStore = useUsrStore();
   let err: Error | undefined;
   let res: any;
   try {
@@ -384,16 +385,16 @@ async function code2Session(
 }
 
 export async function uniLogin() {
-  const usrStore = useUsrStore(cfg.pinia);
+  const indexStore = useIndexStore();
+  const usrStore = useUsrStore();
   let providers: string[] = [ ];
   try {
     const providerInfo = await uni.getProvider({ service: "oauth" });
     providers = providerInfo.provider;
-  } catch (err) {
-  }
+  } catch (err) { /* empty */ }
   if (providers && providers.includes("weixin")) {
-    const systemInfo = uni.getSystemInfoSync();
-    let appLanguage = systemInfo.appLanguage || "zh-CN";
+    const appBaseInfo = indexStore.getAppBaseInfo();
+    let appLanguage = appBaseInfo.appLanguage || "zh-CN";
     if (appLanguage === "en") {
       appLanguage = "en-US";
     } else if (["zh", "zh-hans", "zh-hant", "zh-hans-cn"].includes(appLanguage?.toLocaleLowerCase())) {
@@ -424,7 +425,6 @@ export async function uniLogin() {
     return false;
   }
   // #ifdef H5
-  const indexStore = useIndexStore(cfg.pinia);
   const userAgent = indexStore.getUserAgent();
   if (userAgent.isWxwork || userAgent.isWechat) {
     if (typeof wxwGetAppid === "undefined") {

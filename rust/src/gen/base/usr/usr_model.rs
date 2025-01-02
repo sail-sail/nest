@@ -5,6 +5,8 @@ use std::ops::Deref;
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::str::FromStr;
+use std::sync::OnceLock;
+
 use serde::{Serialize, Deserialize};
 
 use anyhow::{Result,anyhow};
@@ -36,14 +38,16 @@ use crate::r#gen::base::role::role_model::RoleId;
 use crate::r#gen::base::dept::dept_model::DeptId;
 use crate::r#gen::base::org::org_model::OrgId;
 
-lazy_static! {
-  /// 用户 前端允许排序的字段
-  static ref CAN_SORT_IN_API_USR: [&'static str; 4] = [
+static CAN_SORT_IN_API_USR: OnceLock<[&'static str; 4]> = OnceLock::new();
+
+/// 用户 前端允许排序的字段
+fn get_can_sort_in_api_usr() -> &'static [&'static str; 4] {
+  CAN_SORT_IN_API_USR.get_or_init(|| [
     "username",
     "order_by",
     "create_time",
     "update_time",
-  ];
+  ])
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Clone, Debug)]
@@ -1099,12 +1103,14 @@ pub fn check_sort_usr(
   }
   let sort = sort.unwrap();
   
+  let get_can_sort_in_api_usr = get_can_sort_in_api_usr();
+  
   for item in sort {
     let prop = item.prop.as_str();
     if prop.is_empty() {
       continue;
     }
-    if !CAN_SORT_IN_API_USR.contains(&prop) {
+    if !get_can_sort_in_api_usr.contains(&prop) {
       return Err(anyhow!("check_sort_usr: {}", serde_json::to_string(item)?));
     }
   }

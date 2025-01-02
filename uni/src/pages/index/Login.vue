@@ -4,7 +4,7 @@
   un-overflow-hidden
 >
   <tm-form
-    v-model="model"
+    v-model="login_input"
     :label-width="120"
     :rules="form_rules"
     
@@ -26,12 +26,12 @@
         name="tenant_id"
       >
         <CustomSelect
-          v-model="model.tenant_id"
+          v-model="login_input.tenant_id"
           :page-inited="inited"
           :method="getLoginTenantsEfc"
-          @data="(e) => tenants = e"
           placeholder="请选择 租户"
           :multiple="false"
+          @data="(e) => tenants = e"
         >
           <template #left>
             <i
@@ -46,7 +46,7 @@
         name="username"
       >
         <CustomInput
-          v-model="model.username"
+          v-model="login_input.username"
           :type="'text'"
           :show-clear="true"
           placeholder="请输入 用户名"
@@ -64,7 +64,7 @@
         name="password"
       >
         <CustomInput
-          v-model="model.password"
+          v-model="login_input.password"
           :type="'password'"
           :show-clear="true"
           placeholder="请输入 密码"
@@ -110,13 +110,14 @@ import type {
   LoginInput,
 } from "@/typings/types";
 
-const usrStore = useUsrStore(cfg.pinia);
+const usrStore = useUsrStore();
 
 let inited = $ref(false);
 
+// eslint-disable-next-line prefer-const
 let tenants: GetLoginTenants[] = [ ];
 
-const model = ref<LoginInput>({
+const login_input = ref<LoginInput>({
   username: "admin",
   password: "a",
   tenant_id: "" as unknown as TenantId,
@@ -144,6 +145,7 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {
 };
 
 let redirect_uri = cfg.homePage;
+let redirect_action = "reLaunch";
 
 async function onLogin(
   formSubmitResult?: TM.FORM_SUBMIT_RESULT,
@@ -153,9 +155,9 @@ async function onLogin(
   }
   uni.setStorage({
     key: "oldLoginModel",
-    data: model.value,
+    data: login_input.value,
   });
-  const loginModel = await login(model.value);
+  const loginModel = await login(login_input.value);
   if (!loginModel.authorization) {
     return;
   }
@@ -163,7 +165,10 @@ async function onLogin(
   usrStore.setUsrId(loginModel.usr_id);
   usrStore.setUsername(loginModel.username);
   usrStore.setTenantId(loginModel.tenant_id);
-  usrStore.setLang(loginModel.lang);
+  if (redirect_action === "navigateBack") {
+    await uni.navigateBack();
+    return;
+  }
   await uni.reLaunch({
     url: redirect_uri,
   });
@@ -174,17 +179,17 @@ async function onLogin(
  */
 async function getLoginTenantsEfc() {
   const tenants = await getLoginTenants({ domain: cfg.domain });
-  if (!model.value.tenant_id && tenants.length > 0) {
-    model.value.tenant_id = tenants[0].id;
-  } else if (model.value.tenant_id && !tenants.some((item) => item.id === model.value.tenant_id)) {
-    model.value.tenant_id = tenants[0].id;
+  if (!login_input.value.tenant_id && tenants.length > 0) {
+    login_input.value.tenant_id = tenants[0].id;
+  } else if (login_input.value.tenant_id && !tenants.some((item) => item.id === login_input.value.tenant_id)) {
+    login_input.value.tenant_id = tenants[0].id;
   }
   return tenants;
 }
 
 async function setOldLoginModel() {
   try {
-    let res = await uni.getStorage({
+    const res = await uni.getStorage({
       key: "login.oldLoginModel",
     });
     if (res) {
@@ -195,13 +200,12 @@ async function setOldLoginModel() {
           console.error(err);
         }
       }
-      model.value = res.data;
-      if (!tenants.some((item) => item.id === model.value.tenant_id)) {
-        model.value.tenant_id = tenants[0]?.id;
+      login_input.value = res.data;
+      if (!tenants.some((item) => item.id === login_input.value.tenant_id)) {
+        login_input.value.tenant_id = tenants[0]?.id;
       }
     }
-  } catch (err) {
-  }
+  } catch (err) { /* empty */ }
 }
 
 async function initFrame() {
@@ -212,6 +216,9 @@ async function initFrame() {
 onLoad(async function(query) {
   if (query?.redirect_uri) {
     redirect_uri = decodeURIComponent(query.redirect_uri);
+  }
+  if (query?.redirect_action) {
+    redirect_action = decodeURIComponent(query.redirect_action);
   }
   await initFrame();
 });

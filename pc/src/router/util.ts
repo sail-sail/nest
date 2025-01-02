@@ -3,6 +3,7 @@ import type {
 } from "vue";
 
 import type {
+  Router,
   RouteRecordRaw,
 } from "vue-router";
 
@@ -86,6 +87,7 @@ export function getRouterPaths(
 
 export async function getComponent(path0: string): Promise<Component> {
   const router = getRouter(path0);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const compFn = router?.components?.default as any;
   if (compFn instanceof Function) {
     const comp = await compFn();
@@ -95,15 +97,18 @@ export async function getComponent(path0: string): Promise<Component> {
 }
 
 /**
- * 根据业务类型获取路由
+ * 根据路由名称获取路由
  */
-export function getRouterByBizType(bizType?: string) {
-  if (!bizType) {
+export function getRouterByName(
+  router0: Router,
+  name?: string,
+) {
+  if (!name) {
     return;
   }
   const routers = router0.getRoutes();
   function tmpFn(router: RouteRecordRaw) {
-    if (router.meta?.bizType === bizType) {
+    if (router.name === name) {
       return router;
     }
     if (router.children) {

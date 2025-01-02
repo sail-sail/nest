@@ -82,7 +82,9 @@ export const canSortInApiLoginLog = {
 
 /** 登录日志 检测字段是否允许前端排序 */
 export function checkSortLoginLog(sort?: SortInput[]) {
-  if (!sort) return;
+  if (!sort) {
+    return;
+  }
   for (const item of sort) {
     const order = item.order;
     if (
