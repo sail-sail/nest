@@ -124,9 +124,8 @@ async function initFrame() {
   }
 }
 
-usrStore.onLogin(initFrame);
-
 initFrame();
+
 </script>
 
 <style scoped>

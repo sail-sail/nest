@@ -53,7 +53,7 @@
       </el-checkbox>
     </template>
     <template
-      v-for="(item, key, index) in $slots"
+      v-for="(key, index) in keys"
       :key="index"
       #[key]
     >
@@ -236,9 +236,11 @@ import {
   copyText,
 } from "@/utils/common";
 
-const t = getCurrentInstance();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const keys = Object.keys(slots);
 
-const usrStore = useUsrStore();
+const t = getCurrentInstance();
 
 const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -277,6 +279,7 @@ const props = withDefaults(
     multiple?: boolean;
     showSelectAll?: boolean;
     init?: boolean;
+    pageInited?: boolean;
     disabled?: boolean;
     readonly?: boolean;
     placeholder?: string | null;
@@ -302,6 +305,7 @@ const props = withDefaults(
     multiple: false,
     showSelectAll: true,
     init: true,
+    pageInited: undefined,
     disabled: undefined,
     readonly: undefined,
     placeholder: undefined,
@@ -732,8 +736,6 @@ async function initFrame() {
 }
 
 initFrame();
-
-usrStore.onLogin(refreshEfc);
 
 onMounted(() => {
   refreshWrapperHeight();
