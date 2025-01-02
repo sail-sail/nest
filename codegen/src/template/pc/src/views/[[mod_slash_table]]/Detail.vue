@@ -393,7 +393,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     plain
                     @click="<#=column_name#>OpenAddDialog"
                   >
-                    {{ ns("新增") }} {{ ns("<#=foreignSchema.opts.table_comment#>") }}
+                    {{ ns("新增") }}{{ ns("<#=foreignSchema.opts.table_comment#>") }}
                   </el-button>
                 </div>
               </template>
@@ -1223,7 +1223,9 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     @click="<#=inline_column_name#>Add"
                   >
                     {{ ns('新增') }}
-                  </el-button>
+                  </el-button><#
+                  if (!opts?.noDelete) {
+                  #>
                   
                   <el-button
                     v-else
@@ -1238,7 +1240,9 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     @click="<#=inline_column_name#>Remove(row)"
                   >
                     {{ ns('删除') }}
-                  </el-button>
+                  </el-button><#
+                  }
+                  #>
                   
                 </template>
               </el-table-column>
