@@ -579,7 +579,9 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           <ElIconCirclePlus />
         </template>
         <span>{{ ns('新增') }}</span>
-      </el-button>
+      </el-button><#
+        if (opts.noCopy !== true) {
+      #>
       
       <el-button
         v-if="permit('add') && !isLocked"
@@ -592,6 +594,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
         </template>
         <span>{{ ns('复制') }}</span>
       </el-button><#
+        }
+      #><#
       }
       #><#
       if (opts.noEdit !== true) {
