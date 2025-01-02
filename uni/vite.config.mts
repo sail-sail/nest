@@ -21,11 +21,11 @@ const pluginsH5: PluginOption[] = [ ];
 const isH5 = process.env.UNI_PLATFORM === "h5";
 
 if (isH5) {
-  pluginsH5.push(TurboConsole());
+  pluginsH5.push(TurboConsole() as any);
   pluginsH5.push(
     Inspector({
       toggleButtonPos: "top-left",
-    }),
+    }) as any,
   );
 }
 
@@ -36,7 +36,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: "modern-compiler",
-        additionalData: `@import "@/assets/style/uni.scss";`,
+        additionalData: `@use "@/assets/style/uni.scss";`,
       },
     },
   },

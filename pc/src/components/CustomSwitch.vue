@@ -8,6 +8,9 @@
   :active-value="props.activeValue"
   :inactive-value="props.inactiveValue"
   :disabled="props.disabled"
+  :style="{
+    '--el-transition-duration': transitionDuration,
+  }"
   @change="onChange"
 >
   <template
@@ -60,6 +63,7 @@ const props = withDefaults(
     trueReadonlyLabel?: string;
     falseReadonlyLabel?: string;
     notBorder?: boolean;
+    pageInited?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -70,6 +74,7 @@ const props = withDefaults(
     trueReadonlyLabel: "是",
     falseReadonlyLabel: "否",
     notBorder: undefined,
+    pageInited: undefined,
   },
 );
 
@@ -79,6 +84,17 @@ watch(
   () => props.modelValue,
   () => {
     modelValue = props.modelValue;
+  },
+);
+
+let transitionDuration = $ref<"0s" | undefined>();
+
+watch(
+  () => props.pageInited,
+  async () => {
+    transitionDuration = "0s";
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    transitionDuration = props.pageInited === false ? "0s" : undefined;
   },
 );
 
