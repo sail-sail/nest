@@ -995,7 +995,7 @@ export async function getSchema(
   // canSortInApi
   for (let i = 0; i < tables[table_name].columns.length; i++) {
     const column = tables[table_name].columns[i];
-    if (column.canSortInApi == null && column.sortable) {
+    if (column.canSortInApi == null && column.sortable || tables[table_name]?.opts?.defaultSort?.prop === column.COLUMN_NAME) {
       column.canSortInApi = true;
     }
   }
