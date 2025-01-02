@@ -444,6 +444,10 @@ html:is(.dark) {
   color: var(--readonly_font_color);
 }
 
+.custom_input_placeholder {
+  color: var(--readonly_font_color);
+}
+
 .v-header-order-drag-sortable-drag {
   color: red;
 }
