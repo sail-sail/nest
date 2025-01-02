@@ -229,6 +229,7 @@ defineExpose({ tabs_divRef: $$(tabs_divRef) });
   }
 }
 .tab_active {
+  background-color: var(--el-menu-hover-bg-color);
   .tab_label {
     color: var(--el-menu-active-color);
   }
