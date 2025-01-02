@@ -56,6 +56,11 @@
     },
     "scm.diffDecorationsIgnoreTrimWhitespace": "true",
     "diffEditor.ignoreTrimWhitespace": true,
-    "explorer.copyRelativePathSeparator": "/"
+    "explorer.copyRelativePathSeparator": "/",
+    "vue.autoInsert.dotValue": true,
+    "vue.inlayHints.destructuredProps": true,
+    "vue.inlayHints.inlineHandlerLeading": false,
+    "vue.inlayHints.missingProps": true,
+    "vue.updateImportsOnFileMove.enabled": false
   }
 }
