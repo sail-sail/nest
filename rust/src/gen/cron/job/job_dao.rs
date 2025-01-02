@@ -685,6 +685,10 @@ pub async fn find_count(
     .map(|item| item.total)
     .unwrap_or_default();
   
+  if total > MAX_SAFE_INTEGER {
+    return Err(anyhow!("total > MAX_SAFE_INTEGER"));
+  }
+  
   Ok(total)
 }
 
