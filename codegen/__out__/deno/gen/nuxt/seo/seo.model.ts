@@ -97,7 +97,9 @@ export const canSortInApiSeo = {
 
 /** SEO优化 检测字段是否允许前端排序 */
 export function checkSortSeo(sort?: SortInput[]) {
-  if (!sort) return;
+  if (!sort) {
+    return;
+  }
   for (const item of sort) {
     const order = item.order;
     if (
