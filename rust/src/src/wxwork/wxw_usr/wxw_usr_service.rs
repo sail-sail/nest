@@ -1,4 +1,5 @@
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
+
 use tokio::sync::Mutex;
 
 use anyhow::{Result, anyhow};
@@ -306,15 +307,17 @@ pub async fn wxw_login_by_code(
   Ok(wxw_login_by_code)
 }
 
-lazy_static! {
-  static ref WXW_SYNC_USR_LOCK: Arc<Mutex<bool>> = Arc::new(Mutex::new(false));
+static WXW_SYNC_USR_LOCK: OnceLock<Arc<Mutex<bool>>> = OnceLock::new();
+
+fn get_wxw_sync_usr_lock() -> &'static Arc<Mutex<bool>> {
+  WXW_SYNC_USR_LOCK.get_or_init(|| Arc::new(Mutex::new(false)))
 }
 
 /// 同步企微用户
 pub async fn wxw_sync_usr(
   host: String,
 ) -> Result<i32> {
-  let mut wxw_sync_usr_lock = WXW_SYNC_USR_LOCK.lock().await;
+  let mut wxw_sync_usr_lock = get_wxw_sync_usr_lock().lock().await;
   if *wxw_sync_usr_lock {
     return Err(anyhow!("企微用户正在同步中, 请稍后再试"));
   }

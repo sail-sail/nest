@@ -18,7 +18,7 @@ use crate::r#gen::wxwork::wxw_msg::wxw_msg_model::WxwMsgInput;
 
 use super::wxw_msg_model::SendCardMsgInput;
 
-use crate::common::util::http::CLIENT;
+use crate::common::util::http::client;
 
 #[derive(Serialize, Deserialize)]
 struct SendRes {
@@ -64,7 +64,7 @@ async fn fetch_send_card_msg(
     &wxw_app_model,
   ).await?;
   let agentid = wxw_app_model.agentid;
-  let res = CLIENT.post(&url)
+  let res = client().post(&url)
     .json(&json!({
       "touser": input.touser,
       "msgtype": "textcard",
