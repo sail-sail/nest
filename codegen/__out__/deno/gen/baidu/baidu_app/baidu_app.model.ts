@@ -89,7 +89,9 @@ export const canSortInApiBaiduApp = {
 
 /** 百度应用 检测字段是否允许前端排序 */
 export function checkSortBaiduApp(sort?: SortInput[]) {
-  if (!sort) return;
+  if (!sort) {
+    return;
+  }
   for (const item of sort) {
     const order = item.order;
     if (
