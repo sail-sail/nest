@@ -68,7 +68,9 @@ export const canSortInApiSmsSendRecord = {
 
 /** 短信发送记录 检测字段是否允许前端排序 */
 export function checkSortSmsSendRecord(sort?: SortInput[]) {
-  if (!sort) return;
+  if (!sort) {
+    return;
+  }
   for (const item of sort) {
     const order = item.order;
     if (
