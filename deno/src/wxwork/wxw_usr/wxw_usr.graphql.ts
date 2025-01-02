@@ -51,7 +51,7 @@ type Query {
 type Mutation {
   
   "微信企业号登录"
-  wxwLoginByCode(input: WxwLoginByCodeInput!): WxwLoginByCode!
+  wxwLoginByCode(input: WxwLoginByCodeInput!): WxwLoginByCode
   
   wxwSyncUsr(
     "域名"

@@ -77,10 +77,11 @@ export async function wxwGetAppid(
 
 /**
  * 企业微信单点登录
+ * 如果 code 有效, 则返回授权码, 否则返回 undefined
  */
 export async function wxwLoginByCode(
   input: WxwLoginByCodeInput,
-): Promise<WxwLoginByCode> {
+): Promise<WxwLoginByCode | undefined> {
   const host = input.host;
   const code = input.code;
   const lang = input.lang || "zh_cn";
@@ -106,12 +107,15 @@ export async function wxwLoginByCode(
   const wxw_app_id: WxwAppId = wxw_appModel.id;
   const tenant_id: TenantId = wxw_appModel.tenant_id!;
   
-  const {
-    userid,
-  } = await getuserinfoByCode(
+  const userinfo = await getuserinfoByCode(
     wxw_app_id,
     code,
   );
+  const userid = userinfo?.userid;
+  
+  if (!userid) {
+    return;
+  }
   
   const wxwUser = await getuser(
     wxw_app_id,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type {
   WxwUsrInput as WxwUsrInputType,
   WxwUsrModel as WxwUsrModelType,
@@ -14,6 +15,7 @@ declare global {
   }
 
   interface WxwUsrSearch extends WxwUsrSearchType {
+    is_deleted?: 0 | 1;
   }
 
   interface WxwUsrFieldComment extends WxwUsrFieldCommentType {

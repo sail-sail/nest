@@ -404,6 +404,7 @@ export async function getJsapiTicketAgentConfigSignature(
 /**
  * 获取访问用户身份
  * https://developer.work.weixin.qq.com/document/path/91023
+ * 如果 code 无效, 已经被使用过, 或则不合法, 则返回 undefined
  * @param code 通过成员授权获取到的code
  */
 export async function getuserinfoByCode(
@@ -413,7 +414,7 @@ export async function getuserinfoByCode(
 ): Promise<{
   userid: string;
   user_ticket: string;
-}> {
+} | undefined> {
   const access_token = await getAccessToken(
     wxw_app_id,
     force,
@@ -435,14 +436,18 @@ export async function getuserinfoByCode(
     userid: string;
     user_ticket: string;
   } = await res.json();
-  if (data.errcode === 42001 && !force) {
+  const errcode = data.errcode;
+  if (errcode === 42001 && !force) {
     return await getuserinfoByCode(
       wxw_app_id,
       code,
       true,
     );
   }
-  if (data.errcode != 0) {
+  if (errcode === 40029) {
+    return;
+  }
+  if (errcode != 0) {
     error(data);
     throw data.errmsg;
   }
