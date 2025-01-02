@@ -78,7 +78,9 @@ export const canSortInApiDictDetail = {
 
 /** 系统字典明细 检测字段是否允许前端排序 */
 export function checkSortDictDetail(sort?: SortInput[]) {
-  if (!sort) return;
+  if (!sort) {
+    return;
+  }
   for (const item of sort) {
     const order = item.order;
     if (

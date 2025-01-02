@@ -8,10 +8,13 @@
   :active-value="props.activeValue"
   :inactive-value="props.inactiveValue"
   :disabled="props.disabled"
+  :style="{
+    '--el-transition-duration': transitionDuration,
+  }"
   @change="onChange"
 >
   <template
-    v-for="(item, key, index) in $slots"
+    v-for="(key, index) in keys"
     :key="index"
     #[key]
   >
@@ -31,6 +34,10 @@
 </template>
 
 <script lang="ts" setup>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const keys = Object.keys(slots);
+
 const {
   ns,
   initSysI18ns,
@@ -56,6 +63,7 @@ const props = withDefaults(
     trueReadonlyLabel?: string;
     falseReadonlyLabel?: string;
     notBorder?: boolean;
+    pageInited?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -66,6 +74,7 @@ const props = withDefaults(
     trueReadonlyLabel: "是",
     falseReadonlyLabel: "否",
     notBorder: undefined,
+    pageInited: undefined,
   },
 );
 
@@ -75,6 +84,17 @@ watch(
   () => props.modelValue,
   () => {
     modelValue = props.modelValue;
+  },
+);
+
+let transitionDuration = $ref<"0s" | undefined>();
+
+watch(
+  () => props.pageInited,
+  async () => {
+    transitionDuration = "0s";
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    transitionDuration = props.pageInited === false ? "0s" : undefined;
   },
 );
 
