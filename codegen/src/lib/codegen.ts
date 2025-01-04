@@ -613,7 +613,7 @@ export async function gitDiffOut() {
   await treeDir();
   await unlink(`${ projectPh }/codegening.txt`);
   if (applyHasErr) {
-    console.log(`代码合并失败!`);
+    throw `代码合并失败!`;
   } else {
     console.log(`代码合并成功!`);
   }
