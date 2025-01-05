@@ -9,7 +9,7 @@ use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::error::BoxDynError;
@@ -1054,13 +1054,13 @@ impl From<UsrType> for ArgType {
 }
 
 impl FromStr for UsrType {
-  type Err = anyhow::Error;
+  type Err = color_eyre::eyre::Error;
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
       "login" => Ok(Self::Login),
       "api" => Ok(Self::Api),
-      _ => Err(anyhow::anyhow!("UsrType can't convert from {s}")),
+      _ => Err(eyre!("UsrType can't convert from {s}")),
     }
   }
 }
@@ -1111,7 +1111,7 @@ pub fn check_sort_usr(
       continue;
     }
     if !get_can_sort_in_api_usr.contains(&prop) {
-      return Err(anyhow!("check_sort_usr: {}", serde_json::to_string(item)?));
+      return Err(eyre!("check_sort_usr: {}", serde_json::to_string(item)?));
     }
   }
   

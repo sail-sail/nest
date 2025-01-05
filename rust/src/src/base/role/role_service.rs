@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 use crate::common::context::{get_auth_id_err, Options};
 
 use crate::r#gen::base::role::role_dao::find_all as find_all_role;

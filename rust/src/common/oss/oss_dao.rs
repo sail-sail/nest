@@ -1,5 +1,5 @@
 use std::env;
-use anyhow::Result;
+use color_eyre::eyre::Result;
 use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command};
 use s3::request::tokio_backend::HyperRequest;
 use s3::request::Request;

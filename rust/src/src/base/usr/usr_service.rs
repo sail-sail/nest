@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::{Result,eyre};
 use crate::common::context::{
   Ctx,
   Options,
@@ -80,14 +80,14 @@ pub async fn login(
       "用户名或密码不能为空".to_owned(),
       None,
     ).await?;
-    return Err(anyhow::anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   if tenant_id.is_empty() {
     let err_msg = n_route.n(
       "请选择租户".to_owned(),
       None,
     ).await?;
-    return Err(anyhow::anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   
   // 获取租户
@@ -148,7 +148,7 @@ pub async fn login(
         "密码错误次数过多, 请10分钟后再试".to_owned(),
         None,
       ).await?;
-      return Err(anyhow::anyhow!(err_msg));
+      return Err(eyre!(err_msg));
     }
   }
   
@@ -272,7 +272,7 @@ pub async fn select_lang(
 ) -> Result<String> {
   
   if lang.is_empty() {
-    return Err(anyhow::anyhow!("语言编码不能为空"));
+    return Err(eyre!("语言编码不能为空"));
   }
   
   let mut auth_model = get_auth_model_err()?;
@@ -303,28 +303,28 @@ pub async fn change_password(
       "旧密码不能为空".to_owned(),
       None,
     ).await?;
-    return Err(anyhow::anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   if password.is_empty() {
     let err_msg = n_route.n(
       "新密码不能为空".to_owned(),
       None,
     ).await?;
-    return Err(anyhow::anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   if confirm_password.is_empty() {
     let err_msg = n_route.n(
       "确认密码不能为空".to_owned(),
       None,
     ).await?;
-    return Err(anyhow::anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   if password != confirm_password {
     let err_msg = n_route.n(
       "两次输入的密码不一致".to_owned(),
       None,
     ).await?;
-    return Err(anyhow::anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   
   let auth_model = get_auth_model_err()?;
@@ -353,7 +353,7 @@ pub async fn change_password(
       "旧密码错误".to_owned(),
       None,
     ).await?;
-    return Err(anyhow::anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   
   update_by_id_usr(

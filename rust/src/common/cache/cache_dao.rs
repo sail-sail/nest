@@ -1,5 +1,5 @@
 use std::env;
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use std::sync::OnceLock;
 
