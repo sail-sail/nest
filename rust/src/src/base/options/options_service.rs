@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use super::options_dao;
 use crate::r#gen::base::options::options_model::OptionsModel;

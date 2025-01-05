@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use crate::common::context::get_auth_tenant_id;
 

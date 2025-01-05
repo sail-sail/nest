@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;

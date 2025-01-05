@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use crate::common::context::{get_auth_id_err, Options};
 
@@ -29,7 +29,7 @@ pub async fn clear_cache(
   let usrername = usr_model.username;
   
   if usrername != "admin" {
-    anyhow::bail!("只有超级管理员 admin 才能清空缓存");
+    color_eyre::eyre::bail!("只有超级管理员 admin 才能清空缓存");
   }
   
   cache_dao::flash_db().await?;

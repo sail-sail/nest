@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use super::dictbiz_detail_model::GetDictbiz;
 use super::dictbiz_detail_dao;

@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use super::field_permit_service::get_field_permit as get_field_permit_service;
 

@@ -1,4 +1,5 @@
-use anyhow::Result;
+#[allow(unused_imports)]
+use color_eyre::eyre::{Result,eyre};
 use async_graphql::{Context, Object};
 
 #[allow(unused_imports)]
@@ -127,7 +128,7 @@ impl OperationRecordGenMutation {
     ctx: &Context<'_>,
     input: OperationRecordInput,
   ) -> Result<OperationRecordId> {
-    Err(anyhow::anyhow!(""))
+    Err(eyre!(""))
   }
   
   /// 操作记录根据id修改租户id
