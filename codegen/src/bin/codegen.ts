@@ -3,7 +3,10 @@ import {
   initContext,
   type Context,
 } from "../lib/information_schema";
+
 import { Command } from "commander";
+import { Chalk } from "chalk";
+
 import {
   removeExcelTemplate,
   codegen,
@@ -11,8 +14,14 @@ import {
   // genMenu,
   denoGenTypes,
 } from "../lib/codegen";
+
 import tables from "../tables/tables";
-import { gitDiffOut } from "../lib/codegen";
+
+import {
+  gitDiffOut,
+} from "../lib/codegen";
+
+const chalk = new Chalk();
 
 async function exec(context: Context, table_names0: string[]) {
   const table_names: string[] = Object.keys(tables).filter((item) => item);
@@ -58,7 +67,7 @@ const options = program.opts();
     await gitDiffOut();
     await denoGenTypes();
   } catch(err) {
-    console.error(err);
+    console.error(chalk.red(err));
   } finally {
     process.exit(0);
   }
