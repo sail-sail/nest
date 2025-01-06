@@ -513,7 +513,6 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: WxPayNoticeId;
       ids?: WxPayNoticeId[];
       is_deleted?: 0 | 1;
     };
@@ -565,7 +564,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  if (dialogAction === "copy" && !model?.id) {
+  if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
   if (action === "add") {
@@ -580,14 +579,15 @@ async function showDialog(
       ...model,
     };
   } else if (dialogAction === "copy") {
-    if (!model?.id) {
+    const id = model?.ids?.[0];
+    if (!id) {
       return await dialogRes.dialogPrm;
     }
     const [
       data,
     ] = await Promise.all([
       findOneModel({
-        id: model.id,
+        id,
         is_deleted,
       }),
     ]);
