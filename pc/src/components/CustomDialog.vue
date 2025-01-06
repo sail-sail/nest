@@ -46,16 +46,18 @@
       <template
         v-if="fullscreen"
       >
-        <ElIconFullScreen
-          v-if="!isFullscreen"
+        <div
+          un-flex="~"
           class="full_but"
           @click="setFullscreen"
-        ></ElIconFullScreen>
-        <ElIconCopyDocument
-          v-if="isFullscreen"
-          class="full_but"
-          @click="setFullscreen"
-        ></ElIconCopyDocument>
+        >
+          <ElIconFullScreen
+            v-if="!isFullscreen"
+          ></ElIconFullScreen>
+          <ElIconCopyDocument
+            v-if="isFullscreen"
+          ></ElIconCopyDocument>
+        </div>
       </template>
     </div>
   </template>
