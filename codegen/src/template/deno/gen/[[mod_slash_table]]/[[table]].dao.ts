@@ -3958,6 +3958,11 @@ for (const key of redundLblKeys) {
       }).join("");
       const inline_column_name = inlineForeignTab.column_name;
       const inline_foreign_type = inlineForeignTab.foreign_type || "one2many";
+      const inline_column = inlineForeignSchema.columns.find((item) => item.COLUMN_NAME === inlineForeignTab.column);
+      if (!inline_column) {
+        throw `表: ${ mod }_${ table } 的 inlineForeignTabs 中的 ${ inlineForeignTab.mod }_${ inlineForeignTab.table } 的列 ${ inlineForeignTab.column } 不存在`;
+      }
+      const modelLabel = inline_column.modelLabel;
     #>
     
     // <#=inlineForeignTab.label#><#
@@ -3967,14 +3972,24 @@ for (const key of redundLblKeys) {
     if (<#=inline_column_name#>_input && <#=inline_column_name#>_input.length > 0) {
       for (let i = 0; i < <#=inline_column_name#>_input.length; i++) {
         const model = <#=inline_column_name#>_input[i];
-        model.<#=inlineForeignTab.column#> = input.id;
+        model.<#=inlineForeignTab.column#> = input.id;<#
+        if (modelLabel) {
+        #>
+        model.<#=modelLabel#> = input.<#=inline_column.foreignKey.lbl#>;<#
+        }
+        #>
         await create<#=Table_Up#>(model, options);
       }
     }<#
       } else if (inline_foreign_type === "one2one") {
     #>
     if (input.<#=inline_column_name#>) {
-      input.<#=inline_column_name#>.<#=inlineForeignTab.column#> = input.id;
+      input.<#=inline_column_name#>.<#=inlineForeignTab.column#> = input.id;<#
+      if (modelLabel) {
+      #>
+      input.<#=inline_column_name#>.<#=modelLabel#> = input.<#=inline_column.foreignKey.lbl#>;<#
+      }
+      #>
       await create<#=Table_Up#>(input.<#=inline_column_name#>, options);
     }<#
       }

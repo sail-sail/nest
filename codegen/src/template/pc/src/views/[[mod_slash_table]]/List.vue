@@ -1849,8 +1849,12 @@ if (mod === "base" && table === "role") {
 const usrStore = useUsrStore();<#
 }
 #>
-const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
+const permitStore = usePermitStore();<#
+if (tableFieldPermit) {
+#>
+const fieldPermitStore = useFieldPermitStore();<#
+}
+#>
 const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
