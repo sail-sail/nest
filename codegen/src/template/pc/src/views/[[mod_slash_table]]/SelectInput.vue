@@ -44,7 +44,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     @keydown.enter="onEnter"
   >
     <template
-      v-for="(item, key, index) in $slots"
+      v-for="(key, index) in slotKeys"
       :key="index"
       #[key]
     >
@@ -124,6 +124,10 @@ import {
   findAll,
   getPagePath,
 } from "./Api";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slots: any = useSlots();
+const slotKeys = Object.keys(slots);
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null): void,
