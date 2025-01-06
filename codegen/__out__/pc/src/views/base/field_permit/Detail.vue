@@ -326,7 +326,6 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: FieldPermitId;
       ids?: FieldPermitId[];
       is_deleted?: 0 | 1;
     };
@@ -378,7 +377,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  if (dialogAction === "copy" && !model?.id) {
+  if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
   if (action === "add") {
@@ -396,7 +395,8 @@ async function showDialog(
       order_by: order_by + 1,
     };
   } else if (dialogAction === "copy") {
-    if (!model?.id) {
+    const id = model?.ids?.[0];
+    if (!id) {
       return await dialogRes.dialogPrm;
     }
     const [
@@ -404,7 +404,7 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       findOneModel({
-        id: model.id,
+        id,
       }),
       findLastOrderBy(),
     ]);

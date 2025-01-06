@@ -296,7 +296,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
-              :inited
+              :page-inited="inited"
             ></UploadImage><#
             } else if (
               foreignKey
@@ -1428,7 +1428,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
-                    :inited
+                    :page-inited="inited"
                   ></UploadImage><#
                   } else if (
                     foreignKey
@@ -3749,7 +3749,6 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: <#=Table_Up#>Id;
       ids?: <#=Table_Up#>Id[];
       is_deleted?: 0 | 1;
     };
@@ -3850,7 +3849,7 @@ async function showDialog(
     }
     #>
   };
-  if (dialogAction === "copy" && !model?.id) {
+  if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
   if (action === "add") {
@@ -4024,7 +4023,8 @@ async function showDialog(
       #>
     };
   } else if (dialogAction === "copy") {
-    if (!model?.id) {
+    const id = model?.ids?.[0];
+    if (!id) {
       return await dialogRes.dialogPrm;
     }
     const [
@@ -4076,7 +4076,7 @@ async function showDialog(
       #>
     ] = await Promise.all([
       findOneModel({
-        id: model.id,<#
+        id,<#
         if (hasIsDeleted) {
         #>
         is_deleted,<#
