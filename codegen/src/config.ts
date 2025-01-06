@@ -761,6 +761,11 @@ export interface TablesConfigItem {
     noAdd?: boolean;
     
     /**
+     * Detail隐藏保持并继续按钮
+     */
+    hideSaveAndCopy?: boolean;
+    
+    /**
      * 不显示复制按钮
      */
     noCopy?: boolean;
