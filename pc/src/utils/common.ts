@@ -129,10 +129,43 @@ export function showUploadMsg(
   };
 }
 
+/**
+ * 复制文本到剪贴板
+ */
 export async function copyText(text: string) {
   try {
     await navigator.clipboard.writeText(text);
   } catch (err) {
     console.error(err);
+  }
+}
+
+/**
+ * 浏览器进入全屏
+ */
+export function enterFullscreen() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const el = document.documentElement as any;
+  const rfs = el.requestFullscreen
+    || el.webkitRequestFullScreen
+    || el.mozRequestFullScreen
+    || el.msRequestFullscreen;
+  if (rfs) {
+    rfs.call(el);
+  }
+}
+
+/**
+ * 浏览器退出全屏
+ */
+export function exitFullscreen() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const document = window.document as any;
+  const efs = document.exitFullscreen
+    || document.webkitExitFullscreen
+    || document.mozCancelFullScreen
+    || document.msExitFullscreen;
+  if (efs) {
+    efs.call(document);
   }
 }
