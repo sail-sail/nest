@@ -143,9 +143,15 @@ export async function copyText(text: string) {
 /**
  * 浏览器进入全屏
  */
-export function enterFullscreen() {
+export function enterFullscreen(el0?: HTMLElement) {
+  if (!el0) {
+    el0 = document.documentElement;
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const el = document.documentElement as any;
+  const el = el0 as any;
+  if (!el) {
+    return;
+  }
   const rfs = el.requestFullscreen
     || el.webkitRequestFullScreen
     || el.mozRequestFullScreen
