@@ -120,7 +120,7 @@
                     plain
                     @click="domain_idsOpenAddDialog"
                   >
-                    {{ ns("新增") }} {{ ns("域名") }}
+                    {{ ns("新增") }}{{ ns("域名") }}
                   </el-button>
                 </div>
               </template>

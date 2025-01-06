@@ -5,6 +5,11 @@
   un-items-center
   un-w="full"
   class="custom_input"
+  :class="{
+    'custom_input_align_left': props.align === 'left',
+    'custom_input_align_center': props.align === 'center',
+    'custom_input_align_right': props.align === 'right',
+  }"
 >
   <el-input
     ref="inputRef"
@@ -110,6 +115,7 @@ const props = withDefaults(
     placeholder?: string;
     readonlyPlaceholder?: string;
     isReadonlyBorder?: boolean;
+    align?: "left" | "center" | "right";
   }>(),
   {
     modelValue: undefined,
@@ -120,6 +126,7 @@ const props = withDefaults(
     placeholder: undefined,
     readonlyPlaceholder: undefined,
     isReadonlyBorder: true,
+    align: undefined,
   },
 );
 
@@ -186,6 +193,42 @@ defineExpose({
 .custom_input_readonly_no_border {
   .custom_input_readonly_content {
     @apply p-y-1.5;
+  }
+}
+.custom_input {
+  :deep(.el-input__wrapper) {
+    .el-input__inner {
+      @apply m-r-5.5;
+    }
+  }
+  :deep(.el-input__wrapper:has(.el-input__suffix)) {
+    .el-input__inner {
+      @apply m-r-0;
+    }
+  }
+}
+.custom_input_align_left {
+  .custom_input_readonly_content {
+    @apply text-left;
+  }
+  :deep(el-input__inner) {
+    @apply text-left;
+  }
+}
+.custom_input_align_center {
+  .custom_input_readonly_content {
+    @apply text-center;
+  }
+  :deep(.el-input__inner) {
+    @apply text-center;
+  }
+}
+.custom_input_align_right {
+  .custom_input_readonly_content {
+    @apply text-right;
+  }
+  :deep(.el-input__inner) {
+    @apply text-right;
   }
 }
 </style>
