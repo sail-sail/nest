@@ -457,6 +457,14 @@ html:is(.dark) {
   // flex-wrap: nowrap;
   // overflow: hidden;
 }
+.el-form-item .el-form-item__content:has(> .custom_input_align_center)>.el-form-item__error {
+  left: 50%;
+  transform: translateX(calc(-50% - 11px));
+}
+.el-form-item .el-form-item__content:has(> .custom_input_align_right)>.el-form-item__error {
+  left: auto;
+  right: 0;
+}
 
 .inlineMany2manyTab_table {
   .dict_select_readonly,
