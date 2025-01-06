@@ -709,7 +709,6 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
