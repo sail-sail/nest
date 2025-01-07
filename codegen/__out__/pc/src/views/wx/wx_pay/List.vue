@@ -548,7 +548,8 @@
               <template #default="{ row, column }">
                 <LinkAtt
                   v-model="row[column.property]"
-                  :is-locked="isLocked"
+                  :is-public="false"
+                  :readonly="isLocked"
                   @change="onLinkAtt(row, column.property)"
                 ></LinkAtt>
               </template>
@@ -564,7 +565,8 @@
               <template #default="{ row, column }">
                 <LinkAtt
                   v-model="row[column.property]"
-                  :is-locked="isLocked"
+                  :is-public="false"
+                  :readonly="isLocked"
                   @change="onLinkAtt(row, column.property)"
                 ></LinkAtt>
               </template>
@@ -1373,7 +1375,7 @@ async function onCancelExport() {
 }
 
 async function onLinkAtt(row: WxPayModel, key: keyof WxPayModel) {
-  await updateById(row.id!, { [key]: row[key] });
+  await updateById(row.id, { [key]: row[key] });
 }
 
 /** 打开新增页面 */
