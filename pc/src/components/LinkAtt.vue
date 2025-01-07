@@ -1,9 +1,13 @@
 <template>
 <el-link
+  v-bind="$attrs"
   type="primary"
   @click="linkClk"
 >
-  <slot name="default">
+  <slot
+    name="default"
+    :count="attLen"
+  >
     {{ attLen }}
   </slot>
 </el-link>
@@ -23,7 +27,7 @@ const emit = defineEmits([
 
 const props = withDefaults(
   defineProps<{
-    modelValue: string|null;
+    modelValue?: string | null;
     maxSize?: number;
     maxFileSize?: number;
     readonly?: boolean;
