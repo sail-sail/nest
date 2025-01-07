@@ -268,7 +268,7 @@ export function getDownloadUrl(
     filename?: string;
     inline?: "0"|"1";
   } | string,
-  type: "oss" | "tmpfile" = "tmpfile",
+  type: "oss" | "tmpfile" = "oss",
 ): string {
   const usrStore = useUsrStore(cfg.pinia);
   const params = new URLSearchParams();

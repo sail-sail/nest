@@ -302,6 +302,10 @@ import {
 import VueOfficeExcel from "@vue-office/excel";
 import VueOfficeDocx from "@vue-office/docx";
 
+import {
+  saveAs,
+} from "file-saver";
+
 const {
   ns,
   nsAsync,
@@ -388,7 +392,10 @@ const urlList = $computed(() => {
     if (lbl.length > 45) {
       lbl = lbl.substring(0, 45) + "...";
     }
-    const url = `${ baseURL }/api/oss/download/${ encodeURIComponent(lbl) }?id=${ encodeURIComponent(id) }`;
+    const url = getDownloadUrl({
+      id,
+      filename: lbl,
+    });
     list.push(url);
   }
   return list;
@@ -571,8 +578,8 @@ function downloadClk() {
   }
   const ids = modelValue.split(",").filter((x) => x);
   const id = ids[nowIndex];
-  const url = `${ baseURL }/api/oss/download/?inline=0&id=${ encodeURIComponent(id) }`;
-  window.location.href = url;
+  const url = getDownloadUrl(id);
+  saveAs(url);
 }
 
 // 打印

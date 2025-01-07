@@ -88,6 +88,9 @@ const old_mod = mod;
 const old_table = table;
 
 const tableFieldPermit = columns.some((item) => item.fieldPermit);
+
+const hasImg = columns.some((item) => item.isImg);
+const hasAtt = columns.some((item) => item.isAtt);
 #>
 <CustomDialog
   ref="customDialogRef"
@@ -187,7 +190,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           if (column.ignoreCodegen) continue;
           if (column.onlyCodegenDeno) continue;
           if (column.noAdd && column.noEdit) continue;
-          if (column.isAtt) continue;
+          // if (column.isAtt) continue;
           const column_name = column.COLUMN_NAME;
           if (column_name === "id") continue;
           if (column_name === "is_locked") continue;
@@ -685,6 +688,43 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               }
               #>
             ></CustomInputNumber><#
+            } else if (column.isAtt) {
+            #>
+            <LinkAtt
+              v-model="dialogModel.<#=column_name#>"<#
+              if (column.attMaxSize > 1) {
+              #>
+              :max-size="<#=column.attMaxSize#>"<#
+              }
+              #><#
+              if (column.maxFileSize) {
+              #>
+              :maxFileSize="<#=column.maxFileSize#>"<#
+              }
+              #><#
+              if (column.attAccept) {
+              #>
+              accept="<#=column.attAccept#>"<#
+              }
+              #><#
+              if (column.isPublicAtt) {
+              #>
+              :is-public="true"<#
+              } else {
+              #>
+              :is-public="false"<#
+              }
+              #><#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked"<#
+              }
+              #>
+              un-m="l-1"
+            ></LinkAtt><#
             } else {
             #>
             <CustomInput

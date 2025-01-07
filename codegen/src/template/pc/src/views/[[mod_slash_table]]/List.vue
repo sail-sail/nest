@@ -1159,8 +1159,23 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                   #>
                   accept="<#=column.attAccept#>"<#
                   }
+                  #><#
+                  if (column.isPublicAtt) {
                   #>
-                  :is-locked="isLocked"
+                  :is-public="true"<#
+                  } else {
+                  #>
+                  :is-public="false"<#
+                  }
+                  #><#
+                  if (column.readonly) {
+                  #>
+                  :readonly="true"<#
+                  } else {
+                  #>
+                  :readonly="isLocked"<#
+                  }
+                  #>
                   @change="onLinkAtt(row, column.property)"
                 ></LinkAtt>
               </template>
@@ -2866,7 +2881,7 @@ if (hasAtt) {
 async function onLinkAtt(row: <#=modelName#>, key: keyof <#=modelName#>) {<#
     if (opts.noEdit !== true) {
 #>
-  await updateById(row.id!, { [key]: row[key] });<#
+  await updateById(row.id, { [key]: row[key] });<#
     }
   #>
 }<#
