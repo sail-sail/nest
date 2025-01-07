@@ -139,39 +139,3 @@ export async function copyText(text: string) {
     console.error(err);
   }
 }
-
-/**
- * 浏览器进入全屏
- */
-export function enterFullscreen(el0?: HTMLElement) {
-  if (!el0) {
-    el0 = document.documentElement;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const el = el0 as any;
-  if (!el) {
-    return;
-  }
-  const rfs = el.requestFullscreen
-    || el.webkitRequestFullScreen
-    || el.mozRequestFullScreen
-    || el.msRequestFullscreen;
-  if (rfs) {
-    rfs.call(el);
-  }
-}
-
-/**
- * 浏览器退出全屏
- */
-export function exitFullscreen() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const document = window.document as any;
-  const efs = document.exitFullscreen
-    || document.webkitExitFullscreen
-    || document.mozCancelFullScreen
-    || document.msExitFullscreen;
-  if (efs) {
-    efs.call(document);
-  }
-}

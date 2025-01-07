@@ -276,6 +276,9 @@ export function getDownloadUrl(
     model = { id: model };
   }
   params.set("id", model.id);
+  if (!model.id) {
+    return "";
+  }
   if (model.filename) {
     params.set("filename", model.filename);
   }
