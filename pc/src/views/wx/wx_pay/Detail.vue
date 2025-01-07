@@ -114,6 +114,34 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.public_key == null)">
+          <el-form-item
+            :label="n('公钥')"
+            prop="public_key"
+          >
+            <LinkAtt
+              v-model="dialogModel.public_key"
+              :is-public="false"
+              :readonly="isLocked"
+              un-m="l-1"
+            ></LinkAtt>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.private_key == null)">
+          <el-form-item
+            :label="n('私钥')"
+            prop="private_key"
+          >
+            <LinkAtt
+              v-model="dialogModel.private_key"
+              :is-public="false"
+              :readonly="isLocked"
+              un-m="l-1"
+            ></LinkAtt>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.v3_key == null)">
           <el-form-item
             :label="n('APIv3密钥')"
