@@ -116,7 +116,8 @@
       un-overflow-auto
       un-justify-center
       un-items-center
-      un-p="5"
+      un-p="x-5"
+      un-box-border
       un-pos="relative"
     >
       <template
@@ -280,6 +281,26 @@
         
       </div>
     </div>
+    
+    <div
+      un-p="y-2.5"
+      un-box-border
+      un-flex
+      un-justify-center
+      un-items-center
+    >
+      
+      <el-button
+        plain
+        @click="onClose"
+      >
+        <template #icon>
+          <ElIconCircleClose />
+        </template>
+        <span>{{ ns('关闭') }}</span>
+      </el-button>
+    </div>
+    
   </div>
   <input
     ref="fileRef"
@@ -701,5 +722,13 @@ function beforeClose(done: (cancel: boolean) => void) {
   });
 }
 
-defineExpose({ showDialog });
+async function onClose() {
+  onCloseResolve({
+    type: "cancel",
+  });
+}
+
+defineExpose({
+  showDialog,
+});
 </script>
