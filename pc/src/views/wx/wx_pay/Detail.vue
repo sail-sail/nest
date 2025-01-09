@@ -122,7 +122,7 @@
             <LinkAtt
               v-model="dialogModel.public_key"
               :is-public="false"
-              :readonly="isLocked"
+              :readonly="isLocked || isReadonly"
               un-m="l-1"
             ></LinkAtt>
           </el-form-item>
@@ -136,7 +136,7 @@
             <LinkAtt
               v-model="dialogModel.private_key"
               :is-public="false"
-              :readonly="isLocked"
+              :readonly="isLocked || isReadonly"
               un-m="l-1"
             ></LinkAtt>
           </el-form-item>
