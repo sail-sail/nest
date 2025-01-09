@@ -52,7 +52,7 @@
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="x-8 y-5"
+      un-p="x-8 y-4"
       un-box-border
       un-gap="4"
       un-justify-start
@@ -147,7 +147,7 @@
       </el-form>
     </div>
     <div
-      un-p="y-2.5"
+      un-p="y-3"
       un-box-border
       un-flex
       un-justify-center
