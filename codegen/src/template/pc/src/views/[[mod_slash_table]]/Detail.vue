@@ -720,11 +720,29 @@ const hasAtt = columns.some((item) => item.isAtt);
               :readonly="true"<#
               } else {
               #>
-              :readonly="isLocked"<#
+              :readonly="isLocked || isReadonly"<#
               }
               #>
               un-m="l-1"
             ></LinkAtt><#
+            } else if (column.isColorPicker) {
+            #>
+            <CustomColorPicker
+              v-model="dialogModel.<#=column_name#>"<#
+              if (column.isColorShowAlpha) {
+              #>
+              show-alpha<#
+              }
+              #><#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
+            ></CustomColorPicker><#
             } else {
             #>
             <CustomInput
