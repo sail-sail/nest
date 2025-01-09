@@ -162,6 +162,7 @@
     </div>
     <div
       un-p="y-2.5"
+      un-box-border
       un-flex
       un-justify-center
       un-items-center
