@@ -18,8 +18,10 @@ declare const dictId: unique symbol;
 
 declare global {
   
+  /** 系统字典 */
   type DictId = Distinct<string, typeof dictId>;
-
+  
+  /** 系统字典 */
   interface DictSearch extends DictSearchType {
     /** 数据类型 */
     type?: DictType[];
