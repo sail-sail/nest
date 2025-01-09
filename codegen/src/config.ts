@@ -369,6 +369,16 @@ export interface TableCloumn {
   isTextarea?: boolean,
   
   /**
+   * 是否为颜色, 默认为 false
+   */
+  isColorPicker?: boolean,
+  
+  /**
+   * 颜色是否透明, 默认为 false
+   */
+  isColorShowAlpha?: boolean,
+  
+  /**
    * 是否保留换行 un-whitespace-pre
    * 默认为 false
    */

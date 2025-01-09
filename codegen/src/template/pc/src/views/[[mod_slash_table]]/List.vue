@@ -1345,6 +1345,21 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                   <#=prefix#>{{ row[column.property] }}
                 </el-link>
               </template><#
+              } else if (column.isColorPicker) {
+              #>
+              <template #default="{ row, column }">
+                <CustomColorPicker
+                  :model-value="row[column.property]"<#
+                  if (column.isColorShowAlpha) {
+                  #>
+                  show-alpha<#
+                  }
+                  #>
+                  readonly
+                  :is-readonly-border="false"
+                  un-justify="center"
+                ></CustomColorPicker>
+              </template><#
               } else if (prefix) {
               #>
               <template #default="{ row, column }">

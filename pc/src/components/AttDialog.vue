@@ -213,12 +213,12 @@
         </el-button>
         
         <div
-          v-else-if="!dialogModel.readonly"
+          v-else-if="dialogModel.readonly"
           un-flex="~ [1_0_0]"
           un-overflow-hidden
           un-justify-center
           un-items-center
-          un-text="var(--el-text-color-regular) 5"
+          un-text="4 gray-400"
         >
           <span>{{ ns("(暂无附件)") }}</span>
         </div>
