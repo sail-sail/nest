@@ -16,8 +16,10 @@ declare const wxoAppTokenId: unique symbol;
 
 declare global {
   
+  /** 小程序接口凭据 */
   type WxoAppTokenId = Distinct<string, typeof wxoAppTokenId>;
-
+  
+  /** 小程序接口凭据 */
   interface WxoAppTokenSearch extends WxoAppTokenSearchType {
     /** 令牌 */
     access_token?: string;

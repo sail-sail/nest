@@ -20,8 +20,10 @@ declare const wxoAppId: unique symbol;
 
 declare global {
   
+  /** 公众号设置 */
   type WxoAppId = Distinct<string, typeof wxoAppId>;
-
+  
+  /** 公众号设置 */
   interface WxoAppSearch extends WxoAppSearchType {
     /** 开发者密码 */
     appsecret?: string;

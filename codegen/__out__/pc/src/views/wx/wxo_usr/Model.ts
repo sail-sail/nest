@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 公众号用户 */
   interface WxoUsrModel extends WxoUsrModelType {
   }
-
+  
+  /** 公众号用户 */
   interface WxoUsrInput extends WxoUsrInputType {
   }
-
+  
+  /** 公众号用户 */
   interface WxoUsrSearch extends WxoUsrSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 公众号用户 */
   interface WxoUsrFieldComment extends WxoUsrFieldCommentType {
   }
   

@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 微信JSAPI下单 */
   interface PayTransactionsJsapiModel extends PayTransactionsJsapiModelType {
   }
-
+  
+  /** 微信JSAPI下单 */
   interface PayTransactionsJsapiInput extends PayTransactionsJsapiInputType {
   }
-
+  
+  /** 微信JSAPI下单 */
   interface PayTransactionsJsapiSearch extends PayTransactionsJsapiSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 微信JSAPI下单 */
   interface PayTransactionsJsapiFieldComment extends PayTransactionsJsapiFieldCommentType {
   }
   

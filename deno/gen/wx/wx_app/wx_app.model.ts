@@ -16,8 +16,10 @@ declare const wxAppId: unique symbol;
 
 declare global {
   
+  /** 小程序设置 */
   type WxAppId = Distinct<string, typeof wxAppId>;
-
+  
+  /** 小程序设置 */
   interface WxAppSearch extends WxAppSearchType {
     /** 开发者密码 */
     appsecret?: string;
