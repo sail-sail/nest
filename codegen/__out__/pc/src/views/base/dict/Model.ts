@@ -12,18 +12,22 @@ import {
 
 declare global {
   
+  /** 系统字典 */
   interface DictModel extends DictModelType {
   }
-
+  
+  /** 系统字典 */
   interface DictInput extends DictInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 系统字典 */
   interface DictSearch extends DictSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 系统字典 */
   interface DictFieldComment extends DictFieldCommentType {
   }
   

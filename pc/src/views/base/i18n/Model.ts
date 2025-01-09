@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 国际化 */
   interface I18nModel extends I18nModelType {
   }
-
+  
+  /** 国际化 */
   interface I18nInput extends I18nInputType {
   }
-
+  
+  /** 国际化 */
   interface I18nSearch extends I18nSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 国际化 */
   interface I18nFieldComment extends I18nFieldCommentType {
   }
   
