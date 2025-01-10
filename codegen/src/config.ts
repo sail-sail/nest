@@ -828,6 +828,8 @@ export interface TablesConfigItem {
       column_name?: string;
       /** 一对一还是一对多, 默认为 one2many 一对多*/
       foreign_type?: "one2one" | "one2many";
+      /** 是否只生成后端相关功能, 默认为false */
+      onlyCodegenDeno?: boolean;
     }[],
     
     /**
