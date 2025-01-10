@@ -115,6 +115,25 @@ async function connect() {
   return socket;
 }
 
+/** 响应式订阅主题 */
+export async function useSubscribe<T>(
+  topic: string,
+  callback: ((data: T | undefined) => void),
+) {
+  
+  onMounted(async () => {
+    await subscribe(topic, callback);
+  });
+  
+  onBeforeUnmount(async () => {
+    await unSubscribe(topic, callback);
+  });
+  
+  return async () => {
+    await unSubscribe(topic, callback);
+  };
+}
+
 /** 订阅主题topic */
 export async function subscribe<T>(
   topic: string,
