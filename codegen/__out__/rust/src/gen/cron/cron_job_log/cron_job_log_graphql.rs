@@ -1,4 +1,5 @@
-use anyhow::Result;
+#[allow(unused_imports)]
+use color_eyre::eyre::{Result,eyre};
 use async_graphql::{Context, Object};
 
 #[allow(unused_imports)]
@@ -127,7 +128,7 @@ impl CronJobLogGenMutation {
     ctx: &Context<'_>,
     input: CronJobLogInput,
   ) -> Result<CronJobLogId> {
-    Err(anyhow::anyhow!(""))
+    Err(eyre!(""))
   }
   
   /// 定时任务日志根据id修改租户id

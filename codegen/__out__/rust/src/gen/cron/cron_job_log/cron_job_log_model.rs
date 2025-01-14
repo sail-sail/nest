@@ -9,7 +9,7 @@ use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::error::BoxDynError;
@@ -725,14 +725,14 @@ impl From<CronJobLogExecState> for ArgType {
 }
 
 impl FromStr for CronJobLogExecState {
-  type Err = anyhow::Error;
+  type Err = color_eyre::eyre::Error;
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
       "running" => Ok(Self::Running),
       "success" => Ok(Self::Success),
       "fail" => Ok(Self::Fail),
-      _ => Err(anyhow::anyhow!("CronJobLogExecState can't convert from {s}")),
+      _ => Err(eyre!("CronJobLogExecState can't convert from {s}")),
     }
   }
 }
@@ -785,7 +785,7 @@ pub fn check_sort_cron_job_log(
       continue;
     }
     if !get_can_sort_in_api_cron_job_log.contains(&prop) {
-      return Err(anyhow!("check_sort_cron_job_log: {}", serde_json::to_string(item)?));
+      return Err(eyre!("check_sort_cron_job_log: {}", serde_json::to_string(item)?));
     }
   }
   
