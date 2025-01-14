@@ -369,6 +369,16 @@ export interface TableCloumn {
   isTextarea?: boolean,
   
   /**
+   * 是否为颜色, 默认为 false
+   */
+  isColorPicker?: boolean,
+  
+  /**
+   * 颜色是否透明, 默认为 false
+   */
+  isColorShowAlpha?: boolean,
+  
+  /**
    * 是否保留换行 un-whitespace-pre
    * 默认为 false
    */
@@ -761,6 +771,11 @@ export interface TablesConfigItem {
     noAdd?: boolean;
     
     /**
+     * Detail隐藏保持并继续按钮
+     */
+    hideSaveAndCopy?: boolean;
+    
+    /**
      * 不显示复制按钮
      */
     noCopy?: boolean;
@@ -813,6 +828,8 @@ export interface TablesConfigItem {
       column_name?: string;
       /** 一对一还是一对多, 默认为 one2many 一对多*/
       foreign_type?: "one2one" | "one2many";
+      /** 是否只生成后端相关功能, 默认为false */
+      onlyCodegenDeno?: boolean;
     }[],
     
     /**
