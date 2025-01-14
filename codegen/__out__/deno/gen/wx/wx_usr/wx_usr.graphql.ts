@@ -18,7 +18,7 @@ type WxUsrModel {
   "昵称"
   nick_name: String!
   "头像"
-  avatar_url: String!
+  avatar_img: String!
   "手机"
   mobile: String!
   "小程序用户唯一标识"
@@ -70,7 +70,7 @@ type WxUsrFieldComment {
   "昵称"
   nick_name: String!
   "头像"
-  avatar_url: String!
+  avatar_img: String!
   "手机"
   mobile: String!
   "小程序用户唯一标识"
@@ -120,7 +120,7 @@ input WxUsrInput {
   "昵称"
   nick_name: String
   "头像"
-  avatar_url: String
+  avatar_img: String
   "手机"
   mobile: String
   "小程序用户唯一标识"

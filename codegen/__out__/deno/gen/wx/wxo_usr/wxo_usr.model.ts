@@ -22,8 +22,8 @@ declare global {
   /** 公众号用户 */
   interface WxoUsrSearch extends WxoUsrSearchType {
     /** 头像 */
-    headimgurl?: string;
-    headimgurl_like?: string;
+    head_img?: string;
+    head_img_like?: string;
     /** 公众号用户唯一标识 */
     openid?: string;
     openid_like?: string;

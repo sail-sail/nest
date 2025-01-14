@@ -12,7 +12,7 @@ type WxoUsrModel {
   "昵称"
   lbl: String!
   "头像"
-  headimgurl: String!
+  head_img: String!
   "绑定用户"
   usr_id: UsrId!
   "绑定用户"
@@ -58,7 +58,7 @@ type WxoUsrFieldComment {
   "昵称"
   lbl: String!
   "头像"
-  headimgurl: String!
+  head_img: String!
   "绑定用户"
   usr_id: String!
   "绑定用户"
@@ -104,7 +104,7 @@ input WxoUsrInput {
   "昵称"
   lbl: String
   "头像"
-  headimgurl: String
+  head_img: String
   "绑定用户"
   usr_id: UsrId
   "绑定用户"

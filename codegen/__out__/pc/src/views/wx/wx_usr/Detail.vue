@@ -122,16 +122,18 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.avatar_url == null)">
+        <template v-if="(showBuildIn || builtInModel?.avatar_img == null)">
           <el-form-item
             :label="n('头像')"
-            prop="avatar_url"
+            prop="avatar_img"
           >
-            <CustomInput
-              v-model="dialogModel.avatar_url"
-              :placeholder="`${ ns('请输入') } ${ n('头像') }`"
+            <UploadImage
+              v-model="dialogModel.avatar_img"
+              db="wx_wx_usr.avatar_img"
+              :is-public="true"
               :readonly="isLocked || isReadonly"
-            ></CustomInput>
+              :page-inited="inited"
+            ></UploadImage>
           </el-form-item>
         </template>
         

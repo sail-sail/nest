@@ -480,11 +480,17 @@
           </template>
           
           <!-- 头像 -->
-          <template v-else-if="'avatar_url' === col.prop">
+          <template v-else-if="'avatar_img' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                  un-h="8"
+                ></LinkImage>
+              </template>
             </el-table-column>
           </template>
           
@@ -981,11 +987,10 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "头像",
-      prop: "avatar_url",
-      width: 120,
+      prop: "avatar_img",
+      width: 100,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
     },
     {
       label: "手机",
@@ -1376,7 +1381,7 @@ async function onImportExcel() {
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("用户") ]: "usr_id_lbl",
     [ await nAsync("昵称") ]: "nick_name",
-    [ await nAsync("头像") ]: "avatar_url",
+    [ await nAsync("头像") ]: "avatar_img",
     [ await nAsync("手机") ]: "mobile",
     [ await nAsync("小程序用户唯一标识") ]: "openid",
     [ await nAsync("用户统一标识") ]: "unionid",
@@ -1410,7 +1415,7 @@ async function onImportExcel() {
           "lbl": "string",
           "usr_id_lbl": "string",
           "nick_name": "string",
-          "avatar_url": "string",
+          "avatar_img": "string",
           "mobile": "string",
           "openid": "string",
           "unionid": "string",
