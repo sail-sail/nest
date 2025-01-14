@@ -51,6 +51,7 @@
     "dayjs": "npm:dayjs@1.11.13",
     "decimal.js": "https://esm.sh/decimal.js@10.4.3",
     "graphql": "npm:graphql@16.10.0",
+    "mime": "npm:mime@4.0.6",
     "jose/": "https://deno.land/x/jose@v5.9.6/",
     "mnemonist": "npm:mnemonist@0.39.8",
     "redis": "https://deno.land/x/redis@v0.37.1/mod.ts",
