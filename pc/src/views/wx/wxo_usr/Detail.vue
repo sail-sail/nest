@@ -88,16 +88,18 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.headimgurl == null)">
+        <template v-if="(showBuildIn || builtInModel?.head_img == null)">
           <el-form-item
             :label="n('头像')"
-            prop="headimgurl"
+            prop="head_img"
           >
-            <CustomInput
-              v-model="dialogModel.headimgurl"
-              :placeholder="`${ ns('请输入') } ${ n('头像') }`"
+            <UploadImage
+              v-model="dialogModel.head_img"
+              db="wx_wxo_usr.head_img"
+              :is-public="true"
               :readonly="isLocked || isReadonly"
-            ></CustomInput>
+              :page-inited="inited"
+            ></UploadImage>
           </el-form-item>
         </template>
         

@@ -10,6 +10,8 @@ declare global {
   
   /** 公众号用户 */
   interface WxoUsrModel extends WxoUsrModelType {
+    /** 头像 */
+    head_img_lbl: string;
   }
   
   /** 公众号用户 */
@@ -33,7 +35,7 @@ export const wxoUsrFields = [
   // 昵称
   "lbl",
   // 头像
-  "headimgurl",
+  "head_img",
   // 绑定用户
   "usr_id",
   "usr_id_lbl",

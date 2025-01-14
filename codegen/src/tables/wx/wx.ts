@@ -108,8 +108,8 @@ export default defineConfig({
         width: 140,
       },
       {
-        COLUMN_NAME: "avatar_url",
-        width: 120,
+        COLUMN_NAME: "avatar_img",
+        isPublicAtt: true,
       },
       {
         COLUMN_NAME: "mobile",
@@ -280,7 +280,8 @@ export default defineConfig({
         fixed: "left",
       },
       {
-        COLUMN_NAME: "headimgurl",
+        COLUMN_NAME: "head_img",
+        isPublicAtt: true,
       },
       {
         COLUMN_NAME: "usr_id",

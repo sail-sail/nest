@@ -462,17 +462,16 @@
           </template>
           
           <!-- 头像 -->
-          <template v-else-if="'headimgurl' === col.prop">
+          <template v-else-if="'head_img' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <el-image
-                  v-if="row.headimgurl"
-                  :src="row.headimgurl"
-                  style="height: 50px;"
-                ></el-image>
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                  un-h="8"
+                ></LinkImage>
               </template>
             </el-table-column>
           </template>
@@ -944,10 +943,10 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "头像",
-      prop: "headimgurl",
+      prop: "head_img",
+      width: 100,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
     },
     {
       label: "绑定用户",
@@ -1329,7 +1328,7 @@ async function onImportExcel() {
   }
   const header: { [key: string]: string } = {
     [ await nAsync("昵称") ]: "lbl",
-    [ await nAsync("头像") ]: "headimgurl",
+    [ await nAsync("头像") ]: "head_img",
     [ await nAsync("绑定用户") ]: "usr_id_lbl",
     [ await nAsync("公众号用户唯一标识") ]: "openid",
     [ await nAsync("用户统一标识") ]: "unionid",
@@ -1360,7 +1359,7 @@ async function onImportExcel() {
       {
         key_types: {
           "lbl": "string",
-          "headimgurl": "string",
+          "head_img": "string",
           "usr_id_lbl": "string",
           "openid": "string",
           "unionid": "string",

@@ -137,11 +137,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.nick_name_like)) {
     whereQuery += ` and t.nick_name like ${ args.push("%" + sqlLike(search?.nick_name_like) + "%") }`;
   }
-  if (search?.avatar_url != null) {
-    whereQuery += ` and t.avatar_url=${ args.push(search.avatar_url) }`;
+  if (search?.avatar_img != null) {
+    whereQuery += ` and t.avatar_img=${ args.push(search.avatar_img) }`;
   }
-  if (isNotEmpty(search?.avatar_url_like)) {
-    whereQuery += ` and t.avatar_url like ${ args.push("%" + sqlLike(search?.avatar_url_like) + "%") }`;
+  if (isNotEmpty(search?.avatar_img_like)) {
+    whereQuery += ` and t.avatar_img like ${ args.push("%" + sqlLike(search?.avatar_img_like) + "%") }`;
   }
   if (search?.mobile != null) {
     whereQuery += ` and t.mobile=${ args.push(search.mobile) }`;
@@ -543,7 +543,7 @@ export async function getFieldComments(): Promise<WxUsrFieldComment> {
     usr_id: await n("用户"),
     usr_id_lbl: await n("用户"),
     nick_name: await n("昵称"),
-    avatar_url: await n("头像"),
+    avatar_img: await n("头像"),
     mobile: await n("手机"),
     openid: await n("小程序用户唯一标识"),
     unionid: await n("用户统一标识"),
@@ -960,9 +960,9 @@ export async function validate(
   
   // 头像
   await validators.chars_max_length(
-    input.avatar_url,
-    500,
-    fieldComments.avatar_url,
+    input.avatar_img,
+    22,
+    fieldComments.avatar_img,
   );
   
   // 手机
@@ -1265,7 +1265,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,usr_id_lbl,usr_id,nick_name,avatar_url,mobile,openid,unionid,gender,city,province,country,language,rem)values";
+  let sql = "insert into wx_wx_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,usr_id_lbl,usr_id,nick_name,avatar_img,mobile,openid,unionid,gender,city,province,country,language,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1383,8 +1383,8 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.avatar_url != null) {
-        sql += `,${ args.push(input.avatar_url) }`;
+      if (input.avatar_img != null) {
+        sql += `,${ args.push(input.avatar_img) }`;
       } else {
         sql += ",default";
       }
@@ -1601,9 +1601,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.avatar_url != null) {
-    if (input.avatar_url != oldModel.avatar_url) {
-      sql += `avatar_url=${ args.push(input.avatar_url) },`;
+  if (input.avatar_img != null) {
+    if (input.avatar_img != oldModel.avatar_img) {
+      sql += `avatar_img=${ args.push(input.avatar_img) },`;
       updateFldNum++;
     }
   }
