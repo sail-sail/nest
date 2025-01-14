@@ -48,8 +48,8 @@ async fn main() -> Result<(), std::io::Error> {
     let git_hash = git_hash.to_str().unwrap();
     info!("git_hash: {git_hash}");
   }
-  let package_name2: &'static str = Box::leak(format!("{}::", package_name.to_string()).into_boxed_str());
-  let common_name2: &'static str = Box::leak(format!("{}::common::", package_name.to_string()).into_boxed_str());
+  let package_name2: &'static str = Box::leak(format!("{}::", package_name).into_boxed_str());
+  let common_name2: &'static str = Box::leak(format!("{}::common::", package_name).into_boxed_str());
   
   #[cfg(debug_assertions)]
   let _guard = {

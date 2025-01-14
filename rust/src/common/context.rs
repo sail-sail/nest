@@ -1,6 +1,5 @@
 use std::borrow::Cow;
 use std::env;
-use std::collections::HashMap;
 
 use tracing::{info, error, event_enabled, Level};
 use color_eyre::eyre::{Result,eyre};
@@ -1779,12 +1778,13 @@ impl <'a> CtxBuilder<'a> {
       if auth_token.is_some()  {
         return auth_token;
       }
-      let query = resful_req.uri().query().map(|q| {
-        url::form_urlencoded::parse(q.as_bytes())
-          .into_owned()
-          .collect::<HashMap<String, String>>()
-      }).unwrap_or_default();
-      query.get(AUTHORIZATION).cloned()
+      resful_req.uri()
+        .query()
+        .and_then(|q| {
+          url::form_urlencoded::parse(q.as_bytes())
+            .find(|(key, _)| key == AUTHORIZATION)
+            .map(|(_, value)| value.into_owned())
+        })
     } else {
       None
     }
