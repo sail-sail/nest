@@ -102,6 +102,7 @@ import {
 
 declare global {
   
+  /** <#=table_comment#> */
   interface <#=modelName#> extends <#=modelName#>Type {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
@@ -131,7 +132,8 @@ declare global {
     }
     #>
   }
-
+  
+  /** <#=table_comment#> */
   interface <#=inputName#> extends <#=inputName#>Type {<#
     if (hasIsSys) {
     #>
@@ -140,7 +142,8 @@ declare global {
     }
     #>
   }
-
+  
+  /** <#=table_comment#> */
   interface <#=searchName#> extends <#=searchName#>Type {<#
     if (hasIsDeleted) {
     #>
@@ -148,7 +151,8 @@ declare global {
     }
     #>
   }
-
+  
+  /** <#=table_comment#> */
   interface <#=fieldCommentName#> extends <#=fieldCommentName#>Type {
   }
   

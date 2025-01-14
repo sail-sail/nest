@@ -5,13 +5,13 @@
   :fullscreen="isFullscreen"
   append-to-body
   destroy-on-close
-  :close-on-click-modal="false"
+  :close-on-click-modal="props.closeOnClickModal"
   class="custom_dialog"
   :class="{
     auto_dialog: dialogType === 'auto',
     medium_dialog: dialogType === 'medium',
     large_dialog: dialogType === 'large',
-    pointer_pierce_dialog: pointerPierce,
+    pointer_pierce_dialog: props.closeOnClickModal === false && pointerPierce,
   }"
   top="0"
   :before-close="beforeClose"
@@ -46,16 +46,18 @@
       <template
         v-if="fullscreen"
       >
-        <ElIconFullScreen
-          v-if="!isFullscreen"
+        <div
+          un-flex="~"
           class="full_but"
           @click="setFullscreen"
-        ></ElIconFullScreen>
-        <ElIconCopyDocument
-          v-if="isFullscreen"
-          class="full_but"
-          @click="setFullscreen"
-        ></ElIconCopyDocument>
+        >
+          <ElIconFullScreen
+            v-if="!isFullscreen"
+          ></ElIconFullScreen>
+          <ElIconCopyDocument
+            v-if="isFullscreen"
+          ></ElIconCopyDocument>
+        </div>
       </template>
     </div>
   </template>
@@ -98,9 +100,15 @@ watch(
   },
 );
 
-const props = defineProps<{
+const props = withDefaults(
+  defineProps<{
   height?: string;
-}>();
+  closeOnClickModal?: boolean;
+}>(),
+{
+  height: undefined,
+  closeOnClickModal: false,
+});
 
 let titleWatchHandle: WatchStopHandle | undefined;
 let noticeWatchHandle: WatchStopHandle | undefined;

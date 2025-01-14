@@ -4,8 +4,8 @@ const hasLocked = columns.some((column) => column.COLUMN_NAME === "is_locked");
 const hasDefault = columns.some((column) => column.COLUMN_NAME === "is_default");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasIsSys = columns.some((column) => column.COLUMN_NAME === "is_sys");
-const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
-const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
+const inlineForeignTabs = (opts?.inlineForeignTabs || [ ]).filter((item) => item.onlyCodegenDeno !== true);
+const hasInlineForeignTabs = inlineForeignTabs.length > 0;
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
@@ -88,6 +88,9 @@ const old_mod = mod;
 const old_table = table;
 
 const tableFieldPermit = columns.some((item) => item.fieldPermit);
+
+const hasImg = columns.some((item) => item.isImg);
+const hasAtt = columns.some((item) => item.isAtt);
 #>
 <CustomDialog
   ref="customDialogRef"
@@ -158,7 +161,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="x-8 y-5"
+      un-p="x-8 y-4"
       un-box-border
       un-gap="4"
       un-justify-start
@@ -187,7 +190,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
           if (column.ignoreCodegen) continue;
           if (column.onlyCodegenDeno) continue;
           if (column.noAdd && column.noEdit) continue;
-          if (column.isAtt) continue;
+          // if (column.isAtt) continue;
           const column_name = column.COLUMN_NAME;
           if (column_name === "id") continue;
           if (column_name === "is_locked") continue;
@@ -296,7 +299,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
               }
               #>
-              :inited
+              :page-inited="inited"
             ></UploadImage><#
             } else if (
               foreignKey
@@ -685,6 +688,61 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
               }
               #>
             ></CustomInputNumber><#
+            } else if (column.isAtt) {
+            #>
+            <LinkAtt
+              v-model="dialogModel.<#=column_name#>"<#
+              if (column.attMaxSize > 1) {
+              #>
+              :max-size="<#=column.attMaxSize#>"<#
+              }
+              #><#
+              if (column.maxFileSize) {
+              #>
+              :maxFileSize="<#=column.maxFileSize#>"<#
+              }
+              #><#
+              if (column.attAccept) {
+              #>
+              accept="<#=column.attAccept#>"<#
+              }
+              #><#
+              if (column.isPublicAtt) {
+              #>
+              :is-public="true"<#
+              } else {
+              #>
+              :is-public="false"<#
+              }
+              #><#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
+              un-m="l-1"
+            ></LinkAtt><#
+            } else if (column.isColorPicker) {
+            #>
+            <CustomColorPicker
+              v-model="dialogModel.<#=column_name#>"<#
+              if (column.isColorShowAlpha) {
+              #>
+              show-alpha<#
+              }
+              #><#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly"<#
+              }
+              #>
+            ></CustomColorPicker><#
             } else {
             #>
             <CustomInput
@@ -1428,7 +1486,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
                     }
                     #>
-                    :inited
+                    :page-inited="inited"
                   ></UploadImage><#
                   } else if (
                     foreignKey
@@ -2423,7 +2481,8 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
       #>
     </div>
     <div
-      un-p="y-2.5"
+      un-p="y-3"
+      un-box-border
       un-flex
       un-justify-center
       un-items-center
@@ -3749,7 +3808,6 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: <#=Table_Up#>Id;
       ids?: <#=Table_Up#>Id[];
       is_deleted?: 0 | 1;
     };
@@ -3850,7 +3908,7 @@ async function showDialog(
     }
     #>
   };
-  if (dialogAction === "copy" && !model?.id) {
+  if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
   if (action === "add") {
@@ -4024,7 +4082,8 @@ async function showDialog(
       #>
     };
   } else if (dialogAction === "copy") {
-    if (!model?.id) {
+    const id = model?.ids?.[0];
+    if (!id) {
       return await dialogRes.dialogPrm;
     }
     const [
@@ -4076,7 +4135,7 @@ async function showDialog(
       #>
     ] = await Promise.all([
       findOneModel({
-        id: model.id,<#
+        id,<#
         if (hasIsDeleted) {
         #>
         is_deleted,<#

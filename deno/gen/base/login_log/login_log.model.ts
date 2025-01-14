@@ -16,8 +16,10 @@ declare const loginLogId: unique symbol;
 
 declare global {
   
+  /** 登录日志 */
   type LoginLogId = Distinct<string, typeof loginLogId>;
-
+  
+  /** 登录日志 */
   interface LoginLogSearch extends LoginLogSearchType {
     /** 创建人 */
     create_usr_id?: UsrId[];

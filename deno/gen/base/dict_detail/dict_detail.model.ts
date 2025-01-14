@@ -16,8 +16,10 @@ declare const dictDetailId: unique symbol;
 
 declare global {
   
+  /** 系统字典明细 */
   type DictDetailId = Distinct<string, typeof dictDetailId>;
-
+  
+  /** 系统字典明细 */
   interface DictDetailSearch extends DictDetailSearchType {
     /** 锁定 */
     is_locked?: number[];

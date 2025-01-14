@@ -8,18 +8,22 @@ import type {
 
 declare global {
   
+  /** 业务字典明细 */
   interface DictbizDetailModel extends DictbizDetailModelType {
   }
-
+  
+  /** 业务字典明细 */
   interface DictbizDetailInput extends DictbizDetailInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 业务字典明细 */
   interface DictbizDetailSearch extends DictbizDetailSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 业务字典明细 */
   interface DictbizDetailFieldComment extends DictbizDetailFieldCommentType {
   }
   
