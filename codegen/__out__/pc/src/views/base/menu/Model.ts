@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 菜单 */
   interface MenuModel extends MenuModelType {
   }
-
+  
+  /** 菜单 */
   interface MenuInput extends MenuInputType {
   }
-
+  
+  /** 菜单 */
   interface MenuSearch extends MenuSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 菜单 */
   interface MenuFieldComment extends MenuFieldCommentType {
   }
   

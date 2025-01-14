@@ -8,17 +8,21 @@ import type {
 
 declare global {
   
+  /** 字段权限 */
   interface FieldPermitModel extends FieldPermitModelType {
   }
-
+  
+  /** 字段权限 */
   interface FieldPermitInput extends FieldPermitInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 字段权限 */
   interface FieldPermitSearch extends FieldPermitSearchType {
   }
-
+  
+  /** 字段权限 */
   interface FieldPermitFieldComment extends FieldPermitFieldCommentType {
   }
   

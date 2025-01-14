@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 部门 */
   interface DeptModel extends DeptModelType {
   }
-
+  
+  /** 部门 */
   interface DeptInput extends DeptInputType {
   }
-
+  
+  /** 部门 */
   interface DeptSearch extends DeptSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 部门 */
   interface DeptFieldComment extends DeptFieldCommentType {
   }
   

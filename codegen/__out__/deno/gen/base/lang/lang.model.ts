@@ -16,8 +16,10 @@ declare const langId: unique symbol;
 
 declare global {
   
+  /** 语言 */
   type LangId = Distinct<string, typeof langId>;
-
+  
+  /** 语言 */
   interface LangSearch extends LangSearchType {
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];

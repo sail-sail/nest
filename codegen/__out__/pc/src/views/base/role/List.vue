@@ -891,7 +891,6 @@ const {
 
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
@@ -922,7 +921,7 @@ const props = defineProps<{
   isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: RoleId[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选
+  isMultiple?: string; //是否多选
   id?: RoleId; // ID
   code?: string; // 编码
   code_like?: string; // 编码
@@ -943,6 +942,7 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   isPagination: "0|1",
+  isMultiple: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
   isListSelectDialog: "0|1",
@@ -989,7 +989,7 @@ const builtInModel: RoleModel = $(initBuiltInModel(
 ));
 
 /** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
+const multiple = $computed(() => props.isMultiple !== "0");
 /** 是否显示内置变量 */
 const showBuildIn = $computed(() => props.showBuildIn === "1");
 /** 是否分页 */
@@ -1549,6 +1549,8 @@ async function openCopy() {
     ElMessage.warning(await nsAsync("请选择需要 复制 的 {0}", await nsAsync("角色")));
     return;
   }
+  const id = selectedIds[selectedIds.length - 1];
+  const ids = [ id ];
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1557,7 +1559,7 @@ async function openCopy() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
     model: {
-      id: selectedIds[selectedIds.length - 1],
+      ids,
     },
   });
   tableFocus();
@@ -1734,6 +1736,7 @@ async function openEdit() {
     ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("角色")));
     return;
   }
+  const ids = selectedIds;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1744,7 +1747,7 @@ async function openEdit() {
     isReadonly: $$(isLocked),
     isLocked: $$(isLocked),
     model: {
-      ids: selectedIds,
+      ids,
     },
   });
   tableFocus();
@@ -1801,6 +1804,7 @@ async function openView() {
   }
   const search = getDataSearch();
   const is_deleted = search.is_deleted;
+  const ids = selectedIds;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1810,7 +1814,7 @@ async function openView() {
     showBuildIn: $$(showBuildIn),
     isLocked: $$(isLocked),
     model: {
-      ids: selectedIds,
+      ids,
       is_deleted,
     },
   });

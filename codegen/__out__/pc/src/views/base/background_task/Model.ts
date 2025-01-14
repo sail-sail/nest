@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 后台任务 */
   interface BackgroundTaskModel extends BackgroundTaskModelType {
   }
-
+  
+  /** 后台任务 */
   interface BackgroundTaskInput extends BackgroundTaskInputType {
   }
-
+  
+  /** 后台任务 */
   interface BackgroundTaskSearch extends BackgroundTaskSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 后台任务 */
   interface BackgroundTaskFieldComment extends BackgroundTaskFieldCommentType {
   }
   

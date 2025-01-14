@@ -130,6 +130,7 @@ export default defineConfig({
             "ElIcon",
             "ElAutocomplete",
             "ElLink",
+            "ElColorPicker",
           ],
           "pinia": [
             "defineStore",
@@ -274,7 +275,7 @@ export default defineConfig({
   base: "/",
   build: {
     outDir: "../build/pc",
-    chunkSizeWarningLimit: 2000,
+    chunkSizeWarningLimit: 3000,
     reportCompressedSize: false,
     sourcemap: false,
   },

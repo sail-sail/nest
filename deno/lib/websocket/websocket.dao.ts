@@ -63,8 +63,27 @@ export async function publish<T>(
   }
 }
 
+/** 同时取消订阅多个主题 */
+export async function unSubscribes(
+  topics: string[],
+) {
+  if (!topics || topics.length === 0) {
+    return;
+  }
+  for (const topic of topics) {
+    callbacksMap.delete(topic);
+  }
+}
+
 /** 取消订阅主题topic */
-export function unSubscribe<T>(topic: string, callback: (data: T) => void) {
+export function unSubscribe<T>(
+  topic: string,
+  callback?: (data: T) => void,
+) {
+  if (!callback) {
+    callbacksMap.delete(topic);
+    return
+  }
   const callbacks = callbacksMap.get(topic);
   if (callbacks && callbacks.length > 0) {
     // deno-lint-ignore no-explicit-any
