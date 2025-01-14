@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 定时任务日志 */
   interface CronJobLogModel extends CronJobLogModelType {
   }
-
+  
+  /** 定时任务日志 */
   interface CronJobLogInput extends CronJobLogInputType {
   }
-
+  
+  /** 定时任务日志 */
   interface CronJobLogSearch extends CronJobLogSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 定时任务日志 */
   interface CronJobLogFieldComment extends CronJobLogFieldCommentType {
   }
   

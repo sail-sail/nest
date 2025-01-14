@@ -131,7 +131,7 @@ async function showDialog(
     title?: string;
     tabGroup: string;
     model?: {
-      id?: CronJobLogId;
+      ids?: CronJobLogId[];
       is_deleted?: 0 | 1;
     };
     action?: typeof dialogAction;
@@ -150,7 +150,7 @@ async function showDialog(
   dialogModel.is_deleted = model?.is_deleted;
   dialogAction = action || "list";
   if (dialogAction === "list") {
-    dialogModel.id = model?.id;
+    dialogModel.id = model?.ids?.[0];
     await useAllFindCount();
   }
   inited = true;
