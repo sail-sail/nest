@@ -18,8 +18,10 @@ declare const cardId: unique symbol;
 
 declare global {
   
+  /** 会员卡 */
   type CardId = Distinct<string, typeof cardId>;
-
+  
+  /** 会员卡 */
   interface CardSearch extends CardSearchType {
     /** 卡号-序列号 */
     lbl_seq?: [(number|undefined|null), (number|undefined|null)];

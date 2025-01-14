@@ -8,6 +8,7 @@ import type {
 
 declare global {
   
+  /** 订单 */
   interface OrderModel extends OrderModelType {
     /** 订单金额 */
     price_lbl: string;
@@ -20,14 +21,17 @@ declare global {
     /** 消费后赠送余额 */
     give_balance_lbl: string;
   }
-
+  
+  /** 订单 */
   interface OrderInput extends OrderInputType {
   }
-
+  
+  /** 订单 */
   interface OrderSearch extends OrderSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 订单 */
   interface OrderFieldComment extends OrderFieldCommentType {
   }
   

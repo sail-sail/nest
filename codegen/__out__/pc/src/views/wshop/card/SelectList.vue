@@ -20,7 +20,7 @@
     <List
       v-bind="$attrs"
       :selected-ids="selectedIds"
-      :is-multiple="multiple"
+      :is-multiple="multiple ? '1' : '0'"
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
       @selected-ids-chg="selectedIdsChg"

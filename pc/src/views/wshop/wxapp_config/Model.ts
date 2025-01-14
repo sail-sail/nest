@@ -8,20 +8,24 @@ import type {
 
 declare global {
   
+  /** 小程序配置 */
   interface WxappConfigModel extends WxappConfigModelType {
     /** 图片 */
     img_lbl: string;
   }
-
+  
+  /** 小程序配置 */
   interface WxappConfigInput extends WxappConfigInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 小程序配置 */
   interface WxappConfigSearch extends WxappConfigSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 小程序配置 */
   interface WxappConfigFieldComment extends WxappConfigFieldCommentType {
   }
   

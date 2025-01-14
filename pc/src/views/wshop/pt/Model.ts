@@ -8,6 +8,7 @@ import type {
 
 declare global {
   
+  /** 产品 */
   interface PtModel extends PtModelType {
     /** 图标 */
     img_lbl: string;
@@ -20,14 +21,17 @@ declare global {
     /** 详情底部图片 */
     detail_bottom_img_lbl: string;
   }
-
+  
+  /** 产品 */
   interface PtInput extends PtInputType {
   }
-
+  
+  /** 产品 */
   interface PtSearch extends PtSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 产品 */
   interface PtFieldComment extends PtFieldCommentType {
   }
   

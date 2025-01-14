@@ -52,7 +52,7 @@
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="x-8 y-5"
+      un-p="x-8 y-4"
       un-box-border
       un-gap="4"
       un-justify-start
@@ -87,7 +87,7 @@
               :max-size="4"
               :is-public="false"
               :readonly="isLocked || isReadonly"
-              :inited
+              :page-inited="inited"
             ></UploadImage>
           </el-form-item>
         </template>
@@ -240,7 +240,7 @@
               :max-size="8"
               :is-public="false"
               :readonly="isLocked || isReadonly"
-              :inited
+              :page-inited="inited"
             ></UploadImage>
           </el-form-item>
         </template>
@@ -257,7 +257,7 @@
               :max-size="8"
               :is-public="false"
               :readonly="isLocked || isReadonly"
-              :inited
+              :page-inited="inited"
             ></UploadImage>
           </el-form-item>
         </template>
@@ -282,7 +282,8 @@
       </el-form>
     </div>
     <div
-      un-p="y-2.5"
+      un-p="y-3"
+      un-box-border
       un-flex
       un-justify-center
       un-items-center
@@ -515,7 +516,6 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: PtId;
       ids?: PtId[];
       is_deleted?: 0 | 1;
     };
@@ -571,7 +571,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  if (dialogAction === "copy" && !model?.id) {
+  if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
   if (action === "add") {
@@ -589,7 +589,8 @@ async function showDialog(
       order_by: order_by + 1,
     };
   } else if (dialogAction === "copy") {
-    if (!model?.id) {
+    const id = model?.ids?.[0];
+    if (!id) {
       return await dialogRes.dialogPrm;
     }
     const [
@@ -597,7 +598,7 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       findOneModel({
-        id: model.id,
+        id,
         is_deleted,
       }),
       findLastOrderBy(),

@@ -16,8 +16,10 @@ declare const cardConsumeId: unique symbol;
 
 declare global {
   
+  /** 会员卡消费记录 */
   type CardConsumeId = Distinct<string, typeof cardConsumeId>;
-
+  
+  /** 会员卡消费记录 */
   interface CardConsumeSearch extends CardConsumeSearchType {
     /** 微信支付订单号 */
     transaction_id?: string;

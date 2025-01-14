@@ -576,7 +576,6 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
@@ -607,7 +606,7 @@ const props = defineProps<{
   isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: CardRechargeId[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选
+  isMultiple?: string; //是否多选
   id?: CardRechargeId; // ID
   card_id?: string|string[]; // 会员卡
   card_id_lbl?: string; // 会员卡
@@ -619,6 +618,7 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   isPagination: "0|1",
+  isMultiple: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
   isListSelectDialog: "0|1",
@@ -659,7 +659,7 @@ const builtInModel: CardRechargeModel = $(initBuiltInModel(
 ));
 
 /** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
+const multiple = $computed(() => props.isMultiple !== "0");
 /** 是否显示内置变量 */
 const showBuildIn = $computed(() => props.showBuildIn === "1");
 /** 是否分页 */
@@ -1153,6 +1153,7 @@ async function openView() {
   }
   const search = getDataSearch();
   const is_deleted = search.is_deleted;
+  const ids = selectedIds;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1162,7 +1163,7 @@ async function openView() {
     showBuildIn: $$(showBuildIn),
     isLocked: $$(isLocked),
     model: {
-      ids: selectedIds,
+      ids,
       is_deleted,
     },
   });

@@ -16,8 +16,10 @@ declare const ptTypeId: unique symbol;
 
 declare global {
   
+  /** 产品类别 */
   type PtTypeId = Distinct<string, typeof ptTypeId>;
-
+  
+  /** 产品类别 */
   interface PtTypeSearch extends PtTypeSearchType {
     /** 图标 */
     img?: string;

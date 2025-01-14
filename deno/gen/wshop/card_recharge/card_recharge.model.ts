@@ -16,8 +16,10 @@ declare const cardRechargeId: unique symbol;
 
 declare global {
   
+  /** 会员卡充值记录 */
   type CardRechargeId = Distinct<string, typeof cardRechargeId>;
-
+  
+  /** 会员卡充值记录 */
   interface CardRechargeSearch extends CardRechargeSearchType {
     /** 微信支付订单号 */
     transaction_id?: string;
