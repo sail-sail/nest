@@ -8,6 +8,7 @@ import type {
 
 declare global {
   
+  /** 会员卡充值记录 */
   interface CardRechargeModel extends CardRechargeModelType {
     /** 充值金额 */
     amt_lbl: string;
@@ -18,14 +19,17 @@ declare global {
     /** 充值后赠送余额 */
     give_balance_lbl: string;
   }
-
+  
+  /** 会员卡充值记录 */
   interface CardRechargeInput extends CardRechargeInputType {
   }
-
+  
+  /** 会员卡充值记录 */
   interface CardRechargeSearch extends CardRechargeSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 会员卡充值记录 */
   interface CardRechargeFieldComment extends CardRechargeFieldCommentType {
   }
   

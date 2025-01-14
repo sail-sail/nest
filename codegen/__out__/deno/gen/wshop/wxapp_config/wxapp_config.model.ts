@@ -16,8 +16,10 @@ declare const wxappConfigId: unique symbol;
 
 declare global {
   
+  /** 小程序配置 */
   type WxappConfigId = Distinct<string, typeof wxappConfigId>;
-
+  
+  /** 小程序配置 */
   interface WxappConfigSearch extends WxappConfigSearchType {
     /** 图片 */
     img?: string;

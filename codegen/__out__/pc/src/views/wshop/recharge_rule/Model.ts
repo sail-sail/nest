@@ -8,20 +8,24 @@ import type {
 
 declare global {
   
+  /** 充值赠送规则 */
   interface RechargeRuleModel extends RechargeRuleModelType {
     /** 充值金额 */
     amt_lbl: string;
     /** 赠送金额 */
     give_amt_lbl: string;
   }
-
+  
+  /** 充值赠送规则 */
   interface RechargeRuleInput extends RechargeRuleInputType {
   }
-
+  
+  /** 充值赠送规则 */
   interface RechargeRuleSearch extends RechargeRuleSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 充值赠送规则 */
   interface RechargeRuleFieldComment extends RechargeRuleFieldCommentType {
   }
   

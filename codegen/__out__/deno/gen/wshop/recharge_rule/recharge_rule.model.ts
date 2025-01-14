@@ -16,8 +16,10 @@ declare const rechargeRuleId: unique symbol;
 
 declare global {
   
+  /** 充值赠送规则 */
   type RechargeRuleId = Distinct<string, typeof rechargeRuleId>;
-
+  
+  /** 充值赠送规则 */
   interface RechargeRuleSearch extends RechargeRuleSearchType {
     /** 充值金额 */
     amt?: [(string|undefined|null), (string|undefined|null)];

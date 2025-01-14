@@ -8,18 +8,22 @@ import type {
 
 declare global {
   
+  /** 产品类别 */
   interface PtTypeModel extends PtTypeModelType {
     /** 图标 */
     img_lbl: string;
   }
-
+  
+  /** 产品类别 */
   interface PtTypeInput extends PtTypeInputType {
   }
-
+  
+  /** 产品类别 */
   interface PtTypeSearch extends PtTypeSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 产品类别 */
   interface PtTypeFieldComment extends PtTypeFieldCommentType {
   }
   

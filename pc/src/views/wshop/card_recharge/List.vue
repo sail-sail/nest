@@ -29,6 +29,60 @@
       @keydown.enter="onSearch(true)"
     >
       
+      <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
+        <el-form-item
+          :label="n('订单号')"
+          prop="lbl_like"
+        >
+          <CustomInput
+            v-model="search.lbl_like"
+            :placeholder="`${ ns('请输入') } ${ n('订单号') }`"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(builtInSearch?.company == null && (showBuildIn || builtInSearch?.company_like == null))">
+        <el-form-item
+          :label="n('公司')"
+          prop="company_like"
+        >
+          <CustomInput
+            v-model="search.company_like"
+            :placeholder="`${ ns('请输入') } ${ n('公司') }`"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(builtInSearch?.phone == null && (showBuildIn || builtInSearch?.phone_like == null))">
+        <el-form-item
+          :label="n('联系电话')"
+          prop="phone_like"
+        >
+          <CustomInput
+            v-model="search.phone_like"
+            :placeholder="`${ ns('请输入') } ${ n('联系电话') }`"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(showBuildIn || builtInSearch?.is_enabled == null)">
+        <el-form-item
+          :label="n('启用')"
+          prop="is_enabled"
+        >
+          <DictSelect
+            :model-value="is_enabled_search[0]"
+            code="is_enabled"
+            :placeholder="`${ ns('请选择') } ${ n('启用') }`"
+            @update:model-value="($event != null && $event !== '') ? is_enabled_search = [ $event ] : is_enabled_search = [ ]"
+            @change="onSearch(false)"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
       <el-form-item
         label=""
         prop="idsChecked"
@@ -138,6 +192,42 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
+        v-if="permit('add') && !isLocked"
+        plain
+        type="primary"
+        @click="openAdd"
+      >
+        <template #icon>
+          <ElIconCirclePlus />
+        </template>
+        <span>{{ ns('新增') }}</span>
+      </el-button>
+      
+      <el-button
+        v-if="permit('add') && !isLocked"
+        plain
+        type="primary"
+        @click="openCopy"
+      >
+        <template #icon>
+          <ElIconCopyDocument />
+        </template>
+        <span>{{ ns('复制') }}</span>
+      </el-button>
+      
+      <el-button
+        v-if="permit('edit') && !isLocked"
+        plain
+        type="primary"
+        @click="openEdit"
+      >
+        <template #icon>
+          <ElIconEdit />
+        </template>
+        <span>{{ ns('编辑') }}</span>
+      </el-button>
+      
+      <el-button
         v-if="permit('delete') && !isLocked"
         plain
         type="danger"
@@ -218,6 +308,46 @@
               @click="onCancelExport"
             >
               <span un-text="red">{{ ns('取消导出') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-if="permit('add') && !isLocked"
+              un-justify-center
+              @click="onImportExcel"
+            >
+              <span>{{ ns('导入') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
+              un-justify-center
+              @click="onEnableByIds(1)"
+            >
+              <span>{{ ns('启用') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
+              un-justify-center
+              @click="onEnableByIds(0)"
+            >
+              <span>{{ ns('禁用') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
+              un-justify-center
+              @click="onLockByIds(1)"
+            >
+              <span>{{ ns('锁定') }}</span>
+            </el-dropdown-item>
+            
+            <el-dropdown-item
+              v-if="permit('edit') && !isLocked"
+              un-justify-center
+              @click="onLockByIds(0)"
+            >
+              <span>{{ ns('解锁') }}</span>
             </el-dropdown-item>
             
           </el-dropdown-menu>
@@ -380,6 +510,7 @@
         @keydown.end="onRowEnd"
         @keydown.page-up="onPageUp"
         @keydown.page-down="onPageDown"
+        @keydown.ctrl.i="onInsert"
       >
         
         <el-table-column
@@ -394,8 +525,35 @@
           :key="col.prop"
         >
           
-          <!-- 会员卡 -->
-          <template v-if="'card_id_lbl' === col.prop && (showBuildIn || builtInSearch?.card_id == null)">
+          <!-- 订单号 -->
+          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 公司 -->
+          <template v-else-if="'company' === col.prop && (showBuildIn || builtInSearch?.company == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 联系电话 -->
+          <template v-else-if="'phone' === col.prop && (showBuildIn || builtInSearch?.phone == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 订单状态 -->
+          <template v-else-if="'status_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -412,7 +570,34 @@
             </el-table-column>
           </template>
           
-          <!-- 充值金额 -->
+          <!-- 会员卡 -->
+          <template v-else-if="'card_id_lbl' === col.prop && (showBuildIn || builtInSearch?.card_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 订单金额 -->
+          <template v-else-if="'price' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 订单类别 -->
+          <template v-else-if="'type_lbl' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 消费充值金额 -->
           <template v-else-if="'amt' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -421,7 +606,7 @@
             </el-table-column>
           </template>
           
-          <!-- 赠送金额 -->
+          <!-- 消费赠送金额 -->
           <template v-else-if="'give_amt' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -430,7 +615,16 @@
             </el-table-column>
           </template>
           
-          <!-- 充值后充值余额 -->
+          <!-- 获得积分 -->
+          <template v-else-if="'integral' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 消费后充值余额 -->
           <template v-else-if="'balance' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -439,7 +633,7 @@
             </el-table-column>
           </template>
           
-          <!-- 充值后赠送余额 -->
+          <!-- 消费后赠送余额 -->
           <template v-else-if="'give_balance' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -448,12 +642,35 @@
             </el-table-column>
           </template>
           
-          <!-- 充值后积分 -->
-          <template v-else-if="'integral' === col.prop">
+          <!-- 锁定 -->
+          <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_locked"
+                  @change="onIs_locked(row.id, row.is_locked)"
+                ></CustomSwitch>
+              </template>
+            </el-table-column>
+          </template>
+          
+          <!-- 启用 -->
+          <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <CustomSwitch
+                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-model="row.is_enabled"
+                  @change="onIs_enabled(row.id, row.is_enabled)"
+                ></CustomSwitch>
+              </template>
             </el-table-column>
           </template>
           
@@ -542,6 +759,17 @@
     ref="detailRef"
   ></Detail>
   
+  <UploadFileDialog
+    ref="uploadFileDialogRef"
+    @download-import-template="onDownloadImportTemplate"
+  ></UploadFileDialog>
+  
+  <ImportPercentageDialog
+    :percentage="importPercentage"
+    :dialog-visible="isImporting"
+    @stop="stopImport"
+  ></ImportPercentageDialog>
+  
 </div>
 </template>
 
@@ -555,11 +783,16 @@ import {
   revertByIds,
   deleteByIds,
   forceDeleteByIds,
+  enableByIds,
+  lockByIds,
   useExportExcel,
+  updateById,
+  importModels,
+  useDownloadImportTemplate,
 } from "./Api";
 
 defineOptions({
-  name: "会员卡充值记录",
+  name: "订单",
 });
 
 const pagePath = getPagePath();
@@ -575,9 +808,7 @@ const {
   initSysI18ns
 } = useI18n(pagePath);
 
-const usrStore = useUsrStore();
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
@@ -587,15 +818,15 @@ const permit = permitStore.getPermit(pagePath);
 let inited = $ref(false);
 
 const emit = defineEmits<{
-  selectedIdsChg: [ CardRechargeId[] ],
-  add: [ CardRechargeId[] ],
-  edit: [ CardRechargeId[] ],
+  selectedIdsChg: [ OrderId[] ],
+  add: [ OrderId[] ],
+  edit: [ OrderId[] ],
   remove: [ number ],
   revert: [ number ],
   refresh: [ ],
   beforeSearchReset: [ ],
   rowEnter: [ KeyboardEvent? ],
-  rowDblclick: [ CardRechargeModel ],
+  rowDblclick: [ OrderModel ],
 }>();
 
 const props = defineProps<{
@@ -607,27 +838,37 @@ const props = defineProps<{
   propsNotReset?: string[];
   isListSelectDialog?: string;
   ids?: string[]; //ids
-  selectedIds?: CardRechargeId[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选
-  id?: CardRechargeId; // ID
-  card_id?: string|string[]; // 会员卡
-  card_id_lbl?: string; // 会员卡
+  selectedIds?: OrderId[]; //已选择行的id列表
+  isMultiple?: string; //是否多选
+  id?: OrderId; // ID
+  lbl?: string; // 订单号
+  lbl_like?: string; // 订单号
+  company?: string; // 公司
+  company_like?: string; // 公司
+  phone?: string; // 联系电话
+  phone_like?: string; // 联系电话
   usr_id?: string|string[]; // 用户
   usr_id_lbl?: string; // 用户
+  card_id?: string|string[]; // 会员卡
+  card_id_lbl?: string; // 会员卡
+  is_enabled?: string|string[]; // 启用
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   isPagination: "0|1",
+  isMultiple: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
-  card_id: "string[]",
-  card_id_lbl: "string[]",
   usr_id: "string[]",
   usr_id_lbl: "string[]",
+  card_id: "string[]",
+  card_id_lbl: "string[]",
+  is_enabled: "number[]",
+  is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -646,21 +887,21 @@ const propsNotInSearch: string[] = [
 ];
 
 /** 内置查询条件 */
-const builtInSearch: CardRechargeSearch = $(initBuiltInSearch(
+const builtInSearch: OrderSearch = $(initBuiltInSearch(
   props,
   builtInSearchType,
   propsNotInSearch,
 ));
 
 /** 内置变量 */
-const builtInModel: CardRechargeModel = $(initBuiltInModel(
+const builtInModel: OrderModel = $(initBuiltInModel(
   props,
   builtInSearchType,
   propsNotInSearch,
 ));
 
 /** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
+const multiple = $computed(() => props.isMultiple !== "0");
 /** 是否显示内置变量 */
 const showBuildIn = $computed(() => props.showBuildIn === "1");
 /** 是否分页 */
@@ -678,7 +919,7 @@ const tableRef = $ref<InstanceType<typeof ElTable>>();
 function initSearch() {
   const search = {
     is_deleted: 0,
-  } as CardRechargeSearch;
+  } as OrderSearch;
   if (props.propsNotReset && props.propsNotReset.length > 0) {
     for (let i = 0; i < props.propsNotReset.length; i++) {
       const key = props.propsNotReset[i];
@@ -690,6 +931,20 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 启用
+const is_enabled_search = $computed({
+  get() {
+    return search.is_enabled || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.is_enabled = undefined;
+    } else {
+      search.is_enabled = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function recycleChg() {
@@ -707,7 +962,7 @@ async function onSearch(isFocus: boolean) {
 }
 
 /** 暂存查询 */
-async function onSearchStaging(searchStaging?: CardRechargeSearch) {
+async function onSearchStaging(searchStaging?: OrderSearch) {
   if (!searchStaging) {
     return;
   }
@@ -757,7 +1012,7 @@ const {
   pgCurrentChg,
   onPageUp,
   onPageDown,
-} = $(usePage<CardRechargeModel>(
+} = $(usePage<OrderModel>(
   dataGrid,
   {
     isPagination,
@@ -765,7 +1020,7 @@ const {
 ));
 
 /** 表格选择功能 */
-const tableSelected = useSelect<CardRechargeModel, CardRechargeId>(
+const tableSelected = useSelect<OrderModel, OrderId>(
   $$(tableRef),
   {
     multiple: $$(multiple),
@@ -835,19 +1090,43 @@ watch(
 let idsChecked = $ref<0|1>(0);
 
 /** 表格数据 */
-let tableData = $ref<CardRechargeModel[]>([ ]);
+let tableData = $ref<OrderModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
     {
-      label: "会员卡",
-      prop: "card_id_lbl",
-      sortBy: "card_id_lbl",
-      width: 180,
+      label: "订单号",
+      prop: "lbl",
+      width: 140,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
       fixed: "left",
+    },
+    {
+      label: "公司",
+      prop: "company",
+      width: 260,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "联系电话",
+      prop: "phone",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "订单状态",
+      prop: "status_lbl",
+      sortBy: "status",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "用户",
@@ -857,10 +1136,35 @@ function getTableColumns(): ColumnType[] {
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
-      fixed: "left",
     },
     {
-      label: "充值金额",
+      label: "会员卡",
+      prop: "card_id_lbl",
+      sortBy: "card_id_lbl",
+      width: 180,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "订单金额",
+      prop: "price",
+      width: 120,
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "订单类别",
+      prop: "type_lbl",
+      sortBy: "type",
+      width: 120,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "消费充值金额",
       prop: "amt",
       width: 100,
       align: "right",
@@ -868,7 +1172,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "赠送金额",
+      label: "消费赠送金额",
       prop: "give_amt",
       width: 100,
       align: "right",
@@ -876,7 +1180,15 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "充值后充值余额",
+      label: "获得积分",
+      prop: "integral",
+      width: 100,
+      align: "right",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "消费后充值余额",
       prop: "balance",
       width: 120,
       align: "right",
@@ -884,7 +1196,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "充值后赠送余额",
+      label: "消费后赠送余额",
       prop: "give_balance",
       width: 120,
       align: "right",
@@ -892,12 +1204,22 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "充值后积分",
-      prop: "integral",
-      width: 100,
-      align: "right",
+      label: "锁定",
+      prop: "is_locked_lbl",
+      sortBy: "is_locked",
+      width: 85,
+      align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
+      showOverflowTooltip: false,
+    },
+    {
+      label: "启用",
+      prop: "is_enabled_lbl",
+      sortBy: "is_enabled",
+      width: 85,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: false,
     },
     {
       label: "备注",
@@ -969,7 +1291,7 @@ const {
   resetColumns,
   storeColumns,
   initColumns,
-} = $(useTableColumns<CardRechargeModel>(
+} = $(useTableColumns<OrderModel>(
   $$(tableColumns),
   {
     persistKey: __filename,
@@ -1078,7 +1400,7 @@ let sort = $ref<Sort>({
 
 /** 排序 */
 async function onSortChange(
-  { prop, order, column }: { column: TableColumnCtx<CardRechargeModel> } & Sort,
+  { prop, order, column }: { column: TableColumnCtx<OrderModel> } & Sort,
 ) {
   if (!order) {
     sort = {
@@ -1115,19 +1437,293 @@ async function onCancelExport() {
   exportExcel.workerTerminate();
 }
 
+/** 打开新增页面 */
+async function openAdd() {
+  if (isLocked) {
+    return;
+  }
+  if (!detailRef) {
+    return;
+  }
+  if (!permit("add")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
+    title: await nsAsync("新增") + " " + await nsAsync("订单"),
+    action: "add",
+    builtInModel,
+    showBuildIn: $$(showBuildIn),
+  });
+  tableFocus();
+  if (changedIds.length === 0) {
+    return;
+  }
+  selectedIds = [
+    ...changedIds,
+  ];
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
+  emit("add", changedIds);
+}
+
+/** 打开复制页面 */
+async function openCopy() {
+  if (isLocked) {
+    return;
+  }
+  if (!detailRef) {
+    return;
+  }
+  if (!permit("add")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
+  if (selectedIds.length === 0) {
+    ElMessage.warning(await nsAsync("请选择需要 复制 的 {0}", await nsAsync("订单")));
+    return;
+  }
+  const id = selectedIds[selectedIds.length - 1];
+  const ids = [ id ];
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
+    title: await nsAsync("复制") + " " + await nsAsync("订单"),
+    action: "copy",
+    builtInModel,
+    showBuildIn: $$(showBuildIn),
+    model: {
+      ids,
+    },
+  });
+  tableFocus();
+  if (changedIds.length === 0) {
+    return;
+  }
+  selectedIds = [
+    ...changedIds,
+  ];
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
+  emit("add", changedIds);
+}
+
+/** 打开新增或复制页面, 未选择任何行则为新增, 选中一行为复制此行 */
+async function onInsert() {
+  if (isLocked) {
+    return;
+  }
+  await openAdd();
+}
+
+const uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+
+let importPercentage = $ref(0);
+let isImporting = $ref(false);
+let isStopImport = $ref(false);
+
+const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
+
+/**
+ * 下载导入模板
+ */
+async function onDownloadImportTemplate() {
+  await downloadImportTemplate.workerFn();
+}
+
+/** 弹出导入窗口 */
+async function onImportExcel() {
+  if (isLocked) {
+    return;
+  }
+  if (!uploadFileDialogRef) {
+    return;
+  }
+  const header: { [key: string]: string } = {
+    [ await nAsync("公司") ]: "company",
+    [ await nAsync("联系电话") ]: "phone",
+    [ await nAsync("订单状态") ]: "status_lbl",
+    [ await nAsync("用户") ]: "usr_id_lbl",
+    [ await nAsync("会员卡") ]: "card_id_lbl",
+    [ await nAsync("订单金额") ]: "price",
+    [ await nAsync("订单类别") ]: "type_lbl",
+    [ await nAsync("消费充值金额") ]: "amt",
+    [ await nAsync("消费赠送金额") ]: "give_amt",
+    [ await nAsync("获得积分") ]: "integral",
+    [ await nAsync("消费后充值余额") ]: "balance",
+    [ await nAsync("消费后赠送余额") ]: "give_balance",
+    [ await nAsync("锁定") ]: "is_locked_lbl",
+    [ await nAsync("启用") ]: "is_enabled_lbl",
+    [ await nAsync("备注") ]: "rem",
+  };
+  const file = await uploadFileDialogRef.showDialog({
+    title: await nsAsync("批量导入"),
+    accept: ".xlsx",
+  });
+  tableFocus();
+  if (!file) {
+    return;
+  }
+  isStopImport = false;
+  isImporting = true;
+  importPercentage = 0;
+  let msg: VNode | undefined = undefined;
+  let succNum = 0;
+  try {
+    const messageHandler = ElMessage.info(await nsAsync("正在导入..."));
+    const models = await getExcelData<OrderInput>(
+      file,
+      header,
+      {
+        key_types: {
+          "company": "string",
+          "phone": "string",
+          "status_lbl": "string",
+          "usr_id_lbl": "string",
+          "card_id_lbl": "string",
+          "price": "string",
+          "type_lbl": "string",
+          "amt": "string",
+          "give_amt": "string",
+          "integral": "number",
+          "balance": "string",
+          "give_balance": "string",
+          "is_locked_lbl": "string",
+          "is_enabled_lbl": "string",
+          "rem": "string",
+        },
+      },
+    );
+    messageHandler.close();
+    const res = await importModels(
+      models,
+      $$(importPercentage),
+      $$(isStopImport),
+    );
+    msg = res.msg;
+    succNum = res.succNum;
+  } finally {
+    isImporting = false;
+  }
+  if (msg) {
+    ElMessageBox.alert(msg)
+  }
+  if (succNum > 0) {
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
+  }
+}
+
+/** 取消导入 */
+async function stopImport() {
+  isStopImport = true;
+  isImporting = false;
+}
+
+/** 锁定 */
+async function onIs_locked(id: OrderId, is_locked: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await lockByIds(
+    [ id ],
+    is_locked,
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}
+
+/** 启用 */
+async function onIs_enabled(id: OrderId, is_enabled: 0 | 1) {
+  if (isLocked) {
+    return;
+  }
+  const notLoading = true;
+  await enableByIds(
+    [ id ],
+    is_enabled,
+    {
+      notLoading,
+    },
+  );
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(
+    true,
+    {
+      notLoading,
+    },
+  );
+}
+
+/** 打开编辑页面 */
+async function openEdit() {
+  if (isLocked) {
+    return;
+  }
+  if (!detailRef) {
+    return;
+  }
+  if (!permit("edit")) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
+  if (selectedIds.length === 0) {
+    ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("订单")));
+    return;
+  }
+  const ids = selectedIds;
+  const {
+    changedIds,
+  } = await detailRef.showDialog({
+    title: await nsAsync("编辑") + " " + await nsAsync("订单"),
+    action: "edit",
+    builtInModel,
+    showBuildIn: $$(showBuildIn),
+    isReadonly: $$(isLocked),
+    isLocked: $$(isLocked),
+    model: {
+      ids,
+    },
+  });
+  tableFocus();
+  if (changedIds.length === 0) {
+    return;
+  }
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
+  emit("edit", changedIds);
+}
+
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
   if (props.selectedIds != null && !isLocked) {
     emit("rowEnter", e);
     return;
   }
-  await openView();
+  if (e.ctrlKey) {
+    await openEdit();
+  } else if (e.shiftKey) {
+    await openCopy();
+  } else {
+    await openView();
+  }
 }
 
 /** 双击行 */
 async function onRowDblclick(
-  row: CardRechargeModel,
-  column: TableColumnCtx<CardRechargeModel>,
+  row: OrderModel,
+  column: TableColumnCtx<OrderModel>,
 ) {
   if (isListSelectDialog) {
     return;
@@ -1149,21 +1745,22 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("会员卡充值记录")));
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("订单")));
     return;
   }
   const search = getDataSearch();
   const is_deleted = search.is_deleted;
+  const ids = selectedIds;
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + " " + await nsAsync("会员卡充值记录"),
+    title: await nsAsync("查看") + " " + await nsAsync("订单"),
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
     isLocked: $$(isLocked),
     model: {
-      ids: selectedIds,
+      ids,
       is_deleted,
     },
   });
@@ -1187,11 +1784,11 @@ async function onDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("会员卡充值记录")));
+    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("订单")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("会员卡充值记录")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("订单")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1205,7 +1802,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("会员卡充值记录")));
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("订单")));
     emit("remove", num);
   }
 }
@@ -1221,11 +1818,11 @@ async function onForceDeleteByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("会员卡充值记录")));
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("订单")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("会员卡充值记录")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("订单")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1236,7 +1833,75 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("会员卡充值记录")));
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("订单")));
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
+  }
+}
+
+/** 点击启用或者禁用 */
+async function onEnableByIds(is_enabled: 0 | 1) {
+  tableFocus();
+  if (isLocked) {
+    return;
+  }
+  if (permit("edit") === false) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
+  if (selectedIds.length === 0) {
+    let msg = "";
+    if (is_enabled === 1) {
+      msg = await nsAsync("请选择需要 启用 的 {0}", await nsAsync("订单"));
+    } else {
+      msg = await nsAsync("请选择需要 禁用 的 {0}", await nsAsync("订单"));
+    }
+    ElMessage.warning(msg);
+    return;
+  }
+  const num = await enableByIds(selectedIds, is_enabled);
+  if (num > 0) {
+    let msg = "";
+    if (is_enabled === 1) {
+      msg = await nsAsync("启用 {0} {1} 成功", num, await nsAsync("订单"));
+    } else {
+      msg = await nsAsync("禁用 {0} {1} 成功", num, await nsAsync("订单"));
+    }
+    ElMessage.success(msg);
+    dirtyStore.fireDirty(pageName);
+    await dataGrid(true);
+  }
+}
+
+/** 点击锁定或者解锁 */
+async function onLockByIds(is_locked: 0 | 1) {
+  tableFocus();
+  if (isLocked) {
+    return;
+  }
+  if (permit("edit") === false) {
+    ElMessage.warning(await nsAsync("无权限"));
+    return;
+  }
+  if (selectedIds.length === 0) {
+    let msg = "";
+    if (is_locked === 1) {
+      msg = await nsAsync("请选择需要 锁定 的 {0}", await nsAsync("订单"));
+    } else {
+      msg = await nsAsync("请选择需要 解锁 的 {0}", await nsAsync("订单"));
+    }
+    ElMessage.warning(msg);
+    return;
+  }
+  const num = await lockByIds(selectedIds, is_locked);
+  if (num > 0) {
+    let msg = "";
+    if (is_locked === 1) {
+      msg = await nsAsync("锁定 {0} {1} 成功", num, await nsAsync("订单"));
+    } else {
+      msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("订单"));
+    }
+    ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1253,11 +1918,11 @@ async function onRevertByIds() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("会员卡充值记录")));
+    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("订单")));
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("会员卡充值记录")) }?`, {
+    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("订单")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
@@ -1270,7 +1935,7 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("会员卡充值记录")));
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("订单")));
     emit("revert", num);
   }
 }
@@ -1278,13 +1943,21 @@ async function onRevertByIds() {
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
   const codes: string[] = [
-    "会员卡",
+    "订单号",
+    "公司",
+    "联系电话",
+    "订单状态",
     "用户",
-    "充值金额",
-    "赠送金额",
-    "充值后充值余额",
-    "充值后赠送余额",
-    "充值后积分",
+    "会员卡",
+    "订单金额",
+    "订单类别",
+    "消费充值金额",
+    "消费赠送金额",
+    "获得积分",
+    "消费后充值余额",
+    "消费后赠送余额",
+    "锁定",
+    "启用",
     "备注",
     "创建人",
     "创建时间",
@@ -1346,8 +2019,6 @@ watch(
     immediate: true,
   },
 );
-
-usrStore.onLogin(initFrame);
 
 initFrame();
 

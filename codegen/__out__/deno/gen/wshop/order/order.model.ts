@@ -20,8 +20,10 @@ declare const orderId: unique symbol;
 
 declare global {
   
+  /** 订单 */
   type OrderId = Distinct<string, typeof orderId>;
-
+  
+  /** 订单 */
   interface OrderSearch extends OrderSearchType {
     /** 订单号-序列号 */
     lbl_seq?: [(number|undefined|null), (number|undefined|null)];
