@@ -30,6 +30,7 @@
     "@vue/shared": "3.5.13",
     "@vueuse/core": "12.4.0",
     "cronstrue": "2.52.0",
+    "danmu": "0.14.1",
     "dayjs": "1.11.13",
     "decimal.js": "10.4.3",
     "ejsexcel-browserify": "4.4.3",
