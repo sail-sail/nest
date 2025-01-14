@@ -16,8 +16,10 @@ declare const cronJobId: unique symbol;
 
 declare global {
   
+  /** 定时任务 */
   type CronJobId = Distinct<string, typeof cronJobId>;
-
+  
+  /** 定时任务 */
   interface CronJobSearch extends CronJobSearchType {
     /** 序号 */
     seq?: [(number|undefined|null), (number|undefined|null)];
