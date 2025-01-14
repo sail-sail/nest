@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 短信应用 */
   interface SmsAppModel extends SmsAppModelType {
   }
-
+  
+  /** 短信应用 */
   interface SmsAppInput extends SmsAppInputType {
   }
-
+  
+  /** 短信应用 */
   interface SmsAppSearch extends SmsAppSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 短信应用 */
   interface SmsAppFieldComment extends SmsAppFieldCommentType {
   }
   

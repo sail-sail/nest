@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 短信发送记录 */
   interface SmsSendRecordModel extends SmsSendRecordModelType {
   }
-
+  
+  /** 短信发送记录 */
   interface SmsSendRecordInput extends SmsSendRecordInputType {
   }
-
+  
+  /** 短信发送记录 */
   interface SmsSendRecordSearch extends SmsSendRecordSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 短信发送记录 */
   interface SmsSendRecordFieldComment extends SmsSendRecordFieldCommentType {
   }
   
