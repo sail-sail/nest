@@ -8,16 +8,22 @@ import type {
 
 declare global {
   
+  /** 小程序用户 */
   interface WxUsrModel extends WxUsrModelType {
+    /** 头像 */
+    avatar_img_lbl: string;
   }
-
+  
+  /** 小程序用户 */
   interface WxUsrInput extends WxUsrInputType {
   }
-
+  
+  /** 小程序用户 */
   interface WxUsrSearch extends WxUsrSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 小程序用户 */
   interface WxUsrFieldComment extends WxUsrFieldCommentType {
   }
   
@@ -34,7 +40,7 @@ export const wxUsrFields = [
   // 昵称
   "nick_name",
   // 头像
-  "avatar_url",
+  "avatar_img",
   // 手机
   "mobile",
   // 小程序用户唯一标识

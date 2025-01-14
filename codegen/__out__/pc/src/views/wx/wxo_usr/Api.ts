@@ -20,6 +20,14 @@ async function setLblById(
   if (!model) {
     return;
   }
+  
+  // 头像
+  if (model.head_img) {
+    model.head_img_lbl = location.origin + getImgUrl({
+      id: model.head_img,
+      height: 100,
+    });
+  }
 }
 
 export function intoInput(
@@ -31,7 +39,7 @@ export function intoInput(
     // 昵称
     lbl: model?.lbl,
     // 头像
-    headimgurl: model?.headimgurl,
+    head_img: model?.head_img,
     // 绑定用户
     usr_id: model?.usr_id,
     usr_id_lbl: model?.usr_id_lbl,
@@ -369,7 +377,7 @@ export function useDownloadImportTemplate(routePath: string) {
         query {
           getFieldCommentsWxoUsr {
             lbl
-            headimgurl
+            head_img
             usr_id_lbl
             openid
             unionid

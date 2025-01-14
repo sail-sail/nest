@@ -24,8 +24,10 @@ declare const wxPayNoticeId: unique symbol;
 
 declare global {
   
+  /** 微信支付通知 */
   type WxPayNoticeId = Distinct<string, typeof wxPayNoticeId>;
-
+  
+  /** 微信支付通知 */
   interface WxPayNoticeSearch extends WxPayNoticeSearchType {
     /** 开发者ID */
     appid?: string;

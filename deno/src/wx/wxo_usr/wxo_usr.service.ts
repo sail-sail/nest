@@ -116,6 +116,15 @@ export async function wxoGetAppid(
 export async function wxoLoginByCode(
   input: WxoLoginByCodeInput,
 ): Promise<LoginModel> {
+  
+  const {
+    default: mime,
+  } = await import("mime");
+  
+  const {
+    upload: uploadOss,
+  } = await import("/lib/oss/oss.dao.ts");
+  
   const host = input.host;
   const code = input.code;
   const lang = input.lang || "zh_cn";
@@ -169,6 +178,23 @@ export async function wxoLoginByCode(
     privilege = userinfo.privilege.join(",");
   }
   
+  let head_img = "";
+  
+  if (headimgurl) {
+    const res = await fetch(headimgurl);
+    const blob = await res.blob();
+    const ext = mime.getExtension(blob.type);
+    const file = new File([ blob ], lbl + ext ? "." + ext : "");
+    head_img = await uploadOss(
+      file,
+      {
+        is_public: true,
+        tenant_id,
+        db: "wx_wxo_usr",
+      },
+    );
+  }
+  
   // 微信公众号用户
   let wxo_usr_model = await findOneWxoUsr({
     openid,
@@ -179,7 +205,7 @@ export async function wxoLoginByCode(
       {
         openid,
         lbl,
-        headimgurl,
+        head_img,
         unionid,
         sex,
         province,
@@ -202,7 +228,7 @@ export async function wxoLoginByCode(
       {
         unionid,
         lbl,
-        headimgurl,
+        head_img,
         sex,
         province,
         city,
@@ -473,6 +499,6 @@ export async function getWxoUsrInfo() {
   return {
     id: wxo_usr_model.id,
     lbl: wxo_usr_model.lbl,
-    headimgurl: wxo_usr_model.headimgurl,
+    head_img: wxo_usr_model.head_img,
   };
 }

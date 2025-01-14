@@ -20,8 +20,10 @@ declare const payTransactionsJsapiId: unique symbol;
 
 declare global {
   
+  /** 微信JSAPI下单 */
   type PayTransactionsJsapiId = Distinct<string, typeof payTransactionsJsapiId>;
-
+  
+  /** 微信JSAPI下单 */
   interface PayTransactionsJsapiSearch extends PayTransactionsJsapiSearchType {
     /** 开发者ID */
     appid?: string;

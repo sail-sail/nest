@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 公众号设置 */
   interface WxoAppModel extends WxoAppModelType {
   }
-
+  
+  /** 公众号设置 */
   interface WxoAppInput extends WxoAppInputType {
   }
-
+  
+  /** 公众号设置 */
   interface WxoAppSearch extends WxoAppSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 公众号设置 */
   interface WxoAppFieldComment extends WxoAppFieldCommentType {
   }
   

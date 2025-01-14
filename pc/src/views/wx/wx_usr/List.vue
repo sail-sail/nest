@@ -480,11 +480,17 @@
           </template>
           
           <!-- 头像 -->
-          <template v-else-if="'avatar_url' === col.prop">
+          <template v-else-if="'avatar_img' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row, column }">
+                <LinkImage
+                  v-model="row[column.property]"
+                  un-h="8"
+                ></LinkImage>
+              </template>
             </el-table-column>
           </template>
           
@@ -670,7 +676,6 @@ import {
   deleteByIds,
   forceDeleteByIds,
   useExportExcel,
-  updateById,
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
@@ -693,7 +698,6 @@ const {
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
-const fieldPermitStore = useFieldPermitStore();
 const dirtyStore = useDirtyStore();
 
 const clearDirty = dirtyStore.onDirty(onRefresh, pageName);
@@ -724,7 +728,7 @@ const props = defineProps<{
   isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: WxUsrId[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选
+  isMultiple?: string; //是否多选
   id?: WxUsrId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
@@ -736,6 +740,7 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   isPagination: "0|1",
+  isMultiple: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
   isListSelectDialog: "0|1",
@@ -774,7 +779,7 @@ const builtInModel: WxUsrModel = $(initBuiltInModel(
 ));
 
 /** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
+const multiple = $computed(() => props.isMultiple !== "0");
 /** 是否显示内置变量 */
 const showBuildIn = $computed(() => props.showBuildIn === "1");
 /** 是否分页 */
@@ -981,11 +986,10 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "头像",
-      prop: "avatar_url",
-      width: 120,
+      prop: "avatar_img",
+      width: 100,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: true,
     },
     {
       label: "手机",
@@ -1316,6 +1320,8 @@ async function openCopy() {
     ElMessage.warning(await nsAsync("请选择需要 复制 的 {0}", await nsAsync("小程序用户")));
     return;
   }
+  const id = selectedIds[selectedIds.length - 1];
+  const ids = [ id ];
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1324,7 +1330,7 @@ async function openCopy() {
     builtInModel,
     showBuildIn: $$(showBuildIn),
     model: {
-      id: selectedIds[selectedIds.length - 1],
+      ids,
     },
   });
   tableFocus();
@@ -1374,7 +1380,7 @@ async function onImportExcel() {
     [ await nAsync("名称") ]: "lbl",
     [ await nAsync("用户") ]: "usr_id_lbl",
     [ await nAsync("昵称") ]: "nick_name",
-    [ await nAsync("头像") ]: "avatar_url",
+    [ await nAsync("头像") ]: "avatar_img",
     [ await nAsync("手机") ]: "mobile",
     [ await nAsync("小程序用户唯一标识") ]: "openid",
     [ await nAsync("用户统一标识") ]: "unionid",
@@ -1408,7 +1414,7 @@ async function onImportExcel() {
           "lbl": "string",
           "usr_id_lbl": "string",
           "nick_name": "string",
-          "avatar_url": "string",
+          "avatar_img": "string",
           "mobile": "string",
           "openid": "string",
           "unionid": "string",
@@ -1463,6 +1469,7 @@ async function openEdit() {
     ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("小程序用户")));
     return;
   }
+  const ids = selectedIds;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1473,7 +1480,7 @@ async function openEdit() {
     isReadonly: $$(isLocked),
     isLocked: $$(isLocked),
     model: {
-      ids: selectedIds,
+      ids,
     },
   });
   tableFocus();
@@ -1530,6 +1537,7 @@ async function openView() {
   }
   const search = getDataSearch();
   const is_deleted = search.is_deleted;
+  const ids = selectedIds;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1539,7 +1547,7 @@ async function openView() {
     showBuildIn: $$(showBuildIn),
     isLocked: $$(isLocked),
     model: {
-      ids: selectedIds,
+      ids,
       is_deleted,
     },
   });

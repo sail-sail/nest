@@ -16,15 +16,17 @@ declare const wxUsrId: unique symbol;
 
 declare global {
   
+  /** 小程序用户 */
   type WxUsrId = Distinct<string, typeof wxUsrId>;
-
+  
+  /** 小程序用户 */
   interface WxUsrSearch extends WxUsrSearchType {
     /** 昵称 */
     nick_name?: string;
     nick_name_like?: string;
     /** 头像 */
-    avatar_url?: string;
-    avatar_url_like?: string;
+    avatar_img?: string;
+    avatar_img_like?: string;
     /** 手机 */
     mobile?: string;
     mobile_like?: string;

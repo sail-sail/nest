@@ -20,6 +20,14 @@ async function setLblById(
   if (!model) {
     return;
   }
+  
+  // 头像
+  if (model.avatar_img) {
+    model.avatar_img_lbl = location.origin + getImgUrl({
+      id: model.avatar_img,
+      height: 100,
+    });
+  }
 }
 
 export function intoInput(
@@ -36,7 +44,7 @@ export function intoInput(
     // 昵称
     nick_name: model?.nick_name,
     // 头像
-    avatar_url: model?.avatar_url,
+    avatar_img: model?.avatar_img,
     // 手机
     mobile: model?.mobile,
     // 小程序用户唯一标识
@@ -377,7 +385,7 @@ export function useDownloadImportTemplate(routePath: string) {
             lbl
             usr_id_lbl
             nick_name
-            avatar_url
+            avatar_img
             mobile
             openid
             unionid

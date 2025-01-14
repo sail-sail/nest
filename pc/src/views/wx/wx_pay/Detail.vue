@@ -52,7 +52,7 @@
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="x-8 y-5"
+      un-p="x-8 y-4"
       un-box-border
       un-gap="4"
       un-justify-start
@@ -111,6 +111,34 @@
               :placeholder="`${ ns('请输入') } ${ n('商户号') }`"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.public_key == null)">
+          <el-form-item
+            :label="n('公钥')"
+            prop="public_key"
+          >
+            <LinkAtt
+              v-model="dialogModel.public_key"
+              :is-public="false"
+              :readonly="isLocked || isReadonly"
+              un-m="l-1"
+            ></LinkAtt>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.private_key == null)">
+          <el-form-item
+            :label="n('私钥')"
+            prop="private_key"
+          >
+            <LinkAtt
+              v-model="dialogModel.private_key"
+              :is-public="false"
+              :readonly="isLocked || isReadonly"
+              un-m="l-1"
+            ></LinkAtt>
           </el-form-item>
         </template>
         
@@ -186,7 +214,8 @@
       </el-form>
     </div>
     <div
-      un-p="y-2.5"
+      un-p="y-3"
+      un-box-border
       un-flex
       un-justify-center
       un-items-center
@@ -419,7 +448,6 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: WxPayId;
       ids?: WxPayId[];
       is_deleted?: 0 | 1;
     };
@@ -475,7 +503,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  if (dialogAction === "copy" && !model?.id) {
+  if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
   if (action === "add") {
@@ -493,7 +521,8 @@ async function showDialog(
       order_by: order_by + 1,
     };
   } else if (dialogAction === "copy") {
-    if (!model?.id) {
+    const id = model?.ids?.[0];
+    if (!id) {
       return await dialogRes.dialogPrm;
     }
     const [
@@ -501,7 +530,7 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       findOneModel({
-        id: model.id,
+        id,
         is_deleted,
       }),
       findLastOrderBy(),
