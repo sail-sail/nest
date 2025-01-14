@@ -16,8 +16,10 @@ declare const wxwMsgId: unique symbol;
 
 declare global {
   
+  /** 企微消息 */
   type WxwMsgId = Distinct<string, typeof wxwMsgId>;
-
+  
+  /** 企微消息 */
   interface WxwMsgSearch extends WxwMsgSearchType {
     /** 成员ID */
     touser?: string;
