@@ -16,8 +16,10 @@ declare const seoId: unique symbol;
 
 declare global {
   
+  /** SEO优化 */
   type SeoId = Distinct<string, typeof seoId>;
-
+  
+  /** SEO优化 */
   interface SeoSearch extends SeoSearchType {
     /** 标题 */
     title?: string;

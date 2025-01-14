@@ -8,18 +8,22 @@ import type {
 
 declare global {
   
+  /** SEO优化 */
   interface SeoModel extends SeoModelType {
     /** 分享图片 */
     og_image_lbl: string;
   }
-
+  
+  /** SEO优化 */
   interface SeoInput extends SeoInputType {
   }
-
+  
+  /** SEO优化 */
   interface SeoSearch extends SeoSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** SEO优化 */
   interface SeoFieldComment extends SeoFieldCommentType {
   }
   
