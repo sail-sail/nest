@@ -16,8 +16,10 @@ declare const archiveId: unique symbol;
 
 declare global {
   
+  /** 全宗设置 */
   type ArchiveId = Distinct<string, typeof archiveId>;
-
+  
+  /** 全宗设置 */
   interface ArchiveSearch extends ArchiveSearchType {
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];

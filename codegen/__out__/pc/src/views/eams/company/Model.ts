@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 单位 */
   interface CompanyModel extends CompanyModelType {
   }
-
+  
+  /** 单位 */
   interface CompanyInput extends CompanyInputType {
   }
-
+  
+  /** 单位 */
   interface CompanySearch extends CompanySearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 单位 */
   interface CompanyFieldComment extends CompanyFieldCommentType {
   }
   

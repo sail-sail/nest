@@ -16,8 +16,10 @@ declare const companyId: unique symbol;
 
 declare global {
   
+  /** 单位 */
   type CompanyId = Distinct<string, typeof companyId>;
-
+  
+  /** 单位 */
   interface CompanySearch extends CompanySearchType {
     /** 锁定 */
     is_locked?: number[];
