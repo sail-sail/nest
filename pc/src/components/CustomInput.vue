@@ -130,8 +130,6 @@ const props = withDefaults(
   },
 );
 
-const t = getCurrentInstance()!.proxy!;
-
 let modelValue = $ref(props.modelValue);
 
 watch(
@@ -195,10 +193,10 @@ defineExpose({
     @apply p-y-1.5;
   }
 }
-.custom_input {
+.custom_input_align_center {
   :deep(.el-input__wrapper) {
     .el-input__inner {
-      @apply m-r-5.5;
+      @apply m-r-5.5 relative right--2.75;
     }
   }
   :deep(.el-input__wrapper:has(.el-input__suffix)) {

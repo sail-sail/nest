@@ -8,18 +8,22 @@ import type {
 
 declare global {
   
+  /** 语言 */
   interface LangModel extends LangModelType {
   }
-
+  
+  /** 语言 */
   interface LangInput extends LangInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 语言 */
   interface LangSearch extends LangSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 语言 */
   interface LangFieldComment extends LangFieldCommentType {
   }
   

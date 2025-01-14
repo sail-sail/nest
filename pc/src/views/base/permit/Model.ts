@@ -8,17 +8,21 @@ import type {
 
 declare global {
   
+  /** 按钮权限 */
   interface PermitModel extends PermitModelType {
   }
-
+  
+  /** 按钮权限 */
   interface PermitInput extends PermitInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 按钮权限 */
   interface PermitSearch extends PermitSearchType {
   }
-
+  
+  /** 按钮权限 */
   interface PermitFieldComment extends PermitFieldCommentType {
   }
   

@@ -110,7 +110,7 @@
     </div>
   </div>
   <div
-    v-if="inited && !props.readonly && thumbList.length < props.maxSize"
+    v-if="props.pageInited && !props.readonly && thumbList.length < props.maxSize"
     :style="{
       height: `${ (props.itemHeight + 4) }px`,
       width: `${ (props.itemHeight + 4) }px`,
@@ -190,7 +190,7 @@ const props = withDefaults(
     maxImageWidth?: number;
     maxImageHeight?: number;
     itemHeight?: number;
-    inited?: boolean;
+    pageInited?: boolean;
     db?: string;
     isPublic?: boolean;
   }>(),
@@ -204,7 +204,7 @@ const props = withDefaults(
     maxImageWidth: 1920,
     maxImageHeight: 1080,
     itemHeight: 100,
-    inited: false,
+    pageInited: false,
     db: "",
     isPublic: false,
   },
@@ -367,9 +367,9 @@ function onView(i?: number) {
 const uploadImageRef = $ref<HTMLDivElement>();
 
 watch(
-  () => props.inited,
+  () => props.pageInited,
   async () => {
-    if (!props.inited) {
+    if (!props.pageInited) {
       return;
     }
     if (!uploadImageRef) {
