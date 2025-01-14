@@ -391,7 +391,6 @@ import {
   getPagePath,
   findAll,
   findCount,
-  updateById,
 } from "./Api";
 
 import {
@@ -445,7 +444,7 @@ const props = defineProps<{
   isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: PermitId[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选
+  isMultiple?: string; //是否多选
   id?: PermitId; // ID
   menu_id?: string|string[]; // 菜单
   menu_id_lbl?: string; // 菜单
@@ -458,6 +457,7 @@ const props = defineProps<{
 const builtInSearchType: { [key: string]: string } = {
   showBuildIn: "0|1",
   isPagination: "0|1",
+  isMultiple: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
   isListSelectDialog: "0|1",
@@ -492,7 +492,7 @@ const builtInModel: PermitModel = $(initBuiltInModel(
 ));
 
 /** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
+const multiple = $computed(() => props.isMultiple !== "0");
 /** 是否显示内置变量 */
 const showBuildIn = $computed(() => props.showBuildIn === "1");
 /** 是否分页 */
@@ -893,6 +893,7 @@ async function openEdit() {
     ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("按钮权限")));
     return;
   }
+  const ids = selectedIds;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -903,7 +904,7 @@ async function openEdit() {
     isReadonly: $$(isLocked),
     isLocked: $$(isLocked),
     model: {
-      ids: selectedIds,
+      ids,
     },
   });
   tableFocus();
@@ -957,6 +958,7 @@ async function openView() {
     return;
   }
   const search = getDataSearch();
+  const ids = selectedIds;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -966,7 +968,7 @@ async function openView() {
     showBuildIn: $$(showBuildIn),
     isLocked: $$(isLocked),
     model: {
-      ids: selectedIds,
+      ids,
     },
   });
   tableFocus();

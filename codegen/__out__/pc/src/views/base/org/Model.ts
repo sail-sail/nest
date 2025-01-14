@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 组织 */
   interface OrgModel extends OrgModelType {
   }
-
+  
+  /** 组织 */
   interface OrgInput extends OrgInputType {
   }
-
+  
+  /** 组织 */
   interface OrgSearch extends OrgSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 组织 */
   interface OrgFieldComment extends OrgFieldCommentType {
   }
   

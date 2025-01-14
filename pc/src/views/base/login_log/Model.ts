@@ -8,17 +8,21 @@ import type {
 
 declare global {
   
+  /** 登录日志 */
   interface LoginLogModel extends LoginLogModelType {
   }
-
+  
+  /** 登录日志 */
   interface LoginLogInput extends LoginLogInputType {
     create_time_lbl?: string;
   }
-
+  
+  /** 登录日志 */
   interface LoginLogSearch extends LoginLogSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 登录日志 */
   interface LoginLogFieldComment extends LoginLogFieldCommentType {
   }
   

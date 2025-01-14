@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 域名 */
   interface DomainModel extends DomainModelType {
   }
-
+  
+  /** 域名 */
   interface DomainInput extends DomainInputType {
   }
-
+  
+  /** 域名 */
   interface DomainSearch extends DomainSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 域名 */
   interface DomainFieldComment extends DomainFieldCommentType {
   }
   
