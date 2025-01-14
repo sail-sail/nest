@@ -8,18 +8,22 @@ import type {
 
 declare global {
   
+  /** 业务选项 */
   interface OptbizModel extends OptbizModelType {
   }
-
+  
+  /** 业务选项 */
   interface OptbizInput extends OptbizInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 业务选项 */
   interface OptbizSearch extends OptbizSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 业务选项 */
   interface OptbizFieldComment extends OptbizFieldCommentType {
   }
   

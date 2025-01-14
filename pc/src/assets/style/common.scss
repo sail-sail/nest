@@ -20,7 +20,7 @@ html,body {
   overflow: hidden;
   margin: 0;
   padding: 0;
-  --el-font-size-base: 13px;
+  --el-font-size-base: 14px;
   font-size: var(--el-font-size-base);
   display: flex;
   flex-direction: column;
@@ -456,6 +456,14 @@ html:is(.dark) {
   line-height: unset;
   // flex-wrap: nowrap;
   // overflow: hidden;
+}
+.el-form-item .el-form-item__content:has(> .custom_input_align_center)>.el-form-item__error {
+  left: 50%;
+  transform: translateX(calc(-50% - 11px));
+}
+.el-form-item .el-form-item__content:has(> .custom_input_align_right)>.el-form-item__error {
+  left: auto;
+  right: 0;
 }
 
 .inlineMany2manyTab_table {

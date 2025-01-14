@@ -12,18 +12,22 @@ import {
 
 declare global {
   
+  /** 业务字典 */
   interface DictbizModel extends DictbizModelType {
   }
-
+  
+  /** 业务字典 */
   interface DictbizInput extends DictbizInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 业务字典 */
   interface DictbizSearch extends DictbizSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 业务字典 */
   interface DictbizFieldComment extends DictbizFieldCommentType {
   }
   
