@@ -676,7 +676,6 @@ import {
   deleteByIds,
   forceDeleteByIds,
   useExportExcel,
-  updateById,
   importModels,
   useDownloadImportTemplate,
 } from "./Api";
