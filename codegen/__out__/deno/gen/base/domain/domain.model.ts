@@ -16,8 +16,10 @@ declare const domainId: unique symbol;
 
 declare global {
   
+  /** 域名 */
   type DomainId = Distinct<string, typeof domainId>;
-
+  
+  /** 域名 */
   interface DomainSearch extends DomainSearchType {
     /** 协议 */
     protocol?: string;

@@ -130,6 +130,7 @@ export default defineConfig({
             "ElIcon",
             "ElAutocomplete",
             "ElLink",
+            "ElColorPicker",
           ],
           "pinia": [
             "defineStore",
