@@ -8,19 +8,23 @@ import type {
 
 declare global {
   
+  /** 角色 */
   interface RoleModel extends RoleModelType {
     home_url_lbl: string;
   }
-
+  
+  /** 角色 */
   interface RoleInput extends RoleInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 角色 */
   interface RoleSearch extends RoleSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 角色 */
   interface RoleFieldComment extends RoleFieldCommentType {
   }
   

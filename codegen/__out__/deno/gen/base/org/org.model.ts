@@ -16,8 +16,10 @@ declare const orgId: unique symbol;
 
 declare global {
   
+  /** 组织 */
   type OrgId = Distinct<string, typeof orgId>;
-
+  
+  /** 组织 */
   interface OrgSearch extends OrgSearchType {
     /** 锁定 */
     is_locked?: number[];
