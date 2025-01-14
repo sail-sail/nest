@@ -1,4 +1,4 @@
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 #[allow(dead_code)]
 pub fn chars_min_length(
@@ -22,5 +22,5 @@ pub fn chars_min_length(
     "The {label} length cannot less than {len}",
   );
   
-  Err(anyhow!(err_msg))
+  Err(eyre!(err_msg))
 }

@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use super::permit_service;
 use super::permit_model::GetUsrPermits;

@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use std::time::Instant;
 
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use crate::common::context::Options;
 use crate::common::gql::model::{PageInput, SortInput};

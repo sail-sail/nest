@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::fmt::Display;
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use crate::src::base::i18n::i18n_dao;
 
@@ -37,5 +37,5 @@ where
   err_msg.push_str(&msg);
   let err_msg = err_msg;
   
-  Err(anyhow!(err_msg))
+  Err(eyre!(err_msg))
 }

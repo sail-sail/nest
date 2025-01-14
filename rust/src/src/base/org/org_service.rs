@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::{Result,eyre};
 
 use crate::common::auth::auth_dao::get_token_by_auth_model;
 use crate::common::context::{
@@ -24,7 +24,7 @@ pub async fn org_login_select(
   }
   let mut auth_model = get_auth_model()
     .ok_or_else(|| 
-      anyhow::anyhow!("auth_model.is_none()")
+      eyre!("auth_model.is_none()")
     )?;
   
   let options = Options::new();
@@ -43,7 +43,7 @@ pub async fn org_login_select(
     }
   };
   if !org_ids.contains(&org_id) {
-    return Err(anyhow::anyhow!("org_id: {org_id} dose not exit in login usr"));
+    return Err(eyre!("org_id: {org_id} dose not exit in login usr"));
   }
   auth_model.org_id = org_id.into();
   let token = get_token_by_auth_model(&auth_model)?;

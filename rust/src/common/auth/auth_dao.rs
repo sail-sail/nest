@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::{Result, eyre};
 use sha2::Digest;
 
 use jwt::{VerifyWithKey, SignWithKey};
@@ -25,7 +25,7 @@ pub fn get_token_by_auth_model(
   auth_model: &AuthModel,
 ) -> Result<String> {
   if auth_model.exp <= 0 {
-    return Err(anyhow::anyhow!("token过期时间不能为空"));
+    return Err(eyre!("token过期时间不能为空"));
   }
   let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(SECRET_KEY.as_bytes())?;
   let token = String::from("Bearer ") + SignWithKey::sign_with_key(auth_model, &key)?.as_str();

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::ops::Deref;
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use crate::src::base::i18n::i18n_dao;
 
@@ -34,5 +34,5 @@ pub async fn min_items<T: Deref<Target = [E]>, E>(
   err_msg.push_str(&msg);
   let err_msg = err_msg;
   
-  Err(anyhow!(err_msg))
+  Err(eyre!(err_msg))
 }

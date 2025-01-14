@@ -89,16 +89,36 @@ pub async fn publish(
   }
 }
 
+/// 同时取消订阅多个主题
+#[allow(dead_code)]
+pub async fn un_subscribes(
+  topics: Vec<String>,
+) {
+  if topics.is_empty() {
+    return;
+  }
+  let mut callbacks_map = callbacks_map().write().await;
+  for topic in topics {
+    callbacks_map.remove(topic.as_str());
+  }
+}
+
 /// 取消订阅主题topic
 #[allow(dead_code, unused_must_use)]
 pub async fn un_subscribe(
   topic: &str,
-  callback: &Callback,
+  callback: Option<&Callback>,
 ) {
   if topic.is_empty() {
     error!("websocket.dao.unsubscribe {} topic is empty", get_req_id());
     return;
   }
+  if callback.is_none() {
+    let mut callbacks_map = callbacks_map().write().await;
+    callbacks_map.remove(topic);
+    return;
+  }
+  let callback = callback.unwrap();
   let mut callbacks_map = callbacks_map().write().await;
   let callbacks =  callbacks_map.get_mut(topic);
   if callbacks.is_none() {

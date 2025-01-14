@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
-use anyhow::{Result, anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -201,7 +201,7 @@ pub async fn update_by_id(
       "不能修改已经锁定的 {0}".to_owned(),
       map.into(),
     ).await?;
-    return Err(anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   
   let dept_id = dept_dao::update_by_id(
@@ -242,7 +242,7 @@ pub async fn delete_by_ids(
         "不能删除已经锁定的 {0}",
         map.into(),
       ).await?;
-      return Err(anyhow!(err_msg));
+      return Err(eyre!(err_msg));
     }
   }
   

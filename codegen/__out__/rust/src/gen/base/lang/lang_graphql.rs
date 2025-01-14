@@ -1,4 +1,5 @@
-use anyhow::Result;
+#[allow(unused_imports)]
+use color_eyre::eyre::{Result,eyre};
 use async_graphql::{Context, Object};
 
 #[allow(unused_imports)]

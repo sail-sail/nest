@@ -1,9 +1,8 @@
 use std::borrow::Cow;
 use std::env;
-use std::collections::HashMap;
 
 use tracing::{info, error, event_enabled, Level};
-use anyhow::{Result, anyhow};
+use color_eyre::eyre::{Result,eyre};
 use async_graphql::SimpleObject;
 use poem::http::{HeaderName, HeaderValue};
 use rust_decimal::Decimal;
@@ -184,7 +183,7 @@ pub fn get_auth_model_err() -> Result<AuthModel> {
       "{req_id} Not login! - validate_auth_model is none",
       req_id = ctx.req_id,
     );
-    Err(anyhow!("Not login!"))
+    Err(eyre!("Not login!"))
   })
 }
 
@@ -201,7 +200,7 @@ pub fn get_auth_id() -> Option<UsrId> {
 /// 获取当前登录用户的id
 pub fn get_auth_id_err() -> Result<UsrId> {
   get_auth_id()
-    .ok_or(anyhow!("Not login!"))
+    .ok_or(eyre!("Not login!"))
 }
 
 /// 获取当前登录用户的租户id
@@ -228,7 +227,7 @@ pub fn get_auth_org_id() -> Option<OrgId> {
 #[allow(dead_code)]
 pub fn get_auth_org_id_err() -> Result<OrgId> {
   get_auth_org_id()
-    .ok_or(anyhow!("Not login!"))
+    .ok_or(eyre!("Not login!"))
 }
 
 /// 获取当前登录用户的语言
@@ -405,7 +404,7 @@ impl Ctx {
             );
           } else {
             error!(
-              "{} {:#?}",
+              "{} {:?}",
               self.req_id,
               err,
             );
@@ -456,7 +455,7 @@ impl Ctx {
           );
         } else {
           error!(
-            "{} {:#?}",
+            "{} {:?}",
             self.req_id,
             err,
           );
@@ -1138,7 +1137,7 @@ impl Ctx {
       let res = f.await;
       let ctx = CTX.with(|ctx| ctx.clone());
       if ctx.is_resful {
-        return Err(anyhow!("must use resful_scope()"));
+        return Err(eyre!("must use resful_scope()"));
       }
       // info!("{} {}", ctx.req_id, serde_json::to_string(&res).unwrap_or_default());
       ctx.ok(res).await
@@ -1779,12 +1778,13 @@ impl <'a> CtxBuilder<'a> {
       if auth_token.is_some()  {
         return auth_token;
       }
-      let query = resful_req.uri().query().map(|q| {
-        url::form_urlencoded::parse(q.as_bytes())
-          .into_owned()
-          .collect::<HashMap<String, String>>()
-      }).unwrap_or_default();
-      query.get(AUTHORIZATION).cloned()
+      resful_req.uri()
+        .query()
+        .and_then(|q| {
+          url::form_urlencoded::parse(q.as_bytes())
+            .find(|(key, _)| key == AUTHORIZATION)
+            .map(|(_, value)| value.into_owned())
+        })
     } else {
       None
     }
@@ -1806,18 +1806,18 @@ impl <'a> CtxBuilder<'a> {
   /// 校验token是否已经过期
   pub fn with_auth(mut self) -> Result<CtxBuilder<'a>> {
     if self.auth_model.is_some() {
-      return Err(anyhow!("auth_model_not_none"));
+      return Err(eyre!("auth_model_not_none"));
     }
     let auth_token = self.get_auth_token();
     if auth_token.is_none() {
-      return Err(anyhow!("token_empty"));
+      return Err(eyre!("token_empty"));
     }
     let auth_token = auth_token.unwrap();
     let mut auth_model = match get_auth_model_by_token(auth_token) {
       Ok(item) => item,
-      Err(e) => {
-        error!("{}", e.to_string());
-        return Err(anyhow!("refresh_token_expired"));
+      Err(err) => {
+        error!("{:?}", err);
+        return Err(eyre!("refresh_token_expired"));
       },
     };
     let now = self.now;
@@ -1825,7 +1825,7 @@ impl <'a> CtxBuilder<'a> {
     let now_sec = now.and_utc().timestamp_millis() / 1000;
     if now_sec - server_tokentimeout > auth_model.exp {
       if now_sec - server_tokentimeout * 2 > auth_model.exp {
-        return Err(anyhow!("refresh_token_expired"));
+        return Err(eyre!("refresh_token_expired"));
       }
       auth_model.exp = now_sec + server_tokentimeout;
       let auth_token = get_token_by_auth_model(&auth_model)?;
@@ -1839,7 +1839,7 @@ impl <'a> CtxBuilder<'a> {
   #[allow(dead_code)]
   pub fn with_auth_optional(mut self) -> Result<CtxBuilder<'a>> {
     if self.auth_model.is_some() {
-      return Err(anyhow!("auth_model_not_none"));
+      return Err(eyre!("auth_model_not_none"));
     }
     let auth_token = self.get_auth_token();
     if auth_token.is_none() {
