@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 全宗设置 */
   interface ArchiveModel extends ArchiveModelType {
   }
-
+  
+  /** 全宗设置 */
   interface ArchiveInput extends ArchiveInputType {
   }
-
+  
+  /** 全宗设置 */
   interface ArchiveSearch extends ArchiveSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 全宗设置 */
   interface ArchiveFieldComment extends ArchiveFieldCommentType {
   }
   
