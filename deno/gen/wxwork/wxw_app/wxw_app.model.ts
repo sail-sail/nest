@@ -16,8 +16,10 @@ declare const wxwAppId: unique symbol;
 
 declare global {
   
+  /** 企微应用 */
   type WxwAppId = Distinct<string, typeof wxwAppId>;
-
+  
+  /** 企微应用 */
   interface WxwAppSearch extends WxwAppSearchType {
     /** 锁定 */
     is_locked?: number[];

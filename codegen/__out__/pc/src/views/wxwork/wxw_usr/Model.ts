@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 企微用户 */
   interface WxwUsrModel extends WxwUsrModelType {
   }
-
+  
+  /** 企微用户 */
   interface WxwUsrInput extends WxwUsrInputType {
   }
-
+  
+  /** 企微用户 */
   interface WxwUsrSearch extends WxwUsrSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 企微用户 */
   interface WxwUsrFieldComment extends WxwUsrFieldCommentType {
   }
   
