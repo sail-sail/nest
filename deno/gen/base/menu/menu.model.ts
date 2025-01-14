@@ -16,8 +16,10 @@ declare const menuId: unique symbol;
 
 declare global {
   
+  /** 菜单 */
   type MenuId = Distinct<string, typeof menuId>;
-
+  
+  /** 菜单 */
   interface MenuSearch extends MenuSearchType {
     /** 路由 */
     route_path?: string;

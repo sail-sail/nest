@@ -8,18 +8,22 @@ import type {
 
 declare global {
   
+  /** 用户 */
   interface UsrModel extends UsrModelType {
     /** 头像 */
     img_lbl: string;
   }
-
+  
+  /** 用户 */
   interface UsrInput extends UsrInputType {
   }
-
+  
+  /** 用户 */
   interface UsrSearch extends UsrSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 用户 */
   interface UsrFieldComment extends UsrFieldCommentType {
   }
   

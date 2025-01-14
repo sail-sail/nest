@@ -8,18 +8,22 @@ import type {
 
 declare global {
   
+  /** 租户 */
   interface TenantModel extends TenantModelType {
   }
-
+  
+  /** 租户 */
   interface TenantInput extends TenantInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 租户 */
   interface TenantSearch extends TenantSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 租户 */
   interface TenantFieldComment extends TenantFieldCommentType {
   }
   

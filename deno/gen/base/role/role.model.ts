@@ -16,8 +16,10 @@ declare const roleId: unique symbol;
 
 declare global {
   
+  /** 角色 */
   type RoleId = Distinct<string, typeof roleId>;
-
+  
+  /** 角色 */
   interface RoleSearch extends RoleSearchType {
     /** 卡号-序列号 */
     code_seq?: [(number|undefined|null), (number|undefined|null)];
