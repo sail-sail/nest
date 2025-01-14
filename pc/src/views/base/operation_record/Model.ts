@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 操作记录 */
   interface OperationRecordModel extends OperationRecordModelType {
   }
-
+  
+  /** 操作记录 */
   interface OperationRecordInput extends OperationRecordInputType {
   }
-
+  
+  /** 操作记录 */
   interface OperationRecordSearch extends OperationRecordSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 操作记录 */
   interface OperationRecordFieldComment extends OperationRecordFieldCommentType {
   }
   

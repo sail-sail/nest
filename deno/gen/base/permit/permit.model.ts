@@ -16,8 +16,10 @@ declare const permitId: unique symbol;
 
 declare global {
   
+  /** 按钮权限 */
   type PermitId = Distinct<string, typeof permitId>;
-
+  
+  /** 按钮权限 */
   interface PermitSearch extends PermitSearchType {
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];

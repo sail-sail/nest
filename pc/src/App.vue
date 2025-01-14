@@ -21,14 +21,14 @@
           :description="ns('页面不存在')"
         >
           <el-button
-            un-w="[200px]"
+            un-w="50"
             
             size="large"
             type="danger"
-            @click="goBack"
+            @click="goHome"
           >
-            <span un-text="[18px]">
-              {{ ns("返回") }}
+            <span un-text="4.5">
+              {{ ns("返回首页") }}
             </span>
           </el-button>
         </el-empty>
@@ -50,15 +50,13 @@ const {
 
 const tabsStore = useTabsStore();
 
-const router = useRouter();
 const route = useRoute();
 
-async function goBack() {
-  await tabsStore.closeOtherTabs();
-  router.back();
-  if (route.matched.length === 0) {
-    window.location.reload();
+async function goHome() {
+  if (tabsStore.actTab) {
+    tabsStore.closeCurrentTab(tabsStore.actTab);
   }
+  window.location.href = "/";
 }
 
 // const warn = console.warn;

@@ -27,7 +27,7 @@
   v-else
 >
   <template
-    v-if="props.readonlyBorder === true"
+    v-if="props.isReadonlyBorder === true"
   >
     <div
       un-b="1 solid [var(--el-border-color)]"
@@ -84,7 +84,7 @@ const props = withDefaults(
     clearable?: boolean;
     disabled?: boolean;
     readonly?: boolean;
-    readonlyBorder?: boolean;
+    isReadonlyBorder?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
   }>(),
@@ -98,7 +98,7 @@ const props = withDefaults(
     clearable: false,
     disabled: undefined,
     readonly: undefined,
-    readonlyBorder: true,
+    isReadonlyBorder: true,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
   },
