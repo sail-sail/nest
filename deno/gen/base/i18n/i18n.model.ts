@@ -16,8 +16,10 @@ declare const i18nId: unique symbol;
 
 declare global {
   
+  /** 国际化 */
   type I18nId = Distinct<string, typeof i18nId>;
-
+  
+  /** 国际化 */
   interface I18nSearch extends I18nSearchType {
     /** 备注 */
     rem?: string;
