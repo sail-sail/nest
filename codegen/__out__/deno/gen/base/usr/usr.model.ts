@@ -16,8 +16,10 @@ declare const usrId: unique symbol;
 
 declare global {
   
+  /** 用户 */
   type UsrId = Distinct<string, typeof usrId>;
-
+  
+  /** 用户 */
   interface UsrSearch extends UsrSearchType {
     /** 头像 */
     img?: string;

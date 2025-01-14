@@ -435,6 +435,8 @@ async function refreshScrollVisible() {
     scrollRightVisible = true;
   }
   await nextTick();
+  await nextTick();
+  await nextTick();
   resetTab_active_line();
 }
 
