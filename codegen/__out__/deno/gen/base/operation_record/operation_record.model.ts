@@ -16,8 +16,10 @@ declare const operationRecordId: unique symbol;
 
 declare global {
   
+  /** 操作记录 */
   type OperationRecordId = Distinct<string, typeof operationRecordId>;
-
+  
+  /** 操作记录 */
   interface OperationRecordSearch extends OperationRecordSearchType {
     /** 模块 */
     module?: string;

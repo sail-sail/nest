@@ -142,15 +142,87 @@ export async function subscribe<T>(
   });
 }
 
+/** 同时取消订阅多个主题 */
+export async function unSubscribes(
+  topics: string[],
+) {
+  if (!topics || topics.length === 0) {
+    return;
+  }
+  if (closeSocketTimeout) {
+    clearTimeout(closeSocketTimeout);
+    closeSocketTimeout = undefined;
+  }
+  
+  {
+    const socket = await connect();
+    if (!socket) {
+      return;
+    }
+    for (const topic of topics) {
+      topicCallbackMap.delete(topic);
+    }
+    socket.send({
+      data: JSON.stringify({
+        action: "unSubscribe",
+        data: {
+          topics,
+        },
+      }),
+    });
+  }
+    
+  closeSocketTimeout = setTimeout(() => {
+    if (topicCallbackMap.size === 0) {
+      try {
+        socket?.close({ });
+      } catch (err) {
+        console.log(err);
+      } finally {
+        socket = undefined;
+      }
+    }
+  }, 600000);
+}
+
 /** 取消订阅 */
 export async function unSubscribe(
   topic: string,
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  callback: Function,
+  callback?: Function,
 ) {
   if (closeSocketTimeout) {
     clearTimeout(closeSocketTimeout);
     closeSocketTimeout = undefined;
+  }
+  if (!callback) {
+    {
+      topicCallbackMap.delete(topic);
+      const socket = await connect();
+      if (!socket) {
+        return;
+      }
+      socket.send({
+        data: JSON.stringify({
+          action: "unSubscribe",
+          data: {
+            topics: [ topic ],
+          },
+        }),
+      });
+    }
+    
+    closeSocketTimeout = setTimeout(() => {
+      if (topicCallbackMap.size === 0) {
+        try {
+          socket?.close({ });
+        } catch (err) {
+          console.log(err);
+        } finally {
+          socket = undefined;
+        }
+      }
+    }, 600000);
   }
   const callbacks = topicCallbackMap.get(topic);
   if (callbacks && callbacks.length > 0) {

@@ -16,8 +16,10 @@ declare const optbizId: unique symbol;
 
 declare global {
   
+  /** 业务选项 */
   type OptbizId = Distinct<string, typeof optbizId>;
-
+  
+  /** 业务选项 */
   interface OptbizSearch extends OptbizSearchType {
     /** 键 */
     ky?: string;

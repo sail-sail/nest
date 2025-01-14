@@ -16,8 +16,10 @@ declare const optionsId: unique symbol;
 
 declare global {
   
+  /** 系统选项 */
   type OptionsId = Distinct<string, typeof optionsId>;
-
+  
+  /** 系统选项 */
   interface OptionsSearch extends OptionsSearchType {
     /** 键 */
     ky?: string;

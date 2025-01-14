@@ -85,8 +85,10 @@ declare const <#=table_Up#>Id: unique symbol;
 
 declare global {
   
+  /** <#=table_comment#> */
   type <#=Table_Up#>Id = Distinct<string, typeof <#=table_Up#>Id>;
-
+  
+  /** <#=table_comment#> */
   interface <#=searchName#> extends <#=searchName#>Type {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
