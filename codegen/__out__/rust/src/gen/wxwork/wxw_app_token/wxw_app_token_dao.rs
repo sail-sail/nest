@@ -5,7 +5,7 @@ use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::collections::HashSet;
 
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 #[allow(unused_imports)]
 use tracing::{info, error};
 #[allow(unused_imports)]
@@ -603,7 +603,7 @@ pub async fn find_all(
         .and_then(|x| x.get_ids_limit())
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
-        return Err(anyhow!("search.wxw_app_id.length > {ids_limit}"));
+        return Err(eyre!("search.wxw_app_id.length > {ids_limit}"));
       }
     }
   }
@@ -619,7 +619,7 @@ pub async fn find_all(
         .and_then(|x| x.get_ids_limit())
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
-        return Err(anyhow!("search.create_usr_id.length > {ids_limit}"));
+        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
       }
     }
   }
@@ -635,7 +635,7 @@ pub async fn find_all(
         .and_then(|x| x.get_ids_limit())
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
-        return Err(anyhow!("search.update_usr_id.length > {ids_limit}"));
+        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
       }
     }
   }
@@ -756,7 +756,7 @@ pub async fn find_count(
     .unwrap_or_default();
   
   if total > MAX_SAFE_INTEGER {
-    return Err(anyhow!("total > MAX_SAFE_INTEGER"));
+    return Err(eyre!("total > MAX_SAFE_INTEGER"));
   }
   
   Ok(total)
@@ -984,7 +984,7 @@ pub async fn find_by_ids(
   let len = ids.len();
   
   if len > FIND_ALL_IDS_LIMIT {
-    return Err(anyhow!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
+    return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
   }
   
   let search = WxwAppTokenSearch {
@@ -1000,7 +1000,7 @@ pub async fn find_by_ids(
   ).await?;
   
   if models.len() != len {
-    return Err(anyhow!("find_by_ids: models.length !== ids.length"));
+    return Err(eyre!("find_by_ids: models.length !== ids.length"));
   }
   
   let models = ids
@@ -1012,7 +1012,7 @@ pub async fn find_by_ids(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      Err(anyhow!("find_by_ids: id: {id} not found"))
+      Err(eyre!("find_by_ids: id: {id} not found"))
     })
     .collect::<Result<Vec<WxwAppTokenModel>>>()?;
   
@@ -1282,7 +1282,7 @@ pub async fn check_by_unique(
       "此 {0} 已经存在".to_owned(),
       map.into(),
     ).await?;
-    return Err(anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   Ok(None)
 }
@@ -1314,7 +1314,7 @@ pub async fn set_id_by_lbl(
           "日期格式错误".to_owned(),
           None,
         ).await?;
-        return Err(anyhow!("{column_comment} {err_msg}"));
+        return Err(eyre!("{column_comment} {err_msg}"));
       }
     }
   }
@@ -1336,7 +1336,7 @@ pub async fn set_id_by_lbl(
           "日期格式错误".to_owned(),
           None,
         ).await?;
-        return Err(anyhow!("{column_comment} {err_msg}"));
+        return Err(eyre!("{column_comment} {err_msg}"));
       }
     }
   }
@@ -1358,7 +1358,7 @@ pub async fn set_id_by_lbl(
           "日期格式错误".to_owned(),
           None,
         ).await?;
-        return Err(anyhow!("{column_comment} {err_msg}"));
+        return Err(eyre!("{column_comment} {err_msg}"));
       }
     }
   }
@@ -1495,7 +1495,7 @@ async fn _creates(
   for input in inputs {
   
     if input.id.is_some() {
-      return Err(anyhow!("Can not set id when create in dao: {table}"));
+      return Err(eyre!("Can not set id when create in dao: {table}"));
     }
     
     let old_models = find_by_unique(
@@ -1805,7 +1805,7 @@ async fn _creates(
   ).await?;
   
   if affected_rows != inputs2_len as u64 {
-    return Err(anyhow!("affectedRows: {affected_rows} != {inputs2_len}"));
+    return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
   }
   
   Ok(ids2)
@@ -1830,7 +1830,7 @@ pub async fn create_return(
   ).await?;
   
   if model.is_none() {
-    return Err(anyhow!("create_return: Create failed in dao: {table}"));
+    return Err(eyre!("create_return: Create failed in dao: {table}"));
   }
   let model = model.unwrap();
   
@@ -1869,7 +1869,7 @@ pub async fn create(
   ).await?;
   
   if ids.is_empty() {
-    return Err(anyhow!("_creates: Create failed in dao: {table}"));
+    return Err(eyre!("_creates: Create failed in dao: {table}"));
   }
   let id = ids[0].clone();
   
@@ -1974,7 +1974,7 @@ pub async fn update_by_id(
       "编辑失败, 此 {0} 已被删除".to_owned(),
       map.into(),
     ).await?;
-    return Err(anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   let old_model = old_model.unwrap();
   
@@ -2021,7 +2021,7 @@ pub async fn update_by_id(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(anyhow!(err_msg));
+        return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
       }
@@ -2281,7 +2281,7 @@ pub async fn delete_by_ids(
   }
   
   if ids.len() as u64 > MAX_SAFE_INTEGER {
-    return Err(anyhow!("ids.len(): {} > MAX_SAFE_INTEGER", ids.len()));
+    return Err(eyre!("ids.len(): {} > MAX_SAFE_INTEGER", ids.len()));
   }
   
   let options = Options::from(options)
@@ -2369,7 +2369,7 @@ pub async fn delete_by_ids(
   }
   
   if num > MAX_SAFE_INTEGER {
-    return Err(anyhow!("num: {} > MAX_SAFE_INTEGER", num));
+    return Err(eyre!("num: {} > MAX_SAFE_INTEGER", num));
   }
   
   Ok(num)
@@ -2469,7 +2469,7 @@ pub async fn revert_by_ids(
           "此 {0} 已经存在".to_owned(),
           map.into(),
         ).await?;
-        return Err(anyhow!(err_msg));
+        return Err(eyre!(err_msg));
       }
     }
     
@@ -2593,7 +2593,7 @@ pub async fn validate_option<T>(
       "{req_id} {err_msg}: {backtrace}",
       req_id = get_req_id(),
     );
-    return Err(anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   Ok(model.unwrap())
 }

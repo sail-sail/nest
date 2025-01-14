@@ -1,4 +1,5 @@
-use anyhow::Result;
+#[allow(unused_imports)]
+use color_eyre::eyre::{Result,eyre};
 use async_graphql::{Context, Object};
 
 #[allow(unused_imports)]
@@ -127,7 +128,7 @@ impl WxwMsgGenMutation {
     ctx: &Context<'_>,
     input: WxwMsgInput,
   ) -> Result<WxwMsgId> {
-    Err(anyhow::anyhow!(""))
+    Err(eyre!(""))
   }
   
   /// 企微消息根据id修改租户id

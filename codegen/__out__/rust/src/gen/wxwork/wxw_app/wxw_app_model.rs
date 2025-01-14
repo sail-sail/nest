@@ -9,7 +9,7 @@ use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::error::BoxDynError;
@@ -757,7 +757,7 @@ pub fn check_sort_wxw_app(
       continue;
     }
     if !get_can_sort_in_api_wxw_app.contains(&prop) {
-      return Err(anyhow!("check_sort_wxw_app: {}", serde_json::to_string(item)?));
+      return Err(eyre!("check_sort_wxw_app: {}", serde_json::to_string(item)?));
     }
   }
   
