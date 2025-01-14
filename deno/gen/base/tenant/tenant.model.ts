@@ -16,8 +16,10 @@ declare const tenantId: unique symbol;
 
 declare global {
   
+  /** 租户 */
   type TenantId = Distinct<string, typeof tenantId>;
-
+  
+  /** 租户 */
   interface TenantSearch extends TenantSearchType {
     /** 锁定 */
     is_locked?: number[];

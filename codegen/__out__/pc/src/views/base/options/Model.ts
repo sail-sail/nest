@@ -8,18 +8,22 @@ import type {
 
 declare global {
   
+  /** 系统选项 */
   interface OptionsModel extends OptionsModelType {
   }
-
+  
+  /** 系统选项 */
   interface OptionsInput extends OptionsInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 系统选项 */
   interface OptionsSearch extends OptionsSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 系统选项 */
   interface OptionsFieldComment extends OptionsFieldCommentType {
   }
   

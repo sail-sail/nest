@@ -16,8 +16,10 @@ declare const deptId: unique symbol;
 
 declare global {
   
+  /** 部门 */
   type DeptId = Distinct<string, typeof deptId>;
-
+  
+  /** 部门 */
   interface DeptSearch extends DeptSearchType {
     /** 锁定 */
     is_locked?: number[];
