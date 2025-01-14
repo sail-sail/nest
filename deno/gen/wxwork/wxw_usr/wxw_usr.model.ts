@@ -16,8 +16,10 @@ declare const wxwUsrId: unique symbol;
 
 declare global {
   
+  /** 企微用户 */
   type WxwUsrId = Distinct<string, typeof wxwUsrId>;
-
+  
+  /** 企微用户 */
   interface WxwUsrSearch extends WxwUsrSearchType {
     /** 用户ID */
     userid?: string;

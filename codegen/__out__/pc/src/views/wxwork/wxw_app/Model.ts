@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 企微应用 */
   interface WxwAppModel extends WxwAppModelType {
   }
-
+  
+  /** 企微应用 */
   interface WxwAppInput extends WxwAppInputType {
   }
-
+  
+  /** 企微应用 */
   interface WxwAppSearch extends WxwAppSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 企微应用 */
   interface WxwAppFieldComment extends WxwAppFieldCommentType {
   }
   
