@@ -16,8 +16,10 @@ declare const cronJobLogId: unique symbol;
 
 declare global {
   
+  /** 定时任务日志 */
   type CronJobLogId = Distinct<string, typeof cronJobLogId>;
-
+  
+  /** 定时任务日志 */
   interface CronJobLogSearch extends CronJobLogSearchType {
     /** 执行结果 */
     exec_result?: string;
