@@ -4,13 +4,6 @@ version = "0.1.0"
 edition = "2021"
 default-run = "rust"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[workspace]
-members = [
-  "."
-]
-
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
@@ -20,15 +13,14 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
 tracing-attributes = "0.1.27"
-tokio = { version = "1.42", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
-poem = { version = "3.1.5", features = ["rustls", "server", "multipart", "tempfile", "anyhow", "tokio-metrics", "websocket"], default-features = false }
+tokio = { version = "1.43", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
+poem = { version = "3.1.6", features = ["rustls", "server", "multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"], default-features = false }
 async-graphql = { version = "7.0.13", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str"] }
 smol_str = { version = "0.3", features = ["serde"] }
 slab = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
-# lazy_static = "1.5"
-anyhow = "1.0"
-sqlx = { version = "0.8.2", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
+# anyhow = "1.0"
+sqlx = { version = "0.8.3", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15"
 rust-s3 = { version = "0.35.1", features = ["tokio-rustls-tls"], default-features = false }
 imstr = { version = "0.2", features = ["serde"] }
@@ -46,19 +38,19 @@ reqwest = { version = "0.12.9", features = ["rustls-tls", "json", "multipart", "
 encoding_rs = "0.8"
 urlencoding = "2.1"
 url = "2.5"
-# sqlformat = "0.3.1"
+# sqlformat = "0.3.5"
 smallvec = { version = "1.13", features = ["union", "serde"] }
 # downcast-rs = "1.2"
 uuid = { version = "1.11", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12"
 deadpool-redis = "0.18"
-redis = { version = "0.27", features = ["tokio-comp"], default-features = false }
+redis = { version = "0.28", features = ["tokio-comp"], default-features = false }
 # pin-project = "1.1"
 bigdecimal = "0.4"
 time = "0.3"
 rust_decimal = "1.36"
 rust_decimal_macros = "1.36"
-# enum_dispatch = "0.3"
+# enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2"
 # rayon = "1.10"
 regex = "1.11"
@@ -76,11 +68,11 @@ enum-iterator = "2.1"
 derive_more = { version = "1.0.0", features = ["full"] }
 derive_builder = "0.20"
 strum = { version = "0.26", features = ["derive"] }
-itertools = "0.13.0"
-color-backtrace = "0.6.1"
+itertools = "0.14.0"
+color-eyre = "0.6.3"
 
 # 安全地使用无proc宏的自引用结构
-# self_cell = "1.0"
+# self_cell = "1.1"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = "0.6.0"

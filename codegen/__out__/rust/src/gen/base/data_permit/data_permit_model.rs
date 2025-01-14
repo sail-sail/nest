@@ -9,7 +9,7 @@ use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::error::BoxDynError;
@@ -661,7 +661,7 @@ impl From<DataPermitScope> for ArgType {
 }
 
 impl FromStr for DataPermitScope {
-  type Err = anyhow::Error;
+  type Err = color_eyre::eyre::Error;
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
@@ -670,7 +670,7 @@ impl FromStr for DataPermitScope {
       "dept_parent" => Ok(Self::DeptParent),
       "role" => Ok(Self::Role),
       "tenant" => Ok(Self::Tenant),
-      _ => Err(anyhow::anyhow!("DataPermitScope can't convert from {s}")),
+      _ => Err(eyre!("DataPermitScope can't convert from {s}")),
     }
   }
 }
@@ -755,13 +755,13 @@ impl From<DataPermitType> for ArgType {
 }
 
 impl FromStr for DataPermitType {
-  type Err = anyhow::Error;
+  type Err = color_eyre::eyre::Error;
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
       "readonly" => Ok(Self::Readonly),
       "editable" => Ok(Self::Editable),
-      _ => Err(anyhow::anyhow!("DataPermitType can't convert from {s}")),
+      _ => Err(eyre!("DataPermitType can't convert from {s}")),
     }
   }
 }
@@ -812,7 +812,7 @@ pub fn check_sort_data_permit(
       continue;
     }
     if !get_can_sort_in_api_data_permit.contains(&prop) {
-      return Err(anyhow!("check_sort_data_permit: {}", serde_json::to_string(item)?));
+      return Err(eyre!("check_sort_data_permit: {}", serde_json::to_string(item)?));
     }
   }
   

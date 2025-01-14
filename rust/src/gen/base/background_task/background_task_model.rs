@@ -9,7 +9,7 @@ use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::error::BoxDynError;
@@ -771,7 +771,7 @@ impl From<BackgroundTaskState> for ArgType {
 }
 
 impl FromStr for BackgroundTaskState {
-  type Err = anyhow::Error;
+  type Err = color_eyre::eyre::Error;
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
@@ -779,7 +779,7 @@ impl FromStr for BackgroundTaskState {
       "success" => Ok(Self::Success),
       "fail" => Ok(Self::Fail),
       "cancel" => Ok(Self::Cancel),
-      _ => Err(anyhow::anyhow!("BackgroundTaskState can't convert from {s}")),
+      _ => Err(eyre!("BackgroundTaskState can't convert from {s}")),
     }
   }
 }
@@ -874,7 +874,7 @@ impl From<BackgroundTaskType> for ArgType {
 }
 
 impl FromStr for BackgroundTaskType {
-  type Err = anyhow::Error;
+  type Err = color_eyre::eyre::Error;
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
@@ -882,7 +882,7 @@ impl FromStr for BackgroundTaskType {
       "download" => Ok(Self::Download),
       "inline" => Ok(Self::Inline),
       "tag" => Ok(Self::Tag),
-      _ => Err(anyhow::anyhow!("BackgroundTaskType can't convert from {s}")),
+      _ => Err(eyre!("BackgroundTaskType can't convert from {s}")),
     }
   }
 }
@@ -937,7 +937,7 @@ pub fn check_sort_background_task(
       continue;
     }
     if !get_can_sort_in_api_background_task.contains(&prop) {
-      return Err(anyhow!("check_sort_background_task: {}", serde_json::to_string(item)?));
+      return Err(eyre!("check_sort_background_task: {}", serde_json::to_string(item)?));
     }
   }
   

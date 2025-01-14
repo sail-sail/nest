@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
-use anyhow::{Result, anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 #[allow(unused_imports)]
 use crate::common::context::{
@@ -164,7 +164,7 @@ pub async fn delete_by_ids(
   for model in models {
     if model.is_sys == 1 {
       let err_msg = ns("不能删除系统记录".to_owned(), None).await?;
-      return Err(anyhow!(err_msg));
+      return Err(eyre!(err_msg));
     }
   }
   

@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use crate::common::context::{
   Options,

@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 // use crate::common::context::get_auth_tenant_id;
 
 use crate::r#gen::base::tenant::tenant_dao::{
@@ -47,7 +47,7 @@ use super::tenant_model::SetTenantAdminPwdInput;
 //   let tenant_id = get_auth_tenant_id();
   
 //   if tenant_id.is_none() {
-//     return Err(anyhow::anyhow!("tenant_id is none"));
+//     return Err(eyre!("tenant_id is none"));
 //   }
   
 //   let tenant_id = tenant_id.unwrap();
@@ -62,7 +62,7 @@ use super::tenant_model::SetTenantAdminPwdInput;
 //   ).await?;
   
 //   if model.is_none() {
-//     return Err(anyhow::anyhow!("tenant_id cannot be found"));
+//     return Err(eyre!("tenant_id cannot be found"));
 //   }
   
 //   let model = model.unwrap();

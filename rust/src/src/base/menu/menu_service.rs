@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use super::menu_dao;
 use super::menu_model::GetMenus;
