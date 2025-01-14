@@ -116,7 +116,8 @@
       un-overflow-auto
       un-justify-center
       un-items-center
-      un-p="5"
+      un-p="x-5"
+      un-box-border
       un-pos="relative"
     >
       <template
@@ -213,12 +214,12 @@
         </el-button>
         
         <div
-          v-else-if="!dialogModel.readonly"
+          v-else-if="dialogModel.readonly"
           un-flex="~ [1_0_0]"
           un-overflow-hidden
           un-justify-center
           un-items-center
-          un-text="var(--el-text-color-regular) 5"
+          un-text="4 gray-400"
         >
           <span>{{ ns("(暂无附件)") }}</span>
         </div>
@@ -280,6 +281,26 @@
         
       </div>
     </div>
+    
+    <div
+      un-p="y-2.5"
+      un-box-border
+      un-flex
+      un-justify-center
+      un-items-center
+    >
+      
+      <el-button
+        plain
+        @click="onClose"
+      >
+        <template #icon>
+          <ElIconCircleClose />
+        </template>
+        <span>{{ ns('关闭') }}</span>
+      </el-button>
+    </div>
+    
   </div>
   <input
     ref="fileRef"
@@ -301,6 +322,10 @@ import {
 
 import VueOfficeExcel from "@vue-office/excel";
 import VueOfficeDocx from "@vue-office/docx";
+
+import {
+  saveAs,
+} from "file-saver";
 
 const {
   ns,
@@ -388,7 +413,10 @@ const urlList = $computed(() => {
     if (lbl.length > 45) {
       lbl = lbl.substring(0, 45) + "...";
     }
-    const url = `${ baseURL }/api/oss/download/${ encodeURIComponent(lbl) }?id=${ encodeURIComponent(id) }`;
+    const url = getDownloadUrl({
+      id,
+      filename: lbl,
+    });
     list.push(url);
   }
   return list;
@@ -571,8 +599,8 @@ function downloadClk() {
   }
   const ids = modelValue.split(",").filter((x) => x);
   const id = ids[nowIndex];
-  const url = `${ baseURL }/api/oss/download/?inline=0&id=${ encodeURIComponent(id) }`;
-  window.location.href = url;
+  const url = getDownloadUrl(id);
+  saveAs(url);
 }
 
 // 打印
@@ -694,5 +722,13 @@ function beforeClose(done: (cancel: boolean) => void) {
   });
 }
 
-defineExpose({ showDialog });
+async function onClose() {
+  onCloseResolve({
+    type: "cancel",
+  });
+}
+
+defineExpose({
+  showDialog,
+});
 </script>

@@ -9,7 +9,7 @@ use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::error::BoxDynError;
@@ -761,7 +761,7 @@ impl From<DictType> for ArgType {
 }
 
 impl FromStr for DictType {
-  type Err = anyhow::Error;
+  type Err = color_eyre::eyre::Error;
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
@@ -771,7 +771,7 @@ impl FromStr for DictType {
       "datetime" => Ok(Self::Datetime),
       "time" => Ok(Self::Time),
       "boolean" => Ok(Self::Boolean),
-      _ => Err(anyhow::anyhow!("DictType can't convert from {s}")),
+      _ => Err(eyre!("DictType can't convert from {s}")),
     }
   }
 }
@@ -830,7 +830,7 @@ pub fn check_sort_dict(
       continue;
     }
     if !get_can_sort_in_api_dict.contains(&prop) {
-      return Err(anyhow!("check_sort_dict: {}", serde_json::to_string(item)?));
+      return Err(eyre!("check_sort_dict: {}", serde_json::to_string(item)?));
     }
   }
   

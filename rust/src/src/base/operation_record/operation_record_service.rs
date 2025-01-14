@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use crate::r#gen::base::operation_record::operation_record_dao;
 use crate::r#gen::base::operation_record::operation_record_model::OperationRecordInput;

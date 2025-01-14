@@ -308,22 +308,21 @@ export default defineStore("tabs", function() {
         ...query,
       };
     }
-    const isHasTab = hasTab({
+    const oldTab = findTab({
       path: route.path,
       query,
     });
-    if (isHasTab) {
-      activeTab(tab);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const comp = routeNow.matched[1].instances?.default as any;
-      await comp?.refresh?.();
-      return;
-    }
     activeTab(tab);
     const navFail = await router.push({
       path: tab.path,
       query: tab.query,
     });
+    if (oldTab) {
+      oldTab.lbl = tab.lbl;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const comp = routeNow.matched[1].instances?.default as any;
+      await comp?.refresh?.();
+    }
     return navFail;
   }
   

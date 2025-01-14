@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use super::i18n_service;
 

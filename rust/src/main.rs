@@ -33,20 +33,39 @@ use crate::common::gql::query_root::{Query, QuerySchema, Mutation};
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-  dotenv().ok();
+  dotenv().unwrap();
   let server_title = std::env::var_os("server_title").expect("server_title not found in .env");
   let server_title = server_title.to_str().unwrap();
+  let package_name = env!("CARGO_PKG_NAME");
   if std::env::var_os("RUST_LOG").is_none() {
-    std::env::set_var("RUST_LOG", format!("{}=info", server_title));
+    std::env::set_var("RUST_LOG", format!("{}=info", package_name));
+  }
+  if std::env::var_os("RUST_BACKTRACE").is_none() {
+    std::env::set_var("RUST_BACKTRACE", "1");
   }
   let git_hash = std::env::var_os("GIT_HASH");
   if let Some(git_hash) = git_hash {
     let git_hash = git_hash.to_str().unwrap();
     info!("git_hash: {git_hash}");
   }
+  let package_name2: &'static str = Box::leak(format!("{}::", package_name).into_boxed_str());
+  let common_name2: &'static str = Box::leak(format!("{}::common::", package_name).into_boxed_str());
   
   #[cfg(debug_assertions)]
   let _guard = {
+    color_eyre::config::HookBuilder::default()
+      .add_frame_filter(Box::new(move |frames| {
+        frames.retain(|frame| {
+          let name = if let Some(name) = frame.name.as_ref() {
+            name.as_str()
+          } else {
+            return true;
+          };
+          name.starts_with(package_name2) && !name.starts_with(common_name2)
+        });
+      }))
+      .install()
+      .unwrap();
     let log_path = std::env::var_os("log_path");
     if log_path.is_none() {
       tracing_subscriber::fmt::init();
@@ -69,6 +88,22 @@ async fn main() -> Result<(), std::io::Error> {
   
   #[cfg(not(debug_assertions))]
   let _guard = {
+    if std::env::var_os("NO_COLOR").is_none() {
+      std::env::set_var("NO_COLOR", "1");
+    }
+    color_eyre::config::HookBuilder::default()
+      .add_frame_filter(Box::new(move |frames| {
+        frames.retain(|frame| {
+          let name = if let Some(name) = frame.name.as_ref() {
+            name.as_str()
+          } else {
+            return true;
+          };
+          name.starts_with(package_name2) && !name.starts_with(common_name2)
+        });
+      }))
+      .install()
+      .unwrap();
     let log_path = std::env::var_os("log_path");
     if log_path.is_none() {
       tracing_subscriber::fmt()
@@ -100,8 +135,6 @@ async fn main() -> Result<(), std::io::Error> {
       println!("tmpfile_dao::init() error: {}", err);
     }
   });
-  
-  color_backtrace::install();
   
   let schema: QuerySchema = Schema::build(
     Query::default(),

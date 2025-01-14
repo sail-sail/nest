@@ -32,7 +32,8 @@ const hasDictbiz = columns.some((column) => {
   }
   return column.dictbiz;
 });
-#>use anyhow::Result;
+#>#[allow(unused_imports)]
+use color_eyre::eyre::{Result,eyre};
 use async_graphql::{Context, Object};
 
 #[allow(unused_imports)]
@@ -292,7 +293,7 @@ impl <#=tableUP#>GenMutation {<#
     ctx: &Context<'_>,
     input: <#=tableUP#>Input,
   ) -> Result<<#=Table_Up#>Id> {
-    Err(anyhow::anyhow!(""))
+    Err(eyre!(""))
   }<#
     }
   #><#

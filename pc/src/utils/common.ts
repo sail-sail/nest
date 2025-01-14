@@ -129,6 +129,9 @@ export function showUploadMsg(
   };
 }
 
+/**
+ * 复制文本到剪贴板
+ */
 export async function copyText(text: string) {
   try {
     await navigator.clipboard.writeText(text);

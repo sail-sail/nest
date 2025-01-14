@@ -1,4 +1,4 @@
-use anyhow::{Result, anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use super::super::context::query_one;
 
@@ -15,7 +15,7 @@ pub async fn health_check() -> Result<()> {
   ).await?;
   
   if res.is_none() || res.unwrap().a != 1 {
-    return Err(anyhow!("health check failed"));
+    return Err(eyre!("health check failed"));
   }
   
   Ok(())
