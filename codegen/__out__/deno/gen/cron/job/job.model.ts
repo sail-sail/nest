@@ -16,8 +16,10 @@ declare const jobId: unique symbol;
 
 declare global {
   
+  /** 任务 */
   type JobId = Distinct<string, typeof jobId>;
-
+  
+  /** 任务 */
   interface JobSearch extends JobSearchType {
     /** 锁定 */
     is_locked?: number[];

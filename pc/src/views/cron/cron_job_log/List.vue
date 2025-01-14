@@ -631,7 +631,7 @@ const props = defineProps<{
   isListSelectDialog?: string;
   ids?: string[]; //ids
   selectedIds?: CronJobLogId[]; //已选择行的id列表
-  isMultiple?: boolean; //是否多选
+  isMultiple?: string; //是否多选
   id?: CronJobLogId; // ID
   cron_job_id?: string|string[]; // 定时任务
   cron_job_id_lbl?: string; // 定时任务
@@ -643,6 +643,7 @@ const builtInSearchType: { [key: string]: string } = {
   is_deleted: "0|1",
   showBuildIn: "0|1",
   isPagination: "0|1",
+  isMultiple: "0|1",
   isLocked: "0|1",
   isFocus: "0|1",
   isListSelectDialog: "0|1",
@@ -679,7 +680,7 @@ const builtInModel: CronJobLogModel = $(initBuiltInModel(
 ));
 
 /** 是否多选 */
-const multiple = $computed(() => props.isMultiple !== false);
+const multiple = $computed(() => props.isMultiple !== "0");
 /** 是否显示内置变量 */
 const showBuildIn = $computed(() => props.showBuildIn === "1");
 /** 是否分页 */
@@ -1174,6 +1175,7 @@ async function openView() {
   }
   const search = getDataSearch();
   const is_deleted = search.is_deleted;
+  const ids = selectedIds;
   const {
     changedIds,
   } = await detailRef.showDialog({
@@ -1183,7 +1185,7 @@ async function openView() {
     showBuildIn: $$(showBuildIn),
     isLocked: $$(isLocked),
     model: {
-      ids: selectedIds,
+      ids,
       is_deleted,
     },
   });
@@ -1305,11 +1307,12 @@ async function openForeignTabs(
   if (!foreignTabsRef) {
     return;
   }
+  const ids = [ id ];
   await foreignTabsRef.showDialog({
     title,
     tabGroup,
     model: {
-      id,
+      ids,
       is_deleted: search.is_deleted,
     },
   });

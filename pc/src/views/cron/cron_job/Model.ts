@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 定时任务 */
   interface CronJobModel extends CronJobModelType {
   }
-
+  
+  /** 定时任务 */
   interface CronJobInput extends CronJobInputType {
   }
-
+  
+  /** 定时任务 */
   interface CronJobSearch extends CronJobSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 定时任务 */
   interface CronJobFieldComment extends CronJobFieldCommentType {
   }
   

@@ -8,18 +8,22 @@ import type {
 
 declare global {
   
+  /** 任务 */
   interface JobModel extends JobModelType {
   }
-
+  
+  /** 任务 */
   interface JobInput extends JobInputType {
     /** 系统字段 */
     is_sys?: number;
   }
-
+  
+  /** 任务 */
   interface JobSearch extends JobSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 任务 */
   interface JobFieldComment extends JobFieldCommentType {
   }
   
