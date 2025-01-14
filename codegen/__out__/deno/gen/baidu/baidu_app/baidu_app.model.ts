@@ -16,8 +16,10 @@ declare const baiduAppId: unique symbol;
 
 declare global {
   
+  /** 百度应用 */
   type BaiduAppId = Distinct<string, typeof baiduAppId>;
-
+  
+  /** 百度应用 */
   interface BaiduAppSearch extends BaiduAppSearchType {
     /** AppID */
     appid?: string;

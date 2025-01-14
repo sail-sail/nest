@@ -16,8 +16,10 @@ declare const baiduAppTokenId: unique symbol;
 
 declare global {
   
+  /** 百度接口凭据 */
   type BaiduAppTokenId = Distinct<string, typeof baiduAppTokenId>;
-
+  
+  /** 百度接口凭据 */
   interface BaiduAppTokenSearch extends BaiduAppTokenSearchType {
     /** 令牌 */
     access_token?: string;

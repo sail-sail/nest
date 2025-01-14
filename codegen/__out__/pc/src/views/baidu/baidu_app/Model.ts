@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 百度应用 */
   interface BaiduAppModel extends BaiduAppModelType {
   }
-
+  
+  /** 百度应用 */
   interface BaiduAppInput extends BaiduAppInputType {
   }
-
+  
+  /** 百度应用 */
   interface BaiduAppSearch extends BaiduAppSearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 百度应用 */
   interface BaiduAppFieldComment extends BaiduAppFieldCommentType {
   }
   
