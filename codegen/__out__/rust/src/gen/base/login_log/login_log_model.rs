@@ -9,7 +9,7 @@ use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::error::BoxDynError;
@@ -615,12 +615,12 @@ impl From<LoginLogType> for ArgType {
 }
 
 impl FromStr for LoginLogType {
-  type Err = anyhow::Error;
+  type Err = color_eyre::eyre::Error;
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {
       "account" => Ok(Self::Account),
-      _ => Err(anyhow::anyhow!("LoginLogType can't convert from {s}")),
+      _ => Err(eyre!("LoginLogType can't convert from {s}")),
     }
   }
 }
@@ -669,7 +669,7 @@ pub fn check_sort_login_log(
       continue;
     }
     if !get_can_sort_in_api_login_log.contains(&prop) {
-      return Err(anyhow!("check_sort_login_log: {}", serde_json::to_string(item)?));
+      return Err(eyre!("check_sort_login_log: {}", serde_json::to_string(item)?));
     }
   }
   

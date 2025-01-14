@@ -165,8 +165,10 @@
   </div>
   <div
     v-else
+    un-flex="~ wrap"
+    un-items="center"
     un-b="1 solid [var(--el-border-color)]"
-    un-p="x-2.5 y-1"
+    un-p="x-2.75 y-1"
     un-box-border
     un-rounded
     un-w="full"
@@ -185,6 +187,8 @@
     >
       <span
         class="dict_select_placeholder"
+        un-relative
+        un-top="-0.25"
       >
         {{ props.readonlyPlaceholder ?? "" }}
       </span>
@@ -194,13 +198,17 @@
     >
       <span
         v-if="isShowModelLabel"
-        class="dict_select_readonly"
+        class="dict_select_readonly_span"
+        un-relative
+        un-top="-0.25"
       >
         {{ props.modelLabel || "" }}
       </span>
       <span
         v-else
-        class="dict_select_readonly"
+        class="dict_select_readonly_span"
+        un-relative
+        un-top="-0.25"
       >
         {{ modelLabels[0] || "" }}
       </span>

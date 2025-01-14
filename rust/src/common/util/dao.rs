@@ -1,6 +1,6 @@
 use std::sync::OnceLock;
 
-use anyhow::{Result, anyhow};
+use color_eyre::eyre::{Result,eyre};
 use serde::{Serialize, Deserialize};
 use smol_str::SmolStr;
 use sqlx::FromRow;
@@ -228,7 +228,7 @@ pub async fn many2many_update(
     let idx = idx.unwrap_or_default();
     let order_by = idx + 1;
     if order_by > u32::MAX as usize {
-      return Err(anyhow!("many2many_update: idx > u32::MAX as usize"));
+      return Err(eyre!("many2many_update: idx > u32::MAX as usize"));
     }
     let order_by = order_by as u32;
     if model.is_deleted || model.order_by != order_by {
@@ -278,7 +278,7 @@ pub async fn many2many_update(
       .map(|idx| idx + 1)
       .unwrap();
     if idx > u32::MAX as usize {
-      return Err(anyhow!("many2many_update: idx > u32::MAX as usize"));
+      return Err(eyre!("many2many_update: idx > u32::MAX as usize"));
     }
     let idx = idx as u32;
     sql_fields += ",order_by";

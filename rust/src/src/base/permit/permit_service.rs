@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use anyhow::Result;
+use color_eyre::eyre::{Result,eyre};
 
 use crate::common::context::{
   get_auth_model,
@@ -192,7 +192,7 @@ pub async fn use_permit(
       "无权限".to_owned(),
       None,
     ).await?;
-    return Err(anyhow::anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   
   let auth_model = auth_model.unwrap();
@@ -209,7 +209,7 @@ pub async fn use_permit(
       "无权限".to_owned(),
       None,
     ).await?;
-    return Err(anyhow::anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   
   let usr_model = usr_model.unwrap();
@@ -225,7 +225,7 @@ pub async fn use_permit(
       "无权限".to_owned(),
       None,
     ).await?;
-    return Err(anyhow::anyhow!(err_msg));
+    return Err(eyre!(err_msg));
   }
   
   let role_models = find_all_role(
@@ -293,5 +293,5 @@ pub async fn use_permit(
     Some(map),
   ).await?;
   
-  Err(anyhow::anyhow!(err_msg))
+  Err(eyre!(err_msg))
 }

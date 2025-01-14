@@ -71,7 +71,7 @@ use std::sync::OnceLock;
 
 use serde::{Serialize, Deserialize};
 
-use anyhow::{Result,anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 use sqlx::encode::{Encode, IsNull};
 use sqlx::error::BoxDynError;
@@ -2986,7 +2986,7 @@ impl From<<#=enumColumnName#>> for ArgType {
 }
 
 impl FromStr for <#=enumColumnName#> {
-  type Err = anyhow::Error;
+  type Err = color_eyre::eyre::Error;
   
   fn from_str(s: &str) -> Result<Self, Self::Err> {
     match s {<#
@@ -3001,7 +3001,7 @@ impl FromStr for <#=enumColumnName#> {
       "<#=val#>" => Ok(Self::<#=valUp#>),<#
       }
       #>
-      _ => Err(anyhow::anyhow!("<#=enumColumnName#> can't convert from {s}")),
+      _ => Err(eyre!("<#=enumColumnName#> can't convert from {s}")),
     }
   }
 }
@@ -3072,7 +3072,7 @@ pub fn check_sort_<#=table#>(
       continue;
     }
     if !get_can_sort_in_api_<#=table#>.contains(&prop) {
-      return Err(anyhow!("check_sort_<#=table#>: {}", serde_json::to_string(item)?));
+      return Err(eyre!("check_sort_<#=table#>: {}", serde_json::to_string(item)?));
     }
   }
   
