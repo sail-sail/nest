@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
-use anyhow::{Result, anyhow};
+use color_eyre::eyre::{Result,eyre};
 
 #[allow(unused_imports)]
 use crate::common::context::{
