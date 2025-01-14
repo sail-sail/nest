@@ -48,12 +48,19 @@ const hasForeignTabsMore = columns.some((item) => {
     return item2.linkType === "more";
   });
 });
-const hasImg = columns.some((item) => item.isImg);
-const hasAtt = columns.some((item) => item.isAtt);
+const hasImg = columns.some((item) => item.isImg && !item.onlyCodegenDeno);
+const hasAtt = columns.some((item) => item.isAtt && !item.onlyCodegenDeno);
 
 const searchFormWidth = opts.searchFormWidth;
 
 const tableFieldPermit = columns.some((item) => item.fieldPermit);
+
+const hasIsSwitch = columns.some((item) => item.isSwitch && !item.onlyCodegenDeno && !item.ignoreCodegen && !item.readonly && !item.noList
+  && !item.isEncrypt
+  && item.COLUMN_NAME !== "is_deleted"
+);
+const hasForeignKeyShowTypeDialog = columns.some((item) => item.foreignKey?.showType === "dialog" && !item.onlyCodegenDeno);
+const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !item.readonly && !item.onlyCodegenDeno);
 #><template>
 <div
   un-flex="~ [1_0_0] col"
@@ -1708,7 +1715,10 @@ import {
   useExportExcel,<#
     }
   #><#
-    if (opts.noEdit !== true) {
+    if (
+      opts.noEdit !== true &&
+      (hasIsSwitch || hasAtt || hasForeignKeyShowTypeDialog || hasOrderBy)
+    ) {
   #>
   updateById,<#
     }
@@ -3200,7 +3210,7 @@ for (let i = 0; i < columns.length; i++) {
   const data_type = column.DATA_TYPE;
   const column_type = column.COLUMN_TYPE;
   const column_comment = column.COLUMN_COMMENT || "";
-  if (!column.isSwitch) {
+  if (!column.isSwitch || column.readonly) {
     continue;
   }
 #><#
