@@ -16,8 +16,10 @@ declare const backgroundTaskId: unique symbol;
 
 declare global {
   
+  /** 后台任务 */
   type BackgroundTaskId = Distinct<string, typeof backgroundTaskId>;
-
+  
+  /** 后台任务 */
   interface BackgroundTaskSearch extends BackgroundTaskSearchType {
     /** 执行结果 */
     result?: string;

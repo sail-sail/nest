@@ -43,7 +43,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     <List
       v-bind="$attrs"
       :selected-ids="selectedIds"
-      :is-multiple="multiple"
+      :is-multiple="multiple ? '1' : '0'"
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
       @selected-ids-chg="selectedIdsChg"
@@ -57,7 +57,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
       ref="listRef"
       :selected-ids="selectedIds"
       @selected-ids-chg="selectedIdsChg"
-      :is-multiple="multiple"
+      :is-multiple="multiple ? '1' : '0'"
       :is-readonly="isReadonly ? '1' : '0'"
       :is-locked="isReadonly ? '1' : '0'"
     ></TreeList><#

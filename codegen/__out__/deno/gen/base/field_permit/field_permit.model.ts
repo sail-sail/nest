@@ -16,8 +16,10 @@ declare const fieldPermitId: unique symbol;
 
 declare global {
   
+  /** 字段权限 */
   type FieldPermitId = Distinct<string, typeof fieldPermitId>;
-
+  
+  /** 字段权限 */
   interface FieldPermitSearch extends FieldPermitSearchType {
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
