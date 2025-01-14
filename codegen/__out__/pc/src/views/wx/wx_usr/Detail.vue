@@ -52,7 +52,7 @@
     <div
       un-flex="~ [1_0_0] col basis-[inherit]"
       un-overflow-auto
-      un-p="x-8 y-5"
+      un-p="x-8 y-4"
       un-box-border
       un-gap="4"
       un-justify-start
@@ -122,16 +122,18 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.avatar_url == null)">
+        <template v-if="(showBuildIn || builtInModel?.avatar_img == null)">
           <el-form-item
             :label="n('头像')"
-            prop="avatar_url"
+            prop="avatar_img"
           >
-            <CustomInput
-              v-model="dialogModel.avatar_url"
-              :placeholder="`${ ns('请输入') } ${ n('头像') }`"
+            <UploadImage
+              v-model="dialogModel.avatar_img"
+              db="wx_wx_usr.avatar_img"
+              :is-public="true"
               :readonly="isLocked || isReadonly"
-            ></CustomInput>
+              :page-inited="inited"
+            ></UploadImage>
           </el-form-item>
         </template>
         
@@ -261,7 +263,8 @@
       </el-form>
     </div>
     <div
-      un-p="y-2.5"
+      un-p="y-3"
+      un-box-border
       un-flex
       un-justify-center
       un-items-center
@@ -492,7 +495,6 @@ async function showDialog(
     isReadonly?: MaybeRefOrGetter<boolean>;
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
-      id?: WxUsrId;
       ids?: WxUsrId[];
       is_deleted?: 0 | 1;
     };
@@ -544,7 +546,7 @@ async function showDialog(
   changedIds = [ ];
   dialogModel = {
   };
-  if (dialogAction === "copy" && !model?.id) {
+  if (dialogAction === "copy" && !model?.ids?.[0]) {
     dialogAction = "add";
   }
   if (action === "add") {
@@ -559,14 +561,15 @@ async function showDialog(
       ...model,
     };
   } else if (dialogAction === "copy") {
-    if (!model?.id) {
+    const id = model?.ids?.[0];
+    if (!id) {
       return await dialogRes.dialogPrm;
     }
     const [
       data,
     ] = await Promise.all([
       findOneModel({
-        id: model.id,
+        id,
         is_deleted,
       }),
     ]);

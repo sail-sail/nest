@@ -119,11 +119,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
-  if (search?.headimgurl != null) {
-    whereQuery += ` and t.headimgurl=${ args.push(search.headimgurl) }`;
+  if (search?.head_img != null) {
+    whereQuery += ` and t.head_img=${ args.push(search.head_img) }`;
   }
-  if (isNotEmpty(search?.headimgurl_like)) {
-    whereQuery += ` and t.headimgurl like ${ args.push("%" + sqlLike(search?.headimgurl_like) + "%") }`;
+  if (isNotEmpty(search?.head_img_like)) {
+    whereQuery += ` and t.head_img like ${ args.push("%" + sqlLike(search?.head_img_like) + "%") }`;
   }
   if (search?.usr_id != null) {
     whereQuery += ` and t.usr_id in (${ args.push(search.usr_id) })`;
@@ -528,7 +528,7 @@ export async function getFieldComments(): Promise<WxoUsrFieldComment> {
   const fieldComments: WxoUsrFieldComment = {
     id: await n("ID"),
     lbl: await n("昵称"),
-    headimgurl: await n("头像"),
+    head_img: await n("头像"),
     usr_id: await n("绑定用户"),
     usr_id_lbl: await n("绑定用户"),
     openid: await n("公众号用户唯一标识"),
@@ -932,9 +932,9 @@ export async function validate(
   
   // 头像
   await validators.chars_max_length(
-    input.headimgurl,
-    200,
-    fieldComments.headimgurl,
+    input.head_img,
+    22,
+    fieldComments.head_img,
   );
   
   // 绑定用户
@@ -1237,7 +1237,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wxo_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,headimgurl,usr_id_lbl,usr_id,openid,unionid,sex,province,city,country,privilege,rem)values";
+  let sql = "insert into wx_wxo_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,head_img,usr_id_lbl,usr_id,openid,unionid,sex,province,city,country,privilege,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1340,8 +1340,8 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.headimgurl != null) {
-        sql += `,${ args.push(input.headimgurl) }`;
+      if (input.head_img != null) {
+        sql += `,${ args.push(input.head_img) }`;
       } else {
         sql += ",default";
       }
@@ -1546,9 +1546,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.headimgurl != null) {
-    if (input.headimgurl != oldModel.headimgurl) {
-      sql += `headimgurl=${ args.push(input.headimgurl) },`;
+  if (input.head_img != null) {
+    if (input.head_img != oldModel.head_img) {
+      sql += `head_img=${ args.push(input.head_img) },`;
       updateFldNum++;
     }
   }

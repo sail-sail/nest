@@ -57,7 +57,7 @@ CREATE TABLE if not exists `wx_wx_usr` (
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
   `usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '用户',
   `nick_name` varchar(100) NOT NULL DEFAULT '' COMMENT '昵称',
-  `avatar_url` varchar(500) NOT NULL DEFAULT '' COMMENT '头像',
+  `avatar_img` varchar(22) NOT NULL DEFAULT '' COMMENT '头像',
   `mobile` varchar(30) NOT NULL DEFAULT '' COMMENT '手机',
   `openid` varchar(100) NOT NULL DEFAULT '' COMMENT '小程序用户唯一标识',
   `unionid` varchar(100) NOT NULL DEFAULT '' COMMENT '用户统一标识',
@@ -121,7 +121,7 @@ drop table if exists `wx_wxo_usr`;
 CREATE TABLE if not exists `wx_wxo_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '昵称',
-  `headimgurl` varchar(200) NOT NULL DEFAULT '' COMMENT '头像',
+  `head_img` varchar(22) NOT NULL DEFAULT '' COMMENT '头像',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '绑定用户',
   `usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '绑定用户',
   `openid` varchar(100) NOT NULL DEFAULT '' COMMENT '公众号用户唯一标识',

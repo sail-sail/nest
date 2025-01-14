@@ -8,16 +8,20 @@ import type {
 
 declare global {
   
+  /** 微信支付设置 */
   interface WxPayModel extends WxPayModelType {
   }
-
+  
+  /** 微信支付设置 */
   interface WxPayInput extends WxPayInputType {
   }
-
+  
+  /** 微信支付设置 */
   interface WxPaySearch extends WxPaySearchType {
     is_deleted?: 0 | 1;
   }
-
+  
+  /** 微信支付设置 */
   interface WxPayFieldComment extends WxPayFieldCommentType {
   }
   

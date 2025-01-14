@@ -17,7 +17,7 @@ type WxoGetAppid {
 type GetWxoUsrInfo {
   id: String!
   lbl: String!
-  headimgurl: String!
+  head_img: String!
 }
 
 input WxoLoginByCodeInput {
