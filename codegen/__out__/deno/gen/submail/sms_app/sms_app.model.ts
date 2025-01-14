@@ -16,8 +16,10 @@ declare const smsAppId: unique symbol;
 
 declare global {
   
+  /** 短信应用 */
   type SmsAppId = Distinct<string, typeof smsAppId>;
-
+  
+  /** 短信应用 */
   interface SmsAppSearch extends SmsAppSearchType {
     /** appid */
     appid?: string;

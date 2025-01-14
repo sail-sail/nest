@@ -18,8 +18,10 @@ declare const smsSendRecordId: unique symbol;
 
 declare global {
   
+  /** 短信发送记录 */
   type SmsSendRecordId = Distinct<string, typeof smsSendRecordId>;
-
+  
+  /** 短信发送记录 */
   interface SmsSendRecordSearch extends SmsSendRecordSearchType {
     /** 内容 */
     content?: string;
