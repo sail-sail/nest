@@ -719,7 +719,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $ref<InstanceType<typeof ElTable>>();
+const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -1095,7 +1095,7 @@ const {
   },
 ));
 
-const detailRef = $ref<InstanceType<typeof Detail>>();
+const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
 
 /** 刷新表格 */
 async function dataGrid(
