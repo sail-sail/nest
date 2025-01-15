@@ -3336,7 +3336,7 @@ let ids = $ref<<#=Table_Up#>Id[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
-const formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -3737,8 +3737,8 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 // <#=foreignSchema.opts.table_comment#>
-const <#=foreignSchema.opts.table#>DetailDialogRef = $ref<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>();
-const <#=column_name#>Ref = $ref<InstanceType<typeof CustomSelect>>();
+const <#=foreignSchema.opts.table#>DetailDialogRef = $(useTemplateRef<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>("<#=foreignSchema.opts.table#>DetailDialogRef"));
+const <#=column_name#>Ref = $(useTemplateRef<InstanceType<typeof CustomSelect>>("<#=column_name#>Ref"));
 
 /** 打开新增 <#=foreignSchema.opts.table_comment#> 对话框 */
 async function <#=column_name#>OpenAddDialog() {
@@ -3794,7 +3794,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
 let findOneModel = findOne;
 
@@ -5335,7 +5335,7 @@ async function onSave() {
 if (mod === "base" && table === "usr") {
 #>
 
-const default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
+const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
 let old_default_org_id: OrgId | null | undefined = undefined;
 
 async function getOrgListApi() {
@@ -5390,7 +5390,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 // <#=inlineForeignTab.label#>
-const <#=inline_column_name#>Ref = $ref<InstanceType<typeof ElTable>>();
+const <#=inline_column_name#>Ref = $(useTemplateRef<InstanceType<typeof ElTable>>("<#=inline_column_name#>Ref"));
 
 const <#=inline_column_name#>Data = $computed(() => {
   if (!isLocked && !isReadonly) {
@@ -5580,8 +5580,8 @@ for (let i = 0; i < columns.length; i++) {
   const inlineMany2manyColumns = inlineMany2manySchema.columns;
 #>
 
-const <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
-const <#=column_name#>_<#=table#>Ref = $ref<InstanceType<typeof ElTable>>();
+const <#=column_name#>ListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("<#=column_name#>ListSelectDialogRef"));
+const <#=column_name#>_<#=table#>Ref = $(useTemplateRef<InstanceType<typeof ElTable>>("<#=column_name#>_<#=table#>Ref"));
 
 async function <#=column_name#>Select() {
   if (!<#=column_name#>ListSelectDialogRef) {

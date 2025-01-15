@@ -427,7 +427,7 @@ let ids = $ref<UsrId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<UsrId[]>([ ]);
 
-const formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -501,7 +501,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
 let findOneModel = findOne;
 
@@ -972,7 +972,7 @@ async function onSave() {
   });
 }
 
-const default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
+const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
 let old_default_org_id: OrgId | null | undefined = undefined;
 
 async function getOrgListApi() {
