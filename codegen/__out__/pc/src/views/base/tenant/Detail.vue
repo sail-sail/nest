@@ -353,7 +353,7 @@ let ids = $ref<TenantId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<TenantId[]>([ ]);
 
-const formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -402,8 +402,8 @@ watchEffect(async () => {
 });
 
 // 域名
-const domainDetailDialogRef = $ref<InstanceType<typeof DomainDetailDialog>>();
-const domain_idsRef = $ref<InstanceType<typeof CustomSelect>>();
+const domainDetailDialogRef = $(useTemplateRef<InstanceType<typeof DomainDetailDialog>>("domainDetailDialogRef"));
+const domain_idsRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("domain_idsRef"));
 
 /** 打开新增 域名 对话框 */
 async function domain_idsOpenAddDialog() {
@@ -450,7 +450,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
 let findOneModel = findOne;
 

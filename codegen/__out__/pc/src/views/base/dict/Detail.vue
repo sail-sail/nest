@@ -431,7 +431,7 @@ let ids = $ref<DictId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DictId[]>([ ]);
 
-const formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -505,7 +505,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
 let findOneModel = findOne;
 
@@ -989,7 +989,7 @@ async function onSave() {
 const inlineForeignTabLabel = $ref("系统字典明细");
 
 // 系统字典明细
-const dict_detailRef = $ref<InstanceType<typeof ElTable>>();
+const dict_detailRef = $(useTemplateRef<InstanceType<typeof ElTable>>("dict_detailRef"));
 
 const dict_detailData = $computed(() => {
   if (!isLocked && !isReadonly) {
