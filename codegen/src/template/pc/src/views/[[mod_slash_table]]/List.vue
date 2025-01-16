@@ -2134,7 +2134,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $ref<InstanceType<typeof ElTable>>();<#
+const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));<#
 if (opts?.isRealData) {
 #>
 
@@ -2700,7 +2700,7 @@ const {
   },
 ));
 
-const detailRef = $ref<InstanceType<typeof Detail>>();
+const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
 
 /** 刷新表格 */
 async function dataGrid(
@@ -3025,7 +3025,7 @@ async function onInsert() {
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
 #>
 
-const uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -3698,7 +3698,7 @@ async function getDetailByModule(
 if (hasForeignTabs) {
 #>
 
-const foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();<#
+const foreignTabsRef = $(useTemplateRef<InstanceType<typeof ForeignTabs>>("foreignTabsRef"));<#
 if (hasForeignTabsButton || hasForeignTabsMore) {
 #>
 
@@ -3940,7 +3940,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
 
-const <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+const <#=column_name#>ListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("<#=column_name#>ListSelectDialogRef"));
 
 async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row: <#=modelName#>) {
   if (!<#=column_name#>ListSelectDialogRef) {
@@ -4002,7 +4002,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   if (foreignKey && foreignKey.isLinkForeignTabs) {
 #>
 
-const <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs>>();
+const <#=foreignTable#>ForeignTabsRef = $(useTemplateRef<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs>>("<#=foreignTable#>ForeignTabsRef"));
 
 async function open<#=Foreign_Table_Up#>ForeignTabs(id: <#=Table_Up#>Id, title: string) {
   await <#=foreignTable#>ForeignTabsRef?.showDialog({

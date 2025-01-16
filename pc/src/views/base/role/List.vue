@@ -1004,7 +1004,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $ref<InstanceType<typeof ElTable>>();
+const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -1365,7 +1365,7 @@ const {
   },
 ));
 
-const detailRef = $ref<InstanceType<typeof Detail>>();
+const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
 
 /** 刷新表格 */
 async function dataGrid(
@@ -1585,7 +1585,7 @@ async function onInsert() {
   await openAdd();
 }
 
-const uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
@@ -2074,7 +2074,7 @@ watch(
 
 initFrame();
 
-const menu_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+const menu_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("menu_idsListSelectDialogRef"));
 
 async function onMenu_ids(row: RoleModel) {
   if (!menu_idsListSelectDialogRef) {
@@ -2115,7 +2115,7 @@ async function onMenu_ids(row: RoleModel) {
   await dataGrid();
 }
 
-const permit_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+const permit_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("permit_idsListSelectDialogRef"));
 
 async function onPermit_ids(row: RoleModel) {
   if (!permit_idsListSelectDialogRef) {
@@ -2156,7 +2156,7 @@ async function onPermit_ids(row: RoleModel) {
   await dataGrid();
 }
 
-const data_permit_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+const data_permit_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("data_permit_idsListSelectDialogRef"));
 
 async function onData_permit_ids(row: RoleModel) {
   if (!data_permit_idsListSelectDialogRef) {
@@ -2197,7 +2197,7 @@ async function onData_permit_ids(row: RoleModel) {
   await dataGrid();
 }
 
-const field_permit_idsListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+const field_permit_idsListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("field_permit_idsListSelectDialogRef"));
 
 async function onField_permit_ids(row: RoleModel) {
   if (!field_permit_idsListSelectDialogRef) {

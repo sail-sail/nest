@@ -149,7 +149,7 @@ export function usePage<T>(
 }
 
 export function useSelect<T = any, Id = string>(
-  tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
+  tableRef: Ref<InstanceType<typeof ElTable> | null | undefined>,
   opts?: {
     tableSelectable?: ((row: T, index: number) => boolean),
     multiple?: MaybeRefOrGetter<boolean>,
