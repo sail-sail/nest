@@ -247,7 +247,7 @@ function onClear(e?: PointerEvent) {
 }
 
 
-const selectListRef = $ref<InstanceType<typeof SelectList>>();
+const selectListRef = $(useTemplateRef<InstanceType<typeof SelectList>>("selectListRef"));
 
 async function onInput(
   clickType: "input" | "icon",
@@ -286,7 +286,7 @@ async function onInput(
   emit("update:modelValue", modelValue);
 }
 
-const inputRef = $ref<InstanceType<typeof ElInput>>();
+const inputRef = $(useTemplateRef<InstanceType<typeof CustomInput>>("inputRef"));
 
 function focus() {
   if (!inputRef) {
