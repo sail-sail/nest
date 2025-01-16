@@ -95,7 +95,7 @@ let onCloseResolve = function(_value: OnCloseResolveType) { };
 let onBeforeClose: OnBeforeCloseFnType | undefined = undefined;
 let onBeforeChange: OnBeforeChangeFnType | undefined = undefined;
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
 let selectedIds = $ref<CardId[]>([ ]);
 
@@ -176,7 +176,7 @@ async function onRowDblclick(row: { id: CardId }) {
   await onSave();
 }
 
-const listRef = $ref<InstanceType<typeof List>>();
+const listRef = $(useTemplateRef<InstanceType<typeof List>>("listRef"));
 
 /** 刷新 */
 async function onRefresh() {
