@@ -2,7 +2,7 @@ import { createSSRApp } from "vue";
 import App from "./App.vue";
 import * as Pinia from "pinia";
 
-import tmui from "./uni_modules/tmui";
+import tmui from "./uni_modules/tm-ui";
 
 import "virtual:uno.css";
 
