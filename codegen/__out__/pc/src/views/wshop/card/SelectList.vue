@@ -5,7 +5,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('刷新')"
+      title="刷新"
     >
       <ElIconRefresh
         class="select_refresh_icon"
@@ -41,7 +41,7 @@
       <template #icon>
         <ElIconCircleClose />
       </template>
-      <span>{{ ns("关闭") }}</span>
+      <span>关闭</span>
     </el-button>
     
     <el-button
@@ -52,7 +52,7 @@
       <template #icon>
         <ElIconCircleCheck />
       </template>
-      <span>{{ ns("确定") }}</span>
+      <span>确定</span>
     </el-button>
   </div>
 </CustomDialog>
@@ -73,11 +73,6 @@ import List from "./List.vue";
 const emit = defineEmits<{
   (e: "change", value?: CardModel | CardModel[] | null): void,
 }>();
-
-const {
-  n,
-  ns,
-} = useI18n("/wshop/card");
 
 let inited = $ref(false);
 

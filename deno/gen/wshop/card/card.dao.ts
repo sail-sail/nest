@@ -35,11 +35,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -733,38 +728,37 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取会员卡字段注释 */
 export async function getFieldComments(): Promise<CardFieldComment> {
-  const n = initN(route_path);
   const fieldComments: CardFieldComment = {
-    id: await n("ID"),
-    lbl_seq: await n("卡号-序列号"),
-    lbl: await n("卡号"),
-    usr_id: await n("绑定用户"),
-    usr_id_lbl: await n("绑定用户"),
-    grade: await n("会员等级"),
-    grade_lbl: await n("会员等级"),
-    name: await n("姓名"),
-    mobile: await n("电话"),
-    balance: await n("充值余额"),
-    give_balance: await n("赠送余额"),
-    integral: await n("积分"),
-    growth_amt: await n("累计消费"),
-    is_default_card: await n("默认"),
-    is_default_card_lbl: await n("默认"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
-    org_id: await n("组织"),
-    org_id_lbl: await n("组织"),
+    id: "ID",
+    lbl_seq: "卡号-序列号",
+    lbl: "卡号",
+    usr_id: "绑定用户",
+    usr_id_lbl: "绑定用户",
+    grade: "会员等级",
+    grade_lbl: "会员等级",
+    name: "姓名",
+    mobile: "电话",
+    balance: "充值余额",
+    give_balance: "赠送余额",
+    integral: "积分",
+    growth_amt: "累计消费",
+    is_default_card: "默认",
+    is_default_card_lbl: "默认",
+    is_locked: "锁定",
+    is_locked_lbl: "锁定",
+    is_enabled: "启用",
+    is_enabled_lbl: "启用",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
+    org_id: "组织",
+    org_id_lbl: "组织",
   };
   return fieldComments;
 }
@@ -864,7 +858,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("会员卡")));
+      throw new UniqueException("此 会员卡 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: CardId = await updateById(
@@ -1110,7 +1104,7 @@ export async function validateIsEnabled(
   model: Readonly<CardModel>,
 ) {
   if (model.is_enabled == 0) {
-    throw `${ await ns("会员卡") } ${ await ns("已禁用") }`;
+    throw "会员卡 已禁用";
   }
 }
 
@@ -1120,7 +1114,7 @@ export async function validateOption(
   model?: CardModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("会员卡") } ${ await ns("不存在") }`;
+    const err_msg = "会员卡 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1682,7 +1676,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("会员卡"));
+        throw "此 会员卡 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1692,7 +1686,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("会员卡"));
+    throw "编辑失败, 此 会员卡 已被删除";
   }
   
   const args = new QueryArgs();
@@ -2088,7 +2082,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("会员卡"));
+        throw "此 会员卡 已经存在";
       }
     }
     const args = new QueryArgs();

@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -631,31 +626,30 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取产品类别字段注释 */
 export async function getFieldComments(): Promise<PtTypeFieldComment> {
-  const n = initN(route_path);
   const fieldComments: PtTypeFieldComment = {
-    id: await n("ID"),
-    img: await n("图标"),
-    lbl: await n("名称"),
-    is_home: await n("首页显示"),
-    is_home_lbl: await n("首页显示"),
-    is_recommend: await n("推荐"),
-    is_recommend_lbl: await n("推荐"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    order_by: await n("排序"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
-    org_id: await n("组织"),
-    org_id_lbl: await n("组织"),
+    id: "ID",
+    img: "图标",
+    lbl: "名称",
+    is_home: "首页显示",
+    is_home_lbl: "首页显示",
+    is_recommend: "推荐",
+    is_recommend_lbl: "推荐",
+    is_locked: "锁定",
+    is_locked_lbl: "锁定",
+    is_enabled: "启用",
+    is_enabled_lbl: "启用",
+    order_by: "排序",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
+    org_id: "组织",
+    org_id_lbl: "组织",
   };
   return fieldComments;
 }
@@ -755,7 +749,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("产品类别")));
+      throw new UniqueException("此 产品类别 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: PtTypeId = await updateById(
@@ -1010,7 +1004,7 @@ export async function validateIsEnabled(
   model: Readonly<PtTypeModel>,
 ) {
   if (model.is_enabled == 0) {
-    throw `${ await ns("产品类别") } ${ await ns("已禁用") }`;
+    throw "产品类别 已禁用";
   }
 }
 
@@ -1020,7 +1014,7 @@ export async function validateOption(
   model?: PtTypeModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("产品类别") } ${ await ns("不存在") }`;
+    const err_msg = "产品类别 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1543,7 +1537,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("产品类别"));
+        throw "此 产品类别 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1553,7 +1547,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("产品类别"));
+    throw "编辑失败, 此 产品类别 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1940,7 +1934,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("产品类别"));
+        throw "此 产品类别 已经存在";
       }
     }
     const args = new QueryArgs();

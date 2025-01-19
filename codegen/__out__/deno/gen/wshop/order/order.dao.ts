@@ -35,11 +35,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -840,44 +835,43 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取订单字段注释 */
 export async function getFieldComments(): Promise<OrderFieldComment> {
-  const n = initN(route_path);
   const fieldComments: OrderFieldComment = {
-    id: await n("ID"),
-    lbl_seq: await n("订单号-序列号"),
-    lbl_date_seq: await n("订单号-日期"),
-    lbl_date_seq_lbl: await n("订单号-日期"),
-    lbl: await n("订单号"),
-    company: await n("公司"),
-    phone: await n("联系电话"),
-    status: await n("订单状态"),
-    status_lbl: await n("订单状态"),
-    usr_id: await n("用户"),
-    usr_id_lbl: await n("用户"),
-    card_id: await n("会员卡"),
-    card_id_lbl: await n("会员卡"),
-    price: await n("订单金额"),
-    type: await n("订单类别"),
-    type_lbl: await n("订单类别"),
-    amt: await n("消费充值金额"),
-    give_amt: await n("消费赠送金额"),
-    integral: await n("获得积分"),
-    balance: await n("消费后充值余额"),
-    give_balance: await n("消费后赠送余额"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
-    org_id: await n("组织"),
-    org_id_lbl: await n("组织"),
+    id: "ID",
+    lbl_seq: "订单号-序列号",
+    lbl_date_seq: "订单号-日期",
+    lbl_date_seq_lbl: "订单号-日期",
+    lbl: "订单号",
+    company: "公司",
+    phone: "联系电话",
+    status: "订单状态",
+    status_lbl: "订单状态",
+    usr_id: "用户",
+    usr_id_lbl: "用户",
+    card_id: "会员卡",
+    card_id_lbl: "会员卡",
+    price: "订单金额",
+    type: "订单类别",
+    type_lbl: "订单类别",
+    amt: "消费充值金额",
+    give_amt: "消费赠送金额",
+    integral: "获得积分",
+    balance: "消费后充值余额",
+    give_balance: "消费后赠送余额",
+    is_locked: "锁定",
+    is_locked_lbl: "锁定",
+    is_enabled: "启用",
+    is_enabled_lbl: "启用",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
+    org_id: "组织",
+    org_id_lbl: "组织",
   };
   return fieldComments;
 }
@@ -977,7 +971,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("订单")));
+      throw new UniqueException("此 订单 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: OrderId = await updateById(
@@ -1223,7 +1217,7 @@ export async function validateIsEnabled(
   model: Readonly<OrderModel>,
 ) {
   if (model.is_enabled == 0) {
-    throw `${ await ns("订单") } ${ await ns("已禁用") }`;
+    throw "订单 已禁用";
   }
 }
 
@@ -1233,7 +1227,7 @@ export async function validateOption(
   model?: OrderModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("订单") } ${ await ns("不存在") }`;
+    const err_msg = "订单 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1829,7 +1823,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("订单"));
+        throw "此 订单 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1839,7 +1833,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("订单"));
+    throw "编辑失败, 此 订单 已被删除";
   }
   
   const args = new QueryArgs();
@@ -2259,7 +2253,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("订单"));
+        throw "此 订单 已经存在";
       }
     }
     const args = new QueryArgs();

@@ -5,10 +5,6 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   get_usr_id,
   get_org_id,
 } from "/lib/auth/auth.dao.ts";
@@ -170,7 +166,7 @@ export async function updateById(
   
   const is_locked = await wxapp_configDao.getIsLockedById(id);
   if (is_locked) {
-    throw await ns("不能修改已经锁定的数据");
+    throw "不能修改已经锁定的 小程序配置";
   }
   
   // 不能修改系统记录的系统字段
@@ -197,7 +193,7 @@ export async function deleteByIds(
     });
     for (const model of models) {
       if (model.is_locked === 1) {
-        throw await ns("不能删除已经锁定的 {0}", "小程序配置");
+        throw "不能删除已经锁定的 小程序配置";
       }
     }
   }
@@ -208,7 +204,7 @@ export async function deleteByIds(
     });
     for (const model of models) {
       if (model.is_sys === 1) {
-        throw await ns("不能删除系统记录");
+        throw "不能删除系统记录";
       }
     }
   }
