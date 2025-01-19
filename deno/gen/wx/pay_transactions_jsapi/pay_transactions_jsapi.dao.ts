@@ -33,11 +33,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -545,14 +540,14 @@ export async function setIdByLbl(
       input.success_time = success_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.success_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.success_time } 日期格式错误`;
     }
   }
   if (input.success_time) {
     const success_time = dayjs(input.success_time);
     if (!success_time.isValid()) {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.success_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.success_time } 日期格式错误`;
     }
     input.success_time = dayjs(input.success_time).format("YYYY-MM-DD HH:mm:ss");
   }
@@ -610,38 +605,37 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取微信JSAPI下单字段注释 */
 export async function getFieldComments(): Promise<PayTransactionsJsapiFieldComment> {
-  const n = initN(route_path);
   const fieldComments: PayTransactionsJsapiFieldComment = {
-    id: await n("ID"),
-    appid: await n("开发者ID"),
-    mchid: await n("商户号"),
-    description: await n("商品描述"),
-    out_trade_no: await n("商户订单号"),
-    transaction_id: await n("微信支付订单号"),
-    trade_state: await n("交易状态"),
-    trade_state_lbl: await n("交易状态"),
-    trade_state_desc: await n("交易状态描述"),
-    success_time: await n("支付完成时间"),
-    success_time_lbl: await n("支付完成时间"),
-    time_expire: await n("交易限制时间"),
-    attach: await n("附加数据"),
-    attach2: await n("附加数据2"),
-    notify_url: await n("通知地址"),
-    support_fapiao: await n("是否支持发票"),
-    support_fapiao_lbl: await n("是否支持发票"),
-    total_fee: await n("订单金额(分)"),
-    currency: await n("货币类型"),
-    currency_lbl: await n("货币类型"),
-    openid: await n("用户标识"),
-    prepay_id: await n("预支付交易会话标识"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    appid: "开发者ID",
+    mchid: "商户号",
+    description: "商品描述",
+    out_trade_no: "商户订单号",
+    transaction_id: "微信支付订单号",
+    trade_state: "交易状态",
+    trade_state_lbl: "交易状态",
+    trade_state_desc: "交易状态描述",
+    success_time: "支付完成时间",
+    success_time_lbl: "支付完成时间",
+    time_expire: "交易限制时间",
+    attach: "附加数据",
+    attach2: "附加数据2",
+    notify_url: "通知地址",
+    support_fapiao: "是否支持发票",
+    support_fapiao_lbl: "是否支持发票",
+    total_fee: "订单金额(分)",
+    currency: "货币类型",
+    currency_lbl: "货币类型",
+    openid: "用户标识",
+    prepay_id: "预支付交易会话标识",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -721,7 +715,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("微信JSAPI下单")));
+      throw new UniqueException("此 微信JSAPI下单 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: PayTransactionsJsapiId = await updateById(
@@ -967,7 +961,7 @@ export async function validateOption(
   model?: PayTransactionsJsapiModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("微信JSAPI下单") } ${ await ns("不存在") }`;
+    const err_msg = "微信JSAPI下单 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1630,7 +1624,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("微信JSAPI下单"));
+        throw "此 微信JSAPI下单 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1640,7 +1634,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("微信JSAPI下单"));
+    throw "编辑失败, 此 微信JSAPI下单 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1971,7 +1965,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("微信JSAPI下单"));
+        throw "此 微信JSAPI下单 已经存在";
       }
     }
     const args = new QueryArgs();
