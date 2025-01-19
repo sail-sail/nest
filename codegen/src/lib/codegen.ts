@@ -6,7 +6,7 @@ import { basename, dirname, resolve, normalize } from "path";
 import { Chalk } from "chalk";
 import * as shelljs from "shelljs";
 import * as uuid from "uuid";
-import tables from "../tables/tables";
+import tables, { isUseI18n as isUseI18n0 } from "../tables/tables";
 import { createHash } from "crypto";
 import { unlink } from "fs/promises";
 import { TablesConfigItem } from "../config";
@@ -16,6 +16,8 @@ if (!shelljs.which("git")) {
   shelljs.echo("请先安装git: https://git-scm.com");
   process.exit(1);
 }
+
+const isUseI18n = isUseI18n0;
 
 // if (shelljs.env["LESSCHARSET"] !== "utf-8") {
 //   shelljs.echo("请先设置全局环境变量 LESSCHARSET 为 utf-8");
