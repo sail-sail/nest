@@ -1415,10 +1415,15 @@ export async function get<#=Foreign_Table_Up#>Tree() {
 /**
  * 下载<#=table_comment#>导入模板
  */
-export function useDownloadImportTemplate(routePath: string) {
+export function useDownloadImportTemplate(routePath: string) {<#
+  if (isUseI18n) {
+  #>
   const {
     nsAsync,
   } = useI18n(routePath);
+  <#
+  }
+  #>
   const {
     workerFn,
     workerStatus,
@@ -1650,18 +1655,39 @@ export function useDownloadImportTemplate(routePath: string) {
       variables: {
       },
     });
-    try {
-      const sheetName = await nsAsync("<#=table_comment#>");
+    try {<#
+      if (isUseI18n) {
+      #>
+      const sheetName = await nsAsync("<#=table_comment#>");<#
+      } else {
+      #>
+      const sheetName = "<#=table_comment#>";<#
+      }
+      #>
       const buffer = await workerFn(
         `${ location.origin }/import_template/<#=mod_slash_table#>.xlsx`,
         {
           sheetName,
           data,
         },
-      );
-      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
-    } catch (err) {
-      ElMessage.error(await nsAsync("下载失败"));
+      );<#
+      if (isUseI18n) {
+      #>
+      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);<#
+      } else {
+      #>
+      saveAsExcel(buffer, `${ sheetName}导入`);<#
+      }
+      #>
+    } catch (err) {<#
+      if (isUseI18n) {
+      #>
+      ElMessage.error(await nsAsync("下载失败"));<#
+      } else {
+      #>
+      ElMessage.error("下载失败");<#
+      }
+      #>
       throw err;
     }
   }
@@ -1675,10 +1701,14 @@ export function useDownloadImportTemplate(routePath: string) {
 /**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel(routePath: string) {<#
+  if (isUseI18n) {
+  #>
   const {
     nsAsync,
-  } = useI18n(routePath);
+  } = useI18n(routePath);<#
+  }
+  #>
   const {
     workerFn,
     workerStatus,
@@ -1865,8 +1895,15 @@ export function useExportExcel(routePath: string) {
       for (const model of data.findAll<#=Table_Up2#>) {
         await setLblById(model, true);
       }
-      try {
-        const sheetName = await nsAsync("<#=table_comment#>");
+      try {<#
+        if (isUseI18n) {
+        #>
+        const sheetName = await nsAsync("<#=table_comment#>");<#
+        } else {
+        #>
+        const sheetName = "<#=table_comment#>";<#
+        }
+        #>
         const buffer = await workerFn(
           `${ location.origin }/excel_template/<#=mod_slash_table#>.xlsx`,
           {
@@ -1876,8 +1913,15 @@ export function useExportExcel(routePath: string) {
           },
         );
         saveAsExcel(buffer, sheetName);
-      } catch (err) {
-        ElMessage.error(await nsAsync("导出失败"));
+      } catch (err) {<#
+        if (isUseI18n) {
+        #>
+        ElMessage.error(await nsAsync("导出失败"));<#
+        } else {
+        #>
+        ElMessage.error("导出失败");<#
+        }
+        #>
         throw err;
       }
     } finally {
@@ -1902,11 +1946,15 @@ export async function importModels(
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
   opt?: GqlOpt,
-) {
+) {<#
+  if (isUseI18n) {
+  #>
   const {
     nsAsync,
   } = useI18n();
-  
+  <#
+  }
+  #>
   opt = opt || { };
   opt.showErrMsg = false;
   opt.notLoading = true;
@@ -1935,8 +1983,15 @@ export async function importModels(
       );
       succNum += inputs.length;
     } catch (err) {
-      failNum += inputs.length;
-      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));
+      failNum += inputs.length;<#
+      if (isUseI18n) {
+      #>
+      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));<#
+      } else {
+      #>
+      failErrMsgs.push(`批量导入第 ${ i + 1 - inputs.length } 至 ${ i + 1 } 行时失败: ${ err }`);<#
+      }
+      #>
     }
     
     percentage.value = Math.floor((i + 1) / len * 100);

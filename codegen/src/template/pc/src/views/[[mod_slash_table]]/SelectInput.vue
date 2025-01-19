@@ -137,14 +137,18 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePath();<#
+if (isUseI18n) {
+#>
 
 const {
   n,
   ns,
   nAsync,
   nsAsync,
-} = useI18n(pagePath);
+} = useI18n(pagePath);<#
+}
+#>
 
 const props = withDefaults(
   defineProps<{
@@ -286,8 +290,15 @@ async function onInput(
   const {
     type,
     selectedIds,
-  } = await selectListRef.showDialog({
-    title: `${ await nsAsync("选择") } ${ await nAsync("<#=table_comment#>") }`,
+  } = await selectListRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: `${ await nsAsync("选择") } ${ await nAsync("<#=table_comment#>") }`,<#
+    } else {
+    #>
+    title: `选择 <#=table_comment#>`,<#
+    }
+    #>
     action: "select",
     multiple: props.multiple,
     isReadonly: () => props.readonly,
