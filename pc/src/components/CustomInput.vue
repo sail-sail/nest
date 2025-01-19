@@ -178,9 +178,14 @@ function focus() {
   inputRef?.focus();
 }
 
+function blur() {
+  inputRef?.blur();
+}
+
 defineExpose({
   inputRef: $$(inputRef),
   focus,
+  blur,
 });
 </script>
 
