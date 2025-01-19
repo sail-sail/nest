@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -524,30 +519,29 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取公众号用户字段注释 */
 export async function getFieldComments(): Promise<WxoUsrFieldComment> {
-  const n = initN(route_path);
   const fieldComments: WxoUsrFieldComment = {
-    id: await n("ID"),
-    lbl: await n("昵称"),
-    head_img: await n("头像"),
-    usr_id: await n("绑定用户"),
-    usr_id_lbl: await n("绑定用户"),
-    openid: await n("公众号用户唯一标识"),
-    unionid: await n("用户统一标识"),
-    sex: await n("性别"),
-    sex_lbl: await n("性别"),
-    province: await n("省份"),
-    city: await n("城市"),
-    country: await n("国家"),
-    privilege: await n("特权"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    lbl: "昵称",
+    head_img: "头像",
+    usr_id: "绑定用户",
+    usr_id_lbl: "绑定用户",
+    openid: "公众号用户唯一标识",
+    unionid: "用户统一标识",
+    sex: "性别",
+    sex_lbl: "性别",
+    province: "省份",
+    city: "城市",
+    country: "国家",
+    privilege: "特权",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -647,7 +641,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("公众号用户")));
+      throw new UniqueException("此 公众号用户 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxoUsrId = await updateById(
@@ -902,7 +896,7 @@ export async function validateOption(
   model?: WxoUsrModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("公众号用户") } ${ await ns("不存在") }`;
+    const err_msg = "公众号用户 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1524,7 +1518,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("公众号用户"));
+        throw "此 公众号用户 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1534,7 +1528,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("公众号用户"));
+    throw "编辑失败, 此 公众号用户 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1846,7 +1840,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("公众号用户"));
+        throw "此 公众号用户 已经存在";
       }
     }
     const args = new QueryArgs();
