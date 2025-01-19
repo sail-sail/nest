@@ -11,7 +11,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -21,7 +21,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -31,7 +31,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -72,14 +72,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.exec_state == null)">
           <el-form-item
-            :label="n('执行状态')"
+            label="执行状态"
             prop="exec_state"
           >
             <DictSelect
               v-model="dialogModel.exec_state"
               :set="dialogModel.exec_state = dialogModel.exec_state ?? undefined"
               code="cron_job_log_exec_state"
-              :placeholder="`${ ns('请选择') } ${ n('执行状态') }`"
+              placeholder="请选择 执行状态"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -87,12 +87,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.exec_result == null)">
           <el-form-item
-            :label="n('执行结果')"
+            label="执行结果"
             prop="exec_result"
           >
             <CustomInput
               v-model="dialogModel.exec_result"
-              :placeholder="`${ ns('请输入') } ${ n('执行结果') }`"
+              placeholder="请输入 执行结果"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -100,7 +100,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.begin_time == null)">
           <el-form-item
-            :label="n('开始时间')"
+            label="开始时间"
             prop="begin_time"
           >
             <CustomDatePicker
@@ -108,7 +108,7 @@
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
-              :placeholder="`${ ns('请选择') } ${ n('开始时间') }`"
+              placeholder="请选择 开始时间"
               :readonly="isLocked || isReadonly"
             ></CustomDatePicker>
           </el-form-item>
@@ -116,7 +116,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.end_time == null)">
           <el-form-item
-            :label="n('结束时间')"
+            label="结束时间"
             prop="end_time"
           >
             <CustomDatePicker
@@ -124,7 +124,7 @@
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
-              :placeholder="`${ ns('请选择') } ${ n('结束时间') }`"
+              placeholder="请选择 结束时间"
               :readonly="isLocked || isReadonly"
             ></CustomDatePicker>
           </el-form-item>
@@ -132,7 +132,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
-            :label="n('备注')"
+            label="备注"
             prop="rem"
             un-grid="col-span-full"
           >
@@ -140,7 +140,7 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -164,7 +164,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <div
@@ -280,14 +280,14 @@ watchEffect(async () => {
     cron_job_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("定时任务") }`,
+        message: "请选择 定时任务",
       },
     ],
     // 执行状态
     exec_state: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("执行状态") }`,
+        message: "请选择 执行状态",
       },
     ],
   };
@@ -445,10 +445,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -471,7 +471,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -505,7 +505,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -548,7 +548,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -647,24 +647,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "定时任务",
-    "执行状态",
-    "执行结果",
-    "开始时间",
-    "结束时间",
-    "备注",
-    "创建时间",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,
