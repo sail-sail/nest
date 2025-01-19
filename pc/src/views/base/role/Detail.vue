@@ -110,7 +110,7 @@
             <CustomSelect
               v-model="dialogModel.home_url"
               :method="(getHomeUrlMap as any)"
-              placeholder="请选择 首页"
+              :placeholder="`${ ns('请选择') } ${ n('首页') }`"
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
