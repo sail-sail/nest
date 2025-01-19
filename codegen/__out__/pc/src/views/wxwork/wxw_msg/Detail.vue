@@ -11,7 +11,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -21,7 +21,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -31,7 +31,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -72,7 +72,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.wxw_app_id == null)">
           <el-form-item
-            :label="n('企微应用')"
+            label="企微应用"
             prop="wxw_app_id"
           >
             <CustomSelect
@@ -84,7 +84,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('企微应用') }`"
+              placeholder="请选择 企微应用"
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
@@ -92,14 +92,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.errcode == null)">
           <el-form-item
-            :label="n('发送状态')"
+            label="发送状态"
             prop="errcode"
           >
             <DictSelect
               v-model="dialogModel.errcode"
               :set="dialogModel.errcode = dialogModel.errcode ?? undefined"
               code="wxw_msg_errcode"
-              :placeholder="`${ ns('请选择') } ${ n('发送状态') }`"
+              placeholder="请选择 发送状态"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -107,12 +107,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.touser == null)">
           <el-form-item
-            :label="n('成员ID')"
+            label="成员ID"
             prop="touser"
           >
             <CustomInput
               v-model="dialogModel.touser"
-              :placeholder="`${ ns('请输入') } ${ n('成员ID') }`"
+              placeholder="请输入 成员ID"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -120,12 +120,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.title == null)">
           <el-form-item
-            :label="n('标题')"
+            label="标题"
             prop="title"
           >
             <CustomInput
               v-model="dialogModel.title"
-              :placeholder="`${ ns('请输入') } ${ n('标题') }`"
+              placeholder="请输入 标题"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -133,12 +133,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.description == null)">
           <el-form-item
-            :label="n('描述')"
+            label="描述"
             prop="description"
           >
             <CustomInput
               v-model="dialogModel.description"
-              :placeholder="`${ ns('请输入') } ${ n('描述') }`"
+              placeholder="请输入 描述"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -146,12 +146,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.btntxt == null)">
           <el-form-item
-            :label="n('按钮文字')"
+            label="按钮文字"
             prop="btntxt"
           >
             <CustomInput
               v-model="dialogModel.btntxt"
-              :placeholder="`${ ns('请输入') } ${ n('按钮文字') }`"
+              placeholder="请输入 按钮文字"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -159,12 +159,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.errmsg == null)">
           <el-form-item
-            :label="n('错误信息')"
+            label="错误信息"
             prop="errmsg"
           >
             <CustomInput
               v-model="dialogModel.errmsg"
-              :placeholder="`${ ns('请输入') } ${ n('错误信息') }`"
+              placeholder="请输入 错误信息"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -187,7 +187,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <div
@@ -307,14 +307,14 @@ watchEffect(async () => {
     wxw_app_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("企微应用") }`,
+        message: "请选择 企微应用",
       },
     ],
     // 发送状态
     errcode: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("发送状态") }`,
+        message: "请选择 发送状态",
       },
     ],
   };
@@ -472,10 +472,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -498,7 +498,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -532,7 +532,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -575,7 +575,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -664,25 +664,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "企微应用",
-    "发送状态",
-    "成员ID",
-    "标题",
-    "描述",
-    "按钮文字",
-    "发送时间",
-    "错误信息",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,
