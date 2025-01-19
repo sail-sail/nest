@@ -33,11 +33,15 @@ const hasSummary = columns.some((column) => column.showSummary);
   SortInput,
 } from "/gen/types.ts";<#
 if (hasLocked || hasIsSys) {
+#><#
+if (isUseI18n) {
 #>
 
 import {
   ns,
 } from "/src/base/i18n/i18n.ts";<#
+}
+#><#
 }
 #><#
 if (opts.filterDataByCreateUsr || hasOrgId) {
@@ -378,8 +382,15 @@ export async function updateById(
   #>
   
   const is_locked = await <#=table#>Dao.getIsLockedById(id);
-  if (is_locked) {
-    throw await ns("不能修改已经锁定的数据");
+  if (is_locked) {<#
+    if (isUseI18n) {
+    #>
+    throw await ns("不能修改已经锁定的 {0}", await ns("<#=table_comment#>"));<#
+    } else {
+    #>
+    throw "不能修改已经锁定的 <#=table_comment#>";<#
+    }
+    #>
   }<#
   }
   #><#
@@ -471,8 +482,15 @@ export async function deleteByIds(
       ids,
     });
     for (const model of models) {
-      if (model.is_locked === 1) {
-        throw await ns("不能删除已经锁定的 {0}", "<#=table_comment#>");
+      if (model.is_locked === 1) {<#
+        if (isUseI18n) {
+        #>
+        throw await ns("不能删除已经锁定的 {0}", await ns("<#=table_comment#>"));<#
+        } else {
+        #>
+        throw "不能删除已经锁定的 <#=table_comment#>";<#
+        }
+        #>
       }
     }
   }<#
@@ -486,8 +504,15 @@ export async function deleteByIds(
       ids,
     });
     for (const model of models) {
-      if (model.is_sys === 1) {
-        throw await ns("不能删除系统记录");
+      if (model.is_sys === 1) {<#
+        if (isUseI18n) {
+        #>
+        throw await ns("不能删除系统记录");<#
+        } else {
+        #>
+        throw "不能删除系统记录";<#
+        }
+        #>
       }
     }
   }<#
