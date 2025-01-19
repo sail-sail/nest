@@ -33,11 +33,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -404,14 +399,14 @@ export async function setIdByLbl(
       input.send_time = send_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.send_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.send_time } 日期格式错误`;
     }
   }
   if (input.send_time) {
     const send_time = dayjs(input.send_time);
     if (!send_time.isValid()) {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.send_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.send_time } 日期格式错误`;
     }
     input.send_time = dayjs(input.send_time).format("YYYY-MM-DD HH:mm:ss");
   }
@@ -469,23 +464,22 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取短信发送记录字段注释 */
 export async function getFieldComments(): Promise<SmsSendRecordFieldComment> {
-  const n = initN(route_path);
   const fieldComments: SmsSendRecordFieldComment = {
-    id: await n("ID"),
-    sms_app_id: await n("短信应用"),
-    sms_app_id_lbl: await n("短信应用"),
-    send_to: await n("接收人"),
-    content: await n("内容"),
-    status: await n("状态"),
-    status_lbl: await n("状态"),
-    send_time: await n("发送时间"),
-    send_time_lbl: await n("发送时间"),
-    tag: await n("标签"),
-    msg: await n("消息"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
+    id: "ID",
+    sms_app_id: "短信应用",
+    sms_app_id_lbl: "短信应用",
+    send_to: "接收人",
+    content: "内容",
+    status: "状态",
+    status_lbl: "状态",
+    send_time: "发送时间",
+    send_time_lbl: "发送时间",
+    tag: "标签",
+    msg: "消息",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
   };
   return fieldComments;
 }
@@ -565,7 +559,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("短信发送记录")));
+      throw new UniqueException("此 短信发送记录 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: SmsSendRecordId = await updateById(
@@ -811,7 +805,7 @@ export async function validateOption(
   model?: SmsSendRecordModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("短信发送记录") } ${ await ns("不存在") }`;
+    const err_msg = "短信发送记录 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1356,7 +1350,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("短信发送记录"));
+        throw "此 短信发送记录 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1366,7 +1360,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("短信发送记录"));
+    throw "编辑失败, 此 短信发送记录 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1596,7 +1590,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("短信发送记录"));
+        throw "此 短信发送记录 已经存在";
       }
     }
     const args = new QueryArgs();
