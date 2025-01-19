@@ -43,7 +43,7 @@
         :expand-on-click-node="false"
         :highlight-current="true"
         :default-expand-all="true"
-        :empty-text="inited ? undefined : ns('加载中...')"
+        :empty-text="inited ? undefined : '加载中...'"
         un-w="full"
         un-m="b-4"
         :filter-node-method="(filterNode as any)"
@@ -103,10 +103,6 @@ const props = defineProps<{
 }>();
 
 const pagePath = getPagePath();
-
-const {
-  ns,
-} = useI18n(pagePath);
 
 let inited = $ref(false);
 

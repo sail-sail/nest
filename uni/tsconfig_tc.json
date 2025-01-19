@@ -44,7 +44,7 @@
   ],
   "exclude": [
     "src/typings/components2.d.ts",
-    "src/uni_modules/tmui/**/*.ts",
-    "src/uni_modules/tmui/**/*.vue"
+    "src/uni_modules/tm-ui/**/*.ts",
+    "src/uni_modules/tm-ui/**/*.vue"
   ]
 }

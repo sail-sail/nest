@@ -16,7 +16,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -26,7 +26,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -36,7 +36,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -77,7 +77,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.img == null)">
           <el-form-item
-            :label="n('头像')"
+            label="头像"
             prop="img"
           >
             <UploadImage
@@ -92,12 +92,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
-            :label="n('名称')"
+            label="名称"
             prop="lbl"
           >
             <CustomInput
               v-model="dialogModel.lbl"
-              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+              placeholder="请输入 名称"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -105,12 +105,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.username == null)">
           <el-form-item
-            :label="n('用户名')"
+            label="用户名"
             prop="username"
           >
             <CustomInput
               v-model="dialogModel.username"
-              :placeholder="`${ ns('请输入') } ${ n('用户名') }`"
+              placeholder="请输入 用户名"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -118,14 +118,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.password == null)">
           <el-form-item
-            :label="n('密码')"
+            label="密码"
             prop="password"
           >
             <CustomInput
               v-model="dialogModel.password"
               type="password"
               show-password
-              :placeholder="`${ ns('请输入') } ${ n('密码') }`"
+              placeholder="请输入 密码"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -133,7 +133,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.role_ids == null)">
           <el-form-item
-            :label="n('所属角色')"
+            label="所属角色"
             prop="role_ids"
           >
             <CustomSelect
@@ -146,7 +146,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('所属角色') }`"
+              placeholder="请选择 所属角色"
               multiple
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
@@ -155,14 +155,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.dept_ids == null)">
           <el-form-item
-            :label="n('所属部门')"
+            label="所属部门"
             prop="dept_ids"
           >
             <CustomTreeSelect
               v-model="dialogModel.dept_ids"
               :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
               :method="getDeptTree"
-              :placeholder="`${ ns('请选择') } ${ n('所属部门') }`"
+              placeholder="请选择 所属部门"
               multiple
               :readonly="isLocked || isReadonly"
             ></CustomTreeSelect>
@@ -171,7 +171,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.org_ids == null)">
           <el-form-item
-            :label="n('所属组织')"
+            label="所属组织"
             prop="org_ids"
           >
             <CustomSelect
@@ -184,7 +184,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('所属组织') }`"
+              placeholder="请选择 所属组织"
               multiple
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
@@ -193,7 +193,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.default_org_id == null)">
           <el-form-item
-            :label="n('默认组织')"
+            label="默认组织"
             prop="default_org_id"
           >
             <CustomSelect
@@ -207,7 +207,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('默认组织') }`"
+              placeholder="请选择 默认组织"
               :readonly="isLocked || isReadonly"
               @change="old_default_org_id = dialogModel.default_org_id;"
             ></CustomSelect>
@@ -216,14 +216,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.type == null)">
           <el-form-item
-            :label="n('类型')"
+            label="类型"
             prop="type"
           >
             <DictSelect
               v-model="dialogModel.type"
               :set="dialogModel.type = dialogModel.type ?? undefined"
               code="usr_type"
-              :placeholder="`${ ns('请选择') } ${ n('类型') }`"
+              placeholder="请选择 类型"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -231,12 +231,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
-            :label="n('排序')"
+            label="排序"
             prop="order_by"
           >
             <CustomInputNumber
               v-model="dialogModel.order_by"
-              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
+              placeholder="请输入 排序"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -244,7 +244,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
-            :label="n('备注')"
+            label="备注"
             prop="rem"
             un-grid="col-span-full"
           >
@@ -252,7 +252,7 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -276,7 +276,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <el-button
@@ -288,7 +288,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存并继续') }}</span>
+        <span>保存并继续</span>
       </el-button>
       
       <el-button
@@ -300,7 +300,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <el-button
@@ -312,7 +312,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <div
@@ -443,38 +443,38 @@ watchEffect(async () => {
     lbl: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("名称") }`,
+        message: "请输入 名称",
       },
       {
         type: "string",
         max: 45,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+        message: "名称 长度不能超过 45",
       },
     ],
     // 用户名
     username: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("用户名") }`,
+        message: "请输入 用户名",
       },
       {
         type: "string",
         max: 45,
-        message: `${ n("用户名") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+        message: "用户名 长度不能超过 45",
       },
     ],
     // 类型
     type: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("类型") }`,
+        message: "请选择 类型",
       },
     ],
     // 排序
     order_by: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
+        message: "请输入 排序",
       },
     ],
   };
@@ -646,11 +646,11 @@ watch(
       return;
     }
     if (is_deleted) {
-      dialogNotice = await nsAsync("(已删除)");
+      dialogNotice = "(已删除)";
       return;
     }
     if (isLocked) {
-      dialogNotice = await nsAsync("(已锁定)");
+      dialogNotice = "(已锁定)";
       return;
     }
     dialogNotice = "";
@@ -672,10 +672,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -701,7 +701,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -737,7 +737,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -780,7 +780,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -896,7 +896,7 @@ async function save() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = await nsAsync("新增成功");
+    msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
       return;
@@ -913,7 +913,7 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("编辑成功");
+    msg = "编辑成功";
   }
   if (id) {
     if (!changedIds.includes(id)) {
@@ -1039,33 +1039,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "头像",
-    "名称",
-    "用户名",
-    "所属角色",
-    "所属部门",
-    "所属组织",
-    "默认组织",
-    "类型",
-    "锁定",
-    "启用",
-    "排序",
-    "备注",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,
