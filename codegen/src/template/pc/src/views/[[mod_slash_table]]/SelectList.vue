@@ -25,8 +25,15 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   :before-close="beforeClose"
 >
   <template #extra_header>
-    <div
-      :title="ns('刷新')"
+    <div<#
+      if (isUseI18n) {
+      #>
+      :title="ns('刷新')"<#
+      } else {
+      #>
+      title="刷新"<#
+      }
+      #>
     >
       <ElIconRefresh
         class="select_refresh_icon"
@@ -76,8 +83,15 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     >
       <template #icon>
         <ElIconCircleClose />
-      </template>
-      <span>{{ ns("关闭") }}</span>
+      </template><#
+      if (isUseI18n) {
+      #>
+      <span>{{ ns("关闭") }}</span><#
+      } else {
+      #>
+      <span>关闭</span><#
+      }
+      #>
     </el-button>
     
     <el-button
@@ -87,8 +101,15 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     >
       <template #icon>
         <ElIconCircleCheck />
-      </template>
-      <span>{{ ns("确定") }}</span>
+      </template><#
+      if (isUseI18n) {
+      #>
+      <span>{{ ns("确定") }}</span><#
+      } else {
+      #>
+      <span>确定</span><#
+      }
+      #>
     </el-button>
   </div>
 </CustomDialog>
@@ -116,12 +137,16 @@ import TreeList from "./TreeList.vue";<#
 
 const emit = defineEmits<{
   (e: "change", value?: <#=modelName#> | <#=modelName#>[] | null): void,
-}>();
+}>();<#
+if (isUseI18n) {
+#>
 
 const {
   n,
   ns,
-} = useI18n("/<#=mod#>/<#=table#>");
+} = useI18n("/<#=mod#>/<#=table#>");<#
+}
+#>
 
 let inited = $ref(false);
 

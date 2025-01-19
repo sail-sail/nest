@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -396,15 +391,14 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取字段权限字段注释 */
 export async function getFieldComments(): Promise<FieldPermitFieldComment> {
-  const n = initN(route_path);
   const fieldComments: FieldPermitFieldComment = {
-    id: await n("ID"),
-    menu_id: await n("菜单"),
-    menu_id_lbl: await n("菜单"),
-    code: await n("编码"),
-    lbl: await n("名称"),
-    order_by: await n("排序"),
-    rem: await n("备注"),
+    id: "ID",
+    menu_id: "菜单",
+    menu_id_lbl: "菜单",
+    code: "编码",
+    lbl: "名称",
+    order_by: "排序",
+    rem: "备注",
   };
   return fieldComments;
 }
@@ -515,7 +509,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("字段权限")));
+      throw new UniqueException("此 字段权限 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: FieldPermitId = await updateById(
@@ -770,7 +764,7 @@ export async function validateOption(
   model?: FieldPermitModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("字段权限") } ${ await ns("不存在") }`;
+    const err_msg = "字段权限 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1235,7 +1229,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("字段权限"));
+        throw "此 字段权限 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1245,7 +1239,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("字段权限"));
+    throw "编辑失败, 此 字段权限 已被删除";
   }
   
   const args = new QueryArgs();

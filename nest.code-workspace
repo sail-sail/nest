@@ -47,6 +47,7 @@
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
     "diffEditor.wordWrap": "off",
     "editor.formatOnSave": false,
+    "editor.inlineSuggest.syntaxHighlightingEnabled": true,
     "deno.codeLens.references": false,
     "deno.codeLens.referencesAllFunctions": false,
     "git.timeline.showUncommitted": true,

@@ -15,7 +15,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -55,13 +55,13 @@
         
         <template v-if="(showBuildIn || builtInModel?.menu_id == null)">
           <el-form-item
-            :label="n('菜单')"
+            label="菜单"
             prop="menu_id"
           >
             <CustomTreeSelect
               v-model="dialogModel.menu_id"
               :method="getMenuTree"
-              :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
+              placeholder="请选择 菜单"
               :readonly="true"
             ></CustomTreeSelect>
           </el-form-item>
@@ -69,12 +69,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.code == null)">
           <el-form-item
-            :label="n('编码')"
+            label="编码"
             prop="code"
           >
             <CustomInput
               v-model="dialogModel.code"
-              :placeholder="`${ ns('请输入') } ${ n('编码') }`"
+              placeholder="请输入 编码"
               :readonly="true"
             ></CustomInput>
           </el-form-item>
@@ -82,12 +82,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
-            :label="n('名称')"
+            label="名称"
             prop="lbl"
           >
             <CustomInput
               v-model="dialogModel.lbl"
-              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+              placeholder="请输入 名称"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -95,12 +95,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
-            :label="n('排序')"
+            label="排序"
             prop="order_by"
           >
             <CustomInputNumber
               v-model="dialogModel.order_by"
-              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
+              placeholder="请输入 排序"
               :readonly="true"
             ></CustomInputNumber>
           </el-form-item>
@@ -108,7 +108,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
-            :label="n('备注')"
+            label="备注"
             prop="rem"
             un-grid="col-span-full"
           >
@@ -116,7 +116,7 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -140,7 +140,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <el-button
@@ -152,7 +152,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <div
@@ -274,12 +274,12 @@ watchEffect(async () => {
     lbl: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("名称") }`,
+        message: "请输入 名称",
       },
       {
         type: "string",
         max: 100,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 100) }`,
+        message: "名称 长度不能超过 100",
       },
     ],
   };
@@ -451,10 +451,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -480,7 +480,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -514,7 +514,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -557,7 +557,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -648,7 +648,7 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("编辑成功");
+    msg = "编辑成功";
   }
   if (id) {
     if (!changedIds.includes(id)) {
@@ -740,22 +740,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "菜单",
-    "编码",
-    "名称",
-    "排序",
-    "备注",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,
