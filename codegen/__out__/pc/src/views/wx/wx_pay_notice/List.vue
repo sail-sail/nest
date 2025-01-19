@@ -31,12 +31,12 @@
       
       <template v-if="(builtInSearch?.openid == null && (showBuildIn || builtInSearch?.openid_like == null))">
         <el-form-item
-          :label="n('用户标识')"
+          label="用户标识"
           prop="openid_like"
         >
           <CustomInput
             v-model="search.openid_like"
-            :placeholder="`${ ns('请输入') } ${ n('用户标识') }`"
+            placeholder="用户标识"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -44,12 +44,12 @@
       
       <template v-if="(builtInSearch?.transaction_id == null && (showBuildIn || builtInSearch?.transaction_id_like == null))">
         <el-form-item
-          :label="n('微信支付订单号')"
+          label="微信支付订单号"
           prop="transaction_id_like"
         >
           <CustomInput
             v-model="search.transaction_id_like"
-            :placeholder="`${ ns('请输入') } ${ n('微信支付订单号') }`"
+            placeholder="微信支付订单号"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -77,7 +77,7 @@
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
-              <span>{{ ns('已选择') }}</span>
+              <span>已选择</span>
               <span
                 v-if="selectedIds.length > 0"
                 un-m="l-0.5"
@@ -88,7 +88,7 @@
             </el-checkbox>
             <el-icon
               v-show="selectedIds.length > 0"
-              :title="ns('清空已选择')"
+              title="清空已选择"
               un-cursor-pointer
               un-text="hover:red"
               @click="onEmptySelected"
@@ -105,7 +105,7 @@
             :true-value="1"
             @change="recycleChg"
           >
-            <span>{{ ns('回收站') }}</span>
+            <span>回收站</span>
           </el-checkbox>
         </div>
       </el-form-item>
@@ -123,7 +123,7 @@
           <template #icon>
             <ElIconSearch />
           </template>
-          <span>{{ ns('查询') }}</span>
+          <span>查询</span>
         </el-button>
         
         <el-button
@@ -133,7 +133,7 @@
           <template #icon>
             <ElIconDelete />
           </template>
-          <span>{{ ns('重置') }}</span>
+          <span>重置</span>
         </el-button>
         
         <div
@@ -170,7 +170,7 @@
         <template #icon>
           <ElIconReading />
         </template>
-        <span>{{ ns('查看') }}</span>
+        <span>查看</span>
       </el-button>
       
       <el-button
@@ -180,7 +180,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>{{ ns('刷新') }}</span>
+        <span>刷新</span>
       </el-button>
       
       <el-dropdown
@@ -195,18 +195,18 @@
             v-if="exportExcel.workerStatus === 'RUNNING'"
             un-text="red"
           >
-            {{ ns('正在导出') }}
+            正在导出
           </span>
           <span
             v-else-if="exportExcel.loading"
             un-text="red"
           >
-            {{ ns('正在为导出加载数据') }}
+            正在为导出加载数据
           </span>
           <span
             v-else
           >
-            {{ ns('更多操作') }}
+            更多操作
           </span>
           <el-icon>
             <ElIconArrowDown />
@@ -223,7 +223,7 @@
               un-justify-center
               @click="onExport"
             >
-              <span>{{ ns('导出') }}</span>
+              <span>导出</span>
             </el-dropdown-item>
             
             <el-dropdown-item
@@ -231,7 +231,7 @@
               un-justify-center
               @click="onCancelExport"
             >
-              <span un-text="red">{{ ns('取消导出') }}</span>
+              <span un-text="red">取消导出</span>
             </el-dropdown-item>
             
           </el-dropdown-menu>
@@ -249,7 +249,7 @@
         <template #icon>
           <ElIconReading />
         </template>
-        <span>{{ ns('查看') }}</span>
+        <span>查看</span>
       </el-button>
       
       <el-button
@@ -259,7 +259,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>{{ ns('刷新') }}</span>
+        <span>刷新</span>
       </el-button>
       
       <el-dropdown
@@ -273,18 +273,18 @@
           <span
             v-if="exportExcel.workerStatus === 'RUNNING'"
           >
-            {{ ns('正在导出') }}
+            正在导出
           </span>
           <span
             v-else-if="exportExcel.loading"
             un-text="red"
           >
-            {{ ns('正在为导出加载数据') }}
+            正在为导出加载数据
           </span>
           <span
             v-else
           >
-            {{ ns('更多操作') }}
+            更多操作
           </span>
           <el-icon>
             <ElIconArrowDown />
@@ -301,7 +301,7 @@
               un-justify-center
               @click="onExport"
             >
-              <span>{{ ns('导出') }}</span>
+              <span>导出</span>
             </el-dropdown-item>
             
             <el-dropdown-item
@@ -309,7 +309,7 @@
               un-justify-center
               @click="onCancelExport"
             >
-              <span un-text="red">{{ ns('取消导出') }}</span>
+              <span un-text="red">取消导出</span>
             </el-dropdown-item>
             
           </el-dropdown-menu>
@@ -329,7 +329,7 @@
       @reset-columns="resetColumns"
       @store-columns="storeColumns"
     >
-      {{ ns('列操作') }}
+      列操作
     </TableShowColumns>
     
   </div>
@@ -352,7 +352,7 @@
         height="100%"
         row-key="id"
         :default-sort="defaultSort"
-        :empty-text="inited ? undefined : ns('加载中...')"
+        :empty-text="inited ? undefined : '加载中...'"
         @select="onSelect"
         @select-all="onSelect"
         @row-click="onRow"
@@ -1103,18 +1103,6 @@ function getTableColumns(): ColumnType[] {
 /** 表格列 */
 const tableColumns = $ref<ColumnType[]>(getTableColumns());
 
-/** 表格列标签国际化 */
-watchEffect(() => {
-  const tableColumns2 = getTableColumns();
-  for (let i = 0; i < tableColumns2.length; i++) {
-    const column2 = tableColumns2[i];
-    const column = tableColumns.find((item) => item.prop === column2.prop);
-    if (column) {
-      column.label = n(column2.label);
-    }
-  }
-});
-
 /** 表格列 */
 const {
   headerDragend,
@@ -1301,7 +1289,7 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("微信支付通知")));
+    ElMessage.warning("请选择需要查看的 微信支付通知");
     return;
   }
   const search = getDataSearch();
@@ -1310,7 +1298,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + " " + await nsAsync("微信支付通知"),
+    title: "查看 微信支付通知",
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1327,38 +1315,6 @@ async function openView() {
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
-}
-
-/** 初始化ts中的国际化信息 */
-async function initI18nsEfc() {
-  const codes: string[] = [
-    "开发者ID",
-    "商户号",
-    "用户标识",
-    "商户订单号",
-    "微信支付订单号",
-    "交易类型",
-    "交易状态",
-    "交易状态描述",
-    "付款银行",
-    "附加数据",
-    "支付完成时间",
-    "总金额",
-    "用户支付金额",
-    "货币类型",
-    "用户支付币种",
-    "商户端设备号",
-    "备注",
-    "原始数据",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
-  ];
-  await Promise.all([
-    initListI18ns(),
-    initI18ns(codes),
-  ]);
 }
 
 async function focus() {
@@ -1384,7 +1340,6 @@ watch(
 async function initFrame() {
   initColumns(tableColumns);
   await Promise.all([
-    initI18nsEfc(),
     dataGrid(true),
   ]);
   inited = true;

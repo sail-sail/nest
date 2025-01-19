@@ -11,7 +11,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -21,7 +21,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -31,7 +31,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -72,12 +72,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.appid == null)">
           <el-form-item
-            :label="n('开发者ID')"
+            label="开发者ID"
             prop="appid"
           >
             <CustomInput
               v-model="dialogModel.appid"
-              :placeholder="`${ ns('请输入') } ${ n('开发者ID') }`"
+              placeholder="请输入 开发者ID"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -85,12 +85,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.mchid == null)">
           <el-form-item
-            :label="n('商户号')"
+            label="商户号"
             prop="mchid"
           >
             <CustomInput
               v-model="dialogModel.mchid"
-              :placeholder="`${ ns('请输入') } ${ n('商户号') }`"
+              placeholder="请输入 商户号"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -98,12 +98,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.openid == null)">
           <el-form-item
-            :label="n('用户标识')"
+            label="用户标识"
             prop="openid"
           >
             <CustomInput
               v-model="dialogModel.openid"
-              :placeholder="`${ ns('请输入') } ${ n('用户标识') }`"
+              placeholder="请输入 用户标识"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -111,12 +111,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.out_trade_no == null)">
           <el-form-item
-            :label="n('商户订单号')"
+            label="商户订单号"
             prop="out_trade_no"
           >
             <CustomInput
               v-model="dialogModel.out_trade_no"
-              :placeholder="`${ ns('请输入') } ${ n('商户订单号') }`"
+              placeholder="请输入 商户订单号"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -124,12 +124,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.transaction_id == null)">
           <el-form-item
-            :label="n('微信支付订单号')"
+            label="微信支付订单号"
             prop="transaction_id"
           >
             <CustomInput
               v-model="dialogModel.transaction_id"
-              :placeholder="`${ ns('请输入') } ${ n('微信支付订单号') }`"
+              placeholder="请输入 微信支付订单号"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -137,14 +137,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.trade_type == null)">
           <el-form-item
-            :label="n('交易类型')"
+            label="交易类型"
             prop="trade_type"
           >
             <DictSelect
               v-model="dialogModel.trade_type"
               :set="dialogModel.trade_type = dialogModel.trade_type ?? undefined"
               code="wx_unified_order_trade_type"
-              :placeholder="`${ ns('请选择') } ${ n('交易类型') }`"
+              placeholder="请选择 交易类型"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -152,14 +152,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.trade_state == null)">
           <el-form-item
-            :label="n('交易状态')"
+            label="交易状态"
             prop="trade_state"
           >
             <DictSelect
               v-model="dialogModel.trade_state"
               :set="dialogModel.trade_state = dialogModel.trade_state ?? undefined"
               code="wx_pay_notice_trade_state"
-              :placeholder="`${ ns('请选择') } ${ n('交易状态') }`"
+              placeholder="请选择 交易状态"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -167,12 +167,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.trade_state_desc == null)">
           <el-form-item
-            :label="n('交易状态描述')"
+            label="交易状态描述"
             prop="trade_state_desc"
           >
             <CustomInput
               v-model="dialogModel.trade_state_desc"
-              :placeholder="`${ ns('请输入') } ${ n('交易状态描述') }`"
+              placeholder="请输入 交易状态描述"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -180,12 +180,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.bank_type == null)">
           <el-form-item
-            :label="n('付款银行')"
+            label="付款银行"
             prop="bank_type"
           >
             <CustomInput
               v-model="dialogModel.bank_type"
-              :placeholder="`${ ns('请输入') } ${ n('付款银行') }`"
+              placeholder="请输入 付款银行"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -193,12 +193,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.attach == null)">
           <el-form-item
-            :label="n('附加数据')"
+            label="附加数据"
             prop="attach"
           >
             <CustomInput
               v-model="dialogModel.attach"
-              :placeholder="`${ ns('请输入') } ${ n('附加数据') }`"
+              placeholder="请输入 附加数据"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -206,7 +206,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.success_time == null)">
           <el-form-item
-            :label="n('支付完成时间')"
+            label="支付完成时间"
             prop="success_time"
           >
             <CustomDatePicker
@@ -214,7 +214,7 @@
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
-              :placeholder="`${ ns('请选择') } ${ n('支付完成时间') }`"
+              placeholder="请选择 支付完成时间"
               :readonly="isLocked || isReadonly"
             ></CustomDatePicker>
           </el-form-item>
@@ -222,12 +222,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.total == null)">
           <el-form-item
-            :label="n('总金额')"
+            label="总金额"
             prop="total"
           >
             <CustomInputNumber
               v-model="dialogModel.total"
-              :placeholder="`${ ns('请输入') } ${ n('总金额') }`"
+              placeholder="请输入 总金额"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -235,12 +235,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.payer_total == null)">
           <el-form-item
-            :label="n('用户支付金额')"
+            label="用户支付金额"
             prop="payer_total"
           >
             <CustomInputNumber
               v-model="dialogModel.payer_total"
-              :placeholder="`${ ns('请输入') } ${ n('用户支付金额') }`"
+              placeholder="请输入 用户支付金额"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -248,14 +248,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.currency == null)">
           <el-form-item
-            :label="n('货币类型')"
+            label="货币类型"
             prop="currency"
           >
             <DictSelect
               v-model="dialogModel.currency"
               :set="dialogModel.currency = dialogModel.currency ?? undefined"
               code="wx_pay_notice_currency"
-              :placeholder="`${ ns('请选择') } ${ n('货币类型') }`"
+              placeholder="请选择 货币类型"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -263,14 +263,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.payer_currency == null)">
           <el-form-item
-            :label="n('用户支付币种')"
+            label="用户支付币种"
             prop="payer_currency"
           >
             <DictSelect
               v-model="dialogModel.payer_currency"
               :set="dialogModel.payer_currency = dialogModel.payer_currency ?? undefined"
               code="wx_pay_notice_currency"
-              :placeholder="`${ ns('请选择') } ${ n('用户支付币种') }`"
+              placeholder="请选择 用户支付币种"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -278,12 +278,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.device_id == null)">
           <el-form-item
-            :label="n('商户端设备号')"
+            label="商户端设备号"
             prop="device_id"
           >
             <CustomInput
               v-model="dialogModel.device_id"
-              :placeholder="`${ ns('请输入') } ${ n('商户端设备号') }`"
+              placeholder="请输入 商户端设备号"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -291,7 +291,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
-            :label="n('备注')"
+            label="备注"
             prop="rem"
             un-grid="col-span-full"
           >
@@ -299,7 +299,7 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -308,12 +308,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.raw == null)">
           <el-form-item
-            :label="n('原始数据')"
+            label="原始数据"
             prop="raw"
           >
             <CustomInput
               v-model="dialogModel.raw"
-              :placeholder="`${ ns('请输入') } ${ n('原始数据') }`"
+              placeholder="请输入 原始数据"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -336,7 +336,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <div
@@ -452,28 +452,28 @@ watchEffect(async () => {
     trade_type: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("交易类型") }`,
+        message: "请选择 交易类型",
       },
     ],
     // 交易状态
     trade_state: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("交易状态") }`,
+        message: "请选择 交易状态",
       },
     ],
     // 货币类型
     currency: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("货币类型") }`,
+        message: "请选择 货币类型",
       },
     ],
     // 用户支付币种
     payer_currency: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("用户支付币种") }`,
+        message: "请选择 用户支付币种",
       },
     ],
   };
@@ -631,10 +631,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -657,7 +657,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -691,7 +691,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -734,7 +734,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -836,39 +836,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "开发者ID",
-    "商户号",
-    "用户标识",
-    "商户订单号",
-    "微信支付订单号",
-    "交易类型",
-    "交易状态",
-    "交易状态描述",
-    "付款银行",
-    "附加数据",
-    "支付完成时间",
-    "总金额",
-    "用户支付金额",
-    "货币类型",
-    "用户支付币种",
-    "商户端设备号",
-    "备注",
-    "原始数据",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,
