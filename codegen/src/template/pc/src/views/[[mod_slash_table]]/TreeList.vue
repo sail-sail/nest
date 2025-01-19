@@ -79,8 +79,15 @@ if (typeof list_tree === "string") {
         }"
         :expand-on-click-node="false"
         :highlight-current="true"
-        :default-expand-all="true"
-        :empty-text="inited ? undefined : ns('加载中...')"
+        :default-expand-all="true"<#
+        if (isUseI18n) {
+        #>
+        :empty-text="inited ? undefined : ns('加载中...')"<#
+        } else {
+        #>
+        :empty-text="inited ? undefined : '加载中...'"<#
+        }
+        #>
         un-w="full"
         un-m="b-4"
         :filter-node-method="(filterNode as any)"
@@ -163,11 +170,15 @@ const props = defineProps<{
   showBuildIn?: string;
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePath();<#
+if (isUseI18n) {
+#>
 
 const {
   ns,
-} = useI18n(pagePath);
+} = useI18n(pagePath);<#
+}
+#>
 
 let inited = $ref(false);
 
