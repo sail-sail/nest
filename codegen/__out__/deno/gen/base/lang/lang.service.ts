@@ -4,10 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
 import * as langDao from "./lang.dao.ts";
 
 async function setSearchQuery(
@@ -157,7 +153,7 @@ export async function deleteByIds(
     });
     for (const model of models) {
       if (model.is_sys === 1) {
-        throw await ns("不能删除系统记录");
+        throw "不能删除系统记录";
       }
     }
   }
