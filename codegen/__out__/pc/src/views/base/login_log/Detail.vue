@@ -11,7 +11,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -21,7 +21,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -31,7 +31,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -72,14 +72,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.type == null)">
           <el-form-item
-            :label="n('类型')"
+            label="类型"
             prop="type"
           >
             <DictSelect
               v-model="dialogModel.type"
               :set="dialogModel.type = dialogModel.type ?? undefined"
               code="login_log_type"
-              :placeholder="`${ ns('请选择') } ${ n('类型') }`"
+              placeholder="请选择 类型"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -87,12 +87,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.username == null)">
           <el-form-item
-            :label="n('用户名')"
+            label="用户名"
             prop="username"
           >
             <CustomInput
               v-model="dialogModel.username"
-              :placeholder="`${ ns('请输入') } ${ n('用户名') }`"
+              placeholder="请输入 用户名"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -100,14 +100,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.is_succ == null)">
           <el-form-item
-            :label="n('登录成功')"
+            label="登录成功"
             prop="is_succ"
           >
             <DictSelect
               v-model="dialogModel.is_succ"
               :set="dialogModel.is_succ = dialogModel.is_succ ?? undefined"
               code="yes_no"
-              :placeholder="`${ ns('请选择') } ${ n('登录成功') }`"
+              placeholder="请选择 登录成功"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -115,12 +115,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.ip == null)">
           <el-form-item
-            :label="n('IP')"
+            label="IP"
             prop="ip"
           >
             <CustomInput
               v-model="dialogModel.ip"
-              :placeholder="`${ ns('请输入') } ${ n('IP') }`"
+              placeholder="请输入 IP"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -143,7 +143,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <div
@@ -259,26 +259,26 @@ watchEffect(async () => {
     type: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("类型") }`,
+        message: "请选择 类型",
       },
     ],
     // 用户名
     username: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("用户名") }`,
+        message: "请输入 用户名",
       },
       {
         type: "string",
         max: 45,
-        message: `${ n("用户名") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+        message: "用户名 长度不能超过 45",
       },
     ],
     // 登录成功
     is_succ: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("登录成功") }`,
+        message: "请选择 登录成功",
       },
     ],
   };
@@ -436,10 +436,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -462,7 +462,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -496,7 +496,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -539,7 +539,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -628,22 +628,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "类型",
-    "用户名",
-    "登录成功",
-    "IP",
-    "登录时间",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,
