@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -687,30 +682,29 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取租户字段注释 */
 export async function getFieldComments(): Promise<TenantFieldComment> {
-  const n = initN(route_path);
   const fieldComments: TenantFieldComment = {
-    id: await n("ID"),
-    lbl: await n("名称"),
-    domain_ids: await n("所属域名"),
-    domain_ids_lbl: await n("所属域名"),
-    menu_ids: await n("菜单权限"),
-    menu_ids_lbl: await n("菜单权限"),
-    lang_id: await n("语言"),
-    lang_id_lbl: await n("语言"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    order_by: await n("排序"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    lbl: "名称",
+    domain_ids: "所属域名",
+    domain_ids_lbl: "所属域名",
+    menu_ids: "菜单权限",
+    menu_ids_lbl: "菜单权限",
+    lang_id: "语言",
+    lang_id_lbl: "语言",
+    is_locked: "锁定",
+    is_locked_lbl: "锁定",
+    is_enabled: "启用",
+    is_enabled_lbl: "启用",
+    order_by: "排序",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -810,7 +804,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("租户")));
+      throw new UniqueException("此 租户 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: TenantId = await updateById(
@@ -1065,7 +1059,7 @@ export async function validateIsEnabled(
   model: Readonly<TenantModel>,
 ) {
   if (model.is_enabled == 0) {
-    throw `${ await ns("租户") } ${ await ns("已禁用") }`;
+    throw "租户 已禁用";
   }
 }
 
@@ -1075,7 +1069,7 @@ export async function validateOption(
   model?: TenantModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("租户") } ${ await ns("不存在") }`;
+    const err_msg = "租户 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1594,7 +1588,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("租户"));
+        throw "此 租户 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1604,7 +1598,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("租户"));
+    throw "编辑失败, 此 租户 已被删除";
   }
   
   const args = new QueryArgs();
@@ -2080,7 +2074,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("租户"));
+        throw "此 租户 已经存在";
       }
     }
     const args = new QueryArgs();

@@ -220,6 +220,7 @@ defineExpose({ tabs_divRef: $$(tabs_divRef) });
   cursor: default;
   padding-left: 6px;
   padding-right: 6px;
+  transition: background-color .5s;
 }
 .tab_div:hover {
   transition: width 1s;
@@ -236,6 +237,14 @@ defineExpose({ tabs_divRef: $$(tabs_divRef) });
   .tab_close {
     opacity: 1;
     color: var(--el-menu-active-color);
+  }
+}
+.dark {
+  .tab_active {
+    background-color: transparent;
+  }
+  .tab_active:hover {
+    background-color: var(--el-menu-hover-bg-color);
   }
 }
 .tab_label {
