@@ -16,7 +16,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -26,7 +26,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -36,7 +36,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -77,7 +77,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.img == null)">
           <el-form-item
-            :label="n('图标')"
+            label="图标"
             prop="img"
             un-grid="col-span-full"
           >
@@ -94,12 +94,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
-            :label="n('名称')"
+            label="名称"
             prop="lbl"
           >
             <CustomInput
               v-model="dialogModel.lbl"
-              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+              placeholder="请输入 名称"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -107,7 +107,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.pt_type_ids == null)">
           <el-form-item
-            :label="n('产品类别')"
+            label="产品类别"
             prop="pt_type_ids"
           >
             <CustomSelect
@@ -120,7 +120,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('产品类别') }`"
+              placeholder="请选择 产品类别"
               multiple
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
@@ -129,14 +129,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.price == null)">
           <el-form-item
-            :label="n('价格')"
+            label="价格"
             prop="price"
           >
             <CustomInputNumber
               v-model="dialogModel.price"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('价格') }`"
+              placeholder="请输入 价格"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -144,14 +144,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.original_price == null)">
           <el-form-item
-            :label="n('原价')"
+            label="原价"
             prop="original_price"
           >
             <CustomInputNumber
               v-model="dialogModel.original_price"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('原价') }`"
+              placeholder="请输入 原价"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -159,12 +159,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.unit == null)">
           <el-form-item
-            :label="n('单位')"
+            label="单位"
             prop="unit"
           >
             <CustomInput
               v-model="dialogModel.unit"
-              :placeholder="`${ ns('请输入') } ${ n('单位') }`"
+              placeholder="请输入 单位"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -172,14 +172,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.is_new == null)">
           <el-form-item
-            :label="n('新品')"
+            label="新品"
             prop="is_new"
           >
             <DictSelect
               v-model="dialogModel.is_new"
               :set="dialogModel.is_new = dialogModel.is_new ?? undefined"
               code="yes_no"
-              :placeholder="`${ ns('请选择') } ${ n('新品') }`"
+              placeholder="请选择 新品"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -187,12 +187,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.introduct == null)">
           <el-form-item
-            :label="n('简介')"
+            label="简介"
             prop="introduct"
           >
             <CustomInput
               v-model="dialogModel.introduct"
-              :placeholder="`${ ns('请输入') } ${ n('简介') }`"
+              placeholder="请输入 简介"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -200,12 +200,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.order_by == null)">
           <el-form-item
-            :label="n('排序')"
+            label="排序"
             prop="order_by"
           >
             <CustomInputNumber
               v-model="dialogModel.order_by"
-              :placeholder="`${ ns('请输入') } ${ n('排序') }`"
+              placeholder="请输入 排序"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -213,7 +213,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.detail == null)">
           <el-form-item
-            :label="n('详情')"
+            label="详情"
             prop="detail"
             un-grid="col-span-full"
           >
@@ -221,7 +221,7 @@
               v-model="dialogModel.detail"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('详情') }`"
+              placeholder="请输入 详情"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -230,7 +230,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.detail_top_img == null)">
           <el-form-item
-            :label="n('详情顶部图片')"
+            label="详情顶部图片"
             prop="detail_top_img"
             un-grid="col-span-full"
           >
@@ -247,7 +247,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.detail_bottom_img == null)">
           <el-form-item
-            :label="n('详情底部图片')"
+            label="详情底部图片"
             prop="detail_bottom_img"
             un-grid="col-span-full"
           >
@@ -264,7 +264,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
-            :label="n('备注')"
+            label="备注"
             prop="rem"
             un-grid="col-span-full"
           >
@@ -272,7 +272,7 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -296,7 +296,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <el-button
@@ -308,7 +308,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存并继续') }}</span>
+        <span>保存并继续</span>
       </el-button>
       
       <el-button
@@ -320,7 +320,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <el-button
@@ -332,7 +332,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <div
@@ -456,26 +456,26 @@ watchEffect(async () => {
     lbl: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("名称") }`,
+        message: "请输入 名称",
       },
       {
         type: "string",
         max: 200,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 200) }`,
+        message: "名称 长度不能超过 200",
       },
     ],
     // 新品
     is_new: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("新品") }`,
+        message: "请选择 新品",
       },
     ],
     // 排序
     order_by: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("排序") }`,
+        message: "请输入 排序",
       },
     ],
   };
@@ -647,11 +647,11 @@ watch(
       return;
     }
     if (is_deleted) {
-      dialogNotice = await nsAsync("(已删除)");
+      dialogNotice = "(已删除)";
       return;
     }
     if (isLocked) {
-      dialogNotice = await nsAsync("(已锁定)");
+      dialogNotice = "(已锁定)";
       return;
     }
     dialogNotice = "";
@@ -673,10 +673,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -702,7 +702,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -737,7 +737,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -780,7 +780,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -884,7 +884,7 @@ async function save() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = await nsAsync("新增成功");
+    msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
       return;
@@ -901,7 +901,7 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("编辑成功");
+    msg = "编辑成功";
   }
   if (id) {
     if (!changedIds.includes(id)) {
@@ -994,36 +994,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "图标",
-    "名称",
-    "产品类别",
-    "价格",
-    "原价",
-    "单位",
-    "新品",
-    "简介",
-    "锁定",
-    "启用",
-    "排序",
-    "详情",
-    "详情顶部图片",
-    "详情底部图片",
-    "备注",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,

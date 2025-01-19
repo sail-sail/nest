@@ -11,7 +11,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -21,7 +21,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -31,7 +31,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -72,7 +72,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.card_id == null)">
           <el-form-item
-            :label="n('卡号')"
+            label="卡号"
             prop="card_id"
           >
             <CustomSelect
@@ -84,7 +84,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('卡号') }`"
+              placeholder="请选择 卡号"
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
@@ -92,7 +92,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
           <el-form-item
-            :label="n('用户')"
+            label="用户"
             prop="usr_id"
           >
             <CustomSelect
@@ -104,7 +104,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('用户') }`"
+              placeholder="请选择 用户"
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
@@ -112,14 +112,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.amt == null)">
           <el-form-item
-            :label="n('消费充值金额')"
+            label="消费充值金额"
             prop="amt"
           >
             <CustomInputNumber
               v-model="dialogModel.amt"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('消费充值金额') }`"
+              placeholder="请输入 消费充值金额"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -127,14 +127,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.give_amt == null)">
           <el-form-item
-            :label="n('消费赠送金额')"
+            label="消费赠送金额"
             prop="give_amt"
           >
             <CustomInputNumber
               v-model="dialogModel.give_amt"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('消费赠送金额') }`"
+              placeholder="请输入 消费赠送金额"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -142,12 +142,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.integral == null)">
           <el-form-item
-            :label="n('获得积分')"
+            label="获得积分"
             prop="integral"
           >
             <CustomInputNumber
               v-model="dialogModel.integral"
-              :placeholder="`${ ns('请输入') } ${ n('获得积分') }`"
+              placeholder="请输入 获得积分"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -155,14 +155,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.balance == null)">
           <el-form-item
-            :label="n('消费后余额')"
+            label="消费后余额"
             prop="balance"
           >
             <CustomInputNumber
               v-model="dialogModel.balance"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('消费后余额') }`"
+              placeholder="请输入 消费后余额"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -170,14 +170,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.give_balance == null)">
           <el-form-item
-            :label="n('消费后赠送余额')"
+            label="消费后赠送余额"
             prop="give_balance"
           >
             <CustomInputNumber
               v-model="dialogModel.give_balance"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('消费后赠送余额') }`"
+              placeholder="请输入 消费后赠送余额"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -185,7 +185,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
-            :label="n('备注')"
+            label="备注"
             prop="rem"
             un-grid="col-span-full"
           >
@@ -193,7 +193,7 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -217,7 +217,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <div
@@ -338,14 +338,14 @@ watchEffect(async () => {
     card_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("卡号") }`,
+        message: "请选择 卡号",
       },
     ],
     // 用户
     usr_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("用户") }`,
+        message: "请选择 用户",
       },
     ],
   };
@@ -503,10 +503,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -529,7 +529,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -563,7 +563,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -606,7 +606,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -695,29 +695,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "卡号",
-    "用户",
-    "消费充值金额",
-    "消费赠送金额",
-    "获得积分",
-    "消费后余额",
-    "消费后赠送余额",
-    "备注",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,

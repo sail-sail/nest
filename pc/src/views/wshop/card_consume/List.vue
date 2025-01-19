@@ -31,7 +31,7 @@
       
       <template v-if="(showBuildIn || builtInSearch?.card_id == null)">
         <el-form-item
-          :label="n('卡号')"
+          label="卡号"
           prop="card_id"
         >
           <CustomSelect
@@ -43,7 +43,7 @@
                 value: item.id,
               };
             })"
-            :placeholder="`${ ns('请选择') } ${ n('卡号') }`"
+            placeholder="卡号"
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
@@ -52,7 +52,7 @@
       
       <template v-if="(showBuildIn || builtInSearch?.usr_id == null)">
         <el-form-item
-          :label="n('用户')"
+          label="用户"
           prop="usr_id"
         >
           <CustomSelect
@@ -64,7 +64,7 @@
                 value: item.id,
               };
             })"
-            :placeholder="`${ ns('请选择') } ${ n('用户') }`"
+            placeholder="用户"
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
@@ -93,7 +93,7 @@
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
-              <span>{{ ns('已选择') }}</span>
+              <span>已选择</span>
               <span
                 v-if="selectedIds.length > 0"
                 un-m="l-0.5"
@@ -104,7 +104,7 @@
             </el-checkbox>
             <el-icon
               v-show="selectedIds.length > 0"
-              :title="ns('清空已选择')"
+              title="清空已选择"
               un-cursor-pointer
               un-text="hover:red"
               @click="onEmptySelected"
@@ -121,7 +121,7 @@
             :true-value="1"
             @change="recycleChg"
           >
-            <span>{{ ns('回收站') }}</span>
+            <span>回收站</span>
           </el-checkbox>
         </div>
       </el-form-item>
@@ -139,7 +139,7 @@
           <template #icon>
             <ElIconSearch />
           </template>
-          <span>{{ ns('查询') }}</span>
+          <span>查询</span>
         </el-button>
         
         <el-button
@@ -149,7 +149,7 @@
           <template #icon>
             <ElIconDelete />
           </template>
-          <span>{{ ns('重置') }}</span>
+          <span>重置</span>
         </el-button>
         
         <div
@@ -188,7 +188,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('删除') }}</span>
+        <span>删除</span>
       </el-button>
       
       <el-button
@@ -198,7 +198,7 @@
         <template #icon>
           <ElIconReading />
         </template>
-        <span>{{ ns('查看') }}</span>
+        <span>查看</span>
       </el-button>
       
       <el-button
@@ -208,7 +208,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>{{ ns('刷新') }}</span>
+        <span>刷新</span>
       </el-button>
       
       <el-dropdown
@@ -223,18 +223,18 @@
             v-if="exportExcel.workerStatus === 'RUNNING'"
             un-text="red"
           >
-            {{ ns('正在导出') }}
+            正在导出
           </span>
           <span
             v-else-if="exportExcel.loading"
             un-text="red"
           >
-            {{ ns('正在为导出加载数据') }}
+            正在为导出加载数据
           </span>
           <span
             v-else
           >
-            {{ ns('更多操作') }}
+            更多操作
           </span>
           <el-icon>
             <ElIconArrowDown />
@@ -251,7 +251,7 @@
               un-justify-center
               @click="onExport"
             >
-              <span>{{ ns('导出') }}</span>
+              <span>导出</span>
             </el-dropdown-item>
             
             <el-dropdown-item
@@ -259,7 +259,7 @@
               un-justify-center
               @click="onCancelExport"
             >
-              <span un-text="red">{{ ns('取消导出') }}</span>
+              <span un-text="red">取消导出</span>
             </el-dropdown-item>
             
           </el-dropdown-menu>
@@ -279,7 +279,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('还原') }}</span>
+        <span>还原</span>
       </el-button>
       
       <el-button
@@ -291,7 +291,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('彻底删除') }}</span>
+        <span>彻底删除</span>
       </el-button>
       
       <el-button
@@ -301,7 +301,7 @@
         <template #icon>
           <ElIconReading />
         </template>
-        <span>{{ ns('查看') }}</span>
+        <span>查看</span>
       </el-button>
       
       <el-button
@@ -311,7 +311,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>{{ ns('刷新') }}</span>
+        <span>刷新</span>
       </el-button>
       
       <el-dropdown
@@ -325,18 +325,18 @@
           <span
             v-if="exportExcel.workerStatus === 'RUNNING'"
           >
-            {{ ns('正在导出') }}
+            正在导出
           </span>
           <span
             v-else-if="exportExcel.loading"
             un-text="red"
           >
-            {{ ns('正在为导出加载数据') }}
+            正在为导出加载数据
           </span>
           <span
             v-else
           >
-            {{ ns('更多操作') }}
+            更多操作
           </span>
           <el-icon>
             <ElIconArrowDown />
@@ -353,7 +353,7 @@
               un-justify-center
               @click="onExport"
             >
-              <span>{{ ns('导出') }}</span>
+              <span>导出</span>
             </el-dropdown-item>
             
             <el-dropdown-item
@@ -361,7 +361,7 @@
               un-justify-center
               @click="onCancelExport"
             >
-              <span un-text="red">{{ ns('取消导出') }}</span>
+              <span un-text="red">取消导出</span>
             </el-dropdown-item>
             
           </el-dropdown-menu>
@@ -381,7 +381,7 @@
       @reset-columns="resetColumns"
       @store-columns="storeColumns"
     >
-      {{ ns('列操作') }}
+      列操作
     </TableShowColumns>
     
   </div>
@@ -404,7 +404,7 @@
         height="100%"
         row-key="id"
         :default-sort="defaultSort"
-        :empty-text="inited ? undefined : ns('加载中...')"
+        :empty-text="inited ? undefined : '加载中...'"
         @select="onSelect"
         @select-all="onSelect"
         @row-click="onRow"
@@ -1025,18 +1025,6 @@ function getTableColumns(): ColumnType[] {
 /** 表格列 */
 const tableColumns = $ref<ColumnType[]>(getTableColumns());
 
-/** 表格列标签国际化 */
-watchEffect(() => {
-  const tableColumns2 = getTableColumns();
-  for (let i = 0; i < tableColumns2.length; i++) {
-    const column2 = tableColumns2[i];
-    const column = tableColumns.find((item) => item.prop === column2.prop);
-    if (column) {
-      column.label = n(column2.label);
-    }
-  }
-});
-
 /** 表格列 */
 const {
   headerDragend,
@@ -1223,7 +1211,7 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("会员卡消费记录")));
+    ElMessage.warning("请选择需要查看的 会员卡消费记录");
     return;
   }
   const search = getDataSearch();
@@ -1232,7 +1220,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + " " + await nsAsync("会员卡消费记录"),
+    title: "查看 会员卡消费记录",
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -1258,17 +1246,17 @@ async function onDeleteByIds() {
     return;
   }
   if (!permit("delete")) {
-    ElMessage.warning(await nsAsync("无权限"));
+    ElMessage.warning("无权限");
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("会员卡消费记录")));
+    ElMessage.warning("请选择需要删除的 会员卡消费记录");
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("会员卡消费记录")) }?`, {
-      confirmButtonText: await nsAsync("确定"),
-      cancelButtonText: await nsAsync("取消"),
+    await ElMessageBox.confirm(`确定删除已选择的 ${ selectedIds.length } 会员卡消费记录?`, {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
       type: "warning",
     });
   } catch (err) {
@@ -1280,7 +1268,7 @@ async function onDeleteByIds() {
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("会员卡消费记录")));
+    ElMessage.success(`删除 ${ num } 会员卡消费记录 成功`);
     emit("remove", num);
   }
 }
@@ -1292,17 +1280,17 @@ async function onForceDeleteByIds() {
     return;
   }
   if (!permit("forceDelete")) {
-    ElMessage.warning(await nsAsync("无权限"));
+    ElMessage.warning("无权限");
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("会员卡消费记录")));
+    ElMessage.warning("请选择需要 彻底删除 的 会员卡消费记录");
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("会员卡消费记录")) }?`, {
-      confirmButtonText: await nsAsync("确定"),
-      cancelButtonText: await nsAsync("取消"),
+    await ElMessageBox.confirm(`确定 彻底删除 已选择的 ${ selectedIds.length } 会员卡消费记录?`, {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
       type: "warning",
     });
   } catch (err) {
@@ -1311,7 +1299,7 @@ async function onForceDeleteByIds() {
   const num = await forceDeleteByIds(selectedIds);
   if (num) {
     selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("会员卡消费记录")));
+    ElMessage.success(`彻底删除 ${ num } 会员卡消费记录 成功`);
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -1324,17 +1312,17 @@ async function onRevertByIds() {
     return;
   }
   if (permit("delete") === false) {
-    ElMessage.warning(await nsAsync("无权限"));
+    ElMessage.warning("无权限");
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("会员卡消费记录")));
+    ElMessage.warning("请选择需要还原的 会员卡消费记录");
     return;
   }
   try {
-    await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("会员卡消费记录")) }?`, {
-      confirmButtonText: await nsAsync("确定"),
-      cancelButtonText: await nsAsync("取消"),
+    await ElMessageBox.confirm(`确定还原已选择的 ${ selectedIds.length } 会员卡消费记录?`, {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
       type: "warning",
     });
   } catch (err) {
@@ -1345,31 +1333,9 @@ async function onRevertByIds() {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("会员卡消费记录")));
+    ElMessage.success(`还原 ${ num } 会员卡消费记录 成功`);
     emit("revert", num);
   }
-}
-
-/** 初始化ts中的国际化信息 */
-async function initI18nsEfc() {
-  const codes: string[] = [
-    "卡号",
-    "用户",
-    "消费充值金额",
-    "消费赠送金额",
-    "获得积分",
-    "消费后余额",
-    "消费后赠送余额",
-    "备注",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
-  ];
-  await Promise.all([
-    initListI18ns(),
-    initI18ns(codes),
-  ]);
 }
 
 async function focus() {
@@ -1395,7 +1361,6 @@ watch(
 async function initFrame() {
   initColumns(tableColumns);
   await Promise.all([
-    initI18nsEfc(),
     dataGrid(true),
   ]);
   inited = true;

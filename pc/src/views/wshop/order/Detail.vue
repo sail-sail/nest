@@ -16,7 +16,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -26,7 +26,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -36,7 +36,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -77,26 +77,26 @@
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
-            :label="n('订单号')"
+            label="订单号"
             prop="lbl"
           >
             <CustomInput
               v-model="dialogModel.lbl"
-              :placeholder="`${ ns('请输入') } ${ n('订单号') }`"
+              placeholder="请输入 订单号"
               :readonly="true"
-              :readonly-placeholder="ns('(自动生成)')"
+              readonly-placeholder="(自动生成)"
             ></CustomInput>
           </el-form-item>
         </template>
         
         <template v-if="(showBuildIn || builtInModel?.company == null)">
           <el-form-item
-            :label="n('公司')"
+            label="公司"
             prop="company"
           >
             <CustomInput
               v-model="dialogModel.company"
-              :placeholder="`${ ns('请输入') } ${ n('公司') }`"
+              placeholder="请输入 公司"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -104,12 +104,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.phone == null)">
           <el-form-item
-            :label="n('联系电话')"
+            label="联系电话"
             prop="phone"
           >
             <CustomInput
               v-model="dialogModel.phone"
-              :placeholder="`${ ns('请输入') } ${ n('联系电话') }`"
+              placeholder="请输入 联系电话"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -117,14 +117,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.status == null)">
           <el-form-item
-            :label="n('订单状态')"
+            label="订单状态"
             prop="status"
           >
             <DictbizSelect
               v-model="dialogModel.status"
               :set="dialogModel.status = dialogModel.status ?? undefined"
               code="order_status"
-              :placeholder="`${ ns('请选择') } ${ n('订单状态') }`"
+              placeholder="请选择 订单状态"
               :readonly="isLocked || isReadonly"
             ></DictbizSelect>
           </el-form-item>
@@ -132,7 +132,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
           <el-form-item
-            :label="n('用户')"
+            label="用户"
             prop="usr_id"
           >
             <CustomSelect
@@ -144,7 +144,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('用户') }`"
+              placeholder="请选择 用户"
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
@@ -152,12 +152,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.card_id == null)">
           <el-form-item
-            :label="n('会员卡')"
+            label="会员卡"
             prop="card_id"
           >
             <SelectInputCard
               v-model="dialogModel.card_id"
-              :placeholder="`${ ns('请选择') } ${ n('会员卡') }`"
+              placeholder="请选择 会员卡"
               :readonly="isLocked || isReadonly"
               @validate-field="() => formRef?.validateField('card_id')"
             ></SelectInputCard>
@@ -166,14 +166,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.price == null)">
           <el-form-item
-            :label="n('订单金额')"
+            label="订单金额"
             prop="price"
           >
             <CustomInputNumber
               v-model="dialogModel.price"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('订单金额') }`"
+              placeholder="请输入 订单金额"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -181,14 +181,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.type == null)">
           <el-form-item
-            :label="n('订单类别')"
+            label="订单类别"
             prop="type"
           >
             <DictbizSelect
               v-model="dialogModel.type"
               :set="dialogModel.type = dialogModel.type ?? undefined"
               code="order_type"
-              :placeholder="`${ ns('请选择') } ${ n('订单类别') }`"
+              placeholder="请选择 订单类别"
               :readonly="isLocked || isReadonly"
             ></DictbizSelect>
           </el-form-item>
@@ -196,7 +196,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
-            :label="n('备注')"
+            label="备注"
             prop="rem"
             un-grid="col-span-full"
           >
@@ -204,7 +204,7 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -228,7 +228,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <el-button
@@ -240,7 +240,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存并继续') }}</span>
+        <span>保存并继续</span>
       </el-button>
       
       <el-button
@@ -252,7 +252,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <el-button
@@ -264,7 +264,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <div
@@ -388,59 +388,59 @@ watchEffect(async () => {
     company: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("公司") }`,
+        message: "请输入 公司",
       },
       {
         type: "string",
         max: 50,
-        message: `${ n("公司") } ${ await nsAsync("长度不能超过 {0}", 50) }`,
+        message: "公司 长度不能超过 50",
       },
     ],
     // 联系电话
     phone: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("联系电话") }`,
+        message: "请输入 联系电话",
       },
       {
         type: "string",
         max: 20,
-        message: `${ n("联系电话") } ${ await nsAsync("长度不能超过 {0}", 20) }`,
+        message: "联系电话 长度不能超过 20",
       },
     ],
     // 订单状态
     status: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("订单状态") }`,
+        message: "请选择 订单状态",
       },
     ],
     // 用户
     usr_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("用户") }`,
+        message: "请选择 用户",
       },
     ],
     // 会员卡
     card_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("会员卡") }`,
+        message: "请选择 会员卡",
       },
     ],
     // 订单金额
     price: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("订单金额") }`,
+        message: "请输入 订单金额",
       },
     ],
     // 订单类别
     type: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("订单类别") }`,
+        message: "请选择 订单类别",
       },
     ],
   };
@@ -607,11 +607,11 @@ watch(
       return;
     }
     if (is_deleted) {
-      dialogNotice = await nsAsync("(已删除)");
+      dialogNotice = "(已删除)";
       return;
     }
     if (isLocked) {
-      dialogNotice = await nsAsync("(已锁定)");
+      dialogNotice = "(已锁定)";
       return;
     }
     dialogNotice = "";
@@ -633,10 +633,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -659,7 +659,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -694,7 +694,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -737,7 +737,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -849,7 +849,7 @@ async function save() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = await nsAsync("新增成功");
+    msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
       return;
@@ -866,7 +866,7 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("编辑成功");
+    msg = "编辑成功";
   }
   if (id) {
     if (!changedIds.includes(id)) {
@@ -957,37 +957,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "订单号",
-    "公司",
-    "联系电话",
-    "订单状态",
-    "用户",
-    "会员卡",
-    "订单金额",
-    "订单类别",
-    "消费充值金额",
-    "消费赠送金额",
-    "获得积分",
-    "消费后充值余额",
-    "消费后赠送余额",
-    "锁定",
-    "启用",
-    "备注",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,

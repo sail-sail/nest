@@ -16,7 +16,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -26,7 +26,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -36,7 +36,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -77,21 +77,21 @@
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
-            :label="n('卡号')"
+            label="卡号"
             prop="lbl"
           >
             <CustomInput
               v-model="dialogModel.lbl"
-              :placeholder="`${ ns('请输入') } ${ n('卡号') }`"
+              placeholder="请输入 卡号"
               :readonly="true"
-              :readonly-placeholder="ns('(自动生成)')"
+              readonly-placeholder="(自动生成)"
             ></CustomInput>
           </el-form-item>
         </template>
         
         <template v-if="(showBuildIn || builtInModel?.usr_id == null)">
           <el-form-item
-            :label="n('绑定用户')"
+            label="绑定用户"
             prop="usr_id"
           >
             <CustomSelect
@@ -103,7 +103,7 @@
                   value: item.id,
                 };
               })"
-              :placeholder="`${ ns('请选择') } ${ n('绑定用户') }`"
+              placeholder="请选择 绑定用户"
               :readonly="isLocked || isReadonly"
             ></CustomSelect>
           </el-form-item>
@@ -111,14 +111,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.grade == null)">
           <el-form-item
-            :label="n('会员等级')"
+            label="会员等级"
             prop="grade"
           >
             <DictbizSelect
               v-model="dialogModel.grade"
               :set="dialogModel.grade = dialogModel.grade ?? undefined"
               code="card_grade"
-              :placeholder="`${ ns('请选择') } ${ n('会员等级') }`"
+              placeholder="请选择 会员等级"
               :readonly="isLocked || isReadonly"
             ></DictbizSelect>
           </el-form-item>
@@ -126,12 +126,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.name == null)">
           <el-form-item
-            :label="n('姓名')"
+            label="姓名"
             prop="name"
           >
             <CustomInput
               v-model="dialogModel.name"
-              :placeholder="`${ ns('请输入') } ${ n('姓名') }`"
+              placeholder="请输入 姓名"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -139,12 +139,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.mobile == null)">
           <el-form-item
-            :label="n('电话')"
+            label="电话"
             prop="mobile"
           >
             <CustomInput
               v-model="dialogModel.mobile"
-              :placeholder="`${ ns('请输入') } ${ n('电话') }`"
+              placeholder="请输入 电话"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -152,14 +152,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.balance == null)">
           <el-form-item
-            :label="n('充值余额')"
+            label="充值余额"
             prop="balance"
           >
             <CustomInputNumber
               v-model="dialogModel.balance"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('充值余额') }`"
+              placeholder="请输入 充值余额"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -167,14 +167,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.give_balance == null)">
           <el-form-item
-            :label="n('赠送余额')"
+            label="赠送余额"
             prop="give_balance"
           >
             <CustomInputNumber
               v-model="dialogModel.give_balance"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('赠送余额') }`"
+              placeholder="请输入 赠送余额"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -182,12 +182,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.integral == null)">
           <el-form-item
-            :label="n('积分')"
+            label="积分"
             prop="integral"
           >
             <CustomInputNumber
               v-model="dialogModel.integral"
-              :placeholder="`${ ns('请输入') } ${ n('积分') }`"
+              placeholder="请输入 积分"
               :readonly="isLocked || isReadonly"
             ></CustomInputNumber>
           </el-form-item>
@@ -195,14 +195,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.growth_amt == null)">
           <el-form-item
-            :label="n('累计消费')"
+            label="累计消费"
             prop="growth_amt"
           >
             <CustomInputNumber
               v-model="dialogModel.growth_amt"
               :max="99999999999.99"
               :precision="2"
-              :placeholder="`${ ns('请输入') } ${ n('累计消费') }`"
+              placeholder="请输入 累计消费"
               :readonly="true"
             ></CustomInputNumber>
           </el-form-item>
@@ -210,14 +210,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.is_default_card == null)">
           <el-form-item
-            :label="n('默认')"
+            label="默认"
             prop="is_default_card"
           >
             <DictSelect
               v-model="dialogModel.is_default_card"
               :set="dialogModel.is_default_card = dialogModel.is_default_card ?? undefined"
               code="is_default"
-              :placeholder="`${ ns('请选择') } ${ n('默认') }`"
+              placeholder="请选择 默认"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -225,7 +225,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
-            :label="n('备注')"
+            label="备注"
             prop="rem"
             un-grid="col-span-full"
           >
@@ -233,7 +233,7 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -257,7 +257,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <el-button
@@ -269,7 +269,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存并继续') }}</span>
+        <span>保存并继续</span>
       </el-button>
       
       <el-button
@@ -281,7 +281,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <el-button
@@ -293,7 +293,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <div
@@ -415,45 +415,45 @@ watchEffect(async () => {
     usr_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("绑定用户") }`,
+        message: "请选择 绑定用户",
       },
     ],
     // 会员等级
     grade: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("会员等级") }`,
+        message: "请选择 会员等级",
       },
     ],
     // 姓名
     name: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("姓名") }`,
+        message: "请输入 姓名",
       },
       {
         type: "string",
         max: 10,
-        message: `${ n("姓名") } ${ await nsAsync("长度不能超过 {0}", 10) }`,
+        message: "姓名 长度不能超过 10",
       },
     ],
     // 电话
     mobile: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("电话") }`,
+        message: "请输入 电话",
       },
       {
         type: "string",
         max: 22,
-        message: `${ n("电话") } ${ await nsAsync("长度不能超过 {0}", 22) }`,
+        message: "电话 长度不能超过 22",
       },
     ],
     // 默认
     is_default_card: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("默认") }`,
+        message: "请选择 默认",
       },
     ],
   };
@@ -621,11 +621,11 @@ watch(
       return;
     }
     if (is_deleted) {
-      dialogNotice = await nsAsync("(已删除)");
+      dialogNotice = "(已删除)";
       return;
     }
     if (isLocked) {
-      dialogNotice = await nsAsync("(已锁定)");
+      dialogNotice = "(已锁定)";
       return;
     }
     dialogNotice = "";
@@ -647,10 +647,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -673,7 +673,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -708,7 +708,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -751,7 +751,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -859,7 +859,7 @@ async function save() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = await nsAsync("新增成功");
+    msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
       return;
@@ -876,7 +876,7 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("编辑成功");
+    msg = "编辑成功";
   }
   if (id) {
     if (!changedIds.includes(id)) {
@@ -968,34 +968,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "卡号",
-    "绑定用户",
-    "会员等级",
-    "姓名",
-    "电话",
-    "充值余额",
-    "赠送余额",
-    "积分",
-    "累计消费",
-    "默认",
-    "锁定",
-    "启用",
-    "备注",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,

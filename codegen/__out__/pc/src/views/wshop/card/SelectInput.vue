@@ -118,13 +118,6 @@ const emit = defineEmits<{
 
 const pagePath = getPagePath();
 
-const {
-  n,
-  ns,
-  nAsync,
-  nsAsync,
-} = useI18n(pagePath);
-
 const props = withDefaults(
   defineProps<{
     modelValue?: CardId | CardId[] | null;
@@ -266,7 +259,7 @@ async function onInput(
     type,
     selectedIds,
   } = await selectListRef.showDialog({
-    title: `${ await nsAsync("选择") } ${ await nAsync("会员卡") }`,
+    title: `选择 会员卡`,
     action: "select",
     multiple: props.multiple,
     isReadonly: () => props.readonly,

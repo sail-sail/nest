@@ -375,9 +375,6 @@ export async function getUsrList() {
  */
 export function useDownloadImportTemplate(routePath: string) {
   const {
-    nsAsync,
-  } = useI18n(routePath);
-  const {
     workerFn,
     workerStatus,
     workerTerminate,
@@ -410,7 +407,7 @@ export function useDownloadImportTemplate(routePath: string) {
       },
     });
     try {
-      const sheetName = await nsAsync("会员卡充值记录");
+      const sheetName = "会员卡充值记录";
       const buffer = await workerFn(
         `${ location.origin }/import_template/wshop/card_recharge.xlsx`,
         {
@@ -418,9 +415,9 @@ export function useDownloadImportTemplate(routePath: string) {
           data,
         },
       );
-      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
+      saveAsExcel(buffer, `${ sheetName}导入`);
     } catch (err) {
-      ElMessage.error(await nsAsync("下载失败"));
+      ElMessage.error("下载失败");
       throw err;
     }
   }
@@ -435,9 +432,6 @@ export function useDownloadImportTemplate(routePath: string) {
  * 导出Excel
  */
 export function useExportExcel(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
   const {
     workerFn,
     workerStatus,
@@ -480,7 +474,7 @@ export function useExportExcel(routePath: string) {
         await setLblById(model, true);
       }
       try {
-        const sheetName = await nsAsync("会员卡充值记录");
+        const sheetName = "会员卡充值记录";
         const buffer = await workerFn(
           `${ location.origin }/excel_template/wshop/card_recharge.xlsx`,
           {
@@ -491,7 +485,7 @@ export function useExportExcel(routePath: string) {
         );
         saveAsExcel(buffer, sheetName);
       } catch (err) {
-        ElMessage.error(await nsAsync("导出失败"));
+        ElMessage.error("导出失败");
         throw err;
       }
     } finally {

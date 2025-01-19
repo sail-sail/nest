@@ -35,11 +35,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -601,30 +596,29 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取会员卡充值记录字段注释 */
 export async function getFieldComments(): Promise<CardRechargeFieldComment> {
-  const n = initN(route_path);
   const fieldComments: CardRechargeFieldComment = {
-    id: await n("ID"),
-    transaction_id: await n("微信支付订单号"),
-    card_id: await n("会员卡"),
-    card_id_lbl: await n("会员卡"),
-    usr_id: await n("用户"),
-    usr_id_lbl: await n("用户"),
-    amt: await n("充值金额"),
-    give_amt: await n("赠送金额"),
-    balance: await n("充值后充值余额"),
-    give_balance: await n("充值后赠送余额"),
-    integral: await n("充值后积分"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
-    org_id: await n("组织"),
-    org_id_lbl: await n("组织"),
+    id: "ID",
+    transaction_id: "微信支付订单号",
+    card_id: "会员卡",
+    card_id_lbl: "会员卡",
+    usr_id: "用户",
+    usr_id_lbl: "用户",
+    amt: "充值金额",
+    give_amt: "赠送金额",
+    balance: "充值后充值余额",
+    give_balance: "充值后赠送余额",
+    integral: "充值后积分",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
+    org_id: "组织",
+    org_id_lbl: "组织",
   };
   return fieldComments;
 }
@@ -704,7 +698,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("会员卡充值记录")));
+      throw new UniqueException("此 会员卡充值记录 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: CardRechargeId = await updateById(
@@ -950,7 +944,7 @@ export async function validateOption(
   model?: CardRechargeModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("会员卡充值记录") } ${ await ns("不存在") }`;
+    const err_msg = "会员卡充值记录 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1473,7 +1467,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("会员卡充值记录"));
+        throw "此 会员卡充值记录 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1483,7 +1477,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("会员卡充值记录"));
+    throw "编辑失败, 此 会员卡充值记录 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1721,7 +1715,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("会员卡充值记录"));
+        throw "此 会员卡充值记录 已经存在";
       }
     }
     const args = new QueryArgs();
