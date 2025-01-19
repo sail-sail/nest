@@ -4,10 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
 import * as orgDao from "./org.dao.ts";
 
 async function setSearchQuery(
@@ -142,7 +138,7 @@ export async function updateById(
   
   const is_locked = await orgDao.getIsLockedById(id);
   if (is_locked) {
-    throw await ns("不能修改已经锁定的数据");
+    throw "不能修改已经锁定的 组织";
   }
   
   const id2 = await orgDao.updateById(id, input);
@@ -162,7 +158,7 @@ export async function deleteByIds(
     });
     for (const model of models) {
       if (model.is_locked === 1) {
-        throw await ns("不能删除已经锁定的 {0}", "组织");
+        throw "不能删除已经锁定的 组织";
       }
     }
   }
