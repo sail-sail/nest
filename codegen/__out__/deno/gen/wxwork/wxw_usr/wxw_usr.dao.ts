@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -438,29 +433,28 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取企微用户字段注释 */
 export async function getFieldComments(): Promise<WxwUsrFieldComment> {
-  const n = initN(route_path);
   const fieldComments: WxwUsrFieldComment = {
-    id: await n("ID"),
-    lbl: await n("姓名"),
-    userid: await n("用户ID"),
-    mobile: await n("手机号"),
-    gender: await n("性别"),
-    email: await n("邮箱"),
-    biz_email: await n("企业邮箱"),
-    direct_leader: await n("直属上级"),
-    position: await n("职位"),
-    avatar: await n("头像"),
-    thumb_avatar: await n("头像缩略图"),
-    qr_code: await n("个人二维码"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    lbl: "姓名",
+    userid: "用户ID",
+    mobile: "手机号",
+    gender: "性别",
+    email: "邮箱",
+    biz_email: "企业邮箱",
+    direct_leader: "直属上级",
+    position: "职位",
+    avatar: "头像",
+    thumb_avatar: "头像缩略图",
+    qr_code: "个人二维码",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -580,7 +574,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("企微用户")));
+      throw new UniqueException("此 企微用户 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxwUsrId = await updateById(
@@ -835,7 +829,7 @@ export async function validateOption(
   model?: WxwUsrModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("企微用户") } ${ await ns("不存在") }`;
+    const err_msg = "企微用户 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1457,7 +1451,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("企微用户"));
+        throw "此 企微用户 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1467,7 +1461,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("企微用户"));
+    throw "编辑失败, 此 企微用户 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1780,7 +1774,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("企微用户"));
+        throw "此 企微用户 已经存在";
       }
     }
     const args = new QueryArgs();
