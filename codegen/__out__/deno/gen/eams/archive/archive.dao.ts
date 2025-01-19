@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -457,23 +452,22 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取全宗设置字段注释 */
 export async function getFieldComments(): Promise<ArchiveFieldComment> {
-  const n = initN(route_path);
   const fieldComments: ArchiveFieldComment = {
-    id: await n("ID"),
-    code: await n("编号"),
-    lbl: await n("名称"),
-    company_id: await n("关联单位"),
-    company_id_lbl: await n("关联单位"),
-    order_by: await n("排序"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    code: "编号",
+    lbl: "名称",
+    company_id: "关联单位",
+    company_id_lbl: "关联单位",
+    order_by: "排序",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -593,7 +587,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("全宗设置")));
+      throw new UniqueException("此 全宗设置 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: ArchiveId = await updateById(
@@ -848,7 +842,7 @@ export async function validateOption(
   model?: ArchiveModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("全宗设置") } ${ await ns("不存在") }`;
+    const err_msg = "全宗设置 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1393,7 +1387,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("全宗设置"));
+        throw "此 全宗设置 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1403,7 +1397,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("全宗设置"));
+    throw "编辑失败, 此 全宗设置 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1674,7 +1668,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("全宗设置"));
+        throw "此 全宗设置 已经存在";
       }
     }
     const args = new QueryArgs();
