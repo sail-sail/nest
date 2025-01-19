@@ -33,11 +33,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -476,14 +471,14 @@ export async function setIdByLbl(
       input.begin_time = begin_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.begin_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.begin_time } 日期格式错误`;
     }
   }
   if (input.begin_time) {
     const begin_time = dayjs(input.begin_time);
     if (!begin_time.isValid()) {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.begin_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.begin_time } 日期格式错误`;
     }
     input.begin_time = dayjs(input.begin_time).format("YYYY-MM-DD HH:mm:ss");
   }
@@ -494,14 +489,14 @@ export async function setIdByLbl(
       input.end_time = end_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.end_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.end_time } 日期格式错误`;
     }
   }
   if (input.end_time) {
     const end_time = dayjs(input.end_time);
     if (!end_time.isValid()) {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.end_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.end_time } 日期格式错误`;
     }
     input.end_time = dayjs(input.end_time).format("YYYY-MM-DD HH:mm:ss");
   }
@@ -565,27 +560,26 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取定时任务日志字段注释 */
 export async function getFieldComments(): Promise<CronJobLogFieldComment> {
-  const n = initN(route_path);
   const fieldComments: CronJobLogFieldComment = {
-    id: await n("ID"),
-    cron_job_id: await n("定时任务"),
-    cron_job_id_lbl: await n("定时任务"),
-    exec_state: await n("执行状态"),
-    exec_state_lbl: await n("执行状态"),
-    exec_result: await n("执行结果"),
-    begin_time: await n("开始时间"),
-    begin_time_lbl: await n("开始时间"),
-    end_time: await n("结束时间"),
-    end_time_lbl: await n("结束时间"),
-    rem: await n("备注"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    cron_job_id: "定时任务",
+    cron_job_id_lbl: "定时任务",
+    exec_state: "执行状态",
+    exec_state_lbl: "执行状态",
+    exec_result: "执行结果",
+    begin_time: "开始时间",
+    begin_time_lbl: "开始时间",
+    end_time: "结束时间",
+    end_time_lbl: "结束时间",
+    rem: "备注",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -665,7 +659,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("定时任务日志")));
+      throw new UniqueException("此 定时任务日志 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: CronJobLogId = await updateById(
@@ -911,7 +905,7 @@ export async function validateOption(
   model?: CronJobLogModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("定时任务日志") } ${ await ns("不存在") }`;
+    const err_msg = "定时任务日志 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1428,7 +1422,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("定时任务日志"));
+        throw "此 定时任务日志 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1438,7 +1432,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("定时任务日志"));
+    throw "编辑失败, 此 定时任务日志 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1703,7 +1697,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("定时任务日志"));
+        throw "此 定时任务日志 已经存在";
       }
     }
     const args = new QueryArgs();
