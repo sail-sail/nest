@@ -32,8 +32,6 @@ use async_graphql::{
 
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
-
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
 static CAN_SORT_IN_API_MENU: OnceLock<[&'static str; 4]> = OnceLock::new();
@@ -112,8 +110,6 @@ pub struct MenuModel {
 
 impl FromRow<'_, MySqlRow> for MenuModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
-    
-    let server_i18n_enable = get_server_i18n_enable();
     // 隐藏字段
     let is_hidden = row.try_get("is_hidden")?;
     // ID
@@ -138,42 +134,6 @@ impl FromRow<'_, MySqlRow> for MenuModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
-    
-    // 父菜单
-    let parent_id_lbl = if server_i18n_enable {
-      let parent_id_lbl_lang: Option<String> = row.try_get("parent_id_lbl_lang")?;
-      if parent_id_lbl_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
-        parent_id_lbl
-      } else {
-        parent_id_lbl_lang.unwrap()
-      }
-    } else {
-      parent_id_lbl
-    };
-    
-    // 名称
-    let lbl = if server_i18n_enable {
-      let lbl_lang: Option<String> = row.try_get("lbl_lang")?;
-      if lbl_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
-        lbl
-      } else {
-        lbl_lang.unwrap()
-      }
-    } else {
-      lbl
-    };
-    
-    // 备注
-    let rem = if server_i18n_enable {
-      let rem_lang: Option<String> = row.try_get("rem_lang")?;
-      if rem_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
-        rem
-      } else {
-        rem_lang.unwrap()
-      }
-    } else {
-      rem
-    };
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;

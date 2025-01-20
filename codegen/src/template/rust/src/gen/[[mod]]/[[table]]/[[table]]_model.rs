@@ -104,7 +104,7 @@ if (hasEncrypt) {
 use crate::common::util::dao::decrypt;<#
 }
 #><#
-if (opts.langTable) {
+if (opts.langTable && isUseI18n) {
 #>
 
 use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;<#
@@ -797,7 +797,7 @@ pub struct <#=tableUP#>Model {<#
 
 impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     
     let server_i18n_enable = get_server_i18n_enable();<#
@@ -1267,6 +1267,8 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       const column_name = record.COLUMN_NAME;
       const column_name_rust = rustKeyEscape(record.COLUMN_NAME);
       const column_comment = record.COLUMN_COMMENT || "";
+    #><#
+    if (isUseI18n) {
     #>
     
     // <#=column_comment#>
@@ -1280,6 +1282,8 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
     } else {
       <#=column_name_rust#>
     };<#
+    }
+    #><#
     }
     #><#
     }

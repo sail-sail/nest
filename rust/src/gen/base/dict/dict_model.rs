@@ -33,8 +33,6 @@ use async_graphql::{
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
-
 use crate::r#gen::base::dict_detail::dict_detail_model::{
   DictDetailModel,
   DictDetailInput,
@@ -114,8 +112,6 @@ pub struct DictModel {
 
 impl FromRow<'_, MySqlRow> for DictModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
-    
-    let server_i18n_enable = get_server_i18n_enable();
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
     // ID
@@ -137,30 +133,6 @@ impl FromRow<'_, MySqlRow> for DictModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
-    
-    // 名称
-    let lbl = if server_i18n_enable {
-      let lbl_lang: Option<String> = row.try_get("lbl_lang")?;
-      if lbl_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
-        lbl
-      } else {
-        lbl_lang.unwrap()
-      }
-    } else {
-      lbl
-    };
-    
-    // 备注
-    let rem = if server_i18n_enable {
-      let rem_lang: Option<String> = row.try_get("rem_lang")?;
-      if rem_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
-        rem
-      } else {
-        rem_lang.unwrap()
-      }
-    } else {
-      rem
-    };
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;

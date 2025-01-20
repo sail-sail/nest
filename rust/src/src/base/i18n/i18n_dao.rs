@@ -49,6 +49,7 @@ impl NRoute {
     Ok(res)
   }
   
+  #[allow(dead_code)]
   pub async fn n_batch(
     &self,
     i18n_code_maps: Vec<I18nCodeMap>,

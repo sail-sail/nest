@@ -12,9 +12,6 @@ use crate::common::context::{
 
 use crate::common::gql::model::{PageInput, SortInput};
 
-#[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao::ns;
-
 use super::dict_model::*;
 use super::dict_dao;
 
@@ -142,17 +139,7 @@ pub async fn update_by_id(
   ).await?;
   
   if is_locked {
-    let table_comment = ns(
-      "系统字典".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = ns(
-      "不能修改已经锁定的 {0}".to_owned(),
-      map.into(),
-    ).await?;
+    let err_msg = "不能修改已经锁定的 系统字典";
     return Err(eyre!(err_msg));
   }
   
@@ -202,17 +189,7 @@ pub async fn delete_by_ids(
   ).await?;
   for model in models {
     if model.is_locked == 1 {
-      let table_comment = ns(
-        "系统字典".to_owned(),
-        None,
-      ).await?;
-      let map = HashMap::from([
-        ("0".to_owned(), table_comment),
-      ]);
-      let err_msg = ns(
-        "不能删除已经锁定的 {0}",
-        map.into(),
-      ).await?;
+      let err_msg = "不能删除已经锁定的 系统字典";
       return Err(eyre!(err_msg));
     }
   }
@@ -228,7 +205,7 @@ pub async fn delete_by_ids(
   ).await?;
   for model in models {
     if model.is_sys == 1 {
-      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;
+      let err_msg = "不能删除系统记录";
       return Err(eyre!(err_msg));
     }
   }

@@ -38,15 +38,12 @@ use crate::common::context::{
   get_is_creating,
 };
 
-use crate::src::base::i18n::i18n_dao;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
 };
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::options_model::*;
 use crate::r#gen::base::usr::usr_model::UsrId;
@@ -418,8 +415,6 @@ async fn get_from_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let server_i18n_enable = get_server_i18n_enable();
-  
   let from_query = r#"base_options t"#.to_owned();
   Ok(from_query)
 }
@@ -689,73 +684,31 @@ pub async fn find_count(
   Ok(total)
 }
 
-/// 获取当前路由的国际化
-pub fn get_n_route() -> i18n_dao::NRoute {
-  i18n_dao::NRoute {
-    route_path: get_route_path_options().into(),
-  }
-}
-
 // MARK: get_field_comments
 /// 获取系统选项字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<OptionsFieldComment> {
   
-  let n_route = get_n_route();
-  
-  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
-    "ID".into(),
-    "名称".into(),
-    "键".into(),
-    "值".into(),
-    "锁定".into(),
-    "锁定".into(),
-    "启用".into(),
-    "启用".into(),
-    "排序".into(),
-    "备注".into(),
-    "创建人".into(),
-    "创建人".into(),
-    "创建时间".into(),
-    "创建时间".into(),
-    "更新人".into(),
-    "更新人".into(),
-    "更新时间".into(),
-    "更新时间".into(),
-  ];
-  
-  let map = n_route.n_batch(
-    i18n_code_maps.clone(),
-  ).await?;
-  
-  let vec = i18n_code_maps.into_iter()
-    .map(|item|
-      map.get(&item.code)
-        .map(|item| item.to_owned())
-        .unwrap_or_default()
-    )
-    .collect::<Vec<String>>();
-  
   let field_comments = OptionsFieldComment {
-    id: vec[0].to_owned(),
-    lbl: vec[1].to_owned(),
-    ky: vec[2].to_owned(),
-    val: vec[3].to_owned(),
-    is_locked: vec[4].to_owned(),
-    is_locked_lbl: vec[5].to_owned(),
-    is_enabled: vec[6].to_owned(),
-    is_enabled_lbl: vec[7].to_owned(),
-    order_by: vec[8].to_owned(),
-    rem: vec[9].to_owned(),
-    create_usr_id: vec[10].to_owned(),
-    create_usr_id_lbl: vec[11].to_owned(),
-    create_time: vec[12].to_owned(),
-    create_time_lbl: vec[13].to_owned(),
-    update_usr_id: vec[14].to_owned(),
-    update_usr_id_lbl: vec[15].to_owned(),
-    update_time: vec[16].to_owned(),
-    update_time_lbl: vec[17].to_owned(),
+    id: "ID".into(),
+    lbl: "名称".into(),
+    ky: "键".into(),
+    val: "值".into(),
+    is_locked: "锁定".into(),
+    is_locked_lbl: "锁定".into(),
+    is_enabled: "启用".into(),
+    is_enabled_lbl: "启用".into(),
+    order_by: "排序".into(),
+    rem: "备注".into(),
+    create_usr_id: "创建人".into(),
+    create_usr_id_lbl: "创建人".into(),
+    create_time: "创建时间".into(),
+    create_time_lbl: "创建时间".into(),
+    update_usr_id: "更新人".into(),
+    update_usr_id_lbl: "更新人".into(),
+    update_time: "更新时间".into(),
+    update_time_lbl: "更新时间".into(),
   };
   Ok(field_comments)
 }
@@ -1159,17 +1112,7 @@ pub async fn check_by_unique(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let table_comment = i18n_dao::ns(
-      "系统选项".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "此 {0} 已经存在".to_owned(),
-      map.into(),
-    ).await?;
+    let err_msg = "此 系统选项 已经存在";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1758,17 +1701,7 @@ pub async fn update_by_id(
   ).await?;
   
   if old_model.is_none() {
-    let table_comment = i18n_dao::ns(
-      "系统选项".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "编辑失败, 此 {0} 已被删除".to_owned(),
-      map.into(),
-    ).await?;
+    let err_msg = "编辑失败, 此 系统选项 已被删除";
     return Err(eyre!(err_msg));
   }
   let old_model = old_model.unwrap();
@@ -1805,17 +1738,7 @@ pub async fn update_by_id(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let table_comment = i18n_dao::ns(
-          "系统选项".to_owned(),
-          None,
-        ).await?;
-        let map = HashMap::from([
-          ("0".to_owned(), table_comment),
-        ]);
-        let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
-          map.into(),
-        ).await?;
+        let err_msg = "此 系统选项 已经存在";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -1884,17 +1807,7 @@ pub async fn update_by_id(
           let version2 = get_version_by_id(id.clone()).await?;
           if let Some(version2) = version2 {
             if version2 > version {
-              let table_comment = i18n_dao::ns(
-                "系统选项".to_owned(),
-                None,
-              ).await?;
-              let map = HashMap::from([
-                ("0".to_owned(), table_comment),
-              ]);
-              let err_msg = i18n_dao::ns(
-                "此 {0} 已被修改，请刷新后重试".to_owned(),
-                map.into(),
-              ).await?;
+              let err_msg = "此 系统选项 已被修改，请刷新后重试";
               return Err(eyre!(err_msg));
             }
           }
@@ -2420,17 +2333,7 @@ pub async fn revert_by_ids(
         .collect();
       
       if !models.is_empty() {
-        let table_comment = i18n_dao::ns(
-          "系统选项".to_owned(),
-          None,
-        ).await?;
-        let map = HashMap::from([
-          ("0".to_owned(), table_comment),
-        ]);
-        let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
-          map.into(),
-        ).await?;
+        let err_msg = "此 系统选项 已经存在";
         return Err(eyre!(err_msg));
       }
     }
@@ -2599,15 +2502,7 @@ pub async fn validate_is_enabled(
   model: &OptionsModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let table_comment = i18n_dao::ns(
-      "系统选项".to_owned(),
-      None,
-    ).await?;
-    let msg1 = i18n_dao::ns(
-      "已禁用".to_owned(),
-      None,
-    ).await?;
-    let err_msg = table_comment + msg1.as_str();
+    let err_msg = "系统选项已禁用";
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -2620,15 +2515,7 @@ pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
-    let table_comment = i18n_dao::ns(
-      "系统选项".to_owned(),
-      None,
-    ).await?;
-    let msg1 = i18n_dao::ns(
-      "不存在".to_owned(),
-      None,
-    ).await?;
-    let err_msg = table_comment + msg1.as_str();
+    let err_msg = "系统选项不存在";
     let backtrace = std::backtrace::Backtrace::capture();
     error!(
       "{req_id} {err_msg}: {backtrace}",
