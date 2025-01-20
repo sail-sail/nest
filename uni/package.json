@@ -80,7 +80,7 @@
     "@uni-helper/uni-app-types": "1.0.0-alpha.6",
     "@unocss/preset-attributify": "65.4.2",
     "@vue-macros/eslint-config": "0.7.1",
-    "@vue-macros/reactivity-transform": "1.1.5",
+    "@vue-macros/reactivity-transform": "1.1.6",
     "@vue/runtime-core": "3.5.13",
     "cross-env": "7.0.3",
     "eslint": "9.18.0",
