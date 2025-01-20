@@ -21,6 +21,10 @@ import {
   gitDiffOut,
 } from "../lib/codegen";
 
+import {
+  execSync,
+} from "child_process";
+
 const chalk = new Chalk();
 
 async function exec(context: Context, table_names0: string[]) {
@@ -53,8 +57,19 @@ program
 
 const options = program.opts();
 
+/**
+ * 查看git是否有未加入暂存区的文件, 如果有, 则退出
+ */
+function validateGitStaging() {
+  const status = execSync("git status").toString();
+  if (status.includes("Changes not staged for commit:")) {
+    throw new Error("git有未加入暂存区的文件, 请先加入暂存区");
+  }
+}
+
 (async function() {
   try {
+    validateGitStaging();
     let table = options.table;
     if (table) {
       table = table.split(",");
