@@ -43,7 +43,7 @@
                 value: item.id,
               };
             })"
-            placeholder="语言"
+            placeholder="请选择 语言"
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
@@ -64,7 +64,7 @@
                 value: item.id,
               };
             })"
-            placeholder="菜单"
+            placeholder="请选择 菜单"
             multiple
             @change="onSearch(false)"
           ></CustomTreeSelect>
@@ -78,7 +78,7 @@
         >
           <CustomInput
             v-model="search.code_like"
-            placeholder="编码"
+            placeholder="请输入 编码"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -91,7 +91,7 @@
         >
           <CustomInput
             v-model="search.lbl_like"
-            placeholder="名称"
+            placeholder="请输入 名称"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>

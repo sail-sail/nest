@@ -43,7 +43,7 @@
                 value: item.id,
               };
             })"
-            placeholder="菜单"
+            placeholder="请选择 菜单"
             multiple
             @change="onSearch(false)"
           ></CustomTreeSelect>
@@ -58,7 +58,7 @@
           <DictSelect
             v-model="scope_search"
             code="data_permit_scope"
-            placeholder="范围"
+            placeholder="请选择 范围"
             multiple
             @change="onSearch(false)"
           ></DictSelect>
