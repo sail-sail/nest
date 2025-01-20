@@ -3846,7 +3846,9 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePath();<#
+if (isUseI18n) {
+#>
 
 const {
   n,
@@ -3854,7 +3856,9 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n(pagePath);
+} = useI18n(pagePath);<#
+}
+#>
 
 const permitStore = usePermitStore();<#
 if (tableFieldPermit) {
