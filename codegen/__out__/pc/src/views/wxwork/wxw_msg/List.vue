@@ -43,7 +43,7 @@
                 value: item.id,
               };
             })"
-            placeholder="企微应用"
+            placeholder="请选择 企微应用"
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
@@ -58,7 +58,7 @@
           <DictSelect
             v-model="errcode_search"
             code="wxw_msg_errcode"
-            placeholder="发送状态"
+            placeholder="请选择 发送状态"
             multiple
             @change="onSearch(false)"
           ></DictSelect>
