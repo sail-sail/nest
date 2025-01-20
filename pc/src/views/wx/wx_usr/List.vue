@@ -36,7 +36,7 @@
         >
           <CustomInput
             v-model="search.lbl_like"
-            placeholder="名称"
+            placeholder="请输入 名称"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
