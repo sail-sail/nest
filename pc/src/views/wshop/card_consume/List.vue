@@ -43,7 +43,7 @@
                 value: item.id,
               };
             })"
-            placeholder="卡号"
+            placeholder="请选择 卡号"
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
@@ -64,7 +64,7 @@
                 value: item.id,
               };
             })"
-            placeholder="用户"
+            placeholder="请选择 用户"
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
