@@ -36,7 +36,7 @@
         >
           <CustomInput
             v-model="search.lbl_like"
-            placeholder="日志明细"
+            placeholder="请输入 日志明细"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
