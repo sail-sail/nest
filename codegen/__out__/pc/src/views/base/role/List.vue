@@ -879,16 +879,6 @@ defineOptions({
 const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
-
-const {
-  n,
-  nAsync,
-  ns,
-  nsAsync,
-  initI18ns,
-  initSysI18ns
-} = useI18n(pagePath);
-
 const usrStore = useUsrStore();
 const permitStore = usePermitStore();
 const dirtyStore = useDirtyStore();
