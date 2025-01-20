@@ -37,7 +37,7 @@
           <DictSelect
             v-model="type_search"
             code="login_log_type"
-            placeholder="类型"
+            placeholder="请选择 类型"
             multiple
             @change="onSearch(false)"
           ></DictSelect>
@@ -51,7 +51,7 @@
         >
           <CustomInput
             v-model="search.username_like"
-            placeholder="用户名"
+            placeholder="请输入 用户名"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -65,7 +65,7 @@
           <DictSelect
             :model-value="is_succ_search[0]"
             code="yes_no"
-            placeholder="登录成功"
+            placeholder="请选择 登录成功"
             @update:model-value="($event != null && $event !== '') ? is_succ_search = [ $event ] : is_succ_search = [ ]"
             @change="onSearch(false)"
           ></DictSelect>
@@ -79,7 +79,7 @@
         >
           <CustomInput
             v-model="search.ip_like"
-            placeholder="IP"
+            placeholder="请输入 IP"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>

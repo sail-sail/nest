@@ -36,7 +36,7 @@
         >
           <CustomInput
             v-model="search.lbl_like"
-            placeholder="名称"
+            placeholder="请输入 名称"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -49,7 +49,7 @@
         >
           <CustomInput
             v-model="search.username_like"
-            placeholder="用户名"
+            placeholder="请输入 用户名"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -69,7 +69,7 @@
                 value: item.id,
               };
             })"
-            placeholder="所属角色"
+            placeholder="请选择 所属角色"
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
@@ -90,7 +90,7 @@
                 value: item.id,
               };
             })"
-            placeholder="所属部门"
+            placeholder="请选择 所属部门"
             multiple
             @change="onSearch(false)"
           ></CustomTreeSelect>
@@ -111,7 +111,7 @@
                 value: item.id,
               };
             })"
-            placeholder="所属组织"
+            placeholder="请选择 所属组织"
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
@@ -126,7 +126,7 @@
           <DictSelect
             :model-value="is_enabled_search[0]"
             code="is_enabled"
-            placeholder="启用"
+            placeholder="请选择 启用"
             @update:model-value="($event != null && $event !== '') ? is_enabled_search = [ $event ] : is_enabled_search = [ ]"
             @change="onSearch(false)"
           ></DictSelect>
