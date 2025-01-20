@@ -1442,7 +1442,7 @@ async fn _creates(
   let mut ids2: Vec<DictId> = vec![];
   let mut inputs2: Vec<DictInput> = vec![];
   
-  for input in inputs.clone() {
+  for input in inputs {
   
     if input.id.is_some() {
       return Err(eyre!("Can not set id when create in dao: {table}"));
