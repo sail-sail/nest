@@ -1,6 +1,7 @@
 import { defineConfig } from "../config";
 
 import base from "./base/base";
+
 import wxwork from "./wxwork/wxwork";
 
 /** 是否使用国际化 */
