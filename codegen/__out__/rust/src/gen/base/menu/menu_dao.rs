@@ -160,10 +160,8 @@ async fn get_where_query(
       None => None,
     };
     if let Some(parent_id_lbl_like) = parent_id_lbl_like {
-      where_query.push_str(" and (parent_id_lbl.lbl like ? or base_menu_lang.parent_id_lbl like ?)");
-      let like_str = format!("%{}%", sql_like(&parent_id_lbl_like));
-      args.push(like_str.as_str().into());
-      args.push(like_str.as_str().into());
+      where_query.push_str(" and parent_id_lbl.lbl like ?");
+      args.push(format!("%{}%", sql_like(&parent_id_lbl_like)).into());
     }
   }
   // 名称
@@ -1470,7 +1468,7 @@ async fn _creates(
   let mut ids2: Vec<MenuId> = vec![];
   let mut inputs2: Vec<MenuInput> = vec![];
   
-  for input in inputs.clone() {
+  for input in inputs {
   
     if input.id.is_some() {
       return Err(eyre!("Can not set id when create in dao: {table}"));

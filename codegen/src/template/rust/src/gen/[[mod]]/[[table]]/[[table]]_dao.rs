@@ -1014,7 +1014,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(<#=column_name#>_<#=foreignKey.lbl#>_like) = <#=column_name#>_<#=foreignKey.lbl#>_like {<#
-      if (!foreignLangTableRecords.some((record) => record.COLUMN_NAME === column_name+"_"+foreignKey.lbl)) {
+      if (!isUseI18n || !foreignLangTableRecords.some((record) => record.COLUMN_NAME === column_name+"_"+foreignKey.lbl)) {
       #>
       where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
       args.push(format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like)).into());<#
@@ -3435,7 +3435,7 @@ async fn _creates(
   let mut inputs2: Vec<<#=tableUP#>Input> = vec![];
   
   for input in inputs<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>.clone()<#
   }
   #> {
