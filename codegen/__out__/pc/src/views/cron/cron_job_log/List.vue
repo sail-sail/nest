@@ -43,7 +43,7 @@
                 value: item.id,
               };
             })"
-            placeholder="定时任务"
+            placeholder="请选择 定时任务"
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
@@ -58,7 +58,7 @@
           <DictSelect
             v-model="exec_state_search"
             code="cron_job_log_exec_state"
-            placeholder="执行状态"
+            placeholder="请选择 执行状态"
             multiple
             @change="onSearch(false)"
           ></DictSelect>
