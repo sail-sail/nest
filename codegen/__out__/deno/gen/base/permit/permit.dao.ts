@@ -76,8 +76,6 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
-  
   let whereQuery = "";
   whereQuery += " 1=1"
   if (search?.id != null) {
@@ -105,18 +103,10 @@ async function getWhereQuery(
     whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
   }
   if (search?.lbl != null) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.lbl=${ args.push(search.lbl) } or base_permit_lang.lbl=${ args.push(search.lbl) })`;
-    } else {
-      whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
-    }
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") } or base_permit_lang.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") })`;
-    } else {
-      whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
-    }
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.order_by != null) {
     if (search.order_by[0] != null) {
@@ -127,18 +117,10 @@ async function getWhereQuery(
     }
   }
   if (search?.rem != null) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.rem=${ args.push(search.rem) } or base_permit_lang.rem=${ args.push(search.rem) })`;
-    } else {
-      whereQuery += ` and t.rem=${ args.push(search.rem) }`;
-    }
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") } or base_permit_lang.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") })`;
-    } else {
-      whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
-    }
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   return whereQuery;
 }
@@ -149,14 +131,8 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   let fromQuery = `base_permit t
   left join base_menu menu_id_lbl on menu_id_lbl.id=t.menu_id`;
-  
-  if (server_i18n_enable) {
-    fromQuery += ` left join base_permit_lang on base_permit_lang.permit_id=t.id and base_permit_lang.lang_id=${ args.push(await get_lang_id()) }`;
-  }
   return fromQuery;
 }
 
@@ -249,8 +225,6 @@ export async function findAll(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   // 菜单
   if (search && search.menu_id != null) {
     const len = search.menu_id.length;
@@ -263,17 +237,9 @@ export async function findAll(
     }
   }
   
-  let lang_sql = "";
-  
-  if (server_i18n_enable) {
-    lang_sql += ",max(base_permit_lang.lbl) lbl_lang";
-    lang_sql += ",max(base_permit_lang.rem) rem_lang";
-  }
-  
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
       ,menu_id_lbl.lbl menu_id_lbl
-      ${ lang_sql }
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -324,25 +290,6 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    if (server_i18n_enable) {
-      
-      // deno-lint-ignore no-explicit-any
-      if ((model as any).lbl_lang) {
-        // deno-lint-ignore no-explicit-any
-        model.lbl = (model as any).lbl_lang;
-        // deno-lint-ignore no-explicit-any
-        (model as any).lbl_lang = undefined;
-      }
-      
-      // deno-lint-ignore no-explicit-any
-      if ((model as any).rem_lang) {
-        // deno-lint-ignore no-explicit-any
-        model.rem = (model as any).rem_lang;
-        // deno-lint-ignore no-explicit-any
-        (model as any).rem_lang = undefined;
-      }
-    }
     
     // 菜单
     model.menu_id_lbl = model.menu_id_lbl || "";
@@ -1111,70 +1058,6 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.base_permit`);
 }
 
-async function refreshLangByInput(
-  input: Readonly<PermitInput>,
-) {
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
-  if (!server_i18n_enable) {
-    return;
-  }
-  const lang_sql = "select id from base_permit_lang where lang_id=? and permit_id=?";
-  const lang_args = new QueryArgs();
-  lang_args.push(await get_lang_id());
-  lang_args.push(input.id);
-  const model = await queryOne<{ id: string }>(
-    lang_sql,
-    lang_args,
-  );
-  const lang_id = model?.id;
-  if (lang_id) {
-    let lang_sql = "update base_permit_lang set ";
-    const lang_args = new QueryArgs();
-    // 名称
-    if (input.lbl != null) {
-      lang_sql += "lbl=?,";
-      lang_args.push(input.lbl);
-    }
-    // 备注
-    if (input.rem != null) {
-      lang_sql += "rem=?,";
-      lang_args.push(input.rem);
-    }
-    if (lang_sql.endsWith(",")) {
-      lang_sql = lang_sql.substring(0, lang_sql.length - 1);
-    }
-    lang_sql += " where id=?";
-    lang_args.push(lang_id);
-    await execute(lang_sql, lang_args);
-  } else {
-    const sql_fields: string[] = [ ];
-    const lang_args = new QueryArgs();
-    lang_args.push(shortUuidV4());
-    lang_args.push(await get_lang_id());
-    lang_args.push(input.id);
-    // 名称
-    if (input.lbl != null) {
-      sql_fields.push("lbl");
-      lang_args.push(input.lbl);
-    }
-    // 备注
-    if (input.rem != null) {
-      sql_fields.push("rem");
-      lang_args.push(input.rem);
-    }
-    let lang_sql = "insert into base_permit_lang(id,lang_id,permit_id";
-    for (const sql_field of sql_fields) {
-      lang_sql += "," + sql_field;
-    }
-    lang_sql += ")values(?,?,?";
-    for (let i = 0; i < sql_fields.length; i++) {
-      lang_sql += ",?";
-    }
-    lang_sql += ")";
-    await execute(lang_sql, lang_args);
-  }
-}
-
 // MARK: updateById
 /** 根据 id 修改 按钮权限 */
 export async function updateById(
@@ -1194,8 +1077,6 @@ export async function updateById(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1259,9 +1140,7 @@ export async function updateById(
   }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      if (!server_i18n_enable) {
-        sql += `lbl=${ args.push(input.lbl) },`;
-      }
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
@@ -1273,9 +1152,7 @@ export async function updateById(
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      if (!server_i18n_enable) {
-        sql += `rem=${ args.push(input.rem) },`;
-      }
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
@@ -1297,12 +1174,6 @@ export async function updateById(
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
-      if (server_i18n_enable) {
-        await refreshLangByInput({
-          ...input,
-          id,
-        });
-      }
     }
   }
   
@@ -1334,7 +1205,6 @@ export async function deleteByIds(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1369,12 +1239,6 @@ export async function deleteByIds(
     const sql = `delete from base_permit where id=${ args.push(id) } limit 1`;
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "delete from base_permit_lang where permit_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
     {
       const args = new QueryArgs();
       const sql = `update base_role_permit set is_deleted=1 where permit_id=${ args.push(id) } and is_deleted=0`;
