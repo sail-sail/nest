@@ -84,8 +84,6 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
-  
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
@@ -107,18 +105,10 @@ async function getWhereQuery(
     whereQuery += ` and dict_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.dict_id_lbl_like) + "%") }`;
   }
   if (search?.lbl != null) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.lbl=${ args.push(search.lbl) } or base_dict_detail_lang.lbl=${ args.push(search.lbl) })`;
-    } else {
-      whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
-    }
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") } or base_dict_detail_lang.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") })`;
-    } else {
-      whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
-    }
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.val != null) {
     whereQuery += ` and t.val=${ args.push(search.val) }`;
@@ -141,18 +131,10 @@ async function getWhereQuery(
     }
   }
   if (search?.rem != null) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.rem=${ args.push(search.rem) } or base_dict_detail_lang.rem=${ args.push(search.rem) })`;
-    } else {
-      whereQuery += ` and t.rem=${ args.push(search.rem) }`;
-    }
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") } or base_dict_detail_lang.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") })`;
-    } else {
-      whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
-    }
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
@@ -203,14 +185,8 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   let fromQuery = `base_dict_detail t
   left join base_dict dict_id_lbl on dict_id_lbl.id=t.dict_id`;
-  
-  if (server_i18n_enable) {
-    fromQuery += ` left join base_dict_detail_lang on base_dict_detail_lang.dict_detail_id=t.id and base_dict_detail_lang.lang_id=${ args.push(await get_lang_id()) }`;
-  }
   return fromQuery;
 }
 
@@ -303,8 +279,6 @@ export async function findAll(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   // 系统字典
   if (search && search.dict_id != null) {
     const len = search.dict_id.length;
@@ -361,17 +335,9 @@ export async function findAll(
     }
   }
   
-  let lang_sql = "";
-  
-  if (server_i18n_enable) {
-    lang_sql += ",max(base_dict_detail_lang.lbl) lbl_lang";
-    lang_sql += ",max(base_dict_detail_lang.rem) rem_lang";
-  }
-  
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
       ,dict_id_lbl.lbl dict_id_lbl
-      ${ lang_sql }
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -437,25 +403,6 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    if (server_i18n_enable) {
-      
-      // deno-lint-ignore no-explicit-any
-      if ((model as any).lbl_lang) {
-        // deno-lint-ignore no-explicit-any
-        model.lbl = (model as any).lbl_lang;
-        // deno-lint-ignore no-explicit-any
-        (model as any).lbl_lang = undefined;
-      }
-      
-      // deno-lint-ignore no-explicit-any
-      if ((model as any).rem_lang) {
-        // deno-lint-ignore no-explicit-any
-        model.rem = (model as any).rem_lang;
-        // deno-lint-ignore no-explicit-any
-        (model as any).rem_lang = undefined;
-      }
-    }
     
     // 系统字典
     model.dict_id_lbl = model.dict_id_lbl || "";
@@ -1407,10 +1354,6 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  for (const input of inputs) {
-    await refreshLangByInput(input);
-  }
-  
   await delCache();
   
   return ids2;
@@ -1420,70 +1363,6 @@ async function _creates(
 /** 删除缓存 */
 export async function delCache() {
   await delCacheCtx(`dao.sql.base_dict_detail`);
-}
-
-async function refreshLangByInput(
-  input: Readonly<DictDetailInput>,
-) {
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
-  if (!server_i18n_enable) {
-    return;
-  }
-  const lang_sql = "select id from base_dict_detail_lang where lang_id=? and dict_detail_id=?";
-  const lang_args = new QueryArgs();
-  lang_args.push(await get_lang_id());
-  lang_args.push(input.id);
-  const model = await queryOne<{ id: string }>(
-    lang_sql,
-    lang_args,
-  );
-  const lang_id = model?.id;
-  if (lang_id) {
-    let lang_sql = "update base_dict_detail_lang set ";
-    const lang_args = new QueryArgs();
-    // 名称
-    if (input.lbl != null) {
-      lang_sql += "lbl=?,";
-      lang_args.push(input.lbl);
-    }
-    // 备注
-    if (input.rem != null) {
-      lang_sql += "rem=?,";
-      lang_args.push(input.rem);
-    }
-    if (lang_sql.endsWith(",")) {
-      lang_sql = lang_sql.substring(0, lang_sql.length - 1);
-    }
-    lang_sql += " where id=?";
-    lang_args.push(lang_id);
-    await execute(lang_sql, lang_args);
-  } else {
-    const sql_fields: string[] = [ ];
-    const lang_args = new QueryArgs();
-    lang_args.push(shortUuidV4());
-    lang_args.push(await get_lang_id());
-    lang_args.push(input.id);
-    // 名称
-    if (input.lbl != null) {
-      sql_fields.push("lbl");
-      lang_args.push(input.lbl);
-    }
-    // 备注
-    if (input.rem != null) {
-      sql_fields.push("rem");
-      lang_args.push(input.rem);
-    }
-    let lang_sql = "insert into base_dict_detail_lang(id,lang_id,dict_detail_id";
-    for (const sql_field of sql_fields) {
-      lang_sql += "," + sql_field;
-    }
-    lang_sql += ")values(?,?,?";
-    for (let i = 0; i < sql_fields.length; i++) {
-      lang_sql += ",?";
-    }
-    lang_sql += ")";
-    await execute(lang_sql, lang_args);
-  }
 }
 
 // MARK: updateById
@@ -1505,8 +1384,6 @@ export async function updateById(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1564,9 +1441,7 @@ export async function updateById(
   }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      if (!server_i18n_enable) {
-        sql += `lbl=${ args.push(input.lbl) },`;
-      }
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
@@ -1596,9 +1471,7 @@ export async function updateById(
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      if (!server_i18n_enable) {
-        sql += `rem=${ args.push(input.rem) },`;
-      }
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
@@ -1688,12 +1561,6 @@ export async function updateById(
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
-      if (server_i18n_enable) {
-        await refreshLangByInput({
-          ...input,
-          id,
-        });
-      }
     }
   }
   
@@ -1725,7 +1592,6 @@ export async function deleteByIds(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1780,12 +1646,6 @@ export async function deleteByIds(
     sql += ` where id=${ args.push(id) } limit 1`;
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "update base_dict_detail_lang set is_deleted=1 where dict_detail_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
   }
   
   await delCache();
@@ -1944,7 +1804,6 @@ export async function revertByIds(
   const method = "revertByIds";
   
   const is_debug = get_is_debug(options?.is_debug);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -2002,12 +1861,6 @@ export async function revertByIds(
     const sql = `update base_dict_detail set is_deleted=0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "update base_dict_detail_lang set is_deleted=0 where dict_detail_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
   }
   
   await delCache();
@@ -2030,7 +1883,6 @@ export async function forceDeleteByIds(
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -2069,12 +1921,6 @@ export async function forceDeleteByIds(
     const sql = `delete from base_dict_detail where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "delete from base_dict_detail_lang where dict_detail_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
   }
   
   await delCache();

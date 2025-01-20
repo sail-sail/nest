@@ -61,9 +61,22 @@ const options = program.opts();
  * 查看git是否有未加入暂存区的文件, 如果有, 则退出
  */
 function validateGitStaging() {
-  const status = execSync("git status").toString();
+  const status = execSync(
+    "git status",
+    {
+      cwd: process.cwd() + "/../",
+    },
+  ).toString();
   if (status.includes("Changes not staged for commit:")) {
-    throw new Error("git有未加入暂存区的文件, 请先加入暂存区");
+    // 忽略 codegen/__out__/ 目录下的文件
+    let status2 = status.split("Changes not staged for commit:")[1];
+    const arr = status2.split("\n")
+      .map((item: string) => item.trim())
+      .filter((item: string) => item && !item.startsWith("(use \"git ") && !item.includes(" codegen/__out__/"));
+    if (arr.length > 0) {
+      console.error("\n" + chalk.green(arr.join("\n")) + "\n");
+      throw new Error("git有未加入暂存区的文件, 请先加入暂存区");
+    }
   }
 }
 
