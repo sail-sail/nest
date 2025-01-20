@@ -36,7 +36,7 @@
         >
           <CustomInput
             v-model="search.send_to_like"
-            placeholder="接收人"
+            placeholder="请输入 接收人"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
