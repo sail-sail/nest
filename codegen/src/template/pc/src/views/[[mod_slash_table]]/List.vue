@@ -2295,7 +2295,9 @@ if (list_tree) {
 
 const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
-const pageName = getCurrentInstance()?.type?.name as string;
+const pageName = getCurrentInstance()?.type?.name as string;<#
+if (isUseI18n) {
+#>
 
 const {
   n,
@@ -2306,6 +2308,8 @@ const {
   initSysI18ns
 } = useI18n(pagePath);
 <#
+}
+#><#
 if (mod === "base" && table === "role") {
 #>
 const usrStore = useUsrStore();<#
