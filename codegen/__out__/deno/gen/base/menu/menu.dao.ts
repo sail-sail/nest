@@ -1383,10 +1383,6 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  for (const input of inputs) {
-    await refreshLangByInput(input);
-  }
-  
   await delCache();
   
   return ids2;

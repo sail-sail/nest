@@ -4006,7 +4006,7 @@ for (const key of redundLblKeys) {
   if (affectedRows !== inputs2.length) {
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   for (const input of inputs) {

@@ -1369,10 +1369,6 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  for (const input of inputs) {
-    await refreshLangByInput(input);
-  }
-  
   for (let i = 0; i < inputs2.length; i++) {
     const input = inputs2[i];
     
