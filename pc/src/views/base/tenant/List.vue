@@ -794,11 +794,10 @@ const pageName = getCurrentInstance()?.type?.name as string;
 
 const {
   n,
-  nAsync,
   ns,
   nsAsync,
   initI18ns,
-  initSysI18ns
+  initSysI18ns,
 } = useI18n(pagePath);
 
 const permitStore = usePermitStore();
