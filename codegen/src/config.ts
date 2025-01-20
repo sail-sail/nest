@@ -874,6 +874,6 @@ export interface TablesConfig {
   [key: string]: TablesConfigItem;
 }
 
-export function defineConfig(config: TablesConfig) {
+export function defineConfig(config: TablesConfig): TablesConfig {
   return config;
 }
