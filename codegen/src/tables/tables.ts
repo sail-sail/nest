@@ -1,6 +1,7 @@
 import { defineConfig } from "../config";
 
 import base from "./base/base";
+
 import wx from "./wx/wx";
 
 /** 是否使用国际化 */
