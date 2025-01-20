@@ -36,7 +36,7 @@
         >
           <CustomInput
             v-model="search.openid_like"
-            placeholder="用户标识"
+            placeholder="请输入 用户标识"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -49,7 +49,7 @@
         >
           <CustomInput
             v-model="search.transaction_id_like"
-            placeholder="微信支付订单号"
+            placeholder="请输入 微信支付订单号"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>

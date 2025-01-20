@@ -36,7 +36,7 @@
         >
           <CustomInput
             v-model="search.lbl_like"
-            placeholder="名称"
+            placeholder="请输入 名称"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -49,7 +49,7 @@
         >
           <CustomInput
             v-model="search.appid_like"
-            placeholder="开发者ID"
+            placeholder="请输入 开发者ID"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -63,7 +63,7 @@
           <DictSelect
             :model-value="is_enabled_search[0]"
             code="is_enabled"
-            placeholder="启用"
+            placeholder="请选择 启用"
             @update:model-value="($event != null && $event !== '') ? is_enabled_search = [ $event ] : is_enabled_search = [ ]"
             @change="onSearch(false)"
           ></DictSelect>
