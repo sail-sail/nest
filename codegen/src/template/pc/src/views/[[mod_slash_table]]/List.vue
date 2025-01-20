@@ -168,7 +168,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
             } else {
             #>
-            placeholder="<#=column_comment#>"<#
+            placeholder="请选择 <#=column_comment#>"<#
             }
             #>
             multiple
@@ -212,7 +212,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
             } else {
             #>
-            placeholder="<#=column_comment#>"<#
+            placeholder="请选择 <#=column_comment#>"<#
             }
             #>
             multiple
@@ -252,7 +252,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
             } else {
             #>
-            placeholder="<#=column_comment#>"<#
+            placeholder="请选择 <#=column_comment#>"<#
             }
             #>
             multiple
@@ -285,7 +285,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
             } else {
             #>
-            placeholder="<#=column_comment#>"<#
+            placeholder="请输入 <#=column_comment#>"<#
             }
             #>
             @change="onSearch(false)"
@@ -324,7 +324,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
             } else {
             #>
-            placeholder="<#=column_comment#>"<#
+            placeholder="请选择 <#=column_comment#>"<#
             }
             #>
             multiple
@@ -360,7 +360,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
             } else {
             #>
-            placeholder="<#=column_comment#>"<#
+            placeholder="请选择 <#=column_comment#>"<#
             }
             #>
             multiple
@@ -376,7 +376,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
             } else {
             #>
-            placeholder="<#=column_comment#>"<#
+            placeholder="请选择 <#=column_comment#>"<#
             }
             #>
             @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
@@ -414,7 +414,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
             } else {
             #>
-            placeholder="<#=column_comment#>"<#
+            placeholder="请选择 <#=column_comment#>"<#
             }
             #>
             multiple
@@ -430,7 +430,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
             } else {
             #>
-            placeholder="<#=column_comment#>"<#
+            placeholder="请选择 <#=column_comment#>"<#
             }
             #>
             @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
@@ -608,7 +608,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
             } else {
             #>
-            placeholder="<#=column_comment#>"<#
+            placeholder="请输入 <#=column_comment#>"<#
             }
             #>
             @clear="onSearchClear"
