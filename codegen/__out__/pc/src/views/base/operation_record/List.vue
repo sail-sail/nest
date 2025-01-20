@@ -36,7 +36,7 @@
         >
           <CustomInput
             v-model="search.module_lbl_like"
-            placeholder="模块名称"
+            placeholder="请输入 模块名称"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -49,7 +49,7 @@
         >
           <CustomInput
             v-model="search.method_lbl_like"
-            placeholder="方法名称"
+            placeholder="请输入 方法名称"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -62,7 +62,7 @@
         >
           <CustomInput
             v-model="search.lbl_like"
-            placeholder="操作"
+            placeholder="请输入 操作"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
