@@ -31,7 +31,7 @@
       
       <template v-if="(showBuildIn || builtInSearch?.menu_id == null)">
         <el-form-item
-          :label="n('菜单')"
+          label="菜单"
           prop="menu_id"
         >
           <CustomTreeSelect
@@ -43,7 +43,7 @@
                 value: item.id,
               };
             })"
-            :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
+            placeholder="菜单"
             multiple
             @change="onSearch(false)"
           ></CustomTreeSelect>
@@ -52,12 +52,12 @@
       
       <template v-if="(builtInSearch?.code == null && (showBuildIn || builtInSearch?.code_like == null))">
         <el-form-item
-          :label="n('编码')"
+          label="编码"
           prop="code_like"
         >
           <CustomInput
             v-model="search.code_like"
-            :placeholder="`${ ns('请输入') } ${ n('编码') }`"
+            placeholder="编码"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -65,12 +65,12 @@
       
       <template v-if="(builtInSearch?.lbl == null && (showBuildIn || builtInSearch?.lbl_like == null))">
         <el-form-item
-          :label="n('名称')"
+          label="名称"
           prop="lbl_like"
         >
           <CustomInput
             v-model="search.lbl_like"
-            :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+            placeholder="名称"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -98,7 +98,7 @@
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
             >
-              <span>{{ ns('已选择') }}</span>
+              <span>已选择</span>
               <span
                 v-if="selectedIds.length > 0"
                 un-m="l-0.5"
@@ -109,7 +109,7 @@
             </el-checkbox>
             <el-icon
               v-show="selectedIds.length > 0"
-              :title="ns('清空已选择')"
+              title="清空已选择"
               un-cursor-pointer
               un-text="hover:red"
               @click="onEmptySelected"
@@ -133,7 +133,7 @@
           <template #icon>
             <ElIconSearch />
           </template>
-          <span>{{ ns('查询') }}</span>
+          <span>查询</span>
         </el-button>
         
         <el-button
@@ -143,7 +143,7 @@
           <template #icon>
             <ElIconDelete />
           </template>
-          <span>{{ ns('重置') }}</span>
+          <span>重置</span>
         </el-button>
         
         <div
@@ -182,7 +182,7 @@
         <template #icon>
           <ElIconEdit />
         </template>
-        <span>{{ ns('编辑') }}</span>
+        <span>编辑</span>
       </el-button>
       
       <el-button
@@ -192,7 +192,7 @@
         <template #icon>
           <ElIconReading />
         </template>
-        <span>{{ ns('查看') }}</span>
+        <span>查看</span>
       </el-button>
       
       <el-button
@@ -202,7 +202,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>{{ ns('刷新') }}</span>
+        <span>刷新</span>
       </el-button>
       
     </template>
@@ -216,7 +216,7 @@
         <template #icon>
           <ElIconReading />
         </template>
-        <span>{{ ns('查看') }}</span>
+        <span>查看</span>
       </el-button>
       
       <el-button
@@ -226,7 +226,7 @@
         <template #icon>
           <ElIconRefresh />
         </template>
-        <span>{{ ns('刷新') }}</span>
+        <span>刷新</span>
       </el-button>
       
     </template>
@@ -242,7 +242,7 @@
       @reset-columns="resetColumns"
       @store-columns="storeColumns"
     >
-      {{ ns('列操作') }}
+      列操作
     </TableShowColumns>
     
   </div>
@@ -265,7 +265,7 @@
         height="100%"
         row-key="id"
         :default-sort="defaultSort"
-        :empty-text="inited ? undefined : ns('加载中...')"
+        :empty-text="inited ? undefined : '加载中...'"
         @select="onSelect"
         @select-all="onSelect"
         @row-click="onRow"
@@ -404,16 +404,6 @@ defineOptions({
 const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
-
-const {
-  n,
-  nAsync,
-  ns,
-  nsAsync,
-  initI18ns,
-  initSysI18ns
-} = useI18n(pagePath);
-
 const permitStore = usePermitStore();
 const dirtyStore = useDirtyStore();
 
@@ -504,7 +494,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $ref<InstanceType<typeof ElTable>>();
+const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
 
 /** 查询 */
 function initSearch() {
@@ -732,18 +722,6 @@ function getTableColumns(): ColumnType[] {
 /** 表格列 */
 const tableColumns = $ref<ColumnType[]>(getTableColumns());
 
-/** 表格列标签国际化 */
-watchEffect(() => {
-  const tableColumns2 = getTableColumns();
-  for (let i = 0; i < tableColumns2.length; i++) {
-    const column2 = tableColumns2[i];
-    const column = tableColumns.find((item) => item.prop === column2.prop);
-    if (column) {
-      column.label = n(column2.label);
-    }
-  }
-});
-
 /** 表格列 */
 const {
   headerDragend,
@@ -757,7 +735,7 @@ const {
   },
 ));
 
-const detailRef = $ref<InstanceType<typeof Detail>>();
+const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
 
 /** 刷新表格 */
 async function dataGrid(
@@ -886,18 +864,18 @@ async function openEdit() {
     return;
   }
   if (!permit("edit")) {
-    ElMessage.warning(await nsAsync("无权限"));
+    ElMessage.warning("无权限");
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("按钮权限")));
+    ElMessage.warning("请选择需要编辑的 按钮权限");
     return;
   }
   const ids = selectedIds;
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("编辑") + " " + await nsAsync("按钮权限"),
+    title: "编辑 按钮权限",
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -954,7 +932,7 @@ async function openView() {
     return;
   }
   if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("按钮权限")));
+    ElMessage.warning("请选择需要查看的 按钮权限");
     return;
   }
   const search = getDataSearch();
@@ -962,7 +940,7 @@ async function openView() {
   const {
     changedIds,
   } = await detailRef.showDialog({
-    title: await nsAsync("查看") + " " + await nsAsync("按钮权限"),
+    title: "查看 按钮权限",
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -978,21 +956,6 @@ async function openView() {
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
-}
-
-/** 初始化ts中的国际化信息 */
-async function initI18nsEfc() {
-  const codes: string[] = [
-    "菜单",
-    "编码",
-    "名称",
-    "排序",
-    "备注",
-  ];
-  await Promise.all([
-    initListI18ns(),
-    initI18ns(codes),
-  ]);
 }
 
 async function focus() {
@@ -1018,7 +981,6 @@ watch(
 async function initFrame() {
   initColumns(tableColumns);
   await Promise.all([
-    initI18nsEfc(),
     dataGrid(true),
   ]);
   inited = true;

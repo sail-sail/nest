@@ -500,8 +500,9 @@ watch(
     () => tabsStore.actTab,
     () => tabsStore.tabs.length,
   ],
-  () => {
-    nextTick(refreshTab_active_line);
+  async () => {
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    refreshTab_active_line();
   },
   {
     immediate: true,

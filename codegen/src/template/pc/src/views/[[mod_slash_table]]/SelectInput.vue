@@ -137,14 +137,18 @@ const emit = defineEmits<{
   (e: "clear"): void,
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePath();<#
+if (isUseI18n) {
+#>
 
 const {
   n,
   ns,
   nAsync,
   nsAsync,
-} = useI18n(pagePath);
+} = useI18n(pagePath);<#
+}
+#>
 
 const props = withDefaults(
   defineProps<{
@@ -268,7 +272,7 @@ function onClear(e?: PointerEvent) {
 }
 
 
-const selectListRef = $ref<InstanceType<typeof SelectList>>();
+const selectListRef = $(useTemplateRef<InstanceType<typeof SelectList>>("selectListRef"));
 
 async function onInput(
   clickType: "input" | "icon",
@@ -286,8 +290,15 @@ async function onInput(
   const {
     type,
     selectedIds,
-  } = await selectListRef.showDialog({
-    title: `${ await nsAsync("选择") } ${ await nAsync("<#=table_comment#>") }`,
+  } = await selectListRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: `${ await nsAsync("选择") } ${ await nAsync("<#=table_comment#>") }`,<#
+    } else {
+    #>
+    title: `选择 <#=table_comment#>`,<#
+    }
+    #>
     action: "select",
     multiple: props.multiple,
     isReadonly: () => props.readonly,
@@ -307,7 +318,7 @@ async function onInput(
   emit("update:modelValue", modelValue);
 }
 
-const inputRef = $ref<InstanceType<typeof ElInput>>();
+const inputRef = $(useTemplateRef<InstanceType<typeof CustomInput>>("inputRef"));
 
 function focus() {
   if (!inputRef) {

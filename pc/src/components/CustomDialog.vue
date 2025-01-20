@@ -185,7 +185,7 @@ async function focus() {
       await nextTick();
       tableEl.focus();
     } else {
-      const firstInput = el.querySelector("textarea:not([disabled]), input:not([disabled]):not([type='file']") as (HTMLInputElement | undefined);
+      const firstInput = el.querySelector("textarea:not([disabled]), input:not([disabled]):not(.custom_date_picker_readonly [readonly]):not([type='file']") as (HTMLInputElement | undefined);
       if (firstInput) {
         firstInput.focus();
       } else {
