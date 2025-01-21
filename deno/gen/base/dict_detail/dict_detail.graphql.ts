@@ -17,10 +17,6 @@ type DictDetailModel {
   lbl: String!
   "值"
   val: String!
-  "锁定"
-  is_locked: Int!
-  "锁定"
-  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
@@ -61,10 +57,6 @@ type DictDetailFieldComment {
   lbl: String!
   "值"
   val: String!
-  "锁定"
-  is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -101,10 +93,6 @@ input DictDetailInput {
   lbl: String
   "值"
   val: String
-  "锁定"
-  is_locked: Int
-  "锁定"
-  is_locked_lbl: String
   "启用"
   is_enabled: Int
   "启用"
@@ -177,8 +165,6 @@ type Mutation {
   deleteByIdsDictDetail(ids: [DictDetailId!]!): Int!
   "根据 ids 启用或者禁用系统字典明细"
   enableByIdsDictDetail(ids: [DictDetailId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁系统字典明细"
-  lockByIdsDictDetail(ids: [DictDetailId!]!, is_locked: Int!): Int!
   "根据 ids 还原系统字典明细"
   revertByIdsDictDetail(ids: [DictDetailId!]!): Int!
   "根据 ids 彻底删除系统字典明细"

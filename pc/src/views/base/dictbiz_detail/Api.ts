@@ -35,9 +35,6 @@ export function intoInput(
     lbl: model?.lbl,
     // 值
     val: model?.val,
-    // 锁定
-    is_locked: model?.is_locked,
-    is_locked_lbl: model?.is_locked_lbl,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
@@ -280,31 +277,6 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁业务字典明细
- */
-export async function lockByIds(
-  ids: DictbizDetailId[],
-  is_locked: 0 | 1,
-  opt?: GqlOpt,
-) {
-  const data: {
-    lockByIdsDictbizDetail: Mutation["lockByIdsDictbizDetail"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [DictbizDetailId!]!, $is_locked: Int!) {
-        lockByIdsDictbizDetail(ids: $ids, is_locked: $is_locked)
-      }
-    `,
-    variables: {
-      ids,
-      is_locked,
-    },
-  }, opt);
-  const res = data.lockByIdsDictbizDetail;
-  return res;
-}
-
-/**
  * 根据 ids 还原业务字典明细
  */
 export async function revertByIds(
@@ -480,7 +452,6 @@ export function useExportExcel(routePath: string) {
               lbl
             }
             getDict(codes: [
-              "is_locked",
               "is_enabled",
             ]) {
               code
@@ -596,7 +567,6 @@ export function getPagePath() {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: DictbizDetailInput = {
-    is_locked: 0,
     is_enabled: 1,
     order_by: 1,
   };

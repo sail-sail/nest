@@ -124,6 +124,11 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<DictId[]> {
+  
+  for (const input of inputs) {
+    input.is_add = undefined;
+  }
+  
   const ids = await dictDao.creates(inputs, options);
   return ids;
 }
@@ -136,10 +141,7 @@ export async function updateById(
   input: DictInput,
 ): Promise<DictId> {
   
-  const is_locked = await dictDao.getIsLockedById(id);
-  if (is_locked) {
-    throw "不能修改已经锁定的 系统字典";
-  }
+  input.is_add = undefined;
   
   // 不能修改系统记录的系统字段
   const model = await dictDao.findById(id);
@@ -170,17 +172,6 @@ export async function deleteByIds(
       ids,
     });
     for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 系统字典";
-      }
-    }
-  }
-  
-  {
-    const models = await dictDao.findAll({
-      ids,
-    });
-    for (const model of models) {
       if (model.is_sys === 1) {
         throw "不能删除系统记录";
       }
@@ -199,17 +190,6 @@ export async function enableByIds(
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await dictDao.enableByIds(ids, is_enabled);
-  return data;
-}
-
-/**
- * 根据 ids 锁定或者解锁系统字典
- */
-export async function lockByIds(
-  ids: DictId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  const data = await dictDao.lockByIds(ids, is_locked);
   return data;
 }
 

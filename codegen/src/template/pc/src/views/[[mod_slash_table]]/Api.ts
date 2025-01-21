@@ -46,7 +46,7 @@ let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
   if (column.noList) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
@@ -67,7 +67,7 @@ let hasUsrStore = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
   const column_name = column.COLUMN_NAME;
   if (
     [
@@ -270,7 +270,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
@@ -291,7 +291,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (!foreignSchema) {
       continue;
     }
-    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
+    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno && !foreignSchema.opts?.onlyCodegenDenoButApi) {
       continue;
     }
     if (foreignSchema.opts?.list_tree !== true) {
@@ -402,7 +402,7 @@ async function setLblById(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "is_sys") continue;
@@ -466,7 +466,7 @@ export function intoInput(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       if (
         [
@@ -587,7 +587,7 @@ export function intoInput(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       const comment = column.COLUMN_COMMENT;
       let is_nullable = column.IS_NULLABLE === "YES";
@@ -776,7 +776,7 @@ export async function findSummary(
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
+            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
             const column_name = column.COLUMN_NAME;
             if (column_name === "id") continue;
           #><#
@@ -1075,7 +1075,7 @@ const foreignTableArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
   if (column.isAtt) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
@@ -1161,7 +1161,7 @@ const foreignTableTreeArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
   const column_name = column.COLUMN_NAME;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
@@ -1259,7 +1259,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     if (
       [
@@ -1372,7 +1372,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (!foreignSchema) {
       continue;
     }
-    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
+    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno && !foreignSchema.opts?.onlyCodegenDenoButApi) {
       continue;
     }
     if (foreignSchema.opts?.list_tree !== true) {
@@ -1437,7 +1437,7 @@ export function useDownloadImportTemplate(routePath: string) {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
+              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
               if (column.isAtt) continue;
               const column_name = column.COLUMN_NAME;
               if (
@@ -1475,7 +1475,7 @@ export function useDownloadImportTemplate(routePath: string) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
+            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
             if (column.notImportExportList) continue;
             if (column.isAtt) continue;
             const column_name = column.COLUMN_NAME;
@@ -1516,7 +1516,7 @@ export function useDownloadImportTemplate(routePath: string) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
+            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
             if (column.notImportExportList) continue;
             if (column.isAtt) continue;
             const column_name = column.COLUMN_NAME;
@@ -1545,7 +1545,7 @@ export function useDownloadImportTemplate(routePath: string) {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
+              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
               if (column.notImportExportList) continue;
               if (column.isAtt) continue;
               const column_name = column.COLUMN_NAME;
@@ -1585,7 +1585,7 @@ export function useDownloadImportTemplate(routePath: string) {<#
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
+            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
             if (column.notImportExportList) continue;
             if (column.isAtt) continue;
             const column_name = column.COLUMN_NAME;
@@ -1614,7 +1614,7 @@ export function useDownloadImportTemplate(routePath: string) {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
+              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
               if (column.notImportExportList) continue;
               if (column.isAtt) continue;
               const column_name = column.COLUMN_NAME;
@@ -1738,7 +1738,7 @@ export function useExportExcel(routePath: string) {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
+              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
               if (column.notImportExportList) continue;
               const column_name = column.COLUMN_NAME;
               if (
@@ -1773,7 +1773,7 @@ export function useExportExcel(routePath: string) {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
+              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
               if (column.notImportExportList) continue;
               const column_name = column.COLUMN_NAME;
               if (
@@ -1796,7 +1796,7 @@ export function useExportExcel(routePath: string) {<#
               for (let i = 0; i < columns.length; i++) {
                 const column = columns[i];
                 if (column.ignoreCodegen) continue;
-                if (column.onlyCodegenDeno) continue;
+                if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
                 if (column.notImportExportList) continue;
                 const column_name = column.COLUMN_NAME;
                 if (
@@ -1832,7 +1832,7 @@ export function useExportExcel(routePath: string) {<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
+              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
               if (column.notImportExportList) continue;
               const column_name = column.COLUMN_NAME;
               if (
@@ -1855,7 +1855,7 @@ export function useExportExcel(routePath: string) {<#
               for (let i = 0; i < columns.length; i++) {
                 const column = columns[i];
                 if (column.ignoreCodegen) continue;
-                if (column.onlyCodegenDeno) continue;
+                if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
                 if (column.notImportExportList) continue;
                 const column_name = column.COLUMN_NAME;
                 if (
@@ -2045,7 +2045,7 @@ export async function getDefaultInput() {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;

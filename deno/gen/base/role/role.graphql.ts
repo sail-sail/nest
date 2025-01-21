@@ -65,8 +65,6 @@ type RoleModel {
 type RoleFieldComment {
   "ID"
   id: String!
-  "卡号-序列号"
-  code_seq: String!
   "编码"
   code: String!
   "名称"
