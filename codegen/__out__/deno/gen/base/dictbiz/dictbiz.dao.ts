@@ -950,13 +950,6 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // 数据类型
-  await validators.chars_max_length(
-    input.type,
-    22,
-    fieldComments.type,
-  );
-  
   // 备注
   await validators.chars_max_length(
     input.rem,

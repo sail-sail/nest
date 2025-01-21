@@ -4,6 +4,9 @@ import nestConfig from "./nest_config";
 import tables from "../tables/tables";
 import config, { TableCloumn, TablesConfigItem } from "../config";
 import { isEmpty } from "./StringUitl";
+import { Chalk } from "chalk";
+
+const chalk = new Chalk();
 
 export class Context {
   pool: Pool;
@@ -691,6 +694,7 @@ export async function getSchema(
     columns.push(record);
     // 处理 comment
     let comment = record.COLUMN_COMMENT;
+    const oldComment = comment;
     if (isEmpty(comment)) {
       throw new Error(`table: ${ table_name }, column: ${ record.COLUMN_NAME } comment is empty!`);
     }
@@ -710,7 +714,7 @@ export async function getSchema(
         record.COLUMN_COMMENT = comment;
       }
     }
-    // 数据字典, 业务字典
+    // 系统字典, 业务字典
     if (record.dict) {
       const dictModels0 = dictModels.filter((item) => item.code === record.dict);
       record.dict_models = dictModels0;
@@ -724,6 +728,59 @@ export async function getSchema(
       throw new Error(`table: ${ table_name }, column: ${ record.COLUMN_NAME }, 业务字典: ${ record.dict || record.dictbiz } 不存在!`);
     } else if (record.dict_head_model && record.dictHasSelectAdd == null && record.dict_head_model.is_add) {
       record.dictHasSelectAdd = true;
+    }
+    // 检查系统字典, 业务字典的数据类型是否正确
+    const data_type = record.DATA_TYPE.toLowerCase();
+    if (
+      record.dict_head_model && !record.dict_head_model.is_add && record.dict_head_model.is_sys
+      && data_type !== "tinyint" && data_type !== "int" && data_type !== "bigint" && data_type !== "decimal"
+    ) {
+      const column_type = record.COLUMN_TYPE;
+      const enumItems = [ ];
+      if (data_type === "enum") {
+        const enumItems0 = column_type.substring(column_type.indexOf("(") + 1, column_type.indexOf(")")).split(",");
+        for (let i = 0; i < enumItems0.length; i++) {
+          enumItems.push(enumItems0[i].substring(1, enumItems0[i].length - 1));
+        }
+      }
+      const enumItemsDict = [ ];
+      if (record.dict_models) {
+        for (let i = 0; i < record.dict_models.length; i++) {
+          enumItemsDict.push(record.dict_models[i].val);
+        }
+      }
+      let defaultValue = record.COLUMN_DEFAULT;
+      // 如果 enumItems 跟 enumItemsDict 不一致, 则报错并给出正确的 enum 数据类型
+      let isMatch = true;
+      if (!enumItemsDict.includes(defaultValue)) {
+        isMatch = false;
+      } else if (enumItems.length !== enumItemsDict.length) {
+        isMatch = false;
+      } else {
+        for (let i = 0; i < enumItems.length; i++) {
+          if (!enumItemsDict.includes(enumItems[i])) {
+            isMatch = false;
+            break;
+          }
+        }
+      }
+      if (!isMatch) {
+        if (!enumItemsDict.includes(defaultValue)) {
+          defaultValue = enumItemsDict[0];
+        }
+        let errMsg = `
+错误: 表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 数据类型应该为:`;
+        errMsg += `
+
+alter table \`${ table_name }\` change column \`${ record.COLUMN_NAME }\`
+\`${ record.COLUMN_NAME }\` enum('${ enumItemsDict.join("', '") }') not null default '${ defaultValue }' comment '${ oldComment }';
+`;
+        throw chalk.red(errMsg);
+      }
+    }
+    if (data_type === "enum") {
+      record.DATA_TYPE = "varchar";
+      record.COLUMN_TYPE = `varchar(${ record.CHARACTER_MAXIMUM_LENGTH })`;
     }
     if (config.ignoreCodegen.includes(record.COLUMN_NAME) && record.ignoreCodegen == null) {
       record.ignoreCodegen = true;
