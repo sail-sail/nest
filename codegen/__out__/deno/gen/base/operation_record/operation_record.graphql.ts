@@ -63,14 +63,6 @@ type OperationRecordFieldComment {
   create_time: String!
   "操作时间"
   create_time_lbl: String!
-  "更新人"
-  update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: String!
-  "更新时间"
-  update_time_lbl: String!
 }
 input OperationRecordInput {
   "ID"

@@ -551,14 +551,10 @@ async function showDialog(
     isReadonly = toValue(arg?.isReadonly) ?? isReadonly;
     oldIsLocked = toValue(arg?.isLocked) ?? false;
     
-    if (dialogAction === "add") {
-      isLocked = false;
+    if (!permit("edit")) {
+      isLocked = true;
     } else {
-      if (!permit("edit")) {
-        isLocked = true;
-      } else {
-        isLocked = (toValue(arg?.isLocked) || dialogModel.is_locked == 1) ?? isLocked;
-      }
+      isLocked = toValue(arg?.isLocked) ?? isLocked;
     }
   });
   dialogAction = action || "add";
@@ -602,8 +598,6 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        is_locked: undefined,
-        is_locked_lbl: undefined,
         order_by: order_by + 1,
         dict_detail: data.dict_detail?.map((item) => ({
           ...item,
@@ -635,27 +629,6 @@ async function showDialog(
   inited = true;
   return await dialogRes.dialogPrm;
 }
-
-watch(
-  () => [ inited, isLocked, is_deleted, dialogNotice ],
-  async () => {
-    if (!inited) {
-      return;
-    }
-    if (oldDialogNotice != null) {
-      return;
-    }
-    if (is_deleted) {
-      dialogNotice = "(已删除)";
-      return;
-    }
-    if (isLocked) {
-      dialogNotice = "(已锁定)";
-      return;
-    }
-    dialogNotice = "";
-  },
-);
 
 /** 键盘按 Insert */
 async function onInsert() {
@@ -950,8 +923,6 @@ async function onSaveAndCopy() {
   dialogModel = {
     ...data,
     id: undefined,
-    is_locked: undefined,
-    is_locked_lbl: undefined,
     order_by: order_by + 1,
     // 系统字典明细
     dict_detail: data.dict_detail?.map((item) => ({

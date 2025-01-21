@@ -24,6 +24,11 @@ export interface TableCloumn {
   onlyCodegenDeno?: boolean;
   
   /**
+   * 是否在pc前端隐藏此字段, 但是在api中生成
+   */
+  onlyCodegenDenoButApi?: boolean;
+  
+  /**
    * 前端不允许修改
    */
   noEdit?: boolean;
