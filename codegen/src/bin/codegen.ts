@@ -95,7 +95,11 @@ function validateGitStaging() {
     await gitDiffOut();
     await denoGenTypes();
   } catch(err) {
-    console.error(chalk.red(err));
+    if (err instanceof Error) {
+      console.error(chalk.red(err));
+    } else {
+      console.log(err);
+    }
   } finally {
     process.exit(0);
   }

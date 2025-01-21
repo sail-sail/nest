@@ -815,13 +815,6 @@ export async function validate(
     fieldComments.id,
   );
   
-  // 类型
-  await validators.chars_max_length(
-    input.type,
-    20,
-    fieldComments.type,
-  );
-  
   // 用户名
   await validators.chars_max_length(
     input.username,

@@ -623,6 +623,11 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               }
+              #><#
+              if (column.dictHasSelectAdd) {
+              #>
+              :has-select-add="true"<#
+              }
               #>
             ></DictSelect><#
             } else if (column.dictbiz) {
@@ -666,6 +671,11 @@ const hasAtt = columns.some((item) => item.isAtt);
               readonly-placeholder="<#=readonlyPlaceholder#>"<#
               }
               #><#
+              }
+              #><#
+              if (column.dictHasSelectAdd) {
+              #>
+              :has-select-add="true"<#
               }
               #>
             ></DictbizSelect><#
@@ -1294,6 +1304,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       }
+                      #><#
+                      if (column.dictHasSelectAdd) {
+                      #>
+                      :has-select-add="true"<#
+                      }
                       #>
                     ></DictSelect><#
                     } else if (column.dictbiz) {
@@ -1330,6 +1345,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                       readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #><#
+                      }
+                      #><#
+                      if (column.dictHasSelectAdd) {
+                      #>
+                      :has-select-add="true"<#
                       }
                       #>
                     ></DictbizSelect><#
@@ -1546,7 +1566,14 @@ const hasAtt = columns.some((item) => item.isAtt);
               #>
               
               <el-table-column
-                v-if="!isLocked && !isReadonly"
+                v-if="!isLocked &&
+                  !isReadonly &&
+                  <#=inline_column_name#>Data.some((item) => item._type === 'add'<#
+                  if (hasIsSys) {
+                  #> || !item.is_sys<#
+                  }
+                  #>)
+                "
                 prop="_operation"<#
                 if (isUseI18n) {
                 #>
@@ -1582,15 +1609,14 @@ const hasAtt = columns.some((item) => item.isAtt);
                   #>
                   
                   <el-button
-                    v-else
-                    size="small"
-                    plain
-                    type="danger"<#
+                    v-else<#
                     if (hasIsSys) {
-                    #>
-                    :disabled="!!row.is_sys"<#
+                    #>-if="!row.is_sys"<#
                     }
                     #>
+                    size="small"
+                    plain
+                    type="danger"
                     @click="<#=inline_column_name#>Remove(row)"
                   ><#
                     if (isUseI18n) {
@@ -2088,6 +2114,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     }
+                    #><#
+                    if (column.dictHasSelectAdd) {
+                    #>
+                    :has-select-add="true"<#
+                    }
                     #>
                   ></DictSelect><#
                   } else if (column.dictbiz) {
@@ -2131,6 +2162,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                     readonly-placeholder="<#=readonlyPlaceholder#>"<#
                     }
                     #><#
+                    }
+                    #><#
+                    if (column.dictHasSelectAdd) {
+                    #>
+                    :has-select-add="true"<#
                     }
                     #>
                   ></DictbizSelect><#
@@ -2733,6 +2769,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       }
+                      #><#
+                      if (column.dictHasSelectAdd) {
+                      #>
+                      :has-select-add="true"<#
+                      }
                       #>
                     ></DictSelect><#
                     } else if (column.dictbiz) {
@@ -2769,6 +2810,11 @@ const hasAtt = columns.some((item) => item.isAtt);
                       readonly-placeholder="<#=readonlyPlaceholder#>"<#
                       }
                       #><#
+                      }
+                      #><#
+                      if (column.dictHasSelectAdd) {
+                      #>
+                      :has-select-add="true"<#
                       }
                       #>
                     ></DictbizSelect><#
@@ -6288,7 +6334,7 @@ const <#=inline_column_name#>Data = $computed(() => {
     ];
   }
   return dialogModel.<#=inline_column_name#> ?? [ ];
-});
+}) as (<#=Table_Up#>Input & { _type?: "add", is_sys: 0|1 })[];
 
 async function <#=inline_column_name#>Add() {
   if (!dialogModel.<#=inline_column_name#>) {

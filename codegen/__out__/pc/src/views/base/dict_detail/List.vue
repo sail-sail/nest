@@ -139,7 +139,7 @@
             :set="search.is_deleted = search.is_deleted ?? 0"
             :false-value="0"
             :true-value="1"
-            @change="recycleChg"
+            @change="onRecycle"
           >
             <span>回收站</span>
           </el-checkbox>
@@ -340,22 +340,6 @@
               @click="onEnableByIds(0)"
             >
               <span>禁用</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
-              un-justify-center
-              @click="onLockByIds(1)"
-            >
-              <span>锁定</span>
-            </el-dropdown-item>
-            
-            <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
-              un-justify-center
-              @click="onLockByIds(0)"
-            >
-              <span>解锁</span>
             </el-dropdown-item>
             
           </el-dropdown-menu>
@@ -560,35 +544,12 @@
             </el-table-column>
           </template>
           
-          <!-- 锁定 -->
-          <template v-else-if="'is_locked_lbl' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_locked"
-                  @change="onIs_locked(row.id, row.is_locked)"
-                ></CustomSwitch>
-              </template>
-            </el-table-column>
-          </template>
-          
           <!-- 启用 -->
           <template v-else-if="'is_enabled_lbl' === col.prop && (showBuildIn || builtInSearch?.is_enabled == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
             >
-              <template #default="{ row }">
-                <CustomSwitch
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
-                  v-model="row.is_enabled"
-                  @change="onIs_enabled(row.id, row.is_enabled)"
-                ></CustomSwitch>
-              </template>
             </el-table-column>
           </template>
           
@@ -600,7 +561,7 @@
             >
               <template #default="{ row }">
                 <CustomInputNumber
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateById(
@@ -728,7 +689,6 @@ import {
   deleteByIds,
   forceDeleteByIds,
   enableByIds,
-  lockByIds,
   useExportExcel,
   updateById,
   importModels,
@@ -893,7 +853,7 @@ const is_enabled_search = $computed({
 });
 
 /** 回收站 */
-async function recycleChg() {
+async function onRecycle() {
   tableFocus();
   selectedIds = [ ];
   await dataGrid(true);
@@ -1068,15 +1028,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "锁定",
-      prop: "is_locked_lbl",
-      sortBy: "is_locked",
-      width: 85,
-      align: "center",
-      headerAlign: "center",
-      showOverflowTooltip: false,
-    },
-    {
       label: "启用",
       prop: "is_enabled_lbl",
       sortBy: "is_enabled",
@@ -1097,7 +1048,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "备注",
       prop: "rem",
-      width: 280,
+      width: 220,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1406,7 +1357,6 @@ async function onImportExcel() {
     [ "系统字典" ]: "dict_id_lbl",
     [ "名称" ]: "lbl",
     [ "值" ]: "val",
-    [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
     [ "备注" ]: "rem",
@@ -1434,7 +1384,6 @@ async function onImportExcel() {
           "dict_id_lbl": "string",
           "lbl": "string",
           "val": "string",
-          "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",
           "rem": "string",
@@ -1465,50 +1414,6 @@ async function onImportExcel() {
 async function stopImport() {
   isStopImport = true;
   isImporting = false;
-}
-
-/** 锁定 */
-async function onIs_locked(id: DictDetailId, is_locked: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await lockByIds(
-    [ id ],
-    is_locked,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
-}
-
-/** 启用 */
-async function onIs_enabled(id: DictDetailId, is_enabled: 0 | 1) {
-  if (isLocked) {
-    return;
-  }
-  const notLoading = true;
-  await enableByIds(
-    [ id ],
-    is_enabled,
-    {
-      notLoading,
-    },
-  );
-  dirtyStore.fireDirty(pageName);
-  await dataGrid(
-    true,
-    {
-      notLoading,
-    },
-  );
 }
 
 /** 打开编辑页面 */
@@ -1711,40 +1616,6 @@ async function onEnableByIds(is_enabled: 0 | 1) {
       msg = `启用 ${ num } 系统字典明细 成功`;
     } else {
       msg = `禁用 ${ num } 系统字典明细 成功`;
-    }
-    ElMessage.success(msg);
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-  }
-}
-
-/** 点击锁定或者解锁 */
-async function onLockByIds(is_locked: 0 | 1) {
-  tableFocus();
-  if (isLocked) {
-    return;
-  }
-  if (permit("edit") === false) {
-    ElMessage.warning("无权限");
-    return;
-  }
-  if (selectedIds.length === 0) {
-    let msg = "";
-    if (is_locked === 1) {
-      msg = "请选择需要 锁定 的 系统字典明细";
-    } else {
-      msg = "请选择需要 解锁 的 系统字典明细";
-    }
-    ElMessage.warning(msg);
-    return;
-  }
-  const num = await lockByIds(selectedIds, is_locked);
-  if (num > 0) {
-    let msg = "";
-    if (is_locked === 1) {
-      msg = `锁定 ${ num } 系统字典明细 成功`;
-    } else {
-      msg = `解锋 ${ num } 系统字典明细 成功`;
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);

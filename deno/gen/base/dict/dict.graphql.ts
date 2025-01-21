@@ -33,10 +33,8 @@ type DictModel {
   type: DictType!
   "数据类型"
   type_lbl: String!
-  "锁定"
-  is_locked: Int!
-  "锁定"
-  is_locked_lbl: String!
+  "可新增"
+  is_add: Int!
   "启用"
   is_enabled: Int!
   "启用"
@@ -79,10 +77,8 @@ type DictFieldComment {
   type: String!
   "数据类型"
   type_lbl: String!
-  "锁定"
-  is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
+  "可新增"
+  is_add: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -119,10 +115,8 @@ input DictInput {
   type: DictType
   "数据类型"
   type_lbl: String
-  "锁定"
-  is_locked: Int
-  "锁定"
-  is_locked_lbl: String
+  "可新增"
+  is_add: Int
   "启用"
   is_enabled: Int
   "启用"
@@ -189,8 +183,6 @@ type Mutation {
   deleteByIdsDict(ids: [DictId!]!): Int!
   "根据 ids 启用或者禁用系统字典"
   enableByIdsDict(ids: [DictId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁系统字典"
-  lockByIdsDict(ids: [DictId!]!, is_locked: Int!): Int!
   "根据 ids 还原系统字典"
   revertByIdsDict(ids: [DictId!]!): Int!
   "根据 ids 彻底删除系统字典"
