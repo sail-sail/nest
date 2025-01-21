@@ -1204,6 +1204,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+        width: 220,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -1340,6 +1341,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "rem",
+        width: 220,
       },
       {
         COLUMN_NAME: "create_usr_id",

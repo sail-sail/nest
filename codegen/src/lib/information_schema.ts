@@ -676,6 +676,12 @@ export async function getSchema(
     }
   }
   
+  const dictModels = await getDictModels(context);
+  const dictbizModels = await getDictbizModels(context);
+  
+  const dictHeadModels = await getDictHeadModels(context);
+  const dictbizHeadModels = await getDictbizHeadModels(context);
+  
   for (let k = 0; k < records.length; k++) {
     const record = records[k];
     let column: TableCloumn = tables[table_name].columns.find((column: any) => column.COLUMN_NAME === record.COLUMN_NAME);
@@ -703,6 +709,21 @@ export async function getSchema(
         comment = comment.substring(0, comment.lastIndexOf(","));
         record.COLUMN_COMMENT = comment;
       }
+    }
+    // 数据字典, 业务字典
+    if (record.dict) {
+      const dictModels0 = dictModels.filter((item) => item.code === record.dict);
+      record.dict_models = dictModels0;
+      record.dict_head_model = dictHeadModels.find((item) => item.code === record.dict);
+    } else if (record.dictbiz) {
+      const dictbizModels0 = dictbizModels.filter((item) => item.code === record.dictbiz);
+      record.dict_models = dictbizModels0;
+      record.dict_head_model = dictbizHeadModels.find((item) => item.code === record.dictbiz);
+    }
+    if ((record.dict || record.dictbiz) && !record.dict_head_model) {
+      throw new Error(`table: ${ table_name }, column: ${ record.COLUMN_NAME }, 业务字典: ${ record.dict || record.dictbiz } 不存在!`);
+    } else if (record.dict_head_model && record.dictHasSelectAdd == null && record.dict_head_model.is_add) {
+      record.dictHasSelectAdd = true;
     }
     if (config.ignoreCodegen.includes(record.COLUMN_NAME) && record.ignoreCodegen == null) {
       record.ignoreCodegen = true;
@@ -1042,6 +1063,16 @@ export type DictModel = {
   type: string;
 };
 
+export type DictHeadModel = {
+  id: string;
+  code: string;
+  lbl: string;
+  type: string;
+  is_enabled: 0 | 1;
+  is_sys: 0 | 1;
+  is_add: 0 | 1;
+};
+
 let _dictModels: DictModel[] = undefined;
 
 export async function getDictModels(context: Context) {
@@ -1052,7 +1083,8 @@ export async function getDictModels(context: Context) {
         base_dict.code,
         t.lbl,
         t.val,
-        base_dict.type
+        base_dict.type,
+        base_dict.is_add
       from
         base_dict_detail t
       inner join base_dict
@@ -1063,6 +1095,7 @@ export async function getDictModels(context: Context) {
         t.is_deleted = 0
         and t.is_sys = 1
       order by
+        base_dict.code asc,
         t.order_by asc,
         t.create_time asc
     `;
@@ -1101,7 +1134,8 @@ export async function getDictbizModels(context: Context) {
         base_dictbiz.code,
         t.lbl,
         t.val,
-        base_dictbiz.type
+        base_dictbiz.type,
+        base_dictbiz.is_add
       from
         base_dictbiz_detail t
       inner join base_dictbiz
@@ -1113,6 +1147,7 @@ export async function getDictbizModels(context: Context) {
         and t.is_sys = 1
         and t.tenant_id = ?
       order by
+        base_dictbiz.code asc,
         t.order_by asc,
         t.create_time asc
     `;
@@ -1120,4 +1155,58 @@ export async function getDictbizModels(context: Context) {
     _dictbizModels = <any[]>result[0];
   }
   return _dictbizModels;
+}
+
+let _dictHeadModels: DictHeadModel[] = undefined;
+
+export async function getDictHeadModels(context: Context) {
+  if (!_dictHeadModels) {
+    const sql = `
+      select
+        t.id,
+        t.code,
+        t.lbl,
+        t.type,
+        t.is_enabled,
+        t.is_sys,
+        t.is_add
+      from
+        base_dict t
+      where
+        t.is_deleted = 0
+        and t.is_sys = 1
+      order by
+        t.order_by asc
+    `;
+    const result = await context.conn.query(sql);
+    _dictHeadModels = <any[]>result[0];
+  }
+  return _dictHeadModels;
+}
+
+let _dictbizHeadModels: DictHeadModel[] = undefined;
+
+export async function getDictbizHeadModels(context: Context) {
+  if (!_dictbizHeadModels) {
+    const sql = `
+      select
+        t.id,
+        t.code,
+        t.lbl,
+        t.type,
+        t.is_enabled,
+        t.is_sys,
+        t.is_add
+      from
+        base_dictbiz t
+      where
+        t.is_deleted = 0
+        and t.is_sys = 1
+      order by
+        t.order_by asc
+    `;
+    const result = await context.conn.query(sql);
+    _dictbizHeadModels = <any[]>result[0];
+  }
+  return _dictbizHeadModels;
 }

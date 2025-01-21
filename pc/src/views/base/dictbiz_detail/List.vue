@@ -200,7 +200,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_sys && permit('add') && !isLocked"
+        v-if="dictbiz_model && !dictbiz_model.is_add && permit('add') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -212,7 +212,7 @@
       </el-button>
       
       <el-button
-        v-if="dictbiz_model && !dictbiz_model.is_sys && permit('add') && !isLocked"
+        v-if="dictbiz_model && !dictbiz_model.is_add && permit('add') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -239,6 +239,7 @@
         v-if="permit('delete') && !isLocked"
         plain
         type="danger"
+        :disabled="selectedIds.length === 0 || selectedIds.map((item) => tableData.find((item2) => item2.id === item)).some((item) => item?.is_sys === 1)"
         @click="onDeleteByIds"
       >
         <template #icon>
@@ -319,7 +320,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="dictbiz_model && !dictbiz_model.is_sys && permit('add') && !isLocked"
+              v-if="dictbiz_model && !dictbiz_model.is_add && permit('add') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
@@ -351,7 +352,7 @@
     <template v-else>
       
       <el-button
-        v-if="permit('delete') && !isLocked"
+        v-if="dictbiz_model && !dictbiz_model.is_add && permit('delete') && !isLocked"
         plain
         type="primary"
         @click="onRevertByIds"
@@ -1051,7 +1052,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "备注",
       prop: "rem",
-      width: 280,
+      width: 220,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,

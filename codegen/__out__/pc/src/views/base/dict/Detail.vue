@@ -219,7 +219,7 @@
               <el-table-column
                 prop="rem"
                 label="备注"
-                width="318"
+                width="258"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -234,7 +234,10 @@
               </el-table-column>
               
               <el-table-column
-                v-if="!isLocked && !isReadonly"
+                v-if="!isLocked &&
+                  !isReadonly &&
+                  dict_detailData.some((item) => item._type === 'add' || !item.is_sys)
+                "
                 prop="_operation"
                 label="操作"
                 width="90"
@@ -254,11 +257,10 @@
                   </el-button>
                   
                   <el-button
-                    v-else
+                    v-else-if="!row.is_sys"
                     size="small"
                     plain
                     type="danger"
-                    :disabled="!!row.is_sys"
                     @click="dict_detailRemove(row)"
                   >
                     删除
@@ -964,7 +966,7 @@ const dict_detailData = $computed(() => {
     ];
   }
   return dialogModel.dict_detail ?? [ ];
-});
+}) as (DictDetailInput & { _type?: "add", is_sys: 0|1 })[];
 
 async function dict_detailAdd() {
   if (!dialogModel.dict_detail) {
