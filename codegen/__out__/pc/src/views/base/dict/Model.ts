@@ -43,9 +43,8 @@ export const dictFields = [
   // 数据类型
   "type",
   "type_lbl",
-  // 锁定
-  "is_locked",
-  "is_locked_lbl",
+  // 可新增
+  "is_add",
   // 启用
   "is_enabled",
   "is_enabled_lbl",

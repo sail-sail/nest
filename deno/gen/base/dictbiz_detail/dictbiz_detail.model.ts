@@ -21,8 +21,6 @@ declare global {
   
   /** 业务字典明细 */
   interface DictbizDetailSearch extends DictbizDetailSearchType {
-    /** 锁定 */
-    is_locked?: number[];
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */
