@@ -277,73 +277,9 @@ export async function getCronJobList() {
 }
 
 /**
- * 下载定时任务日志导入模板
- */
-export function useDownloadImportTemplate(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
-  const {
-    workerFn,
-    workerStatus,
-    workerTerminate,
-  } = useRenderExcel();
-  async function workerFn2() {
-    const data = await query({
-      query: /* GraphQL */ `
-        query {
-          getFieldCommentsCronJobLog {
-            cron_job_id_lbl
-            exec_state_lbl
-            exec_result
-            begin_time_lbl
-            end_time_lbl
-            rem
-          }
-          findAllCronJob {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "cron_job_log_exec_state",
-          ]) {
-            code
-            lbl
-          }
-        }
-      `,
-      variables: {
-      },
-    });
-    try {
-      const sheetName = await nsAsync("定时任务日志");
-      const buffer = await workerFn(
-        `${ location.origin }/import_template/cron/cron_job_log.xlsx`,
-        {
-          sheetName,
-          data,
-        },
-      );
-      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
-    } catch (err) {
-      ElMessage.error(await nsAsync("下载失败"));
-      throw err;
-    }
-  }
-  return {
-    workerFn: workerFn2,
-    workerStatus,
-    workerTerminate,
-  };
-}
-
-/**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
@@ -389,7 +325,7 @@ export function useExportExcel(routePath: string) {
         await setLblById(model, true);
       }
       try {
-        const sheetName = await nsAsync("定时任务日志");
+        const sheetName = "定时任务日志";
         const buffer = await workerFn(
           `${ location.origin }/excel_template/cron/cron_job_log.xlsx`,
           {
@@ -400,7 +336,7 @@ export function useExportExcel(routePath: string) {
         );
         saveAsExcel(buffer, sheetName);
       } catch (err) {
-        ElMessage.error(await nsAsync("导出失败"));
+        ElMessage.error("导出失败");
         throw err;
       }
     } finally {

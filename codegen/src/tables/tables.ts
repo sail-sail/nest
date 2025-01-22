@@ -1,6 +1,7 @@
 import { defineConfig } from "../config";
 
 import base from "./base/base";
+
 import cron from "./cron/cron";
 
 /** 是否使用国际化 */

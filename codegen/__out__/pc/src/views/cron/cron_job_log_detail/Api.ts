@@ -257,63 +257,9 @@ export async function getCronJobLogList() {
 }
 
 /**
- * 下载定时任务日志明细导入模板
- */
-export function useDownloadImportTemplate(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
-  const {
-    workerFn,
-    workerStatus,
-    workerTerminate,
-  } = useRenderExcel();
-  async function workerFn2() {
-    const data = await query({
-      query: /* GraphQL */ `
-        query {
-          getFieldCommentsCronJobLogDetail {
-            cron_job_log_id_lbl
-            lbl
-          }
-          findAllCronJobLog {
-            id
-            
-          }
-        }
-      `,
-      variables: {
-      },
-    });
-    try {
-      const sheetName = await nsAsync("定时任务日志明细");
-      const buffer = await workerFn(
-        `${ location.origin }/import_template/cron/cron_job_log_detail.xlsx`,
-        {
-          sheetName,
-          data,
-        },
-      );
-      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
-    } catch (err) {
-      ElMessage.error(await nsAsync("下载失败"));
-      throw err;
-    }
-  }
-  return {
-    workerFn: workerFn2,
-    workerStatus,
-    workerTerminate,
-  };
-}
-
-/**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
@@ -350,7 +296,7 @@ export function useExportExcel(routePath: string) {
         await setLblById(model, true);
       }
       try {
-        const sheetName = await nsAsync("定时任务日志明细");
+        const sheetName = "定时任务日志明细";
         const buffer = await workerFn(
           `${ location.origin }/excel_template/cron/cron_job_log_detail.xlsx`,
           {
@@ -361,7 +307,7 @@ export function useExportExcel(routePath: string) {
         );
         saveAsExcel(buffer, sheetName);
       } catch (err) {
-        ElMessage.error(await nsAsync("导出失败"));
+        ElMessage.error("导出失败");
         throw err;
       }
     } finally {
