@@ -126,7 +126,7 @@
             :set="search.is_deleted = search.is_deleted ?? 0"
             :false-value="0"
             :true-value="1"
-            @change="recycleChg"
+            @change="onRecycle"
           >
             <span>回收站</span>
           </el-checkbox>
@@ -931,7 +931,7 @@ const is_enabled_search = $computed({
 });
 
 /** 回收站 */
-async function recycleChg() {
+async function onRecycle() {
   tableFocus();
   selectedIds = [ ];
   await dataGrid(true);
