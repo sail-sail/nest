@@ -152,16 +152,6 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<DictbizDetailId> {
   
-  let is_locked = dictbiz_detail_dao::get_is_locked_by_id(
-    id.clone(),
-    None,
-  ).await?;
-  
-  if is_locked {
-    let err_msg = "不能修改已经锁定的 业务字典明细";
-    return Err(eyre!(err_msg));
-  }
-  
   let dictbiz_detail_id = dictbiz_detail_dao::update_by_id(
     id,
     input,
@@ -177,22 +167,6 @@ pub async fn delete_by_ids(
   ids: Vec<DictbizDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
-  
-  let models = dictbiz_detail_dao::find_all(
-    Some(DictbizDetailSearch {
-      ids: Some(ids.clone()),
-      ..Default::default()
-    }),
-    None,
-    None,
-    options.clone(),
-  ).await?;
-  for model in models {
-    if model.is_locked == 1 {
-      let err_msg = "不能删除已经锁定的 业务字典明细";
-      return Err(eyre!(err_msg));
-    }
-  }
   
   let models = dictbiz_detail_dao::find_all(
     Some(DictbizDetailSearch {
@@ -245,40 +219,6 @@ pub async fn enable_by_ids(
   let num = dictbiz_detail_dao::enable_by_ids(
     ids,
     is_enabled,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
-/// 根据 id 查找业务字典明细是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-#[allow(dead_code)]
-pub async fn get_is_locked_by_id(
-  id: DictbizDetailId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let is_locked = dictbiz_detail_dao::get_is_locked_by_id(
-    id,
-    options,
-  ).await?;
-  
-  Ok(is_locked)
-}
-
-/// 根据 ids 锁定或者解锁业务字典明细
-#[allow(dead_code)]
-pub async fn lock_by_ids(
-  ids: Vec<DictbizDetailId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = dictbiz_detail_dao::lock_by_ids(
-    ids,
-    is_locked,
     options,
   ).await?;
   

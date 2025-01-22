@@ -1143,10 +1143,26 @@ async fn get_where_query(
   #>
   // <#=column_comment#>
   {
-    let <#=column_name_rust#> = search.<#=column_name_rust#>;
+    let <#=column_name_rust#>: Option<Vec<<#=_data_type#>>> = match search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
+      None => None,
+    };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
-      where_query.push_str(" and t.<#=column_name#>=?");
-      args.push(<#=column_name_rust#>.into());
+      let arg = {
+        if <#=column_name_rust#>.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+          for item in <#=column_name_rust#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.<#=column_name#> in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }<#
     } else if (data_type === "varchar" || data_type === "text") {
@@ -2096,6 +2112,7 @@ pub async fn get_field_comments(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       if (
         column_name === "tenant_id" ||
@@ -2173,6 +2190,7 @@ pub async fn get_field_comments(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       if (
         column_name === "tenant_id" ||
@@ -2245,6 +2263,7 @@ pub async fn get_field_comments(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       if (
         column_name === "tenant_id" ||

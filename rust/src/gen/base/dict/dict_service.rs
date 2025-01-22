@@ -133,16 +133,6 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<DictId> {
   
-  let is_locked = dict_dao::get_is_locked_by_id(
-    id.clone(),
-    None,
-  ).await?;
-  
-  if is_locked {
-    let err_msg = "不能修改已经锁定的 系统字典";
-    return Err(eyre!(err_msg));
-  }
-  
   // 不能修改系统记录的系统字段
   let model = dict_dao::find_by_id(
     id.clone(),
@@ -177,22 +167,6 @@ pub async fn delete_by_ids(
   ids: Vec<DictId>,
   options: Option<Options>,
 ) -> Result<u64> {
-  
-  let models = dict_dao::find_all(
-    Some(DictSearch {
-      ids: Some(ids.clone()),
-      ..Default::default()
-    }),
-    None,
-    None,
-    options.clone(),
-  ).await?;
-  for model in models {
-    if model.is_locked == 1 {
-      let err_msg = "不能删除已经锁定的 系统字典";
-      return Err(eyre!(err_msg));
-    }
-  }
   
   let models = dict_dao::find_all(
     Some(DictSearch {
@@ -245,40 +219,6 @@ pub async fn enable_by_ids(
   let num = dict_dao::enable_by_ids(
     ids,
     is_enabled,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
-/// 根据 id 查找系统字典是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-#[allow(dead_code)]
-pub async fn get_is_locked_by_id(
-  id: DictId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let is_locked = dict_dao::get_is_locked_by_id(
-    id,
-    options,
-  ).await?;
-  
-  Ok(is_locked)
-}
-
-/// 根据 ids 锁定或者解锁系统字典
-#[allow(dead_code)]
-pub async fn lock_by_ids(
-  ids: Vec<DictId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let num = dict_dao::lock_by_ids(
-    ids,
-    is_locked,
     options,
   ).await?;
   

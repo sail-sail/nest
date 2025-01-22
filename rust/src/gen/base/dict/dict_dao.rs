@@ -173,26 +173,26 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
-  // 锁定
+  // 可新增
   {
-    let is_locked: Option<Vec<u8>> = match search {
-      Some(item) => item.is_locked.clone(),
+    let is_add: Option<Vec<u8>> = match search {
+      Some(item) => item.is_add.clone(),
       None => None,
     };
-    if let Some(is_locked) = is_locked {
+    if let Some(is_add) = is_add {
       let arg = {
-        if is_locked.is_empty() {
+        if is_add.is_empty() {
           "null".to_string()
         } else {
-          let mut items = Vec::with_capacity(is_locked.len());
-          for item in is_locked {
+          let mut items = Vec::with_capacity(is_add.len());
+          for item in is_add {
             args.push(item.into());
             items.push("?");
           }
           items.join(",")
         }
       };
-      where_query.push_str(" and t.is_locked in (");
+      where_query.push_str(" and t.is_add in (");
       where_query.push_str(&arg);
       where_query.push(')');
     }
@@ -496,22 +496,6 @@ pub async fn find_all(
       }
     }
   }
-  // 锁定
-  if let Some(search) = &search {
-    if search.is_locked.is_some() {
-      let len = search.is_locked.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_locked.length > {ids_limit}"));
-      }
-    }
-  }
   // 启用
   if let Some(search) = &search {
     if search.is_enabled.is_some() {
@@ -612,14 +596,12 @@ pub async fn find_all(
   
   let dict_vec = get_dict(&[
     "dict_type",
-    "is_locked",
     "is_enabled",
   ]).await?;
   let [
     type_dict,
-    is_locked_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 3] = dict_vec
+  ]: [Vec<_>; 2] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -649,15 +631,6 @@ pub async fn find_all(
         .find(|item| item.val == model.r#type.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.r#type.to_string())
-    };
-    
-    // 锁定
-    model.is_locked_lbl = {
-      is_locked_dict
-        .iter()
-        .find(|item| item.val == model.is_locked.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string())
     };
     
     // 启用
@@ -766,8 +739,7 @@ pub async fn get_field_comments(
     lbl: "名称".into(),
     r#type: "数据类型".into(),
     type_lbl: "数据类型".into(),
-    is_locked: "锁定".into(),
-    is_locked_lbl: "锁定".into(),
+    is_add: "可新增".into(),
     is_enabled: "启用".into(),
     is_enabled_lbl: "启用".into(),
     order_by: "排序".into(),
@@ -1225,7 +1197,6 @@ pub async fn set_id_by_lbl(
   
   let dict_vec = get_dict(&[
     "dict_type",
-    "is_locked",
     "is_enabled",
   ]).await?;
   
@@ -1244,24 +1215,9 @@ pub async fn set_id_by_lbl(
     }
   }
   
-  // 锁定
-  if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[1];
-    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-      input.is_locked = is_locked_dict
-        .iter()
-        .find(|item| {
-          item.lbl == is_locked_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[1];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1299,37 +1255,12 @@ pub async fn set_id_by_lbl(
     input.type_lbl = lbl;
   }
   
-  // 锁定
-  if
-    input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
-    && input.is_locked.is_none()
-  {
-    let is_locked_dict = &dict_vec[1];
-    let dict_model = is_locked_dict.iter().find(|item| {
-      item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
-    });
-    let val = dict_model.map(|item| item.val.to_string());
-    if let Some(val) = val {
-      input.is_locked = val.parse::<u8>()?.into();
-    }
-  } else if
-    (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
-    && input.is_locked.is_some()
-  {
-    let is_locked_dict = &dict_vec[1];
-    let dict_model = is_locked_dict.iter().find(|item| {
-      item.val == input.is_locked.unwrap_or_default().to_string()
-    });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
-    input.is_locked_lbl = lbl;
-  }
-  
   // 启用
   if
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[1];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -1341,7 +1272,7 @@ pub async fn set_id_by_lbl(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[2];
+    let is_enabled_dict = &dict_vec[1];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -1502,8 +1433,8 @@ async fn _creates(
   sql_fields += ",lbl";
   // 数据类型
   sql_fields += ",type";
-  // 锁定
-  sql_fields += ",is_locked";
+  // 可新增
+  sql_fields += ",is_add";
   // 启用
   sql_fields += ",is_enabled";
   // 排序
@@ -1651,10 +1582,10 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 锁定
-    if let Some(is_locked) = input.is_locked {
+    // 可新增
+    if let Some(is_add) = input.is_add {
       sql_values += ",?";
-      args.push(is_locked.into());
+      args.push(is_add.into());
     } else {
       sql_values += ",default";
     }
@@ -1909,11 +1840,11 @@ pub async fn update_by_id(
     sql_fields += "type=?,";
     args.push(r#type.into());
   }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
+  // 可新增
+  if let Some(is_add) = input.is_add {
     field_num += 1;
-    sql_fields += "is_locked=?,";
-    args.push(is_locked.into());
+    sql_fields += "is_add=?,";
+    args.push(is_add.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
@@ -2345,92 +2276,6 @@ pub async fn enable_by_ids(
     let sql = format!("update {table} set is_enabled=? where id=? limit 1");
     
     args.push(is_enabled.into());
-    args.push(id.into());
-    
-    let args: Vec<_> = args.into();
-    
-    let options = options.clone().into();
-    
-    num += execute(
-      sql,
-      args,
-      options,
-    ).await?;
-  }
-  
-  Ok(num)
-}
-
-// MARK: get_is_locked_by_id
-/// 根据 id 查找系统字典是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-pub async fn get_is_locked_by_id(
-  id: DictId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let model = find_by_id(
-    id,
-    options,
-  ).await?;
-  
-  let is_locked = {
-    if let Some(model) = model {
-      model.is_locked == 1
-    } else {
-      false
-    }
-  };
-  
-  Ok(is_locked)
-}
-
-// MARK: lock_by_ids
-/// 根据 ids 锁定或者解锁系统字典
-pub async fn lock_by_ids(
-  ids: Vec<DictId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let table = "base_dict";
-  let method = "lock_by_ids";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
-    msg += &format!(" is_locked: {:?}", &is_locked);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  if ids.is_empty() {
-    return Ok(0);
-  }
-  
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let mut num = 0;
-  for id in ids {
-    let mut args = QueryArgs::new();
-    
-    let sql = format!("update {table} set is_locked=? where id=? limit 1");
-    
-    args.push(is_locked.into());
     args.push(id.into());
     
     let args: Vec<_> = args.into();

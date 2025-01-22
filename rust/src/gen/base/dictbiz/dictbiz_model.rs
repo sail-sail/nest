@@ -69,18 +69,15 @@ pub struct DictbizModel {
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
+  /// 可新增
+  #[graphql(name = "is_add")]
+  pub is_add: u8,
   /// 数据类型
   #[graphql(name = "type")]
   pub r#type: DictbizType,
   /// 数据类型
   #[graphql(name = "type_lbl")]
   pub type_lbl: String,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: u8,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
@@ -127,12 +124,11 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
     let code: String = row.try_get("code")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
+    // 可新增
+    let is_add: u8 = row.try_get("is_add")?;
     // 数据类型
     let type_lbl: String = row.try_get("type")?;
     let r#type: DictbizType = type_lbl.clone().try_into()?;
-    // 锁定
-    let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -170,10 +166,9 @@ impl FromRow<'_, MySqlRow> for DictbizModel {
       id,
       code,
       lbl,
+      is_add,
       r#type,
       type_lbl,
-      is_locked,
-      is_locked_lbl,
       is_enabled,
       is_enabled_lbl,
       order_by,
@@ -207,18 +202,15 @@ pub struct DictbizFieldComment {
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
+  /// 可新增
+  #[graphql(name = "is_add")]
+  pub is_add: String,
   /// 数据类型
   #[graphql(name = "type")]
   pub r#type: String,
   /// 数据类型
   #[graphql(name = "type_lbl")]
   pub type_lbl: String,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: String,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: String,
@@ -280,12 +272,12 @@ pub struct DictbizSearch {
   /// 名称
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
+  /// 可新增
+  #[graphql(skip)]
+  pub is_add: Option<Vec<u8>>,
   /// 数据类型
   #[graphql(skip)]
   pub r#type: Option<Vec<DictbizType>>,
-  /// 锁定
-  #[graphql(skip)]
-  pub is_locked: Option<Vec<u8>>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
@@ -361,13 +353,13 @@ impl std::fmt::Debug for DictbizSearch {
     if let Some(ref lbl_like) = self.lbl_like {
       item = item.field("lbl_like", lbl_like);
     }
+    // 可新增
+    if let Some(ref is_add) = self.is_add {
+      item = item.field("is_add", is_add);
+    }
     // 数据类型
     if let Some(ref r#type) = self.r#type {
       item = item.field("r#type", r#type);
-    }
-    // 锁定
-    if let Some(ref is_locked) = self.is_locked {
-      item = item.field("is_locked", is_locked);
     }
     // 启用
     if let Some(ref is_enabled) = self.is_enabled {
@@ -430,18 +422,15 @@ pub struct DictbizInput {
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
+  /// 可新增
+  #[graphql(name = "is_add")]
+  pub is_add: Option<u8>,
   /// 数据类型
   #[graphql(name = "type")]
   pub r#type: Option<DictbizType>,
   /// 数据类型
   #[graphql(name = "type_lbl")]
   pub type_lbl: Option<String>,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: Option<u8>,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
@@ -499,12 +488,11 @@ impl From<DictbizModel> for DictbizInput {
       code: model.code.into(),
       // 名称
       lbl: model.lbl.into(),
+      // 可新增
+      is_add: model.is_add.into(),
       // 数据类型
       r#type: model.r#type.into(),
       type_lbl: model.type_lbl.into(),
-      // 锁定
-      is_locked: model.is_locked.into(),
-      is_locked_lbl: model.is_locked_lbl.into(),
       // 启用
       is_enabled: model.is_enabled.into(),
       is_enabled_lbl: model.is_enabled_lbl.into(),
@@ -548,10 +536,10 @@ impl From<DictbizInput> for DictbizSearch {
       code: input.code,
       // 名称
       lbl: input.lbl,
+      // 可新增
+      is_add: input.is_add.map(|x| vec![x]),
       // 数据类型
       r#type: input.r#type.map(|x| vec![x]),
-      // 锁定
-      is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序

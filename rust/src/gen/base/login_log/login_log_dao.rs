@@ -651,12 +651,6 @@ pub async fn get_field_comments(
     ip: "IP".into(),
     create_time: "登录时间".into(),
     create_time_lbl: "登录时间".into(),
-    create_usr_id: "创建人".into(),
-    create_usr_id_lbl: "创建人".into(),
-    update_usr_id: "更新人".into(),
-    update_usr_id_lbl: "更新人".into(),
-    update_time: "更新时间".into(),
-    update_time_lbl: "更新时间".into(),
   };
   Ok(field_comments)
 }
