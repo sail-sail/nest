@@ -57,7 +57,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns("关闭") }}</span>
+        <span>关闭</span>
       </el-button>
       
     </div>
@@ -72,12 +72,6 @@ import Cron_job_log_detailList from "@/views/cron/cron_job_log_detail/List.vue";
 import {
   findCount as findCountCron_job_log_detail,
 } from "@/views/cron/cron_job_log_detail/Api";
-
-const {
-  n,
-  ns,
-  initI18ns,
-} = useI18n("/cron/cron_job_log");
 
 let inited = $ref(false);
 
@@ -123,7 +117,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
 /** 打开对话框 */
 async function showDialog(
@@ -156,17 +150,6 @@ async function showDialog(
   inited = true;
   return await dialogRes.dialogPrm;
 }
-
-/** 初始化ts中的国际化信息 */
-async function initI18nsEfc() {
-  const {
-    initI18ns,
-  } = useI18n();
-  const codes: string[] = [
-  ];
-  await initI18ns(codes);
-}
-initI18nsEfc();
 
 /** 点击取消关闭按钮 */
 function onClose() {

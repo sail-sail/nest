@@ -55,8 +55,6 @@ type CronJobModel {
 type CronJobFieldComment {
   "ID"
   id: String!
-  "序号"
-  seq: String!
   "名称"
   lbl: String!
   "任务"
