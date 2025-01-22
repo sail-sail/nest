@@ -3312,7 +3312,11 @@ async function onSortChange(
   if (opts.noExport !== true) {
 #>
 
-const exportExcel = $ref(useExportExcel(pagePath));
+const exportExcel = $ref(useExportExcel(<#
+if (isUseI18n) {
+#>pagePath<#
+}
+#>));
 
 /** 导出Excel */
 async function onExport() {
@@ -3496,7 +3500,11 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
+const downloadImportTemplate = $ref(useDownloadImportTemplate(<#
+if (isUseI18n) {
+#>pagePath<#
+}
+#>));
 
 /**
  * 下载导入模板
