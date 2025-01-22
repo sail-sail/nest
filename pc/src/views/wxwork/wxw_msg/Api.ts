@@ -271,74 +271,9 @@ export async function getWxwAppList() {
 }
 
 /**
- * 下载企微消息导入模板
- */
-export function useDownloadImportTemplate(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
-  const {
-    workerFn,
-    workerStatus,
-    workerTerminate,
-  } = useRenderExcel();
-  async function workerFn2() {
-    const data = await query({
-      query: /* GraphQL */ `
-        query {
-          getFieldCommentsWxwMsg {
-            wxw_app_id_lbl
-            errcode_lbl
-            touser
-            title
-            description
-            btntxt
-            errmsg
-          }
-          findAllWxwApp {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "wxw_msg_errcode",
-          ]) {
-            code
-            lbl
-          }
-        }
-      `,
-      variables: {
-      },
-    });
-    try {
-      const sheetName = await nsAsync("企微消息");
-      const buffer = await workerFn(
-        `${ location.origin }/import_template/wxwork/wxw_msg.xlsx`,
-        {
-          sheetName,
-          data,
-        },
-      );
-      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
-    } catch (err) {
-      ElMessage.error(await nsAsync("下载失败"));
-      throw err;
-    }
-  }
-  return {
-    workerFn: workerFn2,
-    workerStatus,
-    workerTerminate,
-  };
-}
-
-/**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
@@ -384,7 +319,7 @@ export function useExportExcel(routePath: string) {
         await setLblById(model, true);
       }
       try {
-        const sheetName = await nsAsync("企微消息");
+        const sheetName = "企微消息";
         const buffer = await workerFn(
           `${ location.origin }/excel_template/wxwork/wxw_msg.xlsx`,
           {
@@ -395,7 +330,7 @@ export function useExportExcel(routePath: string) {
         );
         saveAsExcel(buffer, sheetName);
       } catch (err) {
-        ElMessage.error(await nsAsync("导出失败"));
+        ElMessage.error("导出失败");
         throw err;
       }
     } finally {

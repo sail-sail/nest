@@ -75,22 +75,6 @@ type WxwAppTokenFieldComment {
   jsapi_ticket_agent_config_time_lbl: String!
   "应用jsapi_ticket超时时间"
   jsapi_ticket_agent_config_expires_in: String!
-  "创建人"
-  create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
-  "创建时间"
-  create_time: String!
-  "创建时间"
-  create_time_lbl: String!
-  "更新人"
-  update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: String!
-  "更新时间"
-  update_time_lbl: String!
 }
 input WxwAppTokenInput {
   "ID"
