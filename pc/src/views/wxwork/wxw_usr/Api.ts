@@ -292,7 +292,7 @@ export async function forceDeleteByIds(
 /**
  * 下载企微用户导入模板
  */
-export function useDownloadImportTemplate(routePath: string) {
+export function useDownloadImportTemplate() {
   const {
     workerFn,
     workerStatus,
@@ -337,7 +337,7 @@ export function useDownloadImportTemplate(routePath: string) {
 /**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,

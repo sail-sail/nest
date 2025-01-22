@@ -510,18 +510,10 @@ export async function getFieldComments(): Promise<WxwMsgFieldComment> {
     touser: "成员ID",
     title: "标题",
     description: "描述",
-    url: "链接",
     btntxt: "按钮文字",
     create_time: "发送时间",
     create_time_lbl: "发送时间",
     errmsg: "错误信息",
-    msgid: "消息ID",
-    create_usr_id: "创建人",
-    create_usr_id_lbl: "创建人",
-    update_usr_id: "更新人",
-    update_usr_id_lbl: "更新人",
-    update_time: "更新时间",
-    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }

@@ -616,14 +616,6 @@ export async function getFieldComments(): Promise<WxwAppTokenFieldComment> {
     jsapi_ticket_agent_config_time: "应用jsapi_ticket创建时间",
     jsapi_ticket_agent_config_time_lbl: "应用jsapi_ticket创建时间",
     jsapi_ticket_agent_config_expires_in: "应用jsapi_ticket超时时间",
-    create_usr_id: "创建人",
-    create_usr_id_lbl: "创建人",
-    create_time: "创建时间",
-    create_time_lbl: "创建时间",
-    update_usr_id: "更新人",
-    update_usr_id_lbl: "更新人",
-    update_time: "更新时间",
-    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
