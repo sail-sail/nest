@@ -37,15 +37,12 @@ use crate::common::context::{
   get_is_creating,
 };
 
-use crate::src::base::i18n::i18n_dao;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
 };
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::wxw_msg_model::*;
 
@@ -522,8 +519,6 @@ async fn get_from_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let server_i18n_enable = get_server_i18n_enable();
-  
   let from_query = r#"wxwork_wxw_msg t
   left join wxwork_wxw_app wxw_app_id_lbl on wxw_app_id_lbl.id=t.wxw_app_id"#.to_owned();
   Ok(from_query)
@@ -769,77 +764,25 @@ pub async fn find_count(
   Ok(total)
 }
 
-/// 获取当前路由的国际化
-pub fn get_n_route() -> i18n_dao::NRoute {
-  i18n_dao::NRoute {
-    route_path: get_route_path_wxw_msg().into(),
-  }
-}
-
 // MARK: get_field_comments
 /// 获取企微消息字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<WxwMsgFieldComment> {
   
-  let n_route = get_n_route();
-  
-  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
-    "ID".into(),
-    "企微应用".into(),
-    "企微应用".into(),
-    "发送状态".into(),
-    "发送状态".into(),
-    "成员ID".into(),
-    "标题".into(),
-    "描述".into(),
-    "链接".into(),
-    "按钮文字".into(),
-    "发送时间".into(),
-    "发送时间".into(),
-    "错误信息".into(),
-    "消息ID".into(),
-    "创建人".into(),
-    "创建人".into(),
-    "更新人".into(),
-    "更新人".into(),
-    "更新时间".into(),
-    "更新时间".into(),
-  ];
-  
-  let map = n_route.n_batch(
-    i18n_code_maps.clone(),
-  ).await?;
-  
-  let vec = i18n_code_maps.into_iter()
-    .map(|item|
-      map.get(&item.code)
-        .map(|item| item.to_owned())
-        .unwrap_or_default()
-    )
-    .collect::<Vec<String>>();
-  
   let field_comments = WxwMsgFieldComment {
-    id: vec[0].to_owned(),
-    wxw_app_id: vec[1].to_owned(),
-    wxw_app_id_lbl: vec[2].to_owned(),
-    errcode: vec[3].to_owned(),
-    errcode_lbl: vec[4].to_owned(),
-    touser: vec[5].to_owned(),
-    title: vec[6].to_owned(),
-    description: vec[7].to_owned(),
-    url: vec[8].to_owned(),
-    btntxt: vec[9].to_owned(),
-    create_time: vec[10].to_owned(),
-    create_time_lbl: vec[11].to_owned(),
-    errmsg: vec[12].to_owned(),
-    msgid: vec[13].to_owned(),
-    create_usr_id: vec[14].to_owned(),
-    create_usr_id_lbl: vec[15].to_owned(),
-    update_usr_id: vec[16].to_owned(),
-    update_usr_id_lbl: vec[17].to_owned(),
-    update_time: vec[18].to_owned(),
-    update_time_lbl: vec[19].to_owned(),
+    id: "ID".into(),
+    wxw_app_id: "企微应用".into(),
+    wxw_app_id_lbl: "企微应用".into(),
+    errcode: "发送状态".into(),
+    errcode_lbl: "发送状态".into(),
+    touser: "成员ID".into(),
+    title: "标题".into(),
+    description: "描述".into(),
+    btntxt: "按钮文字".into(),
+    create_time: "发送时间".into(),
+    create_time_lbl: "发送时间".into(),
+    errmsg: "错误信息".into(),
   };
   Ok(field_comments)
 }
@@ -1211,17 +1154,7 @@ pub async fn check_by_unique(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let table_comment = i18n_dao::ns(
-      "企微消息".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "此 {0} 已经存在".to_owned(),
-      map.into(),
-    ).await?;
+    let err_msg = "此 企微消息 已经存在";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1855,17 +1788,7 @@ pub async fn update_by_id(
   ).await?;
   
   if old_model.is_none() {
-    let table_comment = i18n_dao::ns(
-      "企微消息".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "编辑失败, 此 {0} 已被删除".to_owned(),
-      map.into(),
-    ).await?;
+    let err_msg = "编辑失败, 此 企微消息 已被删除";
     return Err(eyre!(err_msg));
   }
   let old_model = old_model.unwrap();
@@ -1902,17 +1825,7 @@ pub async fn update_by_id(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let table_comment = i18n_dao::ns(
-          "企微消息".to_owned(),
-          None,
-        ).await?;
-        let map = HashMap::from([
-          ("0".to_owned(), table_comment),
-        ]);
-        let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
-          map.into(),
-        ).await?;
+        let err_msg = "此 企微消息 已经存在";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2310,17 +2223,7 @@ pub async fn revert_by_ids(
         .collect();
       
       if !models.is_empty() {
-        let table_comment = i18n_dao::ns(
-          "企微消息".to_owned(),
-          None,
-        ).await?;
-        let map = HashMap::from([
-          ("0".to_owned(), table_comment),
-        ]);
-        let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
-          map.into(),
-        ).await?;
+        let err_msg = "此 企微消息 已经存在";
         return Err(eyre!(err_msg));
       }
     }
@@ -2429,15 +2332,7 @@ pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
-    let table_comment = i18n_dao::ns(
-      "企微消息".to_owned(),
-      None,
-    ).await?;
-    let msg1 = i18n_dao::ns(
-      "不存在".to_owned(),
-      None,
-    ).await?;
-    let err_msg = table_comment + msg1.as_str();
+    let err_msg = "企微消息不存在";
     let backtrace = std::backtrace::Backtrace::capture();
     error!(
       "{req_id} {err_msg}: {backtrace}",

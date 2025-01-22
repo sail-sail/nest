@@ -279,30 +279,6 @@ pub struct WxwAppTokenFieldComment {
   /// 应用jsapi_ticket超时时间
   #[graphql(name = "jsapi_ticket_agent_config_expires_in")]
   pub jsapi_ticket_agent_config_expires_in: String,
-  /// 创建人
-  #[graphql(skip)]
-  pub create_usr_id: String,
-  /// 创建人
-  #[graphql(skip)]
-  pub create_usr_id_lbl: String,
-  /// 创建时间
-  #[graphql(skip)]
-  pub create_time: String,
-  /// 创建时间
-  #[graphql(skip)]
-  pub create_time_lbl: String,
-  /// 更新人
-  #[graphql(skip)]
-  pub update_usr_id: String,
-  /// 更新人
-  #[graphql(skip)]
-  pub update_usr_id_lbl: String,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time: String,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Default)]

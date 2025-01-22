@@ -222,9 +222,6 @@ pub struct WxwMsgFieldComment {
   /// 描述
   #[graphql(name = "description")]
   pub description: String,
-  /// 链接
-  #[graphql(skip)]
-  pub url: String,
   /// 按钮文字
   #[graphql(name = "btntxt")]
   pub btntxt: String,
@@ -237,27 +234,6 @@ pub struct WxwMsgFieldComment {
   /// 错误信息
   #[graphql(name = "errmsg")]
   pub errmsg: String,
-  /// 消息ID
-  #[graphql(skip)]
-  pub msgid: String,
-  /// 创建人
-  #[graphql(skip)]
-  pub create_usr_id: String,
-  /// 创建人
-  #[graphql(skip)]
-  pub create_usr_id_lbl: String,
-  /// 更新人
-  #[graphql(skip)]
-  pub update_usr_id: String,
-  /// 更新人
-  #[graphql(skip)]
-  pub update_usr_id_lbl: String,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time: String,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Default)]

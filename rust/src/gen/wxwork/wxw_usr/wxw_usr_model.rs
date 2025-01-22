@@ -215,60 +215,9 @@ pub struct WxwUsrFieldComment {
   /// 用户ID
   #[graphql(name = "userid")]
   pub userid: String,
-  /// 手机号
-  #[graphql(skip)]
-  pub mobile: String,
-  /// 性别
-  #[graphql(skip)]
-  pub gender: String,
-  /// 邮箱
-  #[graphql(skip)]
-  pub email: String,
-  /// 企业邮箱
-  #[graphql(skip)]
-  pub biz_email: String,
-  /// 直属上级
-  #[graphql(skip)]
-  pub direct_leader: String,
-  /// 职位
-  #[graphql(skip)]
-  pub position: String,
-  /// 头像
-  #[graphql(skip)]
-  pub avatar: String,
-  /// 头像缩略图
-  #[graphql(skip)]
-  pub thumb_avatar: String,
-  /// 个人二维码
-  #[graphql(skip)]
-  pub qr_code: String,
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 创建人
-  #[graphql(skip)]
-  pub create_usr_id: String,
-  /// 创建人
-  #[graphql(skip)]
-  pub create_usr_id_lbl: String,
-  /// 创建时间
-  #[graphql(skip)]
-  pub create_time: String,
-  /// 创建时间
-  #[graphql(skip)]
-  pub create_time_lbl: String,
-  /// 更新人
-  #[graphql(skip)]
-  pub update_usr_id: String,
-  /// 更新人
-  #[graphql(skip)]
-  pub update_usr_id_lbl: String,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time: String,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Default)]
