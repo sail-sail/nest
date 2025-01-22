@@ -66,12 +66,6 @@ pub struct DictDetailModel {
   /// 值
   #[graphql(name = "val")]
   pub val: String,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: u8,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
@@ -118,9 +112,6 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
     let lbl: String = row.try_get("lbl")?;
     // 值
     let val: String = row.try_get("val")?;
-    // 锁定
-    let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -159,8 +150,6 @@ impl FromRow<'_, MySqlRow> for DictDetailModel {
       dict_id_lbl,
       lbl,
       val,
-      is_locked,
-      is_locked_lbl,
       is_enabled,
       is_enabled_lbl,
       order_by,
@@ -198,12 +187,6 @@ pub struct DictDetailFieldComment {
   /// 值
   #[graphql(name = "val")]
   pub val: String,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: String,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: String,
@@ -275,9 +258,6 @@ pub struct DictDetailSearch {
   /// 值
   #[graphql(name = "val_like")]
   pub val_like: Option<String>,
-  /// 锁定
-  #[graphql(skip)]
-  pub is_locked: Option<Vec<u8>>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
@@ -357,10 +337,6 @@ impl std::fmt::Debug for DictDetailSearch {
     if let Some(ref val_like) = self.val_like {
       item = item.field("val_like", val_like);
     }
-    // 锁定
-    if let Some(ref is_locked) = self.is_locked {
-      item = item.field("is_locked", is_locked);
-    }
     // 启用
     if let Some(ref is_enabled) = self.is_enabled {
       item = item.field("is_enabled", is_enabled);
@@ -425,12 +401,6 @@ pub struct DictDetailInput {
   /// 值
   #[graphql(name = "val")]
   pub val: Option<String>,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: Option<u8>,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<String>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
@@ -488,9 +458,6 @@ impl From<DictDetailModel> for DictDetailInput {
       lbl: model.lbl.into(),
       // 值
       val: model.val.into(),
-      // 锁定
-      is_locked: model.is_locked.into(),
-      is_locked_lbl: model.is_locked_lbl.into(),
       // 启用
       is_enabled: model.is_enabled.into(),
       is_enabled_lbl: model.is_enabled_lbl.into(),
@@ -528,8 +495,6 @@ impl From<DictDetailInput> for DictDetailSearch {
       lbl: input.lbl,
       // 值
       val: input.val,
-      // 锁定
-      is_locked: input.is_locked.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序

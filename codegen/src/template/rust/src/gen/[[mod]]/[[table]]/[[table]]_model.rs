@@ -382,6 +382,7 @@ pub struct <#=tableUP#>Model {<#
       _data_type = "Option<"+_data_type+">";
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
+    const onlyCodegenDenoButApi = column.onlyCodegenDenoButApi;
   #><#
     if (column_name === "id") {
   #>
@@ -390,7 +391,7 @@ pub struct <#=tableUP#>Model {<#
     } else if (foreignKey && foreignKey.multiple) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -402,7 +403,7 @@ pub struct <#=tableUP#>Model {<#
     if (hasModelLabel) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -457,7 +458,7 @@ pub struct <#=tableUP#>Model {<#
       }
   #>
   /// <#=column_comment#><#=cascade_field_column.COLUMN_COMMENT#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -471,7 +472,7 @@ pub struct <#=tableUP#>Model {<#
     } else if (foreignKey && !foreignKey.multiple) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -483,7 +484,7 @@ pub struct <#=tableUP#>Model {<#
     if (hasModelLabel) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -538,7 +539,7 @@ pub struct <#=tableUP#>Model {<#
       }
   #>
   /// <#=column_comment#><#=cascade_field_column.COLUMN_COMMENT#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -552,7 +553,7 @@ pub struct <#=tableUP#>Model {<#
     } else if (data_type === "date" || data_type === "datetime") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -564,7 +565,7 @@ pub struct <#=tableUP#>Model {<#
     if (hasModelLabel) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -594,7 +595,7 @@ pub struct <#=tableUP#>Model {<#
       }
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -606,7 +607,7 @@ pub struct <#=tableUP#>Model {<#
     if (hasModelLabel) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -617,10 +618,22 @@ pub struct <#=tableUP#>Model {<#
   pub <#=modelLabel#>: String,<#
     }
   #><#
+    } else if (data_type === "tinyint") {
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
+  }
+  #>
+  pub <#=column_name_rust#>: <#=_data_type#>,<#
     } else {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1432,11 +1445,14 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         }
       #><#
         } else if (column.dict || column.dictbiz
-          || data_type === "date" || data_type === "datetime" || data_type === "tinyint"
+          || data_type === "date" || data_type === "datetime"
         ) {
       #>
       <#=column_name_rust#>,
       <#=modelLabel#>,<#
+        } else if (data_type === "tinyint") {
+      #>
+      <#=column_name_rust#>,<#
         } else {
       #>
       <#=column_name_rust#>,<#
@@ -1544,6 +1560,7 @@ pub struct <#=tableUP#>FieldComment {<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     if (
       column_name === "tenant_id" ||
@@ -1560,6 +1577,7 @@ pub struct <#=tableUP#>FieldComment {<#
     const foreignKey = column.foreignKey;
     let is_nullable = column.IS_NULLABLE === "YES";
     const onlyCodegenDeno = column.onlyCodegenDeno;
+    const onlyCodegenDenoButApi = column.onlyCodegenDenoButApi;
     let modelLabel = column.modelLabel;
     let cascade_fields = [ ];
     if (foreignKey) {
@@ -1587,7 +1605,7 @@ pub struct <#=tableUP#>FieldComment {<#
     ) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1597,7 +1615,7 @@ pub struct <#=tableUP#>FieldComment {<#
   #>
   pub <#=column_name_rust#>: String,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1609,7 +1627,7 @@ pub struct <#=tableUP#>FieldComment {<#
     } else {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -1804,7 +1822,7 @@ pub struct <#=tableUP#>Search {
   }
   #>
   pub <#=column_name#>_is_null: Option<bool>,<#
-    } else if (column.dict || column.dictbiz) {
+    } else if ((column.dict || column.dictbiz) && data_type !== "tinyint") {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dict;
@@ -1867,7 +1885,7 @@ pub struct <#=tableUP#>Search {
   #[graphql(name = "<#=column_name#>")]<#
   }
   #>
-  pub <#=column_name_rust#>: Option<<#=_data_type#>>,<#
+  pub <#=column_name_rust#>: Option<Vec<<#=_data_type#>>>,<#
     } else if (data_type === "varchar" || data_type === "text") {
   #>
   /// <#=column_comment#><#
@@ -2096,6 +2114,7 @@ pub struct <#=tableUP#>Input {
       _data_type = "String";
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
+    const onlyCodegenDenoButApi = column.onlyCodegenDenoButApi;
     let modelLabel = column.modelLabel;
     if (foreignKey && foreignKey.lbl && !modelLabel) {
       modelLabel = column_name + "_" + foreignKey.lbl;
@@ -2128,7 +2147,7 @@ pub struct <#=tableUP#>Input {
       }
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2140,7 +2159,7 @@ pub struct <#=tableUP#>Input {
     if (hasModelLabel) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2154,7 +2173,7 @@ pub struct <#=tableUP#>Input {
     } else if (foreignKey && foreignKey?.multiple) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2166,7 +2185,7 @@ pub struct <#=tableUP#>Input {
     if (hasModelLabel) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2180,7 +2199,7 @@ pub struct <#=tableUP#>Input {
   } else if (foreignKey && !foreignKey?.multiple) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2192,7 +2211,7 @@ pub struct <#=tableUP#>Input {
     if (hasModelLabel) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2206,7 +2225,7 @@ pub struct <#=tableUP#>Input {
   } else if (data_type === "date" || data_type === "datetime") {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2216,7 +2235,7 @@ pub struct <#=tableUP#>Input {
   #>
   pub <#=column_name_rust#>: Option<<#=_data_type#>>,
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2228,7 +2247,7 @@ pub struct <#=tableUP#>Input {
   if (is_nullable) {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2242,7 +2261,7 @@ pub struct <#=tableUP#>Input {
   } else {
   #>
   /// <#=column_comment#><#
-  if (onlyCodegenDeno) {
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
   #>
   #[graphql(skip)]<#
   } else {
@@ -2337,7 +2356,7 @@ pub struct <#=tableUP#>Input {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     const table_comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
@@ -2543,7 +2562,7 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
       for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
         if (column.ignoreCodegen) continue;
-        if (column.onlyCodegenDeno) continue;
+        if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
         const column_name = column.COLUMN_NAME;
         const table_comment = column.COLUMN_COMMENT;
         let is_nullable = column.IS_NULLABLE === "YES";
@@ -2646,7 +2665,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       <#=modelLabel_rust#>: input.<#=modelLabel_rust#>.map(|x| vec![x]),<#
         }
       #><#
-        } else if (column.dict || column.dictbiz) {
+        } else if ((column.dict || column.dictbiz) && data_type !== "tinyint") {
       #>
       // <#=column_comment#>
       <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#

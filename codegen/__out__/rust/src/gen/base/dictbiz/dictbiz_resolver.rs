@@ -218,45 +218,6 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找业务字典是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-#[allow(dead_code)]
-pub async fn get_is_locked_by_id(
-  id: DictbizId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let is_locked = dictbiz_service::get_is_locked_by_id(
-    id,
-    options,
-  ).await?;
-  
-  Ok(is_locked)
-}
-
-/// 根据 ids 锁定或者解锁业务字典
-#[allow(dead_code)]
-pub async fn lock_by_ids(
-  ids: Vec<DictbizId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  use_permit(
-    get_route_path_dictbiz(),
-    "edit".to_owned(),
-  ).await?;
-  
-  let num = dictbiz_service::lock_by_ids(
-    ids,
-    is_locked,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 获取业务字典字段注释
 pub async fn get_field_comments(
   options: Option<Options>,

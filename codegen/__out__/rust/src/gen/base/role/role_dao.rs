@@ -981,7 +981,6 @@ pub async fn get_field_comments(
   
   let field_comments = RoleFieldComment {
     id: "ID".into(),
-    code_seq: "卡号-序列号".into(),
     code: "编码".into(),
     lbl: "名称".into(),
     home_url: "首页".into(),

@@ -656,10 +656,6 @@ pub async fn get_field_comments(
     create_usr_id_lbl: "操作人".into(),
     create_time: "操作时间".into(),
     create_time_lbl: "操作时间".into(),
-    update_usr_id: "更新人".into(),
-    update_usr_id_lbl: "更新人".into(),
-    update_time: "更新时间".into(),
-    update_time_lbl: "更新时间".into(),
   };
   Ok(field_comments)
 }
