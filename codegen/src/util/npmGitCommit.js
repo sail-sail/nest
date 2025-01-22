@@ -14,6 +14,9 @@ function npmGitCommit() {
     fs.writeFileSync(".git/COMMIT_EDITMSG", message.slice(2).trim());
     return;
   }
+  if (message === "pkg") {
+    return;
+  }
   const cmd = `npm run gqlgen && npm run lint-staged`;
   child_process.execSync(cmd, {
     cwd: process.cwd(),

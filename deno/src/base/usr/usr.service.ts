@@ -103,25 +103,28 @@ export async function login(
   const now = dayjs();
   const begin = now.subtract(10, "minute").format("YYYY-MM-DD HH:mm:ss");
   const end = now.format("YYYY-MM-DD HH:mm:ss");
-  const loginLog1Count = await findCountLoginLog({
-    type: [ LoginLogType.Account ],
-    username,
-    ip,
-    is_succ: [ 1 ],
-    create_time: [ begin, end ],
-    tenant_id,
-  });
-  if (loginLog1Count === 0) {
-    const loginLog0Count = await findCountLoginLog({
+  // deno-lint-ignore no-explicit-any
+  if ((globalThis as any).process.env.NODE_ENV === "production") {
+    const loginLog1Count = await findCountLoginLog({
       type: [ LoginLogType.Account ],
       username,
       ip,
-      is_succ: [ 0 ],
+      is_succ: [ 1 ],
       create_time: [ begin, end ],
       tenant_id,
     });
-    if (loginLog0Count >= 6) {
-      throw await ns(`密码错误次数过多, 请10分钟后再试`);
+    if (loginLog1Count === 0) {
+      const loginLog0Count = await findCountLoginLog({
+        type: [ LoginLogType.Account ],
+        username,
+        ip,
+        is_succ: [ 0 ],
+        create_time: [ begin, end ],
+        tenant_id,
+      });
+      if (loginLog0Count >= 6) {
+        throw await ns(`密码错误次数过多, 请10分钟后再试`);
+      }
     }
   }
   const password2 = await getPassword(password);
@@ -140,14 +143,17 @@ export async function login(
     });
     throw new ServiceException(await ns("用户名或密码错误"), "username_or_password_error", false);
   }
-  await createLoginLog({
-    type: LoginLogType.Account,
-    username,
-    ip,
-    is_succ: 1,
-    tenant_id,
-    create_usr_id: usr_model.id,
-  });
+  // deno-lint-ignore no-explicit-any
+  if ((globalThis as any).process.env.NODE_ENV === "production") {
+    await createLoginLog({
+      type: LoginLogType.Account,
+      username,
+      ip,
+      is_succ: 1,
+      tenant_id,
+      create_usr_id: usr_model.id,
+    });
+  }
   const usr_id = usr_model.id;
   if (org_id === null) {
     org_id = undefined;
