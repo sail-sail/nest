@@ -162,7 +162,7 @@ export const <#=fieldsName#> = [<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
@@ -252,7 +252,7 @@ export const <#=table_Up#>QueryField = `
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     const comment = column.COLUMN_COMMENT;
     let is_nullable = column.IS_NULLABLE === "YES";
