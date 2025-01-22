@@ -1017,13 +1017,6 @@ export async function validate(
     fieldComments.transaction_id,
   );
   
-  // 交易状态
-  await validators.chars_max_length(
-    input.trade_state,
-    32,
-    fieldComments.trade_state,
-  );
-  
   // 交易状态描述
   await validators.chars_max_length(
     input.trade_state_desc,
@@ -1057,13 +1050,6 @@ export async function validate(
     input.notify_url,
     256,
     fieldComments.notify_url,
-  );
-  
-  // 货币类型
-  await validators.chars_max_length(
-    input.currency,
-    16,
-    fieldComments.currency,
   );
   
   // 用户标识

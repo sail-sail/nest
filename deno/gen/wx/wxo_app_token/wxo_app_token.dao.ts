@@ -468,14 +468,6 @@ export async function getFieldComments(): Promise<WxoAppTokenFieldComment> {
     token_time: "令牌创建时间",
     token_time_lbl: "令牌创建时间",
     expires_in: "令牌超时时间",
-    create_usr_id: "创建人",
-    create_usr_id_lbl: "创建人",
-    create_time: "创建时间",
-    create_time_lbl: "创建时间",
-    update_usr_id: "更新人",
-    update_usr_id_lbl: "更新人",
-    update_time: "更新时间",
-    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }

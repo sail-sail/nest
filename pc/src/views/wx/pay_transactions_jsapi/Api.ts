@@ -2,6 +2,7 @@
 
 import {
   PayTransactionsJsapiTradeState,
+  PayTransactionsJsapiCurrency,
 } from "#/types";
 
 import type {
@@ -183,76 +184,9 @@ export async function findById(
 }
 
 /**
- * 下载微信JSAPI下单导入模板
- */
-export function useDownloadImportTemplate(routePath: string) {
-  const {
-    workerFn,
-    workerStatus,
-    workerTerminate,
-  } = useRenderExcel();
-  async function workerFn2() {
-    const data = await query({
-      query: /* GraphQL */ `
-        query {
-          getFieldCommentsPayTransactionsJsapi {
-            appid
-            mchid
-            description
-            out_trade_no
-            transaction_id
-            trade_state_lbl
-            trade_state_desc
-            success_time_lbl
-            time_expire
-            attach
-            attach2
-            notify_url
-            support_fapiao_lbl
-            total_fee
-            currency_lbl
-            openid
-            prepay_id
-          }
-          getDict(codes: [
-            "wx_pay_notice_trade_state",
-            "is_enabled",
-            "wx_pay_notice_currency",
-          ]) {
-            code
-            lbl
-          }
-        }
-      `,
-      variables: {
-      },
-    });
-    try {
-      const sheetName = "微信JSAPI下单";
-      const buffer = await workerFn(
-        `${ location.origin }/import_template/wx/pay_transactions_jsapi.xlsx`,
-        {
-          sheetName,
-          data,
-        },
-      );
-      saveAsExcel(buffer, `${ sheetName}导入`);
-    } catch (err) {
-      ElMessage.error("下载失败");
-      throw err;
-    }
-  }
-  return {
-    workerFn: workerFn2,
-    workerStatus,
-    workerTerminate,
-  };
-}
-
-/**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
@@ -334,6 +268,7 @@ export async function getDefaultInput() {
     trade_state_desc: "未支付",
     support_fapiao: 0,
     total_fee: 0,
+    currency: PayTransactionsJsapiCurrency.Cny,
   };
   return defaultInput;
 }

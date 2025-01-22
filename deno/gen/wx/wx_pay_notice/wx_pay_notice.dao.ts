@@ -1069,20 +1069,6 @@ export async function validate(
     fieldComments.transaction_id,
   );
   
-  // 交易类型
-  await validators.chars_max_length(
-    input.trade_type,
-    16,
-    fieldComments.trade_type,
-  );
-  
-  // 交易状态
-  await validators.chars_max_length(
-    input.trade_state,
-    32,
-    fieldComments.trade_state,
-  );
-  
   // 交易状态描述
   await validators.chars_max_length(
     input.trade_state_desc,
@@ -1102,20 +1088,6 @@ export async function validate(
     input.attach,
     128,
     fieldComments.attach,
-  );
-  
-  // 货币类型
-  await validators.chars_max_length(
-    input.currency,
-    16,
-    fieldComments.currency,
-  );
-  
-  // 用户支付币种
-  await validators.chars_max_length(
-    input.payer_currency,
-    16,
-    fieldComments.payer_currency,
   );
   
   // 商户端设备号

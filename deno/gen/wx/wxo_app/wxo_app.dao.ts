@@ -1141,20 +1141,6 @@ export async function validate(
     fieldComments.encoding_aes_key,
   );
   
-  // 消息加解密方式
-  await validators.chars_max_length(
-    input.encoding_type,
-    20,
-    fieldComments.encoding_type,
-  );
-  
-  // 授权作用域
-  await validators.chars_max_length(
-    input.scope,
-    20,
-    fieldComments.scope,
-  );
-  
   // 网页授权域名
   await validators.chars_max_length(
     input.domain_id,
