@@ -29,14 +29,12 @@ type DictbizModel {
   code: String!
   "名称"
   lbl: String!
+  "可新增"
+  is_add: Int!
   "数据类型"
   type: DictbizType!
   "数据类型"
   type_lbl: String!
-  "锁定"
-  is_locked: Int!
-  "锁定"
-  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
@@ -75,14 +73,12 @@ type DictbizFieldComment {
   code: String!
   "名称"
   lbl: String!
+  "可新增"
+  is_add: String!
   "数据类型"
   type: String!
   "数据类型"
   type_lbl: String!
-  "锁定"
-  is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -115,14 +111,12 @@ input DictbizInput {
   code: String
   "名称"
   lbl: String
+  "可新增"
+  is_add: Int
   "数据类型"
   type: DictbizType
   "数据类型"
   type_lbl: String
-  "锁定"
-  is_locked: Int
-  "锁定"
-  is_locked_lbl: String
   "启用"
   is_enabled: Int
   "启用"
@@ -189,8 +183,6 @@ type Mutation {
   deleteByIdsDictbiz(ids: [DictbizId!]!): Int!
   "根据 ids 启用或者禁用业务字典"
   enableByIdsDictbiz(ids: [DictbizId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁业务字典"
-  lockByIdsDictbiz(ids: [DictbizId!]!, is_locked: Int!): Int!
   "根据 ids 还原业务字典"
   revertByIdsDictbiz(ids: [DictbizId!]!): Int!
   "根据 ids 彻底删除业务字典"

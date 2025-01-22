@@ -40,12 +40,11 @@ export function intoInput(
     code: model?.code,
     // 名称
     lbl: model?.lbl,
+    // 可新增
+    is_add: model?.is_add,
     // 数据类型
     type: model?.type,
     type_lbl: model?.type_lbl,
-    // 锁定
-    is_locked: model?.is_locked,
-    is_locked_lbl: model?.is_locked_lbl,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
@@ -290,31 +289,6 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁业务字典
- */
-export async function lockByIds(
-  ids: DictbizId[],
-  is_locked: 0 | 1,
-  opt?: GqlOpt,
-) {
-  const data: {
-    lockByIdsDictbiz: Mutation["lockByIdsDictbiz"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [DictbizId!]!, $is_locked: Int!) {
-        lockByIdsDictbiz(ids: $ids, is_locked: $is_locked)
-      }
-    `,
-    variables: {
-      ids,
-      is_locked,
-    },
-  }, opt);
-  const res = data.lockByIdsDictbiz;
-  return res;
-}
-
-/**
  * 根据 ids 还原业务字典
  */
 export async function revertByIds(
@@ -409,7 +383,7 @@ export async function getDictbizList() {
 /**
  * 下载业务字典导入模板
  */
-export function useDownloadImportTemplate(routePath: string) {
+export function useDownloadImportTemplate() {
   const {
     workerFn,
     workerStatus,
@@ -422,6 +396,7 @@ export function useDownloadImportTemplate(routePath: string) {
           getFieldCommentsDictbiz {
             code
             lbl
+            is_add
             type_lbl
             order_by
             rem
@@ -462,7 +437,7 @@ export function useDownloadImportTemplate(routePath: string) {
 /**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
@@ -490,7 +465,6 @@ export function useExportExcel(routePath: string) {
             }
             getDict(codes: [
               "dict_type",
-              "is_locked",
               "is_enabled",
             ]) {
               code
@@ -606,8 +580,8 @@ export function getPagePath() {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: DictbizInput = {
+    is_add: 0,
     type: DictbizType.String,
-    is_locked: 0,
     is_enabled: 1,
     order_by: 1,
   };
