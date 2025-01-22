@@ -120,8 +120,15 @@ const hasAtt = columns.some((item) => item.isAtt);
   #>
 >
   <template #extra_header>
-    <div
-      :title="ns('重置')"
+    <div<#
+      if (isUseI18n) {
+      #>
+      :title="ns('重置')"<#
+      } else {
+      #>
+      title="重置"<#
+      }
+      #>
     >
       <ElIconRefresh
         class="reset_but"
@@ -132,8 +139,15 @@ const hasAtt = columns.some((item) => item.isAtt);
     #>
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
-        v-if="!isReadonly"
-        :title="ns('锁定')"
+        v-if="!isReadonly"<#
+        if (isUseI18n) {
+        #>
+        :title="ns('锁定')"<#
+        } else {
+        #>
+        title="锁定"<#
+        }
+        #>
       >
         <ElIconUnlock
           class="unlock_but"
@@ -142,8 +156,15 @@ const hasAtt = columns.some((item) => item.isAtt);
         </ElIconUnlock>
       </div>
       <div
-        v-else
-        :title="ns('解锁')"
+        v-else<#
+        if (isUseI18n) {
+        #>
+        :title="ns('解锁')"<#
+        } else {
+        #>
+        title="解锉"<#
+        }
+        #>
       >
         <ElIconLock
           class="lock_but"
@@ -242,8 +263,15 @@ const hasAtt = columns.some((item) => item.isAtt);
         #>field_permit('<#=column_name#>') && <#
           }
         #>(showBuildIn || builtInModel?.<#=column_name#> == null)<#=vIfStr ? ' && '+vIfStr : ''#>">
-          <el-form-item
-            :label="n('<#=column_comment#>')"
+          <el-form-item<#
+            if (isUseI18n) {
+            #>
+            :label="n('<#=column_comment#>')"<#
+            } else {
+            #>
+            label="<#=column_comment#>"<#
+            }
+            #>
             prop="<#=column_name#>"<#
             if (
               (column.isTextarea && detailFormCols > 1) ||
@@ -295,8 +323,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
               }
               #>
               :page-inited="inited"
@@ -347,8 +382,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                   label: item.<#=foreignKey.lbl#>,
                   value: item.<#=foreignKey.column#>,
                 };
-              })"
+              })"<#
+              if (isUseI18n) {
+              #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               if (foreignKey.multiple) {
               #>
               multiple<#
@@ -367,8 +409,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
               }
               #><#
               if (mod === "base" && table === "usr" && column_name === "default_org_id") {
@@ -395,8 +444,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                   <el-button
                     plain
                     @click="<#=column_name#>OpenAddDialog"
-                  >
-                    {{ ns("新增") }}{{ ns("<#=foreignSchema.opts.table_comment#>") }}
+                  ><#
+                    if (isUseI18n) {
+                    #>
+                    {{ ns("新增") }}{{ ns("<#=foreignSchema.opts.table_comment#>") }}<#
+                    } else {
+                    #>
+                    新增<#=foreignSchema.opts.table_comment#><#
+                    }
+                    #>
                   </el-button>
                 </div>
               </template>
@@ -414,8 +470,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
               }
               #>
-              v-model="dialogModel.<#=column_name#>"
+              v-model="dialogModel.<#=column_name#>"<#
+              if (isUseI18n) {
+              #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               if (foreignKey.multiple) {
               #>
               multiple<#
@@ -434,8 +497,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
               }
               #>
               @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -452,8 +522,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
               }
               #>
-              :method="get<#=Foreign_Table_Up#>Tree"
+              :method="get<#=Foreign_Table_Up#>Tree"<#
+              if (isUseI18n) {
+              #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               if (foreignKey.lbl !== "lbl") {
               #>
               :props="{
@@ -480,8 +557,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
               }
               #><#
               if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
@@ -507,8 +591,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #>
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
-              code="<#=column.dict#>"
+              code="<#=column.dict#>"<#
+              if (isUseI18n) {
+              #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               if (column.readonly) {
               #>
               :readonly="true"<#
@@ -522,8 +613,20 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
+              }
+              #><#
+              if (column.dictHasSelectAdd) {
+              #>
+              :has-select-add="true"<#
               }
               #>
             ></DictSelect><#
@@ -537,8 +640,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #>
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? undefined"
-              code="<#=column.dictbiz#>"
+              code="<#=column.dictbiz#>"<#
+              if (isUseI18n) {
+              #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               if (column.readonly) {
               #>
               :readonly="true"<#
@@ -552,8 +662,20 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
+              }
+              #><#
+              if (column.dictHasSelectAdd) {
+              #>
+              :has-select-add="true"<#
               }
               #>
             ></DictbizSelect><#
@@ -577,8 +699,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               format="YYYY-MM"
               value-format="YYYY-MM-DD"<#
               }
+              #><#
+              if (isUseI18n) {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
               if (column.readonly) {
               #>
               :readonly="true"<#
@@ -592,17 +721,32 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
               }
               #>
             ></CustomDatePicker><#
             } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
             #>
             <CustomCheckbox
-              v-model="dialogModel.<#=column_name#>"
+              v-model="dialogModel.<#=column_name#>"<#
+              if (isUseI18n) {
+              #>
               :true-readonly-label="`${ ns('是') }`"
               :false-readonly-label="`${ ns('否') }`"<#
+              } else {
+              #>
+              true-readonly-label="是"
+              false-readonly-label="否"<#
+              }
+              #><#
               if (column.readonly) {
               #>
               :readonly="true"<#
@@ -616,8 +760,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
               }
               #>
             >
@@ -626,8 +777,15 @@ const hasAtt = columns.some((item) => item.isAtt);
             } else if (column_type.startsWith("int")) {
             #>
             <CustomInputNumber
-              v-model="dialogModel.<#=column_name#>"
+              v-model="dialogModel.<#=column_name#>"<#
+              if (isUseI18n) {
+              #>
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              } else {
+              #>
+              placeholder="请输入 <#=column_comment#>"<#
+              }
+              #><#
               if (column.readonly) {
               #>
               :readonly="true"<#
@@ -641,8 +799,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
               }
               #>
             ></CustomInputNumber><#
@@ -668,8 +833,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               :min="<#=min#>"<#
                 }
               #>
-              :precision="<#=precision#>"
+              :precision="<#=precision#>"<#
+              if (isUseI18n) {
+              #>
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              } else {
+              #>
+              placeholder="请输入 <#=column_comment#>"<#
+              }
+              #><#
               if (column.readonly) {
               #>
               :readonly="true"<#
@@ -683,8 +855,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
               }
               #>
             ></CustomInputNumber><#
@@ -758,8 +937,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"<#
               }
+              #><#
+              if (isUseI18n) {
               #>
               :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+              } else {
+              #>
+              placeholder="请输入 <#=column_comment#>"<#
+              }
+              #><#
               if (column.readonly) {
               #>
               :readonly="true"<#
@@ -773,8 +959,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               }
               #><#
               if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
               #>
               :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
               }
               #><#
               if (mod === "cron" && table === "cron_job" && column_name === "cron") {
@@ -842,8 +1035,15 @@ const hasAtt = columns.some((item) => item.isAtt);
             >
               
               <el-table-column
-                prop="_seq"
-                :label="ns('序号')"
+                prop="_seq"<#
+                if (isUseI18n) {
+                #>
+                :label="ns('序号')"<#
+                } else {
+                #>
+                label="序号"<#
+                }
+                #>
                 align="center"
                 width="80"
               >
@@ -893,8 +1093,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                 v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
                 }
                 #>
-                prop="<#=column_name#>"
-                :label="n('<#=column_comment#>')"
+                prop="<#=column_name#>"<#
+                if (isUseI18n) {
+                #>
+                :label="n('<#=column_comment#>')"<#
+                } else {
+                #>
+                label="<#=column_comment#>"<#
+                }
+                #>
                 width="<#=width#>"
                 header-align="center"
               >
@@ -946,8 +1153,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomSelect><#
@@ -982,8 +1196,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                       @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -1001,8 +1222,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #>
                       v-model="row.<#=column_name#>"
-                      :method="get<#=Foreign_Table_Up#>Tree"
+                      :method="get<#=Foreign_Table_Up#>Tree"<#
+                      if (isUseI18n) {
+                      #>
                       :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+                      } else {
+                      #>
+                      placeholder="请选择 <#=column_comment#>"<#
+                      }
+                      #><#
                       if (foreignKey.lbl !== "lbl") {
                       #>
                       :props="{
@@ -1029,8 +1257,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomTreeSelect><#
@@ -1059,8 +1294,20 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
+                      }
+                      #><#
+                      if (column.dictHasSelectAdd) {
+                      #>
+                      :has-select-add="true"<#
                       }
                       #>
                     ></DictSelect><#
@@ -1089,8 +1336,20 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
+                      }
+                      #><#
+                      if (column.dictHasSelectAdd) {
+                      #>
+                      :has-select-add="true"<#
                       }
                       #>
                     ></DictbizSelect><#
@@ -1129,17 +1388,32 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomDatePicker><#
                     } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
                     #>
                     <CustomCheckbox
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (isUseI18n) {
+                      #>
                       :true-readonly-label="`${ ns('是') }`"
                       :false-readonly-label="`${ ns('否') }`"<#
+                      } else {
+                      #>
+                      true-readonly-label="是"
+                      false-readonly-label="否"<#
+                      }
+                      #><#
                       if (column.readonly) {
                       #>
                       :readonly="true"<#
@@ -1153,8 +1427,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     >
@@ -1179,8 +1460,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -1221,8 +1509,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -1250,8 +1545,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomInput><#
@@ -1264,9 +1566,23 @@ const hasAtt = columns.some((item) => item.isAtt);
               #>
               
               <el-table-column
-                v-if="!isLocked && !isReadonly"
-                prop="_operation"
-                :label="ns('操作')"
+                v-if="!isLocked &&
+                  !isReadonly &&
+                  <#=inline_column_name#>Data.some((item) => item._type === 'add'<#
+                  if (hasIsSys) {
+                  #> || !item.is_sys<#
+                  }
+                  #>)
+                "
+                prop="_operation"<#
+                if (isUseI18n) {
+                #>
+                :label="ns('操作')"<#
+                } else {
+                #>
+                label="操作"<#
+                }
+                #>
                 width="90"
                 align="center"
                 fixed="right"
@@ -1279,25 +1595,38 @@ const hasAtt = columns.some((item) => item.isAtt);
                     plain
                     type="primary"
                     @click="<#=inline_column_name#>Add"
-                  >
-                    {{ ns('新增') }}
+                  ><#
+                    if (isUseI18n) {
+                    #>
+                    {{ ns('新增') }}<#
+                    } else {
+                    #>
+                    新增<#
+                    }
+                    #>
                   </el-button><#
                   if (!opts?.noDelete) {
                   #>
                   
                   <el-button
-                    v-else
-                    size="small"
-                    plain
-                    type="danger"<#
+                    v-else<#
                     if (hasIsSys) {
-                    #>
-                    :disabled="!!row.is_sys"<#
+                    #>-if="!row.is_sys"<#
                     }
                     #>
+                    size="small"
+                    plain
+                    type="danger"
                     @click="<#=inline_column_name#>Remove(row)"
-                  >
-                    {{ ns('删除') }}
+                  ><#
+                    if (isUseI18n) {
+                    #>
+                    {{ ns('删除') }}<#
+                    } else {
+                    #>
+                    删除<#
+                    }
+                    #>
                   </el-button><#
                   }
                   #>
@@ -1429,8 +1758,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                   const isPassword = column.isPassword;
                 #>
                 
-                <el-form-item
-                  :label="n('<#=column_comment#>')"
+                <el-form-item<#
+                  if (isUseI18n) {
+                  #>
+                  :label="n('<#=column_comment#>')"<#
+                  } else {
+                  #>
+                  label="<#=column_comment#>"<#
+                  }
+                  #>
                   prop="<#=inline_column_name#>.<#=column_name#>"<#
                   if (
                     (column.isTextarea && detailFormCols > 1) ||
@@ -1482,8 +1818,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
                     }
                     #>
                     :page-inited="inited"
@@ -1530,8 +1873,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                         label: item.<#=foreignKey.lbl#>,
                         value: item.<#=foreignKey.column#>,
                       };
-                    })"
+                    })"<#
+                    if (isUseI18n) {
+                    #>
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+                    } else {
+                    #>
+                    placeholder="请选择 <#=column_comment#>"<#
+                    }
+                    #><#
                     if (foreignKey.multiple) {
                     #>
                     multiple<#
@@ -1550,8 +1900,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
                     }
                     #><#
                     if (mod === "base" && table === "usr" && column_name === "default_org_id") {
@@ -1578,8 +1935,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                         <el-button
                           plain
                           @click="<#=column_name#>OpenAddDialog"
-                        >
-                          {{ ns("新增") }}{{ ns("<#=foreignSchema.opts.table_comment#>") }}
+                        ><#
+                          if (isUseI18n) {
+                          #>
+                          {{ ns("新增") }} {{ ns("<#=foreignSchema.opts.table_comment#>") }}<#
+                          } else {
+                          #>
+                          新增 <#=foreignSchema.opts.table_comment#><#
+                          }
+                          #>
                         </el-button>
                       </div>
                     </template>
@@ -1597,8 +1961,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? [ ]"<#
                     }
                     #>
-                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"
+                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
+                    if (isUseI18n) {
+                    #>
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+                    } else {
+                    #>
+                    placeholder="请选择 <#=column_comment#>"<#
+                    }
+                    #><#
                     if (foreignKey.multiple) {
                     #>
                     multiple<#
@@ -1617,8 +1988,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
                     }
                     #>
                     @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -1635,8 +2013,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #>
                     v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"
-                    :method="get<#=Foreign_Table_Up#>Tree"
+                    :method="get<#=Foreign_Table_Up#>Tree"<#
+                    if (isUseI18n) {
+                    #>
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+                    } else {
+                    #>
+                    placeholder="请选择 <#=column_comment#>"<#
+                    }
+                    #><#
                     if (foreignKey.lbl !== "lbl") {
                     #>
                     :props="{
@@ -1663,8 +2048,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
                     }
                     #><#
                     if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
@@ -1690,8 +2082,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #>
                     :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? undefined"
-                    code="<#=column.dict#>"
+                    code="<#=column.dict#>"<#
+                    if (isUseI18n) {
+                    #>
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+                    } else {
+                    #>
+                    placeholder="请选择 <#=column_comment#>"<#
+                    }
+                    #><#
                     if (column.readonly) {
                     #>
                     :readonly="true"<#
@@ -1705,8 +2104,20 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
+                    }
+                    #><#
+                    if (column.dictHasSelectAdd) {
+                    #>
+                    :has-select-add="true"<#
                     }
                     #>
                   ></DictSelect><#
@@ -1720,8 +2131,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #>
                     :set="dialogModel.<#=inline_column_name#>.<#=column_name#> = dialogModel.<#=inline_column_name#>.<#=column_name#> ?? undefined"
-                    code="<#=column.dictbiz#>"
+                    code="<#=column.dictbiz#>"<#
+                    if (isUseI18n) {
+                    #>
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+                    } else {
+                    #>
+                    placeholder="请选择 <#=column_comment#>"<#
+                    }
+                    #><#
                     if (column.readonly) {
                     #>
                     :readonly="true"<#
@@ -1735,8 +2153,20 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
+                    }
+                    #><#
+                    if (column.dictHasSelectAdd) {
+                    #>
+                    :has-select-add="true"<#
                     }
                     #>
                   ></DictbizSelect><#
@@ -1760,8 +2190,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     format="YYYY-MM"
                     value-format="YYYY-MM-DD"<#
                     }
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+                    } else {
+                    #>
+                    placeholder="请选择 <#=column_comment#>"<#
+                    }
+                    #><#
                     if (column.readonly) {
                     #>
                     :readonly="true"<#
@@ -1775,17 +2212,32 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
                     }
                     #>
                   ></CustomDatePicker><#
                   } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
                   #>
                   <CustomCheckbox
-                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"
+                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
+                    if (isUseI18n) {
+                    #>
                     :true-readonly-label="`${ ns('是') }`"
                     :false-readonly-label="`${ ns('否') }`"<#
+                    } else {
+                    #>
+                    true-readonly-label="是"
+                    false-readonly-label="否"<#
+                    }
+                    #><#
                     if (column.readonly) {
                     #>
                     :readonly="true"<#
@@ -1799,8 +2251,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
                     }
                     #>
                   >
@@ -1809,8 +2268,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                   } else if (column_type.startsWith("int")) {
                   #>
                   <CustomInputNumber
-                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"
+                    v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
+                    if (isUseI18n) {
+                    #>
                     :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+                    } else {
+                    #>
+                    placeholder="请输入 <#=column_comment#>"<#
+                    }
+                    #><#
                     if (column.readonly) {
                     #>
                     :readonly="true"<#
@@ -1824,8 +2290,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
                     }
                     #>
                   ></CustomInputNumber><#
@@ -1851,8 +2324,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     :min="<#=min#>"<#
                       }
                     #>
-                    :precision="<#=precision#>"
+                    :precision="<#=precision#>"<#
+                    if (isUseI18n) {
+                    #>
                     :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+                    } else {
+                    #>
+                    placeholder="请输入 <#=column_comment#>"<#
+                    }
+                    #><#
                     if (column.readonly) {
                     #>
                     :readonly="true"<#
@@ -1866,8 +2346,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
                     }
                     #>
                   ></CustomInputNumber><#
@@ -1887,8 +2374,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     :autosize="{ minRows: 2, maxRows: 5 }"
                     @keyup.enter.stop<#
                     }
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+                    } else {
+                    #>
+                    placeholder="请输入 <#=column_comment#>"<#
+                    }
+                    #><#
                     if (column.readonly) {
                     #>
                     :readonly="true"<#
@@ -1902,8 +2396,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     }
                     #><#
                     if (readonlyPlaceholder) {
+                    #><#
+                    if (isUseI18n) {
                     #>
                     :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    } else {
+                    #>
+                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    }
+                    #><#
                     }
                     #><#
                     if (mod === "cron" && table === "cron_job" && column_name === "cron") {
@@ -1997,8 +2498,15 @@ const hasAtt = columns.some((item) => item.isAtt);
             >
               
               <el-table-column
-                prop="order_by"
-                :label="ns('序号')"
+                prop="order_by"<#
+                if (isUseI18n) {
+                #>
+                :label="ns('序号')"<#
+                } else {
+                #>
+                label="序号"<#
+                }
+                #>
                 align="center"
                 width="52"
               >
@@ -2050,8 +2558,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                 v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
                 }
                 #>
-                prop="<#=column_name#>"
-                :label="n('<#=column_comment#>')"
+                prop="<#=column_name#>"<#
+                if (isUseI18n) {
+                #>
+                :label="n('<#=column_comment#>')"<#
+                } else {
+                #>
+                label="<#=column_comment#>"<#
+                }
+                #>
                 width="<#=width#>"
                 header-align="center"
               >
@@ -2103,8 +2618,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomSelect><#
@@ -2139,8 +2661,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                       @validate-field="() => formRef?.validateField('<#=column_name#>')"
@@ -2158,8 +2687,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #>
                       v-model="row.<#=column_name#>"
-                      :method="get<#=Foreign_Table_Up#>Tree"
+                      :method="get<#=Foreign_Table_Up#>Tree"<#
+                      if (isUseI18n) {
+                      #>
                       :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+                      } else {
+                      #>
+                      placeholder="请选择 <#=column_comment#>"<#
+                      }
+                      #><#
                       if (foreignKey.lbl !== "lbl") {
                       #>
                       :props="{
@@ -2186,8 +2722,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomTreeSelect><#
@@ -2216,8 +2759,20 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
+                      }
+                      #><#
+                      if (column.dictHasSelectAdd) {
+                      #>
+                      :has-select-add="true"<#
                       }
                       #>
                     ></DictSelect><#
@@ -2246,8 +2801,20 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
+                      }
+                      #><#
+                      if (column.dictHasSelectAdd) {
+                      #>
+                      :has-select-add="true"<#
                       }
                       #>
                     ></DictbizSelect><#
@@ -2286,17 +2853,32 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomDatePicker><#
                     } else if (column_type.startsWith("int(1)") || column_type.startsWith("tinyint(1)")) {
                     #>
                     <CustomCheckbox
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (isUseI18n) {
+                      #>
                       :true-readonly-label="`${ ns('是') }`"
                       :false-readonly-label="`${ ns('否') }`"<#
+                      } else {
+                      #>
+                      true-readonly-label="是"
+                      false-readonly-label="否"<#
+                      }
+                      #><#
                       if (column.readonly) {
                       #>
                       :readonly="true"<#
@@ -2310,8 +2892,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     >
@@ -2336,8 +2925,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -2378,8 +2974,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomInputNumber><#
@@ -2407,8 +3010,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                       }
                       #><#
                       if (readonlyPlaceholder) {
+                      #><#
+                      if (isUseI18n) {
                       #>
                       :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      } else {
+                      #>
+                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      }
+                      #><#
                       }
                       #>
                     ></CustomInput><#
@@ -2426,8 +3036,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                 v-if="dialogAction !== 'add' && dialogAction !== 'copy'"<#
                 }
                 #>
-                prop="<#=column_name#>_lbl"
-                :label="n('<#=column_comment#>')"
+                prop="<#=column_name#>_lbl"<#
+                if (isUseI18n) {
+                #>
+                :label="n('<#=column_comment#>')"<#
+                } else {
+                #>
+                label="<#=column_comment#>"<#
+                }
+                #>
                 width="<#=width#>"
                 header-align="center"
                 align="<#=column.align || 'center'#>"
@@ -2439,8 +3056,15 @@ const hasAtt = columns.some((item) => item.isAtt);
               
               <el-table-column
                 v-if="permit('edit') && !isLocked && !isReadonly"
-                prop="_operation"
-                :label="ns('操作')"
+                prop="_operation"<#
+                if (isUseI18n) {
+                #>
+                :label="ns('操作')"<#
+                } else {
+                #>
+                label="操作"<#
+                }
+                #>
                 width="72"
                 align="center"
                 fixed="right"
@@ -2453,8 +3077,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     plain
                     type="primary"
                     @click="<#=column_name#>Select"
-                  >
-                    {{ ns('选择') }}
+                  ><#
+                    if (isUseI18n) {
+                    #>
+                    {{ ns('选择') }}<#
+                    } else {
+                    #>
+                    选择<#
+                    }
+                    #>
                   </el-button>
                   
                   <el-button
@@ -2463,8 +3094,15 @@ const hasAtt = columns.some((item) => item.isAtt);
                     plain
                     type="danger"
                     @click="<#=column_name#>Remove(row)"
-                  >
-                    {{ ns('删除') }}
+                  ><#
+                    if (isUseI18n) {
+                    #>
+                    {{ ns('删除') }}<#
+                    } else {
+                    #>
+                    删除<#
+                    }
+                    #>
                   </el-button>
                   
                 </template>
@@ -2494,8 +3132,15 @@ const hasAtt = columns.some((item) => item.isAtt);
       >
         <template #icon>
           <ElIconCircleClose />
-        </template>
-        <span>{{ ns('关闭') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('关闭') }}</span><#
+        } else {
+        #>
+        <span>关闭</span><#
+        }
+        #>
       </el-button><#
       if (!opts.noAdd && !opts.hideSaveAndCopy) {
       #>
@@ -2508,8 +3153,15 @@ const hasAtt = columns.some((item) => item.isAtt);
       >
         <template #icon>
           <ElIconCircleCheck />
-        </template>
-        <span>{{ ns('保存并继续') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('保存并继续') }}</span><#
+        } else {
+        #>
+        <span>保存并继续</span><#
+        }
+        #>
       </el-button><#
       }
       #><#
@@ -2524,8 +3176,15 @@ const hasAtt = columns.some((item) => item.isAtt);
       >
         <template #icon>
           <ElIconCircleCheck />
-        </template>
-        <span>{{ ns('保存') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('保存') }}</span><#
+        } else {
+        #>
+        <span>保存</span><#
+        }
+        #>
       </el-button><#
       }
       #><#
@@ -2540,8 +3199,15 @@ const hasAtt = columns.some((item) => item.isAtt);
       >
         <template #icon>
           <ElIconCircleCheck />
-        </template>
-        <span>{{ ns('保存') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('保存') }}</span><#
+        } else {
+        #>
+        <span>保存</span><#
+        }
+        #>
       </el-button><#
       }
       #>
@@ -3226,7 +3892,9 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePath();<#
+if (isUseI18n) {
+#>
 
 const {
   n,
@@ -3234,7 +3902,9 @@ const {
   nsAsync,
   initI18ns,
   initSysI18ns,
-} = useI18n(pagePath);
+} = useI18n(pagePath);<#
+}
+#>
 
 const permitStore = usePermitStore();<#
 if (tableFieldPermit) {
@@ -3336,7 +4006,7 @@ let ids = $ref<<#=Table_Up#>Id[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<<#=Table_Up#>Id[]>([ ]);
 
-const formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -3398,14 +4068,28 @@ watchEffect(async () => {
       if (column.dict || column.dictbiz) {
       #>
       {
-        required: <#=(!!require).toString()#>,
-        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,
+        required: <#=(!!require).toString()#>,<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,<#
+        } else {
+        #>
+        message: "请选择 <#=column_comment#>",<#
+        }
+        #>
       },<#
       } else {
       #>
       {
-        required: <#=(!!require).toString()#>,
-        message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,
+        required: <#=(!!require).toString()#>,<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,<#
+        } else {
+        #>
+        message: "请输入 <#=column_comment#>",<#
+        }
+        #>
       },<#
       }
       #><#
@@ -3423,8 +4107,15 @@ watchEffect(async () => {
         #>
         max: <#=validator.maximum#>,<#
           }
+        #><#
+        if (isUseI18n) {
         #>
-        message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能大于 {0}", <#=validator.maximum#>) }`,
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能大于 {0}", <#=validator.maximum#>) }`,<#
+        } else {
+        #>
+        message: "<#=column_comment#> 不能大于 <#=validator.maximum#>",<#
+        }
+        #>
       },<#
         } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
           if (column.foreignKey || column.dict || column.dictbiz) {
@@ -3437,8 +4128,15 @@ watchEffect(async () => {
         #>
         min: <#=validator.minimum#>,<#
           }
+        #><#
+        if (isUseI18n) {
         #>
-        message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能小于 {0}", <#=validator.minimum#>) }`,
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能小于 {0}", <#=validator.minimum#>) }`,<#
+        } else {
+        #>
+        message: "<#=column_comment#> 不能小于 <#=validator.minimum#>",<#
+        }
+        #>
       },<#
         } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
           if (column.foreignKey || column.dict || column.dictbiz) {
@@ -3451,8 +4149,15 @@ watchEffect(async () => {
         #>
         max: <#=validator.chars_max_length#>,<#
           }
+        #><#
+        if (isUseI18n) {
         #>
-        message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能超过 {0}", <#=validator.chars_max_length#>) }`,
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能超过 {0}", <#=validator.chars_max_length#>) }`,<#
+        } else {
+        #>
+        message: "<#=column_comment#> 长度不能超过 <#=validator.chars_max_length#>",<#
+        }
+        #>
       },<#
         } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
           if (column.foreignKey || column.dict || column.dictbiz) {
@@ -3465,8 +4170,15 @@ watchEffect(async () => {
         #>
         min: <#=validator.chars_min_length#>,<#
           }
+        #><#
+        if (isUseI18n) {
         #>
-        message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能小于 {0}", <#=validator.chars_min_length#>) }`,
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能小于 {0}", <#=validator.chars_min_length#>) }`,<#
+        } else {
+        #>
+        message: "<#=column_comment#> 长度不能小于 <#=validator.chars_min_length#>",<#
+        }
+        #>
       },<#
         } else if (validator.regex != null && [ "varchar", "text" ].includes(data_type)) {
       #>
@@ -3476,26 +4188,54 @@ watchEffect(async () => {
         #>
         pattern: "<#=validator.regex#>",<#
           }
+        #><#
+        if (isUseI18n) {
         #>
-        message: `${ n("<#=column_comment#>") } ${ await nsAsync("格式不正确") }`,
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("格式不正确") }`,<#
+        } else {
+        #>
+        message: "<#=column_comment#> 格式不正确",<#
+        }
+        #>
       },<#
         } else if (validator.email) {
       #>
       {
-        type: "email",
-        message: `${ await nsAsync("请输入正确的电子邮件") }`,
+        type: "email",<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请输入正确的电子邮件") }`,<#
+        } else {
+        #>
+        message: "请输入正确的电子邮件",<#
+        }
+        #>
       },<#
         } else if (validator.url) {
       #>
       {
-        type: "url",
-        message: `${ await nsAsync("请输入正确的网址") }`,
+        type: "url",<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请输入正确的网址") }`,<#
+        } else {
+        #>
+        message: "请输入正确的网址",<#
+        }
+        #>
       },<#
         } else if (validator.ip) {
       #>
       {
-        type: "ip",
-        message: `${ await nsAsync("请输入正确的IP地址") }`,
+        type: "ip",<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请输入正确的IP地址") }`,<#
+        } else {
+        #>
+        message: "请输入正确的IP地址",<#
+        }
+        #>
       },<#
         }
       #><#
@@ -3507,8 +4247,15 @@ watchEffect(async () => {
     // <#=column_comment#>
     <#=column_name#>: [
       {
-        required: <#=(!!require).toString()#>,
-        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,
+        required: <#=(!!require).toString()#>,<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,<#
+        } else {
+        #>
+        message: "请选择 <#=column_comment#>",<#
+        }
+        #>
       },
     ],<#
         }
@@ -3581,8 +4328,15 @@ watchEffect(async () => {
     // <#=column_comment#>
     "<#=inline_column_name#>.<#=column_name#>": [
       {
-        required: <#=(!!require).toString()#>,
-        message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,
+        required: <#=(!!require).toString()#>,<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请输入") } ${ n("<#=column_comment#>") }`,<#
+        } else {
+        #>
+        message: "请输入 <#=column_comment#>",<#
+        }
+        #>
       },<#
         for (let j = 0; j < validators.length; j++) {
           const validator = validators[j];
@@ -3598,8 +4352,15 @@ watchEffect(async () => {
         #>
         max: <#=validator.maximum#>,<#
           }
+        #><#
+        if (isUseI18n) {
         #>
-        message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能大于 {0}", <#=validator.maximum#>) }`,
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能大于 {0}", <#=validator.maximum#>) }`,<#
+        } else {
+        #>
+        message: "<#=column_comment#> 不能大于 <#=validator.maximum#>",<#
+        }
+        #>
       },<#
         } else if (validator.minimum != null && [ "int", "decimal", "tinyint" ].includes(data_type)) {
           if (column.foreignKey || column.dict || column.dictbiz) {
@@ -3612,8 +4373,15 @@ watchEffect(async () => {
         #>
         min: <#=validator.minimum#>,<#
           }
+        #><#
+        if (isUseI18n) {
         #>
-        message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能小于 {0}", <#=validator.minimum#>) }`,
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("不能小于 {0}", <#=validator.minimum#>) }`,<#
+        } else {
+        #>
+        message: "<#=column_comment#> 不能小于 <#=validator.minimum#>",<#
+        }
+        #>
       },<#
         } else if (validator.chars_max_length != null && [ "varchar", "text" ].includes(data_type)) {
           if (column.foreignKey || column.dict || column.dictbiz) {
@@ -3626,8 +4394,15 @@ watchEffect(async () => {
         #>
         max: <#=validator.chars_max_length#>,<#
           }
+        #><#
+        if (isUseI18n) {
         #>
-        message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能超过 {0}", <#=validator.chars_max_length#>) }`,
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能超过 {0}", <#=validator.chars_max_length#>) }`,<#
+        } else {
+        #>
+        message: "<#=column_comment#> 长度不能超过 <#=validator.chars_max_length#>",<#
+        }
+        #>
       },<#
         } else if (validator.chars_min_length != null && [ "varchar", "text" ].includes(data_type)) {
           if (column.foreignKey || column.dict || column.dictbiz) {
@@ -3640,8 +4415,15 @@ watchEffect(async () => {
         #>
         min: <#=validator.chars_min_length#>,<#
           }
+        #><#
+        if (isUseI18n) {
         #>
-        message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能小于 {0}", <#=validator.chars_min_length#>) }`,
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("长度不能小于 {0}", <#=validator.chars_min_length#>) }`,<#
+        } else {
+        #>
+        message: "<#=column_comment#> 长度不能小于 <#=validator.chars_min_length#>",<#
+        }
+        #>
       },<#
         } else if (validator.regex != null && [ "varchar", "text" ].includes(data_type)) {
       #>
@@ -3651,26 +4433,54 @@ watchEffect(async () => {
         #>
         pattern: "<#=validator.regex#>",<#
           }
+        #><#
+        if (isUseI18n) {
         #>
-        message: `${ n("<#=column_comment#>") } ${ await nsAsync("格式不正确") }`,
+        message: `${ n("<#=column_comment#>") } ${ await nsAsync("格式不正确") }`,<#
+        } else {
+        #>
+        message: "<#=column_comment#> 格式不正确",<#
+        }
+        #>
       },<#
         } else if (validator.email) {
       #>
       {
-        type: "email",
-        message: `${ await nsAsync("请输入正确的电子邮件") }`,
+        type: "email",<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请输入正确的电子邮件") }`,<#
+        } else {
+        #>
+        message: "请输入正确的电子邮件",<#
+        }
+        #>
       },<#
         } else if (validator.url) {
       #>
       {
-        type: "url",
-        message: `${ await nsAsync("请输入正确的网址") }`,
+        type: "url",<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请输入正确的网址") }`,<#
+        } else {
+        #>
+        message: "请输入正确的网址",<#
+        }
+        #>
       },<#
         } else if (validator.ip) {
       #>
       {
-        type: "ip",
-        message: `${ await nsAsync("请输入正确的IP地址") }`,
+        type: "ip",<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请输入正确的IP地址") }`,<#
+        } else {
+        #>
+        message: "请输入正确的IP地址",<#
+        }
+        #>
       },<#
         }
       #><#
@@ -3682,8 +4492,15 @@ watchEffect(async () => {
     // <#=column_comment#>
     "<#=inline_column_name#>.<#=column_name#>": [
       {
-        required: <#=(!!require).toString()#>,
-        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,
+        required: <#=(!!require).toString()#>,<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,<#
+        } else {
+        #>
+        message: "请选择 <#=column_comment#>",<#
+        }
+        #>
       },
     ],<#
         }
@@ -3737,8 +4554,8 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 // <#=foreignSchema.opts.table_comment#>
-const <#=foreignSchema.opts.table#>DetailDialogRef = $ref<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>();
-const <#=column_name#>Ref = $ref<InstanceType<typeof CustomSelect>>();
+const <#=foreignSchema.opts.table#>DetailDialogRef = $(useTemplateRef<InstanceType<typeof <#=foreignSchema.opts.tableUp#>DetailDialog>>("<#=foreignSchema.opts.table#>DetailDialogRef"));
+const <#=column_name#>Ref = $(useTemplateRef<InstanceType<typeof CustomSelect>>("<#=column_name#>Ref"));
 
 /** 打开新增 <#=foreignSchema.opts.table_comment#> 对话框 */
 async function <#=column_name#>OpenAddDialog() {
@@ -3747,8 +4564,15 @@ async function <#=column_name#>OpenAddDialog() {
   }
   const {
     changedIds,
-  } = await <#=foreignSchema.opts.table#>DetailDialogRef.showDialog({
-    title: await nsAsync("新增") + " " + await nsAsync("<#=foreignSchema.opts.table_comment#>"),
+  } = await <#=foreignSchema.opts.table#>DetailDialogRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: await nsAsync("新增") + " " + await nsAsync("<#=foreignSchema.opts.table_comment#>"),<#
+    } else {
+    #>
+    title: "新增 <#=foreignSchema.opts.table_comment#>",<#
+    }
+    #>
     action: "add",
   });
   if (changedIds.length > 0) {
@@ -3794,7 +4618,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
 let findOneModel = findOne;
 
@@ -4400,8 +5224,15 @@ watch(
     if (oldDialogNotice != null) {
       return;
     }
-    if (is_deleted) {
-      dialogNotice = await nsAsync("(已删除)");
+    if (is_deleted) {<#
+      if (isUseI18n) {
+      #>
+      dialogNotice = await nsAsync("(已删除)");<#
+      } else {
+      #>
+      dialogNotice = "(已删除)";<#
+      }
+      #>
       return;
     }<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -4414,14 +5245,35 @@ watch(
     if (isLocked) {<#
       if (hasDataPermit() && hasCreateUsrId) {
       #>
-      if (isEditableDataPermit) {
-        dialogNotice = await nsAsync("(已锁定)");
-      } else {
-        dialogNotice = await nsAsync("(无编辑权限)");
+      if (isEditableDataPermit) {<#
+        if (isUseI18n) {
+        #>
+        dialogNotice = await nsAsync("(已锁定)");<#
+        } else {
+        #>
+        dialogNotice = "(已锁定)";<#
+        }
+        #>
+      } else {<#
+        if (isUseI18n) {
+        #>
+        dialogNotice = await nsAsync("(无编辑权限)");<#
+        } else {
+        #>
+        dialogNotice = "(无编辑权限)";<#
+        }
+        #>
       }<#
       } else {
+      #><#
+      if (isUseI18n) {
       #>
       dialogNotice = await nsAsync("(已锁定)");<#
+      } else {
+      #>
+      dialogNotice = "(已锁定)";<#
+      }
+      #><#
       }
       #>
       return;
@@ -4492,11 +5344,26 @@ async function onReset() {
   }
   if (!isReadonly && !isLocked) {
     try {
-      await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
-        {
+      await ElMessageBox.confirm(<#
+        if (isUseI18n) {
+        #>
+        await nsAsync("确定要重置表单吗"),<#
+        } else {
+        #>
+        "确定要重置表单吗",<#
+        }
+        #>
+        {<#
+          if (isUseI18n) {
+          #>
           confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          cancelButtonText: await nsAsync("取消"),<#
+          } else {
+          #>
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",<#
+          }
+          #>
           type: "warning",
         },
       );
@@ -4533,8 +5400,15 @@ async function onReset() {
   } else if (dialogAction === "edit" || dialogAction === "view") {
     await onRefresh();
   }
-  ElMessage({
-    message: await nsAsync("表单重置完毕"),
+  ElMessage({<#
+    if (isUseI18n) {
+    #>
+    message: await nsAsync("表单重置完毕"),<#
+    } else {
+    #>
+    message: "表单重置完毕",<#
+    }
+    #>
     type: "success",
   });
 }<#
@@ -4556,11 +5430,26 @@ async function subscribeEditCallback(id?: <#=Table_Up#>Id) {
   }
   isShowEditCallbackConfirm = true;
   try {
-    await ElMessageBox.confirm(
-      await nsAsync("此 {0} 已被其他用户编辑，是否刷新?", await nsAsync("<#=table_comment#>")),
-      {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("此 {0} 已被其他用户编辑，是否刷新?", await nsAsync("<#=table_comment#>")),<#
+      } else {
+      #>
+      "此 {0} 已被其他用户编辑，是否刷新?", "<#=table_comment#>",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
         confirmButtonText: await nsAsync("刷新"),
-        cancelButtonText: await nsAsync("取消"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "刷新",
+        cancelButtonText: "取消",<#
+        }
+        #>
         type: "warning",
       },
     );
@@ -4592,11 +5481,26 @@ async function subscribeDeleteCallback(ids?: <#=Table_Up#>Id[]) {
     return;
   }
   try {
-    await ElMessageBox.confirm(
-      await nsAsync("此 {0} 已被其他用户删除, 是否关闭窗口", await nsAsync("<#=table_comment#>")),
-      {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("此 {0} 已被其他用户删除, 是否关闭窗口", await nsAsync("<#=table_comment#>")),<#
+      } else {
+      #>
+      "此 {0} 已被其他用户删除, 是否关闭窗口", "<#=table_comment#>",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
         confirmButtonText: await nsAsync("关闭"),
-        cancelButtonText: await nsAsync("暂不关闭"),
+        cancelButtonText: await nsAsync("暂不关闭"),<#
+        } else {
+        #>
+        confirmButtonText: "关闭",
+        cancelButtonText: "暂不关闭",<#
+        }
+        #>
         type: "warning",
       },
     );
@@ -4810,8 +5714,15 @@ async function onPageUp(e?: KeyboardEvent) {
     e.stopImmediatePropagation();
   }
   const isSucc = await prevId();
-  if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+  if (!isSucc) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("已经是第一项了"));<#
+    } else {
+    #>
+    ElMessage.warning("已经是第一项了");<#
+    }
+    #>
   }
 }
 
@@ -4853,8 +5764,15 @@ async function onPageDown(e?: KeyboardEvent) {
     e.stopImmediatePropagation();
   }
   const isSucc = await nextId();
-  if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+  if (!isSucc) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("已经是最后一项了"));<#
+    } else {
+    #>
+    ElMessage.warning("已经是最后一项了");<#
+    }
+    #>
   }
 }
 
@@ -5124,8 +6042,15 @@ async function save() {
       payload: id,
     });<#
     }
+    #><#
+    if (isUseI18n) {
     #>
-    msg = await nsAsync("新增成功");
+    msg = await nsAsync("新增成功");<#
+    } else {
+    #>
+    msg = "新增成功";<#
+    }
+    #>
   }<#
   }
   #><#
@@ -5195,8 +6120,15 @@ async function save() {
       payload: id,
     });<#
     }
+    #><#
+    if (isUseI18n) {
     #>
-    msg = await nsAsync("编辑成功");
+    msg = await nsAsync("编辑成功");<#
+    } else {
+    #>
+    msg = "编辑成功";<#
+    }
+    #>
   }<#
   }
   #>
@@ -5335,7 +6267,7 @@ async function onSave() {
 if (mod === "base" && table === "usr") {
 #>
 
-const default_org_idRef = $ref<InstanceType<typeof CustomSelect>>();
+const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
 let old_default_org_id: OrgId | null | undefined = undefined;
 
 async function getOrgListApi() {
@@ -5390,7 +6322,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 // <#=inlineForeignTab.label#>
-const <#=inline_column_name#>Ref = $ref<InstanceType<typeof ElTable>>();
+const <#=inline_column_name#>Ref = $(useTemplateRef<InstanceType<typeof ElTable>>("<#=inline_column_name#>Ref"));
 
 const <#=inline_column_name#>Data = $computed(() => {
   if (!isLocked && !isReadonly) {
@@ -5402,7 +6334,7 @@ const <#=inline_column_name#>Data = $computed(() => {
     ];
   }
   return dialogModel.<#=inline_column_name#> ?? [ ];
-});
+}) as (<#=Table_Up#>Input & { _type?: "add", is_sys: 0|1 })[];
 
 async function <#=inline_column_name#>Add() {
   if (!dialogModel.<#=inline_column_name#>) {
@@ -5580,8 +6512,8 @@ for (let i = 0; i < columns.length; i++) {
   const inlineMany2manyColumns = inlineMany2manySchema.columns;
 #>
 
-const <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
-const <#=column_name#>_<#=table#>Ref = $ref<InstanceType<typeof ElTable>>();
+const <#=column_name#>ListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("<#=column_name#>ListSelectDialogRef"));
+const <#=column_name#>_<#=table#>Ref = $(useTemplateRef<InstanceType<typeof ElTable>>("<#=column_name#>_<#=table#>Ref"));
 
 async function <#=column_name#>Select() {
   if (!<#=column_name#>ListSelectDialogRef) {
@@ -5591,8 +6523,15 @@ async function <#=column_name#>Select() {
     return;
   }
   dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ];
-  const res = await <#=column_name#>ListSelectDialogRef.showDialog({
-    title: await nsAsync("选择") + await nsAsync("<#=column_comment#>"),
+  const res = await <#=column_name#>ListSelectDialogRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: await nsAsync("选择") + " " + await nsAsync("<#=column_comment#>"),<#
+    } else {
+    #>
+    title: "选择 <#=column_comment#>",<#
+    }
+    #>
     selectedIds: dialogModel.<#=column_name#>,
     isLocked: dialogModel.is_locked == 1 || is_deleted == 1,
   });
@@ -5645,14 +6584,28 @@ watch(
     }
     dialogModel.<#=column_name#>_<#=table#>_models = inputs;
     let msg = "";
-    if (removeNum > 0) {
-      msg += await nsAsync("删除 {0} 项", removeNum);
+    if (removeNum > 0) {<#
+      if (isUseI18n) {
+      #>
+      msg += await nsAsync("删除 {0} 项", removeNum);<#
+      } else {
+      #>
+      msg += "删除 " + removeNum + " 项";<#
+      }
+      #>
     }
     if (createNum > 0) {
       if (msg) {
         msg += ", ";
+      }<#
+      if (isUseI18n) {
+      #>
+      msg += await nsAsync("新增 {0} 项", createNum);<#
+      } else {
+      #>
+      msg += "新增 " + createNum + " 项";<#
       }
-      msg += await nsAsync("新增 {0} 项", createNum);
+      #>
     }
     if (msg) {
       ElMessage.success(msg);
@@ -5757,7 +6710,9 @@ async function beforeClose(done: (cancel: boolean) => void) {
     type: "cancel",
     changedIds,
   });
-}
+}<#
+if (isUseI18n) {
+#>
 
 /** 初始化ts中的国际化信息 */
 async function onInitI18ns() {
@@ -5784,7 +6739,9 @@ async function onInitI18ns() {
     initI18ns(codes),
   ]);
 }
-onInitI18ns();
+onInitI18ns();<#
+}
+#>
 
 defineExpose({
   showDialog,

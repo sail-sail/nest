@@ -35,9 +35,6 @@ export function intoInput(
     lbl: model?.lbl,
     // 值
     val: model?.val,
-    // 锁定
-    is_locked: model?.is_locked,
-    is_locked_lbl: model?.is_locked_lbl,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
@@ -280,31 +277,6 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁业务字典明细
- */
-export async function lockByIds(
-  ids: DictbizDetailId[],
-  is_locked: 0 | 1,
-  opt?: GqlOpt,
-) {
-  const data: {
-    lockByIdsDictbizDetail: Mutation["lockByIdsDictbizDetail"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [DictbizDetailId!]!, $is_locked: Int!) {
-        lockByIdsDictbizDetail(ids: $ids, is_locked: $is_locked)
-      }
-    `,
-    variables: {
-      ids,
-      is_locked,
-    },
-  }, opt);
-  const res = data.lockByIdsDictbizDetail;
-  return res;
-}
-
-/**
  * 根据 ids 还原业务字典明细
  */
 export async function revertByIds(
@@ -399,10 +371,7 @@ export async function getDictbizList() {
 /**
  * 下载业务字典明细导入模板
  */
-export function useDownloadImportTemplate(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
+export function useDownloadImportTemplate() {
   const {
     workerFn,
     workerStatus,
@@ -429,7 +398,7 @@ export function useDownloadImportTemplate(routePath: string) {
       },
     });
     try {
-      const sheetName = await nsAsync("业务字典明细");
+      const sheetName = "业务字典明细";
       const buffer = await workerFn(
         `${ location.origin }/import_template/base/dictbiz_detail.xlsx`,
         {
@@ -437,9 +406,9 @@ export function useDownloadImportTemplate(routePath: string) {
           data,
         },
       );
-      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
+      saveAsExcel(buffer, `${ sheetName}导入`);
     } catch (err) {
-      ElMessage.error(await nsAsync("下载失败"));
+      ElMessage.error("下载失败");
       throw err;
     }
   }
@@ -453,10 +422,7 @@ export function useDownloadImportTemplate(routePath: string) {
 /**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
@@ -486,7 +452,6 @@ export function useExportExcel(routePath: string) {
               lbl
             }
             getDict(codes: [
-              "is_locked",
               "is_enabled",
             ]) {
               code
@@ -503,7 +468,7 @@ export function useExportExcel(routePath: string) {
         await setLblById(model, true);
       }
       try {
-        const sheetName = await nsAsync("业务字典明细");
+        const sheetName = "业务字典明细";
         const buffer = await workerFn(
           `${ location.origin }/excel_template/base/dictbiz_detail.xlsx`,
           {
@@ -514,7 +479,7 @@ export function useExportExcel(routePath: string) {
         );
         saveAsExcel(buffer, sheetName);
       } catch (err) {
-        ElMessage.error(await nsAsync("导出失败"));
+        ElMessage.error("导出失败");
         throw err;
       }
     } finally {
@@ -538,10 +503,6 @@ export async function importModels(
   isCancel: Ref<boolean>,
   opt?: GqlOpt,
 ) {
-  const {
-    nsAsync,
-  } = useI18n();
-  
   opt = opt || { };
   opt.showErrMsg = false;
   opt.notLoading = true;
@@ -571,7 +532,7 @@ export async function importModels(
       succNum += inputs.length;
     } catch (err) {
       failNum += inputs.length;
-      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));
+      failErrMsgs.push(`批量导入第 ${ i + 1 - inputs.length } 至 ${ i + 1 } 行时失败: ${ err }`);
     }
     
     percentage.value = Math.floor((i + 1) / len * 100);
@@ -606,7 +567,6 @@ export function getPagePath() {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: DictbizDetailInput = {
-    is_locked: 0,
     is_enabled: 1,
     order_by: 1,
   };

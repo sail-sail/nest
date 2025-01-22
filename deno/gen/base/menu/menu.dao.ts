@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -85,8 +80,6 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
-  
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
@@ -108,18 +101,10 @@ async function getWhereQuery(
     whereQuery += ` and (parent_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.parent_id_lbl_like) + "%") } or base_menu_lang.parent_id_lbl like ${ args.push("%" + sqlLike(search?.parent_id_lbl_like) + "%") })`;
   }
   if (search?.lbl != null) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.lbl=${ args.push(search.lbl) } or base_menu_lang.lbl=${ args.push(search.lbl) })`;
-    } else {
-      whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
-    }
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") } or base_menu_lang.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") })`;
-    } else {
-      whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
-    }
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.route_path != null) {
     whereQuery += ` and t.route_path=${ args.push(search.route_path) }`;
@@ -148,18 +133,10 @@ async function getWhereQuery(
     }
   }
   if (search?.rem != null) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.rem=${ args.push(search.rem) } or base_menu_lang.rem=${ args.push(search.rem) })`;
-    } else {
-      whereQuery += ` and t.rem=${ args.push(search.rem) }`;
-    }
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") } or base_menu_lang.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") })`;
-    } else {
-      whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
-    }
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
@@ -213,14 +190,8 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   let fromQuery = `base_menu t
   left join base_menu parent_id_lbl on parent_id_lbl.id=t.parent_id`;
-  
-  if (server_i18n_enable) {
-    fromQuery += ` left join base_menu_lang on base_menu_lang.menu_id=t.id and base_menu_lang.lang_id=${ args.push(await get_lang_id()) }`;
-  }
   return fromQuery;
 }
 
@@ -313,8 +284,6 @@ export async function findAll(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   // 父菜单
   if (search && search.parent_id != null) {
     const len = search.parent_id.length;
@@ -382,18 +351,9 @@ export async function findAll(
     }
   }
   
-  let lang_sql = "";
-  
-  if (server_i18n_enable) {
-    lang_sql += ",max(base_menu_lang.parent_id_lbl) parent_id_lbl_lang";
-    lang_sql += ",max(base_menu_lang.lbl) lbl_lang";
-    lang_sql += ",max(base_menu_lang.rem) rem_lang";
-  }
-  
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
       ,parent_id_lbl.lbl parent_id_lbl
-      ${ lang_sql }
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -459,33 +419,6 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
-    
-    if (server_i18n_enable) {
-      
-      // deno-lint-ignore no-explicit-any
-      if ((model as any).parent_id_lbl_lang) {
-        // deno-lint-ignore no-explicit-any
-        model.parent_id_lbl = (model as any).parent_id_lbl_lang;
-        // deno-lint-ignore no-explicit-any
-        (model as any).parent_id_lbl_lang = undefined;
-      }
-      
-      // deno-lint-ignore no-explicit-any
-      if ((model as any).lbl_lang) {
-        // deno-lint-ignore no-explicit-any
-        model.lbl = (model as any).lbl_lang;
-        // deno-lint-ignore no-explicit-any
-        (model as any).lbl_lang = undefined;
-      }
-      
-      // deno-lint-ignore no-explicit-any
-      if ((model as any).rem_lang) {
-        // deno-lint-ignore no-explicit-any
-        model.rem = (model as any).rem_lang;
-        // deno-lint-ignore no-explicit-any
-        (model as any).rem_lang = undefined;
-      }
-    }
     
     // 父菜单
     model.parent_id_lbl = model.parent_id_lbl || "";
@@ -608,28 +541,27 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取菜单字段注释 */
 export async function getFieldComments(): Promise<MenuFieldComment> {
-  const n = initN(route_path);
   const fieldComments: MenuFieldComment = {
-    id: await n("ID"),
-    parent_id: await n("父菜单"),
-    parent_id_lbl: await n("父菜单"),
-    lbl: await n("名称"),
-    route_path: await n("路由"),
-    route_query: await n("参数"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    order_by: await n("排序"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    parent_id: "父菜单",
+    parent_id_lbl: "父菜单",
+    lbl: "名称",
+    route_path: "路由",
+    route_query: "参数",
+    is_locked: "锁定",
+    is_locked_lbl: "锁定",
+    is_enabled: "启用",
+    is_enabled_lbl: "启用",
+    order_by: "排序",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -740,7 +672,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("菜单")));
+      throw new UniqueException("此 菜单 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: MenuId = await updateById(
@@ -995,7 +927,7 @@ export async function validateIsEnabled(
   model: Readonly<MenuModel>,
 ) {
   if (model.is_enabled == 0) {
-    throw `${ await ns("菜单") } ${ await ns("已禁用") }`;
+    throw "菜单 已禁用";
   }
 }
 
@@ -1005,7 +937,7 @@ export async function validateOption(
   model?: MenuModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("菜单") } ${ await ns("不存在") }`;
+    const err_msg = "菜单 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1451,10 +1383,6 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  for (const input of inputs) {
-    await refreshLangByInput(input);
-  }
-  
   await delCache();
   
   return ids2;
@@ -1465,80 +1393,6 @@ async function _creates(
 export async function delCache() {
   await delCacheCtx(`dao.sql.base_menu`);
   await delCacheCtx(`dao.sql.base_menu._getMenus`);
-}
-
-async function refreshLangByInput(
-  input: Readonly<MenuInput>,
-) {
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
-  if (!server_i18n_enable) {
-    return;
-  }
-  const lang_sql = "select id from base_menu_lang where lang_id=? and menu_id=?";
-  const lang_args = new QueryArgs();
-  lang_args.push(await get_lang_id());
-  lang_args.push(input.id);
-  const model = await queryOne<{ id: string }>(
-    lang_sql,
-    lang_args,
-  );
-  const lang_id = model?.id;
-  if (lang_id) {
-    let lang_sql = "update base_menu_lang set ";
-    const lang_args = new QueryArgs();
-    // 父菜单
-    if (input.parent_id_lbl != null) {
-      lang_sql += "parent_id_lbl=?,";
-      lang_args.push(input.parent_id_lbl);
-    }
-    // 名称
-    if (input.lbl != null) {
-      lang_sql += "lbl=?,";
-      lang_args.push(input.lbl);
-    }
-    // 备注
-    if (input.rem != null) {
-      lang_sql += "rem=?,";
-      lang_args.push(input.rem);
-    }
-    if (lang_sql.endsWith(",")) {
-      lang_sql = lang_sql.substring(0, lang_sql.length - 1);
-    }
-    lang_sql += " where id=?";
-    lang_args.push(lang_id);
-    await execute(lang_sql, lang_args);
-  } else {
-    const sql_fields: string[] = [ ];
-    const lang_args = new QueryArgs();
-    lang_args.push(shortUuidV4());
-    lang_args.push(await get_lang_id());
-    lang_args.push(input.id);
-    // 父菜单
-    if (input.parent_id_lbl != null) {
-      sql_fields.push("parent_id_lbl");
-      lang_args.push(input.parent_id_lbl);
-    }
-    // 名称
-    if (input.lbl != null) {
-      sql_fields.push("lbl");
-      lang_args.push(input.lbl);
-    }
-    // 备注
-    if (input.rem != null) {
-      sql_fields.push("rem");
-      lang_args.push(input.rem);
-    }
-    let lang_sql = "insert into base_menu_lang(id,lang_id,menu_id";
-    for (const sql_field of sql_fields) {
-      lang_sql += "," + sql_field;
-    }
-    lang_sql += ")values(?,?,?";
-    for (let i = 0; i < sql_fields.length; i++) {
-      lang_sql += ",?";
-    }
-    lang_sql += ")";
-    await execute(lang_sql, lang_args);
-  }
 }
 
 // MARK: updateById
@@ -1560,8 +1414,6 @@ export async function updateById(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1595,7 +1447,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("菜单"));
+        throw "此 菜单 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1605,7 +1457,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("菜单"));
+    throw "编辑失败, 此 菜单 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1619,9 +1471,7 @@ export async function updateById(
   }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      if (!server_i18n_enable) {
-        sql += `lbl=${ args.push(input.lbl) },`;
-      }
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
@@ -1657,9 +1507,7 @@ export async function updateById(
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      if (!server_i18n_enable) {
-        sql += `rem=${ args.push(input.rem) },`;
-      }
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
@@ -1749,12 +1597,6 @@ export async function updateById(
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
-      if (server_i18n_enable) {
-        await refreshLangByInput({
-          ...input,
-          id,
-        });
-      }
     }
   }
   
@@ -1786,7 +1628,6 @@ export async function deleteByIds(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1841,12 +1682,6 @@ export async function deleteByIds(
     sql += ` where id=${ args.push(id) } limit 1`;
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "update base_menu_lang set is_deleted=1 where menu_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
     {
       const args = new QueryArgs();
       const sql = `update base_role_menu set is_deleted=1 where menu_id=${ args.push(id) } and is_deleted=0`;
@@ -2015,7 +1850,6 @@ export async function revertByIds(
   const method = "revertByIds";
   
   const is_debug = get_is_debug(options?.is_debug);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -2066,19 +1900,13 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("菜单"));
+        throw "此 菜单 已经存在";
       }
     }
     const args = new QueryArgs();
     const sql = `update base_menu set is_deleted=0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "update base_menu_lang set is_deleted=0 where menu_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
   }
   
   await delCache();
@@ -2101,7 +1929,6 @@ export async function forceDeleteByIds(
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -2140,12 +1967,6 @@ export async function forceDeleteByIds(
     const sql = `delete from base_menu where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "delete from base_menu_lang where menu_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
     {
       const args = new QueryArgs();
       const sql = `delete from base_role_menu where menu_id=${ args.push(id) }`;

@@ -33,8 +33,6 @@ use async_graphql::{
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
-
 use crate::r#gen::base::dict_detail::dict_detail_model::{
   DictDetailModel,
   DictDetailInput,
@@ -72,12 +70,9 @@ pub struct DictModel {
   /// 数据类型
   #[graphql(name = "type_lbl")]
   pub type_lbl: String,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: u8,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
+  /// 可新增
+  #[graphql(name = "is_add")]
+  pub is_add: u8,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: u8,
@@ -114,8 +109,6 @@ pub struct DictModel {
 
 impl FromRow<'_, MySqlRow> for DictModel {
   fn from_row(row: &MySqlRow) -> sqlx::Result<Self> {
-    
-    let server_i18n_enable = get_server_i18n_enable();
     // 系统记录
     let is_sys = row.try_get("is_sys")?;
     // ID
@@ -127,9 +120,8 @@ impl FromRow<'_, MySqlRow> for DictModel {
     // 数据类型
     let type_lbl: String = row.try_get("type")?;
     let r#type: DictType = type_lbl.clone().try_into()?;
-    // 锁定
-    let is_locked: u8 = row.try_get("is_locked")?;
-    let is_locked_lbl: String = is_locked.to_string();
+    // 可新增
+    let is_add: u8 = row.try_get("is_add")?;
     // 启用
     let is_enabled: u8 = row.try_get("is_enabled")?;
     let is_enabled_lbl: String = is_enabled.to_string();
@@ -137,30 +129,6 @@ impl FromRow<'_, MySqlRow> for DictModel {
     let order_by: u32 = row.try_get("order_by")?;
     // 备注
     let rem: String = row.try_get("rem")?;
-    
-    // 名称
-    let lbl = if server_i18n_enable {
-      let lbl_lang: Option<String> = row.try_get("lbl_lang")?;
-      if lbl_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
-        lbl
-      } else {
-        lbl_lang.unwrap()
-      }
-    } else {
-      lbl
-    };
-    
-    // 备注
-    let rem = if server_i18n_enable {
-      let rem_lang: Option<String> = row.try_get("rem_lang")?;
-      if rem_lang.as_ref().map(|x| x.is_empty()).unwrap_or(true) {
-        rem
-      } else {
-        rem_lang.unwrap()
-      }
-    } else {
-      rem
-    };
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -192,8 +160,7 @@ impl FromRow<'_, MySqlRow> for DictModel {
       lbl,
       r#type,
       type_lbl,
-      is_locked,
-      is_locked_lbl,
+      is_add,
       is_enabled,
       is_enabled_lbl,
       order_by,
@@ -233,12 +200,9 @@ pub struct DictFieldComment {
   /// 数据类型
   #[graphql(name = "type_lbl")]
   pub type_lbl: String,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: String,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: String,
+  /// 可新增
+  #[graphql(name = "is_add")]
+  pub is_add: String,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: String,
@@ -301,9 +265,9 @@ pub struct DictSearch {
   /// 数据类型
   #[graphql(skip)]
   pub r#type: Option<Vec<DictType>>,
-  /// 锁定
+  /// 可新增
   #[graphql(skip)]
-  pub is_locked: Option<Vec<u8>>,
+  pub is_add: Option<Vec<u8>>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<Vec<u8>>,
@@ -380,9 +344,9 @@ impl std::fmt::Debug for DictSearch {
     if let Some(ref r#type) = self.r#type {
       item = item.field("r#type", r#type);
     }
-    // 锁定
-    if let Some(ref is_locked) = self.is_locked {
-      item = item.field("is_locked", is_locked);
+    // 可新增
+    if let Some(ref is_add) = self.is_add {
+      item = item.field("is_add", is_add);
     }
     // 启用
     if let Some(ref is_enabled) = self.is_enabled {
@@ -448,12 +412,9 @@ pub struct DictInput {
   /// 数据类型
   #[graphql(name = "type_lbl")]
   pub type_lbl: Option<String>,
-  /// 锁定
-  #[graphql(name = "is_locked")]
-  pub is_locked: Option<u8>,
-  /// 锁定
-  #[graphql(name = "is_locked_lbl")]
-  pub is_locked_lbl: Option<String>,
+  /// 可新增
+  #[graphql(name = "is_add")]
+  pub is_add: Option<u8>,
   /// 启用
   #[graphql(name = "is_enabled")]
   pub is_enabled: Option<u8>,
@@ -513,9 +474,8 @@ impl From<DictModel> for DictInput {
       // 数据类型
       r#type: model.r#type.into(),
       type_lbl: model.type_lbl.into(),
-      // 锁定
-      is_locked: model.is_locked.into(),
-      is_locked_lbl: model.is_locked_lbl.into(),
+      // 可新增
+      is_add: model.is_add.into(),
       // 启用
       is_enabled: model.is_enabled.into(),
       is_enabled_lbl: model.is_enabled_lbl.into(),
@@ -559,8 +519,8 @@ impl From<DictInput> for DictSearch {
       lbl: input.lbl,
       // 数据类型
       r#type: input.r#type.map(|x| vec![x]),
-      // 锁定
-      is_locked: input.is_locked.map(|x| vec![x]),
+      // 可新增
+      is_add: input.is_add.map(|x| vec![x]),
       // 启用
       is_enabled: input.is_enabled.map(|x| vec![x]),
       // 排序
