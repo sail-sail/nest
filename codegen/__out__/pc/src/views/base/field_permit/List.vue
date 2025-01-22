@@ -527,7 +527,7 @@ const menu_id_search = $computed({
 });
 
 /** 回收站 */
-async function recycleChg() {
+async function onRecycle() {
   tableFocus();
   selectedIds = [ ];
   await dataGrid(true);

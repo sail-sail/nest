@@ -136,11 +136,6 @@ export async function updateById(
   input: DictDetailInput,
 ): Promise<DictDetailId> {
   
-  const is_locked = await dict_detailDao.getIsLockedById(id);
-  if (is_locked) {
-    throw "不能修改已经锁定的 系统字典明细";
-  }
-  
   // 不能修改系统记录的系统字段
   const model = await dict_detailDao.findById(id);
   if (model && model.is_sys === 1) {
@@ -158,17 +153,6 @@ export async function updateById(
 export async function deleteByIds(
   ids: DictDetailId[],
 ): Promise<number> {
-  
-  {
-    const models = await dict_detailDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 系统字典明细";
-      }
-    }
-  }
   
   {
     const models = await dict_detailDao.findAll({
@@ -193,17 +177,6 @@ export async function enableByIds(
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await dict_detailDao.enableByIds(ids, is_enabled);
-  return data;
-}
-
-/**
- * 根据 ids 锁定或者解锁系统字典明细
- */
-export async function lockByIds(
-  ids: DictDetailId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  const data = await dict_detailDao.lockByIds(ids, is_locked);
   return data;
 }
 

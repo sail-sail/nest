@@ -37,7 +37,7 @@
     @keydown.ctrl.c.stop="copyModelLabel"
   >
     <template
-      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
+      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 0"
       #header
     >
       <el-checkbox

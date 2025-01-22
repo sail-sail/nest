@@ -37,7 +37,7 @@
     @keydown.ctrl.c.stop="copyModelLabel"
   >
     <template
-      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 1"
+      v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 0"
       #header
     >
       <el-checkbox
@@ -51,6 +51,22 @@
           ({{ ns("全选") }})
         </span>
       </el-checkbox>
+    </template>
+    <template
+      v-if="props.hasSelectAdd && !props.disabled && !props.readonly"
+      #footer
+    >
+      <div
+        un-flex="~"
+        un-justify-center
+      >
+        <el-button
+          plain
+          @click="openAddDialog"
+        >
+          {{ ns("新增选项") }}
+        </el-button>
+      </div>
     </template>
     <template
       v-for="(key, index) in keys"
@@ -215,6 +231,10 @@
     </template>
   </div>
 </template>
+
+<DictDetailDialog
+  ref="dictDetailDialogRef"
+></DictDetailDialog>
 </template>
 
 <script lang="ts" setup>
@@ -229,6 +249,16 @@ import type {
 import {
   copyText,
 } from "@/utils/common";
+
+import DictDetailDialog from "@/views/base/dict_detail/Detail.vue";
+
+import {
+  findOne as findOneDict,
+} from "@/views/base/dict/Api.ts";
+
+import {
+  findAll as findAllDictDetail,
+} from "@/views/base/dict_detail/Api.ts";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const slots: any = useSlots();
@@ -268,6 +298,7 @@ const props = withDefaults(
     readonlyPlaceholder?: string;
     readonlyCollapseTags?: boolean;
     readonlyMaxCollapseTags?: number;
+    hasSelectAdd?: boolean;
   }>(),
   {
     optionsMap: function(item: DictModel) {
@@ -295,6 +326,7 @@ const props = withDefaults(
     readonlyPlaceholder: undefined,
     readonlyCollapseTags: true,
     readonlyMaxCollapseTags: 1,
+    hasSelectAdd: false,
   },
 );
 
@@ -542,6 +574,7 @@ let data = $ref<DictModel[]>([ ]);
 
 const {
   ns,
+  nsAsync,
   initSysI18ns,
 } = useI18n();
 
@@ -603,7 +636,7 @@ function handleVisibleChange(visible: boolean) {
   }
 }
 
-async function refreshEfc() {
+async function onRefresh() {
   const code = props.code;
   if (!code) {
     inited = false;
@@ -654,19 +687,67 @@ watch(
 watch(
   () => props.code,
   async () => {
-    await refreshEfc();
+    await onRefresh();
   },
 );
+
+const dictDetailDialogRef = $(useTemplateRef<InstanceType<typeof DictDetailDialog>>("dictDetailDialogRef"));
+
+/**
+ * 打开新增选项对话框
+ */
+async function openAddDialog() {
+  if (!dictDetailDialogRef) {
+    return;
+  }
+  const code = props.code;
+  if (!code) {
+    return;
+  }
+  const dict_model = await findOneDict({
+    code,
+  });
+  if (!dict_model) {
+    ElMessage.error(await nsAsync("系统字典 {0} 不存在", code));
+    return;
+  }
+  const dict_id = dict_model.id;
+  const {
+    changedIds,
+  } = await dictDetailDialogRef.showDialog({
+    title: await nsAsync("新增选项"),
+    action: "add",
+    builtInModel: {
+      dict_id,
+    },
+  });
+  if (changedIds.length === 0) {
+    return;
+  }
+  await onRefresh();
+  const dict_detail_models = await findAllDictDetail({
+    ids: changedIds,
+  });
+  const vals = changedIds
+    .map((item) => dict_detail_models.find((item2) => item2.id === item)?.val)
+    .filter((item) => item);
+  if (props.multiple) {
+    modelValue = [ ...modelValue, ...vals ];
+  } else {
+    modelValue = vals[0];
+  }
+}
 
 async function initFrame() {
   const codes = [
     "全选",
+    "新增选项"
   ];
   await initSysI18ns(codes);
 }
 
 initFrame();
-refreshEfc();
+onRefresh();
 
 function focus() {
   selectRef?.focus();
@@ -677,7 +758,7 @@ function blur() {
 }
 
 defineExpose({
-  refresh: refreshEfc,
+  refresh: onRefresh,
   focus,
   blur,
 });
