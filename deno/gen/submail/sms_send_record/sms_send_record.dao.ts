@@ -847,13 +847,6 @@ export async function validate(
     fieldComments.content,
   );
   
-  // 状态
-  await validators.chars_max_length(
-    input.status,
-    10,
-    fieldComments.status,
-  );
-  
   // 标签
   await validators.chars_max_length(
     input.tag,
