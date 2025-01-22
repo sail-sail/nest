@@ -51,7 +51,7 @@
     <div
       un-flex="~ [1_0_0]"
       un-overflow-hidden
-      un-p="x-2.5 y-1.25"
+      un-p="x-2.5 y-0.875"
       un-box-border
       un-w="full"
       un-min="h-7.5"
@@ -80,7 +80,7 @@
     <div
       un-flex="~"
       un-overflow-hidden
-      un-p="x-2.5 y-1.25"
+      un-p="x-2.5 y-0.875"
       un-box-border
       un-min="h-7.5"
       un-items="center"

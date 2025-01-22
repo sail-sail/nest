@@ -136,11 +136,6 @@ export async function updateById(
   input: DictbizDetailInput,
 ): Promise<DictbizDetailId> {
   
-  const is_locked = await dictbiz_detailDao.getIsLockedById(id);
-  if (is_locked) {
-    throw "不能修改已经锁定的 业务字典明细";
-  }
-  
   const id2 = await dictbiz_detailDao.updateById(id, input);
   return id2;
 }
@@ -151,17 +146,6 @@ export async function updateById(
 export async function deleteByIds(
   ids: DictbizDetailId[],
 ): Promise<number> {
-  
-  {
-    const models = await dictbiz_detailDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 业务字典明细";
-      }
-    }
-  }
   
   {
     const models = await dictbiz_detailDao.findAll({
@@ -186,17 +170,6 @@ export async function enableByIds(
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await dictbiz_detailDao.enableByIds(ids, is_enabled);
-  return data;
-}
-
-/**
- * 根据 ids 锁定或者解锁业务字典明细
- */
-export async function lockByIds(
-  ids: DictbizDetailId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  const data = await dictbiz_detailDao.lockByIds(ids, is_locked);
   return data;
 }
 

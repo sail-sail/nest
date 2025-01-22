@@ -17,10 +17,6 @@ type DictbizDetailModel {
   lbl: String!
   "值"
   val: String!
-  "锁定"
-  is_locked: Int!
-  "锁定"
-  is_locked_lbl: String!
   "启用"
   is_enabled: Int!
   "启用"
@@ -61,10 +57,6 @@ type DictbizDetailFieldComment {
   lbl: String!
   "值"
   val: String!
-  "锁定"
-  is_locked: String!
-  "锁定"
-  is_locked_lbl: String!
   "启用"
   is_enabled: String!
   "启用"
@@ -101,10 +93,6 @@ input DictbizDetailInput {
   lbl: String
   "值"
   val: String
-  "锁定"
-  is_locked: Int
-  "锁定"
-  is_locked_lbl: String
   "启用"
   is_enabled: Int
   "启用"
@@ -177,8 +165,6 @@ type Mutation {
   deleteByIdsDictbizDetail(ids: [DictbizDetailId!]!): Int!
   "根据 ids 启用或者禁用业务字典明细"
   enableByIdsDictbizDetail(ids: [DictbizDetailId!]!, is_enabled: Int!): Int!
-  "根据 ids 锁定或者解锁业务字典明细"
-  lockByIdsDictbizDetail(ids: [DictbizDetailId!]!, is_locked: Int!): Int!
   "根据 ids 还原业务字典明细"
   revertByIdsDictbizDetail(ids: [DictbizDetailId!]!): Int!
   "根据 ids 彻底删除业务字典明细"

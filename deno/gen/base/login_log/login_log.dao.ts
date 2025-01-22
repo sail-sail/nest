@@ -463,12 +463,6 @@ export async function getFieldComments(): Promise<LoginLogFieldComment> {
     ip: "IP",
     create_time: "登录时间",
     create_time_lbl: "登录时间",
-    create_usr_id: "创建人",
-    create_usr_id_lbl: "创建人",
-    update_usr_id: "更新人",
-    update_usr_id_lbl: "更新人",
-    update_time: "更新时间",
-    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -813,13 +807,6 @@ export async function validate(
     input.id,
     22,
     fieldComments.id,
-  );
-  
-  // 类型
-  await validators.chars_max_length(
-    input.type,
-    20,
-    fieldComments.type,
   );
   
   // 用户名
