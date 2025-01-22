@@ -21,8 +21,6 @@ declare global {
   
   /** 系统字典明细 */
   interface DictDetailSearch extends DictDetailSearchType {
-    /** 锁定 */
-    is_locked?: number[];
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */
