@@ -600,7 +600,6 @@ export async function setIdByLbl(
 export async function getFieldComments(): Promise<CronJobFieldComment> {
   const fieldComments: CronJobFieldComment = {
     id: "ID",
-    seq: "序号",
     lbl: "名称",
     job_id: "任务",
     job_id_lbl: "任务",

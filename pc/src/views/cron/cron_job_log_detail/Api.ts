@@ -257,57 +257,9 @@ export async function getCronJobLogList() {
 }
 
 /**
- * 下载定时任务日志明细导入模板
- */
-export function useDownloadImportTemplate(routePath: string) {
-  const {
-    workerFn,
-    workerStatus,
-    workerTerminate,
-  } = useRenderExcel();
-  async function workerFn2() {
-    const data = await query({
-      query: /* GraphQL */ `
-        query {
-          getFieldCommentsCronJobLogDetail {
-            cron_job_log_id_lbl
-            lbl
-          }
-          findAllCronJobLog {
-            id
-            
-          }
-        }
-      `,
-      variables: {
-      },
-    });
-    try {
-      const sheetName = "定时任务日志明细";
-      const buffer = await workerFn(
-        `${ location.origin }/import_template/cron/cron_job_log_detail.xlsx`,
-        {
-          sheetName,
-          data,
-        },
-      );
-      saveAsExcel(buffer, `${ sheetName}导入`);
-    } catch (err) {
-      ElMessage.error("下载失败");
-      throw err;
-    }
-  }
-  return {
-    workerFn: workerFn2,
-    workerStatus,
-    workerTerminate,
-  };
-}
-
-/**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,

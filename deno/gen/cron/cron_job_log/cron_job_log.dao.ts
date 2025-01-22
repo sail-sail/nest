@@ -574,12 +574,6 @@ export async function getFieldComments(): Promise<CronJobLogFieldComment> {
     rem: "备注",
     create_time: "创建时间",
     create_time_lbl: "创建时间",
-    create_usr_id: "创建人",
-    create_usr_id_lbl: "创建人",
-    update_usr_id: "更新人",
-    update_usr_id_lbl: "更新人",
-    update_time: "更新时间",
-    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -931,13 +925,6 @@ export async function validate(
     input.cron_job_id,
     22,
     fieldComments.cron_job_id,
-  );
-  
-  // 执行状态
-  await validators.chars_max_length(
-    input.exec_state,
-    10,
-    fieldComments.exec_state,
   );
   
   // 备注
