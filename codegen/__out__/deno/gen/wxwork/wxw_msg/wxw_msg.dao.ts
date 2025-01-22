@@ -895,13 +895,6 @@ export async function validate(
     fieldComments.description,
   );
   
-  // 链接
-  await validators.chars_max_length(
-    input.url,
-    1024,
-    fieldComments.url,
-  );
-  
   // 按钮文字
   await validators.chars_max_length(
     input.btntxt,
@@ -914,13 +907,6 @@ export async function validate(
     input.errmsg,
     256,
     fieldComments.errmsg,
-  );
-  
-  // 消息ID
-  await validators.chars_max_length(
-    input.msgid,
-    255,
-    fieldComments.msgid,
   );
   
 }
