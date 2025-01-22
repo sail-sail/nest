@@ -2453,6 +2453,7 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
@@ -2497,6 +2498,7 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
@@ -3164,6 +3166,7 @@ export async function validate(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "is_sys") {
       continue;
