@@ -1,2 +1,1 @@
-id,code,lbl,type,order_by,is_locked,is_sys
-ksWQkD+NSJaIjpcYUvrjtw,wxw_msg_errcode,企微消息-发送状态,string,100,1,1
+id,code,lbl,type,order_by,is_sys,is_add

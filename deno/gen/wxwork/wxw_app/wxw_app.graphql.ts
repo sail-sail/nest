@@ -67,22 +67,6 @@ type WxwAppFieldComment {
   order_by: String!
   "备注"
   rem: String!
-  "创建人"
-  create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
-  "创建时间"
-  create_time: String!
-  "创建时间"
-  create_time_lbl: String!
-  "更新人"
-  update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: String!
-  "更新时间"
-  update_time_lbl: String!
 }
 input WxwAppInput {
   "ID"

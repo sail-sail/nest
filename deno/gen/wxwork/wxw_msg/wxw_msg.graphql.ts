@@ -51,8 +51,6 @@ type WxwMsgFieldComment {
   title: String!
   "描述"
   description: String!
-  "链接"
-  url: String!
   "按钮文字"
   btntxt: String!
   "发送时间"
@@ -61,20 +59,6 @@ type WxwMsgFieldComment {
   create_time_lbl: String!
   "错误信息"
   errmsg: String!
-  "消息ID"
-  msgid: String!
-  "创建人"
-  create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
-  "更新人"
-  update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: String!
-  "更新时间"
-  update_time_lbl: String!
 }
 input WxwMsgInput {
   "ID"

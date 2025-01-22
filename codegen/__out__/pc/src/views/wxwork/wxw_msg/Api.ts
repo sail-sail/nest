@@ -271,68 +271,9 @@ export async function getWxwAppList() {
 }
 
 /**
- * 下载企微消息导入模板
- */
-export function useDownloadImportTemplate(routePath: string) {
-  const {
-    workerFn,
-    workerStatus,
-    workerTerminate,
-  } = useRenderExcel();
-  async function workerFn2() {
-    const data = await query({
-      query: /* GraphQL */ `
-        query {
-          getFieldCommentsWxwMsg {
-            wxw_app_id_lbl
-            errcode_lbl
-            touser
-            title
-            description
-            btntxt
-            errmsg
-          }
-          findAllWxwApp {
-            id
-            lbl
-          }
-          getDict(codes: [
-            "wxw_msg_errcode",
-          ]) {
-            code
-            lbl
-          }
-        }
-      `,
-      variables: {
-      },
-    });
-    try {
-      const sheetName = "企微消息";
-      const buffer = await workerFn(
-        `${ location.origin }/import_template/wxwork/wxw_msg.xlsx`,
-        {
-          sheetName,
-          data,
-        },
-      );
-      saveAsExcel(buffer, `${ sheetName}导入`);
-    } catch (err) {
-      ElMessage.error("下载失败");
-      throw err;
-    }
-  }
-  return {
-    workerFn: workerFn2,
-    workerStatus,
-    workerTerminate,
-  };
-}
-
-/**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
