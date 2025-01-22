@@ -532,7 +532,6 @@ export async function getFieldComments(): Promise<WxoUsrFieldComment> {
     province: "省份",
     city: "城市",
     country: "国家",
-    privilege: "特权",
     rem: "备注",
     create_usr_id: "创建人",
     create_usr_id_lbl: "创建人",

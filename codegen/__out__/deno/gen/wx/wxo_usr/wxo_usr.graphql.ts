@@ -77,8 +77,6 @@ type WxoUsrFieldComment {
   city: String!
   "国家"
   country: String!
-  "特权"
-  privilege: String!
   "备注"
   rem: String!
   "创建人"
