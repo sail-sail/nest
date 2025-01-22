@@ -1410,12 +1410,72 @@ export async function get<#=Foreign_Table_Up#>Tree() {
 }<#
   }
 }
+#><#
+if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
+  let hasDict = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+    if (column.notImportExportList) continue;
+    if (column.isAtt) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+        "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+      ].includes(column_name)
+      || column.readonly
+      || column.noAdd
+    ) continue;
+    if (column_name === "id") {
+      continue;
+    }
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    if (column.dict) {
+      hasDict = true;
+      break;
+    }
+  }
+  let hasDictbiz = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+    if (column.notImportExportList) continue;
+    if (column.isAtt) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+        "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+      ].includes(column_name)
+      || column.readonly
+      || column.noAdd
+    ) continue;
+    if (column_name === "id") {
+      continue;
+    }
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    if (column.dictbiz) {
+      hasDictbiz = true;
+      break;
+    }
+  }
 #>
 
 /**
  * 下载<#=table_comment#>导入模板
  */
-export function useDownloadImportTemplate(routePath: string) {<#
+export function useDownloadImportTemplate(<#
+  if (isUseI18n) {
+  #>routePath: string<#
+  }
+  #>) {<#
   if (isUseI18n) {
   #>
   const {
@@ -1512,33 +1572,6 @@ export function useDownloadImportTemplate(routePath: string) {<#
           }<#
           }
           #><#
-          let hasDict = false;
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
-            if (column.notImportExportList) continue;
-            if (column.isAtt) continue;
-            const column_name = column.COLUMN_NAME;
-            if (
-              [
-                "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
-                "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
-                "tenant_id", "tenant_id_lbl",
-              ].includes(column_name)
-              || column.readonly
-              || column.noAdd
-            ) continue;
-            if (column_name === "id") {
-              continue;
-            }
-            const isPassword = column.isPassword;
-            if (isPassword) continue;
-            if (column.dict) {
-              hasDict = true;
-              break;
-            }
-          }
           if (hasDict) {
           #>
           getDict(codes: [<#
@@ -1581,33 +1614,6 @@ export function useDownloadImportTemplate(routePath: string) {<#
           }<#
           }
           #><#
-          let hasDictbiz = false;
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
-            if (column.notImportExportList) continue;
-            if (column.isAtt) continue;
-            const column_name = column.COLUMN_NAME;
-            if (
-              [
-                "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
-                "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
-                "tenant_id", "tenant_id_lbl",
-              ].includes(column_name)
-              || column.readonly
-              || column.noAdd
-            ) continue;
-            if (column_name === "id") {
-              continue;
-            }
-            const isPassword = column.isPassword;
-            if (isPassword) continue;
-            if (column.dictbiz) {
-              hasDictbiz = true;
-              break;
-            }
-          }
           if (hasDictbiz) {
           #>
           getDictbiz(codes: [<#
@@ -1696,12 +1702,62 @@ export function useDownloadImportTemplate(routePath: string) {<#
     workerStatus,
     workerTerminate,
   };
+}<#
 }
+#><#
+if (opts.noExport !== true) {
+  let hasDict = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+    if (column.notImportExportList) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "is_deleted", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+      ].includes(column_name)
+    ) continue;
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    if (column.dict) {
+      hasDict = true;
+      break;
+    }
+  }
+  let hasDictbiz = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+    if (column.notImportExportList) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "is_deleted", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+      ].includes(column_name)
+    ) continue;
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    if (column.dictbiz) {
+      hasDictbiz = true;
+      break;
+    }
+  }
+#>
 
 /**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {<#
+export function useExportExcel(<#
+  if (isUseI18n) {
+  #>routePath: string<#
+  }
+  #>) {<#
   if (isUseI18n) {
   #>
   const {
@@ -1769,27 +1825,6 @@ export function useExportExcel(routePath: string) {<#
             }<#
             }
             #><#
-            hasDict = false;
-            for (let i = 0; i < columns.length; i++) {
-              const column = columns[i];
-              if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
-              if (column.notImportExportList) continue;
-              const column_name = column.COLUMN_NAME;
-              if (
-                [
-                  "id",
-                  "is_deleted", "is_sys",
-                  "tenant_id", "tenant_id_lbl",
-                ].includes(column_name)
-              ) continue;
-              const isPassword = column.isPassword;
-              if (isPassword) continue;
-              if (column.dict) {
-                hasDict = true;
-                break;
-              }
-            }
             if (hasDict) {
             #>
             getDict(codes: [<#
@@ -1828,27 +1863,6 @@ export function useExportExcel(routePath: string) {<#
             }<#
             }
             #><#
-            hasDictbiz = false;
-            for (let i = 0; i < columns.length; i++) {
-              const column = columns[i];
-              if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
-              if (column.notImportExportList) continue;
-              const column_name = column.COLUMN_NAME;
-              if (
-                [
-                  "id",
-                  "is_deleted", "is_sys",
-                  "tenant_id", "tenant_id_lbl",
-                ].includes(column_name)
-              ) continue;
-              const isPassword = column.isPassword;
-              if (isPassword) continue;
-              if (column.dictbiz) {
-                hasDictbiz = true;
-                break;
-              }
-            }
             if (hasDictbiz) {
             #>
             getDictbiz(codes: [<#
@@ -1935,6 +1949,8 @@ export function useExportExcel(routePath: string) {<#
     workerTerminate,
   };
 }<#
+}
+#><#
 if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>
 
