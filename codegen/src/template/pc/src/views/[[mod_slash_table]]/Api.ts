@@ -1472,10 +1472,10 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
  * 下载<#=table_comment#>导入模板
  */
 export function useDownloadImportTemplate(<#
-  if (isUseI18n) {
-  #>routePath: string<#
-  }
-  #>) {<#
+if (isUseI18n) {
+#>routePath: string<#
+}
+#>) {<#
   if (isUseI18n) {
   #>
   const {
@@ -1754,10 +1754,10 @@ if (opts.noExport !== true) {
  * 导出Excel
  */
 export function useExportExcel(<#
-  if (isUseI18n) {
-  #>routePath: string<#
-  }
-  #>) {<#
+if (isUseI18n) {
+#>routePath: string<#
+}
+#>) {<#
   if (isUseI18n) {
   #>
   const {
