@@ -35,9 +35,6 @@ export function intoInput(
     lbl: model?.lbl,
     // 值
     val: model?.val,
-    // 锁定
-    is_locked: model?.is_locked,
-    is_locked_lbl: model?.is_locked_lbl,
     // 启用
     is_enabled: model?.is_enabled,
     is_enabled_lbl: model?.is_enabled_lbl,
@@ -280,31 +277,6 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁系统字典明细
- */
-export async function lockByIds(
-  ids: DictDetailId[],
-  is_locked: 0 | 1,
-  opt?: GqlOpt,
-) {
-  const data: {
-    lockByIdsDictDetail: Mutation["lockByIdsDictDetail"];
-  } = await mutation({
-    query: /* GraphQL */ `
-      mutation($ids: [DictDetailId!]!, $is_locked: Int!) {
-        lockByIdsDictDetail(ids: $ids, is_locked: $is_locked)
-      }
-    `,
-    variables: {
-      ids,
-      is_locked,
-    },
-  }, opt);
-  const res = data.lockByIdsDictDetail;
-  return res;
-}
-
-/**
  * 根据 ids 还原系统字典明细
  */
 export async function revertByIds(
@@ -399,7 +371,7 @@ export async function getDictList() {
 /**
  * 下载系统字典明细导入模板
  */
-export function useDownloadImportTemplate(routePath: string) {
+export function useDownloadImportTemplate() {
   const {
     workerFn,
     workerStatus,
@@ -450,7 +422,7 @@ export function useDownloadImportTemplate(routePath: string) {
 /**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
@@ -480,7 +452,6 @@ export function useExportExcel(routePath: string) {
               lbl
             }
             getDict(codes: [
-              "is_locked",
               "is_enabled",
             ]) {
               code
@@ -596,7 +567,6 @@ export function getPagePath() {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: DictDetailInput = {
-    is_locked: 0,
     is_enabled: 1,
     order_by: 1,
   };

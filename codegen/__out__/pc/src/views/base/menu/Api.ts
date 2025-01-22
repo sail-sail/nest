@@ -454,7 +454,7 @@ export function useMenuTreeFilter(_value: string, model: MenuModel): boolean {
 /**
  * 下载菜单导入模板
  */
-export function useDownloadImportTemplate(routePath: string) {
+export function useDownloadImportTemplate() {
   const {
     workerFn,
     workerStatus,
@@ -506,7 +506,7 @@ export function useDownloadImportTemplate(routePath: string) {
 /**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
