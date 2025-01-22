@@ -17,14 +17,26 @@ import {
   execCsvFile,
 } from "./common";
 
+import {
+  isUseI18n,
+} from "../tables/tables";
+
 const root = `${ __dirname }/../tables/`;
 
 async function getSqlFiles(dir: string, sqlFiles: string[], csvFiles: string[]) {
   const files = await readdir(root+dir);
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
+    if (file === "node_modules") continue;
+    if (!isUseI18n) {
+      if (
+        file.endsWith("_lang.sql.csv") ||
+        file.endsWith(".i18n.sql") ||
+        file.endsWith(".en-US.sql.csv") ||
+        file.endsWith(".zh-CN.sql.csv")
+      ) continue;
+    }
     const stats = await stat(root+dir+"/"+file);
-    if (file === "node_modules" && stats.isDirectory()) continue;
     if (stats.isDirectory()) {
       await getSqlFiles(dir+"/"+file, sqlFiles, csvFiles);
       continue;

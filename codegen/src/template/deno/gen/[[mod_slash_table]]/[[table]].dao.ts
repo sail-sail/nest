@@ -698,7 +698,7 @@ async function getWhereQuery(
     #>
   },
 ): Promise<string> {<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -811,12 +811,19 @@ async function getWhereQuery(
     #>
     whereQuery += ` and t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) })`;<#
     } else {
+    #><#
+    if (isUseI18n) {
     #>
     if (server_i18n_enable) {
       whereQuery += ` and (t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }) or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }))`;
     } else {
       whereQuery += ` and t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) })`;
     }<#
+    } else {
+    #>
+    whereQuery += ` and t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) })`;<#
+    }
+    #><#
     }
     #>
   }
@@ -825,12 +832,19 @@ async function getWhereQuery(
     #>
     whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;<#
     } else {
+    #><#
+    if (isUseI18n) {
     #>
     if (server_i18n_enable) {
       whereQuery += ` and (t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") })`;
     } else {
       whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;
     }<#
+    } else {
+    #>
+    whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;<#
+    }
+    #><#
     }
     #>
   }<#
@@ -908,12 +922,19 @@ async function getWhereQuery(
     #>
     whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;<#
     } else {
+    #><#
+    if (isUseI18n) {
     #>
     if (server_i18n_enable) {
       whereQuery += ` and (t.<#=column_name#>=${ args.push(search.<#=column_name#>) } or <#=opts.langTable.opts.table_name#>.<#=column_name#>=${ args.push(search.<#=column_name#>) })`;
     } else {
       whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;
     }<#
+    } else {
+    #>
+    whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;<#
+    }
+    #><#
     }
     #>
   }
@@ -922,12 +943,19 @@ async function getWhereQuery(
     #>
     whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;<#
     } else {
+    #><#
+    if (isUseI18n) {
     #>
     if (server_i18n_enable) {
       whereQuery += ` and (t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") })`;
     } else {
       whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;
     }<#
+    } else {
+    #>
+    whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;<#
+    }
+    #><#
     }
     #>
   }<#
@@ -962,7 +990,7 @@ async function getFromQuery(
   const is_deleted = search?.is_deleted ?? 0;<#
   }
   #><#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -1047,7 +1075,7 @@ async function getFromQuery(
   #><#
   }
   #>`;<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   if (server_i18n_enable) {
@@ -1175,7 +1203,7 @@ export async function findAll(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -1234,7 +1262,7 @@ export async function findAll(
   #><#
   }
   #><#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   let lang_sql = "";
@@ -1300,7 +1328,7 @@ export async function findAll(
       #><#
       }
       #><#
-      if (opts.langTable) {
+      if (opts.langTable && isUseI18n) {
       #>
       ${ lang_sql }<#
       }
@@ -1679,7 +1707,7 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     
     if (server_i18n_enable) {<#
@@ -2425,6 +2453,7 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
@@ -2469,6 +2498,7 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
@@ -3978,7 +4008,7 @@ for (const key of redundLblKeys) {
   if (affectedRows !== inputs2.length) {
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   for (const input of inputs) {
@@ -4354,7 +4384,7 @@ export async function getEditableDataPermitsByIds(
 }<#
 }
 #><#
-if (opts.langTable) {
+if (opts.langTable && isUseI18n) {
 #>
 
 async function refreshLangByInput(
@@ -4537,7 +4567,7 @@ export async function updateById(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -4737,11 +4767,19 @@ export async function updateById(
     sql += `<#=modelLabel#>=?,`;
     args.push(input.<#=modelLabel#>);<#
     } else {
+    #><#
+    if (isUseI18n) {
     #>
     if (!server_i18n_enable) {
       sql += `<#=modelLabel#>=?,`;
       args.push(input.<#=modelLabel#>);
     }<#
+    } else {
+    #>
+    sql += `<#=modelLabel#>=?,`;
+    args.push(input.<#=modelLabel#>);<#
+    }
+    #><#
     }
     #>
     updateFldNum++;
@@ -4781,10 +4819,17 @@ export async function updateById(
       #>
       sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
         } else {
+      #><#
+      if (isUseI18n) {
       #>
       if (!server_i18n_enable) {
         sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;
       }<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #><#
         }
       #><#
       }
@@ -4812,10 +4857,17 @@ export async function updateById(
       #>
       sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
         } else {
+      #><#
+      if (isUseI18n) {
       #>
       if (!server_i18n_enable) {
         sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;
       }<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #><#
         }
       #><#
       }
@@ -4853,10 +4905,17 @@ export async function updateById(
       #>
       sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;<#
         } else {
+      #><#
+      if (isUseI18n) {
       #>
       if (!server_i18n_enable) {
         sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;
       }<#
+      } else {
+      #>
+      sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;<#
+      }
+      #><#
         }
       #>
       updateFldNum++;
@@ -5244,7 +5303,7 @@ export async function updateById(
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);<#
-      if (opts.langTable) {
+      if (opts.langTable && isUseI18n) {
       #>
       if (server_i18n_enable) {
         await refreshLangByInput({
@@ -5323,7 +5382,7 @@ export async function deleteByIds(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
   }
@@ -5490,7 +5549,7 @@ export async function deleteByIds(
     #>
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     if (server_i18n_enable) {<#
       if (hasIsDeleted) {
@@ -5938,7 +5997,7 @@ export async function revertByIds(
   const method = "revertByIds";
   
   const is_debug = get_is_debug(options?.is_debug);<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
   }
@@ -6015,7 +6074,7 @@ export async function revertByIds(
     const sql = `update <#=mod#>_<#=table#> set is_deleted=0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     if (server_i18n_enable) {
       const sql = "update <#=opts.langTable.opts.table_name#> set is_deleted=0 where <#=table#>_id=?";
@@ -6194,7 +6253,7 @@ export async function forceDeleteByIds(
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
   }
@@ -6249,7 +6308,7 @@ export async function forceDeleteByIds(
     #> limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     if (server_i18n_enable) {
       const sql = "delete from <#=opts.langTable.opts.table_name#> where <#=table#>_id=?";

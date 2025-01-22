@@ -685,7 +685,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :set="search.is_deleted = search.is_deleted ?? 0"
             :false-value="0"
             :true-value="1"
-            @change="recycleChg"
+            @change="onRecycle"
           ><#
             if (isUseI18n) {
             #>
@@ -2686,7 +2686,7 @@ let isSearchExpand = $(useStorage(`isSearchExpand-${ __filename }`, false));<#
 #>
 
 /** 回收站 */
-async function recycleChg() {
+async function onRecycle() {
   tableFocus();
   selectedIds = [ ];
   await dataGrid(true);
