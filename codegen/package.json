@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "chalk": "5.4.1",
-    "commander": "13.0.0",
+    "commander": "13.1.0",
     "dayjs": "1.11.13",
     "dotenv": "16.4.7",
     "ejsexcel": "4.2.2",
@@ -30,7 +30,7 @@
     "uuid": "11.0.5"
   },
   "devDependencies": {
-    "@swc/wasm": "1.10.8",
+    "@swc/wasm": "1.10.9",
     "@types/fs-extra": "11.0.4",
     "@types/node": "22.10.7",
     "@types/shelljs": "0.8.15",

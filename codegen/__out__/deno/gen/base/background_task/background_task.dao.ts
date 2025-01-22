@@ -936,20 +936,6 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // 状态
-  await validators.chars_max_length(
-    input.state,
-    10,
-    fieldComments.state,
-  );
-  
-  // 类型
-  await validators.chars_max_length(
-    input.type,
-    10,
-    fieldComments.type,
-  );
-  
   // 执行结果
   await validators.chars_max_length(
     input.result,
