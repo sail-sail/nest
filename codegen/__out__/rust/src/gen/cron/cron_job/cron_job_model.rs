@@ -206,9 +206,6 @@ pub struct CronJobFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 序号
-  #[graphql(skip)]
-  pub seq: String,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,

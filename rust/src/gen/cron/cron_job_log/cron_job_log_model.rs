@@ -235,24 +235,6 @@ pub struct CronJobLogFieldComment {
   /// 创建时间
   #[graphql(name = "create_time_lbl")]
   pub create_time_lbl: String,
-  /// 创建人
-  #[graphql(skip)]
-  pub create_usr_id: String,
-  /// 创建人
-  #[graphql(skip)]
-  pub create_usr_id_lbl: String,
-  /// 更新人
-  #[graphql(skip)]
-  pub update_usr_id: String,
-  /// 更新人
-  #[graphql(skip)]
-  pub update_usr_id_lbl: String,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time: String,
-  /// 更新时间
-  #[graphql(skip)]
-  pub update_time_lbl: String,
 }
 
 #[derive(InputObject, Default)]
