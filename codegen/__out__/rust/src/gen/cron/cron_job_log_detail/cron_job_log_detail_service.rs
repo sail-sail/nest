@@ -12,9 +12,6 @@ use crate::common::context::{
 
 use crate::common::gql::model::{PageInput, SortInput};
 
-#[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao::ns;
-
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 use super::cron_job_log_detail_model::*;
