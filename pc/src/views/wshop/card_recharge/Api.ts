@@ -371,67 +371,9 @@ export async function getUsrList() {
 }
 
 /**
- * 下载会员卡充值记录导入模板
- */
-export function useDownloadImportTemplate(routePath: string) {
-  const {
-    workerFn,
-    workerStatus,
-    workerTerminate,
-  } = useRenderExcel();
-  async function workerFn2() {
-    const data = await query({
-      query: /* GraphQL */ `
-        query {
-          getFieldCommentsCardRecharge {
-            card_id_lbl
-            usr_id_lbl
-            amt
-            give_amt
-            balance
-            give_balance
-            integral
-            rem
-          }
-          findAllCard {
-            id
-            lbl
-          }
-          findAllUsr {
-            id
-            lbl
-          }
-        }
-      `,
-      variables: {
-      },
-    });
-    try {
-      const sheetName = "会员卡充值记录";
-      const buffer = await workerFn(
-        `${ location.origin }/import_template/wshop/card_recharge.xlsx`,
-        {
-          sheetName,
-          data,
-        },
-      );
-      saveAsExcel(buffer, `${ sheetName}导入`);
-    } catch (err) {
-      ElMessage.error("下载失败");
-      throw err;
-    }
-  }
-  return {
-    workerFn: workerFn2,
-    workerStatus,
-    workerTerminate,
-  };
-}
-
-/**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,

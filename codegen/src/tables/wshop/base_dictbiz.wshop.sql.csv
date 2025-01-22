@@ -1,4 +1,4 @@
-id,code,lbl,type,order_by,is_locked,tenant_id,is_sys
-ZL1BROTVTNWwEl9ixt5ApA,card_grade,会员卡-会员卡等级,string,100,1,ZDbZlC1OT8KaDg6soxMCBQ,1
-DaFhIk6DTDOdIQKz/HPLHQ,order_type,订单-类型,string,101,1,ZDbZlC1OT8KaDg6soxMCBQ,1
-5OqecJaSRiCu/y9HpjG2rQ,order_status,订单-订单状态,string,102,1,ZDbZlC1OT8KaDg6soxMCBQ,1
+id,code,lbl,type,order_by,tenant_id,is_sys,is_add
+ZL1BROTVTNWwEl9ixt5ApA,card_grade,会员卡-会员卡等级,string,100,ZDbZlC1OT8KaDg6soxMCBQ,1,0
+DaFhIk6DTDOdIQKz/HPLHQ,order_type,订单-类型,string,101,ZDbZlC1OT8KaDg6soxMCBQ,1,0
+5OqecJaSRiCu/y9HpjG2rQ,order_status,订单-订单状态,string,102,ZDbZlC1OT8KaDg6soxMCBQ,1,0

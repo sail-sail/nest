@@ -648,8 +648,6 @@ export async function getFieldComments(): Promise<PtTypeFieldComment> {
     update_usr_id_lbl: "更新人",
     update_time: "更新时间",
     update_time_lbl: "更新时间",
-    org_id: "组织",
-    org_id_lbl: "组织",
   };
   return fieldComments;
 }

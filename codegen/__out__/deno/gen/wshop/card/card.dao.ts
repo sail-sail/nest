@@ -730,7 +730,6 @@ export async function setIdByLbl(
 export async function getFieldComments(): Promise<CardFieldComment> {
   const fieldComments: CardFieldComment = {
     id: "ID",
-    lbl_seq: "卡号-序列号",
     lbl: "卡号",
     usr_id: "绑定用户",
     usr_id_lbl: "绑定用户",
@@ -757,8 +756,6 @@ export async function getFieldComments(): Promise<CardFieldComment> {
     update_usr_id_lbl: "更新人",
     update_time: "更新时间",
     update_time_lbl: "更新时间",
-    org_id: "组织",
-    org_id_lbl: "组织",
   };
   return fieldComments;
 }
@@ -1147,13 +1144,6 @@ export async function validate(
     input.usr_id,
     22,
     fieldComments.usr_id,
-  );
-  
-  // 会员等级
-  await validators.chars_max_length(
-    input.grade,
-    10,
-    fieldComments.grade,
   );
   
   // 姓名
