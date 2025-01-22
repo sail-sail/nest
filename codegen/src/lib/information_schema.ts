@@ -725,7 +725,7 @@ export async function getSchema(
       record.dict_head_model = dictbizHeadModels.find((item) => item.code === record.dictbiz);
     }
     if ((record.dict || record.dictbiz) && !record.dict_head_model) {
-      throw new Error(`table: ${ table_name }, column: ${ record.COLUMN_NAME }, 业务字典: ${ record.dict || record.dictbiz } 不存在!`);
+      // throw new Error(`table: ${ table_name }, column: ${ record.COLUMN_NAME }, 业务字典: ${ record.dict || record.dictbiz } 不存在!`);
     } else if (record.dict_head_model && record.dictHasSelectAdd == null && record.dict_head_model.is_add) {
       record.dictHasSelectAdd = true;
     }
