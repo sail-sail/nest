@@ -115,25 +115,6 @@ impl DictDetailGenQuery {
       }).await
   }
   
-  /// 根据 id 查找系统字典明细是否已锁定
-  /// 已锁定的记录不能修改和删除
-  /// 记录不存在则返回 false
-  async fn get_is_locked_by_id_dict_detail(
-    &self,
-    ctx: &Context<'_>,
-    id: DictDetailId,
-  ) -> Result<bool> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .build()
-      .scope({
-        dict_detail_resolver::get_is_locked_by_id(
-          id,
-          None,
-        )
-      }).await
-  }
-  
   /// 获取系统字典明细字段注释
   async fn get_field_comments_dict_detail(
     &self,
@@ -248,26 +229,6 @@ impl DictDetailGenMutation {
         dict_detail_resolver::enable_by_ids(
           ids,
           is_enabled,
-          None,
-        )
-      }).await
-  }
-  
-  /// 根据 ids 锁定或解锁数据
-  async fn lock_by_ids_dict_detail(
-    &self,
-    ctx: &Context<'_>,
-    ids: Vec<DictDetailId>,
-    is_locked: u8,
-  ) -> Result<u64> {
-    Ctx::builder(ctx)
-      .with_auth()?
-      .with_tran()?
-      .build()
-      .scope({
-        dict_detail_resolver::lock_by_ids(
-          ids,
-          is_locked,
           None,
         )
       }).await

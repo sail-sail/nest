@@ -230,12 +230,16 @@ import {
 
 import {
   getParsedEnv,
-} from "/lib/env.ts";
+} from "/lib/env.ts";<#
+if (isUseI18n) {
+#>
 
 import {
   initN,
   ns,
-} from "/src/base/i18n/i18n.ts";
+} from "/src/base/i18n/i18n.ts";<#
+}
+#>
 
 import {
   isNotEmpty,
@@ -694,7 +698,7 @@ async function getWhereQuery(
     #>
   },
 ): Promise<string> {<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -807,12 +811,19 @@ async function getWhereQuery(
     #>
     whereQuery += ` and t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) })`;<#
     } else {
+    #><#
+    if (isUseI18n) {
     #>
     if (server_i18n_enable) {
       whereQuery += ` and (t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }) or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) }))`;
     } else {
       whereQuery += ` and t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) })`;
     }<#
+    } else {
+    #>
+    whereQuery += ` and t.<#=modelLabel#> in (${ args.push(search.<#=modelLabel#>) })`;<#
+    }
+    #><#
     }
     #>
   }
@@ -821,12 +832,19 @@ async function getWhereQuery(
     #>
     whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;<#
     } else {
+    #><#
+    if (isUseI18n) {
     #>
     if (server_i18n_enable) {
       whereQuery += ` and (t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") })`;
     } else {
       whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;
     }<#
+    } else {
+    #>
+    whereQuery += ` and t.<#=modelLabel#> like ${ args.push("%" + sqlLike(search.<#=modelLabel#>_like) + "%") }`;<#
+    }
+    #><#
     }
     #>
   }<#
@@ -904,12 +922,19 @@ async function getWhereQuery(
     #>
     whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;<#
     } else {
+    #><#
+    if (isUseI18n) {
     #>
     if (server_i18n_enable) {
       whereQuery += ` and (t.<#=column_name#>=${ args.push(search.<#=column_name#>) } or <#=opts.langTable.opts.table_name#>.<#=column_name#>=${ args.push(search.<#=column_name#>) })`;
     } else {
       whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;
     }<#
+    } else {
+    #>
+    whereQuery += ` and t.<#=column_name#>=${ args.push(search.<#=column_name#>) }`;<#
+    }
+    #><#
     }
     #>
   }
@@ -918,12 +943,19 @@ async function getWhereQuery(
     #>
     whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;<#
     } else {
+    #><#
+    if (isUseI18n) {
     #>
     if (server_i18n_enable) {
       whereQuery += ` and (t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") } or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") })`;
     } else {
       whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;
     }<#
+    } else {
+    #>
+    whereQuery += ` and t.<#=column_name#> like ${ args.push("%" + sqlLike(search?.<#=column_name#>_like) + "%") }`;<#
+    }
+    #><#
     }
     #>
   }<#
@@ -958,7 +990,7 @@ async function getFromQuery(
   const is_deleted = search?.is_deleted ?? 0;<#
   }
   #><#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -1043,7 +1075,7 @@ async function getFromQuery(
   #><#
   }
   #>`;<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   if (server_i18n_enable) {
@@ -1171,7 +1203,7 @@ export async function findAll(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -1230,7 +1262,7 @@ export async function findAll(
   #><#
   }
   #><#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   let lang_sql = "";
@@ -1296,7 +1328,7 @@ export async function findAll(
       #><#
       }
       #><#
-      if (opts.langTable) {
+      if (opts.langTable && isUseI18n) {
       #>
       ${ lang_sql }<#
       }
@@ -1675,7 +1707,7 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     
     if (server_i18n_enable) {<#
@@ -1964,15 +1996,29 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();<#
+      if (isUseI18n) {
+      #>
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
+      } else {
+      #>
+      throw `${ fieldComments.<#=column_name#> } 日期格式错误`;<#
+      }
+      #>
     }
   }
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();<#
+      if (isUseI18n) {
+      #>
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
+      } else {
+      #>
+      throw `${ fieldComments.<#=column_name#> } 日期格式错误`;<#
+      }
+      #>
     }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).startOf("month").format("YYYY-MM-DD HH:mm:ss");
   }<#
@@ -1984,15 +2030,29 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();<#
+      if (isUseI18n) {
+      #>
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
+      } else {
+      #>
+      throw `${ fieldComments.<#=column_name#> } 日期格式错误`;<#
+      }
+      #>
     }
   }
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();<#
+      if (isUseI18n) {
+      #>
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
+      } else {
+      #>
+      throw `${ fieldComments.<#=column_name#> } 日期格式错误`;<#
+      }
+      #>
     }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
   }<#
@@ -2004,15 +2064,29 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();<#
+      if (isUseI18n) {
+      #>
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
+      } else {
+      #>
+      throw `${ fieldComments.<#=column_name#> } 日期格式错误`;<#
+      }
+      #>
     }
   }
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      const fieldComments = await getFieldComments();
-      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;
+      const fieldComments = await getFieldComments();<#
+      if (isUseI18n) {
+      #>
+      throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
+      } else {
+      #>
+      throw `${ fieldComments.<#=column_name#> } 日期格式错误`;<#
+      }
+      #>
     }
     input.<#=column_name#> = dayjs(input.<#=column_name#>).format("YYYY-MM-DD HH:mm:ss");
   }<#
@@ -2371,12 +2445,15 @@ export async function setIdByLbl(
 
 // MARK: getFieldComments
 /** 获取<#=table_comment#>字段注释 */
-export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
+export async function getFieldComments(): Promise<<#=fieldCommentName#>> {<#
+  if (isUseI18n) {
+  #>
   const n = initN(route_path);
   const fieldComments: <#=fieldCommentName#> = {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
@@ -2414,7 +2491,54 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
     #><#
     }
     #>
-  };
+  };<#
+  } else {
+  #>
+  const fieldComments: <#=fieldCommentName#> = {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+      const column_name = column.COLUMN_NAME;
+      let data_type = column.DATA_TYPE;
+      let column_type = column.COLUMN_TYPE;
+      let column_comment = column.COLUMN_COMMENT || "";
+      if (column_name === "is_sys") {
+        continue;
+      }
+      if (column_name === "is_deleted") {
+        continue;
+      }
+      if (column_name === "tenant_id") {
+        continue;
+      }
+      if (column_name === "is_hidden") {
+        continue;
+      }
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
+      const foreignKey = column.foreignKey;
+    #><#
+      if (foreignKey || column.dict || column.dictbiz
+        || data_type === "datetime" || data_type === "date"
+      ) {
+    #>
+    <#=column_name#>: "<#=column_comment#>",<#
+        if (!columns.some((item) => item.COLUMN_NAME === column_name + "_lbl")) {
+    #>
+    <#=column_name#>_lbl: "<#=column_comment#>",<#
+        }
+    #><#
+      } else {
+    #>
+    <#=column_name#>: "<#=column_comment#>",<#
+      }
+    #><#
+    }
+    #>
+  };<#
+  }
+  #>
   return fieldComments;
 }
 
@@ -2629,8 +2753,15 @@ export async function checkByUnique(
   const isEquals = equalsByUnique(oldModel, input);
   
   if (isEquals) {
-    if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("<#=table_comment#>")));
+    if (uniqueType === UniqueType.Throw) {<#
+      if (isUseI18n) {
+      #>
+      throw new UniqueException(await ns("此 {0} 已经存在", await ns("<#=table_comment#>")));<#
+      } else {
+      #>
+      throw new UniqueException("此 <#=table_comment#> 已经存在");<#
+      }
+      #>
     }
     if (uniqueType === UniqueType.Update) {
       const id: <#=Table_Up#>Id = await updateById(
@@ -2992,8 +3123,15 @@ if (hasEnabled) {
 export async function validateIsEnabled(
   model: Readonly<<#=modelName#>>,
 ) {
-  if (model.is_enabled == 0) {
-    throw `${ await ns("<#=table_comment#>") } ${ await ns("已禁用") }`;
+  if (model.is_enabled == 0) {<#
+    if (isUseI18n) {
+    #>
+    throw `${ await ns("<#=table_comment#>") } ${ await ns("已禁用") }`;<#
+    } else {
+    #>
+    throw "<#=table_comment#> 已禁用";<#
+    }
+    #>
   }
 }<#
 }
@@ -3004,8 +3142,15 @@ export async function validateIsEnabled(
 export async function validateOption(
   model?: <#=modelName#>,
 ) {
-  if (!model) {
-    const err_msg = `${ await ns("<#=table_comment#>") } ${ await ns("不存在") }`;
+  if (!model) {<#
+    if (isUseI18n) {
+    #>
+    const err_msg = `${ await ns("<#=table_comment#>") } ${ await ns("不存在") }`;<#
+    } else {
+    #>
+    const err_msg = "<#=table_comment#> 不存在";<#
+    }
+    #>
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -3021,6 +3166,7 @@ export async function validate(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "is_sys") {
       continue;
@@ -3863,7 +4009,7 @@ for (const key of redundLblKeys) {
   if (affectedRows !== inputs2.length) {
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   for (const input of inputs) {
@@ -4239,7 +4385,7 @@ export async function getEditableDataPermitsByIds(
 }<#
 }
 #><#
-if (opts.langTable) {
+if (opts.langTable && isUseI18n) {
 #>
 
 async function refreshLangByInput(
@@ -4422,7 +4568,7 @@ export async function updateById(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
@@ -4469,8 +4615,15 @@ export async function updateById(
     let models = await findByUnique(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
-      if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("<#=table_comment#>"));
+      if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {<#
+        if (isUseI18n) {
+        #>
+        throw await ns("此 {0} 已经存在", await ns("<#=table_comment#>"));<#
+        } else {
+        #>
+        throw "此 <#=table_comment#> 已经存在";<#
+        }
+        #>
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -4479,8 +4632,15 @@ export async function updateById(
   
   const oldModel = await findById(id, options);
   
-  if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("<#=table_comment#>"));
+  if (!oldModel) {<#
+    if (isUseI18n) {
+    #>
+    throw await ns("编辑失败, 此 {0} 已被删除", await ns("<#=table_comment#>"));<#
+    } else {
+    #>
+    throw "编辑失败, 此 <#=table_comment#> 已被删除";<#
+    }
+    #>
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
@@ -4492,34 +4652,69 @@ export async function updateById(
   const hasDeptParentPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.DeptParent && item.type === DataPermitType.Editable);
   const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant && item.type === DataPermitType.Editable);
   
-  if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && !hasCreatePermit && dataPermitModels.length > 0) {
-    throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
+  if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && !hasCreatePermit && dataPermitModels.length > 0) {<#
+    if (isUseI18n) {
+    #>
+    throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));<#
+    } else {
+    #>
+    throw "没有权限编辑此 <#=table_comment#>";<#
+    }
+    #>
   }
   
   if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && hasCreatePermit) {
     const usr_id = await get_usr_id();
-    if (oldModel.create_usr_id !== usr_id) {
-      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
+    if (oldModel.create_usr_id !== usr_id) {<#
+      if (isUseI18n) {
+      #>
+      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));<#
+      } else {
+      #>
+      throw "没有权限编辑此 <#=table_comment#>";<#
+      }
+      #>
     }
   } else if (!hasTenantPermit && hasDeptParentPermit) {
     const dept_ids = await getAuthAndChildrenDeptIds();
     const model_dept_ids = await getParentsDeptIds(oldModel.create_usr_id);
-    if (!model_dept_ids.some((item) => dept_ids.includes(item))) {
-      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
+    if (!model_dept_ids.some((item) => dept_ids.includes(item))) {<#
+      if (isUseI18n) {
+      #>
+      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));<#
+      } else {
+      #>
+      throw "没有权限编辑此 <#=table_comment#>";<#
+      }
+      #>
     }
   } else if (!hasTenantPermit && hasDeptPermit) {
     const dept_ids = await getAuthDeptIds();
     const model_dept_ids = await getDeptIds(oldModel.create_usr_id);
-    if (!model_dept_ids.some((item) => dept_ids.includes(item))) {
-      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
+    if (!model_dept_ids.some((item) => dept_ids.includes(item))) {<#
+      if (isUseI18n) {
+      #>
+      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));<#
+      } else {
+      #>
+      throw "没有权限编辑此 <#=table_comment#>";<#
+      }
+      #>
     }
   }
   
   if (!hasTenantPermit && hasRolePermit) {
     const role_ids = await getAuthRoleIds();
     const model_role_ids = await getRoleIds(oldModel.create_usr_id);
-    if (!model_role_ids.some((item) => role_ids.includes(item))) {
-      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));
+    if (!model_role_ids.some((item) => role_ids.includes(item))) {<#
+      if (isUseI18n) {
+      #>
+      throw await ns("没有权限编辑此 {0}", await ns("<#=table_comment#>"));<#
+      } else {
+      #>
+      throw "没有权限编辑此 <#=table_comment#>";<#
+      }
+      #>
     }
   }<#
   }
@@ -4573,11 +4768,19 @@ export async function updateById(
     sql += `<#=modelLabel#>=?,`;
     args.push(input.<#=modelLabel#>);<#
     } else {
+    #><#
+    if (isUseI18n) {
     #>
     if (!server_i18n_enable) {
       sql += `<#=modelLabel#>=?,`;
       args.push(input.<#=modelLabel#>);
     }<#
+    } else {
+    #>
+    sql += `<#=modelLabel#>=?,`;
+    args.push(input.<#=modelLabel#>);<#
+    }
+    #><#
     }
     #>
     updateFldNum++;
@@ -4617,10 +4820,17 @@ export async function updateById(
       #>
       sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
         } else {
+      #><#
+      if (isUseI18n) {
       #>
       if (!server_i18n_enable) {
         sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;
       }<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #><#
         }
       #><#
       }
@@ -4648,10 +4858,17 @@ export async function updateById(
       #>
       sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
         } else {
+      #><#
+      if (isUseI18n) {
       #>
       if (!server_i18n_enable) {
         sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;
       }<#
+      } else {
+      #>
+      sql += `<#=column_name_mysql#>=${ args.push(input.<#=column_name#>) },`;<#
+      }
+      #><#
         }
       #><#
       }
@@ -4689,10 +4906,17 @@ export async function updateById(
       #>
       sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;<#
         } else {
+      #><#
+      if (isUseI18n) {
       #>
       if (!server_i18n_enable) {
         sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;
       }<#
+      } else {
+      #>
+      sql += `<#=val_mysql#> = ${ args.push(input.<#=val#>) },`;<#
+      }
+      #><#
         }
       #>
       updateFldNum++;
@@ -5035,8 +5259,15 @@ export async function updateById(
     if (!is_silent_mode) {
       if (input.version != null) {
         const version = await getVersionById(id);
-        if (version && version > input.version) {
-          throw await ns("此 {0} 已被修改，请刷新后重试", await ns("<#=table_comment#>"));
+        if (version && version > input.version) {<#
+          if (isUseI18n) {
+          #>
+          throw await ns("此 {0} 已被修改，请刷新后重试", await ns("<#=table_comment#>"));<#
+          } else {
+          #>
+          throw "此 <#=table_comment#> 已被修改，请刷新后重试";<#
+          }
+          #>
         }
         sql += `version=${ args.push(version + 1) },`;
         sqlSetFldNum++;
@@ -5073,7 +5304,7 @@ export async function updateById(
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);<#
-      if (opts.langTable) {
+      if (opts.langTable && isUseI18n) {
       #>
       if (server_i18n_enable) {
         await refreshLangByInput({
@@ -5152,7 +5383,7 @@ export async function deleteByIds(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
   }
@@ -5184,8 +5415,15 @@ export async function deleteByIds(
   const hasDeptParentPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.DeptParent && item.type === DataPermitType.Editable);
   const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant && item.type === DataPermitType.Editable);
   
-  if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && !hasCreatePermit && dataPermitModels.length > 0) {
-    throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
+  if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && !hasCreatePermit && dataPermitModels.length > 0) {<#
+    if (isUseI18n) {
+    #>
+    throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));<#
+    } else {
+    #>
+    throw "没有权限删除此 <#=table_comment#>";<#
+    }
+    #>
   }<#
   }
   #><#
@@ -5211,28 +5449,56 @@ export async function deleteByIds(
     
     if (!hasTenantPermit && !hasDeptPermit && !hasDeptParentPermit && !hasRolePermit && hasCreatePermit) {
       const usr_id = await get_usr_id();
-      if (oldModel.create_usr_id !== usr_id) {
-        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
+      if (oldModel.create_usr_id !== usr_id) {<#
+        if (isUseI18n) {
+        #>
+        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));<#
+        } else {
+        #>
+        throw "没有权限删除此 <#=table_comment#>";<#
+        }
+        #>
       }
     } else if (!hasTenantPermit && hasDeptParentPermit) {
       const dept_ids = await getAuthAndParentsDeptIds();
       const model_dept_ids = await getParentsDeptIds(oldModel.create_usr_id);
-      if (!model_dept_ids.some((item) => dept_ids.includes(item))) {
-        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
+      if (!model_dept_ids.some((item) => dept_ids.includes(item))) {<#
+        if (isUseI18n) {
+        #>
+        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));<#
+        } else {
+        #>
+        throw "没有权限删除此 <#=table_comment#>";<#
+        }
+        #>
       }
     } else if (!hasTenantPermit && hasDeptPermit) {
       const dept_ids = await getAuthDeptIds();
       const model_dept_ids = await getDeptIds(oldModel.create_usr_id);
-      if (!model_dept_ids.some((item) => dept_ids.includes(item))) {
-        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
+      if (!model_dept_ids.some((item) => dept_ids.includes(item))) {<#
+        if (isUseI18n) {
+        #>
+        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));<#
+        } else {
+        #>
+        throw "没有权限删除此 <#=table_comment#>";<#
+        }
+        #>
       }
     }
   
     if (!hasTenantPermit && hasRolePermit) {
       const role_ids = await getAuthRoleIds();
       const model_role_ids = await getRoleIds(oldModel.create_usr_id);
-      if (!model_role_ids.some((item) => role_ids.includes(item))) {
-        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));
+      if (!model_role_ids.some((item) => role_ids.includes(item))) {<#
+        if (isUseI18n) {
+        #>
+        throw await ns("没有权限删除此 {0}", await ns("<#=table_comment#>"));<#
+        } else {
+        #>
+        throw "没有权限删除此 <#=table_comment#>";<#
+        }
+        #>
       }
     }<#
     }
@@ -5284,7 +5550,7 @@ export async function deleteByIds(
     #>
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     if (server_i18n_enable) {<#
       if (hasIsDeleted) {
@@ -5341,8 +5607,15 @@ export async function deleteByIds(
         #>
         const sql = `select id from <#=mod#>_<#=many2many.table#> where <#=many2many.column1#>=${ args.push(id) } and <#=many2many.column2#> in (${ args.push(<#=column_name#>) }) and is_deleted=0`;
         const model = await queryOne(sql, args);
-        if (model) {
-          throw await ns("请先删除关联数据");
+        if (model) {<#
+          if (isUseI18n) {
+          #>
+          throw await ns("请先删除关联数据");<#
+          } else {
+          #>
+          throw "请先删除关联数据";<#
+          }
+          #>
         }<#
         }
         #>
@@ -5378,8 +5651,15 @@ export async function deleteByIds(
       #>
       const sql = `select id from <#=mod#>_<#=many2many.table#> where <#=many2many.column2#>=${ args.push(id) } and is_deleted=0`;
       const model = await queryOne(sql, args);
-      if (model) {
-        throw await ns("请先删除关联数据");
+      if (model) {<#
+        if (isUseI18n) {
+        #>
+        throw await ns("请先删除关联数据");<#
+        } else {
+        #>
+        throw "请先删除关联数据";<#
+        }
+        #>
       }<#
       }
       #>
@@ -5718,7 +5998,7 @@ export async function revertByIds(
   const method = "revertByIds";
   
   const is_debug = get_is_debug(options?.is_debug);<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
   }
@@ -5780,15 +6060,22 @@ export async function revertByIds(
       for (const model of models) {
         if (model.id === id) {
           continue;
+        }<#
+        if (isUseI18n) {
+        #>
+        throw await ns("此 {0} 已经存在", await ns("<#=table_comment#>"));<#
+        } else {
+        #>
+        throw "此 <#=table_comment#> 已经存在";<#
         }
-        throw await ns("此 {0} 已经存在", await ns("<#=table_comment#>"));
+        #>
       }
     }
     const args = new QueryArgs();
     const sql = `update <#=mod#>_<#=table#> set is_deleted=0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     if (server_i18n_enable) {
       const sql = "update <#=opts.langTable.opts.table_name#> set is_deleted=0 where <#=table#>_id=?";
@@ -5967,7 +6254,7 @@ export async function forceDeleteByIds(
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";<#
   }
@@ -6022,7 +6309,7 @@ export async function forceDeleteByIds(
     #> limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     if (server_i18n_enable) {
       const sql = "delete from <#=opts.langTable.opts.table_name#> where <#=table#>_id=?";

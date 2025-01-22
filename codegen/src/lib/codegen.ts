@@ -6,7 +6,7 @@ import { basename, dirname, resolve, normalize } from "path";
 import { Chalk } from "chalk";
 import * as shelljs from "shelljs";
 import * as uuid from "uuid";
-import tables from "../tables/tables";
+import tables, { isUseI18n as isUseI18n0 } from "../tables/tables";
 import { createHash } from "crypto";
 import { unlink } from "fs/promises";
 import { TablesConfigItem } from "../config";
@@ -16,6 +16,8 @@ if (!shelljs.which("git")) {
   shelljs.echo("请先安装git: https://git-scm.com");
   process.exit(1);
 }
+
+const isUseI18n = isUseI18n0;
 
 // if (shelljs.env["LESSCHARSET"] !== "utf-8") {
 //   shelljs.echo("请先设置全局环境变量 LESSCHARSET 为 utf-8");
@@ -584,16 +586,22 @@ export async function gitDiffOut() {
   // await copyXlsx(out);
   const diffFile = "__test__.diff";
   const diffStr = `git diff --full-index ./* > ${projectPh}/${ diffFile }`;
-  console.log(diffStr);
   shelljs.cd(projectPh);
   shelljs.exec(diffStr);
+  shelljs.exec(`git add .`);
   let str = await readFile(`${ projectPh }/${ diffFile }`, "utf8");
   let applyHasErr = false;
+  let applyErrMsg = "";
   if (!isEmpty0(str)) {
     str = str.replace(/\/codegen\/__out__\//gm, "/");
     await writeFile(`${ projectPh }/${ diffFile }`, str);
     shelljs.cd(projectPh);
-    const applyRes = shelljs.exec(`git apply ${ diffFile } --ignore-space-change --binary --whitespace=nowarn`);
+    const applyRes = shelljs.exec(
+      `git apply ${ diffFile } --3way --ignore-space-change --binary --whitespace=nowarn`,
+      {
+        silent: true,
+      },
+    );
     const applyErr = applyRes.stderr;
     if (applyErr && applyErr.includes("error: patch failed:")) {
       applyHasErr = true;
@@ -604,18 +612,27 @@ export async function gitDiffOut() {
         item = item.substring("error: ".length, item.length - ": patch does not apply".length);
         // 打开vscode的diff
         const cmdTmp = `code --diff "${ out }/${ item }" "${ projectPh }/${ item }"`;
-        console.log(cmdTmp);
+        applyErrMsg += cmdTmp + "\n";
         shelljs.exec(cmdTmp);
       }
       console.log("");
+    } else {
+      const arr = applyErr.split("\n")
+        .filter((item) => item && !item.startsWith("Applied patch to "));
+      if (arr.length > 0) {
+        applyHasErr = true;
+        applyErrMsg = arr.join("\n");
+      }
     }
+      
   }
   await treeDir();
   await unlink(`${ projectPh }/codegening.txt`);
+  console.log("");
   if (applyHasErr) {
-    throw `代码合并失败!`;
+    throw `代码合并失败:\n\n${ applyErrMsg }`;
   } else {
-    console.log(`代码合并成功!`);
+    console.log(chalk.green("代码合并成功!"));
   }
 }
 

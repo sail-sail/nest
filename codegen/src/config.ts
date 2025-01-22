@@ -1,3 +1,8 @@
+import type {
+  DictModel,
+  DictHeadModel,
+} from "./lib/information_schema";
+
 export default {
   ignoreCodegen: [
     "tenant_id",
@@ -22,6 +27,11 @@ export interface TableCloumn {
    * 是否在pc前端隐藏此字段
    */
   onlyCodegenDeno?: boolean;
+  
+  /**
+   * 是否在pc前端隐藏此字段, 但是在api中生成
+   */
+  onlyCodegenDenoButApi?: boolean;
   
   /**
    * 前端不允许修改
@@ -422,7 +432,7 @@ export interface TableCloumn {
   attAccept?: string,
   
   /**
-   * 宽度
+   * 宽度, rem 默认宽度为 280, lbl 默认宽度为 120
    */
   width?: number,
   
@@ -486,6 +496,16 @@ export interface TableCloumn {
    * 业务字典
    */
   dictbiz?: string,
+  
+  /**
+   * 系统字典 或 业务字典 的下拉框是否有增加按钮
+   * 当这个字典 is_add 为 1 时, 默认为 true, 否则默认为 false
+   */
+  dictHasSelectAdd?: boolean,
+  
+  dict_models?: DictModel[],
+  
+  dict_head_model?: DictHeadModel,
   
   /**
    * 是否为固定列
@@ -874,6 +894,6 @@ export interface TablesConfig {
   [key: string]: TablesConfigItem;
 }
 
-export function defineConfig(config: TablesConfig) {
+export function defineConfig(config: TablesConfig): TablesConfig {
   return config;
 }

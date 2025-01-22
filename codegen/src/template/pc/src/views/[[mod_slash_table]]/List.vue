@@ -143,8 +143,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>"
         >
           <CustomTreeSelect
@@ -155,8 +162,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
                 label: item.<#=foreignKey.lbl#>,
                 value: item.<#=foreignKey.column#>,
               };
-            })"
-            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            })"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             multiple
             @change="onSearch(false)"
           ></CustomTreeSelect>
@@ -173,8 +187,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>"
         >
           <CustomTreeSelect
@@ -185,8 +206,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
                 label: item.<#=foreignKey.lbl#>,
                 value: item.<#=foreignKey.column#>,
               };
-            })"
-            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            })"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             multiple
             @change="onSearch(false)"
           ></CustomTreeSelect>
@@ -199,8 +227,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>"
         >
           <CustomSelect
@@ -211,8 +246,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
                 label: item.<#=foreignKey.lbl#>,
                 value: item.<#=foreignKey.column#>,
               };
-            })"
-            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            })"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
@@ -225,13 +267,27 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>"
         >
           <CustomInput
-            v-model="search.<#=column_name#>_<#=foreignKey.lbl#>_like"
-            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+            v-model="search.<#=column_name#>_<#=foreignKey.lbl#>_like"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请输入 <#=column_comment#>"<#
+            }
+            #>
             @change="onSearch(false)"
           ></CustomInput>
         </el-form-item>
@@ -243,8 +299,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>"
         >
           <CustomSelect
@@ -255,8 +318,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
                 label: item.<#=foreignKey.lbl#>,
                 value: item.<#=foreignKey.column#>,
               };
-            })"
-            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            })"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             multiple
             @change="onSearch(false)"
           ></CustomSelect>
@@ -269,16 +339,30 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>"
         ><#
           if (column.searchMultiple !== false) {
           #>
           <DictSelect
             v-model="<#=column_name#>_search"
-            code="<#=column.dict#>"
-            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            code="<#=column.dict#>"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             multiple
             @change="onSearch(false)"
           ></DictSelect><#
@@ -286,8 +370,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
           #>
           <DictSelect
             :model-value="<#=column_name#>_search[0]"
-            code="<#=column.dict#>"
-            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            code="<#=column.dict#>"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             @change="onSearch(false)"
           ></DictSelect><#
@@ -302,16 +393,30 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>"
         ><#
           if (column.searchMultiple !== false) {
           #>
           <DictbizSelect
             v-model="<#=column_name#>_search"
-            code="<#=column.dictbiz#>"
-            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            code="<#=column.dictbiz#>"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             multiple
             @change="onSearch(false)"
           ></DictbizSelect><#
@@ -319,8 +424,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
           #>
           <DictbizSelect
             :model-value="<#=column_name#>_search[0]"
-            code="<#=column.dictbiz#>"
-            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"
+            code="<#=column.dictbiz#>"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请选择 <#=column_comment#>"<#
+            }
+            #>
             @update:model-value="($event != null && $event !== '') ? <#=column_name#>_search = [ $event ] : <#=column_name#>_search = [ ]"
             @change="onSearch(false)"
           ></DictbizSelect><#
@@ -335,8 +447,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>"
         >
           <CustomDatePicker
@@ -348,9 +467,17 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             #>
             type="daterange"<#
             }
+            #><#
+            if (isUseI18n) {
             #>
             :start-placeholder="ns('开始')"
-            :end-placeholder="ns('结束')"
+            :end-placeholder="ns('结束')"<#
+            } else {
+            #>
+            start-placeholder="开始"
+            end-placeholder="结束"<#
+            }
+            #>
             @clear="onSearchClear"
             @change="onSearch(false)"
           ></CustomDatePicker>
@@ -363,8 +490,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>"
         >
           <el-checkbox
@@ -372,7 +506,14 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             un-w="full"
             :false-value="0"
             :true-value="1"
-          >{{ n('<#=column_comment#>') }}</el-checkbox>
+          ><#
+            if (isUseI18n) {
+            #>{{ n('<#=column_comment#>') }}<#
+            } else {
+            #><#=column_comment#><#
+            }
+            #>
+          </el-checkbox>
         </el-form-item>
       </template><#
       } else if (column_type.startsWith("int")) {
@@ -383,8 +524,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(showBuildIn || builtInSearch?.<#=column_name#> == null<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>"
         >
           <div
@@ -397,8 +545,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             <CustomInputNumber
               un-flex="[1_0_0]"
               v-model="search.<#=column_name#>[0]"
-              @clear="onSearchClear"
-              :placeholder="ns('最小值')"
+              @clear="onSearchClear"<#
+              if (isUseI18n) {
+              #>
+              :placeholder="ns('最小值')"<#
+              } else {
+              #>
+              placeholder="最小值"<#
+              }
+              #>
               @change="() => {
                 search.<#=column_name#> = search.<#=column_name#> ?? [ ];
                 if (search.<#=column_name#>[1] == null) {
@@ -409,8 +564,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             <CustomInputNumber
               un-flex="[1_0_0]"
               v-model="search.<#=column_name#>[1]"
-              @clear="onSearchClear"
-              :placeholder="ns('最大值')"
+              @clear="onSearchClear"<#
+              if (isUseI18n) {
+              #>
+              :placeholder="ns('最大值')"<#
+              } else {
+              #>
+              placeholder="最大值"<#
+              }
+              #>
               @change="() => {
                 search.<#=column_name#> = search.<#=column_name#> ?? [ ];
                 if (search.<#=column_name#>[0] == null) {
@@ -428,13 +590,27 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       #>field_permit('<#=column_name#>') && <#
         }
       #>(builtInSearch?.<#=column_name#> == null && (showBuildIn || builtInSearch?.<#=column_name#>_like == null)<#=isSearchExpand ? " && isSearchExpand" : ""#>)">
-        <el-form-item
-          :label="n('<#=column_comment#>')"
+        <el-form-item<#
+          if (isUseI18n) {
+          #>
+          :label="n('<#=column_comment#>')"<#
+          } else {
+          #>
+          label="<#=column_comment#>"<#
+          }
+          #>
           prop="<#=column_name#>_like"
         >
           <CustomInput
-            v-model="search.<#=column_name#>_like"
-            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"
+            v-model="search.<#=column_name#>_like"<#
+            if (isUseI18n) {
+            #>
+            :placeholder="`${ ns('请输入') } ${ n('<#=column_comment#>') }`"<#
+            } else {
+            #>
+            placeholder="请输入 <#=column_comment#>"<#
+            }
+            #>
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -466,8 +642,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
               :true-value="1"
               :disabled="selectedIds.length === 0"
               @change="onIdsChecked"
-            >
-              <span>{{ ns('已选择') }}</span>
+            ><#
+              if (isUseI18n) {
+              #>
+              <span>{{ ns('已选择') }}</span><#
+              } else {
+              #>
+              <span>已选择</span><#
+              }
+              #>
               <span
                 v-if="selectedIds.length > 0"
                 un-m="l-0.5"
@@ -477,8 +660,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
               </span>
             </el-checkbox>
             <el-icon
-              v-show="selectedIds.length > 0"
-              :title="ns('清空已选择')"
+              v-show="selectedIds.length > 0"<#
+              if (isUseI18n) {
+              #>
+              :title="ns('清空已选择')"<#
+              } else {
+              #>
+              title="清空已选择"<#
+              }
+              #>
               un-cursor-pointer
               un-text="hover:red"
               @click="onEmptySelected"
@@ -495,9 +685,16 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             :set="search.is_deleted = search.is_deleted ?? 0"
             :false-value="0"
             :true-value="1"
-            @change="recycleChg"
-          >
-            <span>{{ ns('回收站') }}</span>
+            @change="onRecycle"
+          ><#
+            if (isUseI18n) {
+            #>
+            <span>{{ ns('回收站') }}</span><#
+            } else {
+            #>
+            <span>回收站</span><#
+            }
+            #>
           </el-checkbox><#
           }
           #>
@@ -516,8 +713,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
         >
           <template #icon>
             <ElIconSearch />
-          </template>
-          <span>{{ ns('查询') }}</span>
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('查询') }}</span><#
+          } else {
+          #>
+          <span>查询</span><#
+          }
+          #>
         </el-button>
         
         <el-button
@@ -526,8 +730,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
         >
           <template #icon>
             <ElIconDelete />
-          </template>
-          <span>{{ ns('重置') }}</span>
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('重置') }}</span><#
+          } else {
+          #>
+          <span>重置</span><#
+          }
+          #>
         </el-button>
         
         <div
@@ -548,9 +759,17 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             un-h="5.5"
             un-overflow-hidden
             @click="isSearchExpand = !isSearchExpand"
-          >
+          ><#
+            if (isUseI18n) {
+            #>
             <span v-if="isSearchExpand">{{ ns('收起') }}</span>
-            <span v-else>{{ ns('展开') }}</span>
+            <span v-else>{{ ns('展开') }}</span><#
+            } else {
+            #>
+            <span v-if="isSearchExpand">收起</span>
+            <span v-else>展开</span><#
+            }
+            #>
           </div><#
           }
           #>
@@ -584,8 +803,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconCirclePlus />
-        </template>
-        <span>{{ ns('新增') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('新增') }}</span><#
+        } else {
+        #>
+        <span>新增</span><#
+        }
+        #>
       </el-button><#
         if (opts.noCopy !== true) {
       #>
@@ -598,8 +824,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconCopyDocument />
-        </template>
-        <span>{{ ns('复制') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('复制') }}</span><#
+        } else {
+        #>
+        <span>复制</span><#
+        }
+        #>
       </el-button><#
         }
       #><#
@@ -616,8 +849,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconEdit />
-        </template>
-        <span>{{ ns('编辑') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('编辑') }}</span><#
+        } else {
+        #>
+        <span>编辑</span><#
+        }
+        #>
       </el-button><#
       }
       #><#
@@ -632,8 +872,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconCircleClose />
-        </template>
-        <span>{{ ns('删除') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('删除') }}</span><#
+        } else {
+        #>
+        <span>删除</span><#
+        }
+        #>
       </el-button><#
         }
       #>
@@ -644,8 +891,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconReading />
-        </template>
-        <span>{{ ns('查看') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('查看') }}</span><#
+        } else {
+        #>
+        <span>查看</span><#
+        }
+        #>
       </el-button>
       
       <el-button
@@ -654,8 +908,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconRefresh />
-        </template>
-        <span>{{ ns('刷新') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('刷新') }}</span><#
+        } else {
+        #>
+        <span>刷新</span><#
+        }
+        #>
       </el-button><#
       for (let ii = 0; ii < columns.length; ii++) {
         const column = columns[ii];
@@ -677,8 +938,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconTickets />
-        </template>
-        <span>{{ ns('<#=label#>') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('<#=label#>') }}</span><#
+        } else {
+        #>
+        <span><#=label#></span><#
+        }
+        #>
       </el-button><#
         }
       }
@@ -699,19 +967,40 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
           <span
             v-if="exportExcel.workerStatus === 'RUNNING'"
             un-text="red"
-          >
-            {{ ns('正在导出') }}
+          ><#
+            if (isUseI18n) {
+            #>
+            {{ ns('正在导出') }}<#
+            } else {
+            #>
+            正在导出<#
+            }
+            #>
           </span>
           <span
             v-else-if="exportExcel.loading"
             un-text="red"
-          >
-            {{ ns('正在为导出加载数据') }}
+          ><#
+            if (isUseI18n) {
+            #>
+            {{ ns('正在为导出加载数据') }}<#
+            } else {
+            #>
+            正在为导出加载数据<#
+            }
+            #>
           </span>
           <span
             v-else
-          >
-            {{ ns('更多操作') }}
+          ><#
+            if (isUseI18n) {
+            #>
+            {{ ns('更多操作') }}<#
+            } else {
+            #>
+            更多操作<#
+            }
+            #>
           </span><#
             } else {
           #>
@@ -736,16 +1025,30 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
               v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
               un-justify-center
               @click="onExport"
-            >
-              <span>{{ ns('导出') }}</span>
+            ><#
+              if (isUseI18n) {
+              #>
+              <span>{{ ns('导出') }}</span><#
+              } else {
+              #>
+              <span>导出</span><#
+              }
+              #>
             </el-dropdown-item>
             
             <el-dropdown-item
               v-else-if="!exportExcel.loading"
               un-justify-center
               @click="onCancelExport"
-            >
-              <span un-text="red">{{ ns('取消导出') }}</span>
+            ><#
+              if (isUseI18n) {
+              #>
+              <span un-text="red">{{ ns('取消导出') }}</span><#
+              } else {
+              #>
+              <span un-text="red">取消导出</span><#
+              }
+              #>
             </el-dropdown-item><#
               }
             #><#
@@ -756,8 +1059,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
               v-if="permit('add') && !isLocked"
               un-justify-center
               @click="onImportExcel"
-            >
-              <span>{{ ns('导入') }}</span>
+            ><#
+              if (isUseI18n) {
+              #>
+              <span>{{ ns('导入') }}</span><#
+              } else {
+              #>
+              <span>导入</span><#
+              }
+              #>
             </el-dropdown-item><#
               }
             #><#
@@ -768,16 +1078,30 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
               v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="onEnableByIds(1)"
-            >
-              <span>{{ ns('启用') }}</span>
+            ><#
+              if (isUseI18n) {
+              #>
+              <span>{{ ns('启用') }}</span><#
+              } else {
+              #>
+              <span>启用</span><#
+              }
+              #>
             </el-dropdown-item>
             
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="onEnableByIds(0)"
-            >
-              <span>{{ ns('禁用') }}</span>
+            ><#
+              if (isUseI18n) {
+              #>
+              <span>{{ ns('禁用') }}</span><#
+              } else {
+              #>
+              <span>禁用</span><#
+              }
+              #>
             </el-dropdown-item><#
             }
             #><#
@@ -788,16 +1112,30 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
               v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="onLockByIds(1)"
-            >
-              <span>{{ ns('锁定') }}</span>
+            ><#
+              if (isUseI18n) {
+              #>
+              <span>{{ ns('锁定') }}</span><#
+              } else {
+              #>
+              <span>锁定</span><#
+              }
+              #>
             </el-dropdown-item>
             
             <el-dropdown-item
               v-if="permit('edit') && !isLocked"
               un-justify-center
               @click="onLockByIds(0)"
-            >
-              <span>{{ ns('解锁') }}</span>
+            ><#
+              if (isUseI18n) {
+              #>
+              <span>{{ ns('解锁') }}</span><#
+              } else {
+              #>
+              <span>解锁</span><#
+              }
+              #>
             </el-dropdown-item><#
             }
             #><#
@@ -821,8 +1159,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             >
               <template #icon>
                 <ElIconTickets />
-              </template>
-              <span>{{ ns('<#=label#>') }}</span>
+              </template><#
+              if (isUseI18n) {
+              #>
+              <span>{{ ns('<#=label#>') }}</span><#
+              } else {
+              #>
+              <span><#=label#></span><#
+              }
+              #>
             </el-dropdown-item><#
               }
             }
@@ -848,8 +1193,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconCircleCheck />
-        </template>
-        <span>{{ ns('还原') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('还原') }}</span><#
+        } else {
+        #>
+        <span>还原</span><#
+        }
+        #>
       </el-button><#
       }
       #><#
@@ -864,8 +1216,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconCircleClose />
-        </template>
-        <span>{{ ns('彻底删除') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('彻底删除') }}</span><#
+        } else {
+        #>
+        <span>彻底删除</span><#
+        }
+        #>
       </el-button><#
       }
       #>
@@ -876,8 +1235,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconReading />
-        </template>
-        <span>{{ ns('查看') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('查看') }}</span><#
+        } else {
+        #>
+        <span>查看</span><#
+        }
+        #>
       </el-button>
       
       <el-button
@@ -886,8 +1252,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       >
         <template #icon>
           <ElIconRefresh />
-        </template>
-        <span>{{ ns('刷新') }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('刷新') }}</span><#
+        } else {
+        #>
+        <span>刷新</span><#
+        }
+        #>
       </el-button><#
       if (opts.noExport !== true) {
       #>
@@ -902,19 +1275,40 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
         >
           <span
             v-if="exportExcel.workerStatus === 'RUNNING'"
-          >
-            {{ ns('正在导出') }}
+          ><#
+            if (isUseI18n) {
+            #>
+            {{ ns('正在导出') }}<#
+            } else {
+            #>
+            正在导出<#
+            }
+            #>
           </span>
           <span
             v-else-if="exportExcel.loading"
             un-text="red"
-          >
-            {{ ns('正在为导出加载数据') }}
+          ><#
+            if (isUseI18n) {
+            #>
+            {{ ns('正在为导出加载数据') }}<#
+            } else {
+            #>
+            正在为导出加载数据<#
+            }
+            #>
           </span>
           <span
             v-else
-          >
-            {{ ns('更多操作') }}
+          ><#
+            if (isUseI18n) {
+            #>
+            {{ ns('更多操作') }}<#
+            } else {
+            #>
+            更多操作<#
+            }
+            #>
           </span>
           <el-icon>
             <ElIconArrowDown />
@@ -930,16 +1324,30 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
               v-if="exportExcel.workerStatus !== 'RUNNING' && !exportExcel.loading"
               un-justify-center
               @click="onExport"
-            >
-              <span>{{ ns('导出') }}</span>
+            ><#
+              if (isUseI18n) {
+              #>
+              <span>{{ ns('导出') }}</span><#
+              } else {
+              #>
+              <span>导出</span><#
+              }
+              #>
             </el-dropdown-item>
             
             <el-dropdown-item
               v-else-if="!exportExcel.loading"
               un-justify-center
               @click="onCancelExport"
-            >
-              <span un-text="red">{{ ns('取消导出') }}</span>
+            ><#
+              if (isUseI18n) {
+              #>
+              <span un-text="red">{{ ns('取消导出') }}</span><#
+              } else {
+              #>
+              <span un-text="red">取消导出</span><#
+              }
+              #>
             </el-dropdown-item>
             
           </el-dropdown-menu>
@@ -960,8 +1368,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       :table-columns="tableColumns"
       @reset-columns="resetColumns"
       @store-columns="storeColumns"
-    >
-      {{ ns('列操作') }}
+    ><#
+      if (isUseI18n) {
+      #>
+      {{ ns('列操作') }}<#
+      } else {
+      #>
+      列操作<#
+      }
+      #>
     </TableShowColumns>
     
   </div>
@@ -983,8 +1398,15 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
         size="small"
         height="100%"
         row-key="id"
-        :default-sort="defaultSort"
+        :default-sort="defaultSort"<#
+        if (isUseI18n) {
+        #>
         :empty-text="inited ? undefined : ns('加载中...')"<#
+        } else {
+        #>
+        :empty-text="inited ? undefined : '加载中...'"<#
+        }
+        #><#
         if (hasSummary) {
         #>
         show-summary
@@ -1873,7 +2295,9 @@ if (list_tree) {
 
 const pagePath = getPagePath();
 const __filename = new URL(import.meta.url).pathname;
-const pageName = getCurrentInstance()?.type?.name as string;
+const pageName = getCurrentInstance()?.type?.name as string;<#
+if (isUseI18n) {
+#>
 
 const {
   n,
@@ -1884,6 +2308,8 @@ const {
   initSysI18ns
 } = useI18n(pagePath);
 <#
+}
+#><#
 if (mod === "base" && table === "role") {
 #>
 const usrStore = useUsrStore();<#
@@ -2134,7 +2560,7 @@ const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
 /** 表格 */
-const tableRef = $ref<InstanceType<typeof ElTable>>();<#
+const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));<#
 if (opts?.isRealData) {
 #>
 
@@ -2260,7 +2686,7 @@ let isSearchExpand = $(useStorage(`isSearchExpand-${ __filename }`, false));<#
 #>
 
 /** 回收站 */
-async function recycleChg() {
+async function onRecycle() {
   tableFocus();
   selectedIds = [ ];
   await dataGrid(true);
@@ -2673,7 +3099,9 @@ function getTableColumns(): ColumnType[] {
 }
 
 /** 表格列 */
-const tableColumns = $ref<ColumnType[]>(getTableColumns());
+const tableColumns = $ref<ColumnType[]>(getTableColumns());<#
+if (isUseI18n) {
+#>
 
 /** 表格列标签国际化 */
 watchEffect(() => {
@@ -2685,7 +3113,9 @@ watchEffect(() => {
       column.label = n(column2.label);
     }
   }
-});
+});<#
+}
+#>
 
 /** 表格列 */
 const {
@@ -2700,7 +3130,7 @@ const {
   },
 ));
 
-const detailRef = $ref<InstanceType<typeof Detail>>();
+const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
 
 /** 刷新表格 */
 async function dataGrid(
@@ -2882,7 +3312,11 @@ async function onSortChange(
   if (opts.noExport !== true) {
 #>
 
-const exportExcel = $ref(useExportExcel(pagePath));
+const exportExcel = $ref(useExportExcel(<#
+if (isUseI18n) {
+#>pagePath<#
+}
+#>));
 
 /** 导出Excel */
 async function onExport() {
@@ -2950,14 +3384,28 @@ async function openAdd() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
-    ElMessage.warning(await nsAsync("无权限"));
+  if (!permit("add")) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
     return;
   }
   const {
     changedIds,
-  } = await detailRef.showDialog({
-    title: await nsAsync("新增") + " " + await nsAsync("<#=table_comment#>"),
+  } = await detailRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: await nsAsync("新增") + " " + await nsAsync("<#=table_comment#>"),<#
+    } else {
+    #>
+    title: "新增 <#=table_comment#>",<#
+    }
+    #>
     action: "add",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -2982,20 +3430,41 @@ async function openCopy() {
   if (!detailRef) {
     return;
   }
-  if (!permit("add")) {
-    ElMessage.warning(await nsAsync("无权限"));
+  if (!permit("add")) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
     return;
   }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 复制 的 {0}", await nsAsync("<#=table_comment#>")));
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要 复制 的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要 复制 的 <#=table_comment#>");<#
+    }
+    #>
     return;
   }
   const id = selectedIds[selectedIds.length - 1];
   const ids = [ id ];
   const {
     changedIds,
-  } = await detailRef.showDialog({
-    title: await nsAsync("复制") + " " + await nsAsync("<#=table_comment#>"),
+  } = await detailRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: await nsAsync("复制") + " " + await nsAsync("<#=table_comment#>"),<#
+    } else {
+    #>
+    title: "复制 <#=table_comment#>",<#
+    }
+    #>
     action: "copy",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -3025,13 +3494,17 @@ async function onInsert() {
   if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
 #>
 
-const uploadFileDialogRef = $ref<InstanceType<typeof UploadFileDialog>>();
+const uploadFileDialogRef = $(useTemplateRef<InstanceType<typeof UploadFileDialog>>("uploadFileDialogRef"));
 
 let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
+const downloadImportTemplate = $ref(useDownloadImportTemplate(<#
+if (isUseI18n) {
+#>pagePath<#
+}
+#>));
 
 /**
  * 下载导入模板
@@ -3079,13 +3552,27 @@ async function onImportExcel() {
     ) {
       column_name2 = `${column_name}_lbl`;
     }
-  #>
+  #><#
+    if (isUseI18n) {
+    #>
     [ await nAsync("<#=column_comment#>") ]: "<#=column_name2#>",<#
+    } else {
+    #>
+    [ "<#=column_comment#>" ]: "<#=column_name2#>",<#
+    }
+    #><#
   }
   #>
   };
-  const file = await uploadFileDialogRef.showDialog({
-    title: await nsAsync("批量导入"),
+  const file = await uploadFileDialogRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: await nsAsync("批量导入"),<#
+    } else {
+    #>
+    title: "批量导入",<#
+    }
+    #>
     accept: ".xlsx",
   });
   tableFocus();
@@ -3097,8 +3584,15 @@ async function onImportExcel() {
   importPercentage = 0;
   let msg: VNode | undefined = undefined;
   let succNum = 0;
-  try {
-    const messageHandler = ElMessage.info(await nsAsync("正在导入..."));
+  try {<#
+    if (isUseI18n) {
+    #>
+    const messageHandler = ElMessage.info(await nsAsync("正在导入..."));<#
+    } else {
+    #>
+    const messageHandler = ElMessage.info("正在导入...");<#
+    }
+    #>
     const models = await getExcelData<<#=inputName#>>(
       file,
       header,
@@ -3324,19 +3818,40 @@ async function openEdit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("edit")) {
-    ElMessage.warning(await nsAsync("无权限"));
+  if (!permit("edit")) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
     return;
   }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("<#=table_comment#>")));
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要编辑的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要编辑的 <#=table_comment#>");<#
+    }
+    #>
     return;
   }
   const ids = selectedIds;
   const {
     changedIds,
-  } = await detailRef.showDialog({
-    title: await nsAsync("编辑") + " " + await nsAsync("<#=table_comment#>"),
+  } = await detailRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: await nsAsync("编辑") + " " + await nsAsync("<#=table_comment#>"),<#
+    } else {
+    #>
+    title: "编辑 <#=table_comment#>",<#
+    }
+    #>
     action: "edit",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -3410,8 +3925,15 @@ async function openView() {
   if (!detailRef) {
     return;
   }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("<#=table_comment#>")));
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要查看的 <#=table_comment#>");<#
+    }
+    #>
     return;
   }
   const search = getDataSearch();<#
@@ -3423,8 +3945,15 @@ async function openView() {
   const ids = selectedIds;
   const {
     changedIds,
-  } = await detailRef.showDialog({
-    title: await nsAsync("查看") + " " + await nsAsync("<#=table_comment#>"),
+  } = await detailRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: await nsAsync("查看") + " " + await nsAsync("<#=table_comment#>"),<#
+    } else {
+    #>
+    title: "查看 <#=table_comment#>",<#
+    }
+    #>
     action: "view",
     builtInModel,
     showBuildIn: $$(showBuildIn),
@@ -3455,20 +3984,45 @@ async function onDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("delete")) {
-    ElMessage.warning(await nsAsync("无权限"));
+  if (!permit("delete")) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
     return;
   }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("<#=table_comment#>")));
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要删除的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要删除的 <#=table_comment#>");<#
+    }
+    #>
     return;
   }
-  try {
+  try {<#
+    if (isUseI18n) {
+    #>
     await ElMessageBox.confirm(`${ await nsAsync("确定删除已选择的 {0} {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
-    });
+    });<#
+    } else {
+    #>
+    await ElMessageBox.confirm(`确定删除已选择的 ${ selectedIds.length } <#=table_comment#>?`, {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });<#
+    }
+    #>
   } catch (err) {
     return;
   }
@@ -3488,8 +4042,15 @@ async function onDeleteByIds() {
     tableData = tableData.filter((item) => !selectedIds.includes(item.id));
     selectedIds = [ ];
     dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));
+    await dataGrid(true);<#
+    if (isUseI18n) {
+    #>
+    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.success(`删除 ${ num } <#=table_comment#> 成功`);<#
+    }
+    #>
     emit("remove", num);
   }
 }<#
@@ -3504,20 +4065,45 @@ async function onForceDeleteByIds() {
   if (isLocked) {
     return;
   }
-  if (!permit("forceDelete")) {
-    ElMessage.warning(await nsAsync("无权限"));
+  if (!permit("forceDelete")) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
     return;
   }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("<#=table_comment#>")));
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要 彻底删除 的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要 彻底删除 的 <#=table_comment#>");<#
+    }
+    #>
     return;
   }
-  try {
+  try {<#
+    if (isUseI18n) {
+    #>
     await ElMessageBox.confirm(`${ await nsAsync("确定 彻底删除 已选择的 {0} {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
-    });
+    });<#
+    } else {
+    #>
+    await ElMessageBox.confirm(`确定 彻底删除 已选择的 ${ selectedIds.length } <#=table_comment#>?`, {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });<#
+    }
+    #>
   } catch (err) {
     return;
   }
@@ -3534,8 +4120,15 @@ async function onForceDeleteByIds() {
     });<#
     }
     #>
-    selectedIds = [ ];
-    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));
+    selectedIds = [ ];<#
+    if (isUseI18n) {
+    #>
+    ElMessage.success(await nsAsync("彻底删除 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.success(`彻底删除 ${ num } <#=table_comment#> 成功`);<#
+    }
+    #>
     dirtyStore.fireDirty(pageName);
     await dataGrid(true);
   }
@@ -3551,16 +4144,37 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
-    ElMessage.warning(await nsAsync("无权限"));
+  if (permit("edit") === false) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
     return;
   }
   if (selectedIds.length === 0) {
     let msg = "";
-    if (is_enabled === 1) {
-      msg = await nsAsync("请选择需要 启用 的 {0}", await nsAsync("<#=table_comment#>"));
-    } else {
-      msg = await nsAsync("请选择需要 禁用 的 {0}", await nsAsync("<#=table_comment#>"));
+    if (is_enabled === 1) {<#
+      if (isUseI18n) {
+      #>
+      msg = await nsAsync("请选择需要 启用 的 {0}", await nsAsync("<#=table_comment#>"));<#
+      } else {
+      #>
+      msg = "请选择需要 启用 的 <#=table_comment#>";<#
+      }
+      #>
+    } else {<#
+      if (isUseI18n) {
+      #>
+      msg = await nsAsync("请选择需要 禁用 的 {0}", await nsAsync("<#=table_comment#>"));<#
+      } else {
+      #>
+      msg = "请选择需要 禁用 的 <#=table_comment#>";<#
+      }
+      #>
     }
     ElMessage.warning(msg);
     return;
@@ -3568,10 +4182,24 @@ async function onEnableByIds(is_enabled: 0 | 1) {
   const num = await enableByIds(selectedIds, is_enabled);
   if (num > 0) {
     let msg = "";
-    if (is_enabled === 1) {
-      msg = await nsAsync("启用 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));
-    } else {
-      msg = await nsAsync("禁用 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));
+    if (is_enabled === 1) {<#
+      if (isUseI18n) {
+      #>
+      msg = await nsAsync("启用 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));<#
+      } else {
+      #>
+      msg = `启用 ${ num } <#=table_comment#> 成功`;<#
+      }
+      #>
+    } else {<#
+      if (isUseI18n) {
+      #>
+      msg = await nsAsync("禁用 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));<#
+      } else {
+      #>
+      msg = `禁用 ${ num } <#=table_comment#> 成功`;<#
+      }
+      #>
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -3589,16 +4217,37 @@ async function onLockByIds(is_locked: 0 | 1) {
   if (isLocked) {
     return;
   }
-  if (permit("edit") === false) {
-    ElMessage.warning(await nsAsync("无权限"));
+  if (permit("edit") === false) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
     return;
   }
   if (selectedIds.length === 0) {
     let msg = "";
-    if (is_locked === 1) {
-      msg = await nsAsync("请选择需要 锁定 的 {0}", await nsAsync("<#=table_comment#>"));
-    } else {
-      msg = await nsAsync("请选择需要 解锁 的 {0}", await nsAsync("<#=table_comment#>"));
+    if (is_locked === 1) {<#
+      if (isUseI18n) {
+      #>
+      msg = await nsAsync("请选择需要 锁定 的 {0}", await nsAsync("<#=table_comment#>"));<#
+      } else {
+      #>
+      msg = "请选择需要 锁定 的 <#=table_comment#>";<#
+      }
+      #>
+    } else {<#
+      if (isUseI18n) {
+      #>
+      msg = await nsAsync("请选择需要 解锁 的 {0}", await nsAsync("<#=table_comment#>"));<#
+      } else {
+      #>
+      msg = "请选择需要 解锁 的 <#=table_comment#>";<#
+      }
+      #>
     }
     ElMessage.warning(msg);
     return;
@@ -3606,10 +4255,24 @@ async function onLockByIds(is_locked: 0 | 1) {
   const num = await lockByIds(selectedIds, is_locked);
   if (num > 0) {
     let msg = "";
-    if (is_locked === 1) {
-      msg = await nsAsync("锁定 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));
-    } else {
-      msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));
+    if (is_locked === 1) {<#
+      if (isUseI18n) {
+      #>
+      msg = await nsAsync("锁定 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));<#
+      } else {
+      #>
+      msg = `锁定 ${ num } <#=table_comment#> 成功`;<#
+      }
+      #>
+    } else {<#
+      if (isUseI18n) {
+      #>
+      msg = await nsAsync("解锁 {0} {1} 成功", num, await nsAsync("<#=table_comment#>"));<#
+      } else {
+      #>
+      msg = `解锋 ${ num } <#=table_comment#> 成功`;<#
+      }
+      #>
     }
     ElMessage.success(msg);
     dirtyStore.fireDirty(pageName);
@@ -3627,20 +4290,45 @@ async function onRevertByIds() {
   if (isLocked) {
     return;
   }
-  if (permit("delete") === false) {
-    ElMessage.warning(await nsAsync("无权限"));
+  if (permit("delete") === false) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
     return;
   }
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("<#=table_comment#>")));
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要还原的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要还原的 <#=table_comment#>");<#
+    }
+    #>
     return;
   }
-  try {
+  try {<#
+    if (isUseI18n) {
+    #>
     await ElMessageBox.confirm(`${ await nsAsync("确定还原已选择的 {0} {1}", selectedIds.length, await nsAsync("<#=table_comment#>")) }?`, {
       confirmButtonText: await nsAsync("确定"),
       cancelButtonText: await nsAsync("取消"),
       type: "warning",
-    });
+    });<#
+    } else {
+    #>
+    await ElMessageBox.confirm(`确定还原已选择的 ${ selectedIds.length } <#=table_comment#>?`, {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });<#
+    }
+    #>
   } catch (err) {
     return;
   }
@@ -3663,8 +4351,15 @@ async function onRevertByIds() {
     }
     #>
     dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));
+    await dataGrid(true);<#
+    if (isUseI18n) {
+    #>
+    ElMessage.success(await nsAsync("还原 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.success(`还原 ${ num } <#=table_comment#> 成功`);<#
+    }
+    #>
     emit("revert", num);
   }
 }<#
@@ -3698,7 +4393,7 @@ async function getDetailByModule(
 if (hasForeignTabs) {
 #>
 
-const foreignTabsRef = $ref<InstanceType<typeof ForeignTabs>>();<#
+const foreignTabsRef = $(useTemplateRef<InstanceType<typeof ForeignTabs>>("foreignTabsRef"));<#
 if (hasForeignTabsButton || hasForeignTabsMore) {
 #>
 
@@ -3707,12 +4402,26 @@ async function onOpenForeignTabs(
   title: string,
 ) {
   tableFocus();
-  if (selectedIds.length === 0) {
-    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("<#=table_comment#>")));
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要查看的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要查看的 <#=table_comment#>");<#
+    }
+    #>
     return;
   }
-  if (selectedIds.length > 1) {
-    ElMessage.warning(await nsAsync("只能选择 1 {0}", await nsAsync("<#=table_comment#>")));
+  if (selectedIds.length > 1) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("只能选择 1 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("只能选择 1 <#=table_comment#>");<#
+    }
+    #>
     return;
   }
   const id = selectedIds[0];
@@ -3746,6 +4455,8 @@ async function openForeignTabs(
   tableFocus();
 }<#
 }
+#><#
+if (isUseI18n) {
 #>
 
 /** 初始化ts中的国际化信息 */
@@ -3773,7 +4484,9 @@ async function initI18nsEfc() {
     initListI18ns(),
     initI18ns(codes),
   ]);
+}<#
 }
+#>
 
 async function focus() {
   if (!inited || !tableRef || !tableRef.$el) {
@@ -3882,8 +4595,12 @@ async function initFrame() {<#
   }
   #>
   initColumns(tableColumns);
-  await Promise.all([
-    initI18nsEfc(),
+  await Promise.all([<#
+    if (isUseI18n) {
+    #>
+    initI18nsEfc(),<#
+    }
+    #>
     dataGrid(true),
   ]);
   inited = true;
@@ -3940,15 +4657,22 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignKey && foreignKey.multiple && foreignKey.showType === "dialog") {
 #>
 
-const <#=column_name#>ListSelectDialogRef = $ref<InstanceType<typeof ListSelectDialog>>();
+const <#=column_name#>ListSelectDialogRef = $(useTemplateRef<InstanceType<typeof ListSelectDialog>>("<#=column_name#>ListSelectDialogRef"));
 
 async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row: <#=modelName#>) {
   if (!<#=column_name#>ListSelectDialogRef) {
     return;
   }
   row.<#=column_name#> = row.<#=column_name#> || [ ];
-  const res = await <#=column_name#>ListSelectDialogRef.showDialog({
-    title: await nsAsync("选择") + await nsAsync("<#=foreignSchema?.opts?.table_comment#>"),
+  const res = await <#=column_name#>ListSelectDialogRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: await nsAsync("选择") + " " + await nsAsync("<#=foreignSchema?.opts?.table_comment#>"),<#
+    } else {
+    #>
+    title: "选择 <#=foreignSchema?.opts?.table_comment#>",<#
+    }
+    #>
     selectedIds: row.<#=column_name#>,<#
     if (hasLocked) {
     #>
@@ -4002,7 +4726,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
   if (foreignKey && foreignKey.isLinkForeignTabs) {
 #>
 
-const <#=foreignTable#>ForeignTabsRef = $ref<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs>>();
+const <#=foreignTable#>ForeignTabsRef = $(useTemplateRef<InstanceType<typeof <#=Foreign_Table_Up#>ForeignTabs>>("<#=foreignTable#>ForeignTabsRef"));
 
 async function open<#=Foreign_Table_Up#>ForeignTabs(id: <#=Table_Up#>Id, title: string) {
   await <#=foreignTable#>ForeignTabsRef?.showDialog({

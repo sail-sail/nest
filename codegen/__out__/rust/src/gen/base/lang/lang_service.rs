@@ -12,9 +12,6 @@ use crate::common::context::{
 
 use crate::common::gql::model::{PageInput, SortInput};
 
-#[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao::ns;
-
 use super::lang_model::*;
 use super::lang_dao;
 
@@ -163,7 +160,7 @@ pub async fn delete_by_ids(
   ).await?;
   for model in models {
     if model.is_sys == 1 {
-      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;
+      let err_msg = "不能删除系统记录";
       return Err(eyre!(err_msg));
     }
   }

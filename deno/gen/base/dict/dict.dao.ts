@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -95,8 +90,6 @@ async function getWhereQuery(
   },
 ): Promise<string> {
   
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
-  
   let whereQuery = "";
   whereQuery += ` t.is_deleted=${ args.push(search?.is_deleted == null ? 0 : search.is_deleted) }`;
   if (search?.id != null) {
@@ -112,24 +105,16 @@ async function getWhereQuery(
     whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
   }
   if (search?.lbl != null) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.lbl=${ args.push(search.lbl) } or base_dict_lang.lbl=${ args.push(search.lbl) })`;
-    } else {
-      whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
-    }
+    whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
   if (isNotEmpty(search?.lbl_like)) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") } or base_dict_lang.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") })`;
-    } else {
-      whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
-    }
+    whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
   if (search?.type != null) {
     whereQuery += ` and t.type in (${ args.push(search.type) })`;
   }
-  if (search?.is_locked != null) {
-    whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
+  if (search?.is_add != null) {
+    whereQuery += ` and t.is_add in (${ args.push(search?.is_add) })`;
   }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
@@ -143,18 +128,10 @@ async function getWhereQuery(
     }
   }
   if (search?.rem != null) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.rem=${ args.push(search.rem) } or base_dict_lang.rem=${ args.push(search.rem) })`;
-    } else {
-      whereQuery += ` and t.rem=${ args.push(search.rem) }`;
-    }
+    whereQuery += ` and t.rem=${ args.push(search.rem) }`;
   }
   if (isNotEmpty(search?.rem_like)) {
-    if (server_i18n_enable) {
-      whereQuery += ` and (t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") } or base_dict_lang.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") })`;
-    } else {
-      whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
-    }
+    whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
@@ -205,13 +182,7 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   let fromQuery = `base_dict t`;
-  
-  if (server_i18n_enable) {
-    fromQuery += ` left join base_dict_lang on base_dict_lang.dict_id=t.id and base_dict_lang.lang_id=${ args.push(await get_lang_id()) }`;
-  }
   return fromQuery;
 }
 
@@ -304,8 +275,6 @@ export async function findAll(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   // 数据类型
   if (search && search.type != null) {
     const len = search.type.length;
@@ -315,17 +284,6 @@ export async function findAll(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.type.length > ${ ids_limit }`);
-    }
-  }
-  // 锁定
-  if (search && search.is_locked != null) {
-    const len = search.is_locked.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_locked.length > ${ ids_limit }`);
     }
   }
   // 启用
@@ -362,16 +320,8 @@ export async function findAll(
     }
   }
   
-  let lang_sql = "";
-  
-  if (server_i18n_enable) {
-    lang_sql += ",max(base_dict_lang.lbl) lbl_lang";
-    lang_sql += ",max(base_dict_lang.rem) rem_lang";
-  }
-  
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
-      ${ lang_sql }
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -429,11 +379,9 @@ export async function findAll(
   
   const [
     typeDict, // 数据类型
-    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
     "dict_type",
-    "is_locked",
     "is_enabled",
   ]);
   
@@ -451,25 +399,6 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
-    if (server_i18n_enable) {
-      
-      // deno-lint-ignore no-explicit-any
-      if ((model as any).lbl_lang) {
-        // deno-lint-ignore no-explicit-any
-        model.lbl = (model as any).lbl_lang;
-        // deno-lint-ignore no-explicit-any
-        (model as any).lbl_lang = undefined;
-      }
-      
-      // deno-lint-ignore no-explicit-any
-      if ((model as any).rem_lang) {
-        // deno-lint-ignore no-explicit-any
-        model.rem = (model as any).rem_lang;
-        // deno-lint-ignore no-explicit-any
-        (model as any).rem_lang = undefined;
-      }
-    }
-    
     // 数据类型
     let type_lbl = model.type as string;
     if (!isEmpty(model.type)) {
@@ -479,16 +408,6 @@ export async function findAll(
       }
     }
     model.type_lbl = type_lbl || "";
-    
-    // 锁定
-    let is_locked_lbl = model.is_locked?.toString() || "";
-    if (model.is_locked != null) {
-      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === String(model.is_locked));
-      if (dictItem) {
-        is_locked_lbl = dictItem.lbl;
-      }
-    }
-    model.is_locked_lbl = is_locked_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -544,11 +463,9 @@ export async function setIdByLbl(
   
   const [
     typeDict, // 数据类型
-    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
     "dict_type",
-    "is_locked",
     "is_enabled",
   ]);
   
@@ -561,17 +478,6 @@ export async function setIdByLbl(
   } else if (isEmpty(input.type_lbl) && input.type != null) {
     const lbl = typeDict.find((itemTmp) => itemTmp.val === input.type)?.lbl || "";
     input.type_lbl = lbl;
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val != null) {
-      input.is_locked = Number(val);
-    }
-  } else if (isEmpty(input.is_locked_lbl) && input.is_locked != null) {
-    const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
-    input.is_locked_lbl = lbl;
   }
   
   // 启用
@@ -589,27 +495,25 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取系统字典字段注释 */
 export async function getFieldComments(): Promise<DictFieldComment> {
-  const n = initN(route_path);
   const fieldComments: DictFieldComment = {
-    id: await n("ID"),
-    code: await n("编码"),
-    lbl: await n("名称"),
-    type: await n("数据类型"),
-    type_lbl: await n("数据类型"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    order_by: await n("排序"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    code: "编码",
+    lbl: "名称",
+    type: "数据类型",
+    type_lbl: "数据类型",
+    is_add: "可新增",
+    is_enabled: "启用",
+    is_enabled_lbl: "启用",
+    order_by: "排序",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -729,7 +633,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("系统字典")));
+      throw new UniqueException("此 系统字典 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: DictId = await updateById(
@@ -984,7 +888,7 @@ export async function validateIsEnabled(
   model: Readonly<DictModel>,
 ) {
   if (model.is_enabled == 0) {
-    throw `${ await ns("系统字典") } ${ await ns("已禁用") }`;
+    throw "系统字典 已禁用";
   }
 }
 
@@ -994,7 +898,7 @@ export async function validateOption(
   model?: DictModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("系统字典") } ${ await ns("不存在") }`;
+    const err_msg = "系统字典 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1027,13 +931,6 @@ export async function validate(
     input.lbl,
     200,
     fieldComments.lbl,
-  );
-  
-  // 数据类型
-  await validators.chars_max_length(
-    input.type,
-    22,
-    fieldComments.type,
   );
   
   // 备注
@@ -1287,7 +1184,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_dict(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,type,is_locked,is_enabled,order_by,rem,is_sys)values";
+  let sql = "insert into base_dict(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,type,is_add,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1387,8 +1284,8 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.is_locked != null) {
-        sql += `,${ args.push(input.is_locked) }`;
+      if (input.is_add != null) {
+        sql += `,${ args.push(input.is_add) }`;
       } else {
         sql += ",default";
       }
@@ -1428,10 +1325,6 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  for (const input of inputs) {
-    await refreshLangByInput(input);
-  }
-  
   for (let i = 0; i < inputs2.length; i++) {
     const input = inputs2[i];
     
@@ -1457,70 +1350,6 @@ export async function delCache() {
   await delCacheCtx(`dao.sql.base_dict`);
 }
 
-async function refreshLangByInput(
-  input: Readonly<DictInput>,
-) {
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
-  if (!server_i18n_enable) {
-    return;
-  }
-  const lang_sql = "select id from base_dict_lang where lang_id=? and dict_id=?";
-  const lang_args = new QueryArgs();
-  lang_args.push(await get_lang_id());
-  lang_args.push(input.id);
-  const model = await queryOne<{ id: string }>(
-    lang_sql,
-    lang_args,
-  );
-  const lang_id = model?.id;
-  if (lang_id) {
-    let lang_sql = "update base_dict_lang set ";
-    const lang_args = new QueryArgs();
-    // 名称
-    if (input.lbl != null) {
-      lang_sql += "lbl=?,";
-      lang_args.push(input.lbl);
-    }
-    // 备注
-    if (input.rem != null) {
-      lang_sql += "rem=?,";
-      lang_args.push(input.rem);
-    }
-    if (lang_sql.endsWith(",")) {
-      lang_sql = lang_sql.substring(0, lang_sql.length - 1);
-    }
-    lang_sql += " where id=?";
-    lang_args.push(lang_id);
-    await execute(lang_sql, lang_args);
-  } else {
-    const sql_fields: string[] = [ ];
-    const lang_args = new QueryArgs();
-    lang_args.push(shortUuidV4());
-    lang_args.push(await get_lang_id());
-    lang_args.push(input.id);
-    // 名称
-    if (input.lbl != null) {
-      sql_fields.push("lbl");
-      lang_args.push(input.lbl);
-    }
-    // 备注
-    if (input.rem != null) {
-      sql_fields.push("rem");
-      lang_args.push(input.rem);
-    }
-    let lang_sql = "insert into base_dict_lang(id,lang_id,dict_id";
-    for (const sql_field of sql_fields) {
-      lang_sql += "," + sql_field;
-    }
-    lang_sql += ")values(?,?,?";
-    for (let i = 0; i < sql_fields.length; i++) {
-      lang_sql += ",?";
-    }
-    lang_sql += ")";
-    await execute(lang_sql, lang_args);
-  }
-}
-
 // MARK: updateById
 /** 根据 id 修改 系统字典 */
 export async function updateById(
@@ -1540,8 +1369,6 @@ export async function updateById(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);
-  
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1575,7 +1402,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("系统字典"));
+        throw "此 系统字典 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1585,7 +1412,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("系统字典"));
+    throw "编辑失败, 此 系统字典 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1599,9 +1426,7 @@ export async function updateById(
   }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
-      if (!server_i18n_enable) {
-        sql += `lbl=${ args.push(input.lbl) },`;
-      }
+      sql += `lbl=${ args.push(input.lbl) },`;
       updateFldNum++;
     }
   }
@@ -1611,9 +1436,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.is_locked != null) {
-    if (input.is_locked != oldModel.is_locked) {
-      sql += `is_locked=${ args.push(input.is_locked) },`;
+  if (input.is_add != null) {
+    if (input.is_add != oldModel.is_add) {
+      sql += `is_add=${ args.push(input.is_add) },`;
       updateFldNum++;
     }
   }
@@ -1631,9 +1456,7 @@ export async function updateById(
   }
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
-      if (!server_i18n_enable) {
-        sql += `rem=${ args.push(input.rem) },`;
-      }
+      sql += `rem=${ args.push(input.rem) },`;
       updateFldNum++;
     }
   }
@@ -1774,12 +1597,6 @@ export async function updateById(
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
-      if (server_i18n_enable) {
-        await refreshLangByInput({
-          ...input,
-          id,
-        });
-      }
     }
   }
   
@@ -1811,7 +1628,6 @@ export async function deleteByIds(
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_creating = get_is_creating(options?.is_creating);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -1866,12 +1682,6 @@ export async function deleteByIds(
     sql += ` where id=${ args.push(id) } limit 1`;
     const res = await execute(sql, args);
     affectedRows += res.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "update base_dict_lang set is_deleted=1 where dict_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
   }
   
   // 系统字典明细
@@ -1963,74 +1773,6 @@ export async function enableByIds(
   return num;
 }
 
-// MARK: getIsLockedById
-/** 根据 id 查找 系统字典 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
-  id: DictId,
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<0 | 1 | undefined> {
-  
-  options = options ?? { };
-  options.is_debug = false;
-  
-  const model = await findById(
-    id,
-    options,
-  );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
-  
-  return is_locked;
-}
-
-// MARK: lockByIds
-/** 根据 ids 锁定或者解锁 系统字典 */
-export async function lockByIds(
-  ids: DictId[],
-  is_locked: Readonly<0 | 1>,
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<number> {
-  
-  const table = "base_dict";
-  const method = "lockByIds";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (ids) {
-      msg += ` ids:${ JSON.stringify(ids) }`;
-    }
-    if (is_locked != null) {
-      msg += ` is_locked:${ is_locked }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  if (!ids || !ids.length) {
-    return 0;
-  }
-  
-  await delCache();
-  
-  const args = new QueryArgs();
-  let sql = `update base_dict set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCache();
-  
-  return num;
-}
-
 // MARK: revertByIds
 /** 根据 ids 还原 系统字典 */
 export async function revertByIds(
@@ -2044,7 +1786,6 @@ export async function revertByIds(
   const method = "revertByIds";
   
   const is_debug = get_is_debug(options?.is_debug);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -2095,19 +1836,13 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("系统字典"));
+        throw "此 系统字典 已经存在";
       }
     }
     const args = new QueryArgs();
     const sql = `update base_dict set is_deleted=0 where id=${ args.push(id) } limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "update base_dict_lang set is_deleted=0 where dict_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
   }
   
   // 系统字典明细
@@ -2145,7 +1880,6 @@ export async function forceDeleteByIds(
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
-  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
   
   if (is_debug !== false) {
     let msg = `${ table }.${ method }:`;
@@ -2184,12 +1918,6 @@ export async function forceDeleteByIds(
     const sql = `delete from base_dict where id=${ args.push(id) } and is_deleted = 1 limit 1`;
     const result = await execute(sql, args);
     num += result.affectedRows;
-    if (server_i18n_enable) {
-      const sql = "delete from base_dict_lang where dict_id=?";
-      const args = new QueryArgs();
-      args.push(id);
-      await execute(sql, args);
-    }
   }
   
   // 系统字典明细

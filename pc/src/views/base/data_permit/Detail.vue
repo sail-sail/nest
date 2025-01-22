@@ -16,7 +16,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -26,7 +26,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -36,7 +36,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -77,13 +77,13 @@
         
         <template v-if="(showBuildIn || builtInModel?.menu_id == null)">
           <el-form-item
-            :label="n('菜单')"
+            label="菜单"
             prop="menu_id"
           >
             <CustomTreeSelect
               v-model="dialogModel.menu_id"
               :method="getMenuTree"
-              :placeholder="`${ ns('请选择') } ${ n('菜单') }`"
+              placeholder="请选择 菜单"
               :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
               :props="{
                 label: 'lbl',
@@ -99,14 +99,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.scope == null)">
           <el-form-item
-            :label="n('范围')"
+            label="范围"
             prop="scope"
           >
             <DictSelect
               v-model="dialogModel.scope"
               :set="dialogModel.scope = dialogModel.scope ?? undefined"
               code="data_permit_scope"
-              :placeholder="`${ ns('请选择') } ${ n('范围') }`"
+              placeholder="请选择 范围"
               :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
             ></DictSelect>
           </el-form-item>
@@ -114,14 +114,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.type == null)">
           <el-form-item
-            :label="n('类型')"
+            label="类型"
             prop="type"
           >
             <DictSelect
               v-model="dialogModel.type"
               :set="dialogModel.type = dialogModel.type ?? undefined"
               code="data_permit_type"
-              :placeholder="`${ ns('请选择') } ${ n('类型') }`"
+              placeholder="请选择 类型"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -129,14 +129,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
-            :label="n('备注')"
+            label="备注"
             prop="rem"
           >
             <CustomInput
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -160,7 +160,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <el-button
@@ -172,7 +172,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存并继续') }}</span>
+        <span>保存并继续</span>
       </el-button>
       
       <el-button
@@ -184,7 +184,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <el-button
@@ -196,7 +196,7 @@
         <template #icon>
           <ElIconCircleCheck />
         </template>
-        <span>{{ ns('保存') }}</span>
+        <span>保存</span>
       </el-button>
       
       <div
@@ -274,14 +274,6 @@ const emit = defineEmits<{
 
 const pagePath = getPagePath();
 
-const {
-  n,
-  ns,
-  nsAsync,
-  initI18ns,
-  initSysI18ns,
-} = useI18n(pagePath);
-
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit(pagePath);
@@ -303,7 +295,7 @@ let ids = $ref<DataPermitId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DataPermitId[]>([ ]);
 
-const formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -319,21 +311,21 @@ watchEffect(async () => {
     menu_id: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("菜单") }`,
+        message: "请选择 菜单",
       },
     ],
     // 范围
     scope: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("范围") }`,
+        message: "请选择 范围",
       },
     ],
     // 类型
     type: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("类型") }`,
+        message: "请选择 类型",
       },
     ],
   };
@@ -360,7 +352,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
 let findOneModel = findOne;
 
@@ -498,10 +490,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -524,7 +516,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -558,7 +550,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -601,7 +593,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -709,7 +701,7 @@ async function save() {
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await create(dialogModel2);
     dialogModel.id = id;
-    msg = await nsAsync("新增成功");
+    msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
     if (!dialogModel.id) {
       return;
@@ -726,7 +718,7 @@ async function save() {
       dialogModel.id,
       dialogModel2,
     );
-    msg = await nsAsync("编辑成功");
+    msg = "编辑成功";
   }
   if (id) {
     if (!changedIds.includes(id)) {
@@ -814,25 +806,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "菜单",
-    "范围",
-    "类型",
-    "备注",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,

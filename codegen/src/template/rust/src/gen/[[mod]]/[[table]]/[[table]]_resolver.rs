@@ -80,9 +80,13 @@ use crate::src::base::field_permit::field_permit_service::get_field_permit;<#
 }
 #><#
 if (log) {
+#><#
+if (isUseI18n) {
 #>
 
-use crate::src::base::i18n::i18n_service::ns;
+use crate::src::base::i18n::i18n_service::ns;<#
+}
+#>
 use crate::src::base::operation_record::operation_record_service::log;
 use crate::r#gen::base::operation_record::operation_record_model::OperationRecordInput;<#
 }
@@ -408,10 +412,19 @@ pub async fn creates(
     None,
     None,
     None,
-  ).await?;
+  ).await?;<#
+  if (isUseI18n) {
+  #>
   
   let method_lbl = ns("新增".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl = "新增".to_owned();
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
   
   let end_time = Instant::now();
   
@@ -530,10 +543,19 @@ pub async fn update_by_id(
   let new_data = find_by_id(
     res.clone(),
     None,
-  ).await?;
+  ).await?;<#
+  if (isUseI18n) {
+  #>
   
   let method_lbl = ns("修改".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl = "修改".to_owned();
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
   
   let end_time = Instant::now();
   
@@ -606,10 +628,19 @@ pub async fn delete_by_ids(
     options,
   ).await?;<#
   if (log) {
+  #><#
+  if (isUseI18n) {
   #>
   
   let method_lbl = ns("删除".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl = "删除".to_owned();
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
   
   let end_time = Instant::now();
   
@@ -673,10 +704,19 @@ pub async fn default_by_id(
     options,
   ).await?;<#
   if (log) {
+  #><#
+  if (isUseI18n) {
   #>
   
   let method_lbl = ns("默认".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl = "默认".to_owned();
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
   
   let end_time = Instant::now();
   
@@ -758,6 +798,8 @@ pub async fn enable_by_ids(
     options,
   ).await?;<#
   if (log) {
+  #><#
+  if (isUseI18n) {
   #>
   
   let method_lbl = {
@@ -766,15 +808,34 @@ pub async fn enable_by_ids(
     } else {
       ns("启用".to_owned(), None).await?
     }
-  };
+  };<#
+  } else {
+  #>
+  
+  let method_lbl = {
+    if is_enabled == 0 {
+      "禁用".to_owned()
+    } else {
+      "启用".to_owned()
+    }
+  };<#
+  }
+  #>
   let method = {
     if is_enabled == 0 {
       "disableByIds".to_owned()
     } else {
       "enableByIds".to_owned()
     }
-  };
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  };<#
+  if (isUseI18n) {
+  #>
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
   
   let end_time = Instant::now();
   
@@ -860,6 +921,8 @@ pub async fn lock_by_ids(
     options,
   ).await?;<#
   if (log) {
+  #><#
+  if (isUseI18n) {
   #>
   
   let method_lbl: String = if is_locked == 0 {
@@ -867,7 +930,18 @@ pub async fn lock_by_ids(
   } else {
     ns("锁定".to_owned(), None).await?
   };
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl: String = if is_locked == 0 {
+    "解锁".to_owned()
+  } else {
+    "锁定".to_owned()
+  };
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
   
   let end_time = Instant::now();
   
@@ -943,10 +1017,19 @@ pub async fn revert_by_ids(
     options,
   ).await?;<#
   if (log) {
+  #><#
+  if (isUseI18n) {
   #>
   
   let method_lbl = ns("还原".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl = "还原".to_owned();
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
   
   let end_time = Instant::now();
   
@@ -1010,10 +1093,19 @@ pub async fn force_delete_by_ids(
     options,
   ).await?;<#
   if (log) {
+  #><#
+  if (isUseI18n) {
   #>
   
   let method_lbl = ns("彻底删除".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl = "彻底删除".to_owned();
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
   
   let end_time = Instant::now();
   
