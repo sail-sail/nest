@@ -25,8 +25,9 @@ declare global {
   interface DictSearch extends DictSearchType {
     /** 数据类型 */
     type?: DictType[];
-    /** 锁定 */
-    is_locked?: number[];
+    /** 可新增 */
+    is_add?: number;
+    is_add_like?: number;
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */
