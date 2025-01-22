@@ -33,11 +33,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -506,28 +501,19 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取企微消息字段注释 */
 export async function getFieldComments(): Promise<WxwMsgFieldComment> {
-  const n = initN(route_path);
   const fieldComments: WxwMsgFieldComment = {
-    id: await n("ID"),
-    wxw_app_id: await n("企微应用"),
-    wxw_app_id_lbl: await n("企微应用"),
-    errcode: await n("发送状态"),
-    errcode_lbl: await n("发送状态"),
-    touser: await n("成员ID"),
-    title: await n("标题"),
-    description: await n("描述"),
-    url: await n("链接"),
-    btntxt: await n("按钮文字"),
-    create_time: await n("发送时间"),
-    create_time_lbl: await n("发送时间"),
-    errmsg: await n("错误信息"),
-    msgid: await n("消息ID"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    wxw_app_id: "企微应用",
+    wxw_app_id_lbl: "企微应用",
+    errcode: "发送状态",
+    errcode_lbl: "发送状态",
+    touser: "成员ID",
+    title: "标题",
+    description: "描述",
+    btntxt: "按钮文字",
+    create_time: "发送时间",
+    create_time_lbl: "发送时间",
+    errmsg: "错误信息",
   };
   return fieldComments;
 }
@@ -607,7 +593,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("企微消息")));
+      throw new UniqueException("此 企微消息 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxwMsgId = await updateById(
@@ -853,7 +839,7 @@ export async function validateOption(
   model?: WxwMsgModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("企微消息") } ${ await ns("不存在") }`;
+    const err_msg = "企微消息 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -909,13 +895,6 @@ export async function validate(
     fieldComments.description,
   );
   
-  // 链接
-  await validators.chars_max_length(
-    input.url,
-    1024,
-    fieldComments.url,
-  );
-  
   // 按钮文字
   await validators.chars_max_length(
     input.btntxt,
@@ -928,13 +907,6 @@ export async function validate(
     input.errmsg,
     256,
     fieldComments.errmsg,
-  );
-  
-  // 消息ID
-  await validators.chars_max_length(
-    input.msgid,
-    255,
-    fieldComments.msgid,
   );
   
 }
@@ -1427,7 +1399,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("企微消息"));
+        throw "此 企微消息 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1437,7 +1409,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("企微消息"));
+    throw "编辑失败, 此 企微消息 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1720,7 +1692,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("企微消息"));
+        throw "此 企微消息 已经存在";
       }
     }
     const args = new QueryArgs();

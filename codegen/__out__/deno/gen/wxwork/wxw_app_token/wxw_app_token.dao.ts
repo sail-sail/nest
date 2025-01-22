@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -508,14 +503,14 @@ export async function setIdByLbl(
       input.token_time = token_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.token_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.token_time } 日期格式错误`;
     }
   }
   if (input.token_time) {
     const token_time = dayjs(input.token_time);
     if (!token_time.isValid()) {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.token_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.token_time } 日期格式错误`;
     }
     input.token_time = dayjs(input.token_time).format("YYYY-MM-DD HH:mm:ss");
   }
@@ -526,14 +521,14 @@ export async function setIdByLbl(
       input.jsapi_ticket_time = jsapi_ticket_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.jsapi_ticket_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.jsapi_ticket_time } 日期格式错误`;
     }
   }
   if (input.jsapi_ticket_time) {
     const jsapi_ticket_time = dayjs(input.jsapi_ticket_time);
     if (!jsapi_ticket_time.isValid()) {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.jsapi_ticket_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.jsapi_ticket_time } 日期格式错误`;
     }
     input.jsapi_ticket_time = dayjs(input.jsapi_ticket_time).format("YYYY-MM-DD HH:mm:ss");
   }
@@ -544,14 +539,14 @@ export async function setIdByLbl(
       input.jsapi_ticket_agent_config_time = jsapi_ticket_agent_config_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.jsapi_ticket_agent_config_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.jsapi_ticket_agent_config_time } 日期格式错误`;
     }
   }
   if (input.jsapi_ticket_agent_config_time) {
     const jsapi_ticket_agent_config_time = dayjs(input.jsapi_ticket_agent_config_time);
     if (!jsapi_ticket_agent_config_time.isValid()) {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.jsapi_ticket_agent_config_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.jsapi_ticket_agent_config_time } 日期格式错误`;
     }
     input.jsapi_ticket_agent_config_time = dayjs(input.jsapi_ticket_agent_config_time).format("YYYY-MM-DD HH:mm:ss");
   }
@@ -604,32 +599,23 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取企微应用接口凭据字段注释 */
 export async function getFieldComments(): Promise<WxwAppTokenFieldComment> {
-  const n = initN(route_path);
   const fieldComments: WxwAppTokenFieldComment = {
-    id: await n("ID"),
-    wxw_app_id: await n("企微应用"),
-    wxw_app_id_lbl: await n("企微应用"),
-    type: await n("类型corp和contact"),
-    access_token: await n("令牌"),
-    token_time: await n("令牌创建时间"),
-    token_time_lbl: await n("令牌创建时间"),
-    expires_in: await n("令牌超时时间"),
-    jsapi_ticket: await n("企业jsapi_ticket"),
-    jsapi_ticket_time: await n("企业jsapi_ticket创建时间"),
-    jsapi_ticket_time_lbl: await n("企业jsapi_ticket创建时间"),
-    jsapi_ticket_expires_in: await n("企业jsapi_ticket超时时间"),
-    jsapi_ticket_agent_config: await n("应用jsapi_ticket"),
-    jsapi_ticket_agent_config_time: await n("应用jsapi_ticket创建时间"),
-    jsapi_ticket_agent_config_time_lbl: await n("应用jsapi_ticket创建时间"),
-    jsapi_ticket_agent_config_expires_in: await n("应用jsapi_ticket超时时间"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    wxw_app_id: "企微应用",
+    wxw_app_id_lbl: "企微应用",
+    type: "类型corp和contact",
+    access_token: "令牌",
+    token_time: "令牌创建时间",
+    token_time_lbl: "令牌创建时间",
+    expires_in: "令牌超时时间",
+    jsapi_ticket: "企业jsapi_ticket",
+    jsapi_ticket_time: "企业jsapi_ticket创建时间",
+    jsapi_ticket_time_lbl: "企业jsapi_ticket创建时间",
+    jsapi_ticket_expires_in: "企业jsapi_ticket超时时间",
+    jsapi_ticket_agent_config: "应用jsapi_ticket",
+    jsapi_ticket_agent_config_time: "应用jsapi_ticket创建时间",
+    jsapi_ticket_agent_config_time_lbl: "应用jsapi_ticket创建时间",
+    jsapi_ticket_agent_config_expires_in: "应用jsapi_ticket超时时间",
   };
   return fieldComments;
 }
@@ -760,7 +746,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("企微应用接口凭据")));
+      throw new UniqueException("此 企微应用接口凭据 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxwAppTokenId = await updateById(
@@ -1015,7 +1001,7 @@ export async function validateOption(
   model?: WxwAppTokenModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("企微应用接口凭据") } ${ await ns("不存在") }`;
+    const err_msg = "企微应用接口凭据 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1583,7 +1569,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("企微应用接口凭据"));
+        throw "此 企微应用接口凭据 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1593,7 +1579,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("企微应用接口凭据"));
+    throw "编辑失败, 此 企微应用接口凭据 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1900,7 +1886,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("企微应用接口凭据"));
+        throw "此 企微应用接口凭据 已经存在";
       }
     }
     const args = new QueryArgs();

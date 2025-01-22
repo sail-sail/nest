@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -562,30 +557,21 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取企微应用字段注释 */
 export async function getFieldComments(): Promise<WxwAppFieldComment> {
-  const n = initN(route_path);
   const fieldComments: WxwAppFieldComment = {
-    id: await n("ID"),
-    lbl: await n("名称"),
-    corpid: await n("企业ID"),
-    agentid: await n("应用ID"),
-    domain_id: await n("可信域名"),
-    domain_id_lbl: await n("可信域名"),
-    corpsecret: await n("应用密钥"),
-    contactsecret: await n("通讯录密钥"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    order_by: await n("排序"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    lbl: "名称",
+    corpid: "企业ID",
+    agentid: "应用ID",
+    domain_id: "可信域名",
+    domain_id_lbl: "可信域名",
+    corpsecret: "应用密钥",
+    contactsecret: "通讯录密钥",
+    is_locked: "锁定",
+    is_locked_lbl: "锁定",
+    is_enabled: "启用",
+    is_enabled_lbl: "启用",
+    order_by: "排序",
+    rem: "备注",
   };
   return fieldComments;
 }
@@ -736,7 +722,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("企微应用")));
+      throw new UniqueException("此 企微应用 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: WxwAppId = await updateById(
@@ -991,7 +977,7 @@ export async function validateIsEnabled(
   model: Readonly<WxwAppModel>,
 ) {
   if (model.is_enabled == 0) {
-    throw `${ await ns("企微应用") } ${ await ns("已禁用") }`;
+    throw "企微应用 已禁用";
   }
 }
 
@@ -1001,7 +987,7 @@ export async function validateOption(
   model?: WxwAppModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("企微应用") } ${ await ns("不存在") }`;
+    const err_msg = "企微应用 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -1578,7 +1564,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("企微应用"));
+        throw "此 企微应用 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1588,7 +1574,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("企微应用"));
+    throw "编辑失败, 此 企微应用 已被删除";
   }
   
   const args = new QueryArgs();
@@ -2027,7 +2013,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("企微应用"));
+        throw "此 企微应用 已经存在";
       }
     }
     const args = new QueryArgs();

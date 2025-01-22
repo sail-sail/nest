@@ -25,42 +25,8 @@ type WxwUsrFieldComment {
   lbl: String!
   "用户ID"
   userid: String!
-  "手机号"
-  mobile: String!
-  "性别"
-  gender: String!
-  "邮箱"
-  email: String!
-  "企业邮箱"
-  biz_email: String!
-  "直属上级"
-  direct_leader: String!
-  "职位"
-  position: String!
-  "头像"
-  avatar: String!
-  "头像缩略图"
-  thumb_avatar: String!
-  "个人二维码"
-  qr_code: String!
   "备注"
   rem: String!
-  "创建人"
-  create_usr_id: String!
-  "创建人"
-  create_usr_id_lbl: String!
-  "创建时间"
-  create_time: String!
-  "创建时间"
-  create_time_lbl: String!
-  "更新人"
-  update_usr_id: String!
-  "更新人"
-  update_usr_id_lbl: String!
-  "更新时间"
-  update_time: String!
-  "更新时间"
-  update_time_lbl: String!
 }
 input WxwUsrInput {
   "ID"
