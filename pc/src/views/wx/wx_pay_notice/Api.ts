@@ -1,6 +1,7 @@
 
 
 import {
+  WxPayNoticeTradeType,
   WxPayNoticeTradeState,
   WxPayNoticeCurrency,
   WxPayNoticePayerCurrency,
@@ -188,78 +189,9 @@ export async function findById(
 }
 
 /**
- * 下载微信支付通知导入模板
- */
-export function useDownloadImportTemplate(routePath: string) {
-  const {
-    workerFn,
-    workerStatus,
-    workerTerminate,
-  } = useRenderExcel();
-  async function workerFn2() {
-    const data = await query({
-      query: /* GraphQL */ `
-        query {
-          getFieldCommentsWxPayNotice {
-            appid
-            mchid
-            openid
-            out_trade_no
-            transaction_id
-            trade_type_lbl
-            trade_state_lbl
-            trade_state_desc
-            bank_type
-            attach
-            success_time_lbl
-            total
-            payer_total
-            currency_lbl
-            payer_currency_lbl
-            device_id
-            rem
-            raw
-          }
-          getDict(codes: [
-            "wx_unified_order_trade_type",
-            "wx_pay_notice_trade_state",
-            "wx_pay_notice_currency",
-            "wx_pay_notice_currency",
-          ]) {
-            code
-            lbl
-          }
-        }
-      `,
-      variables: {
-      },
-    });
-    try {
-      const sheetName = "微信支付通知";
-      const buffer = await workerFn(
-        `${ location.origin }/import_template/wx/wx_pay_notice.xlsx`,
-        {
-          sheetName,
-          data,
-        },
-      );
-      saveAsExcel(buffer, `${ sheetName}导入`);
-    } catch (err) {
-      ElMessage.error("下载失败");
-      throw err;
-    }
-  }
-  return {
-    workerFn: workerFn2,
-    workerStatus,
-    workerTerminate,
-  };
-}
-
-/**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
@@ -338,6 +270,7 @@ export function getPagePath() {
 /** 新增时的默认值 */
 export async function getDefaultInput() {
   const defaultInput: WxPayNoticeInput = {
+    trade_type: WxPayNoticeTradeType.Jsapi,
     trade_state: WxPayNoticeTradeState.Notpay,
     trade_state_desc: "未支付",
     total: 0,
