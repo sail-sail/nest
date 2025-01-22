@@ -962,13 +962,6 @@ export async function validate(
     fieldComments.id,
   );
   
-  // 微信支付订单号
-  await validators.chars_max_length(
-    input.transaction_id,
-    32,
-    fieldComments.transaction_id,
-  );
-  
   // 会员卡
   await validators.chars_max_length(
     input.card_id,
