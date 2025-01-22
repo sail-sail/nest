@@ -1007,7 +1007,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel(pagePath));
+const exportExcel = $ref(useExportExcel());
 
 /** 导出Excel */
 async function onExport() {
@@ -1111,7 +1111,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate(pagePath));
+const downloadImportTemplate = $ref(useDownloadImportTemplate());
 
 /**
  * 下载导入模板
