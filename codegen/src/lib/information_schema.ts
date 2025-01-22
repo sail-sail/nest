@@ -725,7 +725,7 @@ export async function getSchema(
       record.dict_head_model = dictbizHeadModels.find((item) => item.code === record.dictbiz);
     }
     if ((record.dict || record.dictbiz) && !record.dict_head_model) {
-      throw new Error(`table: ${ table_name }, column: ${ record.COLUMN_NAME }, 业务字典: ${ record.dict || record.dictbiz } 不存在!`);
+      // throw new Error(`table: ${ table_name }, column: ${ record.COLUMN_NAME }, 业务字典: ${ record.dict || record.dictbiz } 不存在!`);
     } else if (record.dict_head_model && record.dictHasSelectAdd == null && record.dict_head_model.is_add) {
       record.dictHasSelectAdd = true;
     }
@@ -772,8 +772,8 @@ export async function getSchema(
 错误: 表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 数据类型应该为:`;
         errMsg += `
 
-alter table \`${ table_name }\` change column \`${ record.COLUMN_NAME }\`
-\`${ record.COLUMN_NAME }\` enum('${ enumItemsDict.join("', '") }') not null default '${ defaultValue }' comment '${ oldComment }';
+ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
+\`${ record.COLUMN_NAME }\` ENUM('${ enumItemsDict.join("', '") }') NOT NULL DEFAULT '${ defaultValue }' COMMENT '${ oldComment }';
 `;
         throw chalk.red(errMsg);
       }
