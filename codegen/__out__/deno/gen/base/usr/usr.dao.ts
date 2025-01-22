@@ -1312,13 +1312,6 @@ export async function validate(
     fieldComments.default_org_id,
   );
   
-  // 类型
-  await validators.chars_max_length(
-    input.type,
-    10,
-    fieldComments.type,
-  );
-  
   // 备注
   await validators.chars_max_length(
     input.rem,

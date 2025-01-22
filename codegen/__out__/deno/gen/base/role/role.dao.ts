@@ -791,7 +791,6 @@ export async function setIdByLbl(
 export async function getFieldComments(): Promise<RoleFieldComment> {
   const fieldComments: RoleFieldComment = {
     id: "ID",
-    code_seq: "卡号-序列号",
     code: "编码",
     lbl: "名称",
     home_url: "首页",

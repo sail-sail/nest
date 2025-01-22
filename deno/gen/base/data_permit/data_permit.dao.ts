@@ -932,20 +932,6 @@ export async function validate(
     fieldComments.menu_id,
   );
   
-  // 范围
-  await validators.chars_max_length(
-    input.scope,
-    20,
-    fieldComments.scope,
-  );
-  
-  // 类型
-  await validators.chars_max_length(
-    input.type,
-    10,
-    fieldComments.type,
-  );
-  
   // 备注
   await validators.chars_max_length(
     input.rem,

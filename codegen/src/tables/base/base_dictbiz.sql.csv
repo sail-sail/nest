@@ -1,1 +1,1 @@
-id,code,lbl,type,order_by,is_locked,tenant_id,is_sys
+id,code,lbl,type,order_by,is_locked,tenant_id,is_sys,is_add
