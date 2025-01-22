@@ -837,9 +837,6 @@ export async function setIdByLbl(
 export async function getFieldComments(): Promise<OrderFieldComment> {
   const fieldComments: OrderFieldComment = {
     id: "ID",
-    lbl_seq: "订单号-序列号",
-    lbl_date_seq: "订单号-日期",
-    lbl_date_seq_lbl: "订单号-日期",
     lbl: "订单号",
     company: "公司",
     phone: "联系电话",
@@ -870,8 +867,6 @@ export async function getFieldComments(): Promise<OrderFieldComment> {
     update_usr_id_lbl: "更新人",
     update_time: "更新时间",
     update_time_lbl: "更新时间",
-    org_id: "组织",
-    org_id_lbl: "组织",
   };
   return fieldComments;
 }
@@ -1269,13 +1264,6 @@ export async function validate(
     fieldComments.phone,
   );
   
-  // 订单状态
-  await validators.chars_max_length(
-    input.status,
-    22,
-    fieldComments.status,
-  );
-  
   // 用户
   await validators.chars_max_length(
     input.usr_id,
@@ -1288,13 +1276,6 @@ export async function validate(
     input.card_id,
     22,
     fieldComments.card_id,
-  );
-  
-  // 订单类别
-  await validators.chars_max_length(
-    input.type,
-    22,
-    fieldComments.type,
   );
   
   // 备注

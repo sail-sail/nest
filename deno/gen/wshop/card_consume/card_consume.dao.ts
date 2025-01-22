@@ -598,7 +598,6 @@ export async function setIdByLbl(
 export async function getFieldComments(): Promise<CardConsumeFieldComment> {
   const fieldComments: CardConsumeFieldComment = {
     id: "ID",
-    transaction_id: "微信支付订单号",
     card_id: "卡号",
     card_id_lbl: "卡号",
     usr_id: "用户",
@@ -617,8 +616,6 @@ export async function getFieldComments(): Promise<CardConsumeFieldComment> {
     update_usr_id_lbl: "更新人",
     update_time: "更新时间",
     update_time_lbl: "更新时间",
-    org_id: "组织",
-    org_id_lbl: "组织",
   };
   return fieldComments;
 }

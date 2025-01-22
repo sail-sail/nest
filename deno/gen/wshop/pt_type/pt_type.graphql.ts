@@ -95,10 +95,6 @@ type PtTypeFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
-  "组织"
-  org_id: String!
-  "组织"
-  org_id_lbl: String!
 }
 input PtTypeInput {
   "ID"

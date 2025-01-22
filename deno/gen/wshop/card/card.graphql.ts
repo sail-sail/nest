@@ -79,8 +79,6 @@ type CardModel {
 type CardFieldComment {
   "ID"
   id: String!
-  "卡号-序列号"
-  lbl_seq: String!
   "卡号"
   lbl: String!
   "绑定用户"
@@ -133,10 +131,6 @@ type CardFieldComment {
   update_time: String!
   "更新时间"
   update_time_lbl: String!
-  "组织"
-  org_id: String!
-  "组织"
-  org_id_lbl: String!
 }
 input CardInput {
   "ID"
