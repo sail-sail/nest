@@ -1128,10 +1128,13 @@ export default defineConfig({
         width: 100,
       },
       {
-        COLUMN_NAME: "is_locked",
+        COLUMN_NAME: "is_add",
+        onlyCodegenDeno: true,
+        onlyCodegenDenoButApi: true,
       },
       {
         COLUMN_NAME: "is_enabled",
+        isSwitch: false,
       },
       {
         COLUMN_NAME: "order_by",
@@ -1193,16 +1196,15 @@ export default defineConfig({
         width: 240,
       },
       {
-        COLUMN_NAME: "is_locked",
-      },
-      {
         COLUMN_NAME: "is_enabled",
+        isSwitch: false,
       },
       {
         COLUMN_NAME: "order_by",
       },
       {
         COLUMN_NAME: "rem",
+        width: 220,
       },
       {
         COLUMN_NAME: "create_usr_id",
@@ -1263,16 +1265,18 @@ export default defineConfig({
         width: 240,
       },
       {
+        COLUMN_NAME: "is_add",
+        onlyCodegenDeno: true,
+        onlyCodegenDenoButApi: true,
+      },
+      {
         COLUMN_NAME: "type",
         require: true,
         width: 100,
       },
       {
-        COLUMN_NAME: "is_locked",
-      },
-      {
         COLUMN_NAME: "is_enabled",
-        width: 60,
+        isSwitch: false,
       },
       {
         COLUMN_NAME: "order_by",
@@ -1329,16 +1333,15 @@ export default defineConfig({
         width: 240,
       },
       {
-        COLUMN_NAME: "is_locked",
-      },
-      {
         COLUMN_NAME: "is_enabled",
+        isSwitch: false,
       },
       {
         COLUMN_NAME: "order_by",
       },
       {
         COLUMN_NAME: "rem",
+        width: 220,
       },
       {
         COLUMN_NAME: "create_usr_id",

@@ -40,12 +40,11 @@ export const dictbizFields = [
   "code",
   // 名称
   "lbl",
+  // 可新增
+  "is_add",
   // 数据类型
   "type",
   "type_lbl",
-  // 锁定
-  "is_locked",
-  "is_locked_lbl",
   // 启用
   "is_enabled",
   "is_enabled_lbl",

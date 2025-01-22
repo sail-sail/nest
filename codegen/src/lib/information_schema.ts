@@ -4,6 +4,9 @@ import nestConfig from "./nest_config";
 import tables from "../tables/tables";
 import config, { TableCloumn, TablesConfigItem } from "../config";
 import { isEmpty } from "./StringUitl";
+import { Chalk } from "chalk";
+
+const chalk = new Chalk();
 
 export class Context {
   pool: Pool;
@@ -676,6 +679,12 @@ export async function getSchema(
     }
   }
   
+  const dictModels = await getDictModels(context);
+  const dictbizModels = await getDictbizModels(context);
+  
+  const dictHeadModels = await getDictHeadModels(context);
+  const dictbizHeadModels = await getDictbizHeadModels(context);
+  
   for (let k = 0; k < records.length; k++) {
     const record = records[k];
     let column: TableCloumn = tables[table_name].columns.find((column: any) => column.COLUMN_NAME === record.COLUMN_NAME);
@@ -685,6 +694,7 @@ export async function getSchema(
     columns.push(record);
     // 处理 comment
     let comment = record.COLUMN_COMMENT;
+    const oldComment = comment;
     if (isEmpty(comment)) {
       throw new Error(`table: ${ table_name }, column: ${ record.COLUMN_NAME } comment is empty!`);
     }
@@ -703,6 +713,74 @@ export async function getSchema(
         comment = comment.substring(0, comment.lastIndexOf(","));
         record.COLUMN_COMMENT = comment;
       }
+    }
+    // 系统字典, 业务字典
+    if (record.dict) {
+      const dictModels0 = dictModels.filter((item) => item.code === record.dict);
+      record.dict_models = dictModels0;
+      record.dict_head_model = dictHeadModels.find((item) => item.code === record.dict);
+    } else if (record.dictbiz) {
+      const dictbizModels0 = dictbizModels.filter((item) => item.code === record.dictbiz);
+      record.dict_models = dictbizModels0;
+      record.dict_head_model = dictbizHeadModels.find((item) => item.code === record.dictbiz);
+    }
+    if ((record.dict || record.dictbiz) && !record.dict_head_model) {
+      throw new Error(`table: ${ table_name }, column: ${ record.COLUMN_NAME }, 业务字典: ${ record.dict || record.dictbiz } 不存在!`);
+    } else if (record.dict_head_model && record.dictHasSelectAdd == null && record.dict_head_model.is_add) {
+      record.dictHasSelectAdd = true;
+    }
+    // 检查系统字典, 业务字典的数据类型是否正确
+    const data_type = record.DATA_TYPE.toLowerCase();
+    if (
+      record.dict_head_model && !record.dict_head_model.is_add && record.dict_head_model.is_sys
+      && data_type !== "tinyint" && data_type !== "int" && data_type !== "bigint" && data_type !== "decimal"
+    ) {
+      const column_type = record.COLUMN_TYPE;
+      const enumItems = [ ];
+      if (data_type === "enum") {
+        const enumItems0 = column_type.substring(column_type.indexOf("(") + 1, column_type.indexOf(")")).split(",");
+        for (let i = 0; i < enumItems0.length; i++) {
+          enumItems.push(enumItems0[i].substring(1, enumItems0[i].length - 1));
+        }
+      }
+      const enumItemsDict = [ ];
+      if (record.dict_models) {
+        for (let i = 0; i < record.dict_models.length; i++) {
+          enumItemsDict.push(record.dict_models[i].val);
+        }
+      }
+      let defaultValue = record.COLUMN_DEFAULT;
+      // 如果 enumItems 跟 enumItemsDict 不一致, 则报错并给出正确的 enum 数据类型
+      let isMatch = true;
+      if (!enumItemsDict.includes(defaultValue)) {
+        isMatch = false;
+      } else if (enumItems.length !== enumItemsDict.length) {
+        isMatch = false;
+      } else {
+        for (let i = 0; i < enumItems.length; i++) {
+          if (!enumItemsDict.includes(enumItems[i])) {
+            isMatch = false;
+            break;
+          }
+        }
+      }
+      if (!isMatch) {
+        if (!enumItemsDict.includes(defaultValue)) {
+          defaultValue = enumItemsDict[0];
+        }
+        let errMsg = `
+错误: 表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 数据类型应该为:`;
+        errMsg += `
+
+alter table \`${ table_name }\` change column \`${ record.COLUMN_NAME }\`
+\`${ record.COLUMN_NAME }\` enum('${ enumItemsDict.join("', '") }') not null default '${ defaultValue }' comment '${ oldComment }';
+`;
+        throw chalk.red(errMsg);
+      }
+    }
+    if (data_type === "enum") {
+      record.DATA_TYPE = "varchar";
+      record.COLUMN_TYPE = `varchar(${ record.CHARACTER_MAXIMUM_LENGTH })`;
     }
     if (config.ignoreCodegen.includes(record.COLUMN_NAME) && record.ignoreCodegen == null) {
       record.ignoreCodegen = true;
@@ -1042,6 +1120,16 @@ export type DictModel = {
   type: string;
 };
 
+export type DictHeadModel = {
+  id: string;
+  code: string;
+  lbl: string;
+  type: string;
+  is_enabled: 0 | 1;
+  is_sys: 0 | 1;
+  is_add: 0 | 1;
+};
+
 let _dictModels: DictModel[] = undefined;
 
 export async function getDictModels(context: Context) {
@@ -1052,7 +1140,8 @@ export async function getDictModels(context: Context) {
         base_dict.code,
         t.lbl,
         t.val,
-        base_dict.type
+        base_dict.type,
+        base_dict.is_add
       from
         base_dict_detail t
       inner join base_dict
@@ -1063,6 +1152,7 @@ export async function getDictModels(context: Context) {
         t.is_deleted = 0
         and t.is_sys = 1
       order by
+        base_dict.code asc,
         t.order_by asc,
         t.create_time asc
     `;
@@ -1101,7 +1191,8 @@ export async function getDictbizModels(context: Context) {
         base_dictbiz.code,
         t.lbl,
         t.val,
-        base_dictbiz.type
+        base_dictbiz.type,
+        base_dictbiz.is_add
       from
         base_dictbiz_detail t
       inner join base_dictbiz
@@ -1113,6 +1204,7 @@ export async function getDictbizModels(context: Context) {
         and t.is_sys = 1
         and t.tenant_id = ?
       order by
+        base_dictbiz.code asc,
         t.order_by asc,
         t.create_time asc
     `;
@@ -1120,4 +1212,58 @@ export async function getDictbizModels(context: Context) {
     _dictbizModels = <any[]>result[0];
   }
   return _dictbizModels;
+}
+
+let _dictHeadModels: DictHeadModel[] = undefined;
+
+export async function getDictHeadModels(context: Context) {
+  if (!_dictHeadModels) {
+    const sql = `
+      select
+        t.id,
+        t.code,
+        t.lbl,
+        t.type,
+        t.is_enabled,
+        t.is_sys,
+        t.is_add
+      from
+        base_dict t
+      where
+        t.is_deleted = 0
+        and t.is_sys = 1
+      order by
+        t.order_by asc
+    `;
+    const result = await context.conn.query(sql);
+    _dictHeadModels = <any[]>result[0];
+  }
+  return _dictHeadModels;
+}
+
+let _dictbizHeadModels: DictHeadModel[] = undefined;
+
+export async function getDictbizHeadModels(context: Context) {
+  if (!_dictbizHeadModels) {
+    const sql = `
+      select
+        t.id,
+        t.code,
+        t.lbl,
+        t.type,
+        t.is_enabled,
+        t.is_sys,
+        t.is_add
+      from
+        base_dictbiz t
+      where
+        t.is_deleted = 0
+        and t.is_sys = 1
+      order by
+        t.order_by asc
+    `;
+    const result = await context.conn.query(sql);
+    _dictbizHeadModels = <any[]>result[0];
+  }
+  return _dictbizHeadModels;
 }
