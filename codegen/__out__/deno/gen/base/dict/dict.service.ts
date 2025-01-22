@@ -4,10 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
 import * as dictDao from "./dict.dao.ts";
 
 async function setSearchQuery(
@@ -140,11 +136,6 @@ export async function updateById(
   input: DictInput,
 ): Promise<DictId> {
   
-  const is_locked = await dictDao.getIsLockedById(id);
-  if (is_locked) {
-    throw await ns("不能修改已经锁定的数据");
-  }
-  
   // 不能修改系统记录的系统字段
   const model = await dictDao.findById(id);
   if (model && model.is_sys === 1) {
@@ -174,19 +165,8 @@ export async function deleteByIds(
       ids,
     });
     for (const model of models) {
-      if (model.is_locked === 1) {
-        throw await ns("不能删除已经锁定的 {0}", "系统字典");
-      }
-    }
-  }
-  
-  {
-    const models = await dictDao.findAll({
-      ids,
-    });
-    for (const model of models) {
       if (model.is_sys === 1) {
-        throw await ns("不能删除系统记录");
+        throw "不能删除系统记录";
       }
     }
   }
@@ -203,17 +183,6 @@ export async function enableByIds(
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await dictDao.enableByIds(ids, is_enabled);
-  return data;
-}
-
-/**
- * 根据 ids 锁定或者解锁系统字典
- */
-export async function lockByIds(
-  ids: DictId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  const data = await dictDao.lockByIds(ids, is_locked);
   return data;
 }
 

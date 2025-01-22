@@ -515,10 +515,7 @@ export async function getMenuTree() {
 /**
  * 下载租户导入模板
  */
-export function useDownloadImportTemplate(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
+export function useDownloadImportTemplate() {
   const {
     workerFn,
     workerStatus,
@@ -554,7 +551,7 @@ export function useDownloadImportTemplate(routePath: string) {
       },
     });
     try {
-      const sheetName = await nsAsync("租户");
+      const sheetName = "租户";
       const buffer = await workerFn(
         `${ location.origin }/import_template/base/tenant.xlsx`,
         {
@@ -562,9 +559,9 @@ export function useDownloadImportTemplate(routePath: string) {
           data,
         },
       );
-      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
+      saveAsExcel(buffer, `${ sheetName}导入`);
     } catch (err) {
-      ElMessage.error(await nsAsync("下载失败"));
+      ElMessage.error("下载失败");
       throw err;
     }
   }
@@ -578,10 +575,7 @@ export function useDownloadImportTemplate(routePath: string) {
 /**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
-  const {
-    nsAsync,
-  } = useI18n(routePath);
+export function useExportExcel() {
   const {
     workerFn,
     workerStatus,
@@ -634,7 +628,7 @@ export function useExportExcel(routePath: string) {
         await setLblById(model, true);
       }
       try {
-        const sheetName = await nsAsync("租户");
+        const sheetName = "租户";
         const buffer = await workerFn(
           `${ location.origin }/excel_template/base/tenant.xlsx`,
           {
@@ -645,7 +639,7 @@ export function useExportExcel(routePath: string) {
         );
         saveAsExcel(buffer, sheetName);
       } catch (err) {
-        ElMessage.error(await nsAsync("导出失败"));
+        ElMessage.error("导出失败");
         throw err;
       }
     } finally {
@@ -669,10 +663,6 @@ export async function importModels(
   isCancel: Ref<boolean>,
   opt?: GqlOpt,
 ) {
-  const {
-    nsAsync,
-  } = useI18n();
-  
   opt = opt || { };
   opt.showErrMsg = false;
   opt.notLoading = true;
@@ -702,7 +692,7 @@ export async function importModels(
       succNum += inputs.length;
     } catch (err) {
       failNum += inputs.length;
-      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));
+      failErrMsgs.push(`批量导入第 ${ i + 1 - inputs.length } 至 ${ i + 1 } 行时失败: ${ err }`);
     }
     
     percentage.value = Math.floor((i + 1) / len * 100);

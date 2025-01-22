@@ -220,34 +220,6 @@ export async function enableByIdsDictbizDetail(
 }
 
 /**
- * 根据 ids 锁定或者解锁业务字典明细
- */
-export async function lockByIdsDictbizDetail(
-  ids: DictbizDetailId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  
-  const {
-    lockByIds,
-  } = await import("./dictbiz_detail.service.ts");
-  
-  if (is_locked !== 0 && is_locked !== 1) {
-    throw new Error(`lockByIdsDictbizDetail.is_locked expect 0 or 1 but got ${ is_locked }`);
-  }
-  
-  set_is_tran(true);
-  
-  await usePermit(
-    route_path,
-    "edit",
-  );
-  
-  const res = await lockByIds(ids, is_locked);
-  
-  return res;
-}
-
-/**
  * 根据 ids 还原业务字典明细
  */
 export async function revertByIdsDictbizDetail(

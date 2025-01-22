@@ -1,6 +1,6 @@
 export { }
 
-export * from "@/uni_modules/tmui/interface";
+export * from "@/uni_modules/tm-ui/interface";
 
 declare global {
   

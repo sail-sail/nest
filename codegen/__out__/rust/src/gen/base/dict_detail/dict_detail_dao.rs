@@ -38,18 +38,12 @@ use crate::common::context::{
   get_is_creating,
 };
 
-use crate::src::base::i18n::i18n_dao;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
 };
 
 use crate::src::base::dict_detail::dict_detail_dao::get_dict;
-
-use crate::src::base::lang::lang_dao::get_lang_id;
-use crate::r#gen::base::lang::lang_model::LangId;
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::dict_detail_model::*;
 use crate::r#gen::base::dict::dict_model::DictId;
@@ -64,13 +58,11 @@ async fn get_where_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let server_i18n_enable = get_server_i18n_enable();
-  
   let is_deleted = search
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 14 * 2);
+  let mut where_query = String::with_capacity(80 * 13 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -180,29 +172,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(lbl) = lbl {
-      if server_i18n_enable {
-        where_query.push_str(" and (t.lbl=? or base_dict_detail_lang.lbl=?)");
-        args.push(lbl.as_str().into());
-        args.push(lbl.as_str().into());
-      } else {
-        where_query.push_str(" and t.lbl=?");
-        args.push(lbl.into());
-      }
+      where_query.push_str(" and t.lbl=?");
+      args.push(lbl.into());
     }
     let lbl_like = match search {
       Some(item) => item.lbl_like.clone(),
       None => None,
     };
     if let Some(lbl_like) = lbl_like {
-      if server_i18n_enable {
-        where_query.push_str(" and (t.lbl like ? or base_dict_detail_lang.lbl like ?)");
-        let like_str = format!("%{}%", sql_like(&lbl_like));
-        args.push(like_str.as_str().into());
-        args.push(like_str.as_str().into());
-      } else {
-        where_query.push_str(" and t.lbl like ?");
-        args.push(format!("%{}%", sql_like(&lbl_like)).into());
-      }
+      where_query.push_str(" and t.lbl like ?");
+      args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
   }
   // 值
@@ -222,30 +201,6 @@ async fn get_where_query(
     if let Some(val_like) = val_like {
       where_query.push_str(" and t.val like ?");
       args.push(format!("%{}%", sql_like(&val_like)).into());
-    }
-  }
-  // 锁定
-  {
-    let is_locked: Option<Vec<u8>> = match search {
-      Some(item) => item.is_locked.clone(),
-      None => None,
-    };
-    if let Some(is_locked) = is_locked {
-      let arg = {
-        if is_locked.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(is_locked.len());
-          for item in is_locked {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and t.is_locked in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
     }
   }
   // 启用
@@ -296,29 +251,16 @@ async fn get_where_query(
       None => None,
     };
     if let Some(rem) = rem {
-      if server_i18n_enable {
-        where_query.push_str(" and (t.rem=? or base_dict_detail_lang.rem=?)");
-        args.push(rem.as_str().into());
-        args.push(rem.as_str().into());
-      } else {
-        where_query.push_str(" and t.rem=?");
-        args.push(rem.into());
-      }
+      where_query.push_str(" and t.rem=?");
+      args.push(rem.into());
     }
     let rem_like = match search {
       Some(item) => item.rem_like.clone(),
       None => None,
     };
     if let Some(rem_like) = rem_like {
-      if server_i18n_enable {
-        where_query.push_str(" and (t.rem like ? or base_dict_detail_lang.rem like ?)");
-        let like_str = format!("%{}%", sql_like(&rem_like));
-        args.push(like_str.as_str().into());
-        args.push(like_str.as_str().into());
-      } else {
-        where_query.push_str(" and t.rem like ?");
-        args.push(format!("%{}%", sql_like(&rem_like)).into());
-      }
+      where_query.push_str(" and t.rem like ?");
+      args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
   }
   // 创建人
@@ -497,14 +439,8 @@ async fn get_from_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let server_i18n_enable = get_server_i18n_enable();
-  
-  let mut from_query = r#"base_dict_detail t
+  let from_query = r#"base_dict_detail t
   left join base_dict dict_id_lbl on dict_id_lbl.id=t.dict_id"#.to_owned();
-  if server_i18n_enable {
-    from_query += " left join base_dict_detail_lang on base_dict_detail_lang.dict_detail_id=t.id and base_dict_detail_lang.lang_id=?";
-    args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
-  }
   Ok(from_query)
 }
 
@@ -520,8 +456,6 @@ pub async fn find_all(
   
   let table = "base_dict_detail";
   let method = "find_all";
-  
-  let server_i18n_enable= get_server_i18n_enable();
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -566,22 +500,6 @@ pub async fn find_all(
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
         return Err(eyre!("search.dict_id.length > {ids_limit}"));
-      }
-    }
-  }
-  // 锁定
-  if let Some(search) = &search {
-    if search.is_locked.is_some() {
-      let len = search.is_locked.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.is_locked.length > {ids_limit}"));
       }
     }
   }
@@ -634,15 +552,6 @@ pub async fn find_all(
     }
   }
   
-  let lang_sql = {
-    let mut lang_sql = String::new();
-    if server_i18n_enable {
-      lang_sql += ",max(base_dict_detail_lang.lbl) lbl_lang";
-      lang_sql += ",max(base_dict_detail_lang.rem) rem_lang";
-    }
-    lang_sql
-  };
-  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
@@ -679,7 +588,6 @@ pub async fn find_all(
   
   let sql = format!(r#"select f.* from (select t.*
   ,dict_id_lbl.lbl dict_id_lbl
-  {lang_sql}
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -695,27 +603,16 @@ pub async fn find_all(
   ).await?;
   
   let dict_vec = get_dict(&[
-    "is_locked",
     "is_enabled",
   ]).await?;
   let [
-    is_locked_dict,
     is_enabled_dict,
-  ]: [Vec<_>; 2] = dict_vec
+  ]: [Vec<_>; 1] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
   #[allow(unused_variables)]
   for model in &mut res {
-    
-    // 锁定
-    model.is_locked_lbl = {
-      is_locked_dict
-        .iter()
-        .find(|item| item.val == model.is_locked.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.is_locked.to_string())
-    };
     
     // 启用
     model.is_enabled_lbl = {
@@ -802,75 +699,30 @@ pub async fn find_count(
   Ok(total)
 }
 
-/// 获取当前路由的国际化
-pub fn get_n_route() -> i18n_dao::NRoute {
-  i18n_dao::NRoute {
-    route_path: get_route_path_dict_detail().into(),
-  }
-}
-
 // MARK: get_field_comments
 /// 获取系统字典明细字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<DictDetailFieldComment> {
   
-  let n_route = get_n_route();
-  
-  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
-    "ID".into(),
-    "系统字典".into(),
-    "系统字典".into(),
-    "名称".into(),
-    "值".into(),
-    "锁定".into(),
-    "锁定".into(),
-    "启用".into(),
-    "启用".into(),
-    "排序".into(),
-    "备注".into(),
-    "创建人".into(),
-    "创建人".into(),
-    "创建时间".into(),
-    "创建时间".into(),
-    "更新人".into(),
-    "更新人".into(),
-    "更新时间".into(),
-    "更新时间".into(),
-  ];
-  
-  let map = n_route.n_batch(
-    i18n_code_maps.clone(),
-  ).await?;
-  
-  let vec = i18n_code_maps.into_iter()
-    .map(|item|
-      map.get(&item.code)
-        .map(|item| item.to_owned())
-        .unwrap_or_default()
-    )
-    .collect::<Vec<String>>();
-  
   let field_comments = DictDetailFieldComment {
-    id: vec[0].to_owned(),
-    dict_id: vec[1].to_owned(),
-    dict_id_lbl: vec[2].to_owned(),
-    lbl: vec[3].to_owned(),
-    val: vec[4].to_owned(),
-    is_locked: vec[5].to_owned(),
-    is_locked_lbl: vec[6].to_owned(),
-    is_enabled: vec[7].to_owned(),
-    is_enabled_lbl: vec[8].to_owned(),
-    order_by: vec[9].to_owned(),
-    rem: vec[10].to_owned(),
-    create_usr_id: vec[11].to_owned(),
-    create_usr_id_lbl: vec[12].to_owned(),
-    create_time: vec[13].to_owned(),
-    create_time_lbl: vec[14].to_owned(),
-    update_usr_id: vec[15].to_owned(),
-    update_usr_id_lbl: vec[16].to_owned(),
-    update_time: vec[17].to_owned(),
-    update_time_lbl: vec[18].to_owned(),
+    id: "ID".into(),
+    dict_id: "系统字典".into(),
+    dict_id_lbl: "系统字典".into(),
+    lbl: "名称".into(),
+    val: "值".into(),
+    is_enabled: "启用".into(),
+    is_enabled_lbl: "启用".into(),
+    order_by: "排序".into(),
+    rem: "备注".into(),
+    create_usr_id: "创建人".into(),
+    create_usr_id_lbl: "创建人".into(),
+    create_time: "创建时间".into(),
+    create_time_lbl: "创建时间".into(),
+    update_usr_id: "更新人".into(),
+    update_usr_id_lbl: "更新人".into(),
+    update_time: "更新时间".into(),
+    update_time_lbl: "更新时间".into(),
   };
   Ok(field_comments)
 }
@@ -1274,17 +1126,7 @@ pub async fn check_by_unique(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let table_comment = i18n_dao::ns(
-      "系统字典明细".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "此 {0} 已经存在".to_owned(),
-      map.into(),
-    ).await?;
+    let err_msg = "此 系统字典明细 已经存在";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1301,28 +1143,12 @@ pub async fn set_id_by_lbl(
   let mut input = input;
   
   let dict_vec = get_dict(&[
-    "is_locked",
     "is_enabled",
   ]).await?;
   
-  // 锁定
-  if input.is_locked.is_none() {
-    let is_locked_dict = &dict_vec[0];
-    if let Some(is_locked_lbl) = input.is_locked_lbl.clone() {
-      input.is_locked = is_locked_dict
-        .iter()
-        .find(|item| {
-          item.lbl == is_locked_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
   // 启用
   if input.is_enabled.is_none() {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[0];
     if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
       input.is_enabled = is_enabled_dict
         .iter()
@@ -1371,37 +1197,12 @@ pub async fn set_id_by_lbl(
     }
   }
   
-  // 锁定
-  if
-    input.is_locked_lbl.is_some() && !input.is_locked_lbl.as_ref().unwrap().is_empty()
-    && input.is_locked.is_none()
-  {
-    let is_locked_dict = &dict_vec[0];
-    let dict_model = is_locked_dict.iter().find(|item| {
-      item.lbl == input.is_locked_lbl.clone().unwrap_or_default()
-    });
-    let val = dict_model.map(|item| item.val.to_string());
-    if let Some(val) = val {
-      input.is_locked = val.parse::<u8>()?.into();
-    }
-  } else if
-    (input.is_locked_lbl.is_none() || input.is_locked_lbl.as_ref().unwrap().is_empty())
-    && input.is_locked.is_some()
-  {
-    let is_locked_dict = &dict_vec[0];
-    let dict_model = is_locked_dict.iter().find(|item| {
-      item.val == input.is_locked.unwrap_or_default().to_string()
-    });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
-    input.is_locked_lbl = lbl;
-  }
-  
   // 启用
   if
     input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
     && input.is_enabled.is_none()
   {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[0];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
     });
@@ -1413,7 +1214,7 @@ pub async fn set_id_by_lbl(
     (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
     && input.is_enabled.is_some()
   {
-    let is_enabled_dict = &dict_vec[1];
+    let is_enabled_dict = &dict_vec[0];
     let dict_model = is_enabled_dict.iter().find(|item| {
       item.val == input.is_enabled.unwrap_or_default().to_string()
     });
@@ -1514,7 +1315,7 @@ async fn _creates(
   let mut ids2: Vec<DictDetailId> = vec![];
   let mut inputs2: Vec<DictDetailInput> = vec![];
   
-  for input in inputs.clone() {
+  for input in inputs {
   
     if input.id.is_some() {
       return Err(eyre!("Can not set id when create in dao: {table}"));
@@ -1559,7 +1360,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_fields = String::with_capacity(80 * 13 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1574,8 +1375,6 @@ async fn _creates(
   sql_fields += ",lbl";
   // 值
   sql_fields += ",val";
-  // 锁定
-  sql_fields += ",is_locked";
   // 启用
   sql_fields += ",is_enabled";
   // 排序
@@ -1586,7 +1385,7 @@ async fn _creates(
   sql_fields += ",is_sys";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 14 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 13 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1723,13 +1522,6 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 锁定
-    if let Some(is_locked) = input.is_locked {
-      sql_values += ",?";
-      args.push(is_locked.into());
-    } else {
-      sql_values += ",default";
-    }
     // 启用
     if let Some(is_enabled) = input.is_enabled {
       sql_values += ",?";
@@ -1784,9 +1576,6 @@ async fn _creates(
   
   if affected_rows != inputs2_len as u64 {
     return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
-  }
-  for input in inputs.iter() {
-    refresh_lang_by_input(input, options.clone()).await?;
   }
   
   Ok(ids2)
@@ -1857,94 +1646,6 @@ pub async fn create(
   Ok(id)
 }
 
-#[allow(unused_variables)]
-async fn refresh_lang_by_input(
-  input: &DictDetailInput,
-  options: Option<Options>,
-) -> Result<()> {
-  
-  if input.id.is_none() || input.id.as_ref().unwrap().is_empty() {
-    return Err(eyre!("refresh_lang_by_input: input.id is empty"));
-  }
-  
-  let server_i18n_enable = get_server_i18n_enable();
-  
-  if !server_i18n_enable {
-    return Ok(());
-  }
-  #[derive(Serialize, Deserialize, sqlx::FromRow)]
-  struct ResultTmp {
-    id: String,
-  }
-  let lang_sql = "select id from base_dict_detail_lang where lang_id=? and dict_detail_id=?".to_owned();
-  let mut lang_args = QueryArgs::new();
-  lang_args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
-  lang_args.push(input.id.clone().unwrap_or_default().clone().into());
-  let model = query_one::<ResultTmp>(
-    lang_sql,
-    lang_args.into(),
-    options.clone(),
-  ).await?;
-  let lang_id: Option<LangId> = model.map(|item| item.id).map(|item| item.into());
-  if let Some(lang_id) = lang_id {
-    let mut lang_sql = "update base_dict_detail_lang set ".to_owned();
-    let mut lang_args = QueryArgs::new();
-    // 名称
-    if input.lbl.is_some() {
-      lang_sql += "lbl=?,";
-      lang_args.push(input.lbl.clone().unwrap_or_default().into());
-    }
-    // 备注
-    if input.rem.is_some() {
-      lang_sql += "rem=?,";
-      lang_args.push(input.rem.clone().unwrap_or_default().into());
-    }
-    lang_sql.pop();
-    lang_sql += " where id=?";
-    lang_args.push(lang_id.into());
-    execute(
-      lang_sql,
-      lang_args.into(),
-      options.clone(),
-    ).await?;
-  } else {
-    let mut sql_fields: Vec<&'static str> = vec![];
-    let mut lang_args = QueryArgs::new();
-    let id: LangId = get_short_uuid().into();
-    lang_args.push(id.into());
-    lang_args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
-    lang_args.push(input.id.clone().unwrap_or_default().clone().into());
-    // 名称
-    if input.lbl.is_some() {
-      sql_fields.push("lbl");
-      lang_args.push(input.lbl.clone().unwrap_or_default().into());
-    }
-    // 备注
-    if input.rem.is_some() {
-      sql_fields.push("rem");
-      lang_args.push(input.rem.clone().unwrap_or_default().into());
-    }
-    let mut lang_sql = "insert into base_dict_detail_lang(id,lang_id,dict_detail_id".to_owned();
-    let sql_fields_len = sql_fields.len();
-    for sql_field in sql_fields {
-      lang_sql += ",";
-      lang_sql += sql_field;
-    }
-    lang_sql += ")values(?,?,?";
-    for _ in 0..sql_fields_len {
-      lang_sql += ",?";
-    }
-    lang_sql += ")";
-    execute(
-      lang_sql,
-      lang_args.into(),
-      options.clone(),
-    ).await?;
-  }
-  
-  Ok(())
-}
-
 // MARK: update_by_id
 /// 根据 id 修改系统字典明细
 #[allow(unused_mut)]
@@ -1962,8 +1663,6 @@ pub async fn update_by_id(
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   let is_creating = get_is_creating(options.as_ref());
-  
-  let server_i18n_enable = get_server_i18n_enable();
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -1988,17 +1687,7 @@ pub async fn update_by_id(
   ).await?;
   
   if old_model.is_none() {
-    let table_comment = i18n_dao::ns(
-      "系统字典明细".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "编辑失败, 此 {0} 已被删除".to_owned(),
-      map.into(),
-    ).await?;
+    let err_msg = "编辑失败, 此 系统字典明细 已被删除";
     return Err(eyre!(err_msg));
   }
   let old_model = old_model.unwrap();
@@ -2011,15 +1700,6 @@ pub async fn update_by_id(
       method,
       serde_json::to_string(&old_model)?,
     );
-  }
-  
-  if server_i18n_enable {
-    let mut input = input.clone();
-    input.id = Some(id.clone());
-    refresh_lang_by_input(
-      &input,
-      options.clone(),
-    ).await?;
   }
   
   {
@@ -2044,17 +1724,7 @@ pub async fn update_by_id(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let table_comment = i18n_dao::ns(
-          "系统字典明细".to_owned(),
-          None,
-        ).await?;
-        let map = HashMap::from([
-          ("0".to_owned(), table_comment),
-        ]);
-        let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
-          map.into(),
-        ).await?;
+        let err_msg = "此 系统字典明细 已经存在";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2064,7 +1734,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 14 + 20);
+  let mut sql_fields = String::with_capacity(80 * 13 + 20);
   
   let mut field_num: usize = 0;
   // 系统字典
@@ -2076,22 +1746,14 @@ pub async fn update_by_id(
   // 名称
   if let Some(lbl) = input.lbl {
     field_num += 1;
-    if !server_i18n_enable {
-      sql_fields += "lbl=?,";
-      args.push(lbl.into());
-    }
+    sql_fields += "lbl=?,";
+    args.push(lbl.into());
   }
   // 值
   if let Some(val) = input.val {
     field_num += 1;
     sql_fields += "val=?,";
     args.push(val.into());
-  }
-  // 锁定
-  if let Some(is_locked) = input.is_locked {
-    field_num += 1;
-    sql_fields += "is_locked=?,";
-    args.push(is_locked.into());
   }
   // 启用
   if let Some(is_enabled) = input.is_enabled {
@@ -2108,10 +1770,8 @@ pub async fn update_by_id(
   // 备注
   if let Some(rem) = input.rem {
     field_num += 1;
-    if !server_i18n_enable {
-      sql_fields += "rem=?,";
-      args.push(rem.into());
-    }
+    sql_fields += "rem=?,";
+    args.push(rem.into());
   }
   // 系统字段
   if let Some(is_sys) = input.is_sys {
@@ -2268,7 +1928,6 @@ pub async fn delete_by_ids(
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   let is_creating = get_is_creating(options.as_ref());
-  let server_i18n_enable = get_server_i18n_enable();
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -2372,17 +2031,6 @@ pub async fn delete_by_ids(
       args,
       options.clone(),
     ).await?;
-    
-    if server_i18n_enable {
-      let sql = "update base_dict_detail_lang set is_deleted=1 where dict_detail_id=?".to_owned();
-      let mut args = QueryArgs::new();
-      args.push(id.clone().into());
-      execute(
-        sql,
-        args.into(),
-        options.clone(),
-      ).await?;
-    }
   }
   
   if num > MAX_SAFE_INTEGER {
@@ -2478,92 +2126,6 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-// MARK: get_is_locked_by_id
-/// 根据 id 查找系统字典明细是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-pub async fn get_is_locked_by_id(
-  id: DictDetailId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  let options = Some(options);
-  
-  let model = find_by_id(
-    id,
-    options,
-  ).await?;
-  
-  let is_locked = {
-    if let Some(model) = model {
-      model.is_locked == 1
-    } else {
-      false
-    }
-  };
-  
-  Ok(is_locked)
-}
-
-// MARK: lock_by_ids
-/// 根据 ids 锁定或者解锁系统字典明细
-pub async fn lock_by_ids(
-  ids: Vec<DictDetailId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  let table = "base_dict_detail";
-  let method = "lock_by_ids";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" ids: {:?}", &ids);
-    msg += &format!(" is_locked: {:?}", &is_locked);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  if ids.is_empty() {
-    return Ok(0);
-  }
-  
-  let options = Options::from(options);
-  
-  let options = options.set_del_cache_key1s(get_cache_tables());
-  
-  let mut num = 0;
-  for id in ids {
-    let mut args = QueryArgs::new();
-    
-    let sql = format!("update {table} set is_locked=? where id=? limit 1");
-    
-    args.push(is_locked.into());
-    args.push(id.into());
-    
-    let args: Vec<_> = args.into();
-    
-    let options = options.clone().into();
-    
-    num += execute(
-      sql,
-      args,
-      options,
-    ).await?;
-  }
-  
-  Ok(num)
-}
-
 // MARK: revert_by_ids
 /// 根据 ids 还原系统字典明细
 pub async fn revert_by_ids(
@@ -2575,7 +2137,6 @@ pub async fn revert_by_ids(
   let method = "revert_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());
-  let server_i18n_enable = get_server_i18n_enable();
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -2648,17 +2209,7 @@ pub async fn revert_by_ids(
         .collect();
       
       if !models.is_empty() {
-        let table_comment = i18n_dao::ns(
-          "系统字典明细".to_owned(),
-          None,
-        ).await?;
-        let map = HashMap::from([
-          ("0".to_owned(), table_comment),
-        ]);
-        let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
-          map.into(),
-        ).await?;
+        let err_msg = "此 系统字典明细 已经存在";
         return Err(eyre!(err_msg));
       }
     }
@@ -2668,17 +2219,6 @@ pub async fn revert_by_ids(
       args,
       options.clone(),
     ).await?;
-    
-    if server_i18n_enable {
-      let sql = "update base_dict_detail_lang set is_deleted=0 where dict_detail_id=?".to_owned();
-      let mut args = QueryArgs::new();
-      args.push(id.clone().into());
-      execute(
-        sql,
-        args.into(),
-        options.clone(),
-      ).await?;
-    }
     
   }
   
@@ -2699,7 +2239,6 @@ pub async fn force_delete_by_ids(
   let is_debug = get_is_debug(options.as_ref());
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
-  let server_i18n_enable = get_server_i18n_enable();
   
   if is_debug {
     let mut msg = format!("{table}.{method}:");
@@ -2769,17 +2308,6 @@ pub async fn force_delete_by_ids(
       args,
       options.clone(),
     ).await?;
-    
-    if server_i18n_enable {
-      let sql = "delete from base_dict_detail_lang where dict_detail_id=?".to_owned();
-      let mut args = QueryArgs::new();
-      args.push(id.clone().into());
-      execute(
-        sql,
-        args.into(),
-        options.clone(),
-      ).await?;
-    }
   }
   
   Ok(num)
@@ -2850,15 +2378,7 @@ pub async fn validate_is_enabled(
   model: &DictDetailModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
-    let table_comment = i18n_dao::ns(
-      "系统字典明细".to_owned(),
-      None,
-    ).await?;
-    let msg1 = i18n_dao::ns(
-      "已禁用".to_owned(),
-      None,
-    ).await?;
-    let err_msg = table_comment + msg1.as_str();
+    let err_msg = "系统字典明细已禁用";
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -2871,15 +2391,7 @@ pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
-    let table_comment = i18n_dao::ns(
-      "系统字典明细".to_owned(),
-      None,
-    ).await?;
-    let msg1 = i18n_dao::ns(
-      "不存在".to_owned(),
-      None,
-    ).await?;
-    let err_msg = table_comment + msg1.as_str();
+    let err_msg = "系统字典明细不存在";
     let backtrace = std::backtrace::Backtrace::capture();
     error!(
       "{req_id} {err_msg}: {backtrace}",

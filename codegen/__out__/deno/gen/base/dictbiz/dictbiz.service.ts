@@ -4,10 +4,6 @@ import type {
   SortInput,
 } from "/gen/types.ts";
 
-import {
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
 import * as dictbizDao from "./dictbiz.dao.ts";
 
 async function setSearchQuery(
@@ -140,11 +136,6 @@ export async function updateById(
   input: DictbizInput,
 ): Promise<DictbizId> {
   
-  const is_locked = await dictbizDao.getIsLockedById(id);
-  if (is_locked) {
-    throw await ns("不能修改已经锁定的数据");
-  }
-  
   const id2 = await dictbizDao.updateById(id, input);
   return id2;
 }
@@ -161,19 +152,8 @@ export async function deleteByIds(
       ids,
     });
     for (const model of models) {
-      if (model.is_locked === 1) {
-        throw await ns("不能删除已经锁定的 {0}", "业务字典");
-      }
-    }
-  }
-  
-  {
-    const models = await dictbizDao.findAll({
-      ids,
-    });
-    for (const model of models) {
       if (model.is_sys === 1) {
-        throw await ns("不能删除系统记录");
+        throw "不能删除系统记录";
       }
     }
   }
@@ -190,17 +170,6 @@ export async function enableByIds(
   is_enabled: 0 | 1,
 ): Promise<number> {
   const data = await dictbizDao.enableByIds(ids, is_enabled);
-  return data;
-}
-
-/**
- * 根据 ids 锁定或者解锁业务字典
- */
-export async function lockByIds(
-  ids: DictbizId[],
-  is_locked: 0 | 1,
-): Promise<number> {
-  const data = await dictbizDao.lockByIds(ids, is_locked);
   return data;
 }
 

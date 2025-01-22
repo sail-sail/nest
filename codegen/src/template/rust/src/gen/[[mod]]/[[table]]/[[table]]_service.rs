@@ -46,7 +46,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};<#
-if (table !== "i18n") {
+if (table !== "i18n" && isUseI18n) {
 #>
 
 #[allow(unused_imports)]
@@ -355,7 +355,9 @@ pub async fn update_by_id(
     None,
   ).await?;
   
-  if is_locked {
+  if is_locked {<#
+    if (isUseI18n) {
+    #>
     let table_comment = ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -366,7 +368,12 @@ pub async fn update_by_id(
     let err_msg = ns(
       "不能修改已经锁定的 {0}".to_owned(),
       map.into(),
-    ).await?;
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "不能修改已经锁定的 <#=table_comment#>";<#
+    }
+    #>
     return Err(eyre!(err_msg));
   }<#
   }
@@ -465,7 +472,9 @@ pub async fn delete_by_ids(
     options.clone(),
   ).await?;
   for model in models {
-    if model.is_locked == 1 {
+    if model.is_locked == 1 {<#
+      if (isUseI18n) {
+      #>
       let table_comment = ns(
         "<#=table_comment#>".to_owned(),
         None,
@@ -476,7 +485,12 @@ pub async fn delete_by_ids(
       let err_msg = ns(
         "不能删除已经锁定的 {0}",
         map.into(),
-      ).await?;
+      ).await?;<#
+      } else {
+      #>
+      let err_msg = "不能删除已经锁定的 <#=table_comment#>";<#
+      }
+      #>
       return Err(eyre!(err_msg));
     }
   }<#
@@ -495,8 +509,15 @@ pub async fn delete_by_ids(
     options.clone(),
   ).await?;
   for model in models {
-    if model.is_sys == 1 {
-      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;
+    if model.is_sys == 1 {<#
+      if (isUseI18n) {
+      #>
+      let err_msg = ns("不能删除系统记录".to_owned(), None).await?;<#
+      } else {
+      #>
+      let err_msg = "不能删除系统记录";<#
+      }
+      #>
       return Err(eyre!(err_msg));
     }
   }<#

@@ -366,9 +366,6 @@ pub struct RoleFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
-  /// 卡号-序列号
-  #[graphql(skip)]
-  pub code_seq: String,
   /// 编码
   #[graphql(name = "code")]
   pub code: String,
