@@ -23,10 +23,11 @@ declare global {
   
   /** 业务字典 */
   interface DictbizSearch extends DictbizSearchType {
+    /** 可新增 */
+    is_add?: number;
+    is_add_like?: number;
     /** 数据类型 */
     type?: DictbizType[];
-    /** 锁定 */
-    is_locked?: number[];
     /** 排序 */
     order_by?: [(number|undefined|null), (number|undefined|null)];
     /** 备注 */
