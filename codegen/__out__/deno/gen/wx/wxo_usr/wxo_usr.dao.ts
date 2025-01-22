@@ -972,13 +972,6 @@ export async function validate(
     fieldComments.country,
   );
   
-  // 特权
-  await validators.chars_max_length(
-    input.privilege,
-    200,
-    fieldComments.privilege,
-  );
-  
   // 备注
   await validators.chars_max_length(
     input.rem,
