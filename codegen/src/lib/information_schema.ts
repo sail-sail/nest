@@ -775,8 +775,8 @@ export async function getSchema(
 错误: 表: ${ table_name }, 列: ${ record.COLUMN_NAME }, 数据类型应该为:`;
         errMsg += `
 
-alter table \`${ table_name }\` change column \`${ record.COLUMN_NAME }\`
-\`${ record.COLUMN_NAME }\` enum('${ enumItemsDict.join("', '") }') not null default '${ defaultValue }' comment '${ oldComment }';
+ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
+\`${ record.COLUMN_NAME }\` ENUM('${ enumItemsDict.join("', '") }') NOT NULL DEFAULT '${ defaultValue }' COMMENT '${ oldComment }';
 `;
         throw chalk.red(errMsg);
       }
