@@ -46,7 +46,7 @@ let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
   if (column.noList) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
@@ -67,7 +67,7 @@ let hasUsrStore = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
   const column_name = column.COLUMN_NAME;
   if (
     [
@@ -270,7 +270,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
@@ -291,7 +291,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (!foreignSchema) {
       continue;
     }
-    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
+    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno && !foreignSchema.opts?.onlyCodegenDenoButApi) {
       continue;
     }
     if (foreignSchema.opts?.list_tree !== true) {
@@ -402,7 +402,7 @@ async function setLblById(
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     if (column_name === "id") continue;
     if (column_name === "is_sys") continue;
@@ -466,7 +466,7 @@ export function intoInput(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       if (
         [
@@ -587,7 +587,7 @@ export function intoInput(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       const comment = column.COLUMN_COMMENT;
       let is_nullable = column.IS_NULLABLE === "YES";
@@ -776,7 +776,7 @@ export async function findSummary(
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
+            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
             const column_name = column.COLUMN_NAME;
             if (column_name === "id") continue;
           #><#
@@ -1075,7 +1075,7 @@ const foreignTableArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
   if (column.isAtt) continue;
   const column_name = column.COLUMN_NAME;
   if (column_name === "id") continue;
@@ -1161,7 +1161,7 @@ const foreignTableTreeArr = [];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
   if (column.ignoreCodegen) continue;
-  if (column.onlyCodegenDeno) continue;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
   const column_name = column.COLUMN_NAME;
   const foreignKey = column.foreignKey;
   const data_type = column.DATA_TYPE;
@@ -1259,7 +1259,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
-    if (column.onlyCodegenDeno) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
     const column_name = column.COLUMN_NAME;
     if (
       [
@@ -1372,7 +1372,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
     if (!foreignSchema) {
       continue;
     }
-    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
+    if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno && !foreignSchema.opts?.onlyCodegenDenoButApi) {
       continue;
     }
     if (foreignSchema.opts?.list_tree !== true) {
@@ -1410,15 +1410,80 @@ export async function get<#=Foreign_Table_Up#>Tree() {
 }<#
   }
 }
+#><#
+if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
+  let hasDict = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+    if (column.notImportExportList) continue;
+    if (column.isAtt) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+        "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+      ].includes(column_name)
+      || column.readonly
+      || column.noAdd
+    ) continue;
+    if (column_name === "id") {
+      continue;
+    }
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    if (column.dict) {
+      hasDict = true;
+      break;
+    }
+  }
+  let hasDictbiz = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+    if (column.notImportExportList) continue;
+    if (column.isAtt) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
+        "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+      ].includes(column_name)
+      || column.readonly
+      || column.noAdd
+    ) continue;
+    if (column_name === "id") {
+      continue;
+    }
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    if (column.dictbiz) {
+      hasDictbiz = true;
+      break;
+    }
+  }
 #>
 
 /**
  * 下载<#=table_comment#>导入模板
  */
-export function useDownloadImportTemplate(routePath: string) {
+export function useDownloadImportTemplate(<#
+if (isUseI18n) {
+#>routePath: string<#
+}
+#>) {<#
+  if (isUseI18n) {
+  #>
   const {
     nsAsync,
   } = useI18n(routePath);
+  <#
+  }
+  #>
   const {
     workerFn,
     workerStatus,
@@ -1432,7 +1497,7 @@ export function useDownloadImportTemplate(routePath: string) {
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
+              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
               if (column.isAtt) continue;
               const column_name = column.COLUMN_NAME;
               if (
@@ -1470,7 +1535,7 @@ export function useDownloadImportTemplate(routePath: string) {
           for (let i = 0; i < columns.length; i++) {
             const column = columns[i];
             if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
+            if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
             if (column.notImportExportList) continue;
             if (column.isAtt) continue;
             const column_name = column.COLUMN_NAME;
@@ -1507,40 +1572,13 @@ export function useDownloadImportTemplate(routePath: string) {
           }<#
           }
           #><#
-          let hasDict = false;
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
-            if (column.notImportExportList) continue;
-            if (column.isAtt) continue;
-            const column_name = column.COLUMN_NAME;
-            if (
-              [
-                "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
-                "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
-                "tenant_id", "tenant_id_lbl",
-              ].includes(column_name)
-              || column.readonly
-              || column.noAdd
-            ) continue;
-            if (column_name === "id") {
-              continue;
-            }
-            const isPassword = column.isPassword;
-            if (isPassword) continue;
-            if (column.dict) {
-              hasDict = true;
-              break;
-            }
-          }
           if (hasDict) {
           #>
           getDict(codes: [<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
+              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
               if (column.notImportExportList) continue;
               if (column.isAtt) continue;
               const column_name = column.COLUMN_NAME;
@@ -1576,40 +1614,13 @@ export function useDownloadImportTemplate(routePath: string) {
           }<#
           }
           #><#
-          let hasDictbiz = false;
-          for (let i = 0; i < columns.length; i++) {
-            const column = columns[i];
-            if (column.ignoreCodegen) continue;
-            if (column.onlyCodegenDeno) continue;
-            if (column.notImportExportList) continue;
-            if (column.isAtt) continue;
-            const column_name = column.COLUMN_NAME;
-            if (
-              [
-                "create_usr_id", "create_usr_id_lbl", "create_time", "update_usr_id", "update_usr_id_lbl", "update_time",
-                "is_default", "is_deleted", "is_enabled", "is_locked", "is_sys",
-                "tenant_id", "tenant_id_lbl",
-              ].includes(column_name)
-              || column.readonly
-              || column.noAdd
-            ) continue;
-            if (column_name === "id") {
-              continue;
-            }
-            const isPassword = column.isPassword;
-            if (isPassword) continue;
-            if (column.dictbiz) {
-              hasDictbiz = true;
-              break;
-            }
-          }
           if (hasDictbiz) {
           #>
           getDictbiz(codes: [<#
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
+              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
               if (column.notImportExportList) continue;
               if (column.isAtt) continue;
               const column_name = column.COLUMN_NAME;
@@ -1650,18 +1661,39 @@ export function useDownloadImportTemplate(routePath: string) {
       variables: {
       },
     });
-    try {
-      const sheetName = await nsAsync("<#=table_comment#>");
+    try {<#
+      if (isUseI18n) {
+      #>
+      const sheetName = await nsAsync("<#=table_comment#>");<#
+      } else {
+      #>
+      const sheetName = "<#=table_comment#>";<#
+      }
+      #>
       const buffer = await workerFn(
         `${ location.origin }/import_template/<#=mod_slash_table#>.xlsx`,
         {
           sheetName,
           data,
         },
-      );
-      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);
-    } catch (err) {
-      ElMessage.error(await nsAsync("下载失败"));
+      );<#
+      if (isUseI18n) {
+      #>
+      saveAsExcel(buffer, `${ sheetName }${ await nsAsync("导入") }`);<#
+      } else {
+      #>
+      saveAsExcel(buffer, `${ sheetName}导入`);<#
+      }
+      #>
+    } catch (err) {<#
+      if (isUseI18n) {
+      #>
+      ElMessage.error(await nsAsync("下载失败"));<#
+      } else {
+      #>
+      ElMessage.error("下载失败");<#
+      }
+      #>
       throw err;
     }
   }
@@ -1670,15 +1702,69 @@ export function useDownloadImportTemplate(routePath: string) {
     workerStatus,
     workerTerminate,
   };
+}<#
 }
+#><#
+if (opts.noExport !== true) {
+  let hasDict = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+    if (column.notImportExportList) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "is_deleted", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+      ].includes(column_name)
+    ) continue;
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    if (column.dict) {
+      hasDict = true;
+      break;
+    }
+  }
+  let hasDictbiz = false;
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+    if (column.notImportExportList) continue;
+    const column_name = column.COLUMN_NAME;
+    if (
+      [
+        "id",
+        "is_deleted", "is_sys",
+        "tenant_id", "tenant_id_lbl",
+      ].includes(column_name)
+    ) continue;
+    const isPassword = column.isPassword;
+    if (isPassword) continue;
+    if (column.dictbiz) {
+      hasDictbiz = true;
+      break;
+    }
+  }
+#>
 
 /**
  * 导出Excel
  */
-export function useExportExcel(routePath: string) {
+export function useExportExcel(<#
+if (isUseI18n) {
+#>routePath: string<#
+}
+#>) {<#
+  if (isUseI18n) {
+  #>
   const {
     nsAsync,
-  } = useI18n(routePath);
+  } = useI18n(routePath);<#
+  }
+  #>
   const {
     workerFn,
     workerStatus,
@@ -1708,7 +1794,7 @@ export function useExportExcel(routePath: string) {
             for (let i = 0; i < columns.length; i++) {
               const column = columns[i];
               if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
+              if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
               if (column.notImportExportList) continue;
               const column_name = column.COLUMN_NAME;
               if (
@@ -1739,34 +1825,13 @@ export function useExportExcel(routePath: string) {
             }<#
             }
             #><#
-            hasDict = false;
-            for (let i = 0; i < columns.length; i++) {
-              const column = columns[i];
-              if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
-              if (column.notImportExportList) continue;
-              const column_name = column.COLUMN_NAME;
-              if (
-                [
-                  "id",
-                  "is_deleted", "is_sys",
-                  "tenant_id", "tenant_id_lbl",
-                ].includes(column_name)
-              ) continue;
-              const isPassword = column.isPassword;
-              if (isPassword) continue;
-              if (column.dict) {
-                hasDict = true;
-                break;
-              }
-            }
             if (hasDict) {
             #>
             getDict(codes: [<#
               for (let i = 0; i < columns.length; i++) {
                 const column = columns[i];
                 if (column.ignoreCodegen) continue;
-                if (column.onlyCodegenDeno) continue;
+                if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
                 if (column.notImportExportList) continue;
                 const column_name = column.COLUMN_NAME;
                 if (
@@ -1798,34 +1863,13 @@ export function useExportExcel(routePath: string) {
             }<#
             }
             #><#
-            hasDictbiz = false;
-            for (let i = 0; i < columns.length; i++) {
-              const column = columns[i];
-              if (column.ignoreCodegen) continue;
-              if (column.onlyCodegenDeno) continue;
-              if (column.notImportExportList) continue;
-              const column_name = column.COLUMN_NAME;
-              if (
-                [
-                  "id",
-                  "is_deleted", "is_sys",
-                  "tenant_id", "tenant_id_lbl",
-                ].includes(column_name)
-              ) continue;
-              const isPassword = column.isPassword;
-              if (isPassword) continue;
-              if (column.dictbiz) {
-                hasDictbiz = true;
-                break;
-              }
-            }
             if (hasDictbiz) {
             #>
             getDictbiz(codes: [<#
               for (let i = 0; i < columns.length; i++) {
                 const column = columns[i];
                 if (column.ignoreCodegen) continue;
-                if (column.onlyCodegenDeno) continue;
+                if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
                 if (column.notImportExportList) continue;
                 const column_name = column.COLUMN_NAME;
                 if (
@@ -1865,8 +1909,15 @@ export function useExportExcel(routePath: string) {
       for (const model of data.findAll<#=Table_Up2#>) {
         await setLblById(model, true);
       }
-      try {
-        const sheetName = await nsAsync("<#=table_comment#>");
+      try {<#
+        if (isUseI18n) {
+        #>
+        const sheetName = await nsAsync("<#=table_comment#>");<#
+        } else {
+        #>
+        const sheetName = "<#=table_comment#>";<#
+        }
+        #>
         const buffer = await workerFn(
           `${ location.origin }/excel_template/<#=mod_slash_table#>.xlsx`,
           {
@@ -1876,8 +1927,15 @@ export function useExportExcel(routePath: string) {
           },
         );
         saveAsExcel(buffer, sheetName);
-      } catch (err) {
-        ElMessage.error(await nsAsync("导出失败"));
+      } catch (err) {<#
+        if (isUseI18n) {
+        #>
+        ElMessage.error(await nsAsync("导出失败"));<#
+        } else {
+        #>
+        ElMessage.error("导出失败");<#
+        }
+        #>
         throw err;
       }
     } finally {
@@ -1891,6 +1949,8 @@ export function useExportExcel(routePath: string) {
     workerTerminate,
   };
 }<#
+}
+#><#
 if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>
 
@@ -1902,11 +1962,15 @@ export async function importModels(
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
   opt?: GqlOpt,
-) {
+) {<#
+  if (isUseI18n) {
+  #>
   const {
     nsAsync,
   } = useI18n();
-  
+  <#
+  }
+  #>
   opt = opt || { };
   opt.showErrMsg = false;
   opt.notLoading = true;
@@ -1935,8 +1999,15 @@ export async function importModels(
       );
       succNum += inputs.length;
     } catch (err) {
-      failNum += inputs.length;
-      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));
+      failNum += inputs.length;<#
+      if (isUseI18n) {
+      #>
+      failErrMsgs.push(await nsAsync(`批量导入第 {0} 至 {1} 行时失败: {1}`, i + 1 - inputs.length, i + 1, err));<#
+      } else {
+      #>
+      failErrMsgs.push(`批量导入第 ${ i + 1 - inputs.length } 至 ${ i + 1 } 行时失败: ${ err }`);<#
+      }
+      #>
     }
     
     percentage.value = Math.floor((i + 1) / len * 100);
@@ -1990,7 +2061,7 @@ export async function getDefaultInput() {<#
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
-      if (column.onlyCodegenDeno) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       if (column_name === "id") continue;
       if (column_name === "is_deleted") continue;

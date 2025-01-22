@@ -212,9 +212,13 @@ use crate::common::context::{
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
-};
+};<#
+if (isUseI18n) {
+#>
 
-use crate::src::base::i18n::i18n_dao;
+use crate::src::base::i18n::i18n_dao;<#
+}
+#>
 
 use crate::common::gql::model::{
   PageInput,
@@ -232,14 +236,18 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;<#
 use crate::src::base::dictbiz_detail::dictbiz_detail_dao::get_dictbiz;<#
   }
 #><#
-if (opts.langTable) {
+if (opts.langTable && isUseI18n) {
 #>
 
 use crate::src::base::lang::lang_dao::get_lang_id;
 use crate::r#gen::base::lang::lang_model::LangId;<#
 }
+#><#
+if (isUseI18n) {
 #>
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
+use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;<#
+}
+#>
 
 use super::<#=table#>_model::*;<#
 const findByIdTableUps = [ ];
@@ -578,7 +586,7 @@ async fn get_where_query(
   search: Option<&<#=tableUP#>Search>,
   options: Option<&Options>,
 ) -> Result<String> {<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   let server_i18n_enable = get_server_i18n_enable();<#
@@ -927,12 +935,16 @@ async fn get_where_query(
       };
       where_query.push_str(" and (t.<#=modelLabel#> in (");
       where_query.push_str(&arg);
-      where_query.push(')');
+      where_query.push(')');<#
+      if (isUseI18n) {
+      #>
       if server_i18n_enable {
         where_query.push_str(" or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> in (");
         where_query.push_str(&arg);
         where_query.push(')');
+      }<#
       }
+      #>
       where_query.push(')');
     }<#
     }
@@ -948,6 +960,8 @@ async fn get_where_query(
         where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
         args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());<#
         } else {
+        #><#
+        if (isUseI18n) {
         #>
         if server_i18n_enable {
           where_query.push_str(" and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ? or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ?)");
@@ -958,6 +972,12 @@ async fn get_where_query(
           where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
           args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());
         }<#
+        } else {
+        #>
+        where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
+        args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());<#
+        }
+        #><#
         }
         #>
       }
@@ -994,7 +1014,7 @@ async fn get_where_query(
       None => None,
     };
     if let Some(<#=column_name#>_<#=foreignKey.lbl#>_like) = <#=column_name#>_<#=foreignKey.lbl#>_like {<#
-      if (!foreignLangTableRecords.some((record) => record.COLUMN_NAME === column_name+"_"+foreignKey.lbl)) {
+      if (!isUseI18n || !foreignLangTableRecords.some((record) => record.COLUMN_NAME === column_name+"_"+foreignKey.lbl)) {
       #>
       where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
       args.push(format!("%{}%", sql_like(&<#=column_name#>_<#=foreignKey.lbl#>_like)).into());<#
@@ -1123,10 +1143,26 @@ async fn get_where_query(
   #>
   // <#=column_comment#>
   {
-    let <#=column_name_rust#> = search.<#=column_name_rust#>;
+    let <#=column_name_rust#>: Option<Vec<<#=_data_type#>>> = match search {
+      Some(item) => item.<#=column_name_rust#>.clone(),
+      None => None,
+    };
     if let Some(<#=column_name_rust#>) = <#=column_name_rust#> {
-      where_query.push_str(" and t.<#=column_name#>=?");
-      args.push(<#=column_name_rust#>.into());
+      let arg = {
+        if <#=column_name_rust#>.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(<#=column_name_rust#>.len());
+          for item in <#=column_name_rust#> {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.<#=column_name#> in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
     }
   }<#
     } else if (data_type === "varchar" || data_type === "text") {
@@ -1143,6 +1179,8 @@ async fn get_where_query(
       where_query.push_str(" and t.<#=column_name#>=?");
       args.push(<#=column_name_rust#>.into());<#
       } else {
+      #><#
+      if (isUseI18n) {
       #>
       if server_i18n_enable {
         where_query.push_str(" and (t.<#=column_name#>=? or <#=opts.langTable.opts.table_name#>.<#=column_name#>=?)");
@@ -1152,6 +1190,12 @@ async fn get_where_query(
         where_query.push_str(" and t.<#=column_name#>=?");
         args.push(<#=column_name_rust#>.into());
       }<#
+      } else {
+      #>
+      where_query.push_str(" and t.<#=column_name#>=?");
+      args.push(<#=column_name_rust#>.into());<#
+      }
+      #><#
       }
       #>
     }
@@ -1165,6 +1209,8 @@ async fn get_where_query(
       where_query.push_str(" and t.<#=column_name#> like ?");
       args.push(format!("%{}%", sql_like(&<#=column_name#>_like)).into());<#
       } else {
+      #><#
+      if (isUseI18n) {
       #>
       if server_i18n_enable {
         where_query.push_str(" and (t.<#=column_name#> like ? or <#=opts.langTable.opts.table_name#>.<#=column_name#> like ?)");
@@ -1175,6 +1221,12 @@ async fn get_where_query(
         where_query.push_str(" and t.<#=column_name#> like ?");
         args.push(format!("%{}%", sql_like(&<#=column_name#>_like)).into());
       }<#
+      } else {
+      #>
+      where_query.push_str(" and t.<#=column_name#> like ?");
+      args.push(format!("%{}%", sql_like(&<#=column_name#>_like)).into());<#
+      }
+      #><#
       }
       #>
     }
@@ -1193,6 +1245,8 @@ async fn get_where_query(
       where_query.push_str(" and t.<#=column_name#>=?");
       args.push(<#=column_name_rust#>.into());<#
       } else {
+      #><#
+      if (isUseI18n) {
       #>
       if server_i18n_enable {
         where_query.push_str(" and (t.<#=column_name#>=? or <#=opts.langTable.opts.table_name#>.<#=column_name#>=?)");
@@ -1202,6 +1256,12 @@ async fn get_where_query(
         where_query.push_str(" and t.<#=column_name#>=?");
         args.push(<#=column_name_rust#>.into());
       }<#
+      } else {
+      #>
+      where_query.push_str(" and t.<#=column_name#>=?");
+      args.push(<#=column_name_rust#>.into());<#
+      }
+      #><#
       }
       #>
     }
@@ -1218,9 +1278,13 @@ async fn get_from_query(
   args: &mut QueryArgs,
   search: Option<&<#=tableUP#>Search>,
   options: Option<&Options>,
-) -> Result<String> {
+) -> Result<String> {<#
+  if (isUseI18n) {
+  #>
   
   let server_i18n_enable = get_server_i18n_enable();<#
+  }
+  #><#
   if (hasIsDeleted && hasMany2many) {
   #>
   
@@ -1250,7 +1314,7 @@ async fn get_from_query(
   let<#
   if (
     (hasDataPermit() && hasCreateUsrId)
-    || opts.langTable
+    || (opts.langTable && isUseI18n)
   ) {
   #> mut<#
   }
@@ -1327,7 +1391,7 @@ async fn get_from_query(
   }<#
   }
   #><#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   if server_i18n_enable {
     from_query += " left join <#=opts.langTable.opts.table_name#> on <#=opts.langTable.opts.table_name#>.<#=table#>_id=t.id and <#=opts.langTable.opts.table_name#>.lang_id=?";
@@ -1360,7 +1424,7 @@ pub async fn find_all(
   
   let table = "<#=mod#>_<#=table#>";
   let method = "find_all";<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   let server_i18n_enable= get_server_i18n_enable();<#
@@ -1455,7 +1519,7 @@ pub async fn find_all(
   #><#
   }
   #><#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   let lang_sql = {
@@ -1597,7 +1661,7 @@ pub async fn find_all(
   #><#
   }
   #><#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   {lang_sql}<#
   }
@@ -2021,20 +2085,26 @@ pub async fn find_count(
   }
   
   Ok(total)
-}
+}<#
+if (isUseI18n) {
+#>
 
 /// 获取当前路由的国际化
 pub fn get_n_route() -> i18n_dao::NRoute {
   i18n_dao::NRoute {
     route_path: get_route_path_<#=table#>().into(),
   }
+}<#
 }
+#>
 
 // MARK: get_field_comments
 /// 获取<#=table_comment#>字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
-) -> Result<<#=tableUP#>FieldComment> {
+) -> Result<<#=tableUP#>FieldComment> {<#
+  if (isUseI18n) {
+  #>
   
   let n_route = get_n_route();
   
@@ -2042,6 +2112,7 @@ pub async fn get_field_comments(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       if (
         column_name === "tenant_id" ||
@@ -2119,6 +2190,7 @@ pub async fn get_field_comments(
     for (let i = 0; i < columns.length; i++) {
       const column = columns[i];
       if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
       const column_name = column.COLUMN_NAME;
       if (
         column_name === "tenant_id" ||
@@ -2183,7 +2255,69 @@ pub async fn get_field_comments(
     #><#
     }
     #>
-  };
+  };<#
+  } else {
+  #>
+  
+  let field_comments = <#=tableUP#>FieldComment {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+      const column_name = column.COLUMN_NAME;
+      if (
+        column_name === "tenant_id" ||
+        column_name === "is_sys" ||
+        column_name === "is_deleted" ||
+        column_name === "is_hidden"
+      ) continue;
+      const column_name_rust = rustKeyEscape(column.COLUMN_NAME);
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const isPassword = column.isPassword;
+      if (isPassword) continue;
+      const foreignKey = column.foreignKey;
+      let modelLabel = column.modelLabel;
+      let cascade_fields = [ ];
+      if (foreignKey) {
+        cascade_fields = foreignKey.cascade_fields || [ ];
+        if (foreignKey.lbl && cascade_fields.includes(foreignKey.lbl) && !modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== column_name + "_" + foreignKey.lbl);
+        } else if (modelLabel) {
+          cascade_fields = cascade_fields.filter((item) => item !== modelLabel);
+        }
+      }
+      if (foreignKey && foreignKey.lbl && !modelLabel) {
+        modelLabel = column_name + "_" + foreignKey.lbl;
+      } else if (!foreignKey && !modelLabel) {
+        modelLabel = column_name + "_lbl";
+      }
+      let hasModelLabel = !!column.modelLabel;
+      if (column.dict || column.dictbiz || data_type === "date" || data_type === "datetime") {
+        hasModelLabel = true;
+      } else if (foreignKey && foreignKey.lbl) {
+        hasModelLabel = true;
+      }
+    #><#
+      if (foreignKey || column.dict || column.dictbiz) {
+    #>
+    <#=column_name_rust#>: "<#=column_comment#>".into(),
+    <#=column_name#>_lbl: "<#=column_comment#>".into(),<#
+      } else if (data_type === "datetime" || data_type === "date") {
+    #>
+    <#=column_name_rust#>: "<#=column_comment#>".into(),
+    <#=column_name#>_lbl: "<#=column_comment#>".into(),<#
+      } else {
+    #>
+    <#=column_name_rust#>: "<#=column_comment#>".into(),<#
+      }
+    #><#
+    }
+    #>
+  };<#
+  }
+  #>
   Ok(field_comments)
 }
 
@@ -2629,7 +2763,9 @@ pub async fn check_by_unique(
     ).await?;
     return Ok(id.into());
   }
-  if unique_type == UniqueType::Throw {
+  if unique_type == UniqueType::Throw {<#
+    if (isUseI18n) {
+    #>
     let table_comment = i18n_dao::ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -2640,7 +2776,12 @@ pub async fn check_by_unique(
     let err_msg = i18n_dao::ns(
       "此 {0} 已经存在".to_owned(),
       map.into(),
-    ).await?;
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "此 <#=table_comment#> 已经存在";<#
+    }
+    #>
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -2693,12 +2834,20 @@ pub async fn set_id_by_lbl(
         let field_comments = get_field_comments(
           None,
         ).await?;
-        let column_comment = field_comments.<#=column_name_rust#>;
+        let column_comment = field_comments.<#=column_name_rust#>;<#
+        if (isUseI18n) {
+        #>
         
         let err_msg = i18n_dao::ns(
           "日期格式错误".to_owned(),
           None,
-        ).await?;
+        ).await?;<#
+        } else {
+        #>
+        
+        let err_msg = "日期格式错误";<#
+        }
+        #>
         return Err(eyre!("{column_comment} {err_msg}"));
       }
     }
@@ -2720,12 +2869,20 @@ pub async fn set_id_by_lbl(
         let field_comments = get_field_comments(
           None,
         ).await?;
-        let column_comment = field_comments.<#=column_name_rust#>;
+        let column_comment = field_comments.<#=column_name_rust#>;<#
+        if (isUseI18n) {
+        #>
         
         let err_msg = i18n_dao::ns(
           "日期格式错误".to_owned(),
           None,
-        ).await?;
+        ).await?;<#
+        } else {
+        #>
+        
+        let err_msg = "日期格式错误";<#
+        }
+        #>
         return Err(eyre!("{column_comment} {err_msg}"));
       }
     }
@@ -2744,12 +2901,20 @@ pub async fn set_id_by_lbl(
         let field_comments = get_field_comments(
           None,
         ).await?;
-        let column_comment = field_comments.<#=column_name_rust#>;
+        let column_comment = field_comments.<#=column_name_rust#>;<#
+        if (isUseI18n) {
+        #>
         
         let err_msg = i18n_dao::ns(
           "日期格式错误".to_owned(),
           None,
-        ).await?;
+        ).await?;<#
+        } else {
+        #>
+        
+        let err_msg = "日期格式错误";<#
+        }
+        #>
         return Err(eyre!("{column_comment} {err_msg}"));
       }
     }
@@ -3289,7 +3454,7 @@ async fn _creates(
   let mut inputs2: Vec<<#=tableUP#>Input> = vec![];
   
   for input in inputs<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>.clone()<#
   }
   #> {
@@ -3846,7 +4011,7 @@ async fn _creates(
   if affected_rows != inputs2_len as u64 {
     return Err(eyre!("affectedRows: {affected_rows} != {inputs2_len}"));
   }<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   for input in inputs.iter() {
     refresh_lang_by_input(input, options.clone()).await?;
@@ -4314,7 +4479,7 @@ pub async fn get_editable_data_permits_by_ids(
 }<#
 }
 #><#
-if (opts.langTable) {
+if (opts.langTable && isUseI18n) {
 #>
 
 #[allow(unused_variables)]
@@ -4539,7 +4704,7 @@ pub async fn update_by_id(
   }
   #>
   let is_creating = get_is_creating(options.as_ref());<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   let server_i18n_enable = get_server_i18n_enable();<#
@@ -4578,7 +4743,9 @@ pub async fn update_by_id(
     options.clone(),
   ).await?;
   
-  if old_model.is_none() {
+  if old_model.is_none() {<#
+    if (isUseI18n) {
+    #>
     let table_comment = i18n_dao::ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -4589,7 +4756,12 @@ pub async fn update_by_id(
     let err_msg = i18n_dao::ns(
       "编辑失败, 此 {0} 已被删除".to_owned(),
       map.into(),
-    ).await?;
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "编辑失败, 此 <#=table_comment#> 已被删除";<#
+    }
+    #>
     return Err(eyre!(err_msg));
   }
   let old_model = old_model.unwrap();<#
@@ -4626,7 +4798,9 @@ pub async fn update_by_id(
   let has_tenant_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Tenant && item.r#type == DataPermitType::Editable);
   
-  async fn get_not_permit_err_fn() -> Result<<#=Table_Up#>Id> {
+  async fn get_not_permit_err_fn() -> Result<<#=Table_Up#>Id> {<#
+    if (isUseI18n) {
+    #>
     let table_comment = i18n_dao::ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -4637,7 +4811,12 @@ pub async fn update_by_id(
     let err_msg = i18n_dao::ns(
       "没有权限编辑此 {0}".to_owned(),
       map.into(),
-    ).await?;
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "没有权限编辑此 <#=table_comment#>";<#
+    }
+    #>
     Err(eyre!(err_msg))
   }
   
@@ -4680,7 +4859,7 @@ pub async fn update_by_id(
   )?;<#
   }
   #><#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   
   if server_i18n_enable {
@@ -4715,7 +4894,9 @@ pub async fn update_by_id(
         .as_ref()
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
-      if unique_type == UniqueType::Throw {
+      if unique_type == UniqueType::Throw {<#
+        if (isUseI18n) {
+        #>
         let table_comment = i18n_dao::ns(
           "<#=table_comment#>".to_owned(),
           None,
@@ -4726,7 +4907,12 @@ pub async fn update_by_id(
         let err_msg = i18n_dao::ns(
           "此 {0} 已经存在".to_owned(),
           map.into(),
-        ).await?;
+        ).await?;<#
+        } else {
+        #>
+        let err_msg = "此 <#=table_comment#> 已经存在";<#
+        }
+        #>
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -4782,11 +4968,19 @@ pub async fn update_by_id(
       sql_fields += "<#=modelLabel#>=?,";
       args.push(<#=modelLabel#>.into());<#
       } else {
+      #><#
+      if (isUseI18n) {
       #>
       if !server_i18n_enable {
         sql_fields += "<#=modelLabel#>=?,";
         args.push(<#=modelLabel#>.into());
       }<#
+      } else {
+      #>
+      sql_fields += "<#=modelLabel#>=?,";
+      args.push(<#=modelLabel#>.into());<#
+      }
+      #><#
       }
       #>
     }
@@ -4850,11 +5044,19 @@ pub async fn update_by_id(
     sql_fields += "<#=column_name_mysql#>=?,";
     args.push(<#=column_name_rust#>.into());<#
       } else {
+    #><#
+    if (isUseI18n) {
     #>
     if !server_i18n_enable {
       sql_fields += "<#=column_name_mysql#>=?,";
       args.push(<#=column_name_rust#>.into());
     }<#
+    } else {
+    #>
+    sql_fields += "<#=column_name_mysql#>=?,";
+    args.push(<#=column_name_rust#>.into());<#
+    }
+    #><#
       }
     #>
   }<#
@@ -4889,11 +5091,19 @@ pub async fn update_by_id(
     sql_fields += "<#=val_mysql#>=?,";
     args.push(<#=rustKeyEscape(val)#>.into());<#
       } else {
+    #><#
+    if (isUseI18n) {
     #>
     if !server_i18n_enable {
       sql_fields += "<#=val_mysql#>=?,";
       args.push(<#=rustKeyEscape(val)#>.into());
     }<#
+    } else {
+    #>
+    sql_fields += "<#=val_mysql#>=?,";
+    args.push(<#=rustKeyEscape(val)#>.into());<#
+    }
+    #><#
       }
     #>
   }<#
@@ -5201,7 +5411,9 @@ pub async fn update_by_id(
         if version > 0 {
           let version2 = get_version_by_id(id.clone()).await?;
           if let Some(version2) = version2 {
-            if version2 > version {
+            if version2 > version {<#
+              if (isUseI18n) {
+              #>
               let table_comment = i18n_dao::ns(
                 "<#=table_comment#>".to_owned(),
                 None,
@@ -5212,7 +5424,12 @@ pub async fn update_by_id(
               let err_msg = i18n_dao::ns(
                 "此 {0} 已被修改，请刷新后重试".to_owned(),
                 map.into(),
-              ).await?;
+              ).await?;<#
+              } else {
+              #>
+              let err_msg = "此 <#=table_comment#> 已被修改，请刷新后重试";<#
+              }
+              #>
               return Err(eyre!(err_msg));
             }
           }
@@ -5493,7 +5710,7 @@ pub async fn delete_by_ids(
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   let is_creating = get_is_creating(options.as_ref());<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   let server_i18n_enable = get_server_i18n_enable();<#
   }
@@ -5551,7 +5768,9 @@ pub async fn delete_by_ids(
   let has_tenant_permit = data_permit_models.iter()
     .any(|item| item.scope == DataPermitScope::Tenant && item.r#type == DataPermitType::Editable);
   
-  async fn get_not_permit_err_fn() -> Result<u64> {
+  async fn get_not_permit_err_fn() -> Result<u64> {<#
+    if (isUseI18n) {
+    #>
     let table_comment = i18n_dao::ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -5562,7 +5781,12 @@ pub async fn delete_by_ids(
     let err_msg = i18n_dao::ns(
       "没有权限删除此 {0}".to_owned(),
       map.into(),
-    ).await?;
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "没有权限删除此 <#=table_comment#>";<#
+    }
+    #>
     Err(eyre!(err_msg))
   }
   
@@ -5719,7 +5943,7 @@ pub async fn delete_by_ids(
       args,
       options.clone(),
     ).await?;<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     
     if server_i18n_enable {<#
@@ -5835,11 +6059,18 @@ pub async fn delete_by_ids(
           .map(|item| item.total)
           .unwrap_or_default();
         
-        if total <= 0 {
+        if total <= 0 {<#
+          if (isUseI18n) {
+          #>
           let err_msg = i18n_dao::ns(
             "请先删除关联数据".to_owned(),
             None,
-          ).await?;
+          ).await?;<#
+          } else {
+          #>
+          let err_msg = "请先删除关联数据";<#
+          }
+          #>
           return Err(eyre!(err_msg));
         }<#
         }
@@ -5893,11 +6124,18 @@ pub async fn delete_by_ids(
         .map(|item| item.total)
         .unwrap_or_default();
       
-      if total <= 0 {
+      if total <= 0 {<#
+        if (isUseI18n) {
+        #>
         let err_msg = i18n_dao::ns(
           "请先删除关联数据".to_owned(),
           None,
-        ).await?;
+        ).await?;<#
+        } else {
+        #>
+        let err_msg = "请先删除关联数据";<#
+        }
+        #>
         return Err(eyre!(err_msg));
       }<#
       }
@@ -6381,7 +6619,7 @@ pub async fn revert_by_ids(
   let method = "revert_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   let server_i18n_enable = get_server_i18n_enable();<#
   }
@@ -6475,7 +6713,9 @@ pub async fn revert_by_ids(
         )
         .collect();
       
-      if !models.is_empty() {
+      if !models.is_empty() {<#
+        if (isUseI18n) {
+        #>
         let table_comment = i18n_dao::ns(
           "<#=table_comment#>".to_owned(),
           None,
@@ -6486,7 +6726,12 @@ pub async fn revert_by_ids(
         let err_msg = i18n_dao::ns(
           "此 {0} 已经存在".to_owned(),
           map.into(),
-        ).await?;
+        ).await?;<#
+        } else {
+        #>
+        let err_msg = "此 <#=table_comment#> 已经存在";<#
+        }
+        #>
         return Err(eyre!(err_msg));
       }
     }
@@ -6496,7 +6741,7 @@ pub async fn revert_by_ids(
       args,
       options.clone(),
     ).await?;<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     
     if server_i18n_enable {
@@ -6746,7 +6991,7 @@ pub async fn force_delete_by_ids(
   let is_debug = get_is_debug(options.as_ref());
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());<#
-  if (opts.langTable) {
+  if (opts.langTable && isUseI18n) {
   #>
   let server_i18n_enable = get_server_i18n_enable();<#
   }
@@ -6846,7 +7091,7 @@ pub async fn force_delete_by_ids(
       args,
       options.clone(),
     ).await?;<#
-    if (opts.langTable) {
+    if (opts.langTable && isUseI18n) {
     #>
     
     if server_i18n_enable {
@@ -7138,7 +7383,9 @@ if (hasEnabled) {
 pub async fn validate_is_enabled(
   model: &<#=tableUP#>Model,
 ) -> Result<()> {
-  if model.is_enabled == 0 {
+  if model.is_enabled == 0 {<#
+    if (isUseI18n) {
+    #>
     let table_comment = i18n_dao::ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -7147,7 +7394,12 @@ pub async fn validate_is_enabled(
       "已禁用".to_owned(),
       None,
     ).await?;
-    let err_msg = table_comment + msg1.as_str();
+    let err_msg = table_comment + msg1.as_str();<#
+    } else {
+    #>
+    let err_msg = "<#=table_comment#>已禁用";<#
+    }
+    #>
     return Err(eyre!(err_msg));
   }
   Ok(())
@@ -7161,7 +7413,9 @@ pub async fn validate_is_enabled(
 pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
-  if model.is_none() {
+  if model.is_none() {<#
+    if (isUseI18n) {
+    #>
     let table_comment = i18n_dao::ns(
       "<#=table_comment#>".to_owned(),
       None,
@@ -7170,7 +7424,12 @@ pub async fn validate_option<T>(
       "不存在".to_owned(),
       None,
     ).await?;
-    let err_msg = table_comment + msg1.as_str();
+    let err_msg = table_comment + msg1.as_str();<#
+    } else {
+    #>
+    let err_msg = "<#=table_comment#>不存在";<#
+    }
+    #>
     let backtrace = std::backtrace::Backtrace::capture();
     error!(
       "{req_id} {err_msg}: {backtrace}",

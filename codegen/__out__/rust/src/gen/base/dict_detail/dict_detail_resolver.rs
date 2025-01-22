@@ -199,45 +199,6 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找系统字典明细是否已锁定
-/// 已锁定的记录不能修改和删除
-/// 记录不存在则返回 false
-#[allow(dead_code)]
-pub async fn get_is_locked_by_id(
-  id: DictDetailId,
-  options: Option<Options>,
-) -> Result<bool> {
-  
-  let is_locked = dict_detail_service::get_is_locked_by_id(
-    id,
-    options,
-  ).await?;
-  
-  Ok(is_locked)
-}
-
-/// 根据 ids 锁定或者解锁系统字典明细
-#[allow(dead_code)]
-pub async fn lock_by_ids(
-  ids: Vec<DictDetailId>,
-  is_locked: u8,
-  options: Option<Options>,
-) -> Result<u64> {
-  
-  use_permit(
-    get_route_path_dict_detail(),
-    "edit".to_owned(),
-  ).await?;
-  
-  let num = dict_detail_service::lock_by_ids(
-    ids,
-    is_locked,
-    options,
-  ).await?;
-  
-  Ok(num)
-}
-
 /// 获取系统字典明细字段注释
 pub async fn get_field_comments(
   options: Option<Options>,

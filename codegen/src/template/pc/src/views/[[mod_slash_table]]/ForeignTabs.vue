@@ -83,8 +83,15 @@ const foreignTabsDialogType = columns.find((item) => item.foreignTabs?.length > 
       >
         <template #icon>
           <ElIconCircleClose />
-        </template>
-        <span>{{ ns("关闭") }}</span>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns("关闭") }}</span><#
+        } else {
+        #>
+        <span>关闭</span><#
+        }
+        #>
       </el-button>
       
     </div>
@@ -112,13 +119,17 @@ import {
   }
 #><#
 }
+#><#
+if (isUseI18n) {
 #>
 
 const {
   n,
   ns,
   initI18ns,
-} = useI18n("/<#=mod#>/<#=table#>");
+} = useI18n("/<#=mod#>/<#=table#>");<#
+}
+#>
 
 let inited = $ref(false);
 
@@ -193,7 +204,7 @@ type OnCloseResolveType = {
 
 let onCloseResolve = function(_value: OnCloseResolveType) { };
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
 /** 打开对话框 */
 async function showDialog(
@@ -225,7 +236,9 @@ async function showDialog(
   }
   inited = true;
   return await dialogRes.dialogPrm;
-}
+}<#
+if (isUseI18n) {
+#>
 
 /** 初始化ts中的国际化信息 */
 async function initI18nsEfc() {
@@ -236,7 +249,9 @@ async function initI18nsEfc() {
   ];
   await initI18ns(codes);
 }
-initI18nsEfc();
+initI18nsEfc();<#
+}
+#>
 
 /** 点击取消关闭按钮 */
 function onClose() {

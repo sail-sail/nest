@@ -21,9 +21,9 @@ onLaunch((async(options?: App.LaunchShowOption) => {
 <style lang="scss">
 
 /* 图标必须 */
-@use "./uni_modules/tmui/css/remixicon.min.css";
+@use "./uni_modules/tm-ui/css/remixicon.min.css";
 /* 自定预处理类，可选 */
-@use "./uni_modules/tmui/css/tmui.css";
+@use "./uni_modules/tm-ui/css/tmui.min.css";
 
 @use "./assets/style/common.scss";
 

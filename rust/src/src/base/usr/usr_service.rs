@@ -47,10 +47,13 @@ use super::usr_model::{
   ChangePasswordInput,
 };
 
+#[allow(unused_imports)]
 use crate::r#gen::base::login_log::login_log_dao::{
   create as create_login_log,
   find_count as find_count_login_log,
 };
+
+#[allow(unused_imports)]
 use crate::r#gen::base::login_log::login_log_model::{
   LoginLogInput,
   LoginLogSearch,
@@ -61,6 +64,7 @@ use crate::src::base::i18n::i18n_dao::NRoute;
 use chrono::{NaiveDateTime, Duration};
 
 /// 登录, 获得token
+#[allow(unused_variables)]
 pub async fn login(
   ip: String,
   input: LoginInput,
@@ -120,35 +124,38 @@ pub async fn login(
   let begin: NaiveDateTime = now - Duration::minutes(10);
   let end: NaiveDateTime = now;
   
-  let count = find_count_login_log(
-    LoginLogSearch {
-      username: username.clone().into(),
-      ip: ip.clone().into(),
-      is_succ: vec![1].into(),
-      tenant_id: tenant_id.clone().into(),
-      ..Default::default()
-    }.into(),
-    None,
-  ).await?;
-  
-  if count == 0 {
+  #[cfg(not(debug_assertions))]
+  {
     let count = find_count_login_log(
       LoginLogSearch {
         username: username.clone().into(),
         ip: ip.clone().into(),
-        is_succ: vec![0].into(),
-        create_time: [begin.into(), end.into()].into(),
+        is_succ: vec![1].into(),
         tenant_id: tenant_id.clone().into(),
         ..Default::default()
       }.into(),
       None,
     ).await?;
-    if count >= 6 {
-      let err_msg = n_route.n(
-        "密码错误次数过多, 请10分钟后再试".to_owned(),
+    
+    if count == 0 {
+      let count = find_count_login_log(
+        LoginLogSearch {
+          username: username.clone().into(),
+          ip: ip.clone().into(),
+          is_succ: vec![0].into(),
+          create_time: [begin.into(), end.into()].into(),
+          tenant_id: tenant_id.clone().into(),
+          ..Default::default()
+        }.into(),
         None,
       ).await?;
-      return Err(eyre!(err_msg));
+      if count >= 6 {
+        let err_msg = n_route.n(
+          "密码错误次数过多, 请10分钟后再试".to_owned(),
+          None,
+        ).await?;
+        return Err(eyre!(err_msg));
+      }
     }
   }
   
@@ -164,16 +171,19 @@ pub async fn login(
   
   if usr_model.is_none() || usr_model.as_ref().unwrap().is_enabled == 0 {
     
-    create_login_log(
-      LoginLogInput {
-        username: username.clone().into(),
-        ip: ip.clone().into(),
-        is_succ: 0.into(),
-        tenant_id: tenant_id.clone().into(),
-        ..Default::default()
-      },
-      None,
-    ).await?;
+    #[cfg(not(debug_assertions))]
+    {
+      create_login_log(
+        LoginLogInput {
+          username: username.clone().into(),
+          ip: ip.clone().into(),
+          is_succ: 0.into(),
+          tenant_id: tenant_id.clone().into(),
+          ..Default::default()
+        },
+        None,
+      ).await?;
+    }
     
     let err_msg = n_route.n(
       "用户名或密码错误".to_owned(),
@@ -191,16 +201,20 @@ pub async fn login(
   let usr_model = usr_model.unwrap();
   
   if usr_model.password != get_password(password)? {
-    create_login_log(
-      LoginLogInput {
-        username: username.clone().into(),
-        ip: ip.clone().into(),
-        is_succ: 0.into(),
-        tenant_id: tenant_id.clone().into(),
-        ..Default::default()
-      },
-      None,
-    ).await?;
+    
+    #[cfg(not(debug_assertions))]
+    {
+      create_login_log(
+        LoginLogInput {
+          username: username.clone().into(),
+          ip: ip.clone().into(),
+          is_succ: 0.into(),
+          tenant_id: tenant_id.clone().into(),
+          ..Default::default()
+        },
+        None,
+      ).await?;
+    }
     
     let err_msg = n_route.n(
       "用户名或密码错误".to_owned(),
@@ -216,16 +230,19 @@ pub async fn login(
     );
   }
   
-  create_login_log(
-    LoginLogInput {
-      username: username.clone().into(),
-      ip: ip.clone().into(),
-      is_succ: 1.into(),
-      tenant_id: tenant_id.clone().into(),
-      ..Default::default()
-    },
-    None,
-  ).await?;
+  #[cfg(not(debug_assertions))]
+  {
+    create_login_log(
+      LoginLogInput {
+        username: username.clone().into(),
+        ip: ip.clone().into(),
+        is_succ: 1.into(),
+        tenant_id: tenant_id.clone().into(),
+        ..Default::default()
+      },
+      None,
+    ).await?;
+  }
   
   let usr_id = usr_model.id;
   let username = usr_model.username;

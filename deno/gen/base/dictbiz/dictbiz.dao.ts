@@ -34,11 +34,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -131,11 +126,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.lbl_like)) {
     whereQuery += ` and t.lbl like ${ args.push("%" + sqlLike(search?.lbl_like) + "%") }`;
   }
+  if (search?.is_add != null) {
+    whereQuery += ` and t.is_add in (${ args.push(search?.is_add) })`;
+  }
   if (search?.type != null) {
     whereQuery += ` and t.type in (${ args.push(search.type) })`;
-  }
-  if (search?.is_locked != null) {
-    whereQuery += ` and t.is_locked in (${ args.push(search.is_locked) })`;
   }
   if (search?.is_enabled != null) {
     whereQuery += ` and t.is_enabled in (${ args.push(search.is_enabled) })`;
@@ -308,17 +303,6 @@ export async function findAll(
       throw new Error(`search.type.length > ${ ids_limit }`);
     }
   }
-  // 锁定
-  if (search && search.is_locked != null) {
-    const len = search.is_locked.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.is_locked.length > ${ ids_limit }`);
-    }
-  }
   // 启用
   if (search && search.is_enabled != null) {
     const len = search.is_enabled.length;
@@ -412,11 +396,9 @@ export async function findAll(
   
   const [
     typeDict, // 数据类型
-    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
     "dict_type",
-    "is_locked",
     "is_enabled",
   ]);
   
@@ -443,16 +425,6 @@ export async function findAll(
       }
     }
     model.type_lbl = type_lbl || "";
-    
-    // 锁定
-    let is_locked_lbl = model.is_locked?.toString() || "";
-    if (model.is_locked != null) {
-      const dictItem = is_lockedDict.find((dictItem) => dictItem.val === String(model.is_locked));
-      if (dictItem) {
-        is_locked_lbl = dictItem.lbl;
-      }
-    }
-    model.is_locked_lbl = is_locked_lbl || "";
     
     // 启用
     let is_enabled_lbl = model.is_enabled?.toString() || "";
@@ -508,11 +480,9 @@ export async function setIdByLbl(
   
   const [
     typeDict, // 数据类型
-    is_lockedDict, // 锁定
     is_enabledDict, // 启用
   ] = await getDict([
     "dict_type",
-    "is_locked",
     "is_enabled",
   ]);
   
@@ -525,17 +495,6 @@ export async function setIdByLbl(
   } else if (isEmpty(input.type_lbl) && input.type != null) {
     const lbl = typeDict.find((itemTmp) => itemTmp.val === input.type)?.lbl || "";
     input.type_lbl = lbl;
-  }
-  
-  // 锁定
-  if (isNotEmpty(input.is_locked_lbl) && input.is_locked == null) {
-    const val = is_lockedDict.find((itemTmp) => itemTmp.lbl === input.is_locked_lbl)?.val;
-    if (val != null) {
-      input.is_locked = Number(val);
-    }
-  } else if (isEmpty(input.is_locked_lbl) && input.is_locked != null) {
-    const lbl = is_lockedDict.find((itemTmp) => itemTmp.val === String(input.is_locked))?.lbl || "";
-    input.is_locked_lbl = lbl;
   }
   
   // 启用
@@ -553,27 +512,25 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取业务字典字段注释 */
 export async function getFieldComments(): Promise<DictbizFieldComment> {
-  const n = initN(route_path);
   const fieldComments: DictbizFieldComment = {
-    id: await n("ID"),
-    code: await n("编码"),
-    lbl: await n("名称"),
-    type: await n("数据类型"),
-    type_lbl: await n("数据类型"),
-    is_locked: await n("锁定"),
-    is_locked_lbl: await n("锁定"),
-    is_enabled: await n("启用"),
-    is_enabled_lbl: await n("启用"),
-    order_by: await n("排序"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    code: "编码",
+    lbl: "名称",
+    is_add: "可新增",
+    type: "数据类型",
+    type_lbl: "数据类型",
+    is_enabled: "启用",
+    is_enabled_lbl: "启用",
+    order_by: "排序",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -693,7 +650,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("业务字典")));
+      throw new UniqueException("此 业务字典 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: DictbizId = await updateById(
@@ -948,7 +905,7 @@ export async function validateIsEnabled(
   model: Readonly<DictbizModel>,
 ) {
   if (model.is_enabled == 0) {
-    throw `${ await ns("业务字典") } ${ await ns("已禁用") }`;
+    throw "业务字典 已禁用";
   }
 }
 
@@ -958,7 +915,7 @@ export async function validateOption(
   model?: DictbizModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("业务字典") } ${ await ns("不存在") }`;
+    const err_msg = "业务字典 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -991,13 +948,6 @@ export async function validate(
     input.lbl,
     200,
     fieldComments.lbl,
-  );
-  
-  // 数据类型
-  await validators.chars_max_length(
-    input.type,
-    22,
-    fieldComments.type,
   );
   
   // 备注
@@ -1251,7 +1201,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_dictbiz(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,type,is_locked,is_enabled,order_by,rem,is_sys)values";
+  let sql = "insert into base_dictbiz(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,is_add,type,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1359,13 +1309,13 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.type != null) {
-        sql += `,${ args.push(input.type) }`;
+      if (input.is_add != null) {
+        sql += `,${ args.push(input.is_add) }`;
       } else {
         sql += ",default";
       }
-      if (input.is_locked != null) {
-        sql += `,${ args.push(input.is_locked) }`;
+      if (input.type != null) {
+        sql += `,${ args.push(input.type) }`;
       } else {
         sql += ",default";
       }
@@ -1532,7 +1482,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("业务字典"));
+        throw "此 业务字典 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1542,7 +1492,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("业务字典"));
+    throw "编辑失败, 此 业务字典 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1560,15 +1510,15 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.type != null) {
-    if (input.type != oldModel.type) {
-      sql += `type=${ args.push(input.type) },`;
+  if (input.is_add != null) {
+    if (input.is_add != oldModel.is_add) {
+      sql += `is_add=${ args.push(input.is_add) },`;
       updateFldNum++;
     }
   }
-  if (input.is_locked != null) {
-    if (input.is_locked != oldModel.is_locked) {
-      sql += `is_locked=${ args.push(input.is_locked) },`;
+  if (input.type != null) {
+    if (input.type != oldModel.type) {
+      sql += `type=${ args.push(input.type) },`;
       updateFldNum++;
     }
   }
@@ -1903,74 +1853,6 @@ export async function enableByIds(
   return num;
 }
 
-// MARK: getIsLockedById
-/** 根据 id 查找 业务字典 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
-  id: DictbizId,
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<0 | 1 | undefined> {
-  
-  options = options ?? { };
-  options.is_debug = false;
-  
-  const model = await findById(
-    id,
-    options,
-  );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
-  
-  return is_locked;
-}
-
-// MARK: lockByIds
-/** 根据 ids 锁定或者解锁 业务字典 */
-export async function lockByIds(
-  ids: DictbizId[],
-  is_locked: Readonly<0 | 1>,
-  options?: {
-    is_debug?: boolean;
-  },
-): Promise<number> {
-  
-  const table = "base_dictbiz";
-  const method = "lockByIds";
-  
-  const is_debug = get_is_debug(options?.is_debug);
-  
-  if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
-    if (ids) {
-      msg += ` ids:${ JSON.stringify(ids) }`;
-    }
-    if (is_locked != null) {
-      msg += ` is_locked:${ is_locked }`;
-    }
-    if (options && Object.keys(options).length > 0) {
-      msg += ` options:${ JSON.stringify(options) }`;
-    }
-    log(msg);
-    options = options ?? { };
-    options.is_debug = false;
-  }
-  
-  if (!ids || !ids.length) {
-    return 0;
-  }
-  
-  await delCache();
-  
-  const args = new QueryArgs();
-  let sql = `update base_dictbiz set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
-  const result = await execute(sql, args);
-  const num = result.affectedRows;
-  
-  await delCache();
-  
-  return num;
-}
-
 // MARK: revertByIds
 /** 根据 ids 还原 业务字典 */
 export async function revertByIds(
@@ -2034,7 +1916,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("业务字典"));
+        throw "此 业务字典 已经存在";
       }
     }
     const args = new QueryArgs();

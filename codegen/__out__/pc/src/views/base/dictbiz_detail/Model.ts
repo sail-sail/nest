@@ -39,9 +39,6 @@ export const dictbizDetailFields = [
   "lbl",
   // 值
   "val",
-  // 锁定
-  "is_locked",
-  "is_locked_lbl",
   // 启用
   "is_enabled",
   "is_enabled_lbl",

@@ -33,11 +33,6 @@ import {
 } from "/lib/env.ts";
 
 import {
-  initN,
-  ns,
-} from "/src/base/i18n/i18n.ts";
-
-import {
   isNotEmpty,
   isEmpty,
   sqlLike,
@@ -490,14 +485,14 @@ export async function setIdByLbl(
       input.begin_time = begin_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.begin_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.begin_time } 日期格式错误`;
     }
   }
   if (input.begin_time) {
     const begin_time = dayjs(input.begin_time);
     if (!begin_time.isValid()) {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.begin_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.begin_time } 日期格式错误`;
     }
     input.begin_time = dayjs(input.begin_time).format("YYYY-MM-DD HH:mm:ss");
   }
@@ -508,14 +503,14 @@ export async function setIdByLbl(
       input.end_time = end_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.end_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.end_time } 日期格式错误`;
     }
   }
   if (input.end_time) {
     const end_time = dayjs(input.end_time);
     if (!end_time.isValid()) {
       const fieldComments = await getFieldComments();
-      throw `${ fieldComments.end_time } ${ await ns("日期格式错误") }`;
+      throw `${ fieldComments.end_time } 日期格式错误`;
     }
     input.end_time = dayjs(input.end_time).format("YYYY-MM-DD HH:mm:ss");
   }
@@ -566,29 +561,28 @@ export async function setIdByLbl(
 // MARK: getFieldComments
 /** 获取后台任务字段注释 */
 export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
-  const n = initN(route_path);
   const fieldComments: BackgroundTaskFieldComment = {
-    id: await n("ID"),
-    lbl: await n("名称"),
-    state: await n("状态"),
-    state_lbl: await n("状态"),
-    type: await n("类型"),
-    type_lbl: await n("类型"),
-    result: await n("执行结果"),
-    err_msg: await n("错误信息"),
-    begin_time: await n("开始时间"),
-    begin_time_lbl: await n("开始时间"),
-    end_time: await n("结束时间"),
-    end_time_lbl: await n("结束时间"),
-    rem: await n("备注"),
-    create_usr_id: await n("创建人"),
-    create_usr_id_lbl: await n("创建人"),
-    create_time: await n("创建时间"),
-    create_time_lbl: await n("创建时间"),
-    update_usr_id: await n("更新人"),
-    update_usr_id_lbl: await n("更新人"),
-    update_time: await n("更新时间"),
-    update_time_lbl: await n("更新时间"),
+    id: "ID",
+    lbl: "名称",
+    state: "状态",
+    state_lbl: "状态",
+    type: "类型",
+    type_lbl: "类型",
+    result: "执行结果",
+    err_msg: "错误信息",
+    begin_time: "开始时间",
+    begin_time_lbl: "开始时间",
+    end_time: "结束时间",
+    end_time_lbl: "结束时间",
+    rem: "备注",
+    create_usr_id: "创建人",
+    create_usr_id_lbl: "创建人",
+    create_time: "创建时间",
+    create_time_lbl: "创建时间",
+    update_usr_id: "更新人",
+    update_usr_id_lbl: "更新人",
+    update_time: "更新时间",
+    update_time_lbl: "更新时间",
   };
   return fieldComments;
 }
@@ -668,7 +662,7 @@ export async function checkByUnique(
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
-      throw new UniqueException(await ns("此 {0} 已经存在", await ns("后台任务")));
+      throw new UniqueException("此 后台任务 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
       const id: BackgroundTaskId = await updateById(
@@ -914,7 +908,7 @@ export async function validateOption(
   model?: BackgroundTaskModel,
 ) {
   if (!model) {
-    const err_msg = `${ await ns("后台任务") } ${ await ns("不存在") }`;
+    const err_msg = "后台任务 不存在";
     error(new Error(err_msg));
     throw err_msg;
   }
@@ -940,20 +934,6 @@ export async function validate(
     input.lbl,
     45,
     fieldComments.lbl,
-  );
-  
-  // 状态
-  await validators.chars_max_length(
-    input.state,
-    10,
-    fieldComments.state,
-  );
-  
-  // 类型
-  await validators.chars_max_length(
-    input.type,
-    10,
-    fieldComments.type,
   );
   
   // 执行结果
@@ -1476,7 +1456,7 @@ export async function updateById(
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
-        throw await ns("此 {0} 已经存在", await ns("后台任务"));
+        throw "此 后台任务 已经存在";
       } else if (options.uniqueType === UniqueType.Ignore) {
         return id;
       }
@@ -1486,7 +1466,7 @@ export async function updateById(
   const oldModel = await findById(id, options);
   
   if (!oldModel) {
-    throw await ns("编辑失败, 此 {0} 已被删除", await ns("后台任务"));
+    throw "编辑失败, 此 后台任务 已被删除";
   }
   
   const args = new QueryArgs();
@@ -1763,7 +1743,7 @@ export async function revertByIds(
         if (model.id === id) {
           continue;
         }
-        throw await ns("此 {0} 已经存在", await ns("后台任务"));
+        throw "此 后台任务 已经存在";
       }
     }
     const args = new QueryArgs();

@@ -11,7 +11,7 @@
 >
   <template #extra_header>
     <div
-      :title="ns('重置')"
+      title="重置"
     >
       <ElIconRefresh
         class="reset_but"
@@ -21,7 +21,7 @@
     <template v-if="!isLocked && !is_deleted && (dialogAction === 'edit' || dialogAction === 'view')">
       <div
         v-if="!isReadonly"
-        :title="ns('锁定')"
+        title="锁定"
       >
         <ElIconUnlock
           class="unlock_but"
@@ -31,7 +31,7 @@
       </div>
       <div
         v-else
-        :title="ns('解锁')"
+        title="解锉"
       >
         <ElIconLock
           class="lock_but"
@@ -72,12 +72,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
-            :label="n('名称')"
+            label="名称"
             prop="lbl"
           >
             <CustomInput
               v-model="dialogModel.lbl"
-              :placeholder="`${ ns('请输入') } ${ n('名称') }`"
+              placeholder="请输入 名称"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -85,14 +85,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.state == null)">
           <el-form-item
-            :label="n('状态')"
+            label="状态"
             prop="state"
           >
             <DictSelect
               v-model="dialogModel.state"
               :set="dialogModel.state = dialogModel.state ?? undefined"
               code="background_task_state"
-              :placeholder="`${ ns('请选择') } ${ n('状态') }`"
+              placeholder="请选择 状态"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -100,14 +100,14 @@
         
         <template v-if="(showBuildIn || builtInModel?.type == null)">
           <el-form-item
-            :label="n('类型')"
+            label="类型"
             prop="type"
           >
             <DictSelect
               v-model="dialogModel.type"
               :set="dialogModel.type = dialogModel.type ?? undefined"
               code="background_task_type"
-              :placeholder="`${ ns('请选择') } ${ n('类型') }`"
+              placeholder="请选择 类型"
               :readonly="isLocked || isReadonly"
             ></DictSelect>
           </el-form-item>
@@ -115,12 +115,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.result == null)">
           <el-form-item
-            :label="n('执行结果')"
+            label="执行结果"
             prop="result"
           >
             <CustomInput
               v-model="dialogModel.result"
-              :placeholder="`${ ns('请输入') } ${ n('执行结果') }`"
+              placeholder="请输入 执行结果"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -128,12 +128,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.err_msg == null)">
           <el-form-item
-            :label="n('错误信息')"
+            label="错误信息"
             prop="err_msg"
           >
             <CustomInput
               v-model="dialogModel.err_msg"
-              :placeholder="`${ ns('请输入') } ${ n('错误信息') }`"
+              placeholder="请输入 错误信息"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -141,7 +141,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.begin_time == null)">
           <el-form-item
-            :label="n('开始时间')"
+            label="开始时间"
             prop="begin_time"
           >
             <CustomDatePicker
@@ -149,7 +149,7 @@
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
-              :placeholder="`${ ns('请选择') } ${ n('开始时间') }`"
+              placeholder="请选择 开始时间"
               :readonly="isLocked || isReadonly"
             ></CustomDatePicker>
           </el-form-item>
@@ -157,7 +157,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.end_time == null)">
           <el-form-item
-            :label="n('结束时间')"
+            label="结束时间"
             prop="end_time"
           >
             <CustomDatePicker
@@ -165,7 +165,7 @@
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
               value-format="YYYY-MM-DD HH:mm:ss"
-              :placeholder="`${ ns('请选择') } ${ n('结束时间') }`"
+              placeholder="请选择 结束时间"
               :readonly="isLocked || isReadonly"
             ></CustomDatePicker>
           </el-form-item>
@@ -173,7 +173,7 @@
         
         <template v-if="(showBuildIn || builtInModel?.rem == null)">
           <el-form-item
-            :label="n('备注')"
+            label="备注"
             prop="rem"
             un-grid="col-span-full"
           >
@@ -181,7 +181,7 @@
               v-model="dialogModel.rem"
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 5 }"
-              :placeholder="`${ ns('请输入') } ${ n('备注') }`"
+              placeholder="请输入 备注"
               :readonly="isLocked || isReadonly"
               @keyup.enter.stop
             ></CustomInput>
@@ -205,7 +205,7 @@
         <template #icon>
           <ElIconCircleClose />
         </template>
-        <span>{{ ns('关闭') }}</span>
+        <span>关闭</span>
       </el-button>
       
       <div
@@ -276,14 +276,6 @@ const emit = defineEmits<{
 
 const pagePath = getPagePath();
 
-const {
-  n,
-  ns,
-  nsAsync,
-  initI18ns,
-  initSysI18ns,
-} = useI18n(pagePath);
-
 const permitStore = usePermitStore();
 
 const permit = permitStore.getPermit(pagePath);
@@ -305,7 +297,7 @@ let ids = $ref<BackgroundTaskId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<BackgroundTaskId[]>([ ]);
 
-const formRef = $ref<InstanceType<typeof ElForm>>();
+const formRef = $(useTemplateRef<InstanceType<typeof ElForm>>("formRef"));
 
 /** 表单校验 */
 let form_rules = $ref<Record<string, FormItemRule[]>>({ });
@@ -321,26 +313,26 @@ watchEffect(async () => {
     lbl: [
       {
         required: true,
-        message: `${ await nsAsync("请输入") } ${ n("名称") }`,
+        message: "请输入 名称",
       },
       {
         type: "string",
         max: 45,
-        message: `${ n("名称") } ${ await nsAsync("长度不能超过 {0}", 45) }`,
+        message: "名称 长度不能超过 45",
       },
     ],
     // 状态
     state: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("状态") }`,
+        message: "请选择 状态",
       },
     ],
     // 类型
     type: [
       {
         required: true,
-        message: `${ await nsAsync("请选择") } ${ n("类型") }`,
+        message: "请选择 类型",
       },
     ],
   };
@@ -367,7 +359,7 @@ let isLocked = $ref(false);
 
 let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
-const customDialogRef = $ref<InstanceType<typeof CustomDialog>>();
+const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
 let findOneModel = findOne;
 
@@ -498,10 +490,10 @@ async function onReset() {
   if (!isReadonly && !isLocked) {
     try {
       await ElMessageBox.confirm(
-        await nsAsync("确定要重置表单吗"),
+        "确定要重置表单吗",
         {
-          confirmButtonText: await nsAsync("确定"),
-          cancelButtonText: await nsAsync("取消"),
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
           type: "warning",
         },
       );
@@ -524,7 +516,7 @@ async function onReset() {
     await onRefresh();
   }
   ElMessage({
-    message: await nsAsync("表单重置完毕"),
+    message: "表单重置完毕",
     type: "success",
   });
 }
@@ -559,7 +551,7 @@ async function onPageUp(e?: KeyboardEvent) {
   }
   const isSucc = await prevId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是第一项了"));
+    ElMessage.warning("已经是第一项了");
   }
 }
 
@@ -602,7 +594,7 @@ async function onPageDown(e?: KeyboardEvent) {
   }
   const isSucc = await nextId();
   if (!isSucc) {
-    ElMessage.warning(await nsAsync("已经是最后一项了"));
+    ElMessage.warning("已经是最后一项了");
   }
 }
 
@@ -701,29 +693,6 @@ async function beforeClose(done: (cancel: boolean) => void) {
     changedIds,
   });
 }
-
-/** 初始化ts中的国际化信息 */
-async function onInitI18ns() {
-  const codes: string[] = [
-    "名称",
-    "状态",
-    "类型",
-    "执行结果",
-    "错误信息",
-    "开始时间",
-    "结束时间",
-    "备注",
-    "创建人",
-    "创建时间",
-    "更新人",
-    "更新时间",
-  ];
-  await Promise.all([
-    initDetailI18ns(),
-    initI18ns(codes),
-  ]);
-}
-onInitI18ns();
 
 defineExpose({
   showDialog,

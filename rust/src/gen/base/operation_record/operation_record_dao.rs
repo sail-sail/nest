@@ -37,13 +37,10 @@ use crate::common::context::{
   get_is_creating,
 };
 
-use crate::src::base::i18n::i18n_dao;
-
 use crate::common::gql::model::{
   PageInput,
   SortInput,
 };
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
 
 use super::operation_record_model::*;
 
@@ -446,8 +443,6 @@ async fn get_from_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let server_i18n_enable = get_server_i18n_enable();
-  
   let from_query = r#"base_operation_record t"#.to_owned();
   Ok(from_query)
 }
@@ -641,71 +636,26 @@ pub async fn find_count(
   Ok(total)
 }
 
-/// 获取当前路由的国际化
-pub fn get_n_route() -> i18n_dao::NRoute {
-  i18n_dao::NRoute {
-    route_path: get_route_path_operation_record().into(),
-  }
-}
-
 // MARK: get_field_comments
 /// 获取操作记录字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
 ) -> Result<OperationRecordFieldComment> {
   
-  let n_route = get_n_route();
-  
-  let i18n_code_maps: Vec<i18n_dao::I18nCodeMap> = vec![
-    "ID".into(),
-    "模块".into(),
-    "模块名称".into(),
-    "方法".into(),
-    "方法名称".into(),
-    "操作".into(),
-    "耗时(毫秒)".into(),
-    "操作前数据".into(),
-    "操作后数据".into(),
-    "操作人".into(),
-    "操作人".into(),
-    "操作时间".into(),
-    "操作时间".into(),
-    "更新人".into(),
-    "更新人".into(),
-    "更新时间".into(),
-    "更新时间".into(),
-  ];
-  
-  let map = n_route.n_batch(
-    i18n_code_maps.clone(),
-  ).await?;
-  
-  let vec = i18n_code_maps.into_iter()
-    .map(|item|
-      map.get(&item.code)
-        .map(|item| item.to_owned())
-        .unwrap_or_default()
-    )
-    .collect::<Vec<String>>();
-  
   let field_comments = OperationRecordFieldComment {
-    id: vec[0].to_owned(),
-    module: vec[1].to_owned(),
-    module_lbl: vec[2].to_owned(),
-    method: vec[3].to_owned(),
-    method_lbl: vec[4].to_owned(),
-    lbl: vec[5].to_owned(),
-    time: vec[6].to_owned(),
-    old_data: vec[7].to_owned(),
-    new_data: vec[8].to_owned(),
-    create_usr_id: vec[9].to_owned(),
-    create_usr_id_lbl: vec[10].to_owned(),
-    create_time: vec[11].to_owned(),
-    create_time_lbl: vec[12].to_owned(),
-    update_usr_id: vec[13].to_owned(),
-    update_usr_id_lbl: vec[14].to_owned(),
-    update_time: vec[15].to_owned(),
-    update_time_lbl: vec[16].to_owned(),
+    id: "ID".into(),
+    module: "模块".into(),
+    module_lbl: "模块名称".into(),
+    method: "方法".into(),
+    method_lbl: "方法名称".into(),
+    lbl: "操作".into(),
+    time: "耗时(毫秒)".into(),
+    old_data: "操作前数据".into(),
+    new_data: "操作后数据".into(),
+    create_usr_id: "操作人".into(),
+    create_usr_id_lbl: "操作人".into(),
+    create_time: "操作时间".into(),
+    create_time_lbl: "操作时间".into(),
   };
   Ok(field_comments)
 }
@@ -1077,17 +1027,7 @@ pub async fn check_by_unique(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let table_comment = i18n_dao::ns(
-      "操作记录".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "此 {0} 已经存在".to_owned(),
-      map.into(),
-    ).await?;
+    let err_msg = "此 操作记录 已经存在";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1632,17 +1572,7 @@ pub async fn update_by_id(
   ).await?;
   
   if old_model.is_none() {
-    let table_comment = i18n_dao::ns(
-      "操作记录".to_owned(),
-      None,
-    ).await?;
-    let map = HashMap::from([
-      ("0".to_owned(), table_comment),
-    ]);
-    let err_msg = i18n_dao::ns(
-      "编辑失败, 此 {0} 已被删除".to_owned(),
-      map.into(),
-    ).await?;
+    let err_msg = "编辑失败, 此 操作记录 已被删除";
     return Err(eyre!(err_msg));
   }
   let old_model = old_model.unwrap();
@@ -1679,17 +1609,7 @@ pub async fn update_by_id(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let table_comment = i18n_dao::ns(
-          "操作记录".to_owned(),
-          None,
-        ).await?;
-        let map = HashMap::from([
-          ("0".to_owned(), table_comment),
-        ]);
-        let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
-          map.into(),
-        ).await?;
+        let err_msg = "此 操作记录 已经存在";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -2081,17 +2001,7 @@ pub async fn revert_by_ids(
         .collect();
       
       if !models.is_empty() {
-        let table_comment = i18n_dao::ns(
-          "操作记录".to_owned(),
-          None,
-        ).await?;
-        let map = HashMap::from([
-          ("0".to_owned(), table_comment),
-        ]);
-        let err_msg = i18n_dao::ns(
-          "此 {0} 已经存在".to_owned(),
-          map.into(),
-        ).await?;
+        let err_msg = "此 操作记录 已经存在";
         return Err(eyre!(err_msg));
       }
     }
@@ -2200,15 +2110,7 @@ pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
-    let table_comment = i18n_dao::ns(
-      "操作记录".to_owned(),
-      None,
-    ).await?;
-    let msg1 = i18n_dao::ns(
-      "不存在".to_owned(),
-      None,
-    ).await?;
-    let err_msg = table_comment + msg1.as_str();
+    let err_msg = "操作记录不存在";
     let backtrace = std::backtrace::Backtrace::capture();
     error!(
       "{req_id} {err_msg}: {backtrace}",
