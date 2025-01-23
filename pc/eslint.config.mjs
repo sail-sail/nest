@@ -2,7 +2,7 @@ import eslint from "@eslint/js";
 import eslintPluginVue from "eslint-plugin-vue";
 import globals from "globals";
 import typescriptEslint from "typescript-eslint";
-import vueMacros from "@vue-macros/eslint-config/flat";
+import vueMacros from "@vue-macros/eslint-config";
 
 export default typescriptEslint.config(
   vueMacros,
