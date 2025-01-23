@@ -943,7 +943,8 @@ export async function query<T = any>(
       // deno-lint-ignore no-explicit-any
       result = res[0] as any[];
     } catch(err) {
-      error(sql, args);
+      const debugSql = getDebugQuery(sql, args) + " /* "+ conn.threadId +" */";
+      error(debugSql);
       throw err;
     }
   } else {
@@ -957,8 +958,8 @@ export async function query<T = any>(
       // deno-lint-ignore no-explicit-any
       result = res[0] as any[];
     } catch(err) {
-      error(sql);
-      error(args);
+      const debugSql = getDebugQuery(sql, args);
+      error(debugSql);
       throw err;
     }
   }

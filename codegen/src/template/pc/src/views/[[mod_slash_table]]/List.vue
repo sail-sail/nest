@@ -48,6 +48,7 @@ const hasForeignTabsMore = columns.some((item) => {
     return item2.linkType === "more";
   });
 });
+const hasForeignPage = columns.some((item) => item.foreignPage);
 const hasImg = columns.some((item) => item.isImg && !item.onlyCodegenDeno);
 const hasAtt = columns.some((item) => item.isAtt && !item.onlyCodegenDeno);
 
@@ -1479,6 +1480,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             const isPassword = column.isPassword;
             if (isPassword) continue;
             const foreignTabs = column.foreignTabs || [ ];
+            const foreignPage = column.foreignPage;
             const isEncrypt = column.isEncrypt;
             const prefix = column.prefix || "";
             const canSearch = column.canSearch;
@@ -1545,6 +1547,38 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
+                >
+                  <#=prefix#>{{ row[column.property] }}
+                </el-link>
+              </template><#
+              } else if (foreignPage) {
+                const queryKeys = Object.keys(foreignPage.query || { });
+                if (!foreignPage.routeName) {
+                  throw new Error(`表: ${ table_name } 字段: ${ column_name } 未配置 foreignPage.routeName`);
+                }
+              #>
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignPage(
+                    '<#=foreignPage.routeName#>',<#
+                    if (foreignPage.tabNameField) {
+                    #>
+                    row.<#=foreignPage.tabNameField#>,<#
+                    } else {
+                    #>
+                    undefined,<#
+                    }
+                    #>
+                    {<#
+                      for (const key of queryKeys) {
+                        const value = foreignPage.query[key];
+                      #>
+                      <#=key#>: row.<#=value#>,<#
+                      }
+                      #>
+                    },
+                  )"
                 >
                   <#=prefix#>{{ row[column.property] }}
                 </el-link>
@@ -1711,6 +1745,38 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
                   <#=prefix#>{{ row[column.property] }}
                 </el-link>
               </template><#
+              } else if (foreignPage) {
+                const queryKeys = Object.keys(foreignPage.query || { });
+                if (!foreignPage.routeName) {
+                  throw new Error(`表: ${ table_name } 字段: ${ column_name } 未配置 foreignPage.routeName`);
+                }
+              #>
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignPage(
+                    '<#=foreignPage.routeName#>',<#
+                    if (foreignPage.tabNameField) {
+                    #>
+                    row.<#=foreignPage.tabNameField#>,<#
+                    } else {
+                    #>
+                    undefined,<#
+                    }
+                    #>
+                    {<#
+                      for (const key of queryKeys) {
+                        const value = foreignPage.query[key];
+                      #>
+                      <#=key#>: row.<#=value#>,<#
+                      }
+                      #>
+                    },
+                  )"
+                >
+                  <#=prefix#>{{ row[column.property] }}
+                </el-link>
+              </template><#
               } else if(column.isSwitch && opts.noEdit !== true && !column.readonly && column_name === "is_default") {
               #>
               <template #default="{ row }">
@@ -1770,6 +1836,38 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
                   #> + ' - ' + row.<#=opts.lbl_field#><#
                   }
                   #>)"
+                >
+                  <#=prefix#>{{ row[column.property] }}
+                </el-link>
+              </template><#
+              } else if (foreignPage) {
+                const queryKeys = Object.keys(foreignPage.query || { });
+                if (!foreignPage.routeName) {
+                  throw new Error(`表: ${ table_name } 字段: ${ column_name } 未配置 foreignPage.routeName`);
+                }
+              #>
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignPage(
+                    '<#=foreignPage.routeName#>',<#
+                    if (foreignPage.tabNameField) {
+                    #>
+                    row.<#=foreignPage.tabNameField#>,<#
+                    } else {
+                    #>
+                    undefined,<#
+                    }
+                    #>
+                    {<#
+                      for (const key of queryKeys) {
+                        const value = foreignPage.query[key];
+                      #>
+                      <#=key#>: row.<#=value#>,<#
+                      }
+                      #>
+                    },
+                  )"
                 >
                   <#=prefix#>{{ row[column.property] }}
                 </el-link>
@@ -2273,6 +2371,14 @@ if (hasForeignTabs) {
 #>
 
 import ForeignTabs from "./ForeignTabs.vue";<#
+}
+#><#
+if (hasForeignPage) {
+#>
+
+import {
+  openForeignPage,
+} from "@/router/util.ts";<#
 }
 #><#
 if (opts?.isRealData) {
