@@ -960,6 +960,9 @@ export async function query<T = any>(
     } catch(err) {
       const debugSql = getDebugQuery(sql, args);
       error(debugSql);
+      if (err.code === "ECONNREFUSED") {
+        throw new Error("系统错误: 数据库连接失败");
+      }
       throw err;
     }
   }
