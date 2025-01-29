@@ -319,6 +319,17 @@ export interface TableCloumn {
   }[],
   
   /**
+   * 外键关联表, 表格上点击之后路由跳转的外键关联表
+   */
+  foreignPage?: {
+    routeName: string;
+    tabNameField?: string;
+    query: {
+      [key: string]: string;
+    };
+  },
+  
+  /**
    * 外键关联是否多对多
    */
   many2many?: {
