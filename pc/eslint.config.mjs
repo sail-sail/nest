@@ -9,6 +9,8 @@ export default typescriptEslint.config(
   {
     ignores: [
       "src/typings/**",
+      "src/assets/**",
+      "src/typings/**",
       "*.d.ts",
     ],
   },
