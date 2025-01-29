@@ -15,7 +15,7 @@ tracing-appender = "0.2"
 tracing-attributes = "0.1.27"
 tokio = { version = "1.43", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
 poem = { version = "3.1.6", features = ["rustls", "server", "multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"], default-features = false }
-async-graphql = { version = "7.0.13", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync"] }
+async-graphql = { version = "7.0.14", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync"] }
 smol_str = { version = "0.3", features = ["serde"] }
 slab = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
