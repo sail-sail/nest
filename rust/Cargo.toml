@@ -34,14 +34,14 @@ hex = "0.4"
 base64 = "0.22"
 utf8_slice = "1.0"
 derive-new = "0.6"
-reqwest = { version = "0.12.9", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
+reqwest = { version = "0.12.12", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
 encoding_rs = "0.8"
 urlencoding = "2.1"
 url = "2.5"
 # sqlformat = "0.3.5"
 smallvec = { version = "1.13", features = ["union", "serde"] }
 # downcast-rs = "1.2"
-uuid = { version = "1.11", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "1.12", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12"
 deadpool-redis = "0.18"
 redis = { version = "0.28", features = ["tokio-comp"], default-features = false }
