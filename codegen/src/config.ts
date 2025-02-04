@@ -896,6 +896,28 @@ export interface TablesConfigItem {
       records: TableCloumn[];
     };
     
+    /**
+     * 是否启用审核功能
+     */
+    audit?: {
+      
+      /**
+       * 审核字段, 默认为: audit
+       */
+      column?: string,
+      
+      /**
+       * 审核模块, 默认为: [模块]
+       */
+      auditMod?: string,
+      
+      /**
+       * 审核表, 默认为: [表名]_audit
+       */
+      auditTable?: string,
+      
+    };
+    
   },
   columns?: TableCloumn[];
   records?: any[];
