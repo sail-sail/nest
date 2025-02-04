@@ -687,7 +687,7 @@ const hasAtt = columns.some((item) => item.isAtt);
               #>
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"<#
+              value-format="YYYY-MM-DDTHH:mm:ss"<#
               } else if (data_type === "date" && !column.isMonth) {
               #>
               type="date"
@@ -1361,7 +1361,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                       #>
                       type="datetime"
                       format="YYYY-MM-DD HH:mm:ss"
-                      value-format="YYYY-MM-DD HH:mm:ss"<#
+                      value-format="YYYY-MM-DDTHH:mm:ss"<#
                       } else if (data_type === "date" && !column.isMonth) {
                       #>
                       type="date"
@@ -2178,7 +2178,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                     #>
                     type="datetime"
                     format="YYYY-MM-DD HH:mm:ss"
-                    value-format="YYYY-MM-DD HH:mm:ss"<#
+                    value-format="YYYY-MM-DDTHH:mm:ss"<#
                     } else if (data_type === "date" && !column.isMonth) {
                     #>
                     type="date"
@@ -2826,7 +2826,7 @@ const hasAtt = columns.some((item) => item.isAtt);
                       #>
                       type="datetime"
                       format="YYYY-MM-DD HH:mm:ss"
-                      value-format="YYYY-MM-DD HH:mm:ss"<#
+                      value-format="YYYY-MM-DDTHH:mm:ss"<#
                       } else if (data_type === "date" && !column.isMonth) {
                       #>
                       type="date"
