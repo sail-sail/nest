@@ -32,6 +32,35 @@ const hasDictbiz = columns.some((column) => {
   }
   return column.dictbiz;
 });
+
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+let auditModelLabel = "";
+let auditTableIdColumn = undefined;
+let auditTableSchema = undefined;
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+if (hasAudit) {
+  auditTableSchema = opts?.audit?.auditTableSchema;
+  auditTableIdColumn = auditTableSchema.columns.find(item => item.COLUMN_NAME === `${ table }_id`);
+  if (!auditTableIdColumn) {
+    throw new Error(`${ auditMod }_${ auditTable }: ${ auditTable }_id 字段不存在`);
+  }
+  auditModelLabel = auditTableIdColumn.modelLabel;
+}
+
 #>#[allow(unused_imports)]
 use color_eyre::eyre::{Result,eyre};
 use async_graphql::{Context, Object};
@@ -50,6 +79,12 @@ use crate::common::gql::model::{
 
 use super::<#=table#>_model::*;
 use super::<#=table#>_resolver;<#
+if (auditTable) {
+#>
+
+use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::<#=auditTable_Up#>Input;<#
+}
+#><#
 if (hasTenant_id) {
 #>
 
@@ -387,6 +422,88 @@ impl <#=tableUP#>GenMutation {<#
       }).await
   }<#
     }
+  #><#
+  if (hasAudit) {
+  #>
+  
+  /// <#=table_comment#> 审核提交
+  async fn audit_submit_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    id: <#=Table_Up#>Id,
+  ) -> Result<bool> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        <#=table#>_resolver::audit_submit(
+          id,
+          None,
+        )
+      }).await
+  }
+  
+  /// <#=table_comment#> 审核通过
+  async fn audit_pass_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    id: <#=Table_Up#>Id,
+  ) -> Result<bool> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        <#=table#>_resolver::audit_pass(
+          id,
+          None,
+        )
+      }).await
+  }
+  
+  /// <#=table_comment#> 审核拒绝
+  async fn audit_reject_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    id: <#=Table_Up#>Id,
+    input: <#=auditTable_Up#>Input,
+  ) -> Result<bool> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        <#=table#>_resolver::audit_reject(
+          id,
+          input,
+          None,
+        )
+      }).await
+  }<#
+  if (hasReviewed) {
+  #>
+  
+  /// <#=table_comment#> 复核通过
+  async fn audit_review_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    id: <#=Table_Up#>Id,
+  ) -> Result<bool> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .with_tran()?
+      .build()
+      .scope({
+        <#=table#>_resolver::audit_review(
+          id,
+          None,
+        )
+      }).await
+  }<#
+  }
+  #><#
+  }
   #><#
     if (opts.noDelete !== true) {
   #>
