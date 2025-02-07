@@ -122,6 +122,25 @@ for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
   langTableRecords.push(record);
 }
 const autoCodeColumn = columns.find((item) => item.autoCode);
+
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+const auditTableSchema = opts?.audit?.auditTableSchema;
+
 #>#[allow(unused_imports)]
 use serde::{Serialize, Deserialize};
 #[allow(unused_imports)]
@@ -224,6 +243,13 @@ use crate::common::gql::model::{
   PageInput,
   SortInput,
 };<#
+if (hasAudit && auditTable_Up) {
+#>
+
+use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_dao::find_all as find_all_<#=auditTable#>;
+use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::<#=auditTable_Up#>Search;<#
+}
+#><#
   if (hasDict) {
 #>
 
@@ -1870,6 +1896,32 @@ pub async fn find_all(
     None,
   ).await?;<#
   }
+  #><#
+  if (hasAudit && auditTable_Up) {
+  #>
+  
+  let <#=auditColumn#>_recent_models = find_all_<#=auditTable#>(
+    <#=auditTable_Up#>Search {
+      <#=table#>_id: res
+        .iter()
+        .map(|item| item.id.clone())
+        .collect::<Vec<<#=oldTable_UP#>Id>>()
+        .into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted,<#
+      }
+      #>
+      ..Default::default()
+    }.into(),
+    None,
+    vec![SortInput {
+      prop: "audit_time".to_string(),
+      order: SortOrderEnum::Desc,
+    }].into(),
+    None,
+  ).await?;<#
+  }
   #>
   
   #[allow(unused_variables)]
@@ -2004,6 +2056,20 @@ pub async fn find_all(
       )
       .collect::<Vec<_>>()
       .into();<#
+    }
+    #><#
+    if (hasAudit && auditTable_Up) {
+    #>
+    
+    model.<#=auditColumn#>_recent_model = <#=auditColumn#>_recent_models
+      .clone()
+      .into_iter()
+      .filter(|item|
+        item.<#=table#>_id == model.id
+      )
+      .take(1)
+      .collect::<Vec<_>>()
+      .pop();<#
     }
     #>
     
