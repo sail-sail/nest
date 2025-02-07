@@ -91,6 +91,9 @@ async function getSchema0(
     allTableSchemaRecords = <TableCloumn[]>result[0];
   }
   const records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name);
+  if (!tables[table_name]) {
+    throw `数据库中, 表: ${ table_name } 不存在!`;
+  }
   const hasOrderBy = tables[table_name].columns.some((item: TableCloumn) => item.COLUMN_NAME === "order_by" && !item.onlyCodegenDeno);
   // 是否有系统字段 is_sys
   const hasIs_sys = records.some((item: TableCloumn) => [ "is_sys" ].includes(item.COLUMN_NAME));
@@ -1088,6 +1091,31 @@ ALTER TABLE \`${ table_name }\` CHANGE COLUMN \`${ record.COLUMN_NAME }\`
         tables[table_name].opts.langTable.opts.table_name = table_name2;
         tables[table_name].opts.langTable.records = allTableSchemaRecords.filter((item: TableCloumn) => item.TABLE_NAME === table_name2);
       }
+    }
+  }
+  
+  // 审核
+  if (tables[table_name].opts.audit) {
+    const audit = tables[table_name].opts.audit;
+    if (audit.auditTable) {
+      const auditMod = audit.auditMod || mod;
+      const auditTable = audit.auditTable;
+      const auditTableSchema = await getSchema(context, auditMod + "_" + auditTable, table_names);
+      if (!auditTableSchema) {
+        throw new Error(`表: ${ table_name } 的审核表: ${ auditTable } 不存在!`);
+      }
+      audit.auditTableSchema = auditTableSchema;
+    }
+    // 复核
+    const auditColumnName = audit.column;
+    const auditColumn = tables[table_name].columns.find((item) => item.COLUMN_NAME === auditColumnName);
+    const dict_models = auditColumn.dict_models;
+    if (dict_models && dict_models.some((item) => item.val === "reviewed")) {
+      audit.hasReviewed = true;
+    }
+    // 审核字段默认为不可改
+    if (auditColumn && auditColumn.readonly == null) {
+      auditColumn.readonly = true;
     }
   }
   

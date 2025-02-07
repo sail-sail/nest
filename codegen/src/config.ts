@@ -904,17 +904,24 @@ export interface TablesConfigItem {
       /**
        * 审核字段, 默认为: audit
        */
-      column?: string,
+      column?: string;
       
       /**
        * 审核模块, 默认为: [模块]
        */
-      auditMod?: string,
+      auditMod?: string;
       
       /**
        * 审核表, 默认为: [表名]_audit
        */
-      auditTable?: string,
+      auditTable?: string;
+      
+      auditTableSchema?: TablesConfigItem;
+      
+      /**
+       * 是否有复核功能, 默认寻找 [表名]_audit 复核表的 audit 字段的枚举值是否有 
+       */
+      hasReviewed?: boolean;
       
     };
     
