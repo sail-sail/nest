@@ -66,7 +66,10 @@ export async function request<T>(
       throw new Error("服务器正在重启，请稍后再试");
     }
     if (status !== 200) {
-      const errMsg = await resFt.text();
+      let errMsg = await resFt.text();
+      if (!errMsg) {
+        errMsg = resFt.statusText;
+      }
       throw new Error(errMsg);
     }
     const data = await resFt.json();
