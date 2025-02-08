@@ -155,6 +155,8 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
     const stats = await stat(fileTng);
     const hasForeignTabs = columns.some((item) => item.foreignTabs?.length > 0);
     const hasSelectInput = hasSelectInputFn(mod, table);
+    // 审核
+    const hasAudit = !!opts?.audit;
     if (stats.isFile()) {
       if (opts.onlyCodegenDeno && dir.startsWith("/pc/")) {
         return;
@@ -404,6 +406,14 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       }
       if (dir === "/pc/src/views/[[mod_slash_table]]/SelectList.vue") {
         if (!hasSelectInput) {
+          return;
+        }
+      }
+      if (
+        dir === "/pc/src/views/[[mod_slash_table]]/AuditDialog.vue" ||
+        dir === "/pc/src/views/[[mod_slash_table]]/AuditListDialog.vue"
+      ) {
+        if (!hasAudit) {
           return;
         }
       }
