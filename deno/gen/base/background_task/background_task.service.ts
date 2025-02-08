@@ -10,6 +10,7 @@ import {
 
 import {
   findById as findByIdUsr,
+  validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import * as background_taskDao from "./background_task.dao.ts";

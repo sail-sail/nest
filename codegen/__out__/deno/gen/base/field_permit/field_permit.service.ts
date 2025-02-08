@@ -136,9 +136,12 @@ export async function updateById(
   input: FieldPermitInput,
 ): Promise<FieldPermitId> {
   
+  const old_model = await field_permitDao.validateOption(
+    await field_permitDao.findById(id),
+  );
+  
   // 不能修改系统记录的系统字段
-  const model = await field_permitDao.findById(id);
-  if (model && model.is_sys === 1) {
+  if (old_model.is_sys === 1) {
     // 菜单
     input.menu_id = undefined;
     input.menu_id_lbl = "";
