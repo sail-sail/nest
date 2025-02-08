@@ -25,6 +25,36 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   inputName = Table_Up + "Input";
   searchName = Table_Up + "Search";
 }
+
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+let auditModelLabel = "";
+let auditTableIdColumn = undefined;
+let auditTableSchema = undefined;
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+const auditColumnUp = auditColumn.substring(0,1).toUpperCase() + auditColumn.substring(1);
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+if (hasAudit) {
+  auditTableSchema = opts?.audit?.auditTableSchema;
+  auditTableIdColumn = auditTableSchema.columns.find(item => item.COLUMN_NAME === `${ table }_id`);
+  if (!auditTableIdColumn) {
+    throw new Error(`${ auditMod }_${ auditTable }: ${ auditTable }_id 字段不存在`);
+  }
+  auditModelLabel = auditTableIdColumn.modelLabel;
+}
+
 #><#
 const hasSummary = columns.some((column) => column.showSummary);
 #>import type {
@@ -32,6 +62,14 @@ const hasSummary = columns.some((column) => column.showSummary);
   PageInput,
   SortInput,
 } from "/gen/types.ts";<#
+if (hasAudit) {
+#>
+
+import {
+  reqDate,
+} from "/lib/context.ts";<#
+}
+#><#
 if (hasLocked || hasIsSys) {
 #><#
 if (isUseI18n) {
@@ -44,7 +82,10 @@ import {
 #><#
 }
 #><#
-if (opts.filterDataByCreateUsr || hasOrgId) {
+if (
+  (opts.filterDataByCreateUsr || hasOrgId) ||
+  hasAudit
+) {
 #>
 
 import {
@@ -58,6 +99,7 @@ import {
 
 import {
   findById as findByIdUsr,
+  validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";<#
 }
 #><#
@@ -75,6 +117,33 @@ if (mod === "base" && table === "i18n") {
 import {
   update_i18n_version,
 } from "/src/base/options/options.dao.ts";<#
+}
+#><#
+if (hasAudit && auditTable_Up) {
+#>
+
+import {
+  findAll as findAll<#=auditTable_Up#>,
+  create as create<#=auditTable_Up#>,
+  deleteByIds as deleteByIds<#=auditTable_Up#>,<#
+  if (hasIsDeleted) {
+  #>
+  revertByIds as revertByIds<#=auditTable_Up#>,
+  force_delete_by_ids as force_delete_by_ids<#=auditTable_Up#>,<#
+  }
+  #>
+} from "/gen/<#=auditMod#>/<#=auditTable#>/<#=auditTable#>.dao.ts";
+
+import {
+  <#=Table_Up#><#=auditColumnUp#>,
+  <#=auditTable_Up#>Audit,
+} from "/gen/types.ts"<#
+}
+#><#
+if (hasAudit) {
+#>
+
+import dayjs from "dayjs";<#
 }
 #>
 
@@ -334,7 +403,15 @@ export async function creates(
   options?: {
     uniqueType?: UniqueType;
   },
-): Promise<<#=Table_Up#>Id[]> {
+): Promise<<#=Table_Up#>Id[]> {<#
+  if (hasAudit) {
+  #>
+  
+  for(const input of inputs) {
+    input.<#=auditColumn#> = <#=Table_Up#>Audit.Unsubmited;
+  }<#
+  }
+  #>
   const ids = await <#=table#>Dao.creates(inputs, options);<#
   if (mod === "base" && table === "i18n") {
   #>
@@ -378,6 +455,44 @@ export async function updateById(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
 ): Promise<<#=Table_Up#>Id> {<#
+  if (
+    (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) ||
+    hasAudit
+  ) {
+  #>
+  
+  const old_model = await <#=table#>Dao.validateOption(
+    await <#=table#>Dao.findById(id<#
+      if (hasDataPermit() && hasCreateUsrId) {
+      #>, {<#
+      if (hasDataPermit() && hasCreateUsrId) {
+      #>
+      hasDataPermit: true,<#
+      }
+      #>
+    }<#
+      }
+    #>),
+  );<#
+  }
+  #><#
+  if (hasAudit) {
+  #>
+  
+  if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited ||
+    old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected
+  ) {<#
+    if (isUseI18n) {
+    #>
+    throw await ns("只有未提交的 {0} 才能编辑", await ns("<#=table_comment#>"));<#
+    } else {
+    #>
+    throw "只有未提交的 <#=table_comment#> 才能编辑";<#
+    }
+    #>
+  }<#
+  }
+  #><#
   if (hasLocked) {
   #>
   
@@ -398,18 +513,7 @@ export async function updateById(
   #>
   
   // 不能修改系统记录的系统字段
-  const model = await <#=table#>Dao.findById(id<#
-    if (hasDataPermit() && hasCreateUsrId) {
-    #>, {<#
-    if (hasDataPermit() && hasCreateUsrId) {
-    #>
-    hasDataPermit: true,<#
-    }
-    #>
-  }<#
-    }
-  #>);
-  if (model && model.is_sys === 1) {<#
+  if (old_model.is_sys === 1) {<#
   opts.sys_fields = opts.sys_fields || [ ];
   for (let i = 0; i < opts.sys_fields.length; i++) {
     const sys_field = opts.sys_fields[i];
@@ -466,7 +570,311 @@ export async function updateById(
   }
   #>
   return id2;
+}<#
+if (hasAudit) {
+#>
+
+/** <#=table_comment#> 审核提交 */
+export async function auditSubmit(
+  id: <#=Table_Up#>Id,
+) {
+  
+  const old_model = await <#=table#>Dao.validateOption(
+    await <#=table#>Dao.findById(id),
+  );
+  
+  if (
+    old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited &&
+    old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected
+  ) {<#
+    if (isUseI18n) {
+    #>
+    const table_comment = await ns("<#=table_comment#>");
+    throw await ns("只有未提交或者审核拒绝的 {0} 才能 审核提交", table_comment);<#
+    } else {
+    #>
+    throw "只有未提交或者审核拒绝的 <#=table_comment#> 才能 审核提交";<#
+    }
+    #>
+  }<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+  
+  const <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#> ?? "";<#
+  } else {
+  #>
+  
+  const <#=auditModelLabel#> = "";<#
+  }
+  #><#
+  }
+  #>
+  
+  await <#=table#>Dao.updateById(
+    id,
+    {
+      <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Unaudited,
+    },
+  );<#
+  if (auditTable_Up) {
+  #>
+  
+  const audit_usr_id = await get_usr_id();
+  const audit_time = dayjs(reqDate()).format("YYYY-MM-DD HH:mm:ss");
+  
+  const audit_usr_model = await validateOptionUsr(
+    await findByIdUsr(audit_usr_id),
+  );
+  
+  const audit_usr_id_lbl = audit_usr_model.lbl;
+  
+  await create<#=auditTable_Up#>({
+    <#=table#>_id: id,<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>,<#
+    }
+    #>
+    audit: <#=auditTable_Up#>Audit.Unaudited,
+    audit_usr_id,
+    audit_usr_id_lbl,
+    audit_time,
+  });<#
+  }
+  #>
+  
+  return true;
 }
+
+/** <#=table_comment#> 审核通过 */
+export async function auditPass(
+  id: <#=Table_Up#>Id,
+) {
+  
+  const old_model = await <#=table#>Dao.validateOption(
+    await <#=table#>Dao.findById(id),
+  );
+  
+  if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unaudited) {<#
+    if (isUseI18n) {
+    #>
+    const table_comment = await ns("<#=table_comment#>");
+    throw await ns("只有未审核的 {0} 才能 审核通过", table_comment);<#
+    } else {
+    #>
+    throw "只有未审核的 <#=table_comment#> 才能 审核通过";<#
+    }
+    #>
+  }<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+  
+  const <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#> ?? "";<#
+  } else {
+  #>
+  
+  const <#=auditModelLabel#> = "";<#
+  }
+  #><#
+  }
+  #>
+  
+  await <#=table#>Dao.updateById(
+    id,
+    {
+      <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Audited,
+    },
+  );<#
+  if (auditTable_Up) {
+  #>
+  
+  const audit_usr_id = await get_usr_id();
+  const audit_time = dayjs(reqDate()).format("YYYY-MM-DD HH:mm:ss");
+  
+  const audit_usr_model = await validateOptionUsr(
+    await findByIdUsr(audit_usr_id),
+  );
+  
+  const audit_usr_id_lbl = audit_usr_model.lbl;
+  
+  await create<#=auditTable_Up#>({
+    <#=table#>_id: id,<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>,<#
+    }
+    #>
+    audit: <#=auditTable_Up#>Audit.Audited,
+    audit_usr_id,
+    audit_usr_id_lbl,
+    audit_time,
+  });<#
+  }
+  #>
+  
+  return true;
+}
+
+/** <#=table_comment#> 审核拒绝 */
+export async function auditReject(
+  id: <#=Table_Up#>Id,
+  audit_input: <#=auditTable_Up#>Input,
+) {
+  
+  const old_model = await <#=table#>Dao.validateOption(
+    await <#=table#>Dao.findById(id),
+  );
+  
+  if (
+    old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unaudited<#
+    if (hasReviewed) {
+    #> &&
+    old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Audited<#
+    }
+    #>
+  ) {<#
+    if (isUseI18n) {
+    #>
+    const table_comment = await ns("<#=table_comment#>");
+    throw await ns("只有未审核的 {0} 才能 审核拒绝");<#
+    } else {
+    #>
+    throw "只有未审核的 <#=table_comment#> 才能 审核拒绝";<#
+    }
+    #>
+  }<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+  
+  const <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#> ?? "";<#
+  } else {
+  #>
+  
+  const <#=auditModelLabel#> = "";<#
+  }
+  #><#
+  }
+  #>
+  
+  await <#=table#>Dao.updateById(
+    id,
+    {
+      <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Rejected,
+    },
+  );<#
+  if (auditTable_Up) {
+  #>
+  
+  const audit_usr_id = await get_usr_id();
+  const audit_time = dayjs(reqDate()).format("YYYY-MM-DD HH:mm:ss");
+  
+  const audit_usr_model = await validateOptionUsr(
+    await findByIdUsr(audit_usr_id),
+  );
+  
+  const audit_usr_id_lbl = audit_usr_model.lbl;
+  
+  await create<#=auditTable_Up#>({
+    <#=table#>_id: id,<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>,<#
+    }
+    #>
+    audit: <#=auditTable_Up#>Audit.Rejected,
+    audit_usr_id,
+    audit_usr_id_lbl,
+    audit_time,
+    rem: audit_input.rem,
+  });<#
+  }
+  #>
+  
+  return true;
+}<#
+if (hasReviewed) {
+#>
+
+/** <#=table_comment#> 复核通过 */
+export async function auditReview(
+  id: <#=Table_Up#>Id,
+) {
+  
+  const old_model = await <#=table#>Dao.validateOption(
+    await <#=table#>Dao.findById(id),
+  );
+  
+  if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Audited) {<#
+    if (isUseI18n) {
+    #>
+    const table_comment = await ns("<#=table_comment#>");
+    throw await ns("只有已审核的 {0} 才能 复核通过");<#
+    } else {
+    #>
+    throw "只有已审核的 <#=table_comment#> 才能 复核通过";<#
+    }
+    #>
+  }<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+  
+  const <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#> ?? "";<#
+  } else {
+  #>
+  
+  const <#=auditModelLabel#> = "";<#
+  }
+  #><#
+  }
+  #>
+  
+  await <#=table#>Dao.updateById(
+    id,
+    {
+      <#=auditColumn#>: <#=Table_Up#><#=auditColumnUp#>.Reviewed,
+    },
+  );<#
+  if (auditTable_Up) {
+  #>
+  
+  const audit_usr_id = await get_usr_id();
+  const audit_time = dayjs(reqDate()).format("YYYY-MM-DD HH:mm:ss");
+  
+  const audit_usr_model = await validateOptionUsr(
+    await findByIdUsr(audit_usr_id),
+  );
+  
+  const audit_usr_id_lbl = audit_usr_model.lbl;
+  
+  await create<#=auditTable_Up#>({
+    <#=table#>_id: id,<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>,<#
+    }
+    #>
+    audit: <#=auditTable_Up#>Audit.Reviewed,
+    audit_usr_id,
+    audit_usr_id_lbl,
+    audit_time,
+  });<#
+  }
+  #>
+  
+  return true;
+}<#
+}
+#><#
+}
+#>
 
 /**
  * 根据 ids 删除<#=table_comment#>
@@ -535,6 +943,19 @@ export async function deleteByIds(
   
   await update_i18n_version();<#
   }
+  #><#
+  if (hasAudit && auditTable_Up) {
+  #>
+  
+  // 级联删除审核记录
+  const <#=auditTable#>_models = await findAll<#=auditTable_Up#>({
+    <#=table#>_id: ids,
+  });
+  
+  const <#=auditTable#>_ids = <#=auditTable#>_models.map(item => item.id);
+  
+  await deleteByIds<#=auditTable_Up#>(<#=auditTable#>_ids);<#
+  }
   #>
   return data;
 }<#
@@ -590,7 +1011,21 @@ if (hasIsDeleted) {
  */
 export async function revertByIds(
   ids: <#=Table_Up#>Id[],
-): Promise<number> {
+): Promise<number> {<#
+  if (hasAudit && auditTable_Up) {
+  #>
+  
+   // 级联还原审核记录
+  const <#=auditTable#>_models = await findAll<#=auditTable_Up#>({
+    <#=table#>_id: ids,
+    is_deleted: 1,
+  });
+  
+  const <#=auditTable#>_ids = <#=auditTable#>_models.map(item => item.id);
+  
+  await revertByIds<#=auditTable_Up#>(<#=auditTable#>_ids);<#
+  }
+  #>
   const data = await <#=table#>Dao.revertByIds(ids);
   return data;
 }<#
@@ -604,7 +1039,21 @@ if (hasIsDeleted) {
  */
 export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
-): Promise<number> {
+): Promise<number> {<#
+  if (hasAudit && auditTable_Up) {
+  #>
+  
+  // 级联彻底删除审核记录
+  const <#=auditTable#>_models = await findAll<#=auditTable_Up#>({
+    <#=table#>_id: ids,
+    is_deleted: 1,
+  });
+  
+  const <#=auditTable#>_ids = <#=auditTable#>_models.map(item => item.id);
+  
+  await force_delete_by_ids<#=auditTable_Up#>(<#=auditTable#>_ids);<#
+  }
+  #>
   const data = await <#=table#>Dao.forceDeleteByIds(ids);
   return data;
 }<#
