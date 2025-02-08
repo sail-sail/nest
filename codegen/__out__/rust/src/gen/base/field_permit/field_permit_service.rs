@@ -125,28 +125,27 @@ pub async fn creates(
 }
 
 /// 根据 id 修改字段权限
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: FieldPermitId,
   mut input: FieldPermitInput,
   options: Option<Options>,
 ) -> Result<FieldPermitId> {
   
-  // 不能修改系统记录的系统字段
-  let model = field_permit_dao::find_by_id(
-    id.clone(),
-    None,
+  let old_model = field_permit_dao::validate_option(
+    field_permit_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
   ).await?;
   
-  if let Some(model) = model {
-    if model.is_sys == 1 {
-      // 菜单
-      input.menu_id = None;
-      input.menu_id_lbl = None;
-      // 编码
-      input.code = None;
-    }
+  // 不能修改系统记录的系统字段
+  if old_model.is_sys == 1 {
+    // 菜单
+    input.menu_id = None;
+    input.menu_id_lbl = None;
+    // 编码
+    input.code = None;
   }
   
   let field_permit_id = field_permit_dao::update_by_id(

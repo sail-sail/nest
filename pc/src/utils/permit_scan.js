@@ -171,31 +171,42 @@ async function getMenuByPath(context, route_path) {
   return menuModel;
 }
 
+const reg1 = /permit\('(.*)?'\)/g;
+const reg2 = /[\u4E00-\u9FA5]/g;
+const reg3 = /'(.*)?,(.*)?'/g;
+
 async function getPermits(ph){
   const str = await readFile(ph, "utf-8");
   const permits = [ ];
   
-  const arr = str.match(/permit\('(.*)?'\)/g);
+  const arr = str.match(reg1);
   if (!arr) {
     return permits;
   }
   let order_by = 1;
   for (const item of arr) {
-    const code = item.substring(8, item.length - 2);
+    let code = item.substring(8, item.length - 2);
     let name = "";
     let hasItem = false;
-    for (const item2 of str.split("\n")) {
-      if (item2.includes(item)) {
-        hasItem = true;
-        continue;
-      }
-      if (hasItem) {
-        const arrTmp = item2.match(/[\u4E00-\u9FA5]/g);
-        if (!arrTmp) {
+    const codeTmpArr = code.match(reg3);
+    if (codeTmpArr) {
+      const codeArr = code.split(codeTmpArr[0]);
+      code = codeArr[0];
+      name = codeArr[1];
+    } else {
+      for (const item2 of str.split("\n")) {
+        if (item2.includes(item)) {
+          hasItem = true;
           continue;
         }
-        name = arrTmp.join("");
-        break;
+        if (hasItem) {
+          const arrTmp = item2.match(reg2);
+          if (!arrTmp) {
+            continue;
+          }
+          name = arrTmp.join("");
+          break;
+        }
       }
     }
     name = name.trim();

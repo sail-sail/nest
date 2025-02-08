@@ -144,14 +144,17 @@ export async function updateById(
   input: OptionsInput,
 ): Promise<OptionsId> {
   
+  const old_model = await optionsDao.validateOption(
+    await optionsDao.findById(id),
+  );
+  
   const is_locked = await optionsDao.getIsLockedById(id);
   if (is_locked) {
     throw "不能修改已经锁定的 系统选项";
   }
   
   // 不能修改系统记录的系统字段
-  const model = await optionsDao.findById(id);
-  if (model && model.is_sys === 1) {
+  if (old_model.is_sys === 1) {
     // 名称
     input.lbl = undefined;
     // 键

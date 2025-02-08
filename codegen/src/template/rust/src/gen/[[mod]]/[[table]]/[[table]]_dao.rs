@@ -122,6 +122,25 @@ for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
   langTableRecords.push(record);
 }
 const autoCodeColumn = columns.find((item) => item.autoCode);
+
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+const auditTableSchema = opts?.audit?.auditTableSchema;
+
 #>#[allow(unused_imports)]
 use serde::{Serialize, Deserialize};
 #[allow(unused_imports)]
@@ -224,6 +243,13 @@ use crate::common::gql::model::{
   PageInput,
   SortInput,
 };<#
+if (hasAudit && auditTable_Up) {
+#>
+
+use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_dao::find_all as find_all_<#=auditTable#>;
+use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::<#=auditTable_Up#>Search;<#
+}
+#><#
   if (hasDict) {
 #>
 
@@ -1870,6 +1896,32 @@ pub async fn find_all(
     None,
   ).await?;<#
   }
+  #><#
+  if (hasAudit && auditTable_Up) {
+  #>
+  
+  let <#=auditColumn#>_recent_models = find_all_<#=auditTable#>(
+    <#=auditTable_Up#>Search {
+      <#=table#>_id: res
+        .iter()
+        .map(|item| item.id.clone())
+        .collect::<Vec<<#=oldTable_UP#>Id>>()
+        .into(),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted,<#
+      }
+      #>
+      ..Default::default()
+    }.into(),
+    None,
+    vec![SortInput {
+      prop: "audit_time".to_string(),
+      order: SortOrderEnum::Desc,
+    }].into(),
+    None,
+  ).await?;<#
+  }
   #>
   
   #[allow(unused_variables)]
@@ -2004,6 +2056,20 @@ pub async fn find_all(
       )
       .collect::<Vec<_>>()
       .into();<#
+    }
+    #><#
+    if (hasAudit && auditTable_Up) {
+    #>
+    
+    model.<#=auditColumn#>_recent_model = <#=auditColumn#>_recent_models
+      .clone()
+      .into_iter()
+      .filter(|item|
+        item.<#=table#>_id == model.id
+      )
+      .take(1)
+      .collect::<Vec<_>>()
+      .pop();<#
     }
     #>
     
@@ -3074,7 +3140,7 @@ pub async fn set_id_by_lbl(
       }
     }
   #><#
-    if (column.dict || column.dictbiz) {
+    if (column.dict) {
       let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
       Column_Up = Column_Up.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -3130,6 +3196,64 @@ pub async fn set_id_by_lbl(
       #>
     });
     let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.<#=column_name#>_lbl = lbl;
+  }<#
+    } else if (column.dictbiz) {
+      let Column_Up = column_name.substring(0, 1).toUpperCase()+column_name.substring(1);
+      Column_Up = Column_Up.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      const enumColumnName = Table_Up + Column_Up;
+      const columnDictModels = [
+        ...dictModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dict;
+        }),
+        ...dictbizModels.filter(function(item) {
+          return item.code === column.dict || item.code === column.dictbiz;
+        }),
+      ];
+  #>
+  
+  // <#=column_comment#>
+  if
+    input.<#=column_name#>_lbl.is_some() && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty()
+    && input.<#=column_name_rust#>.is_none()
+  {
+    let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNumMap[column_name]#>];
+    let dictbiz_model = <#=column_name#>_dictbiz.iter().find(|item| {
+      item.lbl == input.<#=column_name#>_lbl.clone().unwrap_or_default()
+    });
+    let val = dictbiz_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.<#=column_name_rust#> = val<#
+        if (columnDictModels.length > 0 && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
+      #>.parse::<<#=enumColumnName#>>()?<#
+        } else if ([ "int" ].includes(data_type)) {
+      #>.parse::<u32>()?<#
+        } else if ([ "decimal" ].includes(data_type)) {
+      #>.parse::<rust_decimal::Decimal>()?<#
+        } else if ([ "tinyint" ].includes(data_type)) {
+      #>.parse::<u8>()?<#
+        }
+      #>.into();
+    }
+  } else if
+    (input.<#=column_name#>_lbl.is_none() || input.<#=column_name#>_lbl.as_ref().unwrap().is_empty())
+    && input.<#=column_name_rust#>.is_some()
+  {
+    let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNumMap[column_name]#>];
+    let dictbiz_model = <#=column_name#>_dictbiz.iter().find(|item| {
+      item.val == input.<#=column_name_rust#><#
+        if (columnDictModels.length === 0 && [ "varchar", "char", "text" ].includes(data_type)) {
+      #>.clone()<#
+        }
+      #>.unwrap_or_default()<#
+        if (columnDictModels.length > 0 || ![ "varchar", "char", "text" ].includes(data_type)) {
+      #>.to_string()<#
+        }
+      #>
+    });
+    let lbl = dictbiz_model.map(|item| item.lbl.to_string());
     input.<#=column_name#>_lbl = lbl;
   }<#
     } else if (foreignKey && foreignKey.type !== "many2many" && !foreignKey.multiple && foreignKey.lbl) {
@@ -3281,8 +3405,8 @@ pub async fn set_id_by_lbl(
   
   // <#=column_comment#>
   if input.<#=column_name#>.is_some() {
-    let <#=column_name#>_dict = &dict_vec[<#=dictBizNumMap[column_name]#>];
-    let dictbiz_model = <#=column_name#>_dict.iter().find(|item| {
+    let <#=column_name#>_dictbiz = &dictbiz_vec[<#=dictBizNumMap[column_name]#>];
+    let dictbiz_model = <#=column_name#>_dictbiz.iter().find(|item| {
       item.val.to_string() == input.<#=column_name#>.unwrap_or_default().to_string()
     });
     if let Some(dictbiz_model) = dictbiz_model {<#

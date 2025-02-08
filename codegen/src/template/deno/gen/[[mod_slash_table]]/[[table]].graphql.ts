@@ -34,8 +34,36 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   inputName = Table_Up + "Input";
   searchName = Table_Up + "Search";
 }
-#><#
 const hasSummary = columns.some((column) => column.showSummary);
+
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+let auditModelLabel = "";
+let auditTableIdColumn = undefined;
+let auditTableSchema = undefined;
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+if (hasAudit) {
+  auditTableSchema = opts?.audit?.auditTableSchema;
+  auditTableIdColumn = auditTableSchema.columns.find(item => item.COLUMN_NAME === `${ table }_id`);
+  if (!auditTableIdColumn) {
+    throw new Error(`${ auditMod }_${ auditTable }: ${ auditTable }_id 字段不存在`);
+  }
+  auditModelLabel = auditTableIdColumn.modelLabel;
+}
+
 #>import { defineGraphql } from "/lib/context.ts";
 
 import type { } from "./<#=table#>.model.ts";
@@ -180,6 +208,7 @@ type <#=modelName#> {<#
     if (!is_nullable) {
       data_type += "!";
     }
+    const isAuditColumn = hasAudit && auditColumn === column_name;
   #><#
     if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && column.DATA_TYPE !== "datetime"
@@ -187,6 +216,12 @@ type <#=modelName#> {<#
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#
+  if (isAuditColumn && auditTable_Up) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>_recent_model: <#=auditTable_Up#>Model<#
+  }
+  #><#
     } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
   #>
   "<#=column_comment#>"
@@ -216,6 +251,12 @@ type <#=modelName#> {<#
   <#=column_name#>: <#=enumColumnName#>
   "<#=column_comment#>"
   <#=column_name#>_lbl: String!<#
+  if (isAuditColumn && auditTable_Up) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>_recent_model: <#=auditTable_Up#>Model<#
+  }
+  #><#
     } else if (foreignKey) {
       const foreignSchema = optTables[foreignKey.mod + "_" + foreignKey.table];
   #>
@@ -925,6 +966,22 @@ type Mutation {<#
   #>
   "根据 id 修改<#=table_comment#>"
   updateById<#=Table_Up2#>(id: <#=Table_Up#>Id!, input: <#=inputName#>!): <#=Table_Up#>Id!<#
+  }
+  #><#
+  if (hasAudit) {
+  #>
+  "<#=table_comment#> 审核提交"
+  auditSubmit<#=Table_Up2#>(id: <#=Table_Up#>Id!): Boolean!
+  "<#=table_comment#> 审核通过"
+  auditPass<#=Table_Up2#>(id: <#=Table_Up#>Id!): Boolean!
+  "<#=table_comment#> 审核拒绝"
+  auditReject<#=Table_Up2#>(id: <#=Table_Up#>Id!, input: <#=auditTable_Up#>Input!): Boolean!<#
+  if (hasReviewed) {
+  #>
+  "<#=table_comment#> 复核通过"
+  auditReview<#=Table_Up2#>(id: <#=Table_Up#>Id!): Boolean!<#
+  }
+  #><#
   }
   #><#
   if (opts.noDelete !== true) {

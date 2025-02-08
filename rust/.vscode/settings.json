@@ -30,6 +30,5 @@
     "**/.npmrc": true
   },
   "deno.enable": false,
-  "files.eol": "\n",
-  "rust-analyzer.typing.continueCommentsOnNewline": false
+  "files.eol": "\n"
 }

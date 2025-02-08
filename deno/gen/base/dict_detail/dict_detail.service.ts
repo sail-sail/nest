@@ -136,9 +136,12 @@ export async function updateById(
   input: DictDetailInput,
 ): Promise<DictDetailId> {
   
+  const old_model = await dict_detailDao.validateOption(
+    await dict_detailDao.findById(id),
+  );
+  
   // 不能修改系统记录的系统字段
-  const model = await dict_detailDao.findById(id);
-  if (model && model.is_sys === 1) {
+  if (old_model.is_sys === 1) {
     // 值
     input.val = undefined;
   }
