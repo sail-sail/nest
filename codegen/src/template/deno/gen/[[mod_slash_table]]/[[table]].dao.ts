@@ -140,6 +140,25 @@ for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
   ) continue;
   langTableRecords.push(record);
 }
+
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+const auditTableSchema = opts?.audit?.auditTableSchema;
+
 const findByIdTableUps = [ ];
 const findOneTableUps = [ ];
 const findAllTableUps = [ ];
@@ -334,6 +353,14 @@ import {
   encrypt,
   decrypt,
 } from "/lib/util/dao_util.ts";<#
+}
+#><#
+if (hasAudit && auditTable_Up) {
+#>
+
+import {
+  findAll as findAll<#=auditTable_Up#>,
+} from "/gen/<#=auditMod#>/<#=auditTable#>/<#=auditTable#>.dao.ts";<#
 }
 #>
 
@@ -1703,6 +1730,28 @@ export async function findAll(
     #>
   });<#
   }
+  #><#
+  if (hasAudit && auditTable_Up) {
+  #>
+  
+  const <#=auditColumn#>_recent_models = await findAll<#=auditTable_Up#>(
+    {
+      <#=table#>_id: result.map((item) => item.id),<#
+      if (hasIsDeleted) {
+      #>
+      is_deleted: search?.is_deleted,<#
+      }
+      #>
+    },
+    undefined,
+    [
+      {
+        prop: "audit_time",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );<#
+  }
   #>
   
   for (let i = 0; i < result.length; i++) {
@@ -1948,6 +1997,13 @@ export async function findAll(
     // <#=column_comment#>
     model.<#=column_name#>_<#=table#>_models = <#=column_name#>_<#=table#>_models
       .filter((item) => item.<#=many2many.column1#> === model.id);<#
+    }
+    #><#
+    if (hasAudit && auditTable_Up) {
+    #>
+    
+    model.<#=auditColumn#>_recent_model = <#=auditColumn#>_recent_models
+      .find((item) => item.<#=table#>_id == model.id);<#
     }
     #>
   }

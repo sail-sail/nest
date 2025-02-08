@@ -13,6 +13,7 @@
   :disabled="props.disabled"
   :readonly="props.readonly"
   :placeholder="props.readonly ? props.readonlyPlaceholder : props.placeholder"
+  :shortcuts="shortcutsComputed"
   @change="onChange"
   @clear="onClear"
 >
@@ -30,6 +31,8 @@
 import type {
   ElDatePicker,
 } from "element-plus";
+
+import dayjs from "dayjs";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const slots: any = useSlots();
@@ -55,6 +58,7 @@ const props = withDefaults(
     readonly?: boolean;
     placeholder?: string;
     readonlyPlaceholder?: string;
+    shortcuts?: DatePickerType["shortcuts"];
   }>(),
   {
     type: undefined,
@@ -64,6 +68,7 @@ const props = withDefaults(
     readonly: undefined,
     placeholder: undefined,
     readonlyPlaceholder: undefined,
+    shortcuts: undefined,
   },
 );
 
@@ -75,6 +80,140 @@ watch(
     modelValue = props.modelValue;
   },
 );
+
+// 'year' | 'years' |'month' | 'months' | 'date' | 'dates' | 'datetime' | 'week' | 'datetimerange' | 'daterange' | 'monthrange' | 'yearrange'
+const shortcutsComputed = $computed(() => {
+  if (props.shortcuts) {
+    return props.shortcuts;
+  }
+  const type = props.type;
+  const now = dayjs();
+  if (type === "yearrange") {
+    return [
+      {
+        text: "今年",
+        value: () => {
+          return [
+            now.startOf("year").toDate(),
+            now.endOf("year").toDate(),
+          ];
+        },
+      },
+      // 去年
+      {
+        text: "去年",
+        value: () => {
+          return [
+            now.subtract(1, "year").startOf("year").toDate(),
+            now.subtract(1, "year").endOf("year").toDate(),
+          ];
+        },
+      },
+    ];
+  } else if (type === "monthrange") {
+    return [
+      {
+        text: "本月",
+        value: () => {
+          return [
+            now.startOf("month").toDate(),
+            now.endOf("month").toDate(),
+          ];
+        },
+      },
+      // 上月
+      {
+        text: "上月",
+        value: () => {
+          return [
+            now.subtract(1, "month").startOf("month").toDate(),
+            now.subtract(1, "month").endOf("month").toDate(),
+          ];
+        },
+      },
+      // 三个月
+      {
+        text: "最近三个月",
+        value: () => {
+          return [
+            now.subtract(3, "month").startOf("month").toDate(),
+            now.endOf("month").toDate(),
+          ];
+        },
+      },
+      // 最近六个月
+      {
+        text: "最近六个月",
+        value: () => {
+          return [
+            now.subtract(6, "month").startOf("day").toDate(),
+            now.endOf("day").toDate(),
+          ];
+        },
+      },
+      // 最近一年
+      {
+        text: "最近一年",
+        value: () => {
+          return [
+            now.subtract(1, "year").startOf("day").toDate(),
+            now.endOf("day").toDate(),
+          ];
+        },
+      },
+    ];
+  } else if (type === "daterange" || type === "datetimerange") {
+    return [
+      {
+        text: "今天",
+        value: () => {
+          return [
+            now.startOf("day").toDate(),
+            now.endOf("day").toDate(),
+          ];
+        },
+      },
+      {
+        text: "当月",
+        value: () => {
+          return [
+            now.subtract(1, "month").startOf("day").toDate(),
+            now.endOf("day").toDate(),
+          ];
+        },
+      },
+      {
+        text: "最近三个月",
+        value: () => {
+          return [
+            now.subtract(3, "month").startOf("day").toDate(),
+            now.endOf("day").toDate(),
+          ];
+        },
+      },
+      // 最近六个月
+      {
+        text: "最近六个月",
+        value: () => {
+          return [
+            now.subtract(6, "month").startOf("day").toDate(),
+            now.endOf("day").toDate(),
+          ];
+        },
+      },
+      // 最近一年
+      {
+        text: "最近一年",
+        value: () => {
+          return [
+            now.subtract(1, "year").startOf("day").toDate(),
+            now.endOf("day").toDate(),
+          ];
+        },
+      },
+    ];
+  }
+});
 
 function onChange() {
   emit("update:modelValue", modelValue);
