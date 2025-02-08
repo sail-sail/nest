@@ -62,6 +62,23 @@ const hasIsSwitch = columns.some((item) => item.isSwitch && !item.onlyCodegenDen
 );
 const hasForeignKeyShowTypeDialog = columns.some((item) => item.foreignKey?.showType === "dialog" && !item.onlyCodegenDeno);
 const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !item.readonly && !item.onlyCodegenDeno);
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+const auditTableSchema = opts?.audit?.auditTableSchema;
 #><template>
 <div
   un-flex="~ [1_0_0] col"
@@ -862,6 +879,38 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
       </el-button><#
       }
       #><#
+      if (hasAudit) {
+      #>
+      
+      <el-button
+        v-if="!isLocked &&
+          (
+            permit('audit_submit', '审核提交') ||
+            permit('audit_pass', '审核通过') ||
+            permit('audit_reject', '审核拒绝') ||
+            permit('audit_review', '复核通过')
+          )
+        "
+        plain
+        type="primary"
+        @click="openAudit"
+      >
+        <template #icon>
+          <ElIcon>
+            <div un-i="iconfont-audit"></div>
+          </ElIcon>
+        </template><#
+        if (isUseI18n) {
+        #>
+        <span>{{ ns('审核') }}</span><#
+        } else {
+        #>
+        <span>审核</span><#
+        }
+        #>
+      </el-button><#
+      }
+      #><#
         if (opts.noDelete !== true) {
       #>
       
@@ -1484,6 +1533,7 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
             const isEncrypt = column.isEncrypt;
             const prefix = column.prefix || "";
             const canSearch = column.canSearch;
+            const isAuditColumn = hasAudit && auditColumn === column_name;
           #><#
           if (column.isImg) {
           #>
@@ -1803,6 +1853,17 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
                   v-model="row.<#=column_name#>"
                   @change="on<#=column_name.substring(0, 1).toUpperCase() + column_name.substring(1)#>(row.id, row.<#=column_name#>)"
                 ></CustomSwitch>
+              </template><#
+              } else if (isAuditColumn) {
+              #>
+              <template #default="{ row, column }">
+                <el-link
+                  v-if="row.<#=auditColumn#>_recent_model"
+                  type="primary"
+                  @click="openAuditListDialog(row.id)"
+                >
+                  <#=prefix#>{{ row[column.property] }}
+                </el-link>
               </template><#
               } else if (prefix) {
               #>
@@ -2140,6 +2201,14 @@ const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !it
     ref="foreignTabsRef"
   ></ForeignTabs><#
   }
+  #><#
+  if (hasAudit && auditTable_Up) {
+  #>
+  
+  <AuditListDialog
+    ref="auditListDialogRef"
+  ></AuditListDialog><#
+  }
   #>
   
 </div>
@@ -2193,6 +2262,12 @@ import <#=Foreign_Table_Up#>TreeList from "../<#=foreignTable#>/TreeList.vue";<#
 import <#=Foreign_Table_Up#>ForeignTabs from "../<#=foreignTable#>/ForeignTabs.vue";<#
   }
 #><#
+}
+#><#
+if (hasAudit && auditTable_Up) {
+#>
+
+import AuditListDialog from "./AuditListDialog.vue";<#
 }
 #>
 
@@ -3974,6 +4049,108 @@ async function openEdit() {
   dirtyStore.fireDirty(pageName);
   await dataGrid();
   emit("edit", changedIds);
+}<#
+}
+#><#
+if (hasAudit) {
+#>
+
+/** 审核 */
+async function openAudit() {
+  if (isLocked) {
+    return;
+  }
+  if (!detailRef) {
+    return;
+  }
+  if (!permit("audit")) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("无权限"));<#
+    } else {
+    #>
+    ElMessage.warning("无权限");<#
+    }
+    #>
+    return;
+  }
+  if (selectedIds.length === 0) {<#
+    if (isUseI18n) {
+    #>
+    ElMessage.warning(await nsAsync("请选择需要审核的 {0}", await nsAsync("<#=table_comment#>")));<#
+    } else {
+    #>
+    ElMessage.warning("请选择需要审核的 <#=table_comment#>");<#
+    }
+    #>
+    return;
+  }
+  const ids = selectedIds;
+  const {
+    changedIds,
+  } = await detailRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: await nsAsync("审核") + " " + await nsAsync("<#=table_comment#>"),<#
+    } else {
+    #>
+    title: "审核 <#=table_comment#>",<#
+    }
+    #>
+    action: "audit",
+    builtInModel,
+    showBuildIn: $$(showBuildIn),
+    isReadonly: $$(isLocked),
+    isLocked: $$(isLocked),
+    model: {
+      ids,
+    },
+  });
+  tableFocus();
+  if (changedIds.length === 0) {
+    return;
+  }
+  dirtyStore.fireDirty(pageName);
+  await dataGrid();
+  emit("edit", changedIds);
+}<#
+}
+#><#
+if (hasAudit && auditTable_Up) {
+#>
+
+const auditListDialogRef = $(useTemplateRef<InstanceType<typeof AuditListDialog>>("auditListDialogRef"));
+
+/** 打开审核列表 */
+async function openAuditListDialog(
+  id: <#=Table_Up#>Id,
+) {
+  if (!auditListDialogRef) {
+    return;
+  }
+  const model = tableData.find((item) => item.id === id);
+  if (!model) {
+    return;
+  }
+  await auditListDialogRef.showDialog({<#
+    if (isUseI18n) {
+    #>
+    title: await nsAsync("审核列表")<#
+    if (opts?.lbl_field) {
+    #> + " - " + await nsAsync("<#=table_comment#>") + " " + model.<#=opts?.lbl_field#><#
+    }
+    #>,<#
+    } else {
+    #>
+    title: `审核列表 - <#=table_comment#> ${ model.<#=opts?.lbl_field#> }`,<#
+    }
+    #>
+    action: "list",
+    model: {
+      id,
+      is_deleted: search.is_deleted,
+    },
+  });
 }<#
 }
 #>
