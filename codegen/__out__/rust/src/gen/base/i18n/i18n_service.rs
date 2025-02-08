@@ -128,8 +128,7 @@ pub async fn creates(
 }
 
 /// 根据 id 修改国际化
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: I18nId,
   mut input: I18nInput,

@@ -125,8 +125,7 @@ pub async fn creates(
 }
 
 /// 根据 id 修改域名
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: DomainId,
   mut input: DomainInput,
