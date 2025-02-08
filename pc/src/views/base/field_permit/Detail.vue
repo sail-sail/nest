@@ -393,9 +393,11 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
+      defaultInput,
       data,
       order_by,
     ] = await Promise.all([
+      getDefaultInput(),
       findOneModel({
         id,
       }),
@@ -405,7 +407,7 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        code: undefined,
+        code: defaultInput.code,
         order_by: order_by + 1,
       };
       Object.assign(dialogModel, { is_deleted: undefined });
@@ -681,9 +683,11 @@ async function onSaveAndCopy() {
   }
   dialogAction = "copy";
   const [
+    defaultInput,
     data,
     order_by,
   ] = await Promise.all([
+    getDefaultInput(),
     findOneModel({
       id,
     }),
@@ -695,7 +699,7 @@ async function onSaveAndCopy() {
   dialogModel = {
     ...data,
     id: undefined,
-    code: undefined,
+    code: defaultInput.code,
     order_by: order_by + 1,
   };
   Object.assign(dialogModel, { is_deleted: undefined });
