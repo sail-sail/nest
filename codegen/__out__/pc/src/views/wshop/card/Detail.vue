@@ -561,8 +561,10 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
+      defaultInput,
       data,
     ] = await Promise.all([
+      getDefaultInput(),
       findOneModel({
         id,
         is_deleted,
@@ -572,8 +574,8 @@ async function showDialog(
       dialogModel = {
         ...data,
         id: undefined,
-        lbl: undefined,
-        growth_amt: undefined,
+        lbl: defaultInput.lbl,
+        growth_amt: defaultInput.growth_amt,
         is_locked: undefined,
         is_locked_lbl: undefined,
       };
@@ -889,8 +891,10 @@ async function onSaveAndCopy() {
   }
   dialogAction = "copy";
   const [
+    defaultInput,
     data,
   ] = await Promise.all([
+    getDefaultInput(),
     findOneModel({
       id,
       is_deleted,
@@ -902,8 +906,8 @@ async function onSaveAndCopy() {
   dialogModel = {
     ...data,
     id: undefined,
-    lbl: undefined,
-    growth_amt: undefined,
+    lbl: defaultInput.lbl,
+    growth_amt: defaultInput.growth_amt,
     is_locked: undefined,
     is_locked_lbl: undefined,
   };

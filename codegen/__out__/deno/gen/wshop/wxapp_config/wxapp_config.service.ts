@@ -11,6 +11,7 @@ import {
 
 import {
   findById as findByIdUsr,
+  validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import * as wxapp_configDao from "./wxapp_config.dao.ts";
@@ -164,14 +165,17 @@ export async function updateById(
   input: WxappConfigInput,
 ): Promise<WxappConfigId> {
   
+  const old_model = await wxapp_configDao.validateOption(
+    await wxapp_configDao.findById(id),
+  );
+  
   const is_locked = await wxapp_configDao.getIsLockedById(id);
   if (is_locked) {
     throw "不能修改已经锁定的 小程序配置";
   }
   
   // 不能修改系统记录的系统字段
-  const model = await wxapp_configDao.findById(id);
-  if (model && model.is_sys === 1) {
+  if (old_model.is_sys === 1) {
     // 名称
     input.lbl = undefined;
   }
