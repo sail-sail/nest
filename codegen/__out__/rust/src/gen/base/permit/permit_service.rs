@@ -125,28 +125,27 @@ pub async fn creates(
 }
 
 /// 根据 id 修改按钮权限
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: PermitId,
   mut input: PermitInput,
   options: Option<Options>,
 ) -> Result<PermitId> {
   
-  // 不能修改系统记录的系统字段
-  let model = permit_dao::find_by_id(
-    id.clone(),
-    None,
+  let old_model = permit_dao::validate_option(
+    permit_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
   ).await?;
   
-  if let Some(model) = model {
-    if model.is_sys == 1 {
-      // 菜单
-      input.menu_id = None;
-      input.menu_id_lbl = None;
-      // 编码
-      input.code = None;
-    }
+  // 不能修改系统记录的系统字段
+  if old_model.is_sys == 1 {
+    // 菜单
+    input.menu_id = None;
+    input.menu_id_lbl = None;
+    // 编码
+    input.code = None;
   }
   
   let permit_id = permit_dao::update_by_id(

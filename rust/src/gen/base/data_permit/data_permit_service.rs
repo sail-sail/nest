@@ -144,29 +144,28 @@ pub async fn update_tenant_by_id(
 }
 
 /// 根据 id 修改数据权限
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: DataPermitId,
   mut input: DataPermitInput,
   options: Option<Options>,
 ) -> Result<DataPermitId> {
   
-  // 不能修改系统记录的系统字段
-  let model = data_permit_dao::find_by_id(
-    id.clone(),
-    None,
+  let old_model = data_permit_dao::validate_option(
+    data_permit_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
   ).await?;
   
-  if let Some(model) = model {
-    if model.is_sys == 1 {
-      // 菜单
-      input.menu_id = None;
-      input.menu_id_lbl = None;
-      // 范围
-      input.scope = None;
-      input.scope_lbl = None;
-    }
+  // 不能修改系统记录的系统字段
+  if old_model.is_sys == 1 {
+    // 菜单
+    input.menu_id = None;
+    input.menu_id_lbl = None;
+    // 范围
+    input.scope = None;
+    input.scope_lbl = None;
   }
   
   let data_permit_id = data_permit_dao::update_by_id(

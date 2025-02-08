@@ -41,6 +41,23 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   modelNameTree = Table_Up + "ModelTree";
   fieldsName = table_Up + "Fields";
 }
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+const auditTableSchema = opts?.audit?.auditTableSchema;
 #><#
 let hasDecimal = false;
 for (let i = 0; i < columns.length; i++) {
@@ -636,7 +653,19 @@ export async function findAll(
     query: `
       query($search: <#=searchName#>, $page: PageInput, $sort: [SortInput!]) {
         findAll<#=Table_Up2#>(search: $search, page: $page, sort: $sort) {
-          ${ <#=table_Up#>QueryField }
+          ${ <#=table_Up#>QueryField }<#
+          if (hasAudit && auditTable_Up) {
+          #>
+          <#=auditColumn#>_recent_model {
+            id
+            audit
+            audit_usr_id
+            audit_usr_id_lbl
+            audit_time
+            rem
+          }<#
+          }
+          #>
         }
       }
     `,
@@ -668,7 +697,19 @@ export async function findOne(
     query: `
       query($search: <#=searchName#>, $sort: [SortInput!]) {
         findOne<#=Table_Up2#>(search: $search, sort: $sort) {
-          ${ <#=table_Up#>QueryField }
+          ${ <#=table_Up#>QueryField }<#
+          if (hasAudit && auditTable_Up) {
+          #>
+          <#=auditColumn#>_recent_model {
+            id
+            audit
+            audit_usr_id
+            audit_usr_id_lbl
+            audit_time
+            rem
+          }<#
+          }
+          #>
         }
       }
     `,
@@ -878,6 +919,100 @@ export async function updateById(
   return id2;
 }<#
 }
+#><#
+if (hasAudit) {
+#>
+
+/** 审核提交 */
+export async function auditSubmit(
+  id: <#=Table_Up#>Id,
+  opt?: GqlOpt,
+) {
+  const data: {
+    auditSubmit<#=Table_Up2#>: Mutation["auditSubmit<#=Table_Up2#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!) {
+        auditSubmit<#=Table_Up2#>(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  const res = data.auditSubmit<#=Table_Up2#>;
+  return res;
+}
+
+/** 审核通过 */
+export async function auditPass(
+  id: <#=Table_Up#>Id,
+  opt?: GqlOpt,
+) {
+  const data: {
+    auditPass<#=Table_Up2#>: Mutation["auditPass<#=Table_Up2#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!) {
+        auditPass<#=Table_Up2#>(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  const res = data.auditPass<#=Table_Up2#>;
+  return res;
+}
+
+/** 审核拒绝 */
+export async function auditReject(
+  id: <#=Table_Up#>Id,
+  input: <#=auditTable_Up#>Input,
+  opt?: GqlOpt,
+) {
+  const data: {
+    auditReject<#=Table_Up2#>: Mutation["auditReject<#=Table_Up2#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!, $input: <#=auditTable_Up#>Input!) {
+        auditReject<#=Table_Up2#>(id: $id, input: $input)
+      }
+    `,
+    variables: {
+      id,
+      input,
+    },
+  }, opt);
+  const res = data.auditReject<#=Table_Up2#>;
+  return res;
+}<#
+if (hasReviewed) {
+#>
+
+/** 复核通过 */
+export async function auditReview(
+  id: <#=Table_Up#>Id,
+  opt?: GqlOpt,
+) {
+  const data: {
+    auditReview<#=Table_Up2#>: Mutation["auditReview<#=Table_Up2#>"];
+  } = await mutation({
+    query: /* GraphQL */ `
+      mutation($id: <#=Table_Up#>Id!) {
+        auditReview<#=Table_Up2#>(id: $id)
+      }
+    `,
+    variables: {
+      id,
+    },
+  }, opt);
+  const res = data.auditReview<#=Table_Up2#>;
+  return res;
+}<#
+}
+#><#
+}
 #>
 
 /**
@@ -893,7 +1028,19 @@ export async function findById(
     query: `
       query($id: <#=Table_Up#>Id!) {
         findById<#=Table_Up2#>(id: $id) {
-          ${ <#=table_Up#>QueryField }
+          ${ <#=table_Up#>QueryField }<#
+          if (hasAudit && auditTable_Up) {
+          #>
+          <#=auditColumn#>_recent_model {
+            id
+            audit
+            audit_usr_id
+            audit_usr_id_lbl
+            audit_time
+            rem
+          }<#
+          }
+          #>
         }
       }
     `,
@@ -1788,7 +1935,19 @@ if (isUseI18n) {
         query: `
           query($search: <#=searchName#>, $sort: [SortInput!]) {
             findAll<#=Table_Up2#>(search: $search, page: null, sort: $sort) {
-              ${ <#=table_Up#>QueryField }
+              ${ <#=table_Up#>QueryField }<#
+              if (hasAudit && auditTable_Up) {
+              #>
+              <#=auditColumn#>_recent_model {
+                id
+                audit
+                audit_usr_id
+                audit_usr_id_lbl
+                audit_time
+                rem
+              }<#
+              }
+              #>
             }<#
             const foreignTableArrTmp2 = [ table ];
             for (let i = 0; i < columns.length; i++) {
