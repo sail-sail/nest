@@ -91,6 +91,23 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
 
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+const auditTableSchema = opts?.audit?.auditTableSchema;
 #>
 <CustomDialog
   ref="customDialogRef"
@@ -3192,7 +3209,11 @@ const hasAtt = columns.some((item) => item.isAtt);
       #>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="<#
+        if (hasAudit) {
+        #>inited && <#
+        }
+        #>(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -3209,6 +3230,151 @@ const hasAtt = columns.some((item) => item.isAtt);
         }
         #>
       </el-button><#
+      }
+      #><#
+      if (hasAudit) {
+      #>
+      
+      <template
+        v-if="dialogAction === 'audit' && !isLocked"
+      >
+        
+        <el-button
+          v-if="permit('audit_reject') &&
+            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
+          "
+          plain
+          type="danger"
+          @click="onAuditReject"
+        >
+          <template #icon>
+            <ElIconCircleClose />
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('审核拒绝') }}</span><#
+          } else {
+          #>
+          <span>审核拒绝</span><#
+          }
+          #>
+        </el-button>
+        
+        <el-button
+          v-if="permit('audit_submit') &&
+            (
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
+              dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
+            )
+          "
+          plain
+          type="primary"
+          @click="onAuditSubmit"
+        >
+          <template #icon>
+            <ElIconCircleCheck />
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('审核提交') }}</span><#
+          } else {
+          #>
+          <span>审核提交</span><#
+          }
+          #>
+        </el-button>
+        
+        <el-button
+          v-if="permit('audit_pass') &&
+            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited
+          "
+          plain
+          type="primary"
+          @click="onAuditPass"
+        >
+          <template #icon>
+            <ElIconCircleCheck />
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('审核通过') }}</span><#
+          } else {
+          #>
+          <span>审核通过</span><#
+          }
+          #>
+        </el-button><#
+        if (!hasReviewed) {
+        #>
+        
+        <el-button
+          v-if="permit('audit_pass') &&
+            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+          "
+          plain
+          type="primary"
+          disabled
+        >
+          <template #icon>
+            <ElIconCircleCheck />
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('已审核') }}</span><#
+          } else {
+          #>
+          <span>已审核</span><#
+          }
+          #>
+        </el-button><#
+        } else {
+        #>
+        
+        <el-button
+          v-if="permit('audit_review') &&
+            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited
+          "
+          plain
+          type="primary"
+          @click="onAuditReview"
+        >
+          <template #icon>
+            <ElIconCircleCheck />
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('复核') }}</span><#
+          } else {
+          #>
+          <span>复核</span><#
+          }
+          #>
+        </el-button>
+        
+        <el-button
+          v-if="permit('audit_review') &&
+            dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed
+          "
+          plain
+          type="primary"
+          disabled
+        >
+          <template #icon>
+            <ElIconCircleCheck />
+          </template><#
+          if (isUseI18n) {
+          #>
+          <span>{{ ns('已复核') }}</span><#
+          } else {
+          #>
+          <span>已复核</span><#
+          }
+          #>
+        </el-button><#
+        }
+        #>
+        
+      </template><#
       }
       #>
       
@@ -3339,6 +3505,14 @@ const hasAtt = columns.some((item) => item.isAtt);
     ></<#=foreignTable_Up#>List>
   </ListSelectDialog><#
   }
+  #><#
+  if (hasAudit) {
+  #>
+  
+  <AuditDialog
+    ref="auditDialogRef"
+  ></AuditDialog><#
+  }
   #>
 </CustomDialog>
 </template>
@@ -3365,6 +3539,17 @@ import {<#
   #>
   updateById,<#
   }
+  #><#
+  if (hasAudit) {
+  #>
+  auditSubmit,
+  auditPass,<#
+  if (hasReviewed) {
+  #>
+  auditReview,<#
+  }
+  #><#
+  }
   #>
   getDefaultInput,<#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -3374,6 +3559,16 @@ import {<#
   #>
   getPagePath,
 } from "./Api";<#
+if (hasAudit) {
+#>
+
+import {
+  <#=Table_Up#>Audit,
+} from "#/types.ts";
+
+import AuditDialog from "./AuditDialog.vue";<#
+}
+#><#
 const foreignTableArr2 = [];
 const foreignTableArr3 = [];
 if (
@@ -3964,7 +4159,11 @@ const <#=foreignSchema.opts.table#>Permit = permitStore.getPermit("/<#=foreignSc
 
 let inited = $ref(false);
 
-type DialogAction = "add" | "copy" | "edit" | "view";
+type DialogAction = "add" | "copy" | "edit" | "view"<#
+if (hasAudit) {
+#> | "audit"<#
+}
+#>;
 let dialogAction = $ref<DialogAction>("add");
 let dialogTitle = $ref("");
 let oldDialogTitle = "";
@@ -4620,7 +4819,31 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOne;<#
+let hasDefaultInputColumn = false;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  if (column.noAdd && column.noEdit) continue;
+  if (column.isAtt) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "is_locked") continue;
+  if (column_name === "is_deleted") continue;
+  if (column_name === "version") continue;
+  if (column_name === "tenant_id") continue;
+  if (column_name === "order_by") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  if (!column.readonly) {
+    continue;
+  }
+  hasDefaultInputColumn = true;
+  break;
+}
+#>
 
 /** 打开对话框 */
 async function showDialog(
@@ -4910,7 +5133,12 @@ async function showDialog(
     if (!id) {
       return await dialogRes.dialogPrm;
     }
-    const [
+    const [<#
+      if (hasDefaultInputColumn) {
+      #>
+      defaultInput,<#
+      }
+      #>
       data,<#
       if (hasOrderBy) {
       #>
@@ -4957,7 +5185,12 @@ async function showDialog(
       _<#=column_name#>_<#=foreign_table#>_models,<#
       }
       #>
-    ] = await Promise.all([
+    ] = await Promise.all([<#
+      if (hasDefaultInputColumn) {
+      #>
+      getDefaultInput(),<#
+      }
+      #>
       findOneModel({
         id,<#
         if (hasIsDeleted) {
@@ -5082,7 +5315,7 @@ async function showDialog(
             continue;
           }
         #>
-        <#=column_name#>: undefined,<#
+        <#=column_name#>: defaultInput.<#=column_name#>,<#
         }
         #><#
         if (hasDefault) {
@@ -5194,7 +5427,11 @@ async function showDialog(
       dialogModel.id = ids[0];
       await onRefresh();
     }
-  } else if (dialogAction === "view") {
+  } else if (dialogAction === "view"<#
+  if (hasAudit) {
+  #> || dialogAction === "audit"<#
+  }
+  #>) {
     if (!model || !model.ids) {
       return await dialogRes.dialogPrm;
     }
@@ -5956,7 +6193,287 @@ async function onSaveKeydown(e: KeyboardEvent) {
   e.stopImmediatePropagation();
   customDialogRef?.focus();
   await onSave();
+}<#
+if (hasAudit) {
+#>
+
+// 已审核提交的不允许编辑
+watch(
+  () => [
+    inited,
+    dialogModel.<#=auditColumn#>,
+    dialogAction,
+    oldIsLocked,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (oldIsLocked) {
+      return;
+    }
+    if (
+      (dialogAction === "edit" || dialogAction === "view") &&
+      (dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unaudited || dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Audited<#
+      if (hasReviewed) {
+      #> || dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Reviewed<#
+      }
+      #>)
+    ) {
+      isLocked = true;
+      dialogNotice = dialogModel.<#=auditColumn#>_lbl ?? oldDialogNotice ?? "";
+    }
+  },
+);
+
+/** 审核提交 */
+async function onAuditSubmit() {
+  const id = dialogModel.id;
+  if (!id) {
+    return;
+  }
+  if (!permit("audit_submit")) {
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确定要审核提交吗"),<#
+      } else {
+      #>
+      "确定要审核提交吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    return;
+  }
+  await auditSubmit(id);
+  ElMessage({<#
+    if (isUseI18n) {
+    #>
+    message: await nsAsync("审核提交成功"),<#
+    } else {
+    #>
+    message: "审核提交成功",<#
+    }
+    #>
+    type: "success",
+  });
+  if (!changedIds.includes(id)) {
+    changedIds.push(id);
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
 }
+
+/** 审核通过 */
+async function onAuditPass() {
+  const id = dialogModel.id;
+  if (!id) {
+    return;
+  }
+  if (!permit("audit_pass")) {
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确定要审核通过吗"),<#
+      } else {
+      #>
+      "确定要审核通过吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    return;
+  }
+  await auditPass(id);
+  ElMessage({<#
+    if (isUseI18n) {
+    #>
+    message: await nsAsync("审核通过成功"),<#
+    } else {
+    #>
+    message: "审核通过成功",<#
+    }
+    #>
+    type: "success",
+  });
+  if (!changedIds.includes(id)) {
+    changedIds.push(id);
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
+}
+
+const auditDialogRef = $(useTemplateRef<InstanceType<typeof AuditDialog>>("auditDialogRef"));
+
+/** 审核拒绝 */
+async function onAuditReject() {
+  if (!auditDialogRef) {
+    return;
+  }
+  const id = dialogModel.id;
+  if (!id) {
+    return;
+  }
+  if (!permit("audit_reject")) {
+    return;
+  }
+  const {
+    type,
+  } = await auditDialogRef.showDialog({
+    title: <#
+      if (isUseI18n) {
+      #>await nsAsync("审核拒绝")<#
+      } else {
+      #>"审核拒绝"<#
+      }
+      #><#
+      if (opts?.lbl_field) {
+      #> + " - " + dialogModel.<#=opts?.lbl_field#><#
+      }
+      #>,
+    model: {
+      id,
+    },
+    action: "reject",
+  });
+  if (type === "cancel") {
+    return;
+  }
+  ElMessage({<#
+    if (isUseI18n) {
+    #>
+    message: await nsAsync("审核拒绝成功"),<#
+    } else {
+    #>
+    message: "审核拒绝成功",<#
+    }
+    #>
+    type: "success",
+  });
+  if (!changedIds.includes(id)) {
+    changedIds.push(id);
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
+}<#
+if (hasReviewed) {
+#>
+
+/** 复核通过 */
+async function onAuditReview() {
+  const id = dialogModel.id;
+  if (!id) {
+    return;
+  }
+  if (!permit("audit_review")) {
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(<#
+      if (isUseI18n) {
+      #>
+      await nsAsync("确定要复核通过吗"),<#
+      } else {
+      #>
+      "确定要复核通过吗",<#
+      }
+      #>
+      {<#
+        if (isUseI18n) {
+        #>
+        confirmButtonText: await nsAsync("确定"),
+        cancelButtonText: await nsAsync("取消"),<#
+        } else {
+        #>
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",<#
+        }
+        #>
+        type: "warning",
+      },
+    );
+  } catch (err) {
+    return;
+  }
+  await auditReview(id);
+  ElMessage({<#
+    if (isUseI18n) {
+    #>
+    message: await nsAsync("复核通过成功"),<#
+    } else {
+    #>
+    message: "复核通过成功",<#
+    }
+    #>
+    type: "success",
+  });
+  if (!changedIds.includes(id)) {
+    changedIds.push(id);
+  }
+  const hasNext = await nextId();
+  if (hasNext) {
+    return;
+  }
+  onCloseResolve({
+    type: "ok",
+    changedIds,
+  });
+}<#
+}
+#><#
+}
+#>
 
 /** 保存并返回id */
 async function save() {
@@ -6104,7 +6621,14 @@ async function save() {
     };
     if (!showBuildIn) {
       Object.assign(dialogModel2, builtInModel);
+    }<#
+    if (hasAudit) {
+    #>
+    
+    const defaultInput = await getDefaultInput();
+    dialogModel2.<#=auditColumn#> = defaultInput.<#=auditColumn#>;<#
     }
+    #>
     Object.assign(dialogModel2, { is_deleted: undefined });
     id = await updateById(
       dialogModel.id,
@@ -6150,14 +6674,24 @@ async function onSaveAndCopy() {
     return;
   }
   dialogAction = "copy";
-  const [
+  const [<#
+    if (hasDefaultInputColumn) {
+    #>
+    defaultInput,<#
+    }
+    #>
     data,<#
     if (hasOrderBy) {
     #>
     order_by,<#
     }
     #>
-  ] = await Promise.all([
+  ] = await Promise.all([<#
+    if (hasDefaultInputColumn) {
+    #>
+    getDefaultInput(),<#
+    }
+    #>
     findOneModel({
       id,<#
       if (hasIsDeleted) {
@@ -6198,7 +6732,7 @@ async function onSaveAndCopy() {
         continue;
       }
     #>
-    <#=column_name#>: undefined,<#
+    <#=column_name#>: defaultInput.<#=column_name#>,<#
     }
     #><#
     if (hasDefault) {
@@ -6252,7 +6786,44 @@ async function onSave() {
   const id = await save();
   if (!id) {
     return;
+  }<#
+  if (hasAudit) {
+  #>
+  if (permit("audit_submit")) {
+    await onRefresh();
+    if (dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Unsubmited ||
+      dialogModel.<#=auditColumn#> === <#=Table_Up#>Audit.Rejected
+    ) {
+      try {
+        await ElMessageBox.confirm(<#
+          if (isUseI18n) {
+          #>
+          await nsAsync("确定要审核提交吗"),<#
+          } else {
+          #>
+          "确定要审核提交吗",<#
+          }
+          #>
+          {<#
+            if (isUseI18n) {
+            #>
+            confirmButtonText: await nsAsync("确定"),
+            cancelButtonText: await nsAsync("取消"),<#
+            } else {
+            #>
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",<#
+            }
+            #>
+            type: "warning",
+          },
+        );
+        await auditSubmit(id);
+      } catch (err) { /* empty */ }
+    }
+  }<#
   }
+  #>
   const hasNext = await nextId();
   if (hasNext) {
     return;
