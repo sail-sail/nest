@@ -144,8 +144,7 @@ pub async fn update_tenant_by_id(
 }
 
 /// 根据 id 修改企微应用
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: WxwAppId,
   mut input: WxwAppInput,
