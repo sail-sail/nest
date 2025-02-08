@@ -62,6 +62,25 @@ const hasDictbiz = columns.some((column) => {
 });
 
 const tableFieldPermit = columns.some((item) => item.fieldPermit);
+
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+const auditTableSchema = opts?.audit?.auditTableSchema;
+
 #>#[allow(unused_imports)]
 use std::time::Instant;
 
@@ -73,6 +92,12 @@ use crate::src::base::permit::permit_service::use_permit;
 
 use super::<#=table#>_model::*;
 use super::<#=table#>_service;<#
+if (auditTable_Up) {
+#>
+
+use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::<#=auditTable_Up#>Input;<#
+}
+#><#
 if (tableFieldPermit) {
 #>
 
@@ -586,6 +611,300 @@ pub async fn update_by_id(
   
   Ok(res)
 }<#
+}
+#><#
+if (hasAudit) {
+#>
+
+/// <#=table_comment#> 审核提交
+pub async fn audit_submit(
+  id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<bool> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
+  
+  use_permit(
+    get_route_path_<#=table#>(),
+    "audit_submit".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = id.clone();<#
+  }
+  #>
+  
+  let res = <#=table#>_service::audit_submit(
+    id,
+    options,
+  ).await?;<#
+  if (log) {
+  #><#
+  if (isUseI18n) {
+  #>
+  
+  let method_lbl = ns("审核提交".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl = "审核提交".to_owned();
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
+  
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
+  log(
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "auditSubmit".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: method_lbl.into(),
+      time: time.into(),
+      old_data: old_data.into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(res)
+}
+
+/// <#=table_comment#> 审核通过
+pub async fn audit_pass(
+  id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<bool> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
+  
+  use_permit(
+    get_route_path_<#=table#>(),
+    "audit_pass".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = id.clone();<#
+  }
+  #>
+  
+  let res = <#=table#>_service::audit_pass(
+    id,
+    options,
+  ).await?;<#
+  if (log) {
+  #><#
+  if (isUseI18n) {
+  #>
+  
+  let method_lbl = ns("审核通过".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl = "审核通过".to_owned();
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
+  
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
+  log(
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "auditPass".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: method_lbl.into(),
+      time: time.into(),
+      old_data: old_data.into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(res)
+}
+
+/// <#=table_comment#> 审核拒绝
+pub async fn audit_reject(
+  id: <#=Table_Up#>Id,
+  input: <#=auditTable_Up#>Input,
+  options: Option<Options>,
+) -> Result<bool> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
+  
+  use_permit(
+    get_route_path_<#=table#>(),
+    "audit_reject".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = id.clone();<#
+  }
+  #>
+  
+  let res = <#=table#>_service::audit_reject(
+    id,
+    input,
+    options,
+  ).await?;<#
+  if (log) {
+  #><#
+  if (isUseI18n) {
+  #>
+  
+  let method_lbl = ns("审核拒绝".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl = "审核拒绝".to_owned();
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
+  
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
+  log(
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "auditReject".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: method_lbl.into(),
+      time: time.into(),
+      old_data: old_data.into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(res)
+}<#
+if (hasReviewed) {
+#>
+
+/// <#=table_comment#> 复核通过
+pub async fn audit_review(
+  id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<bool> {<#
+  if (log) {
+  #>
+  
+  let begin_time = Instant::now();<#
+  }
+  #>
+  
+  use_permit(
+    get_route_path_<#=table#>(),
+    "audit_review".to_owned(),
+  ).await?;<#
+  if (log) {
+  #>
+  
+  let old_data = id.clone();<#
+  }
+  #>
+  
+  let res = <#=table#>_service::audit_review(
+    id,
+    options,
+  ).await?;<#
+  if (log) {
+  #><#
+  if (isUseI18n) {
+  #>
+  
+  let method_lbl = ns("复核通过".to_owned(), None).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  } else {
+  #>
+  
+  let method_lbl = "复核通过".to_owned();
+  let table_comment = "<#=table_comment#>".to_owned();<#
+  }
+  #>
+  
+  let end_time = Instant::now();
+  
+  let time = {
+    let time = (end_time - begin_time).as_millis();
+    if time > u32::MAX as u128 {
+      u32::MAX
+    } else {
+      time as u32
+    }
+  };
+  
+  log(
+    OperationRecordInput {
+      module: "<#=mod#>_<#=table#>".to_owned().into(),
+      module_lbl: table_comment.clone().into(),
+      method: "auditReview".to_owned().into(),
+      method_lbl: method_lbl.clone().into(),
+      lbl: method_lbl.into(),
+      time: time.into(),
+      old_data: old_data.into(),
+      ..Default::default()
+    },
+  ).await?;<#
+  }
+  #>
+  
+  Ok(res)
+}<#
+}
+#><#
 }
 #><#
 if (opts.noDelete !== true) {

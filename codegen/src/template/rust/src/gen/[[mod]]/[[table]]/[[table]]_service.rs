@@ -33,6 +33,36 @@ const hasDictbiz = columns.some((column) => {
   }
   return column.dictbiz;
 });
+
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+let auditModelLabel = "";
+let auditTableIdColumn = undefined;
+let auditTableSchema = undefined;
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+const auditColumnUp = auditColumn.substring(0,1).toUpperCase() + auditColumn.substring(1);
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+if (hasAudit) {
+  auditTableSchema = opts?.audit?.auditTableSchema;
+  auditTableIdColumn = auditTableSchema.columns.find(item => item.COLUMN_NAME === `${ table }_id`);
+  if (!auditTableIdColumn) {
+    throw new Error(`${ auditMod }_${ auditTable }: ${ auditTable }_id 字段不存在`);
+  }
+  auditModelLabel = auditTableIdColumn.modelLabel;
+}
+
 #>#[allow(unused_imports)]
 use std::collections::HashMap;
 #[allow(unused_imports)]
@@ -40,7 +70,12 @@ use color_eyre::eyre::{Result,eyre};
 
 #[allow(unused_imports)]
 use crate::common::context::{
-  Options,
+  Options,<#
+  if (hasAudit) {
+  #>
+  get_now,<#
+  }
+  #>
   get_auth_id_err,
   get_auth_org_id,
 };
@@ -65,7 +100,10 @@ if (hasOrgId) {
 use crate::r#gen::base::org::org_model::OrgId;<#
 }
 #><#
-if (opts.filterDataByCreateUsr || hasOrgId) {
+if (
+  (opts.filterDataByCreateUsr || hasOrgId) ||
+  hasAudit
+) {
 #>
 
 use crate::r#gen::base::usr::usr_dao::{
@@ -81,7 +119,29 @@ use crate::src::base::options::options_dao::update_i18n_version;<#
 #>
 
 use super::<#=table#>_model::*;
-use super::<#=table#>_dao;
+use super::<#=table#>_dao;<#
+if (hasAudit && auditTable_Up) {
+#>
+
+use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_dao::{
+  find_all as find_all_<#=auditTable#>,
+  create as create_<#=auditTable#>,
+  delete_by_ids as delete_by_ids_<#=auditTable#>,<#
+  if (hasIsDeleted) {
+  #>
+  revert_by_ids as revert_by_ids_<#=auditTable#>,
+  force_delete_by_ids as force_delete_by_ids_<#=auditTable#>,<#
+  }
+  #>
+};
+use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::{
+  <#=auditTable_Up#>Id,
+  <#=auditTable_Up#>Audit,
+  <#=auditTable_Up#>Search,
+  <#=auditTable_Up#>Input,
+};<#
+}
+#>
 
 #[allow(unused_variables)]
 async fn set_search_query(
@@ -280,6 +340,16 @@ pub async fn creates(
     .set_has_data_permit(true);
   let options = Some(options);<#
   }
+  #><#
+  if (hasAudit) {
+  #>
+  
+  let mut inputs = inputs;
+  for input in inputs.iter_mut() {
+    input.<#=auditColumn#> = Some(<#=Table_Up#>Audit::Unsubmited);
+  }
+  let inputs = inputs;<#
+  }
   #>
   
   let <#=table#>_ids = <#=table#>_dao::creates(
@@ -332,8 +402,7 @@ pub async fn update_tenant_by_id(
 #>
 
 /// 根据 id 修改<#=table_comment#>
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: <#=Table_Up#>Id,
   mut input: <#=tableUP#>Input,
@@ -345,6 +414,47 @@ pub async fn update_by_id(
   let options = Options::from(options)
     .set_has_data_permit(true);
   let options = Some(options);<#
+  }
+  #><#
+  if (
+    (hasIsSys && opts.sys_fields && opts.sys_fields.length > 0) ||
+    hasAudit
+  ) {
+  #>
+  
+  let old_model = <#=table#>_dao::validate_option(
+    <#=table#>_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
+  ).await?;<#
+  }
+  #><#
+  if (hasAudit) {
+  #>
+  
+  if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
+    old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected {<#
+    if (isUseI18n) {
+    #>
+    let table_comment = ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = ns(
+      "只有未提交的 {0} 才能编辑".to_owned(),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "只有未提交的 <#=table_comment#> 才能编辑";<#
+    }
+    #>
+    return Err(eyre!(err_msg));
+  }<#
   }
   #><#
   if (hasLocked) {
@@ -382,50 +492,43 @@ pub async fn update_by_id(
   #>
   
   // 不能修改系统记录的系统字段
-  let model = <#=table#>_dao::find_by_id(
-    id.clone(),
-    None,
-  ).await?;
-  
-  if let Some(model) = model {
-    if model.is_sys == 1 {<#
-      for (let i = 0; i < opts.sys_fields.length; i++) {
-        const sys_field = opts.sys_fields[i];
-        const column = columns.find(item => item.COLUMN_NAME === sys_field);
-        if (!column) {
-          throw new Error(`${ mod }_${ table }: sys_fields 字段 ${ sys_field } 不存在`);
-        }
-        const column_comment = column.COLUMN_COMMENT;
-        if (column_comment.endsWith("multiple")) {
-          _data_type = "[String]";
-        }
-        const foreignKey = column.foreignKey;
-      #><#
-        if (!foreignKey && !column.dict && !column.dictbiz
-          && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
-        ) {
-      #>
-      // <#=column_comment#>
-      input.<#=rustKeyEscape(sys_field)#> = None;<#
-        } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
-      #>
-      // <#=column_comment#>
-      input.<#=rustKeyEscape(sys_field)#> = None;
-      input.<#=sys_field#>_lbl = None;<#
-        } else if (foreignKey || column.dict || column.dictbiz) {
-      #>
-      // <#=column_comment#>
-      input.<#=rustKeyEscape(sys_field)#> = None;
-      input.<#=sys_field#>_lbl = None;<#
-        } else {
-      #>
-      // <#=column_comment#>
-      input.<#=rustKeyEscape(sys_field)#> = None;<#
-        }
-      #><#
+  if old_model.is_sys == 1 {<#
+    for (let i = 0; i < opts.sys_fields.length; i++) {
+      const sys_field = opts.sys_fields[i];
+      const column = columns.find(item => item.COLUMN_NAME === sys_field);
+      if (!column) {
+        throw new Error(`${ mod }_${ table }: sys_fields 字段 ${ sys_field } 不存在`);
       }
-      #>
+      const column_comment = column.COLUMN_COMMENT;
+      if (column_comment.endsWith("multiple")) {
+        _data_type = "[String]";
+      }
+      const foreignKey = column.foreignKey;
+    #><#
+      if (!foreignKey && !column.dict && !column.dictbiz
+        && column.DATA_TYPE !== "date" && !column.DATA_TYPE === "datetime"
+      ) {
+    #>
+    // <#=column_comment#>
+    input.<#=rustKeyEscape(sys_field)#> = None;<#
+      } else if (column.DATA_TYPE === "date" || column.DATA_TYPE === "datetime") {
+    #>
+    // <#=column_comment#>
+    input.<#=rustKeyEscape(sys_field)#> = None;
+    input.<#=sys_field#>_lbl = None;<#
+      } else if (foreignKey || column.dict || column.dictbiz) {
+    #>
+    // <#=column_comment#>
+    input.<#=rustKeyEscape(sys_field)#> = None;
+    input.<#=sys_field#>_lbl = None;<#
+      } else {
+    #>
+    // <#=column_comment#>
+    input.<#=rustKeyEscape(sys_field)#> = None;<#
+      }
+    #><#
     }
+    #>
   }<#
   }
   #>
@@ -443,7 +546,416 @@ pub async fn update_by_id(
   #>
   
   Ok(<#=table#>_id)
+}<#
+if (hasAudit) {
+#>
+
+/// <#=table_comment#> 审核提交
+pub async fn audit_submit(
+  id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let old_model = <#=table#>_dao::validate_option(
+    <#=table#>_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
+  ).await?;
+  
+  if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
+    old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected {<#
+    if (isUseI18n) {
+    #>
+    let table_comment = ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = ns(
+      "只有未提交或者审核拒绝的 {0} 才能 审核提交".to_owned(),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "只有未提交或者审核拒绝的 <#=table_comment#> 才能 审核提交";<#
+    }
+    #>
+    return Err(eyre!(err_msg));
+  }<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+  
+  let <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#>;<#
+  } else {
+  #>
+  
+  let <#=auditModelLabel#> = String::new();<#
+  }
+  #><#
+  }
+  #>
+  
+  let input = <#=tableUP#>Input {
+    <#=auditColumn#>: Some(<#=tableUP#>Audit::Unaudited),
+    ..Default::default()
+  };
+  
+  <#=table#>_dao::update_by_id(
+    id.clone(),
+    input,
+    options.clone(),
+  ).await?;<#
+  if (auditTable_Up) {
+  #>
+  
+  let audit_usr_id = get_auth_id_err()?;
+  let audit_time = get_now();
+  
+  let audit_usr_model = validate_option_usr(
+    find_by_id_usr(
+      audit_usr_id.clone(),
+      options.clone(),
+    ).await?,
+  ).await?;
+  
+  let audit_usr_id_lbl = audit_usr_model.lbl;
+  
+  let input = <#=auditTable_Up#>Input {
+    <#=table#>_id: Some(id),<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
+    }
+    #>
+    audit: Some(<#=auditTable_Up#>Audit::Unaudited),
+    audit_usr_id: Some(audit_usr_id),
+    audit_usr_id_lbl: Some(audit_usr_id_lbl),
+    audit_time: Some(audit_time),
+    ..Default::default()
+  };
+  
+  create_<#=auditTable#>(
+    input,
+    options,
+  ).await?;<#
+  }
+  #>
+  
+  Ok(true)
 }
+
+/// <#=table_comment#> 审核通过
+pub async fn audit_pass(
+  id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let old_model = <#=table#>_dao::validate_option(
+    <#=table#>_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
+  ).await?;
+  
+  if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unaudited {<#
+    if (isUseI18n) {
+    #>
+    let table_comment = ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = ns(
+      "只有未审核的 {0} 才能 审核通过".to_owned(),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "只有未审核的 <#=table_comment#> 才能 审核通过";<#
+    }
+    #>
+    return Err(eyre!(err_msg));
+  }<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+  
+  let <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#>;<#
+  } else {
+  #>
+  
+  let <#=auditModelLabel#> = String::new();<#
+  }
+  #><#
+  }
+  #>
+  
+  let input = <#=tableUP#>Input {
+    <#=auditColumn#>: Some(<#=tableUP#>Audit::Audited),
+    ..Default::default()
+  };
+  
+  <#=table#>_dao::update_by_id(
+    id.clone(), 
+    input,
+    options.clone(),
+  ).await?;<#
+  if (auditTable_Up) {
+  #>
+  
+  let audit_usr_id = get_auth_id_err()?;
+  let audit_time = get_now();
+  
+  let audit_usr_model = validate_option_usr(
+    find_by_id_usr(
+      audit_usr_id.clone(),
+      options.clone(),
+    ).await?,
+  ).await?;
+  
+  let audit_usr_id_lbl = audit_usr_model.lbl;
+  
+  let input = <#=auditTable_Up#>Input {
+    <#=table#>_id: Some(id),<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
+    }
+    #>
+    audit: Some(<#=auditTable_Up#>Audit::Audited),
+    audit_usr_id: Some(audit_usr_id),
+    audit_usr_id_lbl: Some(audit_usr_id_lbl),
+    audit_time: Some(audit_time),
+    ..Default::default()
+  };
+  
+  create_<#=auditTable#>(
+    input,
+    options,
+  ).await?;<#
+  }
+  #>
+  
+  Ok(true)
+}
+
+/// <#=table_comment#> 审核拒绝
+#[allow(dead_code)]
+pub async fn audit_reject(
+  id: <#=Table_Up#>Id,
+  audit_input: <#=auditTable_Up#>Input,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let old_model = <#=table#>_dao::validate_option(
+    <#=table#>_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
+  ).await?;
+  
+  if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unaudited<#
+    if (hasReviewed) {
+    #> &&
+    old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Audited<#
+    }
+    #> {<#
+    if (isUseI18n) {
+    #>
+    let table_comment = ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = ns(
+      "只有未审核的 {0} 才能 审核拒绝".to_owned(),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "只有未审核的 <#=table_comment#> 才能 审核拒绝";<#
+    }
+    #>
+    return Err(eyre!(err_msg));
+  }<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+  
+  let <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#>;<#
+  } else {
+  #>
+  
+  let <#=auditModelLabel#> = String::new();<#
+  }
+  #><#
+  }
+  #>
+  
+  let input = <#=tableUP#>Input {
+    <#=auditColumn#>: Some(<#=tableUP#>Audit::Rejected),
+    ..Default::default()
+  };
+  
+  <#=table#>_dao::update_by_id(
+    id.clone(),
+    input,
+    options.clone(),
+  ).await?;<#
+  if (auditTable_Up) {
+  #>
+  
+  let audit_usr_id = get_auth_id_err()?;
+  let audit_time = get_now();
+  
+  let audit_usr_model = validate_option_usr(
+    find_by_id_usr(
+      audit_usr_id.clone(),
+      None,
+    ).await?,
+  ).await?;
+  
+  let audit_usr_id_lbl = audit_usr_model.lbl;
+  
+  let input = <#=auditTable_Up#>Input {
+    <#=table#>_id: Some(id),<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
+    }
+    #>
+    audit: Some(<#=auditTable_Up#>Audit::Rejected),
+    audit_usr_id: Some(audit_usr_id),
+    audit_usr_id_lbl: Some(audit_usr_id_lbl),
+    audit_time: Some(audit_time),
+    rem: audit_input.rem,
+    ..Default::default()
+  };
+  
+  create_<#=auditTable#>(
+    input,
+    options,
+  ).await?;<#
+  }
+  #>
+  
+  Ok(true)
+}<#
+if (hasReviewed) {
+#>
+
+/// <#=table_comment#> 复核通过
+pub async fn audit_review(
+  id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let old_model = <#=table#>_dao::validate_option(
+    <#=table#>_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
+  ).await?;
+  
+  if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Audited {<#
+    if (isUseI18n) {
+    #>
+    let table_comment = ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = ns(
+      "只有已审核的 {0} 才能 复核通过".to_owned(),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "只有已审核的 <#=table_comment#> 才能 复核通过";<#
+    }
+    #>
+    return Err(eyre!(err_msg));
+  }<#
+  if (auditTable_Up) {
+  #><#
+  if (opts?.lbl_field) {
+  #>
+  
+  let <#=auditModelLabel#> = old_model.<#=opts?.lbl_field#>;<#
+  } else {
+  #>
+  
+  let <#=auditModelLabel#> = String::new();<#
+  }
+  #><#
+  }
+  #>
+  
+  let input = <#=tableUP#>Input {
+    <#=auditColumn#>: Some(<#=tableUP#>Audit::Reviewed),
+    ..Default::default()
+  };
+  
+  <#=table#>_dao::update_by_id(
+    id.clone(), 
+    input,
+    options.clone(),
+  ).await?;<#
+  if (auditTable_Up) {
+  #>
+  
+  let audit_usr_id = get_auth_id_err()?;
+  let audit_time = get_now();
+  
+  let audit_usr_model = validate_option_usr(
+    find_by_id_usr(
+      audit_usr_id.clone(),
+      None,
+    ).await?,
+  ).await?;
+  
+  let audit_usr_id_lbl = audit_usr_model.lbl;
+  
+  let input = <#=auditTable_Up#>Input {
+    <#=table#>_id: Some(id),<#
+    if (auditModelLabel) {
+    #>
+    <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
+    }
+    #>
+    audit: Some(<#=auditTable_Up#>Audit::Reviewed),
+    audit_usr_id: Some(audit_usr_id),
+    audit_usr_id_lbl: Some(audit_usr_id_lbl),
+    audit_time: Some(audit_time),
+    ..Default::default()
+  };
+  
+  create_<#=auditTable#>(
+    input,
+    options,
+  ).await?;<#
+  }
+  #>
+  
+  Ok(true)
+}<#
+}
+#><#
+}
+#>
 
 /// 根据 ids 删除<#=table_comment#>
 #[allow(dead_code)]
@@ -525,13 +1037,46 @@ pub async fn delete_by_ids(
   #>
   
   let num = <#=table#>_dao::delete_by_ids(
-    ids,
-    options,
+    ids<#
+    if (hasAudit) {
+    #>.clone()<#
+    }
+    #>,
+    options<#
+    if (hasAudit) {
+    #>.clone()<#
+    }
+    #>,
   ).await?;<#
   if (mod === "base" && table === "i18n") {
   #>
   
   update_i18n_version().await?;<#
+  }
+  #><#
+  if (hasAudit && auditTable_Up) {
+  #>
+  
+  // 级联删除审核记录
+  let <#=auditTable#>_models = find_all_<#=auditTable#>(
+    Some(<#=auditTable_Up#>Search {
+      <#=table#>_id: Some(ids),
+      ..Default::default()
+    }),
+    None,
+    None,
+    options.clone(),
+  ).await?;
+  
+  let <#=auditTable#>_ids = <#=auditTable#>_models
+    .into_iter()
+    .map(|model| model.id)
+    .collect::<Vec<<#=auditTable_Up#>Id>>();
+  
+  delete_by_ids_<#=auditTable#>(
+    <#=auditTable#>_ids,
+    options,
+  ).await?;<#
   }
   #>
   
@@ -716,13 +1261,47 @@ pub async fn revert_by_ids(
   #>
   
   let num = <#=table#>_dao::revert_by_ids(
-    ids,
-    options,
+    ids<#
+    if (hasAudit) {
+    #>.clone()<#
+    }
+    #>,
+    options<#
+    if (hasAudit) {
+    #>.clone()<#
+    }
+    #>,
   ).await?;<#
   if (mod === "base" && table === "i18n") {
   #>
   
   update_i18n_version().await?;<#
+  }
+  #><#
+  if (hasAudit && auditTable_Up) {
+  #>
+  
+  // 级联还原审核记录
+  let <#=auditTable#>_models = find_all_<#=auditTable#>(
+    Some(<#=auditTable_Up#>Search {
+      <#=table#>_id: Some(ids),
+      is_deleted: Some(1),
+      ..Default::default()
+    }),
+    None,
+    None,
+    options.clone(),
+  ).await?;
+  
+  let <#=auditTable#>_ids = <#=auditTable#>_models
+    .into_iter()
+    .map(|model| model.id)
+    .collect::<Vec<<#=auditTable_Up#>Id>>();
+  
+  revert_by_ids_<#=auditTable#>(
+    <#=auditTable#>_ids,
+    options,
+  ).await?;<#
   }
   #>
   
@@ -749,9 +1328,43 @@ pub async fn force_delete_by_ids(
   #>
   
   let num = <#=table#>_dao::force_delete_by_ids(
-    ids,
-    options,
+    ids<#
+    if (hasAudit) {
+    #>.clone()<#
+    }
+    #>,
+    options<#
+    if (hasAudit) {
+    #>.clone()<#
+    }
+    #>,
+  ).await?;<#
+  if (hasAudit && auditTable_Up) {
+  #>
+  
+  // 级联彻底删除审核记录
+  let <#=auditTable#>_models = find_all_<#=auditTable#>(
+    Some(<#=auditTable_Up#>Search {
+      <#=table#>_id: Some(ids),
+      is_deleted: Some(1),
+      ..Default::default()
+    }),
+    None,
+    None,
+    options.clone(),
   ).await?;
+  
+  let <#=auditTable#>_ids = <#=auditTable#>_models
+    .into_iter()
+    .map(|model| model.id)
+    .collect::<Vec<<#=auditTable_Up#>Id>>();
+  
+  force_delete_by_ids_<#=auditTable#>(
+    <#=auditTable#>_ids,
+    options,
+  ).await?;<#
+  }
+  #>
   
   Ok(num)
 }<#

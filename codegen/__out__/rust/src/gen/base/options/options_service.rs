@@ -125,13 +125,19 @@ pub async fn creates(
 }
 
 /// 根据 id 修改系统选项
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: OptionsId,
   mut input: OptionsInput,
   options: Option<Options>,
 ) -> Result<OptionsId> {
+  
+  let old_model = options_dao::validate_option(
+    options_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
+  ).await?;
   
   let is_locked = options_dao::get_is_locked_by_id(
     id.clone(),
@@ -144,18 +150,11 @@ pub async fn update_by_id(
   }
   
   // 不能修改系统记录的系统字段
-  let model = options_dao::find_by_id(
-    id.clone(),
-    None,
-  ).await?;
-  
-  if let Some(model) = model {
-    if model.is_sys == 1 {
-      // 名称
-      input.lbl = None;
-      // 键
-      input.ky = None;
-    }
+  if old_model.is_sys == 1 {
+    // 名称
+    input.lbl = None;
+    // 键
+    input.ky = None;
   }
   
   let options_id = options_dao::update_by_id(

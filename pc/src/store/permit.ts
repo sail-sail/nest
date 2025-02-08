@@ -20,7 +20,7 @@ export default defineStore("permit", function() {
       })).reduce((prev, curr) => ({ ...prev, ...curr }), {})
     );
     
-    return function(code: string) {
+    return function(code: string, lbl?: string) {
       if (usrStore.username === "admin") {
         return true;
       }
