@@ -107,7 +107,7 @@
               v-model="dialogModel.begin_time"
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DDTHH:mm:ss"
               placeholder="请选择 开始时间"
               :readonly="isLocked || isReadonly"
             ></CustomDatePicker>
@@ -123,7 +123,7 @@
               v-model="dialogModel.end_time"
               type="datetime"
               format="YYYY-MM-DD HH:mm:ss"
-              value-format="YYYY-MM-DD HH:mm:ss"
+              value-format="YYYY-MM-DDTHH:mm:ss"
               placeholder="请选择 结束时间"
               :readonly="isLocked || isReadonly"
             ></CustomDatePicker>

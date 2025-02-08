@@ -2146,17 +2146,20 @@ export async function findLastOrderBy(
   return result;
 }
 
-const cron_startup = (await getEnv("cron_startup") || "").trim() === "true";
-console.log("cron_startup:", cron_startup);
-if (cron_startup) {
-  const context = newContext();
-  context.notVerifyToken = true;
-  context.is_silent_mode = true;
-  runInAsyncHooks(context, async () => {
-    try {
-      await refreshCronJobs();
-    } catch (err) {
-      console.error(err);
-    }
-  });
+// deno-lint-ignore no-explicit-any
+if ((globalThis as any).process.env.NODE_ENV === "production") {
+  const cron_startup = (await getEnv("cron_startup") || "").trim() === "true";
+  console.log("cron_startup:", cron_startup);
+  if (cron_startup) {
+    const context = newContext();
+    context.notVerifyToken = true;
+    context.is_silent_mode = true;
+    runInAsyncHooks(context, async () => {
+      try {
+        await refreshCronJobs();
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }
 }

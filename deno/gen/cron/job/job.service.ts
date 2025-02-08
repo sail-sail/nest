@@ -136,14 +136,17 @@ export async function updateById(
   input: JobInput,
 ): Promise<JobId> {
   
+  const old_model = await jobDao.validateOption(
+    await jobDao.findById(id),
+  );
+  
   const is_locked = await jobDao.getIsLockedById(id);
   if (is_locked) {
     throw "不能修改已经锁定的 任务";
   }
   
   // 不能修改系统记录的系统字段
-  const model = await jobDao.findById(id);
-  if (model && model.is_sys === 1) {
+  if (old_model.is_sys === 1) {
     // 编码
     input.code = undefined;
   }
