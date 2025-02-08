@@ -59,6 +59,7 @@
       un-whitespace-pre-wrap
       class="custom_input_readonly_content"
       :class="{
+        'items-center': type !== 'textarea',
         'custom_input_placeholder': shouldShowPlaceholder
       }"
       :style="{

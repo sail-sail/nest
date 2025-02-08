@@ -75,7 +75,7 @@ function validateGitStaging() {
       .filter((item: string) => item && !item.startsWith("(use \"git ") && !item.includes(" codegen/__out__/"));
     if (arr.length > 0) {
       console.error("\n" + chalk.green(arr.join("\n")) + "\n");
-      throw new Error("git有未加入暂存区的文件, 请先加入暂存区");
+      throw "git有未加入暂存区的文件, 请先加入暂存区";
     }
   }
 }
@@ -96,9 +96,9 @@ function validateGitStaging() {
     await denoGenTypes();
   } catch(err) {
     if (err instanceof Error) {
-      console.error(chalk.red(err));
+      console.error(chalk.red(err.stack));
     } else {
-      console.log(err);
+      console.error(chalk.red(err));
     }
   } finally {
     process.exit(0);

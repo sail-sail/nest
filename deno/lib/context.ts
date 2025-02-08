@@ -943,7 +943,8 @@ export async function query<T = any>(
       // deno-lint-ignore no-explicit-any
       result = res[0] as any[];
     } catch(err) {
-      error(sql, args);
+      const debugSql = getDebugQuery(sql, args) + " /* "+ conn.threadId +" */";
+      error(debugSql);
       throw err;
     }
   } else {
@@ -957,8 +958,11 @@ export async function query<T = any>(
       // deno-lint-ignore no-explicit-any
       result = res[0] as any[];
     } catch(err) {
-      error(sql);
-      error(args);
+      const debugSql = getDebugQuery(sql, args);
+      error(debugSql);
+      if (err.code === "ECONNREFUSED") {
+        throw new Error("系统错误: 数据库连接失败");
+      }
       throw err;
     }
   }

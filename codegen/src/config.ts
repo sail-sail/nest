@@ -319,6 +319,17 @@ export interface TableCloumn {
   }[],
   
   /**
+   * 外键关联表, 表格上点击之后路由跳转的外键关联表
+   */
+  foreignPage?: {
+    routeName: string;
+    tabNameField?: string;
+    query: {
+      [key: string]: string;
+    };
+  },
+  
+  /**
    * 外键关联是否多对多
    */
   many2many?: {
@@ -883,6 +894,35 @@ export interface TablesConfigItem {
         table_name: string;
       };
       records: TableCloumn[];
+    };
+    
+    /**
+     * 是否启用审核功能
+     */
+    audit?: {
+      
+      /**
+       * 审核字段, 默认为: audit
+       */
+      column?: string;
+      
+      /**
+       * 审核模块, 默认为: [模块]
+       */
+      auditMod?: string;
+      
+      /**
+       * 审核表, 默认为: [表名]_audit
+       */
+      auditTable?: string;
+      
+      auditTableSchema?: TablesConfigItem;
+      
+      /**
+       * 是否有复核功能, 默认寻找 [表名]_audit 复核表的 audit 字段的枚举值是否有 
+       */
+      hasReviewed?: boolean;
+      
     };
     
   },
