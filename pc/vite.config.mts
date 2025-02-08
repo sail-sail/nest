@@ -208,6 +208,9 @@ export default defineConfig({
           "@/utils/ObjectUtil": [
             "deepCompare",
           ],
+          "@/router/util": [
+            "openForeignPage",
+          ],
           "@/locales/i18n": [
             "useI18n",
           ],

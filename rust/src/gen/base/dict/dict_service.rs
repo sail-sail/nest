@@ -125,31 +125,30 @@ pub async fn creates(
 }
 
 /// 根据 id 修改系统字典
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: DictId,
   mut input: DictInput,
   options: Option<Options>,
 ) -> Result<DictId> {
   
-  // 不能修改系统记录的系统字段
-  let model = dict_dao::find_by_id(
-    id.clone(),
-    None,
+  let old_model = dict_dao::validate_option(
+    dict_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
   ).await?;
   
-  if let Some(model) = model {
-    if model.is_sys == 1 {
-      // 编码
-      input.code = None;
-      // 数据类型
-      input.r#type = None;
-      input.type_lbl = None;
-      // 启用
-      input.is_enabled = None;
-      input.is_enabled_lbl = None;
-    }
+  // 不能修改系统记录的系统字段
+  if old_model.is_sys == 1 {
+    // 编码
+    input.code = None;
+    // 数据类型
+    input.r#type = None;
+    input.type_lbl = None;
+    // 启用
+    input.is_enabled = None;
+    input.is_enabled_lbl = None;
   }
   
   let dict_id = dict_dao::update_by_id(

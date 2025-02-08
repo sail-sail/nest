@@ -60,6 +60,25 @@ for (let i = 0; i < (opts.langTable?.records?.length || 0); i++) {
 }
 
 const tableFieldPermit = columns.some((item) => item.fieldPermit);
+
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+const auditTableSchema = opts?.audit?.auditTableSchema;
+
 #>
 use std::fmt;
 use std::ops::Deref;
@@ -99,8 +118,15 @@ use async_graphql::{
 
 use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;<#
+if (hasAudit && auditTable_Up) {
+#>
+
+use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::<#=auditTable_Up#>Model;<#
+}
+#><#
 if (hasEncrypt) {
 #>
+
 use crate::common::util::dao::decrypt;<#
 }
 #><#
@@ -383,6 +409,7 @@ pub struct <#=tableUP#>Model {<#
     }
     const onlyCodegenDeno = column.onlyCodegenDeno;
     const onlyCodegenDenoButApi = column.onlyCodegenDenoButApi;
+    const isAuditColumn = hasAudit && auditColumn === column_name;
   #><#
     if (column_name === "id") {
   #>
@@ -617,6 +644,12 @@ pub struct <#=tableUP#>Model {<#
   #>
   pub <#=modelLabel#>: String,<#
     }
+  #><#
+  if (isAuditColumn && auditTable_Up) {
+  #>
+  #[graphql(name = "<#=column_name_rust#>_recent_model")]
+  pub <#=column_name_rust#>_recent_model: Option<<#=auditTable_Up#>Model>,<#
+  }
   #><#
     } else if (data_type === "tinyint") {
   #>
@@ -1412,6 +1445,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
           hasModelLabel = true;
         }
         let is_nullable = column.IS_NULLABLE === "YES";
+        const isAuditColumn = hasAudit && auditColumn === column_name;
       #><#
         if (foreignKey && foreignKey.multiple) {
       #>
@@ -1450,6 +1484,11 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
       #>
       <#=column_name_rust#>,
       <#=modelLabel#>,<#
+      if (isAuditColumn && auditTable_Up) {
+      #>
+      <#=column_name_rust#>_recent_model: None,<#
+      }
+      #><#
         } else if (data_type === "tinyint") {
       #>
       <#=column_name_rust#>,<#
@@ -1708,7 +1747,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
-      _data_type = "chrono::NaiveDate";
+      _data_type = "chrono::NaiveDateTime";
     } else if (data_type === 'datetime') {
       _data_type = "chrono::NaiveDateTime";
     } else if (data_type === 'time') {
@@ -2673,7 +2712,11 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       #>
       // <#=column_comment#>
       <#=column_name#>: input.<#=column_name#>.map(|x| vec![x]),<#
-      } else if (["date","datetime","time","int","decimal"].includes(data_type)) {
+      } else if (["date"].includes(data_type)) {
+      #>
+      // <#=column_comment#>
+      <#=column_name#>: input.<#=column_name#>.map(|x| [Some(x.and_hms_opt(0, 0, 0).unwrap()), Some(x.and_hms_opt(23, 59, 59).unwrap())]),<#
+      } else if (["datetime","time","int","decimal"].includes(data_type)) {
       #>
       // <#=column_comment#>
       <#=column_name#>: input.<#=column_name#>.map(|x| [Some(x), Some(x)]),<#

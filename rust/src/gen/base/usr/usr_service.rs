@@ -144,8 +144,7 @@ pub async fn update_tenant_by_id(
 }
 
 /// 根据 id 修改用户
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: UsrId,
   mut input: UsrInput,

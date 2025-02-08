@@ -30,6 +30,35 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 const hasSummary = columns.some((column) => column.showSummary);
 
 const tableFieldPermit = columns.some((item) => item.fieldPermit);
+
+// 审核
+const hasAudit = !!opts?.audit;
+let auditColumn = "";
+let auditMod = "";
+let auditTable = "";
+let auditModelLabel = "";
+let auditTableIdColumn = undefined;
+let auditTableSchema = undefined;
+if (hasAudit) {
+  auditColumn = opts.audit.column;
+  auditMod = opts.audit.auditMod;
+  auditTable = opts.audit.auditTable;
+}
+// 是否有复核
+const hasReviewed = opts?.hasReviewed;
+const auditTableUp = auditTable.substring(0, 1).toUpperCase()+auditTable.substring(1);
+const auditTable_Up = auditTableUp.split("_").map(function(item) {
+  return item.substring(0, 1).toUpperCase() + item.substring(1);
+}).join("");
+if (hasAudit) {
+  auditTableSchema = opts?.audit?.auditTableSchema;
+  auditTableIdColumn = auditTableSchema.columns.find(item => item.COLUMN_NAME === `${ table }_id`);
+  if (!auditTableIdColumn) {
+    throw new Error(`${ auditMod }_${ auditTable }: ${ auditTable }_id 字段不存在`);
+  }
+  auditModelLabel = auditTableIdColumn.modelLabel;
+}
+
 #>import {
   set_is_tran,<#
   if (opts.noAdd !== true) {
@@ -507,6 +536,203 @@ export async function updateById<#=Table_Up2#>(
   
   return id2;
 }<#
+}
+#><#
+if (hasAudit) {
+#>
+
+/** <#=table_comment#> 审核提交 */
+export async function auditSubmit<#=Table_Up2#>(
+  id: <#=Table_Up#>Id,
+) {
+  
+  const {
+    auditSubmit,
+  } = await import("./<#=table#>.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "audit_submit",
+  );<#
+  if (log) {
+  #>
+  
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();
+  const old_data = id;<#
+  }
+  #>
+  
+  const res = await auditSubmit(id);<#
+  if (log) {
+  #>
+  
+  const end_time = new Date();
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "auditSubmit",
+    method_lbl: "审核提交",
+    lbl: "审核提交",
+    time: end_time.getTime() - begin_time.getTime(),
+    old_data,
+  });<#
+  }
+  #>
+  
+  return res;
+}
+
+/** <#=table_comment#> 审核通过 */
+export async function auditPass<#=Table_Up2#>(
+  id: <#=Table_Up#>Id,
+) {
+  
+  const {
+    auditPass,
+  } = await import("./<#=table#>.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "audit_pass",
+  );<#
+  if (log) {
+  #>
+  
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();
+  const old_data = id;<#
+  }
+  #>
+  
+  const res = await auditPass(id);<#
+  if (log) {
+  #>
+  
+  const end_time = new Date();
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "auditPass",
+    method_lbl: "审核通过",
+    lbl: "审核通过",
+    time: end_time.getTime() - begin_time.getTime(),
+    old_data,
+  });<#
+  }
+  #>
+  
+  return res;
+}
+
+/** <#=table_comment#> 审核拒绝 */
+export async function auditReject<#=Table_Up2#>(
+  id: <#=Table_Up#>Id,
+  input: <#=auditTable_Up#>Input,
+) {
+  
+  const {
+    auditReject,
+  } = await import("./<#=table#>.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "audit_reject",
+  );<#
+  if (log) {
+  #>
+  
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();
+  const old_data = id;<#
+  }
+  #>
+  
+  const res = await auditReject(id, input);<#
+  if (log) {
+  #>
+  
+  const end_time = new Date();
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "auditReject",
+    method_lbl: "审核拒绝",
+    lbl: "审核拒绝",
+    time: end_time.getTime() - begin_time.getTime(),
+    old_data,
+  });<#
+  }
+  #>
+  
+  return res;
+}<#
+if (hasReviewed) {
+#>
+
+/** <#=table_comment#> 复核通过 */
+export async function auditReview<#=Table_Up2#>(
+  id: <#=Table_Up#>Id,
+) {
+  
+  const {
+    auditReview,
+  } = await import("./<#=table#>.service.ts");
+  
+  set_is_tran(true);
+  
+  await usePermit(
+    route_path,
+    "audit_review",
+  );<#
+  if (log) {
+  #>
+  
+  const {
+    log,
+  } = await import("/src/base/operation_record/operation_record.service.ts");
+  
+  const begin_time = new Date();
+  const old_data = id;<#
+  }
+  #>
+  
+  const res = await auditReview(id);<#
+  if (log) {
+  #>
+  
+  const end_time = new Date();
+  await log({
+    module: "<#=mod#>_<#=table#>",
+    module_lbl: "<#=table_comment#>",
+    method: "auditReview",
+    method_lbl: "复核通过",
+    lbl: "复核通过",
+    time: end_time.getTime() - begin_time.getTime(),
+    old_data,
+  });<#
+  }
+  #>
+  
+  return res;
+}<#
+}
+#><#
 }
 #><#
 if (opts.noDelete !== true) {
