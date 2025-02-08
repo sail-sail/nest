@@ -7,6 +7,8 @@ import type {
   RouteRecordRaw,
 } from "vue-router";
 
+import cfg from "@/utils/config";
+
 import router0 from "./index";
 
 export function getRouter(path0?: string) {
@@ -125,4 +127,17 @@ export function getRouterByName(
       return router;
     }
   }
+}
+
+export async function openForeignPage(
+  routeName: string,
+  tabName: string | undefined,
+  query?: { [key: string]: string },
+) {
+  const tabsStore = useTabsStore(cfg.pinia);
+  await tabsStore.openPageByRouteName(
+    routeName,
+    tabName,
+    query,
+  );
 }
