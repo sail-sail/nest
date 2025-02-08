@@ -11,6 +11,7 @@ import {
 
 import {
   findById as findByIdUsr,
+  validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import * as cardDao from "./card.dao.ts";
