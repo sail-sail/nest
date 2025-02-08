@@ -144,13 +144,19 @@ pub async fn update_tenant_by_id(
 }
 
 /// 根据 id 修改任务
-#[allow(dead_code)]
-#[allow(unused_mut)]
+#[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
   id: JobId,
   mut input: JobInput,
   options: Option<Options>,
 ) -> Result<JobId> {
+  
+  let old_model = job_dao::validate_option(
+    job_dao::find_by_id(
+      id.clone(),
+      options.clone(),
+    ).await?,
+  ).await?;
   
   let is_locked = job_dao::get_is_locked_by_id(
     id.clone(),
@@ -163,16 +169,9 @@ pub async fn update_by_id(
   }
   
   // 不能修改系统记录的系统字段
-  let model = job_dao::find_by_id(
-    id.clone(),
-    None,
-  ).await?;
-  
-  if let Some(model) = model {
-    if model.is_sys == 1 {
-      // 编码
-      input.code = None;
-    }
+  if old_model.is_sys == 1 {
+    // 编码
+    input.code = None;
   }
   
   let job_id = job_dao::update_by_id(
