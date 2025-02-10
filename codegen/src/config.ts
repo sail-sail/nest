@@ -400,6 +400,48 @@ export interface TableCloumn {
   isColorShowAlpha?: boolean,
   
   /**
+   * 是否是省份代码
+   * 如果是, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
+   */
+  isProvinceCode?: boolean,
+  
+  /**
+   * 是否是省份名称
+   * 如果是, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
+   */
+  isProvinceLbl?: boolean,
+  
+  /**
+   * 是否是城市代码
+   * 如果是, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
+   */
+  isCityCode?: boolean,
+  
+  /**
+   * 是否是城市名称
+   * 如果是, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
+   */
+  isCityLbl?: boolean,
+  
+  /**
+   * 是否是区县代码
+   * 如果是, 则默认: onlyCodegenDeno = true, onlyCodegenDenoButApi = true
+   */
+  isCountyCode?: boolean,
+  
+  /**
+   * 是否是区县名称
+   * 如果是, 则默认: width = 160, align = "left"
+   */
+  isCountyLbl?: boolean,
+  
+  /**
+   * 是否是详细地址
+   * 如果是, 则默认: width = 180, align = "left", isTextarea = true
+   */
+  isAddress?: boolean,
+  
+  /**
    * 是否保留换行 un-whitespace-pre
    * 默认为 false
    */

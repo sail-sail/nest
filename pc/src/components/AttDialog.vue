@@ -142,7 +142,7 @@
           </template>
           
           <!-- 判断是否为xlsx文件 -->
-          <template
+          <!-- <template
             v-else-if="fileStats[i]?.contentType?.startsWith('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
               || fileStats[i]?.contentType?.startsWith('application/vnd.ms-excel.sheet')"
           >
@@ -154,10 +154,10 @@
               un-overflow-auto
               un-w="full"
             ></VueOfficeExcel>
-          </template>
+          </template> -->
           
           <!-- 判断是否为docx文件 -->
-          <template
+          <!-- <template
             v-else-if="fileStats[i]?.contentType?.startsWith('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
               || fileStats[i]?.contentType?.startsWith('application/msword')"
           >
@@ -169,7 +169,7 @@
               un-overflow-auto
               un-w="full"
             ></VueOfficeDocx>
-          </template>
+          </template> -->
           
           <template
             v-else
@@ -314,14 +314,13 @@
 
 <script lang="ts" setup>
 import { filesize } from "filesize";
-import { baseURL } from '@/utils/request';
 
 import {
   getStatsOss,
 } from "./Api";
 
-import VueOfficeExcel from "@vue-office/excel";
-import VueOfficeDocx from "@vue-office/docx";
+// import VueOfficeExcel from "@vue-office/excel";
+// import VueOfficeDocx from "@vue-office/docx";
 
 import {
   saveAs,
