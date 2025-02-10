@@ -500,6 +500,75 @@ async function getSchema0(
         item.width = 150;
       }
     }
+    
+    // 是否省市县区选择控件
+    if (item.COLUMN_NAME === "province_code" || item.COLUMN_NAME.endsWith("_province_code")) {
+      if (item.isProvinceCode === undefined) {
+        item.isProvinceCode = true;
+      }
+    }
+    if (item.COLUMN_NAME === "province_lbl" || item.COLUMN_NAME.endsWith("_province_lbl")) {
+      if (item.isProvinceLbl === undefined) {
+        item.isProvinceLbl = true;
+      }
+    }
+    if (item.COLUMN_NAME === "city_code" || item.COLUMN_NAME.endsWith("_city_code")) {
+      if (item.isCityCode === undefined) {
+        item.isCityCode = true;
+      }
+    }
+    if (item.COLUMN_NAME === "city_lbl" || item.COLUMN_NAME.endsWith("_city_lbl")) {
+      if (item.isCityLbl === undefined) {
+        item.isCityLbl = true;
+      }
+    }
+    if (item.COLUMN_NAME === "county_code" || item.COLUMN_NAME.endsWith("_county_code")) {
+      if (item.isCountyCode === undefined) {
+        item.isCountyCode = true;
+      }
+    }
+    if (item.COLUMN_NAME === "county_lbl" || item.COLUMN_NAME.endsWith("_county_lbl")) {
+      if (item.isCountyLbl === undefined) {
+        item.isCountyLbl = true;
+      }
+    }
+    if (item.COLUMN_NAME === "address" || item.COLUMN_NAME.endsWith("_address")) {
+      if (item.isAddress === undefined) {
+        item.isAddress = true;
+      }
+    }
+    if (
+      item.isProvinceCode || item.isProvinceLbl ||
+      item.isCityCode || item.isCityLbl ||
+      item.isCountyCode
+    ) {
+      if (item.onlyCodegenDeno == null) {
+        item.onlyCodegenDeno = true;
+      }
+      if (item.onlyCodegenDenoButApi == null) {
+        item.onlyCodegenDenoButApi = true;
+      }
+    }
+    if (item.isCountyLbl) {
+      if (item.width == null) {
+        item.width = 200;
+      }
+      if (item.align == null) {
+        item.align = "left";
+      }
+    }
+    if (item.isAddress) {
+      if (item.width == null) {
+        item.width = 220;
+      }
+      if (item.align == null) {
+        item.align = "left";
+      }
+      if (item.isTextarea == null) {
+        item.isTextarea = true;
+      }
+    }
+    
   }
   // 校验
   for (let i = 0; i < records2.length; i++) {

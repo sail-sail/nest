@@ -91,6 +91,7 @@ const tableFieldPermit = columns.some((item) => item.fieldPermit);
 
 const hasImg = columns.some((item) => item.isImg);
 const hasAtt = columns.some((item) => item.isAtt);
+
 // 审核
 const hasAudit = !!opts?.audit;
 let auditColumn = "";
@@ -108,6 +109,50 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
+
+// 选择省市县区
+let province_code_column = undefined;
+let province_lbl_column = undefined;
+let city_code_column = undefined;
+let city_lbl_column = undefined;
+let county_code_column = undefined;
+let county_lbl_column = undefined;
+let address_column = undefined;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  const column_name = column.COLUMN_NAME;
+  if (column.isProvinceCode) {
+    province_code_column = column;
+  }
+  if (column.isProvinceLbl) {
+    province_lbl_column = column;
+  }
+  if (column.isCityCode) {
+    city_code_column = column;
+    if (!province_code_column) {
+      throw new Error("没有配置省份字段");
+    }
+  }
+  if (column.isCityLbl) {
+    city_lbl_column = column;
+  }
+  if (column.isCountyCode) {
+    county_code_column = column;
+    if (!city_lbl_column) {
+      throw new Error("没有配置城市字段");
+    }
+  }
+  if (column.isCountyLbl) {
+    county_lbl_column = column;
+  }
+  if (column.isAddress) {
+    address_column = column;
+  }
+  if (province_code_column && province_lbl_column && city_code_column && city_lbl_column && county_code_column && county_lbl_column && address_column) {
+    break;
+  }
+}
+
 #>
 <CustomDialog
   ref="customDialogRef"
@@ -939,6 +984,43 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
               }
               #>
             ></CustomColorPicker><#
+            } else if (column.isCountyLbl) {
+            #>
+            <CustomCityPicker
+              v-model="<#=column_name#>_city_picker"<#
+              if (isUseI18n) {
+              #>
+              :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
+              } else {
+              #>
+              placeholder="请选择 <#=column_comment#>"<#
+              }
+              #><#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
+              }
+              #><#
+              if (readonlyPlaceholder) {
+              #><#
+              if (isUseI18n) {
+              #>
+              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              } else {
+              #>
+              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              }
+              #><#
+              }
+              #>
+            ></CustomCityPicker><#
             } else {
             #>
             <CustomInput
@@ -4195,6 +4277,35 @@ let dialogModel: <#=inputName#> = $ref({<#
   }
   #>
 } as <#=inputName#>);<#
+if (county_lbl_column) {
+#>
+
+/** 选择省市区县 */
+const <#=county_lbl_column.COLUMN_NAME#>_city_picker = $computed<[string, string, string] | undefined>({
+  get() {
+    return [
+      dialogModel.<#=province_code_column.COLUMN_NAME#> ?? "",
+      dialogModel.<#=city_code_column.COLUMN_NAME#> ?? "",
+      dialogModel.<#=county_code_column.COLUMN_NAME#> ?? "",
+    ];
+  },
+  async set(codes) {
+    const <#=province_code_column.COLUMN_NAME#> = codes?.[0] ?? "";
+    const <#=province_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=province_code_column.COLUMN_NAME#>);
+    const <#=city_code_column.COLUMN_NAME#> = codes?.[1] ?? "";
+    const <#=city_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=city_code_column.COLUMN_NAME#>);
+    const <#=county_code_column.COLUMN_NAME#> = codes?.[2] ?? "";
+    const <#=county_lbl_column.COLUMN_NAME#> = await findNameByCodePcaCode(<#=county_code_column.COLUMN_NAME#>);
+    dialogModel.<#=province_code_column.COLUMN_NAME#> = <#=province_code_column.COLUMN_NAME#>;
+    dialogModel.<#=province_lbl_column.COLUMN_NAME#> = <#=province_lbl_column.COLUMN_NAME#>;
+    dialogModel.<#=city_code_column.COLUMN_NAME#> = <#=city_code_column.COLUMN_NAME#>;
+    dialogModel.<#=city_lbl_column.COLUMN_NAME#> = <#=city_lbl_column.COLUMN_NAME#>;
+    dialogModel.<#=county_code_column.COLUMN_NAME#> = <#=county_code_column.COLUMN_NAME#>;
+    dialogModel.<#=county_lbl_column.COLUMN_NAME#> = <#=county_lbl_column.COLUMN_NAME#>;
+  },
+});<#
+}
+#><#
 if (hasDataPermit() && hasCreateUsrId) {
 #>
 let isEditableDataPermit = $ref(true);<#
