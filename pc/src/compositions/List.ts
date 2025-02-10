@@ -947,8 +947,8 @@ export function useSelectOne<T>(
     if (!rowKey) {
       return;
     }
-    const newSelectList = [ ];
-    const select2falseList = [ ];
+    const newSelectList: any[] = [ ];
+    const select2falseList: any[] = [ ];
     for (let i = 0; i < tableRef.value.data.length; i++) {
       const item = tableRef.value.data[i];
       if (selectedIds.includes(item[rowKey])) {
