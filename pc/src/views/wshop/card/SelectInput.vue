@@ -23,8 +23,8 @@
     @keydown.enter="onEnter"
   >
     <template
-      v-for="(key, index) in slotKeys"
-      :key="index"
+      v-for="key in $slots"
+      :key="key"
       #[key]
     >
       <slot
@@ -103,10 +103,6 @@ import {
   findAll,
   getPagePath,
 } from "./Api";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const slots: any = useSlots();
-const slotKeys = Object.keys(slots);
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: CardId | CardId[] | null): void,
