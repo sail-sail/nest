@@ -425,6 +425,8 @@ html:is(.dark) {
   .custom_select_readonly,
   .custom_input_readonly:not(.select_input),
   .custom_date_picker_readonly,
+  .custom_city_picker_readonly,
+  .custom_color_picker_readonly,
   .custom_input_number_readonly,
   .custom_switch_readonly,
   .custom_checkbox_readonly,
@@ -436,6 +438,8 @@ html:is(.dark) {
   .custom_select_readonly,
   .custom_input_readonly:not(.select_input),
   .custom_date_picker_readonly,
+  .custom_city_picker_readonly,
+  .custom_color_picker_readonly,
   .custom_input_number_readonly,
   .custom_switch_readonly,
   .custom_checkbox_readonly,
@@ -466,12 +470,25 @@ html:is(.dark) {
   right: 0;
 }
 
+.el-form-item .custom_city_picker,
+.el-form-item .custom_city_picker_readonly {
+  width: 100%;
+  .custom_city_picker_readonly_content {
+    @apply p-y-1.25;
+  }
+  .el-cascader {
+    width: 100%;
+  }
+}
+
 .inlineMany2manyTab_table {
   .dict_select_readonly,
   .dictbiz_select_readonly,
   .custom_select_readonly,
   .custom_input_readonly,
   .custom_date_picker_readonly,
+  .custom_city_picker_readonly,
+  .custom_color_picker_readonly,
   .custom_input_number_readonly,
   .custom_switch_readonly,
   .custom_checkbox_readonly,
