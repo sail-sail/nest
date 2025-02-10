@@ -217,6 +217,9 @@ export default defineConfig({
           "decimal.js": [
             [ "default", "Decimal" ],
           ],
+          "@/components/CustomCityPickerApi": [
+            "findNameByCodePcaCode",
+          ],
         },
       ],
       viteOptimizeDeps: false,

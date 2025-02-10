@@ -62,6 +62,7 @@ const hasIsSwitch = columns.some((item) => item.isSwitch && !item.onlyCodegenDen
 );
 const hasForeignKeyShowTypeDialog = columns.some((item) => item.foreignKey?.showType === "dialog" && !item.onlyCodegenDeno);
 const hasOrderBy = columns.some((item) => item.COLUMN_NAME === 'order_by' && !item.readonly && !item.onlyCodegenDeno);
+
 // 审核
 const hasAudit = !!opts?.audit;
 let auditColumn = "";
@@ -79,6 +80,50 @@ const auditTable_Up = auditTableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
 }).join("");
 const auditTableSchema = opts?.audit?.auditTableSchema;
+
+// 选择省市县区
+let province_code_column = undefined;
+let province_lbl_column = undefined;
+let city_code_column = undefined;
+let city_lbl_column = undefined;
+let county_code_column = undefined;
+let county_lbl_column = undefined;
+let address_column = undefined;
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  const column_name = column.COLUMN_NAME;
+  if (column.isProvinceCode) {
+    province_code_column = column;
+  }
+  if (column.isProvinceLbl) {
+    province_lbl_column = column;
+  }
+  if (column.isCityCode) {
+    city_code_column = column;
+    if (!province_code_column) {
+      throw new Error("没有配置省份字段");
+    }
+  }
+  if (column.isCityLbl) {
+    city_lbl_column = column;
+  }
+  if (column.isCountyCode) {
+    county_code_column = column;
+    if (!city_lbl_column) {
+      throw new Error("没有配置城市字段");
+    }
+  }
+  if (column.isCountyLbl) {
+    county_lbl_column = column;
+  }
+  if (column.isAddress) {
+    address_column = column;
+  }
+  if (province_code_column && province_lbl_column && city_code_column && city_lbl_column && county_code_column && county_lbl_column && address_column) {
+    break;
+  }
+}
+
 #><template>
 <div
   un-flex="~ [1_0_0] col"
@@ -1887,7 +1932,12 @@ const auditTableSchema = opts?.audit?.auditTableSchema;
               v-if="col.hide !== true"
               v-bind="col"
             ><#
-              if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
+              if (column.isCountyLbl) {
+              #>
+              <template #default="{ row, column }">
+                <#=prefix#>{{ row.<#=province_lbl_column.COLUMN_NAME#> }} / {{ row.<#=city_lbl_column.COLUMN_NAME#> }} / {{ row.<#=county_lbl_column.COLUMN_NAME#> }}
+              </template><#
+              } else if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
               #>
               <template #default="{ row, column }">
                 <el-link
