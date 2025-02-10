@@ -45,7 +45,7 @@
     class="custom_input_readonly"
     :class="{
       'custom_input_readonly_border': props.isReadonlyBorder,
-      'custom_input_readonly_no_border': !props.isReadonlyBorder
+      'custom_input_readonly_no_border': !props.isReadonlyBorder,
     }"
   >
     <div
