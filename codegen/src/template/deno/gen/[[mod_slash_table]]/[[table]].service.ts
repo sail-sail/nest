@@ -129,7 +129,7 @@ import {
   if (hasIsDeleted) {
   #>
   revertByIds as revertByIds<#=auditTable_Up#>,
-  force_delete_by_ids as force_delete_by_ids<#=auditTable_Up#>,<#
+  forceDeleteByIds as forceDeleteByIds<#=auditTable_Up#>,<#
   }
   #>
 } from "/gen/<#=auditMod#>/<#=auditTable#>/<#=auditTable#>.dao.ts";
@@ -479,7 +479,7 @@ export async function updateById(
   if (hasAudit) {
   #>
   
-  if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited ||
+  if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited &&
     old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected
   ) {<#
     if (isUseI18n) {
@@ -1051,7 +1051,7 @@ export async function forceDeleteByIds(
   
   const <#=auditTable#>_ids = <#=auditTable#>_models.map(item => item.id);
   
-  await force_delete_by_ids<#=auditTable_Up#>(<#=auditTable#>_ids);<#
+  await forceDeleteByIds<#=auditTable_Up#>(<#=auditTable#>_ids);<#
   }
   #>
   const data = await <#=table#>Dao.forceDeleteByIds(ids);

@@ -3,6 +3,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
     "importHelpers": false,
     "removeComments": false,
     "target": "ESNext",
