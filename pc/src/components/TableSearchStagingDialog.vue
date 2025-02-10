@@ -243,7 +243,8 @@ function onRefresh() {
 
 function save(model: SearchStagingType) {
   if (model.name) {
-    const searchList2 = [ ];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const searchList2: any[] = [ ];
     for (const item of searchList) {
       if (item.name === model.name) {
         continue;
@@ -266,7 +267,11 @@ async function onDelete(name: string, k: number) {
   // } catch(err) {
   //   return;
   // }
-  const searchList2 = [ ];
+  const searchList2: {
+      name: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      value: any;
+  }[] = [ ];
   for (let i = 0; i < searchList.length; i++) {
     const item = searchList[i];
     if (i === k) {
