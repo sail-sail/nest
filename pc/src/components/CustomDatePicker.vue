@@ -113,7 +113,7 @@ const shortcutsComputed = $computed(() => {
   } else if (type === "monthrange") {
     return [
       {
-        text: "本月",
+        text: "当月",
         value: () => {
           return [
             now.startOf("month").toDate(),
@@ -121,9 +121,9 @@ const shortcutsComputed = $computed(() => {
           ];
         },
       },
-      // 上月
+      // 上个月
       {
-        text: "上月",
+        text: "上个月",
         value: () => {
           return [
             now.subtract(1, "month").startOf("month").toDate(),
@@ -131,7 +131,7 @@ const shortcutsComputed = $computed(() => {
           ];
         },
       },
-      // 三个月
+      // 最近三个月
       {
         text: "最近三个月",
         value: () => {
@@ -146,18 +146,8 @@ const shortcutsComputed = $computed(() => {
         text: "最近六个月",
         value: () => {
           return [
-            now.subtract(6, "month").startOf("day").toDate(),
-            now.endOf("day").toDate(),
-          ];
-        },
-      },
-      // 最近一年
-      {
-        text: "最近一年",
-        value: () => {
-          return [
-            now.subtract(1, "year").startOf("day").toDate(),
-            now.endOf("day").toDate(),
+            now.subtract(6, "month").startOf("month").toDate(),
+            now.endOf("month").toDate(),
           ];
         },
       },
@@ -177,8 +167,17 @@ const shortcutsComputed = $computed(() => {
         text: "当月",
         value: () => {
           return [
-            now.subtract(1, "month").startOf("day").toDate(),
-            now.endOf("day").toDate(),
+            now.startOf("month").toDate(),
+            now.endOf("month").toDate(),
+          ];
+        },
+      },
+      {
+        text: "上个月",
+        value: () => {
+          return [
+            now.subtract(1, "month").startOf("month").toDate(),
+            now.subtract(1, "month").endOf("month").toDate(),
           ];
         },
       },
@@ -186,8 +185,8 @@ const shortcutsComputed = $computed(() => {
         text: "最近三个月",
         value: () => {
           return [
-            now.subtract(3, "month").startOf("day").toDate(),
-            now.endOf("day").toDate(),
+            now.subtract(3, "month").startOf("month").toDate(),
+            now.endOf("month").toDate(),
           ];
         },
       },
@@ -196,18 +195,8 @@ const shortcutsComputed = $computed(() => {
         text: "最近六个月",
         value: () => {
           return [
-            now.subtract(6, "month").startOf("day").toDate(),
-            now.endOf("day").toDate(),
-          ];
-        },
-      },
-      // 最近一年
-      {
-        text: "最近一年",
-        value: () => {
-          return [
-            now.subtract(1, "year").startOf("day").toDate(),
-            now.endOf("day").toDate(),
+            now.subtract(6, "month").startOf("month").toDate(),
+            now.endOf("month").toDate(),
           ];
         },
       },
