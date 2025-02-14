@@ -39,6 +39,7 @@ declare global {
     notLoading?: boolean;
     isMutation?: boolean;
     "x-request-id"?: string;
+    client_tenant_id?: TenantId | null;
   }
   
 }
@@ -285,9 +286,16 @@ export function getQueryUrl(gqlArg: GqlArg, opt?: GqlOpt, authorization?: string
   if (opt && opt.isMutation) {
     request_id = opt["x-request-id"] || uuid();
   }
+  let client_tenant_id = opt?.client_tenant_id;
+  if (!client_tenant_id) {
+    client_tenant_id = sessionStorage.getItem("client_tenant_id") as TenantId;
+  }
   let url = `/graphql?query=${ encodeURIComponent(gqlArg.query) }&variables=${ encodeURIComponent(JSON.stringify(gqlArg.variables)) }`;
   if (request_id) {
     url += `&request_id=${ request_id }`;
+  }
+  if (client_tenant_id) {
+    url += `&client_tenant_id=${ client_tenant_id }`;
   }
   if (authorization) {
     url += `&Authorization=${ authorization }`;
@@ -322,6 +330,7 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
       // showErrMsg: opt?.showErrMsg,
       // duration: opt?.duration,
       isMutation: opt?.isMutation,
+      client_tenant_id: opt?.client_tenant_id,
     } as any);
   } catch (err0) {
     const err = err0 as any;
