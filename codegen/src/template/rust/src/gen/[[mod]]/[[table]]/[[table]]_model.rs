@@ -1747,7 +1747,7 @@ pub struct <#=tableUP#>Search {
     } else if (data_type === 'varchar') {
       _data_type = 'String';
     } else if (data_type === 'date') {
-      _data_type = "chrono::NaiveDateTime";
+      _data_type = "chrono::NaiveDate";
     } else if (data_type === 'datetime') {
       _data_type = "chrono::NaiveDateTime";
     } else if (data_type === 'time') {
@@ -2715,7 +2715,7 @@ impl From<<#=tableUP#>Input> for <#=tableUP#>Search {
       } else if (["date"].includes(data_type)) {
       #>
       // <#=column_comment#>
-      <#=column_name#>: input.<#=column_name#>.map(|x| [Some(x.and_hms_opt(0, 0, 0).unwrap()), Some(x.and_hms_opt(23, 59, 59).unwrap())]),<#
+      <#=column_name#>: input.<#=column_name#>.map(|x| [Some(x), Some(x)]),<#
       } else if (["datetime","time","int","decimal"].includes(data_type)) {
       #>
       // <#=column_comment#>

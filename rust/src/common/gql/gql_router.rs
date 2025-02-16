@@ -65,6 +65,14 @@ pub async fn graphql_handler_get(
     },
   }
   gql_req = gql_req.data::<crate::common::gql::model::Ip>(ip);
+  
+  // client_tenant_id
+  let client_tenant_id = req.header("TenantId")
+    .map(crate::common::auth::auth_model::ClientTenantId::from);
+  if let Some(client_tenant_id) = client_tenant_id {
+    gql_req = gql_req.data::<crate::common::auth::auth_model::ClientTenantId>(client_tenant_id);
+  }
+  
   if let Some(variables) = gql_params.variables {
     let variables = match serde_json::from_str::<Variables>(&variables) {
       Ok(variables) => variables,
@@ -125,6 +133,14 @@ pub async fn graphql_handler(
     },
   }
   gql_req = gql_req.data::<crate::common::gql::model::Ip>(ip);
+  
+  // client_tenant_id
+  let client_tenant_id = req.header("TenantId")
+    .map(crate::common::auth::auth_model::ClientTenantId::from);
+  if let Some(client_tenant_id) = client_tenant_id {
+    gql_req = gql_req.data::<crate::common::auth::auth_model::ClientTenantId>(client_tenant_id);
+  }
+  
   // info!(
   //   "{query}",
   //   query = gql_req.query,
