@@ -142,7 +142,12 @@ export async function getTenant_idByWx_usr(): Promise<TenantId | undefined> {
 export async function getTenant_id(
   usr_id?: UsrId | null,
 ): Promise<TenantId | undefined> {
+  const context = useContext();
   const authModel = await getAuthModel();
+  if (!authModel && context.client_tenant_id) {
+    const tenant_id = context.client_tenant_id;
+    return tenant_id;
+  }
   let tenant_id = authModel?.tenant_id;
   if (!tenant_id && usr_id) {
     const args = new QueryArgs();

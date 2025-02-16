@@ -180,7 +180,7 @@ pub fn get_auth_model_err() -> Result<AuthModel> {
       return Ok(ctx.auth_model.clone().unwrap());
     }
     error!(
-      "{req_id} Not login! - validate_auth_model is none",
+      "{req_id} get_auth_model_err - Not login!",
       req_id = ctx.req_id,
     );
     Err(eyre!("Not login!"))
@@ -200,12 +200,21 @@ pub fn get_auth_id() -> Option<UsrId> {
 /// 获取当前登录用户的id
 pub fn get_auth_id_err() -> Result<UsrId> {
   get_auth_id()
-    .ok_or(eyre!("Not login!"))
+    .ok_or({
+      error!(
+        "{req_id} get_auth_id_err - Not login!",
+        req_id = get_req_id(),
+      );
+      eyre!("Not login!")
+    })
 }
 
 /// 获取当前登录用户的租户id
 pub fn get_auth_tenant_id() -> Option<TenantId> {
   CTX.with(|ctx| {
+    if ctx.auth_model.is_none() && ctx.client_tenant_id.is_some() {
+      return ctx.client_tenant_id.clone();
+    }
     match ctx.auth_model.clone() {
       Some(item) => item.tenant_id.into(),
       None => None,
@@ -227,7 +236,13 @@ pub fn get_auth_org_id() -> Option<OrgId> {
 #[allow(dead_code)]
 pub fn get_auth_org_id_err() -> Result<OrgId> {
   get_auth_org_id()
-    .ok_or(eyre!("Not login!"))
+    .ok_or({
+      error!(
+        "{req_id} get_auth_org_id_err - Not login!",
+        req_id = get_req_id(),
+      );
+      eyre!("Not login!")
+    })
 }
 
 /// 获取当前登录用户的语言
@@ -1123,6 +1138,9 @@ pub struct Ctx {
   /// 创建模式 delete_by_ids 时不自动修改 delete_usr_id, delete_usr_id_lbl 跟 delete_time
   is_creating: Option<bool>,
   
+  /// 无token时的租户id
+  client_tenant_id: Option<TenantId>,
+  
 }
 
 impl Ctx {
@@ -1154,6 +1172,9 @@ impl Ctx {
       let res = f.await;
       let mut res = res.into_response();
       let ctx = CTX.with(|ctx| ctx.clone());
+      if !ctx.is_resful {
+        return Err(eyre!("must use scope()"));
+      }
       if let Some(auth_token) = ctx.auth_token.as_deref() {
         res.headers_mut()
           .insert(AUTHORIZATION, auth_token.parse().unwrap());
@@ -1728,6 +1749,8 @@ pub struct CtxBuilder<'a> {
   
   is_creating: Option<bool>,
   
+  client_tenant_id: Option<TenantId>,
+  
 }
 
 impl <'a> CtxBuilder<'a> {
@@ -1737,6 +1760,13 @@ impl <'a> CtxBuilder<'a> {
   ) -> CtxBuilder<'a> {
     let now = Local::now().naive_local();
     let req_id = now.and_utc().timestamp_millis().to_string();
+    
+    let client_tenant_id = if let Some(gql_ctx) = gql_ctx {
+      gql_ctx.data_opt::<super::auth::auth_model::ClientTenantId>().cloned()
+    } else {
+      None
+    };
+    
     CtxBuilder {
       gql_ctx,
       resful_req: None,
@@ -1748,11 +1778,20 @@ impl <'a> CtxBuilder<'a> {
       is_debug: None,
       is_silent_mode: false,
       is_creating: None,
+      client_tenant_id,
     }
   }
   
   /// 设置restful请求, 从而获取token
   fn with_resful_req(mut self, resful_req: &'a poem::Request) -> CtxBuilder<'a> {
+    
+    // client_tenant_id
+    let client_tenant_id = resful_req
+      .header("TenantId")
+      .map(TenantId::from);
+    
+    self.client_tenant_id = client_tenant_id;
+    
     self.resful_req = Some(resful_req);
     self
   }
@@ -1887,6 +1926,7 @@ impl <'a> CtxBuilder<'a> {
       is_debug: self.is_debug,
       is_silent_mode: self.is_silent_mode,
       is_creating: self.is_creating,
+      client_tenant_id: self.client_tenant_id,
     }
   }
   

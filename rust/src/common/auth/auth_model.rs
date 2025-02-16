@@ -19,3 +19,5 @@ pub struct AuthModel {
 }
 
 pub type AuthToken = String;
+
+pub type ClientTenantId = TenantId;

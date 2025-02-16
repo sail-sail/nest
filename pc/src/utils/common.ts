@@ -139,3 +139,23 @@ export async function copyText(text: string) {
     console.error(err);
   }
 }
+
+/**
+ * 无token时自定义租户ID
+ */
+export function setClientTenantId(
+  tenant_id_fn: () => TenantId | undefined,
+) {
+  watch(
+    tenant_id_fn,
+    () => {
+      const tenant_id = tenant_id_fn();
+      if (tenant_id) {
+        sessionStorage.setItem("client_tenant_id", tenant_id);
+      }
+    },
+    {
+      immediate: true,
+    },
+  )
+}
