@@ -240,6 +240,8 @@ export class Context {
   
   lang_id: LangId | undefined;
   
+  client_tenant_id: TenantId | undefined;
+  
   /** token */
   authorization: string | null | undefined;
   
@@ -264,6 +266,18 @@ export class Context {
     }
     req_id++;
     this.#req_id = req_id.toString(36);
+    if (oakCtx) {
+      const request = oakCtx?.request;
+      const headers = request?.headers;
+      let client_tenant_id = headers?.get("TenantId");
+      if (!client_tenant_id) {
+        const searchParams = request?.url.searchParams;
+        client_tenant_id = searchParams?.get("TenantId");
+      }
+      if (client_tenant_id) {
+        this.client_tenant_id = client_tenant_id as TenantId;
+      }
+    }
   }
   
   get conn() {
