@@ -87,6 +87,7 @@ export default defineConfig({
             "getDictbiz",
             "showUploadMsg",
             "list2tree",
+            "setClientTenantId",
           ],
           "@/utils/excel_util": [
             "getExcelData",

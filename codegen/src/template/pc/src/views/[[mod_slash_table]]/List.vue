@@ -1934,7 +1934,7 @@ for (let i = 0; i < columns.length; i++) {
             ><#
               if (column.isCountyLbl) {
               #>
-              <template #default="{ row, column }">
+              <template #default="{ row }">
                 <#=prefix#>{{ row.<#=province_lbl_column.COLUMN_NAME#> }} / {{ row.<#=city_lbl_column.COLUMN_NAME#> }} / {{ row.<#=county_lbl_column.COLUMN_NAME#> }}
               </template><#
               } else if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
@@ -2887,7 +2887,26 @@ const <#=column_name#>_search = $computed({
     }
   },
 });<#
-  } else if (data_type === "datetime" || data_type === "date") {
+  } else if (data_type === "datetime") {
+#>
+
+// <#=column_comment#>
+const <#=column_name#>_search = $computed({
+  get() {
+    return search.<#=column_name#> || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.<#=column_name#> = undefined;
+    } else {
+      search.<#=column_name#> = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      ];
+    }
+  },
+});<#
+  } else if (data_type === "date") {
 #>
 
 // <#=column_comment#>
