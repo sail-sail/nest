@@ -18,6 +18,11 @@
     :key="item"
     un-relative
     class="upload_image_item"
+    tabindex="0"
+    @keydown.enter="onView(i)"
+    @keydown.space="onView(i)"
+    @keydown.delete="onDelete(i)"
+    @keydown.backspace="onDelete(i)"
   >
     <div
       un-cursor-pointer
@@ -111,12 +116,16 @@
   </div>
   <div
     v-if="props.pageInited && !props.readonly && thumbList.length < props.maxSize"
+    class="upload_image_empty"
     :style="{
       height: `${ (props.itemHeight + 4) }px`,
       width: `${ (props.itemHeight + 4) }px`,
     }"
     un-p="0.75"
     un-box-border
+    tabindex="0"
+    @keydown.z.ctrl="onUndo"
+    @keydown.enter="onUpload"
   >
     <div
       un-b="1 dotted gray-300 hover:[var(--el-color-primary)]"
@@ -127,6 +136,8 @@
       un-rounded
       un-h="full"
       un-w="full"
+      un-transition="border-color"
+      un-relative
       @click="onUpload"
     >
       <el-icon
@@ -135,6 +146,30 @@
       >
         <ElIconPlus />
       </el-icon>
+      <div
+        v-if="!props.readonly && oldModelValue1"
+        un-absolute
+        un-right="-.5"
+        un-top="-1"
+        un-flex="~"
+        un-justify-center
+        un-items-center
+        un-bg="transparent hover:gray"
+        un-text="gray hover:white"
+        un-rounded="full"
+        un-p="0.5"
+        un-box-border
+        un-cursor-pointer
+        @click.stop="onUndo"
+      >
+        <el-icon
+          :size="16"
+        >
+          <div
+            un-i="iconfont-undo-fill"
+          ></div>
+        </el-icon>
+      </div>
     </div>
   </div>
 </div>
@@ -211,6 +246,7 @@ const props = withDefaults(
 );
 
 let modelValue1 = $ref(props.modelValue);
+let oldModelValue1 = $ref(props.modelValue);
 
 watch(() => props.modelValue, (newVal) => {
   if (modelValue1 !== newVal) {
@@ -311,6 +347,7 @@ async function onInput() {
     nowIndex = idArr.length - 1;
   }
   emit("update:modelValue", modelValue1);
+  nextTick(focus);
 }
 
 // 点击上传图片
@@ -341,6 +378,7 @@ async function onDelete(
   } catch (err) {
     return;
   }
+  oldModelValue1 = modelValue1;
   let idArr: string[] = [ ];
   if (modelValue1) {
     idArr = modelValue1.split(",").filter((x) => x).filter((_, i) => i !== nowIndex);
@@ -351,8 +389,19 @@ async function onDelete(
   } else if (nowIndex > 0) {
     nowIndex--;
   }
-  // ElMessage.success("删除成功!");
   emit("update:modelValue", modelValue1);
+  nextTick(focus);
+}
+
+// 还原图片
+async function onUndo() {
+  if (!oldModelValue1) {
+    return;
+  }
+  modelValue1 = oldModelValue1;
+  oldModelValue1 = "";
+  emit("update:modelValue", modelValue1);
+  nextTick(focus);
 }
 
 let showImageViewer = $ref(false);
@@ -407,4 +456,47 @@ watch(
     deep: true,
   },
 );
+
+let isFocus = $ref(false);
+
+watch(
+  () => [
+    isFocus,
+    uploadImageRef,
+  ],
+  () => {
+    if (!uploadImageRef || !isFocus) {
+      return;
+    }
+    const upload_image_itemArr = uploadImageRef.getElementsByClassName("upload_image_item") as HTMLCollectionOf<HTMLDivElement>;
+    if (upload_image_itemArr.length > 0) {
+      upload_image_itemArr[0].focus();
+    } else {
+      const upload_image_emptyArr = uploadImageRef.getElementsByClassName("upload_image_empty") as HTMLCollectionOf<HTMLDivElement>;
+      if (upload_image_emptyArr.length > 0) {
+        upload_image_emptyArr[0].focus();
+      }
+    }
+  },
+);
+
+function focus() {
+  isFocus = true;
+  if (!uploadImageRef) {
+    return;
+  }
+  const upload_image_itemArr = uploadImageRef.getElementsByClassName("upload_image_item") as HTMLCollectionOf<HTMLDivElement>;
+  if (upload_image_itemArr.length > 0) {
+    upload_image_itemArr[0].focus();
+  } else {
+    const upload_image_emptyArr = uploadImageRef.getElementsByClassName("upload_image_empty") as HTMLCollectionOf<HTMLDivElement>;
+    if (upload_image_emptyArr.length > 0) {
+      upload_image_emptyArr[0].focus();
+    }
+  }
+}
+
+defineExpose({
+  focus,
+});
 </script>

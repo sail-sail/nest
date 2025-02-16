@@ -394,10 +394,10 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 
 :root {
-  --readonly_font_color: #888;
+  --readonly_font_color: #909399;
 }
 html:is(.dark) {
-  --readonly_font_color: #bbb;
+  --readonly_font_color: #909399;
 }
 .dict_select_readonly,
 .dictbiz_select_readonly,
