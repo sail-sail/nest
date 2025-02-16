@@ -19,6 +19,7 @@ export async function request<T>(
     method?: string;
     data?: any;
     duration?: number;
+    client_tenant_id?: TenantId | null;
   },
 ): Promise<T> {
   const indexStore = useIndexStore(cfg.pinia);
@@ -45,6 +46,14 @@ export async function request<T>(
     const authorization = usrStore.authorization;
     if (authorization) {
       config.headers.set("authorization", authorization);
+    }
+    
+    let client_tenant_id = config.client_tenant_id;
+    if (!client_tenant_id) {
+      client_tenant_id = sessionStorage.getItem("client_tenant_id") as TenantId;
+    }
+    if (client_tenant_id) {
+      config.headers.set("TenantId", client_tenant_id);
     }
     
     let body = config.data;
