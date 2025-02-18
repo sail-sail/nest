@@ -18,7 +18,7 @@ declare global {
   
   /** 定时任务 */
   interface CronJobSearch extends CronJobSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 定时任务 */
