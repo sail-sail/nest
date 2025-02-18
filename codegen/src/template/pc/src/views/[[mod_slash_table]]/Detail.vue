@@ -388,10 +388,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>': ''"<#
               }
               #><#
               }
@@ -474,10 +474,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -562,10 +562,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -622,10 +622,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -678,10 +678,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -727,10 +727,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -786,10 +786,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -825,10 +825,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -864,10 +864,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -920,10 +920,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -1012,10 +1012,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -1061,10 +1061,10 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               if (isUseI18n) {
               #>
-              :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+              :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
               } else {
               #>
-              readonly-placeholder="<#=readonlyPlaceholder#>"<#
+              :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
               }
               #><#
               }
@@ -1255,10 +1255,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -1298,10 +1298,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -1359,10 +1359,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -1396,10 +1396,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -1438,10 +1438,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -1490,10 +1490,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -1529,10 +1529,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -1562,10 +1562,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -1611,10 +1611,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -1647,10 +1647,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -1920,10 +1920,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2002,10 +2002,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2090,10 +2090,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2150,10 +2150,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2206,10 +2206,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2255,10 +2255,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2314,10 +2314,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2353,10 +2353,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2392,10 +2392,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2448,10 +2448,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2498,10 +2498,10 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     if (isUseI18n) {
                     #>
-                    :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                    :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                     } else {
                     #>
-                    readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                    :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                     }
                     #><#
                     }
@@ -2720,10 +2720,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -2763,10 +2763,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -2824,10 +2824,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -2861,10 +2861,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -2903,10 +2903,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -2955,10 +2955,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -2994,10 +2994,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -3027,10 +3027,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -3076,10 +3076,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
@@ -3112,10 +3112,10 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       if (isUseI18n) {
                       #>
-                      :readonly-placeholder="n('<#=readonlyPlaceholder#>')"<#
+                      :readonly-placeholder="inited ? n('<#=readonlyPlaceholder#>') : ''"<#
                       } else {
                       #>
-                      readonly-placeholder="<#=readonlyPlaceholder#>"<#
+                      :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
                       }
