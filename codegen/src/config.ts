@@ -844,7 +844,7 @@ export interface TablesConfigItem {
     noAdd?: boolean;
     
     /**
-     * Detail隐藏保持并继续按钮
+     * Detail隐藏保持并继续按钮, 默认为true
      */
     hideSaveAndCopy?: boolean;
     
@@ -968,7 +968,7 @@ export interface TablesConfigItem {
     };
     
   },
-  columns?: TableCloumn[];
+  columns: TableCloumn[];
   records?: any[];
 }
 
