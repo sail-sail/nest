@@ -18,7 +18,7 @@ declare global {
   
   /** 百度应用 */
   interface BaiduAppSearch extends BaiduAppSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 百度应用 */
