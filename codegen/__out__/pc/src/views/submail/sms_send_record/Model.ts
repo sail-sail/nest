@@ -18,7 +18,7 @@ declare global {
   
   /** 短信发送记录 */
   interface SmsSendRecordSearch extends SmsSendRecordSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 短信发送记录 */

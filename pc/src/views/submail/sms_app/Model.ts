@@ -18,7 +18,7 @@ declare global {
   
   /** 短信应用 */
   interface SmsAppSearch extends SmsAppSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 短信应用 */
