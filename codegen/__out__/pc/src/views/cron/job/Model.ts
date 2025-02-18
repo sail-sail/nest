@@ -15,12 +15,12 @@ declare global {
   /** 任务 */
   interface JobInput extends JobInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
   }
   
   /** 任务 */
   interface JobSearch extends JobSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 任务 */
