@@ -136,8 +136,8 @@ let inited = $ref(false);
 let dialogAction = $ref<"list">("list");
 
 const dialogModel = $ref<{
-  id?: <#=Table_Up#>Id,
-  is_deleted?: 0 | 1,
+  id?: <#=Table_Up#>Id;
+  is_deleted?: 0 | 1 | null;
 }>({ });
 
 let tabGroup = $ref("");
@@ -213,7 +213,7 @@ async function showDialog(
     tabGroup: string;
     model?: {
       ids?: <#=Table_Up#>Id[];
-      is_deleted?: 0 | 1;
+      is_deleted?: 0 | 1 | null;
     };
     action?: typeof dialogAction;
   },
