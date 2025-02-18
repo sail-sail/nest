@@ -18,7 +18,7 @@ declare global {
   
   /** 企微消息 */
   interface WxwMsgSearch extends WxwMsgSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 企微消息 */

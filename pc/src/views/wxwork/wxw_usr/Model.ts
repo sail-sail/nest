@@ -18,7 +18,7 @@ declare global {
   
   /** 企微用户 */
   interface WxwUsrSearch extends WxwUsrSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 企微用户 */
