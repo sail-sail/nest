@@ -15,12 +15,12 @@ declare global {
   /** 业务字典明细 */
   interface DictbizDetailInput extends DictbizDetailInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
   }
   
   /** 业务字典明细 */
   interface DictbizDetailSearch extends DictbizDetailSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 业务字典明细 */

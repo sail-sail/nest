@@ -15,12 +15,12 @@ declare global {
   /** 系统选项 */
   interface OptionsInput extends OptionsInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
   }
   
   /** 系统选项 */
   interface OptionsSearch extends OptionsSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 系统选项 */
