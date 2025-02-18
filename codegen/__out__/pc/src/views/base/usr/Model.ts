@@ -20,7 +20,7 @@ declare global {
   
   /** 用户 */
   interface UsrSearch extends UsrSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 用户 */

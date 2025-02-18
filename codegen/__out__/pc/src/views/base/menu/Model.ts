@@ -18,7 +18,7 @@ declare global {
   
   /** 菜单 */
   interface MenuSearch extends MenuSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 菜单 */
