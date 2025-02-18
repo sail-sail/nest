@@ -18,7 +18,7 @@ declare global {
   
   /** 小程序设置 */
   interface WxAppSearch extends WxAppSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 小程序设置 */

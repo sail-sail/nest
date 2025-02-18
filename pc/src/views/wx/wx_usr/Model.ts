@@ -20,7 +20,7 @@ declare global {
   
   /** 小程序用户 */
   interface WxUsrSearch extends WxUsrSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 小程序用户 */

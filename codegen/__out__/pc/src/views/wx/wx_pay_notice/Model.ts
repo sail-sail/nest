@@ -18,7 +18,7 @@ declare global {
   
   /** 微信支付通知 */
   interface WxPayNoticeSearch extends WxPayNoticeSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 微信支付通知 */
