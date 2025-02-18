@@ -20,7 +20,7 @@ declare global {
   
   /** 公众号用户 */
   interface WxoUsrSearch extends WxoUsrSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 公众号用户 */
