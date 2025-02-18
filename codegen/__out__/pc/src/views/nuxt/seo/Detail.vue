@@ -10,7 +10,6 @@
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
-  @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"
   @keydown.ctrl.enter="onSaveKeydown"
   @keydown.ctrl.s="onSaveKeydown"
 >
@@ -203,18 +202,6 @@
           <ElIconCircleClose />
         </template>
         <span>关闭</span>
-      </el-button>
-      
-      <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
-        plain
-        type="primary"
-        @click="onSaveAndCopy"
-      >
-        <template #icon>
-          <ElIconCircleCheck />
-        </template>
-        <span>保存并继续</span>
       </el-button>
       
       <el-button
@@ -415,7 +402,7 @@ async function showDialog(
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       ids?: SeoId[];
-      is_deleted?: 0 | 1;
+      is_deleted?: 0 | 1 | null;
     };
     findOne?: typeof findOne;
     action: DialogAction;
@@ -730,16 +717,6 @@ watch(
   },
 );
 
-/** 快捷键ctrl+shift+回车 */
-async function onSaveAndCopyKeydown(e: KeyboardEvent) {
-  e.preventDefault();
-  e.stopImmediatePropagation();
-  if (dialogAction === "add" || dialogAction === "copy") {
-    customDialogRef?.focus();
-    await onSaveAndCopy();
-  }
-}
-
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
@@ -807,38 +784,6 @@ async function save() {
     ElMessage.success(msg);
   }
   return id;
-}
-
-/** 保存并继续 */
-async function onSaveAndCopy() {
-  const id = await save();
-  if (!id) {
-    return;
-  }
-  dialogAction = "copy";
-  const [
-    data,
-    order_by,
-  ] = await Promise.all([
-    findOneModel({
-      id,
-      is_deleted,
-    }),
-    findLastOrderBy(),
-  ]);
-  if (!data) {
-    return;
-  }
-  dialogModel = {
-    ...data,
-    id: undefined,
-    is_default: undefined,
-    is_default_lbl: undefined,
-    is_locked: undefined,
-    is_locked_lbl: undefined,
-    order_by: order_by + 1,
-  };
-  Object.assign(dialogModel, { is_deleted: undefined });
 }
 
 /** 保存 */

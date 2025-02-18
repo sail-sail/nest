@@ -20,7 +20,7 @@ declare global {
   
   /** SEO优化 */
   interface SeoSearch extends SeoSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** SEO优化 */
