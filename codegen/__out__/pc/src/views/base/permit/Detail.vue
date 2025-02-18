@@ -313,7 +313,7 @@ async function showDialog(
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       ids?: PermitId[];
-      is_deleted?: 0 | 1;
+      is_deleted?: 0 | 1 | null;
     };
     findOne?: typeof findOne;
     action: DialogAction;
@@ -588,16 +588,6 @@ async function nextId() {
   return true;
 }
 
-/** 快捷键ctrl+shift+回车 */
-async function onSaveAndCopyKeydown(e: KeyboardEvent) {
-  e.preventDefault();
-  e.stopImmediatePropagation();
-  if (dialogAction === "add" || dialogAction === "copy") {
-    customDialogRef?.focus();
-    await onSaveAndCopy();
-  }
-}
-
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
@@ -653,37 +643,6 @@ async function save() {
     ElMessage.success(msg);
   }
   return id;
-}
-
-/** 保存并继续 */
-async function onSaveAndCopy() {
-  const id = await save();
-  if (!id) {
-    return;
-  }
-  dialogAction = "copy";
-  const [
-    defaultInput,
-    data,
-    order_by,
-  ] = await Promise.all([
-    getDefaultInput(),
-    findOneModel({
-      id,
-    }),
-    findLastOrderBy(),
-  ]);
-  if (!data) {
-    return;
-  }
-  dialogModel = {
-    ...data,
-    id: undefined,
-    menu_id: defaultInput.menu_id,
-    code: defaultInput.code,
-    order_by: order_by + 1,
-  };
-  Object.assign(dialogModel, { is_deleted: undefined });
 }
 
 /** 保存 */
