@@ -18,7 +18,7 @@ declare global {
   
   /** 部门 */
   interface DeptSearch extends DeptSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 部门 */

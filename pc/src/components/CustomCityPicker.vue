@@ -19,6 +19,7 @@
     :clearable="!props.disabled"
     :disabled="props.disabled"
     :readonly="props.readonly"
+    :validate-event="props.validateEvent"
     v-bind="$attrs"
   ></el-cascader>
 </div>
@@ -78,6 +79,7 @@
 <script lang="ts" setup>
 import {
   ElCascader,
+  useFormItem,
 } from "element-plus";
 
 import type {
@@ -100,6 +102,7 @@ const props = withDefaults(
     props?: CascaderProps;
     disabled?: boolean;
     isReadonlyBorder?: boolean;
+    validateEvent?: boolean;
   }>(),
   {
     readonly: undefined,
@@ -108,6 +111,7 @@ const props = withDefaults(
     props: undefined,
     disabled: undefined,
     isReadonlyBorder: true,
+    validateEvent: false,
   },
 );
 
@@ -150,18 +154,25 @@ function treeFindLabel(data: any[], value: string): any {
   }
 }
 
+const {
+  formItem,
+} = useFormItem();
+
 watch(
   () => [
     modelValue.value,
     options.value,
   ],
-  () => {
+  async () => {
     if (!modelValue.value || !options.value || options.value.length === 0) {
       modelLabel.value = undefined;
     } else {
       modelLabel.value = modelValue.value.map((item) => {
         return treeFindLabel(options.value, item);
       });
+    }
+    if (props.validateEvent !== false) {
+      await formItem?.validate("change");
     }
   },
   {
