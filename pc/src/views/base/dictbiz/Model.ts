@@ -19,12 +19,12 @@ declare global {
   /** 业务字典 */
   interface DictbizInput extends DictbizInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
   }
   
   /** 业务字典 */
   interface DictbizSearch extends DictbizSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 业务字典 */

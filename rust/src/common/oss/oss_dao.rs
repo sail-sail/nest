@@ -1,5 +1,5 @@
 use std::env;
-use color_eyre::eyre::Result;
+use color_eyre::eyre::{Result,eyre};
 use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command};
 use s3::request::tokio_backend::HyperRequest;
 use s3::request::Request;
@@ -77,7 +77,10 @@ pub async fn put_object<S: AsRef<str>>(
   if let Some(db) = db {
     bucket.add_header("x-amz-meta-db", urlencoding::encode(db).as_ref());
   }
-  bucket.put_object_with_content_type(path.as_ref(), content, content_type).await?;
+  let res = bucket.put_object_with_content_type(path.as_ref(), content, content_type).await?;
+  if res.status_code() == 404 {
+    return Err(eyre!("oss bucket not found, please check .env oss_bucket"))
+  }
   Ok(true)
 }
 
