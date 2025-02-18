@@ -18,7 +18,7 @@ declare global {
   
   /** 全宗设置 */
   interface ArchiveSearch extends ArchiveSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 全宗设置 */
