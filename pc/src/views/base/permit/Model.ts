@@ -15,7 +15,7 @@ declare global {
   /** 按钮权限 */
   interface PermitInput extends PermitInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
   }
   
   /** 按钮权限 */
