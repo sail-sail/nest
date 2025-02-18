@@ -18,7 +18,7 @@ declare global {
   
   /** 定时任务日志明细 */
   interface CronJobLogDetailSearch extends CronJobLogDetailSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 定时任务日志明细 */

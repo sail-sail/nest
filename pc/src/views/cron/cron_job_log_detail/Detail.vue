@@ -257,7 +257,7 @@ async function showDialog(
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       ids?: CronJobLogDetailId[];
-      is_deleted?: 0 | 1;
+      is_deleted?: 0 | 1 | null;
     };
     findOne?: typeof findOne;
     action: DialogAction;
