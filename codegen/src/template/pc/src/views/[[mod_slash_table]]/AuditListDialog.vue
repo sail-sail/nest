@@ -192,7 +192,7 @@ async function showDialog(
     notice?: string;
     model?: {
       id?: <#=Table_Up#>Id;
-      is_deleted?: 0|1;
+      is_deleted?: 0 | 1 | null;
     };
     action: DialogAction;
   },
