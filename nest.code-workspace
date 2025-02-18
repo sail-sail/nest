@@ -21,6 +21,7 @@
     "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
     "git.openRepositoryInParentFolders": "never",
     "git.autofetch": false,
+    "git.autorefresh": true,
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
     "npm.registry": "https://registry.npmmirror.com",
     "npm.updateStrategy": "LATEST",

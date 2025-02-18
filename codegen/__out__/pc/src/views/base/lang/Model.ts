@@ -15,12 +15,12 @@ declare global {
   /** 语言 */
   interface LangInput extends LangInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
   }
   
   /** 语言 */
   interface LangSearch extends LangSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 语言 */
