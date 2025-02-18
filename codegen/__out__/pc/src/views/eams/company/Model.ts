@@ -18,7 +18,7 @@ declare global {
   
   /** 单位 */
   interface CompanySearch extends CompanySearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 单位 */
