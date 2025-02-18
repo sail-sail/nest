@@ -18,7 +18,7 @@ declare global {
   
   /** 企微应用 */
   interface WxwAppSearch extends WxwAppSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 企微应用 */
