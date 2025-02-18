@@ -18,7 +18,7 @@ declare global {
   
   /** 域名 */
   interface DomainSearch extends DomainSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 域名 */

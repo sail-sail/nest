@@ -18,7 +18,7 @@ declare global {
   
   /** 组织 */
   interface OrgSearch extends OrgSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 组织 */

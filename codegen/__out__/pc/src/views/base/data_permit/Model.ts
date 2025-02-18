@@ -15,12 +15,12 @@ declare global {
   /** 数据权限 */
   interface DataPermitInput extends DataPermitInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
   }
   
   /** 数据权限 */
   interface DataPermitSearch extends DataPermitSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 数据权限 */
