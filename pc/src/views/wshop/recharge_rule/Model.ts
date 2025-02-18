@@ -22,7 +22,7 @@ declare global {
   
   /** 充值赠送规则 */
   interface RechargeRuleSearch extends RechargeRuleSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 充值赠送规则 */

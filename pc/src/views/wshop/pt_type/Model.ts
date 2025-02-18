@@ -20,7 +20,7 @@ declare global {
   
   /** 产品类别 */
   interface PtTypeSearch extends PtTypeSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 产品类别 */

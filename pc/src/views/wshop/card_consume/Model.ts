@@ -26,7 +26,7 @@ declare global {
   
   /** 会员卡消费记录 */
   interface CardConsumeSearch extends CardConsumeSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 会员卡消费记录 */

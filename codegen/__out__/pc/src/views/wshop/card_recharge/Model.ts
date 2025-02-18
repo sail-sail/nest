@@ -26,7 +26,7 @@ declare global {
   
   /** 会员卡充值记录 */
   interface CardRechargeSearch extends CardRechargeSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 会员卡充值记录 */
