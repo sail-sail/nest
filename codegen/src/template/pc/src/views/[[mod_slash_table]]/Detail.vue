@@ -169,7 +169,7 @@ for (let i = 0; i < columns.length; i++) {
   #>
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"<#
-  if (opts.noAdd !== true) {
+  if ((opts.noAdd !== true || opts.noEdit !== true) && opts.hideSaveAndCopy === false) {
   #>
   @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"<#
   }
@@ -3241,7 +3241,7 @@ for (let i = 0; i < columns.length; i++) {
         }
         #>
       </el-button><#
-      if (!opts.noAdd && !opts.hideSaveAndCopy) {
+      if (!opts.noAdd && opts.hideSaveAndCopy === false) {
       #>
       
       <el-button
@@ -4967,7 +4967,7 @@ async function showDialog(
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       ids?: <#=Table_Up#>Id[];
-      is_deleted?: 0 | 1;
+      is_deleted?: 0 | 1 | null;
     };
     findOne?: typeof findOne;
     action: DialogAction;
@@ -6285,7 +6285,7 @@ watch(
 );<#
 }
 #><#
-if (opts.noAdd !== true || opts.noEdit !== true) {
+if ((opts.noAdd !== true || opts.noEdit !== true) && opts.hideSaveAndCopy === false) {
 #>
 
 /** 快捷键ctrl+shift+回车 */
@@ -6296,7 +6296,11 @@ async function onSaveAndCopyKeydown(e: KeyboardEvent) {
     customDialogRef?.focus();
     await onSaveAndCopy();
   }
+}<#
 }
+#><#
+if (opts.noAdd !== true || opts.noEdit !== true) {
+#>
 
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
@@ -6776,7 +6780,9 @@ async function save() {
     ElMessage.success(msg);
   }
   return id;
-}
+}<#
+if (opts.hideSaveAndCopy === false) {
+#>
 
 /** 保存并继续 */
 async function onSaveAndCopy() {
@@ -6890,7 +6896,9 @@ async function onSaveAndCopy() {
     #>
   };
   Object.assign(dialogModel, { is_deleted: undefined });
+}<#
 }
+#>
 
 /** 保存 */
 async function onSave() {
