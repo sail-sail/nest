@@ -15,7 +15,7 @@ declare global {
   /** 字段权限 */
   interface FieldPermitInput extends FieldPermitInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
   }
   
   /** 字段权限 */

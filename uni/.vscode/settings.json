@@ -52,6 +52,10 @@
     "graphql.config.js": true
   },
   "git.timeline.showUncommitted": true,
+  "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
+  "git.openRepositoryInParentFolders": "never",
+  "git.autofetch": false,
+  "git.autorefresh": true,
   "scm.showHistoryGraph": false,
   "deno.enable": false,
   "css.validate": false,

@@ -19,7 +19,7 @@ declare global {
   
   /** 登录日志 */
   interface LoginLogSearch extends LoginLogSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 登录日志 */
