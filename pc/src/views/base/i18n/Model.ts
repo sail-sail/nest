@@ -18,7 +18,7 @@ declare global {
   
   /** 国际化 */
   interface I18nSearch extends I18nSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 国际化 */
