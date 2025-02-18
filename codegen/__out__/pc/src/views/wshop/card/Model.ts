@@ -24,7 +24,7 @@ declare global {
   
   /** 会员卡 */
   interface CardSearch extends CardSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 会员卡 */

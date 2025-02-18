@@ -17,12 +17,12 @@ declare global {
   /** 小程序配置 */
   interface WxappConfigInput extends WxappConfigInputType {
     /** 系统字段 */
-    is_sys?: number;
+    is_sys?: number | null;
   }
   
   /** 小程序配置 */
   interface WxappConfigSearch extends WxappConfigSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 小程序配置 */
