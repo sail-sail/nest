@@ -1180,7 +1180,7 @@ impl Ctx {
           .insert(AUTHORIZATION, auth_token.parse().unwrap());
       }
       let status_code = res.status();
-      let is_success = status_code.is_success() || status_code.is_redirection() || status_code.is_informational();
+      let is_success = !status_code.is_server_error();
       let extensions = res.extensions();
       let is_rollback = extensions.get::<bool>().copied().unwrap_or(true);
       {
