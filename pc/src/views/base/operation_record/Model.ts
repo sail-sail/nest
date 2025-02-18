@@ -18,7 +18,7 @@ declare global {
   
   /** 操作记录 */
   interface OperationRecordSearch extends OperationRecordSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 操作记录 */
