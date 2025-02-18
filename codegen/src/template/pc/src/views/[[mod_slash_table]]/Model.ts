@@ -138,7 +138,7 @@ declare global {
     if (hasIsSys) {
     #>
     /** 系统字段 */
-    is_sys?: number;<#
+    is_sys?: number | null;<#
     }
     #>
   }
@@ -147,7 +147,7 @@ declare global {
   interface <#=searchName#> extends <#=searchName#>Type {<#
     if (hasIsDeleted) {
     #>
-    is_deleted?: 0 | 1;<#
+    is_deleted?: 0 | 1 | null;<#
     }
     #>
   }
