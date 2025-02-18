@@ -10,7 +10,6 @@
   @keydown.ctrl.i="onInsert"
   @keydown.ctrl.arrow-down="onPageDown"
   @keydown.ctrl.arrow-up="onPageUp"
-  @keydown.ctrl.shift.enter="onSaveAndCopyKeydown"
   @keydown.ctrl.enter="onSaveKeydown"
   @keydown.ctrl.s="onSaveKeydown"
 >
@@ -245,18 +244,6 @@
         v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
         plain
         type="primary"
-        @click="onSaveAndCopy"
-      >
-        <template #icon>
-          <ElIconCircleCheck />
-        </template>
-        <span>保存并继续</span>
-      </el-button>
-      
-      <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
-        plain
-        type="primary"
         @click="onSave"
       >
         <template #icon>
@@ -449,7 +436,7 @@ async function showDialog(
     isLocked?: MaybeRefOrGetter<boolean>;
     model?: {
       ids?: WxoUsrId[];
-      is_deleted?: 0 | 1;
+      is_deleted?: 0 | 1 | null;
     };
     findOne?: typeof findOne;
     action: DialogAction;
@@ -731,16 +718,6 @@ watch(
   },
 );
 
-/** 快捷键ctrl+shift+回车 */
-async function onSaveAndCopyKeydown(e: KeyboardEvent) {
-  e.preventDefault();
-  e.stopImmediatePropagation();
-  if (dialogAction === "add" || dialogAction === "copy") {
-    customDialogRef?.focus();
-    await onSaveAndCopy();
-  }
-}
-
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {
   e.preventDefault();
@@ -808,31 +785,6 @@ async function save() {
     ElMessage.success(msg);
   }
   return id;
-}
-
-/** 保存并继续 */
-async function onSaveAndCopy() {
-  const id = await save();
-  if (!id) {
-    return;
-  }
-  dialogAction = "copy";
-  const [
-    data,
-  ] = await Promise.all([
-    findOneModel({
-      id,
-      is_deleted,
-    }),
-  ]);
-  if (!data) {
-    return;
-  }
-  dialogModel = {
-    ...data,
-    id: undefined,
-  };
-  Object.assign(dialogModel, { is_deleted: undefined });
 }
 
 /** 保存 */

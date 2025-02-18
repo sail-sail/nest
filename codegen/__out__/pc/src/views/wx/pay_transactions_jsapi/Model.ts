@@ -18,7 +18,7 @@ declare global {
   
   /** 微信JSAPI下单 */
   interface PayTransactionsJsapiSearch extends PayTransactionsJsapiSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 微信JSAPI下单 */

@@ -18,7 +18,7 @@ declare global {
   
   /** 公众号设置 */
   interface WxoAppSearch extends WxoAppSearchType {
-    is_deleted?: 0 | 1;
+    is_deleted?: 0 | 1 | null;
   }
   
   /** 公众号设置 */
