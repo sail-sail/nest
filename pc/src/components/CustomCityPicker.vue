@@ -19,7 +19,7 @@
     :clearable="!props.disabled"
     :disabled="props.disabled"
     :readonly="props.readonly"
-    :validate-event="props.validateEvent"
+    :validate-event="false"
     v-bind="$attrs"
   ></el-cascader>
 </div>
@@ -182,7 +182,22 @@ watch(
     modelValue.value,
     options.value,
   ],
-  async () => {
+  async (oldVaue, newValue) => {
+    if (oldVaue[0] == null && newValue[0] == null) {
+      return;
+    }
+    const oldItem0 = oldVaue[0]?.[0] ?? "";
+    const oldItem1 = oldVaue[0]?.[1] ?? "";
+    const oldItem2 = oldVaue[0]?.[2] ?? "";
+    
+    const newItem0 = newValue[0]?.[0] ?? "";
+    const newItem1 = newValue[0]?.[1] ?? "";
+    const newItem2 = newValue[0]?.[2] ?? "";
+    
+    if (oldItem0 == newItem0 && oldItem1 == newItem1 && oldItem2 == newItem2) {
+      return;
+    }
+    
     if (!modelValue.value || !options.value || options.value.length === 0) {
       modelLabel.value = undefined;
     } else {
@@ -191,7 +206,9 @@ watch(
       });
     }
     if (props.validateEvent !== false && options.value) {
-      await formItem?.validate("change");
+      try {
+        await formItem?.validate("change");
+      } catch (err) { /* empty */ }
     }
   },
   {
