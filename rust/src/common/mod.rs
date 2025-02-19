@@ -10,3 +10,4 @@ pub mod util;
 pub mod app;
 pub mod websocket;
 pub mod health;
+pub mod macros;
