@@ -200,7 +200,7 @@ pub fn get_auth_id() -> Option<UsrId> {
 /// 获取当前登录用户的id
 pub fn get_auth_id_err() -> Result<UsrId> {
   get_auth_id()
-    .ok_or({
+    .ok_or_else(|| {
       error!(
         "{req_id} get_auth_id_err - Not login!",
         req_id = get_req_id(),
@@ -236,7 +236,7 @@ pub fn get_auth_org_id() -> Option<OrgId> {
 #[allow(dead_code)]
 pub fn get_auth_org_id_err() -> Result<OrgId> {
   get_auth_org_id()
-    .ok_or({
+    .ok_or_else(|| {
       error!(
         "{req_id} get_auth_org_id_err - Not login!",
         req_id = get_req_id(),
@@ -1524,52 +1524,61 @@ impl From<&SmolStr> for ArgType {
   }
 }
 
-#[derive(Default, new, Clone)]
+#[derive(Default, Clone)]
 pub struct Options {
   
   /// 是否打印sql调试语句
-  #[new(default)]
   is_debug: Option<bool>,
   
   /// 指定当前函数的sql是否开启事务
-  #[new(default)]
   is_tran: Option<bool>,
   
-  #[new(default)]
   cache_key1: Option<String>,
   
-  #[new(default)]
   cache_key2: Option<String>,
   
-  #[new(default)]
   del_cache_key1s: Option<Vec<String>>,
   
-  #[new(default)]
   #[allow(dead_code)]
   unique_type: Option<UniqueType>,
   
-  #[new(default)]
   #[allow(dead_code)]
   is_encrypt: Option<bool>,
   
-  #[new(default)]
   #[allow(dead_code)]
   has_data_permit: Option<bool>,
   
-  #[new(default)]
   #[allow(dead_code)]
   database_name: &'static str,
   
-  #[new(default)]
   ids_limit: Option<usize>,
   
   /// 静默模式
-  #[new(default)]
   is_silent_mode: Option<bool>,
   
   /// 创建状态
-  #[new(default)]
   is_creating: Option<bool>,
+  
+}
+
+impl Options {
+  
+  pub fn new() -> Options {
+    Options {
+      is_debug: None,
+      is_tran: None,
+      cache_key1: None,
+      cache_key2: None,
+      del_cache_key1s: None,
+      unique_type: None,
+      is_encrypt: None,
+      has_data_permit: None,
+      database_name: "",
+      ids_limit: None,
+      is_silent_mode: None,
+      is_creating: None,
+    }
+  }
   
 }
 

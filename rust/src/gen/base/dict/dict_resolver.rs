@@ -2,8 +2,13 @@
 use std::time::Instant;
 
 use color_eyre::eyre::Result;
+use tracing::info;
 
-use crate::common::context::Options;
+use crate::common::context::{
+  get_req_id,
+  Options,
+};
+
 use crate::common::gql::model::{PageInput, SortInput};
 use crate::src::base::permit::permit_service::use_permit;
 
@@ -11,12 +16,19 @@ use super::dict_model::*;
 use super::dict_service;
 
 /// 根据搜索条件和分页查找系统字典列表
+#[function_name::named]
 pub async fn find_all(
   search: Option<DictSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<DictModel>> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} page: {page:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   check_sort_dict(sort.as_deref())?;
   
@@ -31,10 +43,17 @@ pub async fn find_all(
 }
 
 /// 根据条件查找系统字典总数
+#[function_name::named]
 pub async fn find_count(
   search: Option<DictSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   let num = dict_service::find_count(
     search,
@@ -45,11 +64,18 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个系统字典
+#[function_name::named]
 pub async fn find_one(
   search: Option<DictSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<DictModel>> {
+  
+  info!(
+    "{req_id} {function_name}: search: {search:?} sort: {sort:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   check_sort_dict(sort.as_deref())?;
   
@@ -63,10 +89,17 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找系统字典
+#[function_name::named]
 pub async fn find_by_id(
   id: DictId,
   options: Option<Options>,
 ) -> Result<Option<DictModel>> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   let model = dict_service::find_by_id(
     id,
@@ -78,10 +111,17 @@ pub async fn find_by_id(
 
 /// 创建系统字典
 #[allow(dead_code)]
+#[function_name::named]
 pub async fn creates(
   inputs: Vec<DictInput>,
   options: Option<Options>,
 ) -> Result<Vec<DictId>> {
+  
+  info!(
+    "{req_id} {function_name}: inputs: {inputs:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   let mut inputs = inputs;
   for input in &mut inputs {
@@ -113,11 +153,18 @@ pub async fn creates(
 
 /// 根据 id 修改系统字典
 #[allow(dead_code)]
+#[function_name::named]
 pub async fn update_by_id(
   id: DictId,
   input: DictInput,
   options: Option<Options>,
 ) -> Result<DictId> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?} input: {input:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   let mut input = input;
   input.id = None;
@@ -143,10 +190,17 @@ pub async fn update_by_id(
 
 /// 根据 ids 删除系统字典
 #[allow(dead_code)]
+#[function_name::named]
 pub async fn delete_by_ids(
   ids: Vec<DictId>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   use_permit(
     get_route_path_dict(),
@@ -164,10 +218,17 @@ pub async fn delete_by_ids(
 /// 根据 id 查找系统字典是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
+#[function_name::named]
 pub async fn get_is_enabled_by_id(
   id: DictId,
   options: Option<Options>,
 ) -> Result<bool> {
+  
+  info!(
+    "{req_id} {function_name}: id: {id:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   let is_enabled = dict_service::get_is_enabled_by_id(
     id,
@@ -179,11 +240,18 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 ids 启用或者禁用系统字典
 #[allow(dead_code)]
+#[function_name::named]
 pub async fn enable_by_ids(
   ids: Vec<DictId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?} is_enabled: {is_enabled:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   use_permit(
     get_route_path_dict(),
@@ -200,9 +268,16 @@ pub async fn enable_by_ids(
 }
 
 /// 获取系统字典字段注释
+#[function_name::named]
 pub async fn get_field_comments(
   options: Option<Options>,
 ) -> Result<DictFieldComment> {
+  
+  info!(
+    "{req_id} {function_name}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   let comments = dict_service::get_field_comments(
     options,
@@ -213,10 +288,17 @@ pub async fn get_field_comments(
 
 /// 根据 ids 还原系统字典
 #[allow(dead_code)]
+#[function_name::named]
 pub async fn revert_by_ids(
   ids: Vec<DictId>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   use_permit(
     get_route_path_dict(),
@@ -233,10 +315,17 @@ pub async fn revert_by_ids(
 
 /// 根据 ids 彻底删除系统字典
 #[allow(dead_code)]
+#[function_name::named]
 pub async fn force_delete_by_ids(
   ids: Vec<DictId>,
   options: Option<Options>,
 ) -> Result<u64> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   use_permit(
     get_route_path_dict(),
@@ -252,9 +341,16 @@ pub async fn force_delete_by_ids(
 }
 
 /// 查找 系统字典 order_by 字段的最大值
+#[function_name::named]
 pub async fn find_last_order_by(
   options: Option<Options>,
 ) -> Result<u32> {
+  
+  info!(
+    "{req_id} {function_name}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
   
   let res = dict_service::find_last_order_by(
     options,

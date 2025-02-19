@@ -1,9 +1,6 @@
 #![forbid(unsafe_code)]
 #![recursion_limit="512"]
 
-#[macro_use]
-extern crate derive_new;
-
 mod common;
 mod gen;
 mod src;
@@ -11,8 +8,6 @@ mod src;
 use async_graphql::{
   EmptySubscription, Schema,
 };
-
-use tracing::info;
 
 use crate::common::gql::query_root::{Query, QuerySchema, Mutation};
 
@@ -33,11 +28,11 @@ async fn main() -> Result<(), std::io::Error> {
     }
   };
   if old_schema != schema {
-    info!("write graphql schema");
+    println!("write graphql schema");
     match std::fs::write(file, &schema) {
       Ok(_) => {},
       Err(e) => {
-        info!("write graphql schema error: {}", e);
+        println!("write graphql schema error: {}", e);
       },
     }
   }
