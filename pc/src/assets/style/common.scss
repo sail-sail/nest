@@ -404,6 +404,7 @@ html:is(.dark) {
 .custom_select_readonly,
 .custom_input_readonly:not(.select_input),
 .custom_date_picker_readonly,
+.custom_city_picker_readonly,
 .custom_input_number_readonly,
 .custom_switch_readonly,
 .custom_checkbox_readonly,
@@ -416,6 +417,19 @@ html:is(.dark) {
   }
   .el-input__prefix-inner {
     display: none;
+  }
+}
+
+.el-form-item {
+  .el-form-item__label {
+    padding-left: 10.38px;
+    box-sizing: border-box;
+  }
+}
+.el-form-item.is-required {
+  .el-form-item__label {
+    padding-left: 0;
+    box-sizing: border-box;
   }
 }
 
