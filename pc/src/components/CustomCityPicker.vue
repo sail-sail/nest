@@ -59,7 +59,7 @@
       <template
         v-else
       >
-        {{ modelLabel?.join(props.separator) ?? "" }}
+        {{ modelLabelComp }}
       </template>
     </div>
     <div
@@ -111,7 +111,7 @@ const props = withDefaults(
     props: undefined,
     disabled: undefined,
     isReadonlyBorder: true,
-    validateEvent: false,
+    validateEvent: undefined,
   },
 );
 
@@ -135,6 +135,25 @@ const modelLabel = defineModel<string[] | null>("modelLabel");
 
 const shouldShowPlaceholder = computed<boolean>(() => {
   return modelValue.value == null || modelValue.value.length === 0;
+});
+
+const modelLabelComp = computed<string>(() => {
+  if (!modelLabel.value) {
+    return "";
+  }
+  const arr = modelLabel.value;
+  let str = "";
+  for (let i = 0; i < arr.length; i++) {
+    const item = arr[i];
+    if (!item) {
+      continue;
+    }
+    str += item;
+    if (i < arr.length - 1) {
+      str += props.separator;
+    }
+  }
+  return str;
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -171,7 +190,7 @@ watch(
         return treeFindLabel(options.value, item);
       });
     }
-    if (props.validateEvent !== false) {
+    if (props.validateEvent !== false && options.value) {
       await formItem?.validate("change");
     }
   },
