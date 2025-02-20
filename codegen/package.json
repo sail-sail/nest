@@ -27,10 +27,10 @@
     "fs-extra": "11.3.0",
     "mysql2": "3.12.0",
     "shelljs": "0.8.5",
-    "uuid": "11.0.5"
+    "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@swc/wasm": "1.10.17",
+    "@swc/wasm": "1.10.18",
     "@types/fs-extra": "11.0.4",
     "@types/node": "22.13.4",
     "@types/shelljs": "0.8.15",
