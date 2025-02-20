@@ -1,4 +1,3 @@
-id,code,lbl,type,order_by,is_locked,is_sys,is_add
 RboeLeiwQ6qCs3aFA04+WA,is_deleted,删除,boolean,1,1,1,0
 CGj3tZtKThK1EaENmjvoWA,is_locked,锁定,boolean,2,1,1,0
 o9GwL7PXSaG6gLDZ8oprwg,is_enabled,启用,boolean,3,1,1,0
@@ -13,3 +12,4 @@ MQOcbGreQUqQG1EFWMbkVQ,data_permit_type,数据权限-类型,string,12,1,1,0
 T0lgQA4dQuCqw2DhMBjo/Q,field_permit_type,字段权限-类型,string,13,1,1,0
 yXJTfqU3T4KQmz4DtVxagg,login_log_type,登录日志-登录类型,string,14,1,1,0
 W9e373o3RfyNR0kdlOYSiw,usr_type,用户-类型,string,15,1,1,0
+id,code,lbl,type,order_by,is_locked,is_sys,is_add
