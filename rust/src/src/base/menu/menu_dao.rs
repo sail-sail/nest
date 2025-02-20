@@ -26,9 +26,28 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   }
   let usr_id = usr_id.unwrap();
   
-  let mut args = QueryArgs::new();
+  let server_i18n_enable = get_server_i18n_enable();
   
-  args.push(get_lang_id().await?.unwrap_or_default().to_string().into());
+  let mut args = QueryArgs::new();
+  let mut lang_join = "";
+  let mut lang_select = "";
+  
+  if server_i18n_enable {
+    let lang_id = get_lang_id().await?;
+    if let Some(lang_id) = lang_id {
+      lang_join = r#"
+      left join base_menu_lang
+        on t.id=base_menu_lang.menu_id
+        and base_menu_lang.lang_id=?
+      "#;
+      args.push(lang_id.into());
+      lang_select = "base_menu_lang.lbl as lbl_lang,";
+    }
+  } else {
+    lang_select = "null as lbl_lang,";
+  }
+  let lang_join = lang_join;
+  let lang_select = lang_select;
   
   let mut where_query = String::new();
   
@@ -64,8 +83,8 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
       t.lbl,
       t.route_path,
       t.route_query,
-      t.order_by,
-      base_menu_lang.lbl as lbl_lang
+      {lang_select}
+      t.order_by
     from base_menu t
     inner join base_tenant_menu
       on t.id = base_tenant_menu.menu_id
@@ -80,9 +99,7 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
     inner join base_usr_role
       on base_role_menu.role_id=base_usr_role.role_id
       and base_usr_role.is_deleted=0
-    left join base_menu_lang
-      on t.id = base_menu_lang.menu_id
-      and base_menu_lang.lang_id=?
+    {lang_join}
     where
       t.is_deleted=0
       and t.is_enabled=1
@@ -106,8 +123,6 @@ async fn find_menus() -> Result<Vec<GetMenus>> {
   ).await?;
   
   res.sort_by(|a, b| a.order_by.cmp(&b.order_by));
-  
-  let server_i18n_enable = get_server_i18n_enable();
   
   if server_i18n_enable {
     for item in &mut res {
