@@ -44,12 +44,18 @@ export async function getLoginTenants(
   }
   const res: GetLoginTenants[] = [ ];
   if (domain_models.length > 0) {
-    const domain_ids: DomainId[] = domain_models.map((item) => item.id);
+    let domain_ids: DomainId[] = domain_models.map((item) => item.id);
     let tenant_models = await findAllTenant({
       domain_ids,
       is_enabled: [ 1 ],
     });
     if (tenant_models.length === 0) {
+      await delCacheDomain();
+      domain_models = await findAllDomain({
+        lbl: domain,
+        is_enabled: [ 1 ],
+      });
+      domain_ids = domain_models.map((item) => item.id);
       await delCacheTenant();
       tenant_models = await findAllTenant({
         domain_ids,
