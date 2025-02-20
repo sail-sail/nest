@@ -123,6 +123,7 @@ pub async fn get_login_tenants(
   ).await?;
   
   if tenant_models.is_empty() {
+    del_cache_domain().await?;
     del_cache_tenant().await?;
     tenant_models = find_all_tenant(
       TenantSearch {
