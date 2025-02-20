@@ -92,7 +92,7 @@ pub async fn get_login_tenants(
     del_cache_domain().await?;
     domain_models = find_all_domain(
       DomainSearch {
-        lbl: domain.into(),
+        lbl: domain.clone().into(),
         is_enabled: vec![1].into(),
         ..Default::default()
       }.into(),
@@ -102,7 +102,7 @@ pub async fn get_login_tenants(
     ).await?;
   }
   
-  let domain_ids: Vec<DomainId> = domain_models
+  let mut domain_ids: Vec<DomainId> = domain_models
     .into_iter()
     .map(|x| x.id)
     .collect();
@@ -124,6 +124,20 @@ pub async fn get_login_tenants(
   
   if tenant_models.is_empty() {
     del_cache_domain().await?;
+    domain_models = find_all_domain(
+      DomainSearch {
+        lbl: domain.into(),
+        is_enabled: vec![1].into(),
+        ..Default::default()
+      }.into(),
+      None,
+      None,
+      None,
+    ).await?;
+    domain_ids = domain_models
+      .into_iter()
+      .map(|x| x.id)
+      .collect();
     del_cache_tenant().await?;
     tenant_models = find_all_tenant(
       TenantSearch {
