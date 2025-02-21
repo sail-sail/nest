@@ -17,10 +17,32 @@ import {
   validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  getParsedEnv,
+} from "/lib/env.ts";
+
 async function _getMenus(
   parent_id?: MenuId,
 ) {
+  
+  const server_i18n_enable = getParsedEnv("server_i18n_enable") === "true";
+  
   const args = new QueryArgs();
+  let lang_join = "";
+  let lang_select = "";
+  
+  if (server_i18n_enable) {
+    const lang_id = await get_lang_id();
+    if (lang_id) {
+      lang_join = `
+        left join base_menu_lang
+          on t.id=base_menu_lang.menu_id
+          and base_menu_lang.lang_id=${ args.push(lang_id) }
+      `;
+      lang_select = "base_menu_lang.lbl as lbl_lang,";
+    }
+  }
+  
   let sql = `
     select distinct
       t.id,
@@ -28,8 +50,8 @@ async function _getMenus(
       t.lbl,
       t.route_path,
       t.route_query,
-      t.order_by,
-      base_menu_lang.lbl as lbl_lang
+      ${ lang_select }
+      t.order_by
     from base_menu t
     inner join base_tenant_menu
       on t.id=base_tenant_menu.menu_id
@@ -44,9 +66,7 @@ async function _getMenus(
     inner join base_usr_role
       on base_role_menu.role_id=base_usr_role.role_id
       and base_usr_role.is_deleted=0
-    left join base_menu_lang
-      on t.id=base_menu_lang.menu_id
-      and base_menu_lang.lang_id=${ args.push(await get_lang_id()) }
+    ${ lang_join }
     where
       t.is_deleted=0
       and t.is_enabled=1
@@ -100,13 +120,7 @@ async function _getMenus(
     },
   );
   
-  const {
-    getEnv,
-  } = await import("/lib/env.ts");
-  
-  const server_i18n_enable = await getEnv("server_i18n_enable");
-  
-  if (server_i18n_enable === "false") {
+  if (!server_i18n_enable) {
     models = models.filter((item) => item.route_path !== "/base/i18n" && item.route_path !== "/base/lang");
   } else {
     for (let i = 0; i < models.length; i++) {
