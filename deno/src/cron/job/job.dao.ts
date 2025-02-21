@@ -53,7 +53,8 @@ export async function runJob(
         end_time,
       },
     );
-  } catch (err) {
+  } catch (err0) {
+    const err = err0 as Error;
     const end_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
     const exec_result = (err.message || err.toString() || "").substring(0, 4000);
     await updateByIdCronJobLog(
