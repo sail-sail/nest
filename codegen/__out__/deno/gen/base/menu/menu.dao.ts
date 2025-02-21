@@ -51,7 +51,6 @@ import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
   get_usr_id,
-  get_lang_id,
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -95,10 +94,10 @@ async function getWhereQuery(
     whereQuery += ` and t.parent_id is null`;
   }
   if (search?.parent_id_lbl != null) {
-    whereQuery += ` and (parent_id_lbl.lbl in (${ args.push(search.parent_id_lbl) }) or base_menu_lang.parent_id_lbl in (${ args.push(search.parent_id_lbl) }))`;
+    whereQuery += ` and parent_id_lbl.lbl in (${ args.push(search.parent_id_lbl) })`;
   }
   if (isNotEmpty(search?.parent_id_lbl_like)) {
-    whereQuery += ` and (parent_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.parent_id_lbl_like) + "%") } or base_menu_lang.parent_id_lbl like ${ args.push("%" + sqlLike(search?.parent_id_lbl_like) + "%") })`;
+    whereQuery += ` and parent_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.parent_id_lbl_like) + "%") }`;
   }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
@@ -184,6 +183,7 @@ async function getWhereQuery(
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: Readonly<MenuSearch>,
