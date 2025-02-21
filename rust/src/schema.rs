@@ -2,7 +2,7 @@
 #![recursion_limit="512"]
 
 mod common;
-mod gen;
+mod r#gen;
 mod src;
 
 use async_graphql::{

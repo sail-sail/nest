@@ -37,9 +37,9 @@ pub use super::gql::model::UniqueType;
 pub use super::util::string::hash;
 
 use crate::common::exceptions::service_exception::ServiceException;
-use crate::gen::base::usr::usr_model::UsrId;
-use crate::gen::base::tenant::tenant_model::TenantId;
-use crate::gen::base::org::org_model::OrgId;
+use crate::r#gen::base::usr::usr_model::UsrId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::org::org_model::OrgId;
 
 pub const FIND_ALL_IDS_LIMIT: usize = 5000;
 pub const MAX_SAFE_INTEGER: u64 = 9007199254740991;

@@ -5,20 +5,20 @@ use crate::common::context::{
   get_auth_id_err,
 };
 
-use crate::gen::base::usr::usr_dao::{
+use crate::r#gen::base::usr::usr_dao::{
   find_by_id as find_by_id_usr,
   validate_option as validate_option_usr,
   validate_is_enabled as validate_is_enabled_usr,
 };
 
-use crate::gen::base::role::role_dao::find_all as find_all_role;
-use crate::gen::base::role::role_model::RoleSearch;
+use crate::r#gen::base::role::role_dao::find_all as find_all_role;
+use crate::r#gen::base::role::role_model::RoleSearch;
 
-use crate::gen::base::field_permit::field_permit_dao::find_all as find_all_field_permit;
-use crate::gen::base::field_permit::field_permit_model::FieldPermitSearch;
+use crate::r#gen::base::field_permit::field_permit_dao::find_all as find_all_field_permit;
+use crate::r#gen::base::field_permit::field_permit_model::FieldPermitSearch;
 
-use crate::gen::base::menu::menu_dao::find_one as find_one_menu;
-use crate::gen::base::menu::menu_model::MenuSearch;
+use crate::r#gen::base::menu::menu_dao::find_one as find_one_menu;
+use crate::r#gen::base::menu::menu_model::MenuSearch;
 
 /// 字段权限
 pub async fn get_field_permit(
