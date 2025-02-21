@@ -47,7 +47,6 @@ import { UniqueException } from "/lib/exceptions/unique.execption.ts";
 
 import {
   get_usr_id,
-  get_lang_id,
 } from "/lib/auth/auth.dao.ts";
 
 import {
@@ -125,6 +124,7 @@ async function getWhereQuery(
   return whereQuery;
 }
 
+// deno-lint-ignore require-await
 async function getFromQuery(
   args: QueryArgs,
   search?: Readonly<FieldPermitSearch>,
