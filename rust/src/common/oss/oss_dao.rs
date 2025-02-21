@@ -4,7 +4,7 @@ use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Comma
 use s3::request::tokio_backend::HyperRequest;
 use s3::request::Request;
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Debug)]
 pub struct StatObject {
