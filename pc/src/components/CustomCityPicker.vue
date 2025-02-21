@@ -19,7 +19,7 @@
     :clearable="!props.disabled"
     :disabled="props.disabled"
     :readonly="props.readonly"
-    :validate-event="props.validateEvent"
+    :validate-event="false"
     v-bind="$attrs"
   ></el-cascader>
 </div>
@@ -59,7 +59,7 @@
       <template
         v-else
       >
-        {{ modelLabel?.join(props.separator) ?? "" }}
+        {{ modelLabelComp }}
       </template>
     </div>
     <div
@@ -111,7 +111,7 @@ const props = withDefaults(
     props: undefined,
     disabled: undefined,
     isReadonlyBorder: true,
-    validateEvent: false,
+    validateEvent: undefined,
   },
 );
 
@@ -135,6 +135,25 @@ const modelLabel = defineModel<string[] | null>("modelLabel");
 
 const shouldShowPlaceholder = computed<boolean>(() => {
   return modelValue.value == null || modelValue.value.length === 0;
+});
+
+const modelLabelComp = computed<string>(() => {
+  if (!modelLabel.value) {
+    return "";
+  }
+  const arr = modelLabel.value;
+  let str = "";
+  for (let i = 0; i < arr.length; i++) {
+    const item = arr[i];
+    if (!item) {
+      continue;
+    }
+    str += item;
+    if (i < arr.length - 1) {
+      str += props.separator;
+    }
+  }
+  return str;
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -163,7 +182,22 @@ watch(
     modelValue.value,
     options.value,
   ],
-  async () => {
+  async (oldVaue, newValue) => {
+    if (oldVaue[0] == null && newValue[0] == null) {
+      return;
+    }
+    const oldItem0 = oldVaue[0]?.[0] ?? "";
+    const oldItem1 = oldVaue[0]?.[1] ?? "";
+    const oldItem2 = oldVaue[0]?.[2] ?? "";
+    
+    const newItem0 = newValue[0]?.[0] ?? "";
+    const newItem1 = newValue[0]?.[1] ?? "";
+    const newItem2 = newValue[0]?.[2] ?? "";
+    
+    if (oldItem0 == newItem0 && oldItem1 == newItem1 && oldItem2 == newItem2) {
+      return;
+    }
+    
     if (!modelValue.value || !options.value || options.value.length === 0) {
       modelLabel.value = undefined;
     } else {
@@ -171,8 +205,10 @@ watch(
         return treeFindLabel(options.value, item);
       });
     }
-    if (props.validateEvent !== false) {
-      await formItem?.validate("change");
+    if (props.validateEvent !== false && options.value) {
+      try {
+        await formItem?.validate("change");
+      } catch (err) { /* empty */ }
     }
   },
   {
