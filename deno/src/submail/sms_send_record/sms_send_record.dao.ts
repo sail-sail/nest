@@ -131,7 +131,8 @@ export async function xsendSms(
     const dataStr = await res.text();
     log("xsendSms.return", dataStr);
     data = JSON.parse(dataStr);
-  } catch (err) {
+  } catch (err0) {
+    const err = err0 as Error;
     if (sms_send_record_id) {
       const send_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
       const status = SmsSendRecordStatus.Failure;
@@ -287,7 +288,8 @@ export async function sendSms(
     const dataStr = await res.text();
     log("sendSms.return", dataStr);
     data = JSON.parse(dataStr);
-  } catch (err) {
+  } catch (err0) {
+    const err = err0 as Error;
     if (sms_send_record_id) {
       const send_time = dayjs().format("YYYY-MM-DD HH:mm:ss");
       const status = SmsSendRecordStatus.Failure;
