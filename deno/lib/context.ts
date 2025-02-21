@@ -9,6 +9,13 @@ import type {
 
 import mysql2 from "mysql2/promise";
 
+import type {
+  Pool,
+  PoolOptions,
+  ResultSetHeader,
+  PoolConnection,
+} from "mysql2/promise"
+
 import { Context as OakContext } from "@oak/oak";
 
 import { getEnv } from "/lib/env.ts";
@@ -39,7 +46,7 @@ declare global {
   }
 }
 
-export type ExecuteResult = mysql2.ResultSetHeader;
+export type ExecuteResult = ResultSetHeader;
 
 /** 临时文件路径 */
 // export const TMP_PATH = `${ Deno.cwd() }/tmp/`;
@@ -94,11 +101,11 @@ export async function redisClient() {
   return _redisClient;
 }
 
-const mysql2PoolMap = new Map<string, mysql2.Pool | undefined>();
+const mysql2PoolMap = new Map<string, Pool | undefined>();
 
 export async function getMysqlPool(
   database_name = "",
-): Promise<mysql2.Pool> {
+): Promise<Pool> {
   let pool = mysql2PoolMap.get(database_name);
   if (!pool) {
     let database_username_key = "database";
@@ -176,7 +183,7 @@ export async function getMysqlPool(
     const debug = (await getEnv(database_debug_key)) === "true";
     
     // mysql2
-    const poolOption: mysql2.PoolOptions = {
+    const poolOption: PoolOptions = {
     };
     if (hostname) {
       poolOption.host = hostname;
@@ -221,7 +228,7 @@ let req_id = 0;
 export class Context {
   
   #is_tran = false;
-  #conn: mysql2.PoolConnection | undefined;
+  #conn: PoolConnection | undefined;
   #req_id = "0";
   
   /** 不校验token是否过期, 默认校验 */
@@ -284,7 +291,7 @@ export class Context {
     return this.#conn;
   }
   
-  set conn(conn: mysql2.PoolConnection | undefined) {
+  set conn(conn: PoolConnection | undefined) {
     this.#conn = conn;
   }
   
@@ -712,7 +719,7 @@ export async function getCache(
 /**
  * 开启事务, 如果事务已经开启则直接返回数据库链接
  */
-export async function beginTran(opt?: { debug?: boolean }): Promise<mysql2.PoolConnection> {
+export async function beginTran(opt?: { debug?: boolean }): Promise<PoolConnection> {
   const context = useContext();
   let conn = context.conn;
   if (conn) return conn;
@@ -731,7 +738,7 @@ export async function beginTran(opt?: { debug?: boolean }): Promise<mysql2.PoolC
 /**
  * 回滚事务
  */
-export async function rollback(conn?: mysql2.PoolConnection, opt?: { debug?: boolean }): Promise<void> {
+export async function rollback(conn?: PoolConnection, opt?: { debug?: boolean }): Promise<void> {
   const context = useContext();
   if (!conn) {
     conn = context.conn;
@@ -753,7 +760,7 @@ export async function rollback(conn?: mysql2.PoolConnection, opt?: { debug?: boo
 /**
  * 提交事务
  */
-export async function commit(conn?: mysql2.PoolConnection, opt?: { debug?: boolean }): Promise<void> {
+export async function commit(conn?: PoolConnection, opt?: { debug?: boolean }): Promise<void> {
   const context = useContext();
   if (!conn) {
     conn = context.conn;
@@ -953,7 +960,7 @@ export async function query<T = any>(
       log(debugSql);
     }
     try {
-      const res = await conn.query(sql, args);
+      const res = await (conn as any).query(sql, args);
       // deno-lint-ignore no-explicit-any
       result = res[0] as any[];
     } catch(err) {
@@ -968,13 +975,13 @@ export async function query<T = any>(
     }
     const pool = await getMysqlPool(opt?.database_name);
     try {
-      const res = await pool.query(sql, args);
+      const res = await (pool as any).query(sql, args);
       // deno-lint-ignore no-explicit-any
       result = res[0] as any[];
     } catch(err) {
       const debugSql = getDebugQuery(sql, args);
       error(debugSql);
-      if (err.code === "ECONNREFUSED") {
+      if ((err as any).code === "ECONNREFUSED") {
         throw new Error("系统错误: 数据库连接失败");
       }
       throw err;
@@ -1020,14 +1027,14 @@ export async function execute(
     if (opt?.debug === true) {
       log(getDebugQuery(sql, args) + " /* "+ conn.threadId +" */");
     }
-    result = await conn.query(sql, args);
+    result = await (conn as any).query(sql, args);
   } else {
     if (opt?.debug === true) {
       log(getDebugQuery(sql, args));
     }
     try {
       const pool = await getMysqlPool();
-      result = await pool.query(sql, args);
+      result = await (pool as any).query(sql, args);
     } catch(err) {
       error(sql);
       error(args);
