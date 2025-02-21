@@ -1,3 +1,7 @@
+import {
+  setNotVerifyToken,
+} from "/lib/context.ts";
+
 import * as appService from "./app.service.ts";
 
 import * as authService from "/lib/auth/auth.service.ts";
@@ -10,6 +14,7 @@ export function generateId() {
  * 清空缓存
  */
 export async function clearCache() {
+  setNotVerifyToken(true);
   return await appService.clearCache();
 }
 
