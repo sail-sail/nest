@@ -44,7 +44,8 @@ async function newCron(
       });
     });
     return job;
-  } catch (err) {
+  } catch (err0) {
+    const err = err0 as Error;
     const errMsg: string = err.message || "";
     if (errMsg.startsWith("CronPattern: ")) {
       throw await ns(`{0} 不是有效的Cron表达式`, cron);
