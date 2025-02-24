@@ -140,13 +140,13 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.desc == null)">
+        <template v-if="(showBuildIn || builtInModel?.info == null)">
           <el-form-item
             label="描述"
-            prop="desc"
+            prop="info"
           >
             <CustomInput
-              v-model="dialogModel.desc"
+              v-model="dialogModel.info"
               placeholder="请输入 描述"
               :readonly="isLocked || isReadonly"
             ></CustomInput>

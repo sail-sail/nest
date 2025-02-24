@@ -1,2 +1,2 @@
-id,lbl,lang_id,lang_id_lbl,title,desc,is_locked,is_enabled,order_by,rem,is_sys
+id,lbl,lang_id,lang_id_lbl,title,info,is_locked,is_enabled,order_by,rem,is_sys
 ZDbZlC1OT8KaDg6soxMCBQ,默认租户,MGExYjJhODVkY2FlNDI4OW,中文,管理系统 (测试库),,1,1,1,,1

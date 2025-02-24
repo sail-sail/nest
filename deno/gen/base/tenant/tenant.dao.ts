@@ -119,11 +119,11 @@ async function getWhereQuery(
   if (isNotEmpty(search?.title_like)) {
     whereQuery += ` and t.title like ${ args.push("%" + sqlLike(search?.title_like) + "%") }`;
   }
-  if (search?.desc != null) {
-    whereQuery += ` and t.desc=${ args.push(search.desc) }`;
+  if (search?.info != null) {
+    whereQuery += ` and t.info=${ args.push(search.info) }`;
   }
-  if (isNotEmpty(search?.desc_like)) {
-    whereQuery += ` and t.desc like ${ args.push("%" + sqlLike(search?.desc_like) + "%") }`;
+  if (isNotEmpty(search?.info_like)) {
+    whereQuery += ` and t.info like ${ args.push("%" + sqlLike(search?.info_like) + "%") }`;
   }
   if (search?.lang_id != null) {
     whereQuery += ` and t.lang_id in (${ args.push(search.lang_id) })`;
@@ -702,7 +702,7 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
     menu_ids: "菜单权限",
     menu_ids_lbl: "菜单权限",
     title: "标题",
-    desc: "描述",
+    info: "描述",
     lang_id: "语言",
     lang_id_lbl: "语言",
     is_locked: "锁定",
@@ -1120,9 +1120,9 @@ export async function validate(
   
   // 描述
   await validators.chars_max_length(
-    input.desc,
+    input.info,
     100,
-    fieldComments.desc,
+    fieldComments.info,
   );
   
   // 语言
@@ -1383,7 +1383,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,title,desc,lang_id_lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys)values";
+  let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,title,info,lang_id_lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1478,8 +1478,8 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.desc != null) {
-        sql += `,${ args.push(input.desc) }`;
+      if (input.info != null) {
+        sql += `,${ args.push(input.info) }`;
       } else {
         sql += ",default";
       }
@@ -1654,9 +1654,9 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.desc != null) {
-    if (input.desc != oldModel.desc) {
-      sql += `desc=${ args.push(input.desc) },`;
+  if (input.info != null) {
+    if (input.info != oldModel.info) {
+      sql += `info=${ args.push(input.info) },`;
       updateFldNum++;
     }
   }

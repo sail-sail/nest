@@ -22,7 +22,7 @@ type TenantModel {
   "标题"
   title: String!
   "描述"
-  desc: String!
+  info: String!
   "语言"
   lang_id: LangId!
   "语言"
@@ -76,7 +76,7 @@ type TenantFieldComment {
   "标题"
   title: String!
   "描述"
-  desc: String!
+  info: String!
   "语言"
   lang_id: String!
   "语言"
@@ -126,7 +126,7 @@ input TenantInput {
   "标题"
   title: String
   "描述"
-  desc: String
+  info: String
   "语言"
   lang_id: LangId
   "语言"
