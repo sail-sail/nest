@@ -2,7 +2,7 @@ use color_eyre::eyre::Result;
 
 use super::oss_dao::{self, StatObject};
 
-use crate::gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /**
  * 上传文件

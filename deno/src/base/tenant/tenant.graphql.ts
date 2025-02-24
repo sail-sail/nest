@@ -9,6 +9,10 @@ type GetLoginTenants {
   id: TenantId!
   "名称"
   lbl: String!
+  "标题"
+  title: String!
+  "描述"
+  info: String!
   "语言"
   lang: String!
 }

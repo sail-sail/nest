@@ -83,7 +83,7 @@
               v-model="dialogModel.code"
               placeholder="请输入 编码"
               :readonly="true"
-              readonly-placeholder="(自动生成)"
+              :readonly-placeholder="inited ? '(自动生成)' : ''"
             ></CustomInput>
           </el-form-item>
         </template>

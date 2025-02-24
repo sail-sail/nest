@@ -695,23 +695,3 @@ export async function denoGenTypes() {
   shelljs.cd(`${ projectPh }/deno`);
   shelljs.exec("npm run gqlgen");
 }
-
-export async function removeExcelTemplate() {
-  console.log("removeExcelTemplate");
-  try {
-    await rm(`${ projectPh }/pc/public/import_template/`, { force: true, recursive: true });
-  } catch (err) {
-  }
-  try {
-    await rm(`${ projectPh }/pc/public/excel_template/`, { force: true, recursive: true });
-  } catch (err) {
-  }
-  try {
-    await rm(`${ out }/pc/public/import_template/`, { force: true, recursive: true });
-  } catch (err) {
-  }
-  try {
-    await rm(`${ out }/pc/public/excel_template/`, { force: true, recursive: true });
-  } catch (err) {
-  }
-}
