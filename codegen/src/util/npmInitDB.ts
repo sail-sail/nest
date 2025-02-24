@@ -87,6 +87,14 @@ async function exec() {
     await execCsvFile(context, item);
   }
   
+  if (!isUseI18n) {
+    let sql = `
+      update base_menu set is_enabled = 0
+      where route_path in ('/base/lang', '/base/i18n')
+    `;
+    await context.pool.execute(sql);
+  }
+  
   console.timeEnd("sql");
   process.exit(0);
 }
