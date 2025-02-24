@@ -49,6 +49,7 @@
     "S3/S3Error": "https://deno.land/x/s3@0.5.0/src/error.ts",
     "canvas": "https://deno.land/x/canvas@v1.4.2/mod.ts",
     "dayjs": "npm:dayjs@1.11.13",
+    "js-md5": "npm:js-md5@0.8.3",
     "decimal.js": "https://esm.sh/decimal.js@10.4.3",
     "graphql": "npm:graphql@16.10.0",
     "mime": "npm:mime@4.0.6",
@@ -57,7 +58,6 @@
     "redis": "https://deno.land/x/redis@v0.37.1/mod.ts",
     "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts",
     "mqtt": "jsr:@ymjacky/mqtt5@0.0.19",
-    "@fidm/x509": "https://esm.sh/@fidm/x509@1.2.1",
-    "wechatpay-node-v3": "./lib/wechatpay-node-v3/mod.ts"
+    "wechatpay-node-v3": "npm:wechatpay-node-v3@2.2.1"
   }
 }

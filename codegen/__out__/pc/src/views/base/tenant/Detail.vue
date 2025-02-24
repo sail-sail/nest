@@ -127,6 +127,32 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.title == null)">
+          <el-form-item
+            label="标题"
+            prop="title"
+          >
+            <CustomInput
+              v-model="dialogModel.title"
+              placeholder="请输入 标题"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.info == null)">
+          <el-form-item
+            label="描述"
+            prop="info"
+          >
+            <CustomInput
+              v-model="dialogModel.info"
+              placeholder="请输入 描述"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.lang_id == null)">
           <el-form-item
             label="语言"
