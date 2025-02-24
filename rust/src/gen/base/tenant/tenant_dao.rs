@@ -69,7 +69,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 15 * 2);
+  let mut where_query = String::with_capacity(80 * 17 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -189,6 +189,44 @@ async fn get_where_query(
     };
     if menu_ids_is_null {
       where_query.push_str(" and t.menu_ids is null");
+    }
+  }
+  // 标题
+  {
+    let title = match search {
+      Some(item) => item.title.clone(),
+      None => None,
+    };
+    if let Some(title) = title {
+      where_query.push_str(" and t.title=?");
+      args.push(title.into());
+    }
+    let title_like = match search {
+      Some(item) => item.title_like.clone(),
+      None => None,
+    };
+    if let Some(title_like) = title_like {
+      where_query.push_str(" and t.title like ?");
+      args.push(format!("%{}%", sql_like(&title_like)).into());
+    }
+  }
+  // 描述
+  {
+    let desc = match search {
+      Some(item) => item.desc.clone(),
+      None => None,
+    };
+    if let Some(desc) = desc {
+      where_query.push_str(" and t.desc=?");
+      args.push(desc.into());
+    }
+    let desc_like = match search {
+      Some(item) => item.desc_like.clone(),
+      None => None,
+    };
+    if let Some(desc_like) = desc_like {
+      where_query.push_str(" and t.desc like ?");
+      args.push(format!("%{}%", sql_like(&desc_like)).into());
     }
   }
   // 语言
@@ -874,6 +912,8 @@ pub async fn get_field_comments(
     domain_ids_lbl: "所属域名".into(),
     menu_ids: "菜单权限".into(),
     menu_ids_lbl: "菜单权限".into(),
+    title: "标题".into(),
+    desc: "描述".into(),
     lang_id: "语言".into(),
     lang_id_lbl: "语言".into(),
     is_locked: "锁定".into(),
@@ -1633,7 +1673,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 15 + 20);
+  let mut sql_fields = String::with_capacity(80 * 17 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1644,6 +1684,10 @@ async fn _creates(
   sql_fields += ",update_usr_id_lbl";
   // 名称
   sql_fields += ",lbl";
+  // 标题
+  sql_fields += ",title";
+  // 描述
+  sql_fields += ",desc";
   // 语言
   sql_fields += ",lang_id_lbl";
   // 语言
@@ -1660,7 +1704,7 @@ async fn _creates(
   sql_fields += ",is_sys";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 15 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 17 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1780,6 +1824,20 @@ async fn _creates(
     if let Some(lbl) = input.lbl {
       sql_values += ",?";
       args.push(lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 标题
+    if let Some(title) = input.title {
+      sql_values += ",?";
+      args.push(title.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 描述
+    if let Some(desc) = input.desc {
+      sql_values += ",?";
+      args.push(desc.into());
     } else {
       sql_values += ",default";
     }
@@ -2069,7 +2127,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 15 + 20);
+  let mut sql_fields = String::with_capacity(80 * 17 + 20);
   
   let mut field_num: usize = 0;
   // 名称
@@ -2077,6 +2135,18 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
+  }
+  // 标题
+  if let Some(title) = input.title {
+    field_num += 1;
+    sql_fields += "title=?,";
+    args.push(title.into());
+  }
+  // 描述
+  if let Some(desc) = input.desc {
+    field_num += 1;
+    sql_fields += "desc=?,";
+    args.push(desc.into());
   }
   // 语言
   if let Some(lang_id_lbl) = input.lang_id_lbl {

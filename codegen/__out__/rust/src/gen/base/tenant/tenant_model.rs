@@ -71,6 +71,12 @@ pub struct TenantModel {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: Vec<String>,
+  /// 标题
+  #[graphql(name = "title")]
+  pub title: String,
+  /// 描述
+  #[graphql(name = "desc")]
+  pub desc: String,
   /// 语言
   #[graphql(name = "lang_id")]
   pub lang_id: LangId,
@@ -205,6 +211,10 @@ impl FromRow<'_, MySqlRow> for TenantModel {
         )
         .collect::<Vec<String>>()
     };
+    // 标题
+    let title: String = row.try_get("title")?;
+    // 描述
+    let desc: String = row.try_get("desc")?;
     // 语言
     let lang_id: LangId = row.try_get("lang_id")?;
     let lang_id_lbl: Option<String> = row.try_get("lang_id_lbl")?;
@@ -251,6 +261,8 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       domain_ids_lbl,
       menu_ids,
       menu_ids_lbl,
+      title,
+      desc,
       lang_id,
       lang_id_lbl,
       is_locked,
@@ -295,6 +307,12 @@ pub struct TenantFieldComment {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: String,
+  /// 标题
+  #[graphql(name = "title")]
+  pub title: String,
+  /// 描述
+  #[graphql(name = "desc")]
+  pub desc: String,
   /// 语言
   #[graphql(name = "lang_id")]
   pub lang_id: String,
@@ -372,6 +390,18 @@ pub struct TenantSearch {
   /// 菜单权限
   #[graphql(name = "menu_ids_save_null")]
   pub menu_ids_is_null: Option<bool>,
+  /// 标题
+  #[graphql(skip)]
+  pub title: Option<String>,
+  /// 标题
+  #[graphql(skip)]
+  pub title_like: Option<String>,
+  /// 描述
+  #[graphql(skip)]
+  pub desc: Option<String>,
+  /// 描述
+  #[graphql(skip)]
+  pub desc_like: Option<String>,
   /// 语言
   #[graphql(name = "lang_id")]
   pub lang_id: Option<Vec<LangId>>,
@@ -460,6 +490,20 @@ impl std::fmt::Debug for TenantSearch {
     if let Some(ref menu_ids) = self.menu_ids {
       item = item.field("menu_ids", menu_ids);
     }
+    // 标题
+    if let Some(ref title) = self.title {
+      item = item.field("title", title);
+    }
+    if let Some(ref title_like) = self.title_like {
+      item = item.field("title_like", title_like);
+    }
+    // 描述
+    if let Some(ref desc) = self.desc {
+      item = item.field("desc", desc);
+    }
+    if let Some(ref desc_like) = self.desc_like {
+      item = item.field("desc_like", desc_like);
+    }
     // 语言
     if let Some(ref lang_id) = self.lang_id {
       item = item.field("lang_id", lang_id);
@@ -538,6 +582,12 @@ pub struct TenantInput {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: Option<Vec<String>>,
+  /// 标题
+  #[graphql(name = "title")]
+  pub title: Option<String>,
+  /// 描述
+  #[graphql(name = "desc")]
+  pub desc: Option<String>,
   /// 语言
   #[graphql(name = "lang_id")]
   pub lang_id: Option<LangId>,
@@ -608,6 +658,10 @@ impl From<TenantModel> for TenantInput {
       // 菜单权限
       menu_ids: model.menu_ids.into(),
       menu_ids_lbl: model.menu_ids_lbl.into(),
+      // 标题
+      title: model.title.into(),
+      // 描述
+      desc: model.desc.into(),
       // 语言
       lang_id: model.lang_id.into(),
       lang_id_lbl: model.lang_id_lbl.into(),
@@ -651,6 +705,10 @@ impl From<TenantInput> for TenantSearch {
       domain_ids: input.domain_ids,
       // 菜单权限
       menu_ids: input.menu_ids,
+      // 标题
+      title: input.title,
+      // 描述
+      desc: input.desc,
       // 语言
       lang_id: input.lang_id.map(|x| vec![x]),
       // 语言
