@@ -85,9 +85,6 @@ async fn main() -> Result<(), std::io::Error> {
   
   #[cfg(not(debug_assertions))]
   let _guard = {
-    // if std::env::var_os("NO_COLOR").is_none() {
-    //   std::env::set_var("NO_COLOR", "1");
-    // }
     color_eyre::config::HookBuilder::default()
       .add_frame_filter(Box::new(move |frames| {
         frames.retain(|frame| {

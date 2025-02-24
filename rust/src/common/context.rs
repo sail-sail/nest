@@ -19,7 +19,7 @@ use tokio::sync::Mutex;
 
 use chrono::{Local, NaiveDate, NaiveTime, NaiveDateTime};
 use base64::{engine::general_purpose, Engine};
-// use regex::Regex;
+use regex::Regex;
 
 use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions, MySqlRow};
 use sqlx::{Pool, MySql, Executor, FromRow, Row};
@@ -48,7 +48,7 @@ static SERVER_TOKEN_TIMEOUT: OnceLock<i64> = OnceLock::new();
 static DB_POOL: OnceLock<Pool<MySql>> = OnceLock::new();
 static DB_POOL_DW: OnceLock<Pool<MySql>> = OnceLock::new();
 static IS_DEBUG: OnceLock<bool> = OnceLock::new();
-// static MULTIPLE_SPACE_REGEX: OnceLock<Regex> = OnceLock::new();
+static MULTIPLE_SPACE_REGEX: OnceLock<Regex> = OnceLock::new();
 
 fn server_token_timeout() -> i64 {
   SERVER_TOKEN_TIMEOUT.get_or_init(|| env::var("server_tokentimeout").unwrap()
@@ -71,10 +71,10 @@ pub fn is_debug() -> bool {
     .to_owned()
 }
 
-// pub fn multiple_space_regex() -> Regex {
-//   MULTIPLE_SPACE_REGEX.get_or_init(|| Regex::new(r"\s+").unwrap())
-//     .clone()
-// }
+pub fn multiple_space_regex() -> Regex {
+  MULTIPLE_SPACE_REGEX.get_or_init(|| Regex::new(r"\s+").unwrap())
+    .clone()
+}
 
 tokio::task_local! {
   pub static CTX: Arc<Ctx>;
@@ -510,7 +510,7 @@ impl Ctx {
     
     if is_tran {
       let mut query = sqlx::query(&sql);
-      for arg in args {
+      for arg in &args {
         match arg {
           ArgType::Bool(s) => {
             query = query.bind(s);
@@ -581,7 +581,12 @@ impl Ctx {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
         let tran = tran.as_mut().unwrap();
-        tran.execute(query).await?
+        let res = tran.execute(query).await;
+        if res.is_err() {
+          let debug_sql = get_debug_sql(&sql, &args);
+          error!("{debug_sql}");
+        }
+        res?
       };
       let rows_affected = res.rows_affected();
       if rows_affected > 0 {
@@ -600,7 +605,7 @@ impl Ctx {
       return Ok(rows_affected);
     }
     let mut query = sqlx::query(&sql);
-    for arg in args {
+    for arg in &args {
       match arg {
         ArgType::Bool(s) => {
           query = query.bind(s);
@@ -668,7 +673,12 @@ impl Ctx {
       };
     }
     let db_pool = db_pool();
-    let res = query.execute(&db_pool).await?;
+    let res = query.execute(&db_pool).await;
+    if res.is_err() {
+      let debug_sql = get_debug_sql(&sql, &args);
+      error!("{debug_sql}");
+    }
+    let res = res?;
     let rows_affected = res.rows_affected();
     if rows_affected > 0 {
       if let Some(options) = &options {
@@ -724,7 +734,7 @@ impl Ctx {
     
     if is_tran {
       let mut query = sqlx::query_as::<_, R>(&sql);
-      for arg in args {
+      for arg in &args {
         match arg {
           ArgType::Bool(s) => {
             query = query.bind(s);
@@ -795,7 +805,12 @@ impl Ctx {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
         let tran = tran.as_mut().unwrap();
-        query.fetch_all((*tran).as_mut()).await?
+        let res = query.fetch_all((*tran).as_mut()).await;
+        if res.is_err() {
+          let debug_sql = get_debug_sql(&sql, &args);
+          error!("{debug_sql}");
+        }
+        res?
       };
       
       if let Some(options) = &options {
@@ -809,7 +824,7 @@ impl Ctx {
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(&sql);
-    for arg in args {
+    for arg in &args {
       match arg {
         ArgType::Bool(s) => {
           query = query.bind(s);
@@ -885,7 +900,12 @@ impl Ctx {
     } else {
       db_pool()
     };
-    let res = query.fetch_all(&db_pool).await?;
+    let res = query.fetch_all(&db_pool).await;
+    if res.is_err() {
+      let debug_sql = get_debug_sql(&sql, &args);
+      error!("{debug_sql}");
+    }
+    let res = res?;
     if let Some(options) = &options {
       if options.cache_key1.is_some() && options.cache_key2.is_some() {
         let cache_key1 = options.cache_key1.as_ref().unwrap();
@@ -934,7 +954,7 @@ impl Ctx {
     
     if is_tran {
       let mut query = sqlx::query_as::<_, R>(&sql);
-      for arg in args {
+      for arg in &args {
         match arg {
           ArgType::Bool(s) => {
             query = query.bind(s);
@@ -1005,7 +1025,12 @@ impl Ctx {
         self.begin().await?;
         let mut tran = self.tran.lock().await;
         let tran = tran.as_mut().unwrap();
-        query.fetch_optional((*tran).as_mut()).await?
+        let res = query.fetch_optional((*tran).as_mut()).await;
+        if res.is_err() {
+          let debug_sql = get_debug_sql(&sql, &args);
+          error!("{debug_sql}");
+        }
+        res?
       };
       if let Some(res) = &res {
         if let Some(options) = &options {
@@ -1020,7 +1045,7 @@ impl Ctx {
       return Ok(res);
     }
     let mut query = sqlx::query_as::<_, R>(&sql);
-    for arg in args {
+    for arg in &args {
       match arg {
         ArgType::Bool(s) => {
           query = query.bind(s);
@@ -1096,7 +1121,12 @@ impl Ctx {
     } else {
       db_pool()
     };
-    let res = query.fetch_optional(&db_pool).await?;
+    let res = query.fetch_optional(&db_pool).await;
+    if res.is_err() {
+      let debug_sql = get_debug_sql(&sql, &args);
+      error!("{debug_sql}");
+    }
+    let res = res?;
     if let Some(res) = &res {
       if let Some(options) = &options {
         if options.cache_key1.is_some() && options.cache_key2.is_some() {
@@ -2078,6 +2108,19 @@ pub fn get_is_creating(
   }
   let ctx = CTX.with(|ctx| ctx.clone());
   ctx.is_creating.unwrap_or_default()
+}
+
+#[must_use]
+pub fn get_debug_sql(
+  sql: &str,
+  args: &Vec<ArgType>,
+) -> String {
+  let mut debug_sql = sql.to_owned();
+  debug_sql = multiple_space_regex().replace_all(&debug_sql, " ").to_string();
+  for arg in args {
+    debug_sql = debug_sql.replacen('?', &format!("'{}'", arg.to_string().replace('\'', "''")), 1);
+  }
+  debug_sql
 }
 
 // #[cfg(test)]

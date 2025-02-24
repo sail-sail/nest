@@ -75,8 +75,8 @@ pub struct TenantModel {
   #[graphql(name = "title")]
   pub title: String,
   /// 描述
-  #[graphql(name = "desc")]
-  pub desc: String,
+  #[graphql(name = "info")]
+  pub info: String,
   /// 语言
   #[graphql(name = "lang_id")]
   pub lang_id: LangId,
@@ -214,7 +214,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     // 标题
     let title: String = row.try_get("title")?;
     // 描述
-    let desc: String = row.try_get("desc")?;
+    let info: String = row.try_get("info")?;
     // 语言
     let lang_id: LangId = row.try_get("lang_id")?;
     let lang_id_lbl: Option<String> = row.try_get("lang_id_lbl")?;
@@ -262,7 +262,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       menu_ids,
       menu_ids_lbl,
       title,
-      desc,
+      info,
       lang_id,
       lang_id_lbl,
       is_locked,
@@ -311,8 +311,8 @@ pub struct TenantFieldComment {
   #[graphql(name = "title")]
   pub title: String,
   /// 描述
-  #[graphql(name = "desc")]
-  pub desc: String,
+  #[graphql(name = "info")]
+  pub info: String,
   /// 语言
   #[graphql(name = "lang_id")]
   pub lang_id: String,
@@ -398,10 +398,10 @@ pub struct TenantSearch {
   pub title_like: Option<String>,
   /// 描述
   #[graphql(skip)]
-  pub desc: Option<String>,
+  pub info: Option<String>,
   /// 描述
   #[graphql(skip)]
-  pub desc_like: Option<String>,
+  pub info_like: Option<String>,
   /// 语言
   #[graphql(name = "lang_id")]
   pub lang_id: Option<Vec<LangId>>,
@@ -498,11 +498,11 @@ impl std::fmt::Debug for TenantSearch {
       item = item.field("title_like", title_like);
     }
     // 描述
-    if let Some(ref desc) = self.desc {
-      item = item.field("desc", desc);
+    if let Some(ref info) = self.info {
+      item = item.field("info", info);
     }
-    if let Some(ref desc_like) = self.desc_like {
-      item = item.field("desc_like", desc_like);
+    if let Some(ref info_like) = self.info_like {
+      item = item.field("info_like", info_like);
     }
     // 语言
     if let Some(ref lang_id) = self.lang_id {
@@ -586,8 +586,8 @@ pub struct TenantInput {
   #[graphql(name = "title")]
   pub title: Option<String>,
   /// 描述
-  #[graphql(name = "desc")]
-  pub desc: Option<String>,
+  #[graphql(name = "info")]
+  pub info: Option<String>,
   /// 语言
   #[graphql(name = "lang_id")]
   pub lang_id: Option<LangId>,
@@ -661,7 +661,7 @@ impl From<TenantModel> for TenantInput {
       // 标题
       title: model.title.into(),
       // 描述
-      desc: model.desc.into(),
+      info: model.info.into(),
       // 语言
       lang_id: model.lang_id.into(),
       lang_id_lbl: model.lang_id_lbl.into(),
@@ -708,7 +708,7 @@ impl From<TenantInput> for TenantSearch {
       // 标题
       title: input.title,
       // 描述
-      desc: input.desc,
+      info: input.info,
       // 语言
       lang_id: input.lang_id.map(|x| vec![x]),
       // 语言
