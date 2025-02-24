@@ -532,7 +532,7 @@
           </template>
           
           <!-- 默认 -->
-          <template v-else-if="'is_default_lbl' === col.prop">
+          <template v-else-if="'is_default_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -731,6 +731,7 @@ const props = defineProps<{
   selectedIds?: SeoId[]; //已选择行的id列表
   isMultiple?: string; //是否多选
   id?: SeoId; // ID
+  is_default?: string|string[]; // 默认
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -742,6 +743,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
+  is_default: "number[]",
+  is_default_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
