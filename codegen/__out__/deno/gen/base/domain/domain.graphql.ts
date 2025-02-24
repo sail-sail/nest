@@ -122,6 +122,8 @@ input DomainSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "默认"
+  is_default: [Int!]
   "启用"
   is_enabled: [Int!]
   "创建人"
