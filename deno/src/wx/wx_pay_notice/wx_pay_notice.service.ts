@@ -42,6 +42,10 @@ import {
   PayTransactionsJsapiTradeState,
 } from "/gen/types.ts";
 
+import {
+  Buffer,
+} from "node:buffer";
+
 interface Ipay {
   appid: string; //  直连商户申请的公众号或移动应用appid。
   mchid: string; // 商户号

@@ -45,6 +45,10 @@ import {
 
 import WxPay from "wechatpay-node-v3";
 
+import {
+  Buffer,
+} from "node:buffer";
+
 /** 订单金额信息 */
 interface Iamount {
   /** 订单总金额，单位为分 */
@@ -138,12 +142,13 @@ export async function transactions_jsapi(
   const wxPay = new WxPay({
     appid: obj.appid,
     mchid: obj.mchid,
-    publicKey: new TextEncoder().encode(obj.publicKey),
-    privateKey: new TextEncoder().encode(obj.privateKey),
+    publicKey: Buffer.from(new TextEncoder().encode(obj.publicKey)),
+    privateKey: Buffer.from(new TextEncoder().encode(obj.privateKey)),
     key: obj.key,
   });
   const res = await wxPay.transactions_jsapi(params);
-  const result = await res.json();
+  log(`transactions_jsapi.result: ${ JSON.stringify(res) }`);
+  const result = res as unknown as RequestPaymentOptions;
   /*
   {
     "status": 200,
@@ -165,7 +170,6 @@ export async function transactions_jsapi(
     throw `${ data.code }: ${ data.message }`;
   }
   result.orderInfo = obj.appid;
-  log(`transactions_jsapi.result: ${ JSON.stringify(result) }`);
   const authModel = await getAuthModel();
   const wx_usr_id = authModel?.wx_usr_id;
   
