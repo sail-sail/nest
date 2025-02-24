@@ -212,21 +212,21 @@ async fn get_where_query(
   }
   // 描述
   {
-    let desc = match search {
-      Some(item) => item.desc.clone(),
+    let info = match search {
+      Some(item) => item.info.clone(),
       None => None,
     };
-    if let Some(desc) = desc {
-      where_query.push_str(" and t.desc=?");
-      args.push(desc.into());
+    if let Some(info) = info {
+      where_query.push_str(" and t.info=?");
+      args.push(info.into());
     }
-    let desc_like = match search {
-      Some(item) => item.desc_like.clone(),
+    let info_like = match search {
+      Some(item) => item.info_like.clone(),
       None => None,
     };
-    if let Some(desc_like) = desc_like {
-      where_query.push_str(" and t.desc like ?");
-      args.push(format!("%{}%", sql_like(&desc_like)).into());
+    if let Some(info_like) = info_like {
+      where_query.push_str(" and t.info like ?");
+      args.push(format!("%{}%", sql_like(&info_like)).into());
     }
   }
   // 语言
@@ -913,7 +913,7 @@ pub async fn get_field_comments(
     menu_ids: "菜单权限".into(),
     menu_ids_lbl: "菜单权限".into(),
     title: "标题".into(),
-    desc: "描述".into(),
+    info: "描述".into(),
     lang_id: "语言".into(),
     lang_id_lbl: "语言".into(),
     is_locked: "锁定".into(),
@@ -1687,7 +1687,7 @@ async fn _creates(
   // 标题
   sql_fields += ",title";
   // 描述
-  sql_fields += ",desc";
+  sql_fields += ",info";
   // 语言
   sql_fields += ",lang_id_lbl";
   // 语言
@@ -1835,9 +1835,9 @@ async fn _creates(
       sql_values += ",default";
     }
     // 描述
-    if let Some(desc) = input.desc {
+    if let Some(info) = input.info {
       sql_values += ",?";
-      args.push(desc.into());
+      args.push(info.into());
     } else {
       sql_values += ",default";
     }
@@ -2143,10 +2143,10 @@ pub async fn update_by_id(
     args.push(title.into());
   }
   // 描述
-  if let Some(desc) = input.desc {
+  if let Some(info) = input.info {
     field_num += 1;
-    sql_fields += "desc=?,";
-    args.push(desc.into());
+    sql_fields += "info=?,";
+    args.push(info.into());
   }
   // 语言
   if let Some(lang_id_lbl) = input.lang_id_lbl {
