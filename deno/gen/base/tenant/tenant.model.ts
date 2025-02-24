@@ -21,6 +21,12 @@ declare global {
   
   /** 租户 */
   interface TenantSearch extends TenantSearchType {
+    /** 标题 */
+    title?: string;
+    title_like?: string;
+    /** 描述 */
+    desc?: string;
+    desc_like?: string;
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */
