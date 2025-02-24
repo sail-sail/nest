@@ -561,6 +561,24 @@
             </el-table-column>
           </template>
           
+          <!-- 标题 -->
+          <template v-else-if="'title' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 描述 -->
+          <template v-else-if="'desc' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 语言 -->
           <template v-else-if="'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
             <el-table-column
@@ -1099,6 +1117,22 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
+      label: "标题",
+      prop: "title",
+      width: 160,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "描述",
+      prop: "desc",
+      width: 180,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
       label: "语言",
       prop: "lang_id_lbl",
       sortBy: "lang_id_lbl",
@@ -1446,6 +1480,8 @@ async function onImportExcel() {
     [ "名称" ]: "lbl",
     [ "所属域名" ]: "domain_ids_lbl",
     [ "菜单权限" ]: "menu_ids_lbl",
+    [ "标题" ]: "title",
+    [ "描述" ]: "desc",
     [ "语言" ]: "lang_id_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
@@ -1475,6 +1511,8 @@ async function onImportExcel() {
           "lbl": "string",
           "domain_ids_lbl": "string[]",
           "menu_ids_lbl": "string[]",
+          "title": "string",
+          "desc": "string",
           "lang_id_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",

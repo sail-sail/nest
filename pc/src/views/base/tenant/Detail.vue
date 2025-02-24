@@ -127,7 +127,33 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.lang_id == null)">
+        <template v-if="(showBuildIn || builtInModel?.title == null)">
+          <el-form-item
+            label="标题"
+            prop="title"
+          >
+            <CustomInput
+              v-model="dialogModel.title"
+              placeholder="请输入 标题"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.desc == null)">
+          <el-form-item
+            label="描述"
+            prop="desc"
+          >
+            <CustomInput
+              v-model="dialogModel.desc"
+              placeholder="请输入 描述"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="isI18n && (showBuildIn || builtInModel?.lang_id == null)">
           <el-form-item
             label="语言"
             prop="lang_id"
@@ -315,7 +341,7 @@ const domainPermit = permitStore.getPermit("/base/domain");
 
 let inited = $ref(false);
 
-const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false" || import.meta.env.DEV;
+const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false";
 
 type DialogAction = "add" | "copy" | "edit" | "view";
 let dialogAction = $ref<DialogAction>("add");
