@@ -24,6 +24,7 @@ function getArg(name: string): string | undefined {
 
 const denoDir = Deno.cwd();
 const pcDir = denoDir + "/../pc";
+const codegenDir = denoDir + "/../codegen";
 const uniDir = denoDir + "/../uni";
 const docsDir = denoDir + "/../docs";
 const buildDir = getArg("--build-dir") || `${ denoDir }/../build/deno`;
@@ -38,6 +39,18 @@ if (target === "linux") {
 const env = getArg("--env") || "prod";
 
 await Deno.mkdir(buildDir, { recursive: true });
+
+async function removeExcelTemplate() {
+  console.log("removeExcelTemplate");
+  try {
+    await Deno.remove(`${ pcDir }/public/import_template/`, { recursive: true });
+  } catch (err) {
+  }
+  try {
+    await Deno.remove(`${ pcDir }/public/excel_template/`, { recursive: true });
+  } catch (err) {
+  }
+}
 
 async function copyEnv() {
   console.log("copyEnv");
@@ -319,6 +332,8 @@ try {
   console.error(err);
 }
 await Deno.mkdir(`${ buildDir }/../`, { recursive: true });
+
+await removeExcelTemplate();
 
 if (commands.length !== 1 || commands[0] !== "docs") {
   await codegen();

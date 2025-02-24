@@ -251,6 +251,20 @@ async function getSchema0(
       item.noAdd = true;
       item.noEdit = true;
     }
+    if (column_name === "is_default") {
+      if (item.width == null) {
+        item.width = 85;
+      }
+      if (item.isSwitch == null) {
+        item.isSwitch = true;
+      }
+      if (item.showOverflowTooltip == null) {
+        item.showOverflowTooltip = false;
+      }
+      if (item.canSearch == null) {
+        item.canSearch = true;
+      }
+    }
     if ([ "create_usr_id", "update_usr_id" ].includes(column_name)) {
       item.foreignKey = item.foreignKey || { };
       item.foreignKey.mod = "base";
