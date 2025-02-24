@@ -407,6 +407,50 @@ import {
   }
 #><#
 }
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno && !column.onlyCodegenDenoButApi) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "is_deleted") continue;
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE;
+  const column_comment = column.COLUMN_COMMENT || "";
+  if (
+    [
+      "is_default",
+      "is_deleted",
+      "tenant_id",
+    ].includes(column_name)
+  ) {
+    continue;
+  }
+  const foreignKey = column.foreignKey;
+  if (!foreignKey) continue;
+  if (foreignKey.multiple) continue;
+  const foreignTable = foreignKey?.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  let foreignSchema = undefined;
+  if (foreignTable) {
+    foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  }
+  if (foreignKey && !foreignSchema) {
+    throw new Error(`表 ${ table } 的外键 ${ foreignTable } 不存在`);
+  }
+  const foreignHasDefault = foreignSchema?.columns?.some((column) => column.COLUMN_NAME === "is_default");
+  if (!foreignHasDefault) continue;
+#>
+
+// <#=foreignSchema.opts?.table_comment#>
+import {
+  findOne as findOne<#=foreignTable_Up#>0,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
+}
 #>
 
 async function setLblById(
@@ -2236,12 +2280,41 @@ export async function getDefaultInput() {<#
       ) {
         continue;
       }
-      if (!column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0) continue;
-      let defaultValue = column.COLUMN_DEFAULT.toString();
-      if (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "") {
+      const foreignKey = column.foreignKey;
+      const foreignTable = foreignKey?.table;
+      const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+      const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+        return item.substring(0, 1).toUpperCase() + item.substring(1);
+      }).join("");
+      let foreignSchema = undefined;
+      if (foreignTable) {
+        foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+      }
+      if (foreignKey && !foreignSchema) {
+        throw new Error(`表 ${ table } 的外键 ${ foreignTable } 不存在`);
+      }
+      const foreignHasDefault = foreignSchema?.columns?.some((column) => column.COLUMN_NAME === "is_default");
+      if (
+        !column.COLUMN_DEFAULT && column.COLUMN_DEFAULT !== 0 &&
+        !foreignHasDefault
+      ) continue;
+      let defaultValue = column.COLUMN_DEFAULT?.toString();
+      if (!foreignHasDefault && (defaultValue == null || defaultValue === "null" || defaultValue === "NULL" || defaultValue === "")) {
         continue;
       }
-      if (column_type.startsWith("int") || column_type.startsWith("tinyint")) {
+      if (foreignKey && foreignKey.multiple) {
+        continue;
+      } else if (foreignHasDefault) {
+        const foreignTableTable_Up = 
+        defaultValue = `(await findOne${ foreignTable_Up }0({`;
+        if (foreignSchema.columns.some((item) => item.COLUMN_NAME === "is_enabled")) {
+          defaultValue += `
+      is_enabled: [ 1 ],`;
+        }
+        defaultValue += `
+      is_default: [ 1 ],
+    }))?.id`;
+      } else if (column_type.startsWith("int") || column_type.startsWith("tinyint")) {
         defaultValue = defaultValue;
       } else if (data_type === "datetime" || data_type === "date") {
         let valueFormat = "YYYY-MM-DD HH:mm:ss";
