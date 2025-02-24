@@ -5,11 +5,8 @@
 #[global_allocator]
 static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 
-#[macro_use]
-extern crate derive_new;
-
 mod common;
-mod gen;
+mod r#gen;
 mod src;
 
 use std::env;
@@ -37,12 +34,12 @@ async fn main() -> Result<(), std::io::Error> {
   let server_title = std::env::var_os("server_title").expect("server_title not found in .env");
   let server_title = server_title.to_str().unwrap();
   let package_name = env!("CARGO_PKG_NAME");
-  if std::env::var_os("RUST_LOG").is_none() {
-    std::env::set_var("RUST_LOG", format!("{}=info", package_name));
-  }
-  if std::env::var_os("RUST_BACKTRACE").is_none() {
-    std::env::set_var("RUST_BACKTRACE", "1");
-  }
+  // if std::env::var_os("RUST_LOG").is_none() {
+  //   std::env::set_var("RUST_LOG", format!("{}=info", package_name));
+  // }
+  // if std::env::var_os("RUST_BACKTRACE").is_none() {
+  //   std::env::set_var("RUST_BACKTRACE", "1");
+  // }
   let git_hash = std::env::var_os("GIT_HASH");
   if let Some(git_hash) = git_hash {
     let git_hash = git_hash.to_str().unwrap();
@@ -88,9 +85,6 @@ async fn main() -> Result<(), std::io::Error> {
   
   #[cfg(not(debug_assertions))]
   let _guard = {
-    if std::env::var_os("NO_COLOR").is_none() {
-      std::env::set_var("NO_COLOR", "1");
-    }
     color_eyre::config::HookBuilder::default()
       .add_frame_filter(Box::new(move |frames| {
         frames.retain(|frame| {

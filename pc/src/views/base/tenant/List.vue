@@ -573,6 +573,24 @@
             </el-table-column>
           </template>
           
+          <!-- 标题 -->
+          <template v-else-if="'title' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 描述 -->
+          <template v-else-if="'info' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 语言 -->
           <template v-else-if="isI18n && 'lang_id_lbl' === col.prop && (showBuildIn || builtInSearch?.lang_id == null)">
             <el-table-column
@@ -904,7 +922,7 @@ const isLocked = $computed(() => props.isLocked === "1");
 const isFocus = $computed(() => props.isFocus !== "0");
 const isListSelectDialog = $computed(() => props.isListSelectDialog === "1");
 
-const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false" || import.meta.env.DEV;
+const isI18n = import.meta.env.VITE_SERVER_I18N_ENABLE !== "false";
 
 /** 表格 */
 const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
@@ -1128,6 +1146,22 @@ function getTableColumns(): ColumnType[] {
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: false,
+    },
+    {
+      label: "标题",
+      prop: "title",
+      width: 160,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "描述",
+      prop: "info",
+      width: 180,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "语言",
@@ -1480,6 +1514,8 @@ async function onImportExcel() {
     [ "名称" ]: "lbl",
     [ "所属域名" ]: "domain_ids_lbl",
     [ "菜单权限" ]: "menu_ids_lbl",
+    [ "标题" ]: "title",
+    [ "描述" ]: "info",
     [ "语言" ]: "lang_id_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
@@ -1509,6 +1545,8 @@ async function onImportExcel() {
           "lbl": "string",
           "domain_ids_lbl": "string[]",
           "menu_ids_lbl": "string[]",
+          "title": "string",
+          "info": "string",
           "lang_id_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
