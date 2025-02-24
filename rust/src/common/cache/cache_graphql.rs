@@ -17,7 +17,6 @@ impl CacheMutation {
     ctx: &Context<'_>,
   ) -> Result<bool> {
     Ctx::builder(ctx)
-      .with_auth()?
       .build()
       .scope({
         cache_resolver::clear_cache()

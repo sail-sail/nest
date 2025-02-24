@@ -12,20 +12,20 @@ rustflags = ["-Clinker-flavor=ld.lld"]
 [unstable]
 gc = true
 
-[source.crates-io]
-registry = "https://github.com/rust-lang/crates.io-index"
+# [source.crates-io]
+# registry = "https://github.com/rust-lang/crates.io-index"
 
 # 指定镜像
-replace-with = 'rsproxy'
+# replace-with = 'rsproxy'
 
 # 中国科学技术大学
-[source.ustc]
-registry = "https://mirrors.ustc.edu.cn/crates.io-index"
+# [source.ustc]
+# registry = "https://mirrors.ustc.edu.cn/crates.io-index"
 
 # 添加 rsproxy 源
-[source.rsproxy]
-registry = "https://rsproxy.cn/crates.io-index"
+# [source.rsproxy]
+# registry = "https://rsproxy.cn/crates.io-index"
 
 # 添加 rsproxy 源的备用下载地址
-[source.rsproxy-sparse]
-registry = "sparse+https://rsproxy.cn/index/"
+# [source.rsproxy-sparse]
+# registry = "sparse+https://rsproxy.cn/index/"
