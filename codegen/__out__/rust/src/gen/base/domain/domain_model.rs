@@ -260,7 +260,7 @@ pub struct DomainSearch {
   #[graphql(skip)]
   pub is_locked: Option<Vec<u8>>,
   /// 默认
-  #[graphql(skip)]
+  #[graphql(name = "is_default")]
   pub is_default: Option<Vec<u8>>,
   /// 启用
   #[graphql(name = "is_enabled")]
