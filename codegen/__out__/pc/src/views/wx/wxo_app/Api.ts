@@ -18,6 +18,11 @@ import {
   wxoAppQueryField,
 } from "./Model";
 
+// 域名
+import {
+  findOne as findOneDomain0,
+} from "@/views/base/domain/Api.ts";
+
 async function setLblById(
   model?: WxoAppModel | null,
   isExcelExport = false,
@@ -632,6 +637,10 @@ export async function getDefaultInput() {
   const defaultInput: WxoAppInput = {
     encoding_type: WxoAppEncodingType.Plaintext,
     scope: WxoAppScope.SnsapiBase,
+    domain_id: (await findOneDomain0({
+      is_enabled: [ 1 ],
+      is_default: [ 1 ],
+    }))?.id,
     is_locked: 0,
     is_enabled: 1,
     order_by: 1,
