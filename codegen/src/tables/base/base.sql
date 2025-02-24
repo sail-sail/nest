@@ -3,6 +3,8 @@ drop table if exists `base_tenant`;
 CREATE TABLE if not exists `base_tenant` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
+  `title` varchar(45) NOT NULL DEFAULT '' COMMENT '标题',
+  `info` varchar(100) NOT NULL DEFAULT '' COMMENT '描述',
   `lang_id` varchar(22) NOT NULL DEFAULT '' COMMENT '语言',
   `lang_id_lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '语言',
   `is_locked` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '锁定,dict:is_locked',
