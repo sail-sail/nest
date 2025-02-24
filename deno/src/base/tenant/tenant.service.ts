@@ -69,6 +69,8 @@ export async function getLoginTenants(
       res.push({
         id: tenant_model.id,
         lbl: tenant_model.lbl,
+        title: tenant_model.title,
+        info: tenant_model.info,
         lang,
       });
     }
