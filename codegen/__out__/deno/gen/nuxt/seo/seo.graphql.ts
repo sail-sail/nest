@@ -131,6 +131,8 @@ input SeoSearch {
   ids: [SeoId!]
   "ID"
   id: SeoId
+  "默认"
+  is_default: [Int!]
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
