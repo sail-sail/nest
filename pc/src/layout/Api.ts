@@ -24,6 +24,8 @@ export async function getLoginTenants(
         getLoginTenants(domain: $domain) {
           id
           lbl
+          title
+          info
           lang
         }
       }
