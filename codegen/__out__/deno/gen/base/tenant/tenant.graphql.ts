@@ -19,6 +19,10 @@ type TenantModel {
   menu_ids: [MenuId!]!
   "菜单权限"
   menu_ids_lbl: [String!]!
+  "标题"
+  title: String!
+  "描述"
+  info: String!
   "语言"
   lang_id: LangId!
   "语言"
@@ -69,6 +73,10 @@ type TenantFieldComment {
   menu_ids: String!
   "菜单权限"
   menu_ids_lbl: String!
+  "标题"
+  title: String!
+  "描述"
+  info: String!
   "语言"
   lang_id: String!
   "语言"
@@ -115,6 +123,10 @@ input TenantInput {
   menu_ids: [MenuId!]
   "菜单权限"
   menu_ids_lbl: [String!]
+  "标题"
+  title: String
+  "描述"
+  info: String
   "语言"
   lang_id: LangId
   "语言"
