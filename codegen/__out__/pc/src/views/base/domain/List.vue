@@ -534,7 +534,7 @@
           </template>
           
           <!-- 默认 -->
-          <template v-else-if="'is_default_lbl' === col.prop">
+          <template v-else-if="'is_default_lbl' === col.prop && (showBuildIn || builtInSearch?.is_default == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -752,6 +752,7 @@ const props = defineProps<{
   id?: DomainId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  is_default?: string|string[]; // 默认
   is_enabled?: string|string[]; // 启用
 }>();
 
@@ -764,6 +765,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
+  is_default: "number[]",
+  is_default_lbl: "string[]",
   is_enabled: "number[]",
   is_enabled_lbl: "string[]",
   create_usr_id: "string[]",
