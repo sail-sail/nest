@@ -571,7 +571,7 @@
           </template>
           
           <!-- 描述 -->
-          <template v-else-if="'desc' === col.prop">
+          <template v-else-if="'info' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1126,7 +1126,7 @@ function getTableColumns(): ColumnType[] {
     },
     {
       label: "描述",
-      prop: "desc",
+      prop: "info",
       width: 180,
       align: "left",
       headerAlign: "center",
@@ -1481,7 +1481,7 @@ async function onImportExcel() {
     [ "所属域名" ]: "domain_ids_lbl",
     [ "菜单权限" ]: "menu_ids_lbl",
     [ "标题" ]: "title",
-    [ "描述" ]: "desc",
+    [ "描述" ]: "info",
     [ "语言" ]: "lang_id_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
@@ -1512,7 +1512,7 @@ async function onImportExcel() {
           "domain_ids_lbl": "string[]",
           "menu_ids_lbl": "string[]",
           "title": "string",
-          "desc": "string",
+          "info": "string",
           "lang_id_lbl": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",

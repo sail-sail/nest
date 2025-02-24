@@ -27,7 +27,7 @@ import {
 const menuStore = useMenuStore();
 const usrStore = useUsrStore();
 
-let app_title = $ref("");
+let app_title = $(useTitle(localStorage.getItem("app_title") ?? ""));
 
 async function initFrame() {
   const tenant_id = usrStore.tenant_id;
@@ -39,7 +39,7 @@ async function initFrame() {
     return;
   }
   app_title = tenant_model.title;
-  useTitle(app_title);
+  localStorage.setItem("app_title", app_title);
 }
 
 initFrame();

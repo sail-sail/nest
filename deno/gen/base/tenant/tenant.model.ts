@@ -25,8 +25,8 @@ declare global {
     title?: string;
     title_like?: string;
     /** 描述 */
-    desc?: string;
-    desc_like?: string;
+    info?: string;
+    info_like?: string;
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */

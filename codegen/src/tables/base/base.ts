@@ -135,7 +135,7 @@ export default defineConfig({
         width: 160,
       },
       {
-        COLUMN_NAME: "desc",
+        COLUMN_NAME: "info",
         width: 180,
         align: "left",
       },

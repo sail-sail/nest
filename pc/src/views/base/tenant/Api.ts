@@ -43,7 +43,7 @@ export function intoInput(
     // 标题
     title: model?.title,
     // 描述
-    desc: model?.desc,
+    info: model?.info,
     // 语言
     lang_id: model?.lang_id,
     lang_id_lbl: model?.lang_id_lbl,
@@ -534,7 +534,7 @@ export function useDownloadImportTemplate() {
             domain_ids_lbl
             menu_ids_lbl
             title
-            desc
+            info
             lang_id_lbl
             order_by
             rem

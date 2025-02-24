@@ -43,7 +43,7 @@ export const tenantFields = [
   // 标题
   "title",
   // 描述
-  "desc",
+  "info",
   // 语言
   "lang_id",
   "lang_id_lbl",
