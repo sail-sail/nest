@@ -83,7 +83,7 @@
               v-model="dialogModel.lbl"
               placeholder="请输入 订单号"
               :readonly="true"
-              readonly-placeholder="(自动生成)"
+              :readonly-placeholder="inited ? '(自动生成)' : ''"
             ></CustomInput>
           </el-form-item>
         </template>
