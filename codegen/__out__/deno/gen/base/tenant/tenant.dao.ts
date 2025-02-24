@@ -113,6 +113,18 @@ async function getWhereQuery(
   if (search?.menu_ids_is_null) {
     whereQuery += ` and base_menu.id is null`;
   }
+  if (search?.title != null) {
+    whereQuery += ` and t.title=${ args.push(search.title) }`;
+  }
+  if (isNotEmpty(search?.title_like)) {
+    whereQuery += ` and t.title like ${ args.push("%" + sqlLike(search?.title_like) + "%") }`;
+  }
+  if (search?.desc != null) {
+    whereQuery += ` and t.desc=${ args.push(search.desc) }`;
+  }
+  if (isNotEmpty(search?.desc_like)) {
+    whereQuery += ` and t.desc like ${ args.push("%" + sqlLike(search?.desc_like) + "%") }`;
+  }
   if (search?.lang_id != null) {
     whereQuery += ` and t.lang_id in (${ args.push(search.lang_id) })`;
   }
@@ -689,6 +701,8 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
     domain_ids_lbl: "所属域名",
     menu_ids: "菜单权限",
     menu_ids_lbl: "菜单权限",
+    title: "标题",
+    desc: "描述",
     lang_id: "语言",
     lang_id_lbl: "语言",
     is_locked: "锁定",
@@ -1097,6 +1111,20 @@ export async function validate(
     fieldComments.lbl,
   );
   
+  // 标题
+  await validators.chars_max_length(
+    input.title,
+    45,
+    fieldComments.title,
+  );
+  
+  // 描述
+  await validators.chars_max_length(
+    input.desc,
+    100,
+    fieldComments.desc,
+  );
+  
   // 语言
   await validators.chars_max_length(
     input.lang_id,
@@ -1355,7 +1383,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,lang_id_lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys)values";
+  let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,title,desc,lang_id_lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1442,6 +1470,16 @@ async function _creates(
       }
       if (input.lbl != null) {
         sql += `,${ args.push(input.lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.title != null) {
+        sql += `,${ args.push(input.title) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.desc != null) {
+        sql += `,${ args.push(input.desc) }`;
       } else {
         sql += ",default";
       }
@@ -1607,6 +1645,18 @@ export async function updateById(
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl=${ args.push(input.lbl) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.title != null) {
+    if (input.title != oldModel.title) {
+      sql += `title=${ args.push(input.title) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.desc != null) {
+    if (input.desc != oldModel.desc) {
+      sql += `desc=${ args.push(input.desc) },`;
       updateFldNum++;
     }
   }

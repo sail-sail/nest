@@ -18,18 +18,28 @@
 </template>
 
 <script setup lang="ts">
+
+// 租户
+import {
+  findById as findByIdTenant,
+} from "@/views/base/tenant/Api.ts";
+
 const menuStore = useMenuStore();
+const usrStore = useUsrStore();
 
-const {
-  ns,
-  nsAsync,
-} = useI18n();
-
-let app_title = $ref(import.meta.env.VITE_APP_TITLE);
+let app_title = $ref("");
 
 async function initFrame() {
-  app_title = await nsAsync(import.meta.env.VITE_APP_TITLE);
-  document.title = app_title;
+  const tenant_id = usrStore.tenant_id;
+  if (!tenant_id) {
+    return;
+  }
+  const tenant_model = await findByIdTenant(tenant_id);
+  if (!tenant_model) {
+    return;
+  }
+  app_title = tenant_model.title;
+  useTitle(app_title);
 }
 
 initFrame();

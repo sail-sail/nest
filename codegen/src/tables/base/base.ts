@@ -131,6 +131,15 @@ export default defineConfig({
         },
       },
       {
+        COLUMN_NAME: "title",
+        width: 160,
+      },
+      {
+        COLUMN_NAME: "desc",
+        width: 180,
+        align: "left",
+      },
+      {
         COLUMN_NAME: "lang_id",
         align: "center",
         modelLabel: "lang_id_lbl",
