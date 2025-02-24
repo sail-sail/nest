@@ -17,7 +17,7 @@
     <div
       style="margin-top: 14px;margin-left: 20px;font-size: 16px;color: white;"
     >
-      {{ ns(app_title) }}
+      {{ app_title }}
     </div>
     <el-form
       ref="formRef"
@@ -148,8 +148,6 @@ let model = $ref<MutationLoginArgs["input"]>({
   org_id: undefined,
 });
 
-const app_title = import.meta.env.VITE_APP_TITLE;
-
 const loginRef = $ref<InstanceType<typeof HTMLDivElement>>();
 
 const formRef = $ref<InstanceType<typeof ElForm>>();
@@ -175,6 +173,8 @@ const oldLoginModelKey = "oldLoginModelPc";
 let tenants = $ref<{
   id: TenantId;
   lbl: string;
+  title: string;
+  info: string;
   lang: string;
 }[]>([ ]);
 
@@ -183,6 +183,23 @@ try {
 } catch (err) {
   tenants = [ ];
 }
+
+const app_title = $computed(() => {
+  const tenant_model = tenants.find(item => item.id === model.tenant_id);
+  const title = tenant_model?.title ?? "";
+  return title;
+});
+
+const title = useTitle(app_title);
+
+watch(
+  () => app_title,
+  () => {
+    if (app_title) {
+      title.value = app_title;
+    }
+  },
+);
 
 const oldLoginModelStr = localStorage.getItem(oldLoginModelKey);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -305,7 +322,7 @@ async function onLogin() {
 /**
  * 获取租户列表
  */
-async function getLoginTenantsEfc() {
+async function onGetLoginTenants() {
   tenants = await getLoginTenants({ domain: window.location.host });
   if (!model.tenant_id && tenants.length > 0) {
     let tenant_id = tenants[0].id;
@@ -355,7 +372,7 @@ async function onClearCache() {
 async function initFrame() {
   await Promise.all([
     initI18nEfc(),
-    getLoginTenantsEfc(),
+    onGetLoginTenants(),
   ]);
 }
 
