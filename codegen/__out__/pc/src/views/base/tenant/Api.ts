@@ -40,6 +40,10 @@ export function intoInput(
     // 菜单权限
     menu_ids: model?.menu_ids,
     menu_ids_lbl: model?.menu_ids_lbl,
+    // 标题
+    title: model?.title,
+    // 描述
+    info: model?.info,
     // 语言
     lang_id: model?.lang_id,
     lang_id_lbl: model?.lang_id_lbl,
@@ -529,6 +533,8 @@ export function useDownloadImportTemplate() {
             lbl
             domain_ids_lbl
             menu_ids_lbl
+            title
+            info
             lang_id_lbl
             order_by
             rem
