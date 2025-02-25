@@ -65,6 +65,7 @@
     "vue.inlayHints.destructuredProps": true,
     "vue.inlayHints.inlineHandlerLeading": false,
     "vue.inlayHints.missingProps": true,
-    "vue.updateImportsOnFileMove.enabled": false
+    "vue.updateImportsOnFileMove.enabled": false,
+    "rust-analyzer.checkOnSave": false
   }
 }
