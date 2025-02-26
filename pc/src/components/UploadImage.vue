@@ -65,7 +65,7 @@
         <template #error>
           <div
             un-h="full"
-            un-aspect-ratio="1"
+            un-aspect="square"
             un-flex="~ [1_0_0] col"
             un-overflow-hidden
             un-justify-center
@@ -170,6 +170,43 @@
           ></div>
         </el-icon>
       </div>
+    </div>
+  </div>
+  <div
+    v-else
+    un-relative
+    class="upload_image_item"
+    tabindex="0"
+    :style="{
+      height: `${ props.itemHeight }px`,
+    }"
+  >
+    <div
+      un-h="full"
+      un-aspect="square"
+      un-flex="~ [1_0_0] col"
+      un-overflow-hidden
+      un-justify-center
+      un-items-center
+      un-b="1 dotted gray-300"
+      un-rounded="md"
+    >
+      
+      <el-icon
+        v-if="loading"
+        color="gray"
+      >
+        <ElIconLoading />
+      </el-icon>
+            
+      <el-icon
+        v-else
+        color="gray"
+        :size="28"
+      >
+        <ElIconPicture />
+      </el-icon>
+      
     </div>
   </div>
 </div>
