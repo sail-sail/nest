@@ -12,9 +12,9 @@ futures-util = "0.3"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
-tracing-attributes = "0.1.27"
+tracing-attributes = "0.1.28"
 tokio = { version = "1.43", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
-poem = { version = "3.1.6", features = ["rustls", "server", "multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"], default-features = false }
+poem = { version = "3.1.7", features = ["rustls", "server", "multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"], default-features = false }
 async-graphql = { version = "7.0.15", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
 smol_str = { version = "0.3", features = ["serde"] }
 slab = "0.4"
@@ -39,8 +39,8 @@ urlencoding = "2.1"
 url = "2.5"
 # sqlformat = "0.3.5"
 smallvec = { version = "1.14", features = ["union", "serde"] }
-# downcast-rs = "1.2"
-uuid = { version = "1.12", features = ["serde", "v4", "fast-rng"] }
+# downcast-rs = "2.0"
+uuid = { version = "1.15", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12"
 deadpool-redis = "0.19"
 redis = { version = "0.29", features = ["tokio-comp"], default-features = false }

@@ -191,6 +191,16 @@ export function useSelect<T = any, Id = string>(
   let selectedIds: Id[] = $ref([ ]);
   let prevSelectedIds: Id[] = $ref([ ]);
   
+  /**
+   * 如果 selectedIds 跟 ids 不一样, 则设置 selectedIds, 避免触发 watch
+   */
+  function setSelectIds(ids: Id[]) {
+    if (selectedIds.length === ids.length && selectedIds.every((item, index) => item === ids[index])) {
+      return;
+    }
+    selectedIds = [ ...ids ];
+  }
+  
   function useSelectedIds() {
     if (!tableRef.value || !tableRef.value.data) {
       return;
@@ -271,7 +281,7 @@ export function useSelect<T = any, Id = string>(
       } else {
         if (!multiple) {
           tableRef.value?.clearSelection();
-          selectedIds = [ (list[0] as any)[rowKey] ];
+          setSelectIds([ (list[0] as any)[rowKey] ]);
         } else {
           for (let i = 0; i < list.length; i++) {
             const item = list[i] as any;
@@ -286,7 +296,7 @@ export function useSelect<T = any, Id = string>(
       if (list.includes(row)) {
         if (!selectedIds.includes(id)) {
           if (!multiple) {
-            selectedIds = [ id ];
+            setSelectIds([ id ]);
           } else {
             selectedIds = [ ...selectedIds, id ];
           }
@@ -363,7 +373,7 @@ export function useSelect<T = any, Id = string>(
       if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
         continue;
       }
-      selectedIds = [ data[idx][rowKey] ];
+      setSelectIds([ data[idx][rowKey] ]);
       scrollIntoViewIfNeeded(idx);
       break;
     }
@@ -398,7 +408,7 @@ export function useSelect<T = any, Id = string>(
       if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
         continue;
       }
-      selectedIds = [ data[idx][rowKey] ];
+      setSelectIds([ data[idx][rowKey] ]);
       scrollIntoViewIfNeeded(idx);
       break;
     }
@@ -522,7 +532,7 @@ export function useSelect<T = any, Id = string>(
       if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
         continue;
       }
-      selectedIds = [ data[idx][rowKey] ];
+      setSelectIds([ data[idx][rowKey] ]);
       scrollIntoViewIfNeeded(idx);
       break;
     }
@@ -667,7 +677,7 @@ export function useSelect<T = any, Id = string>(
       if (opts?.tableSelectable && !opts?.tableSelectable(data[idx], idx)) {
         continue;
       }
-      selectedIds = [ data[idx][rowKey] ];
+      setSelectIds([ data[idx][rowKey] ]);
       scrollIntoViewIfNeeded(idx);
       break;
     }
@@ -747,7 +757,7 @@ export function useSelect<T = any, Id = string>(
     }
     const tableSelectable = opts?.tableSelectable;
     if (tableSelectable && !tableSelectable(row, tableRef.value?.data?.findIndex((item) => item[rowKey] === (row as any)[rowKey]) ?? 0)) {
-      if (column && column.type !== "selection") {
+      if (column && column.type !== "selection" && selectedIds.length > 0) {
         selectedIds = [ ];
       }
       return;
@@ -764,7 +774,7 @@ export function useSelect<T = any, Id = string>(
               id,
             ];
           } else {
-            selectedIds = [ id ];
+            setSelectIds([ id ]);
           }
         }
       } else if (!selectedIds.includes(id)) {
@@ -783,14 +793,17 @@ export function useSelect<T = any, Id = string>(
             id,
           ];
         } else {
-          selectedIds = [ id ];
+          setSelectIds([ id ]);
         }
       }
     } else {
       if (!row) {
-        selectedIds = [ ];
+        if (selectedIds.length > 0) {
+          selectedIds = [ ];
+        }
       } else {
-        selectedIds = [ id ];
+        // selectedIds = [ id ];
+        setSelectIds([ id ]);
       }
     }
   }
@@ -824,7 +837,7 @@ export function useSelect<T = any, Id = string>(
           id,
         ];
       } else {
-        selectedIds = [ id ];
+        setSelectIds([ id ]);
       }
     }
   }
@@ -846,17 +859,17 @@ export function useSelect<T = any, Id = string>(
     }
     const id = (row as any)[rowKey];
     if (selectedIds.length === 0) {
-      selectedIds = [ id ];
+      setSelectIds([ id ]);
       return;
     }
     const idx = tableData.findIndex((item) => item[rowKey] === selectedIds[ selectedIds.length - 1 ]);
     if (idx === -1) {
-      selectedIds = [ id ];
+      setSelectIds([ id ]);
       return;
     }
     const idx2 = tableData.findIndex((item) => item[rowKey] === id);
     if (idx2 === -1) {
-      selectedIds = [ id ];
+      setSelectIds([ id ]);
       return;
     }
     const minIdx = Math.min(idx, idx2);
@@ -901,13 +914,23 @@ export function useSelect<T = any, Id = string>(
   };
 }
 
-export function useSelectOne<T>(
+export function useSelectOne<T = any, Id = string>(
   tableRef: Ref<InstanceType<typeof ElTable> | undefined>,
   opts?: {
     tableSelectable?: (row: T, index?: number) => boolean,
     tabIndex?: number,
   },
 ) {
+  
+  /**
+   * 如果 selectedIds 跟 ids 不一样, 则设置 selectedIds, 避免触发 watch
+   */
+  function setSelectIds(ids: Id[]) {
+    if (selectedIds.length === ids.length && selectedIds.every((item, index) => item === ids[index])) {
+      return;
+    }
+    selectedIds = [ ...ids ] as any;
+  }
   
   const watch3Stop = watch(
     () => tableRef.value,
@@ -1001,15 +1024,17 @@ export function useSelectOne<T>(
     }
     if (!row) {
       if (list.length === 0) {
-        selectedIds = [ ];
+        if (selectedIds.length > 0) {
+          selectedIds = [ ];
+        }
       } else {
-        selectedIds = [ (list as any)[0][rowKey] ];
+        setSelectIds([ (list as any)[0][rowKey] ]);
       }
     } else {
       const id = (row as any)[rowKey];
       if (list.includes(row)) {
         if (!selectedIds.includes(id)) {
-          selectedIds = [ id ];
+          setSelectIds([ id ]);
         }
       } else {
         if (selectedIds.includes(id)) {
@@ -1030,7 +1055,9 @@ export function useSelectOne<T>(
     const tableSelectable = opts?.tableSelectable;
     if (tableSelectable && !tableSelectable(row)) {
       if (column.type !== "selection") {
-        selectedIds = [ ];
+        if (selectedIds.length > 0) {
+          selectedIds = [ ];
+        }
       }
       return;
     }
@@ -1039,15 +1066,15 @@ export function useSelectOne<T>(
       if (selectedIds.includes(id)) {
         selectedIds = selectedIds.filter((item) => item !== id);
       } else {
-        selectedIds = [
-          id,
-        ];
+        setSelectIds([ id ]);
       }
     } else {
       if (!row) {
-        selectedIds = [ ];
+        if (selectedIds.length > 0) {
+          selectedIds = [ ];
+        }
       } else {
-        selectedIds = [ id ];
+        setSelectIds([ id ]);
       }
     }
   }
