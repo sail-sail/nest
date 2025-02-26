@@ -701,7 +701,7 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
     domain_ids_lbl: "所属域名",
     menu_ids: "菜单权限",
     menu_ids_lbl: "菜单权限",
-    title: "标题",
+    title: "简介",
     info: "描述",
     lang_id: "语言",
     lang_id_lbl: "语言",
@@ -1111,7 +1111,7 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // 标题
+  // 简介
   await validators.chars_max_length(
     input.title,
     45,

@@ -191,7 +191,7 @@ async fn get_where_query(
       where_query.push_str(" and t.menu_ids is null");
     }
   }
-  // 标题
+  // 简介
   {
     let title = match search {
       Some(item) => item.title.clone(),
@@ -912,7 +912,7 @@ pub async fn get_field_comments(
     domain_ids_lbl: "所属域名".into(),
     menu_ids: "菜单权限".into(),
     menu_ids_lbl: "菜单权限".into(),
-    title: "标题".into(),
+    title: "简介".into(),
     info: "描述".into(),
     lang_id: "语言".into(),
     lang_id_lbl: "语言".into(),
@@ -1684,7 +1684,7 @@ async fn _creates(
   sql_fields += ",update_usr_id_lbl";
   // 名称
   sql_fields += ",lbl";
-  // 标题
+  // 简介
   sql_fields += ",title";
   // 描述
   sql_fields += ",info";
@@ -1827,7 +1827,7 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 标题
+    // 简介
     if let Some(title) = input.title {
       sql_values += ",?";
       args.push(title.into());
@@ -2136,7 +2136,7 @@ pub async fn update_by_id(
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
-  // 标题
+  // 简介
   if let Some(title) = input.title {
     field_num += 1;
     sql_fields += "title=?,";
