@@ -21,7 +21,7 @@ declare global {
   
   /** 租户 */
   interface TenantSearch extends TenantSearchType {
-    /** 标题 */
+    /** 简介 */
     title?: string;
     title_like?: string;
     /** 描述 */
