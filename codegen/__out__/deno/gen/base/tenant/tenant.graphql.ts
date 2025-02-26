@@ -19,7 +19,7 @@ type TenantModel {
   menu_ids: [MenuId!]!
   "菜单权限"
   menu_ids_lbl: [String!]!
-  "标题"
+  "简介"
   title: String!
   "描述"
   info: String!
@@ -73,7 +73,7 @@ type TenantFieldComment {
   menu_ids: String!
   "菜单权限"
   menu_ids_lbl: String!
-  "标题"
+  "简介"
   title: String!
   "描述"
   info: String!
@@ -123,7 +123,7 @@ input TenantInput {
   menu_ids: [MenuId!]
   "菜单权限"
   menu_ids_lbl: [String!]
-  "标题"
+  "简介"
   title: String
   "描述"
   info: String
