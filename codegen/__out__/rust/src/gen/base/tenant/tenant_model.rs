@@ -71,7 +71,7 @@ pub struct TenantModel {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: Vec<String>,
-  /// 标题
+  /// 简介
   #[graphql(name = "title")]
   pub title: String,
   /// 描述
@@ -211,7 +211,7 @@ impl FromRow<'_, MySqlRow> for TenantModel {
         )
         .collect::<Vec<String>>()
     };
-    // 标题
+    // 简介
     let title: String = row.try_get("title")?;
     // 描述
     let info: String = row.try_get("info")?;
@@ -307,7 +307,7 @@ pub struct TenantFieldComment {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: String,
-  /// 标题
+  /// 简介
   #[graphql(name = "title")]
   pub title: String,
   /// 描述
@@ -390,10 +390,10 @@ pub struct TenantSearch {
   /// 菜单权限
   #[graphql(name = "menu_ids_save_null")]
   pub menu_ids_is_null: Option<bool>,
-  /// 标题
+  /// 简介
   #[graphql(skip)]
   pub title: Option<String>,
-  /// 标题
+  /// 简介
   #[graphql(skip)]
   pub title_like: Option<String>,
   /// 描述
@@ -490,7 +490,7 @@ impl std::fmt::Debug for TenantSearch {
     if let Some(ref menu_ids) = self.menu_ids {
       item = item.field("menu_ids", menu_ids);
     }
-    // 标题
+    // 简介
     if let Some(ref title) = self.title {
       item = item.field("title", title);
     }
@@ -582,7 +582,7 @@ pub struct TenantInput {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: Option<Vec<String>>,
-  /// 标题
+  /// 简介
   #[graphql(name = "title")]
   pub title: Option<String>,
   /// 描述
@@ -658,7 +658,7 @@ impl From<TenantModel> for TenantInput {
       // 菜单权限
       menu_ids: model.menu_ids.into(),
       menu_ids_lbl: model.menu_ids_lbl.into(),
-      // 标题
+      // 简介
       title: model.title.into(),
       // 描述
       info: model.info.into(),
@@ -705,7 +705,7 @@ impl From<TenantInput> for TenantSearch {
       domain_ids: input.domain_ids,
       // 菜单权限
       menu_ids: input.menu_ids,
-      // 标题
+      // 简介
       title: input.title,
       // 描述
       info: input.info,
