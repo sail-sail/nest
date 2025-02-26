@@ -167,6 +167,8 @@ pub async fn get_login_tenants(
     res.push(GetLoginTenants {
       id: tenant_model.id,
       lbl: tenant_model.lbl,
+      title: tenant_model.title,
+      info: tenant_model.info,
       lang,
     });
     

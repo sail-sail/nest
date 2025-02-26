@@ -11,6 +11,10 @@ pub struct GetLoginTenants {
   pub id: TenantId,
   /// 名称
   pub lbl: String,
+  /// 标题
+  pub title: String,
+  /// 简介
+  pub info: String,
   /// 语言
   pub lang: String,
 }
