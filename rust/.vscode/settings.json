@@ -12,7 +12,8 @@
     "app_macro": true,
     ".clippy.toml": true,
     ".editorconfig": true,
-    "**/.npmrc": true
+    "**/.npmrc": true,
+    ".gitignore": true
   },
   "search.exclude": {
     "src/main.rs": true,
@@ -27,8 +28,10 @@
     "app_macro": true,
     ".clippy.toml": true,
     ".editorconfig": true,
-    "**/.npmrc": true
+    "**/.npmrc": true,
+    ".gitignore": true
   },
   "deno.enable": false,
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "rust-analyzer.checkOnSave": false
 }
