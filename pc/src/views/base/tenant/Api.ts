@@ -40,7 +40,7 @@ export function intoInput(
     // 菜单权限
     menu_ids: model?.menu_ids,
     menu_ids_lbl: model?.menu_ids_lbl,
-    // 标题
+    // 简介
     title: model?.title,
     // 描述
     info: model?.info,
