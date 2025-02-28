@@ -11,10 +11,14 @@
     <link rel="icon" href="/favicon.png" />
     <link rel="alternate icon" href="/favicon.png" type="image/png" sizes="16x16">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&#8203;</title>
     <script>
+      const title = window.localStorage.getItem("app_title");
+      if (title) {
+        document.title = title;
+      }
       window.localStorage.setItem("__version", "$__version__$");
     </script>
-    <title>&#8203;</title>
     <style>
       .loading_spinner .circular {
         animation: loading-rotate 2s linear infinite;

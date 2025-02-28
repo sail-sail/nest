@@ -129,12 +129,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.title == null)">
           <el-form-item
-            label="标题"
+            label="简介"
             prop="title"
           >
             <CustomInput
               v-model="dialogModel.title"
-              placeholder="请输入 标题"
+              placeholder="请输入 简介"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
