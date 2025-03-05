@@ -1376,7 +1376,7 @@ pub async fn creates(
 }
 
 /// 批量创建业务字典
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<DictbizInput>,
   options: Option<Options>,

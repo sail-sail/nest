@@ -28,6 +28,7 @@ use crate::common::context::{
   MAX_SAFE_INTEGER,
   CountModel,
   UniqueType,
+  OrderByModel,
   get_short_uuid,
   get_order_by_query,
   get_page_query,
@@ -42,9 +43,9 @@ use crate::common::gql::model::{
   SortInput,
 };
 
-use super::operation_record_model::*;
+use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 
-use crate::r#gen::base::tenant::tenant_model::TenantId;
+use super::icon_model::*;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
 use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
@@ -52,7 +53,7 @@ use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 #[allow(unused_variables)]
 async fn get_where_query(
   args: &mut QueryArgs,
-  search: Option<&OperationRecordSearch>,
+  search: Option<&IconSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
   
@@ -60,7 +61,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 15 * 2);
+  let mut where_query = String::with_capacity(80 * 12 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -75,7 +76,7 @@ async fn get_where_query(
     }
   }
   {
-    let ids: Option<Vec<OperationRecordId>> = match search {
+    let ids: Option<Vec<IconId>> = match search {
       Some(item) => item.ids.clone(),
       None => None,
     };
@@ -97,103 +98,45 @@ async fn get_where_query(
       where_query.push(')');
     }
   }
+  // 图标
   {
-    let tenant_id = {
-      let tenant_id = match search {
-        Some(item) => item.tenant_id.clone(),
-        None => None,
-      };
-      let tenant_id = match tenant_id {
-        None => get_auth_tenant_id(),
-        Some(item) => match item.as_str() {
-          "-" => None,
-          _ => item.into(),
-        },
-      };
-      tenant_id
+    let img = match search {
+      Some(item) => item.img.clone(),
+      None => None,
     };
-    if let Some(tenant_id) = tenant_id {
-      where_query.push_str(" and t.tenant_id=?");
-      args.push(tenant_id.into());
+    if let Some(img) = img {
+      where_query.push_str(" and t.img=?");
+      args.push(img.into());
+    }
+    let img_like = match search {
+      Some(item) => item.img_like.clone(),
+      None => None,
+    };
+    if let Some(img_like) = img_like {
+      where_query.push_str(" and t.img like ?");
+      args.push(format!("%{}%", sql_like(&img_like)).into());
     }
   }
-  // 模块
+  // 编码
   {
-    let module = match search {
-      Some(item) => item.module.clone(),
+    let code = match search {
+      Some(item) => item.code.clone(),
       None => None,
     };
-    if let Some(module) = module {
-      where_query.push_str(" and t.module=?");
-      args.push(module.into());
+    if let Some(code) = code {
+      where_query.push_str(" and t.code=?");
+      args.push(code.into());
     }
-    let module_like = match search {
-      Some(item) => item.module_like.clone(),
+    let code_like = match search {
+      Some(item) => item.code_like.clone(),
       None => None,
     };
-    if let Some(module_like) = module_like {
-      where_query.push_str(" and t.module like ?");
-      args.push(format!("%{}%", sql_like(&module_like)).into());
+    if let Some(code_like) = code_like {
+      where_query.push_str(" and t.code like ?");
+      args.push(format!("%{}%", sql_like(&code_like)).into());
     }
   }
-  // 模块名称
-  {
-    let module_lbl = match search {
-      Some(item) => item.module_lbl.clone(),
-      None => None,
-    };
-    if let Some(module_lbl) = module_lbl {
-      where_query.push_str(" and t.module_lbl=?");
-      args.push(module_lbl.into());
-    }
-    let module_lbl_like = match search {
-      Some(item) => item.module_lbl_like.clone(),
-      None => None,
-    };
-    if let Some(module_lbl_like) = module_lbl_like {
-      where_query.push_str(" and t.module_lbl like ?");
-      args.push(format!("%{}%", sql_like(&module_lbl_like)).into());
-    }
-  }
-  // 方法
-  {
-    let method = match search {
-      Some(item) => item.method.clone(),
-      None => None,
-    };
-    if let Some(method) = method {
-      where_query.push_str(" and t.method=?");
-      args.push(method.into());
-    }
-    let method_like = match search {
-      Some(item) => item.method_like.clone(),
-      None => None,
-    };
-    if let Some(method_like) = method_like {
-      where_query.push_str(" and t.method like ?");
-      args.push(format!("%{}%", sql_like(&method_like)).into());
-    }
-  }
-  // 方法名称
-  {
-    let method_lbl = match search {
-      Some(item) => item.method_lbl.clone(),
-      None => None,
-    };
-    if let Some(method_lbl) = method_lbl {
-      where_query.push_str(" and t.method_lbl=?");
-      args.push(method_lbl.into());
-    }
-    let method_lbl_like = match search {
-      Some(item) => item.method_lbl_like.clone(),
-      None => None,
-    };
-    if let Some(method_lbl_like) = method_lbl_like {
-      where_query.push_str(" and t.method_lbl like ?");
-      args.push(format!("%{}%", sql_like(&method_lbl_like)).into());
-    }
-  }
-  // 操作
+  // 名称
   {
     let lbl = match search {
       Some(item) => item.lbl.clone(),
@@ -212,62 +155,67 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&lbl_like)).into());
     }
   }
-  // 耗时(毫秒)
+  // 启用
   {
-    let mut time = match search {
-      Some(item) => item.time.unwrap_or_default(),
+    let is_enabled: Option<Vec<u8>> = match search {
+      Some(item) => item.is_enabled.clone(),
+      None => None,
+    };
+    if let Some(is_enabled) = is_enabled {
+      let arg = {
+        if is_enabled.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(is_enabled.len());
+          for item in is_enabled {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.is_enabled in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  // 排序
+  {
+    let mut order_by = match search {
+      Some(item) => item.order_by.unwrap_or_default(),
       None => Default::default(),
     };
-    let time_gt = time[0].take();
-    let time_lt = time[1].take();
-    if let Some(time_gt) = time_gt {
-      where_query.push_str(" and t.time >= ?");
-      args.push(time_gt.into());
+    let order_by_gt = order_by[0].take();
+    let order_by_lt = order_by[1].take();
+    if let Some(order_by_gt) = order_by_gt {
+      where_query.push_str(" and t.order_by >= ?");
+      args.push(order_by_gt.into());
     }
-    if let Some(time_lt) = time_lt {
-      where_query.push_str(" and t.time <= ?");
-      args.push(time_lt.into());
+    if let Some(order_by_lt) = order_by_lt {
+      where_query.push_str(" and t.order_by <= ?");
+      args.push(order_by_lt.into());
     }
   }
-  // 操作前数据
+  // 备注
   {
-    let old_data = match search {
-      Some(item) => item.old_data.clone(),
+    let rem = match search {
+      Some(item) => item.rem.clone(),
       None => None,
     };
-    if let Some(old_data) = old_data {
-      where_query.push_str(" and t.old_data=?");
-      args.push(old_data.into());
+    if let Some(rem) = rem {
+      where_query.push_str(" and t.rem=?");
+      args.push(rem.into());
     }
-    let old_data_like = match search {
-      Some(item) => item.old_data_like.clone(),
+    let rem_like = match search {
+      Some(item) => item.rem_like.clone(),
       None => None,
     };
-    if let Some(old_data_like) = old_data_like {
-      where_query.push_str(" and t.old_data like ?");
-      args.push(format!("%{}%", sql_like(&old_data_like)).into());
-    }
-  }
-  // 操作后数据
-  {
-    let new_data = match search {
-      Some(item) => item.new_data.clone(),
-      None => None,
-    };
-    if let Some(new_data) = new_data {
-      where_query.push_str(" and t.new_data=?");
-      args.push(new_data.into());
-    }
-    let new_data_like = match search {
-      Some(item) => item.new_data_like.clone(),
-      None => None,
-    };
-    if let Some(new_data_like) = new_data_like {
-      where_query.push_str(" and t.new_data like ?");
-      args.push(format!("%{}%", sql_like(&new_data_like)).into());
+    if let Some(rem_like) = rem_like {
+      where_query.push_str(" and t.rem like ?");
+      args.push(format!("%{}%", sql_like(&rem_like)).into());
     }
   }
-  // 操作人
+  // 创建人
   {
     let create_usr_id: Option<Vec<UsrId>> = match search {
       Some(item) => item.create_usr_id.clone(),
@@ -333,7 +281,7 @@ async fn get_where_query(
       }
     }
   }
-  // 操作时间
+  // 创建时间
   {
     let mut create_time = match search {
       Some(item) => item.create_time.unwrap_or_default(),
@@ -439,25 +387,25 @@ async fn get_where_query(
 #[allow(unused_variables)]
 async fn get_from_query(
   args: &mut QueryArgs,
-  search: Option<&OperationRecordSearch>,
+  search: Option<&IconSearch>,
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let from_query = r#"base_operation_record t"#.to_owned();
+  let from_query = r#"base_icon t"#.to_owned();
   Ok(from_query)
 }
 
 // MARK: find_all
-/// 根据搜索条件和分页查找操作记录列表
+/// 根据搜索条件和分页查找图标库列表
 #[allow(unused_mut)]
 pub async fn find_all(
-  search: Option<OperationRecordSearch>,
+  search: Option<IconSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<OperationRecordModel>> {
+) -> Result<Vec<IconModel>> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "find_all";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -490,7 +438,23 @@ pub async fn find_all(
       return Ok(vec![]);
     }
   }
-  // 操作人
+  // 启用
+  if let Some(search) = &search {
+    if search.is_enabled.is_some() {
+      let len = search.is_enabled.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.is_enabled.length > {ids_limit}"));
+      }
+    }
+  }
+  // 创建人
   if let Some(search) = &search {
     if search.create_usr_id.is_some() {
       let len = search.create_usr_id.as_ref().unwrap().len();
@@ -538,10 +502,17 @@ pub async fn find_all(
   
   let mut sort = sort.unwrap_or_default();
   
+  if !sort.iter().any(|item| item.prop == "order_by") {
+    sort.push(SortInput {
+      prop: "order_by".into(),
+      order: SortOrderEnum::Asc,
+    });
+  }
+  
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
       prop: "create_time".into(),
-      order: SortOrderEnum::Desc,
+      order: SortOrderEnum::Asc,
     });
   }
   
@@ -557,14 +528,34 @@ pub async fn find_all(
   
   let options = Options::from(options);
   
-  let mut res: Vec<OperationRecordModel> = query(
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let mut res: Vec<IconModel> = query(
     sql,
     args,
     Some(options),
   ).await?;
   
+  let dict_vec = get_dict(&[
+    "is_enabled",
+  ]).await?;
+  let [
+    is_enabled_dict,
+  ]: [Vec<_>; 1] = dict_vec
+    .try_into()
+    .map_err(|err| eyre!("{:#?}", err))?;
+  
   #[allow(unused_variables)]
   for model in &mut res {
+    
+    // 启用
+    model.is_enabled_lbl = {
+      is_enabled_dict
+        .iter()
+        .find(|item| item.val == model.is_enabled.to_string())
+        .map(|item| item.lbl.clone())
+        .unwrap_or_else(|| model.is_enabled.to_string())
+    };
     
   }
   
@@ -572,13 +563,13 @@ pub async fn find_all(
 }
 
 // MARK: find_count
-/// 根据条件查找操作记录总数
+/// 根据条件查找图标库总数
 pub async fn find_count(
-  search: Option<OperationRecordSearch>,
+  search: Option<IconSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "find_count";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -619,6 +610,12 @@ pub async fn find_count(
   
   let args = args.into();
   
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = Some(options);
+  
   let res: Option<CountModel> = query_one(
     sql,
     args,
@@ -637,38 +634,41 @@ pub async fn find_count(
 }
 
 // MARK: get_field_comments
-/// 获取操作记录字段注释
+/// 获取图标库字段注释
 pub async fn get_field_comments(
   _options: Option<Options>,
-) -> Result<OperationRecordFieldComment> {
+) -> Result<IconFieldComment> {
   
-  let field_comments = OperationRecordFieldComment {
+  let field_comments = IconFieldComment {
     id: "ID".into(),
-    module: "模块".into(),
-    module_lbl: "模块名称".into(),
-    method: "方法".into(),
-    method_lbl: "方法名称".into(),
-    lbl: "操作".into(),
-    time: "耗时(毫秒)".into(),
-    old_data: "操作前数据".into(),
-    new_data: "操作后数据".into(),
-    create_usr_id: "操作人".into(),
-    create_usr_id_lbl: "操作人".into(),
-    create_time: "操作时间".into(),
-    create_time_lbl: "操作时间".into(),
+    img: "图标".into(),
+    code: "编码".into(),
+    lbl: "名称".into(),
+    is_enabled: "启用".into(),
+    is_enabled_lbl: "启用".into(),
+    order_by: "排序".into(),
+    rem: "备注".into(),
+    create_usr_id: "创建人".into(),
+    create_usr_id_lbl: "创建人".into(),
+    create_time: "创建时间".into(),
+    create_time_lbl: "创建时间".into(),
+    update_usr_id: "更新人".into(),
+    update_usr_id_lbl: "更新人".into(),
+    update_time: "更新时间".into(),
+    update_time_lbl: "更新时间".into(),
   };
   Ok(field_comments)
 }
 
 // MARK: find_one
-/// 根据条件查找第一个操作记录
+/// 根据条件查找第一个图标库
 pub async fn find_one(
-  search: Option<OperationRecordSearch>,
+  search: Option<IconSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Option<OperationRecordModel>> {
+) -> Result<Option<IconModel>> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "find_one";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -712,19 +712,19 @@ pub async fn find_one(
     options,
   ).await?;
   
-  let model: Option<OperationRecordModel> = res.into_iter().next();
+  let model: Option<IconModel> = res.into_iter().next();
   
   Ok(model)
 }
 
 // MARK: find_by_id
-/// 根据 id 查找操作记录
+/// 根据 id 查找图标库
 pub async fn find_by_id(
-  id: OperationRecordId,
+  id: IconId,
   options: Option<Options>,
-) -> Result<Option<OperationRecordModel>> {
+) -> Result<Option<IconModel>> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "find_by_id";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -749,7 +749,7 @@ pub async fn find_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let search = OperationRecordSearch {
+  let search = IconSearch {
     id: Some(id),
     ..Default::default()
   }.into();
@@ -764,14 +764,14 @@ pub async fn find_by_id(
 }
 
 // MARK: find_by_ids
-/// 根据 ids 查找操作记录
+/// 根据 ids 查找图标库
 #[allow(dead_code)]
 pub async fn find_by_ids(
-  ids: Vec<OperationRecordId>,
+  ids: Vec<IconId>,
   options: Option<Options>,
-) -> Result<Vec<OperationRecordModel>> {
+) -> Result<Vec<IconModel>> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "find_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -802,7 +802,7 @@ pub async fn find_by_ids(
     return Err(eyre!("find_by_ids: ids.length > FIND_ALL_IDS_LIMIT"));
   }
   
-  let search = OperationRecordSearch {
+  let search = IconSearch {
     ids: Some(ids.clone()),
     ..Default::default()
   }.into();
@@ -829,20 +829,20 @@ pub async fn find_by_ids(
       }
       Err(eyre!("find_by_ids: id: {id} not found"))
     })
-    .collect::<Result<Vec<OperationRecordModel>>>()?;
+    .collect::<Result<Vec<IconModel>>>()?;
   
   Ok(models)
 }
 
 // MARK: exists
-/// 根据搜索条件判断操作记录是否存在
+/// 根据搜索条件判断图标库是否存在
 #[allow(dead_code)]
 pub async fn exists(
-  search: Option<OperationRecordSearch>,
+  search: Option<IconSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "exists";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -874,14 +874,14 @@ pub async fn exists(
 }
 
 // MARK: exists_by_id
-/// 根据 id 判断操作记录是否存在
+/// 根据 id 判断图标库是否存在
 #[allow(dead_code)]
 pub async fn exists_by_id(
-  id: OperationRecordId,
+  id: IconId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "exists_by_id";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -902,7 +902,7 @@ pub async fn exists_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let search = OperationRecordSearch {
+  let search = IconSearch {
     id: Some(id),
     ..Default::default()
   }.into();
@@ -919,12 +919,12 @@ pub async fn exists_by_id(
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
 pub async fn find_by_unique(
-  search: OperationRecordSearch,
+  search: IconSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
-) -> Result<Vec<OperationRecordModel>> {
+) -> Result<Vec<IconModel>> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "find_by_unique";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -956,17 +956,73 @@ pub async fn find_by_unique(
     return Ok(model.map_or_else(Vec::new, |m| vec![m]));
   }
   
-  Ok(vec![])
+  let mut models: Vec<IconModel> = vec![];
+  
+  let mut models_tmp = {
+    if
+      search.code.is_none()
+    {
+      return Ok(vec![]);
+    }
+    
+    let search = IconSearch {
+      code: search.code.clone(),
+      ..Default::default()
+    };
+    
+    find_all(
+      search.into(),
+      None,
+      sort.clone(),
+      options.clone(),
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
+  let mut models_tmp = {
+    if
+      search.lbl.is_none()
+    {
+      return Ok(vec![]);
+    }
+    
+    let search = IconSearch {
+      lbl: search.lbl.clone(),
+      ..Default::default()
+    };
+    
+    find_all(
+      search.into(),
+      None,
+      sort.clone(),
+      options.clone(),
+    ).await?
+  };
+  models.append(&mut models_tmp);
+  
+  Ok(models)
 }
 
 /// 根据唯一约束对比对象是否相等
 #[allow(dead_code)]
 pub fn equals_by_unique(
-  input: &OperationRecordInput,
-  model: &OperationRecordModel,
+  input: &IconInput,
+  model: &IconModel,
 ) -> bool {
   if input.id.as_ref().is_some() {
     return input.id.as_ref().unwrap() == &model.id;
+  }
+  
+  if
+    input.code.as_ref().is_some() && input.code.as_ref().unwrap() == &model.code
+  {
+    return true;
+  }
+  
+  if
+    input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
+  {
+    return true;
   }
   false
 }
@@ -975,12 +1031,12 @@ pub fn equals_by_unique(
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
 pub async fn check_by_unique(
-  input: OperationRecordInput,
-  model: OperationRecordModel,
+  input: IconInput,
+  model: IconModel,
   options: Option<Options>,
-) -> Result<Option<OperationRecordId>> {
+) -> Result<Option<IconId>> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "check_by_unique";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1027,7 +1083,7 @@ pub async fn check_by_unique(
     return Ok(id.into());
   }
   if unique_type == UniqueType::Throw {
-    let err_msg = "此 操作记录 已经存在";
+    let err_msg = "此 图标库 已经存在";
     return Err(eyre!(err_msg));
   }
   Ok(None)
@@ -1037,24 +1093,68 @@ pub async fn check_by_unique(
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables, dead_code)]
 pub async fn set_id_by_lbl(
-  input: OperationRecordInput,
-) -> Result<OperationRecordInput> {
+  input: IconInput,
+) -> Result<IconInput> {
   
   #[allow(unused_mut)]
   let mut input = input;
+  
+  let dict_vec = get_dict(&[
+    "is_enabled",
+  ]).await?;
+  
+  // 启用
+  if input.is_enabled.is_none() {
+    let is_enabled_dict = &dict_vec[0];
+    if let Some(is_enabled_lbl) = input.is_enabled_lbl.clone() {
+      input.is_enabled = is_enabled_dict
+        .iter()
+        .find(|item| {
+          item.lbl == is_enabled_lbl
+        })
+        .map(|item| {
+          item.val.parse().unwrap_or_default()
+        });
+    }
+  }
+  
+  // 启用
+  if
+    input.is_enabled_lbl.is_some() && !input.is_enabled_lbl.as_ref().unwrap().is_empty()
+    && input.is_enabled.is_none()
+  {
+    let is_enabled_dict = &dict_vec[0];
+    let dict_model = is_enabled_dict.iter().find(|item| {
+      item.lbl == input.is_enabled_lbl.clone().unwrap_or_default()
+    });
+    let val = dict_model.map(|item| item.val.to_string());
+    if let Some(val) = val {
+      input.is_enabled = val.parse::<u8>()?.into();
+    }
+  } else if
+    (input.is_enabled_lbl.is_none() || input.is_enabled_lbl.as_ref().unwrap().is_empty())
+    && input.is_enabled.is_some()
+  {
+    let is_enabled_dict = &dict_vec[0];
+    let dict_model = is_enabled_dict.iter().find(|item| {
+      item.val == input.is_enabled.unwrap_or_default().to_string()
+    });
+    let lbl = dict_model.map(|item| item.lbl.to_string());
+    input.is_enabled_lbl = lbl;
+  }
   
   Ok(input)
 }
 
 // MARK: creates_return
-/// 批量创建操作记录并返回
+/// 批量创建图标库并返回
 #[allow(dead_code)]
 pub async fn creates_return(
-  inputs: Vec<OperationRecordInput>,
+  inputs: Vec<IconInput>,
   options: Option<Options>,
-) -> Result<Vec<OperationRecordModel>> {
+) -> Result<Vec<IconModel>> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "creates_return";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1085,13 +1185,13 @@ pub async fn creates_return(
 }
 
 // MARK: creates
-/// 批量创建操作记录
+/// 批量创建图标库
 pub async fn creates(
-  inputs: Vec<OperationRecordInput>,
+  inputs: Vec<IconInput>,
   options: Option<Options>,
-) -> Result<Vec<OperationRecordId>> {
+) -> Result<Vec<IconId>> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "creates";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1116,14 +1216,14 @@ pub async fn creates(
   Ok(ids)
 }
 
-/// 批量创建操作记录
+/// 批量创建图标库
 #[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
-  inputs: Vec<OperationRecordInput>,
+  inputs: Vec<IconInput>,
   options: Option<Options>,
-) -> Result<Vec<OperationRecordId>> {
+) -> Result<Vec<IconId>> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   
   let is_silent_mode = get_is_silent_mode(options.as_ref());
   
@@ -1133,8 +1233,8 @@ async fn _creates(
     )
     .unwrap_or_default();
   
-  let mut ids2: Vec<OperationRecordId> = vec![];
-  let mut inputs2: Vec<OperationRecordInput> = vec![];
+  let mut ids2: Vec<IconId> = vec![];
+  let mut inputs2: Vec<IconInput> = vec![];
   
   for input in inputs {
   
@@ -1149,7 +1249,7 @@ async fn _creates(
     ).await?;
     
     if !old_models.is_empty() {
-      let mut id: Option<OperationRecordId> = None;
+      let mut id: Option<IconId> = None;
       
       for old_model in old_models {
         let options = Options::from(options.clone())
@@ -1181,7 +1281,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 15 + 20);
+  let mut sql_fields = String::with_capacity(80 * 12 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1190,26 +1290,21 @@ async fn _creates(
   sql_fields += ",create_usr_id_lbl";
   sql_fields += ",update_usr_id";
   sql_fields += ",update_usr_id_lbl";
-  sql_fields += ",tenant_id";
-  // 模块
-  sql_fields += ",module";
-  // 模块名称
-  sql_fields += ",module_lbl";
-  // 方法
-  sql_fields += ",method";
-  // 方法名称
-  sql_fields += ",method_lbl";
-  // 操作
+  // 图标
+  sql_fields += ",img";
+  // 编码
+  sql_fields += ",code";
+  // 名称
   sql_fields += ",lbl";
-  // 耗时(毫秒)
-  sql_fields += ",time";
-  // 操作前数据
-  sql_fields += ",old_data";
-  // 操作后数据
-  sql_fields += ",new_data";
+  // 启用
+  sql_fields += ",is_enabled";
+  // 排序
+  sql_fields += ",order_by";
+  // 备注
+  sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 15 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 12 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1218,7 +1313,7 @@ async fn _creates(
     .enumerate()
   {
     
-    let id: OperationRecordId = get_short_uuid().into();
+    let id: IconId = get_short_uuid().into();
     ids2.push(id.clone());
     
     inputs2_ids.push(id.clone());
@@ -1325,69 +1420,45 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    
-    if let Some(tenant_id) = input.tenant_id {
+    // 图标
+    if let Some(img) = input.img {
       sql_values += ",?";
-      args.push(tenant_id.into());
-    } else if let Some(tenant_id) = get_auth_tenant_id() {
-      sql_values += ",?";
-      args.push(tenant_id.into());
+      args.push(img.into());
     } else {
       sql_values += ",default";
     }
-    // 模块
-    if let Some(module) = input.module {
+    // 编码
+    if let Some(code) = input.code {
       sql_values += ",?";
-      args.push(module.into());
+      args.push(code.into());
     } else {
       sql_values += ",default";
     }
-    // 模块名称
-    if let Some(module_lbl) = input.module_lbl {
-      sql_values += ",?";
-      args.push(module_lbl.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 方法
-    if let Some(method) = input.method {
-      sql_values += ",?";
-      args.push(method.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 方法名称
-    if let Some(method_lbl) = input.method_lbl {
-      sql_values += ",?";
-      args.push(method_lbl.into());
-    } else {
-      sql_values += ",default";
-    }
-    // 操作
+    // 名称
     if let Some(lbl) = input.lbl {
       sql_values += ",?";
       args.push(lbl.into());
     } else {
       sql_values += ",default";
     }
-    // 耗时(毫秒)
-    if let Some(time) = input.time {
+    // 启用
+    if let Some(is_enabled) = input.is_enabled {
       sql_values += ",?";
-      args.push(time.into());
+      args.push(is_enabled.into());
     } else {
       sql_values += ",default";
     }
-    // 操作前数据
-    if let Some(old_data) = input.old_data {
+    // 排序
+    if let Some(order_by) = input.order_by {
       sql_values += ",?";
-      args.push(old_data.into());
+      args.push(order_by.into());
     } else {
       sql_values += ",default";
     }
-    // 操作后数据
-    if let Some(new_data) = input.new_data {
+    // 备注
+    if let Some(rem) = input.rem {
       sql_values += ",?";
-      args.push(new_data.into());
+      args.push(rem.into());
     } else {
       sql_values += ",default";
     }
@@ -1405,6 +1476,8 @@ async fn _creates(
   
   let options = Options::from(options);
   
+  let options = options.set_del_cache_key1s(get_cache_tables());
+  
   let options = Some(options);
   
   let affected_rows = execute(
@@ -1421,15 +1494,15 @@ async fn _creates(
 }
 
 // MARK: create_return
-/// 创建操作记录并返回
+/// 创建图标库并返回
 #[allow(dead_code)]
 pub async fn create_return(
   #[allow(unused_mut)]
-  mut input: OperationRecordInput,
+  mut input: IconInput,
   options: Option<Options>,
-) -> Result<OperationRecordModel> {
+) -> Result<IconModel> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   
   let id = create(input.clone(), options.clone()).await?;
   
@@ -1447,15 +1520,15 @@ pub async fn create_return(
 }
 
 // MARK: create
-/// 创建操作记录
+/// 创建图标库
 #[allow(dead_code)]
 pub async fn create(
   #[allow(unused_mut)]
-  mut input: OperationRecordInput,
+  mut input: IconInput,
   options: Option<Options>,
-) -> Result<OperationRecordId> {
+) -> Result<IconId> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "create";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1485,63 +1558,17 @@ pub async fn create(
   Ok(id)
 }
 
-// MARK: update_tenant_by_id
-/// 操作记录根据id修改租户id
-pub async fn update_tenant_by_id(
-  id: OperationRecordId,
-  tenant_id: TenantId,
-  options: Option<Options>,
-) -> Result<u64> {
-  let table = "base_operation_record";
-  let method = "update_tenant_by_id";
-  
-  let is_debug = get_is_debug(options.as_ref());
-  
-  if is_debug {
-    let mut msg = format!("{table}.{method}:");
-    msg += &format!(" id: {:?}", &id);
-    msg += &format!(" tenant_id: {:?}", &tenant_id);
-    if let Some(options) = &options {
-      msg += &format!(" options: {:?}", &options);
-    }
-    info!(
-      "{req_id} {msg}",
-      req_id = get_req_id(),
-    );
-  }
-  
-  let options = Options::from(options)
-    .set_is_debug(Some(false));
-  
-  let mut args = QueryArgs::new();
-  
-  args.push(tenant_id.into());
-  args.push(id.into());
-  
-  let sql = format!("update {table} set tenant_id=? where id=?");
-  
-  let args: Vec<_> = args.into();
-  
-  let num = execute(
-    sql,
-    args,
-    Some(options.clone()),
-  ).await?;
-  
-  Ok(num)
-}
-
 // MARK: update_by_id
-/// 根据 id 修改操作记录
+/// 根据 id 修改图标库
 #[allow(unused_mut)]
 #[allow(unused_variables)]
 pub async fn update_by_id(
-  id: OperationRecordId,
-  mut input: OperationRecordInput,
+  id: IconId,
+  mut input: IconInput,
   options: Option<Options>,
-) -> Result<OperationRecordId> {
+) -> Result<IconId> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "update_by_id";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1572,7 +1599,7 @@ pub async fn update_by_id(
   ).await?;
   
   if old_model.is_none() {
-    let err_msg = "编辑失败, 此 操作记录 已被删除";
+    let err_msg = "编辑失败, 此 图标库 已被删除";
     return Err(eyre!(err_msg));
   }
   let old_model = old_model.unwrap();
@@ -1601,7 +1628,7 @@ pub async fn update_by_id(
       .filter(|item| 
         item.id != id
       )
-      .collect::<Vec<OperationRecordModel>>();
+      .collect::<Vec<IconModel>>();
     
     if !models.is_empty() {
       let unique_type = options
@@ -1609,7 +1636,7 @@ pub async fn update_by_id(
         .and_then(|item| item.get_unique_type())
         .unwrap_or(UniqueType::Throw);
       if unique_type == UniqueType::Throw {
-        let err_msg = "此 操作记录 已经存在";
+        let err_msg = "此 图标库 已经存在";
         return Err(eyre!(err_msg));
       } else if unique_type == UniqueType::Ignore {
         return Ok(id);
@@ -1619,62 +1646,44 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 15 + 20);
+  let mut sql_fields = String::with_capacity(80 * 12 + 20);
   
   let mut field_num: usize = 0;
-  
-  if let Some(tenant_id) = input.tenant_id {
+  // 图标
+  if let Some(img) = input.img {
     field_num += 1;
-    sql_fields += "tenant_id=?,";
-    args.push(tenant_id.into());
+    sql_fields += "img=?,";
+    args.push(img.into());
   }
-  // 模块
-  if let Some(module) = input.module {
+  // 编码
+  if let Some(code) = input.code {
     field_num += 1;
-    sql_fields += "module=?,";
-    args.push(module.into());
+    sql_fields += "code=?,";
+    args.push(code.into());
   }
-  // 模块名称
-  if let Some(module_lbl) = input.module_lbl {
-    field_num += 1;
-    sql_fields += "module_lbl=?,";
-    args.push(module_lbl.into());
-  }
-  // 方法
-  if let Some(method) = input.method {
-    field_num += 1;
-    sql_fields += "method=?,";
-    args.push(method.into());
-  }
-  // 方法名称
-  if let Some(method_lbl) = input.method_lbl {
-    field_num += 1;
-    sql_fields += "method_lbl=?,";
-    args.push(method_lbl.into());
-  }
-  // 操作
+  // 名称
   if let Some(lbl) = input.lbl {
     field_num += 1;
     sql_fields += "lbl=?,";
     args.push(lbl.into());
   }
-  // 耗时(毫秒)
-  if let Some(time) = input.time {
+  // 启用
+  if let Some(is_enabled) = input.is_enabled {
     field_num += 1;
-    sql_fields += "time=?,";
-    args.push(time.into());
+    sql_fields += "is_enabled=?,";
+    args.push(is_enabled.into());
   }
-  // 操作前数据
-  if let Some(old_data) = input.old_data {
+  // 排序
+  if let Some(order_by) = input.order_by {
     field_num += 1;
-    sql_fields += "old_data=?,";
-    args.push(old_data.into());
+    sql_fields += "order_by=?,";
+    args.push(order_by.into());
   }
-  // 操作后数据
-  if let Some(new_data) = input.new_data {
+  // 备注
+  if let Some(rem) = input.rem {
     field_num += 1;
-    sql_fields += "new_data=?,";
-    args.push(new_data.into());
+    sql_fields += "rem=?,";
+    args.push(rem.into());
   }
   
   if field_num > 0 {
@@ -1761,6 +1770,8 @@ pub async fn update_by_id(
     
     let options = Options::from(options.clone());
     
+    let options = options.set_del_cache_key1s(get_cache_tables());
+    
     let options = Some(options);
     
     execute(
@@ -1771,13 +1782,27 @@ pub async fn update_by_id(
     
   }
   
+  if field_num > 0 {
+    let options = Options::from(options);
+    let options = options.set_del_cache_key1s(get_cache_tables());
+    if let Some(del_cache_key1s) = options.get_del_cache_key1s() {
+      del_caches(
+        del_cache_key1s
+          .iter()
+          .map(|item| item.as_str())
+          .collect::<Vec<&str>>()
+          .as_slice()
+      ).await?;
+    }
+  }
+  
   Ok(id)
 }
 
 /// 获取需要清空缓存的表名
 #[allow(dead_code)]
 fn get_cache_tables() -> Vec<&'static str> {
-  let table = "base_operation_record";
+  let table = "base_icon";
   vec![
     table,
   ]
@@ -1795,14 +1820,14 @@ pub async fn del_cache() -> Result<()> {
 }
 
 // MARK: delete_by_ids
-/// 根据 ids 删除操作记录
+/// 根据 ids 删除图标库
 #[allow(unused_variables)]
 pub async fn delete_by_ids(
-  ids: Vec<OperationRecordId>,
+  ids: Vec<IconId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "delete_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1903,6 +1928,8 @@ pub async fn delete_by_ids(
     
     let options = Options::from(options.clone());
     
+    let options = options.set_del_cache_key1s(get_cache_tables());
+    
     let options = Some(options);
     
     num += execute(
@@ -1919,14 +1946,100 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-// MARK: revert_by_ids
-/// 根据 ids 还原操作记录
-pub async fn revert_by_ids(
-  ids: Vec<OperationRecordId>,
+// MARK: get_is_enabled_by_id
+/// 根据 id 查找图标库是否已启用
+/// 记录不存在则返回 false
+pub async fn get_is_enabled_by_id(
+  id: IconId,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let model = find_by_id(
+    id,
+    options,
+  ).await?;
+  
+  let is_enabled = {
+    if let Some(model) = model {
+      model.is_enabled == 1
+    } else {
+      false
+    }
+  };
+  
+  Ok(is_enabled)
+}
+
+// MARK: enable_by_ids
+/// 根据 ids 启用或者禁用图标库
+pub async fn enable_by_ids(
+  ids: Vec<IconId>,
+  is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
+  let method = "enable_by_ids";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" ids: {:?}", &ids);
+    msg += &format!(" is_enabled: {:?}", &is_enabled);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  if ids.is_empty() {
+    return Ok(0);
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  
+  let options = options.set_del_cache_key1s(get_cache_tables());
+  
+  let mut num = 0;
+  for id in ids {
+    let mut args = QueryArgs::new();
+    
+    let sql = format!("update {table} set is_enabled=? where id=? limit 1");
+    
+    args.push(is_enabled.into());
+    args.push(id.into());
+    
+    let args: Vec<_> = args.into();
+    
+    let options = options.clone().into();
+    
+    num += execute(
+      sql,
+      args,
+      options,
+    ).await?;
+  }
+  
+  Ok(num)
+}
+
+// MARK: revert_by_ids
+/// 根据 ids 还原图标库
+pub async fn revert_by_ids(
+  ids: Vec<IconId>,
+  options: Option<Options>,
+) -> Result<u64> {
+  
+  let table = "base_icon";
   let method = "revert_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -1949,6 +2062,7 @@ pub async fn revert_by_ids(
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
+  let options = options.set_del_cache_key1s(get_cache_tables());
   let options = Some(options);
   
   let mut num = 0;
@@ -1962,7 +2076,7 @@ pub async fn revert_by_ids(
     let args: Vec<_> = args.into();
     
     let mut old_model = find_one(
-      OperationRecordSearch {
+      IconSearch {
         id: Some(id.clone()),
         is_deleted: Some(1),
         ..Default::default()
@@ -1984,7 +2098,7 @@ pub async fn revert_by_ids(
     let old_model = old_model.unwrap();
     
     {
-      let mut input: OperationRecordInput = old_model.clone().into();
+      let mut input: IconInput = old_model.clone().into();
       input.id = None;
       
       let models = find_by_unique(
@@ -1993,7 +2107,7 @@ pub async fn revert_by_ids(
         options.clone(),
       ).await?;
       
-      let models: Vec<OperationRecordModel> = models
+      let models: Vec<IconModel> = models
         .into_iter()
         .filter(|item| 
           item.id != id
@@ -2001,7 +2115,7 @@ pub async fn revert_by_ids(
         .collect();
       
       if !models.is_empty() {
-        let err_msg = "此 操作记录 已经存在";
+        let err_msg = "此 图标库 已经存在";
         return Err(eyre!(err_msg));
       }
     }
@@ -2018,14 +2132,14 @@ pub async fn revert_by_ids(
 }
 
 // MARK: force_delete_by_ids
-/// 根据 ids 彻底删除操作记录
+/// 根据 ids 彻底删除图标库
 #[allow(unused_variables)]
 pub async fn force_delete_by_ids(
-  ids: Vec<OperationRecordId>,
+  ids: Vec<IconId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let table = "base_operation_record";
+  let table = "base_icon";
   let method = "force_delete_by_ids";
   
   let is_debug = get_is_debug(options.as_ref());
@@ -2056,7 +2170,7 @@ pub async fn force_delete_by_ids(
   for id in ids.clone() {
     
     let old_model = find_all(
-      OperationRecordSearch {
+      IconSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
         ..Default::default()
@@ -2091,6 +2205,8 @@ pub async fn force_delete_by_ids(
     
     let options = Options::from(options.clone());
     
+    let options = options.set_del_cache_key1s(get_cache_tables());
+    
     let options = Some(options);
     
     num += execute(
@@ -2103,14 +2219,85 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
+// MARK: find_last_order_by
+/// 查找 图标库 order_by 字段的最大值
+pub async fn find_last_order_by(
+  options: Option<Options>,
+) -> Result<u32> {
+  
+  let table = "base_icon";
+  let method = "find_last_order_by";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let msg = format!("{table}.{method}:");
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  #[allow(unused_mut)]
+  let mut args = QueryArgs::new();
+  #[allow(unused_mut)]
+  let mut sql_wheres: Vec<&'static str> = Vec::with_capacity(3);
+  
+  sql_wheres.push("t.is_deleted=0");
+  
+  let sql_where = sql_wheres.join(" and ");
+  let sql = format!("select t.order_by order_by from {table} t where {sql_where} order by t.order_by desc limit 1");
+  
+  let args: Vec<_> = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = Some(options);
+  
+  let model = query_one::<OrderByModel>(
+    sql,
+    args,
+    options.clone(),
+  ).await?;
+  
+  let order_by = {
+    if let Some(model) = model {
+      model.order_by
+    } else {
+      0
+    }
+  };
+  
+  Ok(order_by)
+}
+
+// MARK: validate_is_enabled
+/// 校验图标库是否启用
+#[allow(dead_code)]
+pub async fn validate_is_enabled(
+  model: &IconModel,
+) -> Result<()> {
+  if model.is_enabled == 0 {
+    let err_msg = "图标库已禁用";
+    return Err(eyre!(err_msg));
+  }
+  Ok(())
+}
+
 // MARK: validate_option
-/// 校验操作记录是否存在
+/// 校验图标库是否存在
 #[allow(dead_code)]
 pub async fn validate_option<T>(
   model: Option<T>,
 ) -> Result<T> {
   if model.is_none() {
-    let err_msg = "操作记录不存在";
+    let err_msg = "图标库不存在";
     let backtrace = std::backtrace::Backtrace::capture();
     error!(
       "{req_id} {err_msg}: {backtrace}",
