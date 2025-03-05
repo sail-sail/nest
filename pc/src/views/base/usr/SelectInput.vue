@@ -97,6 +97,10 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  useFormItem,
+} from "element-plus";
+
 import SelectList from "./SelectList.vue";
 
 import {
@@ -108,9 +112,12 @@ const emit = defineEmits<{
   (e: "update:modelValue", value?: UsrId | UsrId[] | null): void,
   (e: "update:modelLabel", value?: string): void,
   (e: "change", value?: UsrModel | (UsrModel | undefined)[] | null): void,
-  (e: "validateField"): void,
   (e: "clear"): void,
 }>();
+
+const {
+  formItem,
+} = useFormItem();
 
 const pagePath = getPagePath();
 
@@ -122,6 +129,7 @@ const props = withDefaults(
     disabled?: boolean;
     readonly?: boolean;
     labelReadonly?: boolean;
+    validateEvent?: boolean;
   }>(),
   {
     modelValue: undefined,
@@ -130,6 +138,7 @@ const props = withDefaults(
     disabled: false,
     readonly: false,
     labelReadonly: true,
+    validateEvent: undefined,
   },
 );
 
@@ -196,12 +205,25 @@ function getModelValueArr() {
 }
 
 async function getModelsByIds(ids: UsrId[]) {
+  if (ids.length === 0) {
+    return [ ];
+  }
   const res = await findAll(
     {
       ids,
     },
   );
   return res;
+}
+
+async function validateField() {
+  if (props.validateEvent !== false && !props.readonly) {
+    try {
+      await formItem?.validate("change");
+    } catch (err) { /* empty */ }
+  } else {
+    formItem?.clearValidate();
+  }
 }
 
 /** 根据modelValue刷新输入框的值 */
@@ -224,7 +246,7 @@ async function refreshInputValue() {
   oldInputValue = inputValue;
 }
 
-function onClear(e?: PointerEvent) {
+async function onClear(e?: PointerEvent) {
   e?.stopPropagation();
   modelValue = undefined;
   inputValue = "";
@@ -232,7 +254,7 @@ function onClear(e?: PointerEvent) {
   emit("update:modelValue", modelValue);
   emit("change");
   emit("clear");
-  emit("validateField");
+  await validateField();
 }
 
 
@@ -250,6 +272,7 @@ async function onInput(
   if (!props.labelReadonly && clickType === "input") {
     return;
   }
+  formItem?.clearValidate();
   const modelValueArr = getModelValueArr();
   const {
     type,
@@ -263,6 +286,7 @@ async function onInput(
       ids: modelValueArr,
     },
   });
+  formItem?.clearValidate();
   focus();
   if (type === "cancel") {
     return;
@@ -298,7 +322,7 @@ async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) 
     emit("change", value);
     await nextTick();
     await nextTick();
-    emit("validateField");
+    await validateField();
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
@@ -308,7 +332,7 @@ async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) 
     emit("change", value);
     await nextTick();
     await nextTick();
-    emit("validateField");
+    await validateField();
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
@@ -317,7 +341,7 @@ async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) 
   emit("change", value[0]);
   await nextTick();
   await nextTick();
-  emit("validateField");
+  await validateField();
   if (oldInputValue !== inputValue) {
     await refreshInputValue();
   }

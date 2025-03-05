@@ -40,7 +40,7 @@ export const tenantFields = [
   // 菜单权限
   "menu_ids",
   "menu_ids_lbl",
-  // 标题
+  // 简介
   "title",
   // 描述
   "info",

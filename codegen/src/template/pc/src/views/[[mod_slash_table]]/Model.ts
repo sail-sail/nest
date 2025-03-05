@@ -180,8 +180,15 @@ export const <#=fieldsName#> = [<#
         cascade_fields = cascade_fields.filter((item) => item !== foreignKey.lbl);
       }
     }
+    const isIcon = column.isIcon;
   #><#
-    if (foreignKey) {
+    if (isIcon) {
+  #>
+  // <#=column_comment#>
+  "<#=column_name#>",
+  // <#=column_comment#>
+  "<#=column_name#>_lbl",<#
+    } else if (foreignKey) {
   #>
   // <#=column_comment#>
   "<#=column_name#>",<#

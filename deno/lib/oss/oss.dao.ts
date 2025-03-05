@@ -1,13 +1,15 @@
 import type {
+  PutObjectOptions,
+  PutObjectResponse,
   S3Bucket,
-} from "S3";
+} from "/lib/S3/mod.ts";
 
 import { getEnv } from "/lib/env.ts";
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
 import type {
   S3Error,
-} from "S3/S3Error";
+} from "/lib/S3/error.ts";
 
 import {
   error
@@ -21,7 +23,7 @@ export async function getBucket() {
   }
   const {
     S3,
-  } = await import("S3");
+  } = await import("/lib/S3/mod.ts");
   const s3 = new S3({
     accessKeyID: await getEnv("oss_accesskey"),
     secretKey: await getEnv("oss_secretkey"),
@@ -44,6 +46,7 @@ export async function upload(
     is_public?: boolean;
     tenant_id?: string;
     db?: string;
+    id?: string;
   },
 ) {
   const content = await file.arrayBuffer();
@@ -67,7 +70,7 @@ export async function upload(
   if (opt?.once) {
     meta.once = opt?.once.toString();
   }
-  const id = shortUuidV4<string>();
+  const id = opt?.id || shortUuidV4<string>();
   try {
     const bucket = await getBucket();
     await bucket.putObject(id, new Uint8Array(content), {
@@ -79,6 +82,15 @@ export async function upload(
     error("oss.upload S3Error: " + err.response);
   }
   return id;
+}
+
+export async function putObject(
+  key: string,
+  body: Uint8Array,
+  options?: PutObjectOptions,
+): Promise<PutObjectResponse> {
+  const bucket = await getBucket();
+  return bucket.putObject(key, body, options);
 }
 
 export async function statObject(id: string) {
@@ -97,6 +109,23 @@ export async function getObject(id: string) {
     meta: obj.meta,
     body: obj.body,
   };
+}
+
+const textDecoder = new TextDecoder();
+
+export async function streamToString(
+  readableStream: ReadableStream<Uint8Array<ArrayBufferLike>>,
+): Promise<string> {
+  const reader = readableStream.getReader();
+  const chunks = [ ];
+  
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(textDecoder.decode(value, { stream: true }));
+  }
+  
+  return chunks.join('');
 }
 
 export async function deleteObject(id: string) {
