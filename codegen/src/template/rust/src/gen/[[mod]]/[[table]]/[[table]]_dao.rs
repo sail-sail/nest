@@ -29,6 +29,7 @@ const hasCreateTime = columns.some((column) => column.COLUMN_NAME === "create_ti
 const hasIsMonth = columns.some((column) => column.isMonth);
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
+const hasIsIcon = columns.some((column) => column.isIcon);
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 const Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -232,6 +233,20 @@ use crate::common::context::{
   get_is_silent_mode,
   get_is_creating,
 };<#
+if (hasIsIcon) {
+#>
+
+use sha2::Digest;
+use base64::Engine;
+use base64::engine::general_purpose;
+
+use crate::common::oss::oss_dao::{
+  head_object,
+  get_object,
+  put_object,
+};<#
+}
+#><#
 if (isUseI18n) {
 #>
 
@@ -1941,13 +1956,43 @@ pub async fn find_all(
       const data_type = column.DATA_TYPE;
       const column_type = column.COLUMN_TYPE;
       const column_comment = column.COLUMN_COMMENT || "";
+      const isIcon = column.isIcon;
+      if (!isIcon) continue;
+    #>
+    
+    // <#=column_comment#>
+    model.<#=column_name#>_lbl = {
+      let res = get_object(&model.<#=column_name#>).await?;
+      if let Some(res) = res {
+        String::from_utf8(res)?
+      } else {
+        String::new()
+      }
+    };<#
+    }
+    #><#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = rustKeyEscape(column.COLUMN_NAME);
+      if (column_name === "id") continue;
+      if (
+        [
+          "is_deleted",
+          "is_sys",
+          "is_hidden",
+        ].includes(column_name)
+      ) continue;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
+      const column_comment = column.COLUMN_COMMENT || "";
       const foreignKey = column.foreignKey;
       const foreignTable = foreignKey && foreignKey.table;
       const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
       const many2many = column.many2many;
       const modelLabel = column.modelLabel;
       const isPassword = column.isPassword;
-  #><#
+    #><#
     if ((column.dict || column.dictbiz) && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
       if (modelLabel) {
         continue;
@@ -3540,7 +3585,7 @@ pub async fn creates(
 }
 
 /// 批量创建<#=table_comment#>
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
@@ -3570,6 +3615,94 @@ async fn _creates(
     ) = find_auto_code(options.clone()).await?;
     input.<#=autoCodeColumn.autoCode.seq#> = Some(<#=autoCodeColumn.autoCode.seq#>);
     input.<#=autoCodeColumn.COLUMN_NAME#> = Some(<#=autoCodeColumn.COLUMN_NAME#>);
+  }<#
+  }
+  #><#
+  if (hasIsIcon) {
+  #>
+  
+  // 设置图标
+  let mut inputs = inputs;
+  for input in &mut inputs {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "create_usr_id") continue;
+      if (column_name === "create_time") continue;
+      if (column_name === "update_usr_id") continue;
+      if (column_name === "update_time") continue;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const isIcon = column.isIcon;
+      if (!isIcon) continue;
+    #>
+    // <#=column_comment#>
+    if (input.<#=column_name#>.is_none() || input.<#=column_name#>.as_ref().unwrap().is_empty()) &&
+      (input.<#=column_name#>_lbl.is_some() && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty())
+    {
+      let <#=column_name#>_lbl = input.<#=column_name#>_lbl.as_ref().unwrap();
+      let mut hash = sha2::Sha256::new();
+      hash.update(<#=column_name#>_lbl.clone().as_bytes());
+      let hash = hash.finalize();
+      let bytes = hash.as_slice();
+      let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
+      let <#=column_name#> = <#=column_name#>.get(0..22).unwrap().to_string();
+      let stat = head_object(&<#=column_name#>).await?;
+      if stat.is_none() {
+        let content_type = <#=column_name#>_lbl
+          .get(<#=column_name#>_lbl.rfind("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
+          .unwrap_or_default();
+        if !content_type.starts_with("image/") {
+          error!(
+            "{req_id} <#=column_name#>_lbl is not image: {<#=column_name#>_lbl}",
+            req_id = get_req_id(),
+          );
+          return Err(eyre!("<#=column_name#>_lbl is not image"));
+        }<#
+        if (hasTenant_id) {
+        #>
+        let tenant_id = {
+          if input.tenant_id.is_some() {
+            input.tenant_id.clone()
+          } else {
+            get_auth_tenant_id()
+          }
+        };<#
+        }
+        #>
+        put_object(
+          &<#=column_name#>,
+          <#=column_name#>_lbl.clone().as_bytes(),
+          content_type,
+          &<#=column_name#>,<#
+          if (column.isPublicAtt) {
+          #>
+          Some("1"),<#
+          } else {
+          #>
+          Some("0"),<#
+          }
+          #><#
+          if (hasTenant_id) {
+          #>
+          tenant_id,<#
+          } else {
+          #>
+          None,<#
+          }
+          #>
+          Some("<#=table_name#>.<#=column_name#>"),
+          Some(&<#=column_name#>),
+        ).await?;
+      }
+      input.<#=column_name#> = Some(<#=column_name#>);
+    }<#
+    }
+    #>
   }<#
   }
   #>
@@ -4858,6 +4991,85 @@ pub async fn update_by_id(
     input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
       input.menu_ids.unwrap(),
     ).await?.into();
+  }<#
+  }
+  #><#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isIcon = column.isIcon;
+    if (!isIcon) continue;
+  #>
+  // <#=column_comment#>
+  if (input.<#=column_name#>.is_none() || input.<#=column_name#>.as_ref().unwrap().is_empty()) &&
+    (input.<#=column_name#>_lbl.is_some() && !input.<#=column_name#>_lbl.as_ref().unwrap().is_empty())
+  {
+    let <#=column_name#>_lbl = input.<#=column_name#>_lbl.as_ref().unwrap();
+    let mut hash = sha2::Sha256::new();
+    hash.update(<#=column_name#>_lbl.clone().as_bytes());
+    let hash = hash.finalize();
+    let bytes = hash.as_slice();
+    let <#=column_name#> = general_purpose::STANDARD.encode(bytes);
+    let <#=column_name#> = <#=column_name#>.get(0..22).unwrap().to_string();
+    let stat = head_object(&<#=column_name#>).await?;
+    if stat.is_none() {
+      let content_type = <#=column_name#>_lbl
+        .get(<#=column_name#>_lbl.rfind("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
+        .unwrap_or_default();
+      if !content_type.starts_with("image/") {
+        error!(
+          "{req_id} <#=column_name#>_lbl is not image: {<#=column_name#>_lbl}",
+          req_id = get_req_id(),
+        );
+        return Err(eyre!("<#=column_name#>_lbl is not image"));
+      }<#
+      if (hasTenant_id) {
+      #>
+      let tenant_id = {
+        if input.tenant_id.is_some() {
+          input.tenant_id.clone()
+        } else {
+          get_auth_tenant_id()
+        }
+      };<#
+      }
+      #>
+      put_object(
+        &<#=column_name#>,
+        <#=column_name#>_lbl.clone().as_bytes(),
+        content_type,
+        &<#=column_name#>,<#
+        if (column.isPublicAtt) {
+        #>
+        Some("1"),<#
+        } else {
+        #>
+        Some("0"),<#
+        }
+        #><#
+        if (hasTenant_id) {
+        #>
+        tenant_id,<#
+        } else {
+        #>
+        None,<#
+        }
+        #>
+        Some("<#=table_name#>.<#=column_name#>"),
+        Some(&<#=column_name#>),
+      ).await?;
+    }
+    input.<#=column_name#> = Some(<#=column_name#>);
   }<#
   }
   #>

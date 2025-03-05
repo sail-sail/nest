@@ -1197,7 +1197,7 @@ pub async fn creates(
 }
 
 /// 批量创建语言
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<LangInput>,
   options: Option<Options>,

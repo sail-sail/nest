@@ -7,10 +7,11 @@ import * as ossDao from "./oss.dao.ts";
 export async function upload(
   file: File,
   opt?: {
-    once?: number,
-    is_public?: boolean,
-    tenant_id?: string,
-    db?: string,
+    once?: number;
+    is_public?: boolean;
+    tenant_id?: string;
+    db?: string;
+    id?: string;
   },
 ) {
   const result = await ossDao.upload(file, opt);

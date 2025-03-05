@@ -2,7 +2,7 @@ use std::env;
 use color_eyre::eyre::{Result,eyre};
 use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command};
 use s3::request::tokio_backend::HyperRequest;
-use s3::request::Request;
+use s3::request::{Request, ResponseData};
 
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 
@@ -57,6 +57,7 @@ fn new_bucket() -> Result<Box<Bucket>> {
   Ok(bucket)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub async fn put_object<S: AsRef<str>>(
   path: S,
   content: &[u8],
@@ -65,7 +66,8 @@ pub async fn put_object<S: AsRef<str>>(
   is_public: Option<&str>,
   tenant_id: Option<TenantId>,
   db: Option<&str>,
-) -> Result<bool> {
+  id: Option<&str>,
+) -> Result<ResponseData> {
   let mut bucket = new_bucket()?;
   bucket.add_header("x-amz-meta-filename", urlencoding::encode(filename).as_ref());
   if let Some(is_public) = is_public {
@@ -77,11 +79,15 @@ pub async fn put_object<S: AsRef<str>>(
   if let Some(db) = db {
     bucket.add_header("x-amz-meta-db", urlencoding::encode(db).as_ref());
   }
-  let res = bucket.put_object_with_content_type(path.as_ref(), content, content_type).await?;
+  if let Some(id) = id {
+    bucket.add_header("x-amz-meta-id", urlencoding::encode(id).as_ref());
+  }
+  let res: ResponseData = bucket.put_object_with_content_type(path.as_ref(), content, content_type).await?;
   if res.status_code() == 404 {
     return Err(eyre!("oss bucket not found, please check .env oss_bucket"))
   }
-  Ok(true)
+  dbg!("------------------- put_object -------------------", &res);
+  Ok(res)
 }
 
 pub async fn head_object(
@@ -90,7 +96,12 @@ pub async fn head_object(
   let bucket = new_bucket()?;
   let res = bucket.head_object(path).await;
   let res = match res {
-    Ok((res, _)) => res,
+    Ok((res, code)) => {
+      if code == 404 {
+        return Ok(None);
+      }
+      res
+    },
     Err(e) => {
       if e.to_string().contains("404") {
         return Ok(None);
@@ -99,6 +110,7 @@ pub async fn head_object(
       }
     }
   };
+  dbg!(&res);
   let filename: String = {
     if let Some(metadata) = res.metadata.as_ref() {
       if let Some(f) = metadata.get("filename") {
@@ -142,10 +154,14 @@ pub async fn head_object(
 
 pub async fn get_object(
   path: &str,
-) -> Result<Vec<u8>> {
+) -> Result<Option<Vec<u8>>> {
   let bucket = new_bucket()?;
   let res = bucket.get_object(path).await?;
-  Ok(res.into())
+  if res.status_code() == 404 {
+    return Ok(None);
+  }
+  let res: Vec<u8> = res.into();
+  Ok(Some(res))
 }
 
 pub async fn delete_object(

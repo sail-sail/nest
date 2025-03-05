@@ -61,6 +61,12 @@ export function getScalars() {
       "output": `import("/gen/base/i18n/i18n.model.ts").I18nId`,
     },
     
+    // 图标库
+    "IconId": {
+      "input": `import("/gen/base/icon/icon.model.ts").IconId`,
+      "output": `import("/gen/base/icon/icon.model.ts").IconId`,
+    },
+    
     // 语言
     "LangId": {
       "input": `import("/gen/base/lang/lang.model.ts").LangId`,
