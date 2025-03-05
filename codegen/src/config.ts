@@ -385,6 +385,12 @@ export interface TableCloumn {
   isImg?: boolean,
   
   /**
+   * 是否图标
+   * 如果字段名是icon或者_icon结尾, 并且isIcon == null，则认isIcon默认为true,并且此时width默认为80
+   */
+  isIcon?: boolean,
+  
+  /**
    * 是否文本域
    */
   isTextarea?: boolean,

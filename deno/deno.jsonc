@@ -45,8 +45,6 @@
     "@std/path": "jsr:@std/path@1.0.8",
     "lru-cache": "npm:lru-cache@11.0.2",
     "mysql2": "npm:mysql2@3.12.0",
-    "S3": "https://deno.land/x/s3@0.5.0/mod.ts",
-    "S3/S3Error": "https://deno.land/x/s3@0.5.0/src/error.ts",
     "canvas": "https://deno.land/x/canvas@v1.4.2/mod.ts",
     "dayjs": "npm:dayjs@1.11.13",
     "js-md5": "npm:js-md5@0.8.3",

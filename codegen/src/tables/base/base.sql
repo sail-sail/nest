@@ -709,3 +709,28 @@ CREATE TABLE if not exists `base_dictbiz_detail` (
   INDEX (`dictbiz_id`, `lbl`, `is_deleted`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='业务字典明细';
+
+------------------------------------------------------------------------ 图标库
+drop table if exists `base_icon`;
+CREATE TABLE if not exists `base_icon` (
+  `id` varchar(22) NOT NULL COMMENT 'ID',
+  `img` varchar(22) NOT NULL DEFAULT '' COMMENT '图标',
+  `code` varchar(40) NOT NULL DEFAULT '' COMMENT '编码',
+  `lbl` varchar(40) NOT NULL DEFAULT '' COMMENT '名称',
+  `is_enabled` tinyint unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
+  `order_by` int unsigned NOT NULL DEFAULT 1 COMMENT '排序',
+  `rem` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+  `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `is_deleted` tinyint unsigned NOT NULL DEFAULT 0 COMMENT '删除,dict:is_deleted',
+  `delete_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '删除人',
+  `delete_time` datetime DEFAULT NULL COMMENT '删除时间',
+  INDEX (`code`, `is_deleted`),
+  INDEX (`lbl`, `is_deleted`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='图标库';

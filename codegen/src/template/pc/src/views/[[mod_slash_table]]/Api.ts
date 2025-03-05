@@ -566,8 +566,15 @@ export function intoInput(
       } else if (foreignKey && foreignKey.lbl) {
         hasModelLabel = true;
       }
+      const isIcon = column.isIcon;
     #><#
-      if (foreignKey || column.dict || column.dictbiz) {
+      if (isIcon) {
+    #>
+    // <#=column_comment#>
+    <#=column_name#>: model?.<#=column_name#>,
+    // <#=column_comment#>
+    <#=column_name#>_lbl: model?.<#=column_name#>_lbl,<#
+      } else if (foreignKey || column.dict || column.dictbiz) {
     #>
     // <#=column_comment#>
     <#=column_name#>: model?.<#=column_name#>,<#
