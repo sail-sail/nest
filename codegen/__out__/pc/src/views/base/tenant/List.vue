@@ -78,9 +78,8 @@
         </el-form-item>
       </template>
       
-      <el-form-item
-        label=""
-        prop="idsChecked"
+      <div
+        class="search-ids-checked"
       >
         <div
           un-flex="~ nowrap"
@@ -131,10 +130,10 @@
             <span>回收站</span>
           </el-checkbox>
         </div>
-      </el-form-item>
+      </div>
       
-      <el-form-item
-        label=""
+      <div
+        class="search-buttons"
       >
         
         <el-button
@@ -176,7 +175,7 @@
           
         </div>
         
-      </el-form-item>
+      </div>
       
     </el-form>
   </div>
@@ -561,7 +560,7 @@
             </el-table-column>
           </template>
           
-          <!-- 标题 -->
+          <!-- 简介 -->
           <template v-else-if="'title' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -1040,8 +1039,11 @@ let selectedIds = $(tableSelected.selectedIds);
 
 watch(
   () => selectedIds,
-  () => {
+  (oldVal, newVal) => {
     if (!inited) {
+      return;
+    }
+    if (oldVal.length === newVal.length && oldVal.every((v, i) => v === newVal[i])) {
       return;
     }
     emit("selectedIdsChg", selectedIds);
@@ -1117,7 +1119,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "标题",
+      label: "简介",
       prop: "title",
       width: 160,
       align: "center",
@@ -1480,7 +1482,7 @@ async function onImportExcel() {
     [ "名称" ]: "lbl",
     [ "所属域名" ]: "domain_ids_lbl",
     [ "菜单权限" ]: "menu_ids_lbl",
-    [ "标题" ]: "title",
+    [ "简介" ]: "title",
     [ "描述" ]: "info",
     [ "语言" ]: "lang_id_lbl",
     [ "锁定" ]: "is_locked_lbl",
