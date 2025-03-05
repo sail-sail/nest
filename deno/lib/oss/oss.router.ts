@@ -45,6 +45,7 @@ router.post("upload", async function(ctx) {
   if (!file || !(file instanceof File)) {
     throw new Error("file must a form-data file!");
   }
+  const id0 = formData.get("id") as string | null ?? undefined;
   const {
     upload
   } = await import("./oss.service.ts");
@@ -54,6 +55,7 @@ router.post("upload", async function(ctx) {
     is_public: false,
     tenant_id,
     db,
+    id: id0,
   });
   response.body = {
     code: 0,
@@ -81,11 +83,13 @@ router.post("uploadPublic", async function(ctx) {
   if (!file || !(file instanceof File)) {
     throw new Error("file must a form-data file!");
   }
+  const id0 = formData.get("id") as string | null ?? undefined;
   const {
     upload
   } = await import("./oss.service.ts");
   const id = await upload(file, {
     is_public: true,
+    id: id0,
   });
   response.body = {
     code: 0,
