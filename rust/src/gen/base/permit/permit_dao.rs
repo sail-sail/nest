@@ -965,7 +965,7 @@ pub async fn creates(
 }
 
 /// 批量创建按钮权限
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<PermitInput>,
   options: Option<Options>,

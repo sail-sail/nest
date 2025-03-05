@@ -8,6 +8,7 @@ pub mod dictbiz_detail;
 pub mod domain;
 pub mod field_permit;
 pub mod i18n;
+pub mod icon;
 pub mod lang;
 pub mod login_log;
 pub mod menu;
