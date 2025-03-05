@@ -88,9 +88,8 @@
         </el-form-item>
       </template>
       
-      <el-form-item
-        label=""
-        prop="idsChecked"
+      <div
+        class="search-ids-checked"
       >
         <div
           un-flex="~ nowrap"
@@ -141,10 +140,10 @@
             <span>回收站</span>
           </el-checkbox>
         </div>
-      </el-form-item>
+      </div>
       
-      <el-form-item
-        label=""
+      <div
+        class="search-buttons"
       >
         
         <el-button
@@ -186,7 +185,7 @@
           
         </div>
         
-      </el-form-item>
+      </div>
       
     </el-form>
   </div>

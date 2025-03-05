@@ -193,6 +193,7 @@ async function showDialog(
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "medium",
     title,
+    pointerPierce: true,
   });
   onCloseResolve = dialogRes.onCloseResolve;
   onBeforeClose = arg?.onBeforeClose;
@@ -222,6 +223,9 @@ function selectedIdsChg(value: <#=Table_Up#>Id[]) {
 }
 
 async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
+  if (ids.length === 0) {
+    return [ ];
+  }
   const res = await findAll(
     {
       ids,
