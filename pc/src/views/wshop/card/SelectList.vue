@@ -119,6 +119,7 @@ async function showDialog(
   const dialogRes = customDialogRef!.showDialog<OnCloseResolveType>({
     type: "medium",
     title,
+    pointerPierce: true,
   });
   onCloseResolve = dialogRes.onCloseResolve;
   onBeforeClose = arg?.onBeforeClose;
@@ -148,6 +149,9 @@ function selectedIdsChg(value: CardId[]) {
 }
 
 async function getModelsByIds(ids: CardId[]) {
+  if (ids.length === 0) {
+    return [ ];
+  }
   const res = await findAll(
     {
       ids,
