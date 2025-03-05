@@ -1482,7 +1482,7 @@ pub async fn creates(
 }
 
 /// 批量创建企微应用
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<WxwAppInput>,
   options: Option<Options>,
