@@ -1366,4 +1366,58 @@ export default defineConfig({
       },
     ],
   },
+  // 图标库
+  base_icon: {
+    opts: {
+      cache: true,
+      uniques: [
+        [ "code" ],
+        [ "lbl" ],
+      ],
+      defaultSort: {
+        prop: "order_by",
+        order: "ascending",
+      },
+    },
+    columns: [
+      {
+        COLUMN_NAME: "img",
+        attAccept: "image/svg+xml,image/png,image/jpeg,image/webp",
+        isPublicAtt: true,
+        require: true,
+      },
+      {
+        COLUMN_NAME: "code",
+        require: true,
+        search: true,
+        width: 120,
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "lbl",
+        width: 120,
+      },
+      {
+        COLUMN_NAME: "is_enabled",
+      },
+      {
+        COLUMN_NAME: "order_by",
+      },
+      {
+        COLUMN_NAME: "rem",
+      },
+      {
+        COLUMN_NAME: "create_usr_id",
+      },
+      {
+        COLUMN_NAME: "create_time",
+      },
+      {
+        COLUMN_NAME: "update_usr_id",
+      },
+      {
+        COLUMN_NAME: "update_time",
+      },
+    ],
+  },
 });
