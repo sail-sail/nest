@@ -39,6 +39,10 @@ declare const i18nId: unique symbol;
 /** 国际化 */
 type I18nId = Distinct<string, typeof i18nId>;
 
+declare const iconId: unique symbol;
+/** 图标库 */
+type IconId = Distinct<string, typeof iconId>;
+
 declare const langId: unique symbol;
 /** 语言 */
 type LangId = Distinct<string, typeof langId>;

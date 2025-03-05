@@ -1579,8 +1579,39 @@ for (let i = 0; i < columns.length; i++) {
             const prefix = column.prefix || "";
             const canSearch = column.canSearch;
             const isAuditColumn = hasAudit && auditColumn === column_name;
+            const isIcon = column.isIcon;
           #><#
-          if (column.isImg) {
+          if (isIcon) {
+          #>
+          
+          <!-- <#=column_comment#> -->
+          <template v<#=colIdx === 0 ? "" : "-else"#>-if="'<#=column_name#>_lbl' === col.prop<#
+          if (canSearch) {
+          #> && (showBuildIn || builtInSearch?.<#=column_name#> == null)<#
+          }
+          #>">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+              <template #default="{ row }">
+                <div
+                  un-flex="~ nowrap"
+                  un-items-center
+                  un-justify-center
+                >
+                  <CustomIcon
+                    v-model="row.<#=column_name#>"
+                    v-model:model-lbl="row.<#=column_name#>_lbl"
+                    :readonly="true"
+                    un-w="8"
+                    un-h="8"
+                  ></CustomIcon>
+                </div>
+              </template>
+            </el-table-column>
+          </template><#
+          } else if (column.isImg) {
           #>
           
           <!-- <#=column_comment#> -->
@@ -3137,8 +3168,45 @@ function getTableColumns(): ColumnType[] {
     } else if (fixed === true) {
       fixed = "left";
     }
+    const isIcon = column.isIcon;
   #><#
-    if (column.isImg) {
+    if (isIcon) {
+    #>
+    {
+      label: "<#=column_comment#>",
+      prop: "<#=column_name#>_lbl",<#
+      if (column.width) {
+      #>
+      width: <#=column.width#>,<#
+      }
+      #><#
+      if (column.minWidth) {
+      #>
+      minWidth: <#=column.minWidth#>,<#
+      }
+      #><#
+      if (column.sortable) {
+      #>
+      sortable: "custom",<#
+      }
+      #><#
+      if (column.align) {
+      #>
+      align: "<#=column.align#>",<#
+      }
+      #><#
+      if (column.headerAlign) {
+      #>
+      headerAlign: "<#=column.headerAlign#>",<#
+      }
+      #><#
+      if (fixed) {
+      #>
+      fixed: "<#=fixed#>",<#
+      }
+      #>
+    },<#
+    } else if (column.isImg) {
     #>
     {
       label: "<#=column_comment#>",
