@@ -44,6 +44,15 @@ html,body {
     width: 100%;
     --font-size: var(--el-font-size-base);
   }
+  .search-ids-checked {
+    width: 100%;
+    display: flex;
+  }
+  .search-buttons {
+    display: flex;
+    align-items: flex-end;
+    justify-self: flex-start;
+  }
 }
 .el-divider.el-divider--horizontal {
   margin-top: 15px;

@@ -1,8 +1,8 @@
 import { readFileSync } from "fs";
 import * as dotenv from "dotenv";
 
-type database = {
-  type: "postgres"|"mysql"|"oracle",
+type Database = {
+  type: string,
   host: string,
   port?: number,
   username: string,
@@ -13,16 +13,22 @@ type database = {
 const buf = readFileSync(`../rust/.env`);
 const conf = dotenv.parse(buf);
 
-const config = {
+const config: {
+  database: Database;
+  oss_accesskey: string;
+  oss_secretkey: string;
+  oss_endpoint: string;
+  oss_bucket: string;
+} = {
   database: {
     type: conf.database_type,
     host: conf.database_hostname,
-    port: conf.database_port,
+    port: Number(conf.database_port),
     username: conf.database_username,
     password: conf.database_password,
     database: conf.database_database,
   },
   ...conf,
-};
+} as any;
 
 export default config;

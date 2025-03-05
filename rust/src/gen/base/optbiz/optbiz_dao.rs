@@ -1309,7 +1309,7 @@ pub async fn creates(
 }
 
 /// 批量创建业务选项
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<OptbizInput>,
   options: Option<Options>,

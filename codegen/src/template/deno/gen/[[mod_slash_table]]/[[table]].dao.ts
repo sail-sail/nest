@@ -10,6 +10,7 @@ const hasDatetime = columns.some((column) => column.DATA_TYPE === "datetime");
 const hasIsDeleted = columns.some((column) => column.COLUMN_NAME === "is_deleted");
 const hasInlineForeignTabs = opts?.inlineForeignTabs && opts?.inlineForeignTabs.length > 0;
 const hasRedundLbl = columns.some((column) => column.redundLbl && Object.keys(column.redundLbl).length > 0);
+const hasIsIcon = columns.some((column) => column.isIcon);
 const inlineForeignTabs = opts?.inlineForeignTabs || [ ];
 let Table_Up = tableUp.split("_").map(function(item) {
   return item.substring(0, 1).toUpperCase() + item.substring(1);
@@ -698,11 +699,32 @@ import {<#
   #>
 } from "/gen/base/usr/usr.dao.ts";<#
 }
+#><#
+if (hasIsIcon) {
+#>
+
+import {
+  statObject,
+  getObject,
+  streamToString,
+  putObject,
+} from "/lib/oss/oss.dao.ts";
+
+import {
+  createHash,
+} from "node:crypto";<#
+}
 #>
 
 import {
   route_path,
-} from "./<#=table#>.model.ts";
+} from "./<#=table#>.model.ts";<#
+if (hasIsIcon) {
+#>
+
+const textEncoding = new TextEncoder();<#
+}
+#>
 <#
 if (
   !(
@@ -1756,6 +1778,33 @@ export async function findAll(
   
   for (let i = 0; i < result.length; i++) {
     const model = result[i];<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "is_sys") continue;
+      if (column_name === "is_deleted") continue;
+      if (column_name === "is_hidden") continue;
+      if (column_name === "tenant_id") continue;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const isIcon = column.isIcon;
+      if (!isIcon) continue;
+    #>
+    
+    // <#=column_comment#>
+    let <#=column_name#>_lbl = "";
+    if (model.<#=column_name#>) {
+      const res = await getObject(model.<#=column_name#>);
+      if (res) {
+        <#=column_name#>_lbl = await streamToString(res.body);
+      }
+    }
+    model.<#=column_name#>_lbl = <#=column_name#>_lbl;<#
+    }
+    #><#
     if (opts.langTable && isUseI18n) {
     #>
     
@@ -3635,6 +3684,79 @@ async function _creates(
     input.<#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.COLUMN_NAME#>;
   }<#
   }
+  #><#
+  if (hasIsIcon) {
+  #>
+  
+  // 设置图标
+  for (const input of inputs) {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      if (column.isVirtual) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      if (column_name === "create_usr_id") continue;
+      if (column_name === "create_time") continue;
+      if (column_name === "update_usr_id") continue;
+      if (column_name === "update_time") continue;
+      const data_type = column.DATA_TYPE;
+      const column_type = column.COLUMN_TYPE;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const isIcon = column.isIcon;
+      if (!isIcon) continue;
+    #>
+    // <#=column_comment#>
+    if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+      const hash = createHash("sha256");
+      hash.update(input.<#=column_name#>_lbl);
+      input.<#=column_name#> = hash.digest("base64").substring(0, 22);
+      const stat = await statObject(input.<#=column_name#>);
+      if (!stat) {
+        const contentType = input.<#=column_name#>_lbl.substring(input.<#=column_name#>_lbl.lastIndexOf("data:") + 5, input.<#=column_name#>_lbl.indexOf(";"));
+        const buffer = textEncoding.encode(input.<#=column_name#>_lbl);<#
+        if (hasTenant_id) {
+        #>
+        let tenant_id = input.tenant_id;
+        if (tenant_id == null) {
+          const usr_id = await get_usr_id();
+          tenant_id = await getTenant_id(usr_id);
+        } else if (tenant_id as unknown as string === "-") {
+          tenant_id = undefined;
+        }<#
+        } else {
+        #>
+        const tenant_id = undefined;<#
+        }
+        #>
+        const meta: {
+          filename?: string;
+          once?: string;
+          db?: string;
+          is_public: "0" | "1";
+          tenant_id?: string;
+        } = {
+          filename: input.<#=column_name#>,
+          db: "<#=table_name#>.<#=column_name#>",
+          is_public: <#
+          if (column.isPublicAtt) {
+          #>"1"<#
+          } else {
+          #>"0"<#
+          }
+          #>,
+          tenant_id,
+        };
+        await putObject(input.<#=column_name#>, buffer, {
+          contentType,
+          meta,
+        });
+      }
+    }<#
+    }
+    #>
+  }<#
+  }
   #>
   
   const table = "<#=mod#>_<#=table#>";
@@ -3742,12 +3864,9 @@ for (let i = 0; i < columns.length; i++) {
   if (column_name === "create_time") continue;
   if (column_name === "update_usr_id") continue;
   if (column_name === "update_time") continue;
-  let data_type = column.DATA_TYPE;
-  let column_type = column.COLUMN_TYPE;
-  let column_comment = column.COLUMN_COMMENT || "";
-  if (column_comment.indexOf("[") !== -1) {
-    column_comment = column_comment.substring(0, column_comment.indexOf("["));
-  }
+  const data_type = column.DATA_TYPE;
+  const column_type = column.COLUMN_TYPE;
+  const column_comment = column.COLUMN_COMMENT || "";
   const foreignKey = column.foreignKey;
   const foreignTable = foreignKey && foreignKey.table;
   const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
@@ -4653,6 +4772,72 @@ export async function updateById(
   if (!input) {
     throw new Error("updateById: input cannot be null");
   }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === "id") continue;
+    if (column_name === "create_usr_id") continue;
+    if (column_name === "create_time") continue;
+    if (column_name === "update_usr_id") continue;
+    if (column_name === "update_time") continue;
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE;
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isIcon = column.isIcon;
+    if (!isIcon) continue;
+  #>
+  
+  // <#=column_comment#>
+  if (!input.<#=column_name#> && input.<#=column_name#>_lbl) {
+    const hash = createHash("sha256");
+    hash.update(input.<#=column_name#>_lbl);
+    input.<#=column_name#> = hash.digest("base64").substring(0, 22);
+    const stat = await statObject(input.<#=column_name#>);
+    if (!stat) {
+      const contentType = input.<#=column_name#>_lbl.substring(input.<#=column_name#>_lbl.lastIndexOf("data:") + 5, input.<#=column_name#>_lbl.indexOf(";"));
+      const buffer = textEncoding.encode(input.<#=column_name#>_lbl);<#
+      if (hasTenant_id) {
+      #>
+      let tenant_id = input.tenant_id;
+      if (tenant_id == null) {
+        const usr_id = await get_usr_id();
+        tenant_id = await getTenant_id(usr_id);
+      } else if (tenant_id as unknown as string === "-") {
+        tenant_id = undefined;
+      }<#
+      } else {
+      #>
+      const tenant_id = undefined;<#
+      }
+      #>
+      const meta: {
+        filename?: string;
+        once?: string;
+        db?: string;
+        is_public: "0" | "1";
+        tenant_id?: string;
+      } = {
+        filename: input.<#=column_name#>,
+        db: "<#=table_name#>.<#=column_name#>",
+        is_public: <#
+        if (column.isPublicAtt) {
+        #>"1"<#
+        } else {
+        #>"0"<#
+        }
+        #>,
+        tenant_id,
+      };
+      await putObject(input.<#=column_name#>, buffer, {
+        contentType,
+        meta,
+      });
+    }
+  }<#
+  }
+  #><#
   if (hasTenant_id) {
   #>
   

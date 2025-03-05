@@ -1,12 +1,14 @@
 use color_eyre::eyre::Result;
 
 use super::oss_dao::{self, StatObject};
+use s3::request::ResponseData;
 
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /**
  * 上传文件
  */
+#[allow(clippy::too_many_arguments)]
 pub async fn put_object<S: AsRef<str>>(
   path: S,
   content: &[u8],
@@ -15,10 +17,11 @@ pub async fn put_object<S: AsRef<str>>(
   is_public: Option<&str>,
   tenant_id: Option<TenantId>,
   db: Option<&str>,
-) -> Result<bool> {
+  id: Option<&str>,
+) -> Result<ResponseData> {
   let res = oss_dao::put_object(
     path, content, content_type, filename,
-    is_public, tenant_id, db,
+    is_public, tenant_id, db, id,
   ).await?;
   Ok(res)
 }
@@ -32,8 +35,8 @@ pub async fn head_object(
 
 pub async fn get_object(
   path: &str,
-) -> Result<Vec<u8>> {
-  let res = oss_dao::get_object(path).await?;
+) -> Result<Option<Vec<u8>>> {
+  let res: Option<Vec<u8>> = oss_dao::get_object(path).await?;
   Ok(res)
 }
 

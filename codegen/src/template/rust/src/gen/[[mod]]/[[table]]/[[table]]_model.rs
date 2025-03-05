@@ -410,11 +410,34 @@ pub struct <#=tableUP#>Model {<#
     const onlyCodegenDeno = column.onlyCodegenDeno;
     const onlyCodegenDenoButApi = column.onlyCodegenDenoButApi;
     const isAuditColumn = hasAudit && auditColumn === column_name;
+    const isIcon = column.isIcon;
   #><#
     if (column_name === "id") {
   #>
   /// ID
   pub id: <#=Table_Up#>Id,<#
+    } else if (isIcon) {
+  #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
+  }
+  #>
+  pub <#=column_name_rust#>: <#=_data_type#>,
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_lbl")]<#
+  }
+  #>
+  pub <#=column_name#>_lbl: <#=_data_type#>,<#
     } else if (foreignKey && foreignKey.multiple) {
   #>
   /// <#=column_comment#><#
@@ -1446,8 +1469,13 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
         }
         let is_nullable = column.IS_NULLABLE === "YES";
         const isAuditColumn = hasAudit && auditColumn === column_name;
+        const isIcon = column.isIcon;
       #><#
-        if (foreignKey && foreignKey.multiple) {
+        if (isIcon) {
+      #>
+      <#=column_name_rust#>,
+      <#=column_name#>_lbl: String::new(),<#
+        } else if (foreignKey && foreignKey.multiple) {
       #>
       <#=column_name_rust#>,<#
         if (hasModelLabel) {
@@ -2166,8 +2194,31 @@ pub struct <#=tableUP#>Input {
     } else if (foreignKey && foreignKey.lbl) {
       hasModelLabel = true;
     }
+    const isIcon = column.isIcon;
   #><#
-    if (column.dict || column.dictbiz) {
+    if (isIcon) {
+    #>
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>")]<#
+  }
+  #>
+  pub <#=column_name_rust#>: Option<<#=_data_type#>>,
+  /// <#=column_comment#><#
+  if (onlyCodegenDeno && !onlyCodegenDenoButApi) {
+  #>
+  #[graphql(skip)]<#
+  } else {
+  #>
+  #[graphql(name = "<#=column_name#>_lbl")]<#
+  }
+  #>
+  pub <#=column_name#>_lbl: Option<<#=_data_type#>>,<#
+    } else if (column.dict || column.dictbiz) {
       const columnDictModels = [
         ...dictModels.filter(function(item) {
           return item.code === column.dict || item.code === column.dict;
@@ -2495,8 +2546,15 @@ impl From<<#=tableUP#>Model> for <#=tableUP#>Input {
         } else if (foreignKey && foreignKey.lbl) {
           hasModelLabel = true;
         }
+        const isIcon = column.isIcon;
       #><#
-        if (
+        if (isIcon) {
+      #>
+      // <#=column_comment#>
+      <#=column_name_rust#>: model.<#=column_name_rust#>.into(),
+      // <#=column_comment#>
+      <#=column_name#>_lbl: model.<#=column_name#>_lbl.into(),<#
+        } else if (
           (foreignKey || column.dict || column.dictbiz)
         ) {
       #>
