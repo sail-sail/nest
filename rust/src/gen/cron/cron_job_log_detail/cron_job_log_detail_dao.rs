@@ -1030,7 +1030,7 @@ pub async fn creates(
 }
 
 /// 批量创建定时任务日志明细
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<CronJobLogDetailInput>,
   options: Option<Options>,

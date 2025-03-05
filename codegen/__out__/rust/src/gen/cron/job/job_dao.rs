@@ -1313,7 +1313,7 @@ pub async fn creates(
 }
 
 /// 批量创建任务
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<JobInput>,
   options: Option<Options>,
