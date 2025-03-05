@@ -596,7 +596,6 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               }
               #>
-              @validate-field="() => formRef?.validateField('<#=column_name#>')"
             ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (foreignSchema && foreignSchema.opts?.list_tree
               && !foreignSchema.opts?.ignoreCodegen
@@ -1332,7 +1331,6 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
-                      @validate-field="() => formRef?.validateField('<#=column_name#>')"
                     >
                     </SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree
@@ -2124,7 +2122,6 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     }
                     #>
-                    @validate-field="() => formRef?.validateField('<#=column_name#>')"
                   ></SelectInput<#=Foreign_Table_Up#>><#
                   } else if (foreignSchema && foreignSchema.opts?.list_tree
                     && !foreignSchema.opts?.ignoreCodegen
@@ -2797,7 +2794,6 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
-                      @validate-field="() => formRef?.validateField('<#=column_name#>')"
                     >
                     </SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree

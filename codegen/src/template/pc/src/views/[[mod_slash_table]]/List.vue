@@ -684,9 +684,8 @@ for (let i = 0; i < columns.length; i++) {
       }
       #>
       
-      <el-form-item
-        label=""
-        prop="idsChecked"
+      <div
+        class="search-ids-checked"
       >
         <div
           un-flex="~ nowrap"
@@ -762,10 +761,10 @@ for (let i = 0; i < columns.length; i++) {
           }
           #>
         </div>
-      </el-form-item>
+      </div>
       
-      <el-form-item
-        label=""
+      <div
+        class="search-buttons"
       >
         
         <el-button
@@ -846,7 +845,7 @@ for (let i = 0; i < columns.length; i++) {
           
         </div>
         
-      </el-form-item>
+      </div>
       
     </el-form>
   </div>
