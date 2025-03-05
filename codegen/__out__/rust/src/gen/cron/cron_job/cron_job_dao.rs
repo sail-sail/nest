@@ -1523,7 +1523,7 @@ pub async fn creates(
 }
 
 /// 批量创建定时任务
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<CronJobInput>,
   options: Option<Options>,
