@@ -1,5 +1,6 @@
 use std::sync::OnceLock;
 
+use tracing::error;
 use color_eyre::eyre::{Result,eyre};
 use serde::{Serialize, Deserialize};
 use smol_str::SmolStr;
@@ -21,6 +22,7 @@ type Aes128CbcEnc = cbc::Encryptor<aes::Aes128>;
 type Aes128CbcDec = cbc::Decryptor<aes::Aes128>;
 
 use crate::common::context::{
+  get_req_id,
   get_auth_model,
   get_auth_tenant_id,
   get_now,
@@ -228,6 +230,10 @@ pub async fn many2many_update(
     let idx = idx.unwrap_or_default();
     let order_by = idx + 1;
     if order_by > u32::MAX as usize {
+      error!(
+        "{req_id} many2many_update: idx > u32::MAX as usize",
+        req_id = get_req_id(),
+      );
       return Err(eyre!("many2many_update: idx > u32::MAX as usize"));
     }
     let order_by = order_by as u32;
@@ -278,6 +284,10 @@ pub async fn many2many_update(
       .map(|idx| idx + 1)
       .unwrap();
     if idx > u32::MAX as usize {
+      error!(
+        "{req_id} many2many_update: idx > u32::MAX as usize",
+        req_id = get_req_id(),
+      );
       return Err(eyre!("many2many_update: idx > u32::MAX as usize"));
     }
     let idx = idx as u32;

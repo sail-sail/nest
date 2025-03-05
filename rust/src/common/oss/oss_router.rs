@@ -22,15 +22,18 @@ use crate::common::context::{
 use crate::common::tmpfile::tmpfile_dao;
 
 use super::oss_service;
+use smol_str::SmolStr;
 
 #[derive(Deserialize)]
 struct UploadQuery {
   db: Option<String>,
+  id: Option<String>,
 }
 
 async fn _upload(
   mut multipart: Multipart,
   db: Option<String>,
+  id: Option<String>,
 ) -> Response {
   let mut file_name = String::new();
   let mut content_type: Option<String> = None;
@@ -59,12 +62,16 @@ async fn _upload(
   }
   let content = content.unwrap();
   let content_type = content_type.unwrap_or("application/octet-stream".to_owned());
-  let id = get_short_uuid();
+  let id: SmolStr = if let Some(id) = id {
+    id.into()
+  } else {
+    get_short_uuid()
+  };
   let auth_model = get_auth_model();
   let tenant_id = auth_model.map(|x| x.tenant_id);
   let res = oss_service::put_object(
     id.as_str(), &content, &content_type, &file_name,
-    Some("0"), tenant_id, db.as_deref(),
+    Some("0"), tenant_id, db.as_deref(), Some(id.as_str()),
   ).await;
   if let Err(err) = res {
     let mut response = Response::builder();
@@ -88,20 +95,34 @@ async fn _upload(
 pub async fn upload(
   req: &poem::Request,
   mut multipart: Multipart,
-  Query(UploadQuery { db }): Query<UploadQuery>,
+  Query(UploadQuery { db, id }): Query<UploadQuery>,
 ) -> Result<Response> {
   Ctx::resful_builder(Some(req))
     .with_auth()?
     .build()
     .resful_scope({
-      _upload(multipart, db)
+      _upload(multipart, db, id)
     }).await
 }
 
 #[handler]
 pub async fn upload_public(
+  req: &poem::Request,
   mut multipart: Multipart,
+  Query(UploadQuery { db, id }): Query<UploadQuery>,
 ) -> Result<Response> {
+  Ctx::resful_builder(Some(req))
+    .build()
+    .resful_scope({
+      _upload_public(multipart, db, id)
+    }).await
+}
+
+pub async fn _upload_public(
+  mut multipart: Multipart,
+  db: Option<String>,
+  id: Option<String>,
+) -> Response {
   let mut file_name = String::new();
   let mut content_type: Option<String> = None;
   let mut content: Option<Vec<u8>> = None;
@@ -125,22 +146,35 @@ pub async fn upload_public(
       "msg": "upload failed",
       "data": null,
     }).to_string());
-    return Ok(response);
+    return response;
   }
   let content = content.unwrap();
   let content_type = content_type.unwrap_or("application/octet-stream".to_owned());
-  let id = get_short_uuid();
-  oss_service::put_object(
+  let id: SmolStr = if let Some(id) = id {
+    id.into()
+  } else {
+    get_short_uuid()
+  };
+  let res = oss_service::put_object(
     id.as_str(), &content, &content_type, &file_name,
-    Some("1"), None, None,
-  ).await?;
+    Some("1"), None, db.as_deref(), Some(id.as_str()),
+  ).await;
+  if let Err(err) = res {
+    let mut response = Response::builder();
+    response = response.header("Content-Type", "application/json");
+    let response = response.body(json!({
+      "code": 1,
+      "msg": err.to_string(),
+      "data": null,
+    }).to_string());
+    return response;
+  }
   let mut response = Response::builder();
   response = response.header("Content-Type", "application/json");
-  let response = response.body(json!({
+  response.body(json!({
     "code": 0,
     "data": id,
-  }).to_string());
-  Ok(response)
+  }).to_string())
 }
 
 #[handler]
@@ -237,6 +271,10 @@ async fn _download(
     return Response::builder()
       .status(StatusCode::INTERNAL_SERVER_ERROR)
       .body(err.to_string());
+  }
+  let content = content.unwrap();
+  if content.is_none() {
+    return Response::builder().status(StatusCode::NOT_FOUND).finish();
   }
   let content = content.unwrap();
   response = response.header("Content-Length", content.len().to_string());
@@ -426,6 +464,10 @@ async fn _img(
         .body(err.to_string());
     }
     let content = content.unwrap();
+    if content.is_none() {
+      return Response::builder().status(StatusCode::NOT_FOUND).finish();
+    }
+    let content = content.unwrap();
     let len = content.len();
     response = response.header("Content-Length", len.to_string());
     if let Some(last_modified) = &stat.last_modified {
@@ -499,6 +541,10 @@ async fn _img(
     return Response::builder()
       .status(StatusCode::INTERNAL_SERVER_ERROR)
       .body(err.to_string());
+  }
+  let content = content.unwrap();
+  if content.is_none() {
+    return Response::builder().status(StatusCode::NOT_FOUND).finish();
   }
   let content = content.unwrap();
   let len = content.len();

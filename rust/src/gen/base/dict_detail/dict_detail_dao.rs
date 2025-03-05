@@ -1296,7 +1296,7 @@ pub async fn creates(
 }
 
 /// 批量创建系统字典明细
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<DictDetailInput>,
   options: Option<Options>,
