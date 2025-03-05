@@ -1287,7 +1287,7 @@ pub async fn creates(
 }
 
 /// 批量创建系统选项
-#[allow(unused_variables)]
+#[allow(unused_variables, clippy::redundant_locals)]
 async fn _creates(
   inputs: Vec<OptionsInput>,
   options: Option<Options>,
