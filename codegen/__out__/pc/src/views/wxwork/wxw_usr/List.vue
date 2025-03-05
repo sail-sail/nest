@@ -42,9 +42,8 @@
         </el-form-item>
       </template>
       
-      <el-form-item
-        label=""
-        prop="idsChecked"
+      <div
+        class="search-ids-checked"
       >
         <div
           un-flex="~ nowrap"
@@ -95,10 +94,10 @@
             <span>回收站</span>
           </el-checkbox>
         </div>
-      </el-form-item>
+      </div>
       
-      <el-form-item
-        label=""
+      <div
+        class="search-buttons"
       >
         
         <el-button
@@ -140,7 +139,7 @@
           
         </div>
         
-      </el-form-item>
+      </div>
       
     </el-form>
   </div>
@@ -759,8 +758,11 @@ let selectedIds = $(tableSelected.selectedIds);
 
 watch(
   () => selectedIds,
-  () => {
+  (oldVal, newVal) => {
     if (!inited) {
+      return;
+    }
+    if (oldVal.length === newVal.length && oldVal.every((v, i) => v === newVal[i])) {
       return;
     }
     emit("selectedIdsChg", selectedIds);
