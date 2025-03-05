@@ -173,7 +173,7 @@
     </div>
   </div>
   <div
-    v-else
+    v-else-if="props.pageInited && props.readonly && thumbList.length < props.maxSize"
     un-relative
     class="upload_image_item"
     tabindex="0"
@@ -182,7 +182,8 @@
     }"
   >
     <div
-      un-h="full"
+      un-m="l-.75 t-.1"
+      un-h="[calc(100%-1.8px)]"
       un-aspect="square"
       un-flex="~ [1_0_0] col"
       un-overflow-hidden

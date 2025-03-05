@@ -333,8 +333,15 @@ for (let i = 0; i < columns.length; i++) {
             #>
             label="<#=column_comment#>"<#
             }
+            #><#
+            if (column.isIcon) {
+            #>
+            prop="<#=column_name#>_lbl"<#
+            } else {
             #>
             prop="<#=column_name#>"<#
+            }
+            #><#
             if (
               (column.isTextarea && detailFormCols > 1) ||
               (column.isImg && detailFormCols > 1 && column.attMaxSize > 1)
@@ -344,7 +351,26 @@ for (let i = 0; i < columns.length; i++) {
             }
             #>
           ><#
-            if (column.isImg) {
+            if (column.isIcon) {
+            #>
+            <CustomIcon
+              v-model="dialogModel.<#=column_name#>"
+              v-model:model-lbl="dialogModel.<#=column_name#>_lbl"<#
+              if (column.readonly) {
+              #>
+              :readonly="true"<#
+              } else {
+              #>
+              :readonly="isLocked || isReadonly<#
+                if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                #> || !!dialogModel.is_sys<#
+                }
+                #>"<#
+              }
+              #>
+              :page-inited="inited"
+            ></CustomIcon><#
+            } else if (column.isImg) {
             #>
             <UploadImage
               v-model="dialogModel.<#=column_name#>"
@@ -570,7 +596,6 @@ for (let i = 0; i < columns.length; i++) {
               #><#
               }
               #>
-              @validate-field="() => formRef?.validateField('<#=column_name#>')"
             ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (foreignSchema && foreignSchema.opts?.list_tree
               && !foreignSchema.opts?.ignoreCodegen
@@ -1306,7 +1331,6 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
-                      @validate-field="() => formRef?.validateField('<#=column_name#>')"
                     >
                     </SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree
@@ -2098,7 +2122,6 @@ for (let i = 0; i < columns.length; i++) {
                     #><#
                     }
                     #>
-                    @validate-field="() => formRef?.validateField('<#=column_name#>')"
                   ></SelectInput<#=Foreign_Table_Up#>><#
                   } else if (foreignSchema && foreignSchema.opts?.list_tree
                     && !foreignSchema.opts?.ignoreCodegen
@@ -2771,7 +2794,6 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
-                      @validate-field="() => formRef?.validateField('<#=column_name#>')"
                     >
                     </SelectInput<#=Foreign_Table_Up#>><#
                     } else if (foreignSchema && foreignSchema.opts?.list_tree
@@ -4339,9 +4361,6 @@ watchEffect(async () => {
       let data_type = column.DATA_TYPE;
       let column_type = column.COLUMN_TYPE;
       let column_comment = column.COLUMN_COMMENT || "";
-      if (column_comment.indexOf("[") !== -1) {
-        column_comment = column_comment.substring(0, column_comment.indexOf("["));
-      }
       const require = column.require;
       if (data_type == "datetime" || data_type == "date") {
         column_comment = column_comment + "开始";
@@ -4369,13 +4388,34 @@ watchEffect(async () => {
       if (column.noAdd && column.noEdit) {
         continue;
       }
+      const isIcon = column.isIcon;
     #><#
       if (require) {
         if (!foreignKey) {
     #>
-    // <#=column_comment#>
-    <#=column_name#>: [<#
-      if (column.dict || column.dictbiz) {
+    // <#=column_comment#><#
+    if (isIcon) {
+    #>
+    <#=column_name#>_lbl<#
+    } else {
+    #>
+    <#=column_name#><#
+    }
+    #>: [<#
+      if (isIcon) {
+      #>
+      {
+        required: <#=(!!require).toString()#>,<#
+        if (isUseI18n) {
+        #>
+        message: `${ await nsAsync("请选择") } ${ n("<#=column_comment#>") }`,<#
+        } else {
+        #>
+        message: "请选择 <#=column_comment#>",<#
+        }
+        #>
+      },<#
+      } else if (column.dict || column.dictbiz) {
       #>
       {
         required: <#=(!!require).toString()#>,<#

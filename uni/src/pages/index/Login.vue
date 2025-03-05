@@ -47,8 +47,6 @@
       >
         <CustomInput
           v-model="login_input.username"
-          :type="'text'"
-          :show-clear="true"
           placeholder="请输入 用户名"
         >
           <template #left>
@@ -65,8 +63,7 @@
       >
         <CustomInput
           v-model="login_input.password"
-          :type="'password'"
-          :show-clear="true"
+          password
           placeholder="请输入 密码"
         >
           <template #left>

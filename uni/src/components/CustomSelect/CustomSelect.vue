@@ -85,7 +85,6 @@
           un-b="0 b-1 solid #e6e6e6"
           :style="{
             'color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
-            'border-color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
           }"
           @click="onSelect(item.value)"
         >

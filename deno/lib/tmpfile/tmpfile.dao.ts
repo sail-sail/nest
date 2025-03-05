@@ -1,13 +1,13 @@
 import type {
   S3Bucket,
-} from "S3";
+} from "/lib/S3/mod.ts";
 
 import { getEnv } from "/lib/env.ts";
 import { shortUuidV4 } from "/lib/util/string_util.ts";
 
 import type {
   S3Error,
-} from "S3/S3Error";
+} from "/lib/S3/error.ts";
 
 import {
   error
@@ -21,7 +21,7 @@ export async function getBucket() {
   }
   const {
     S3,
-  } = await import("S3");
+  } = await import("/lib/S3/mod.ts");
   const s3 = new S3({
     accessKeyID: await getEnv("tmpfile_accesskey"),
     secretKey: await getEnv("tmpfile_secretkey"),
