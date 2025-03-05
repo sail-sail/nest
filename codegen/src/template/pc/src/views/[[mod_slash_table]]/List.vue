@@ -3080,8 +3080,11 @@ let selectedIds = $(tableSelected.selectedIds);
 
 watch(
   () => selectedIds,
-  () => {
+  (oldVal, newVal) => {
     if (!inited) {
+      return;
+    }
+    if (oldVal.length === newVal.length && oldVal.every((v, i) => v === newVal[i])) {
       return;
     }
     emit("selectedIdsChg", selectedIds);
