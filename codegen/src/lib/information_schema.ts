@@ -432,6 +432,7 @@ async function getSchema0(
     if (
       (column_name === "img" || column_name.endsWith("_img"))
       || (column_name === "att" || column_name.endsWith("_att"))
+      || (column_name === "icon" || column_name.endsWith("_icon"))
     ) {
       if (column_name === "img" || column_name.endsWith("_img")) {
         if (item.isImg == null) {
@@ -441,13 +442,22 @@ async function getSchema0(
         if (item.isAtt == null) {
           item.isAtt = true;
         }
+      } else if (column_name === "icon" || column_name.endsWith("_icon")) {
+        if (item.isIcon == null) {
+          item.isIcon = true;
+        }
+      }
+      if (item.isIcon) {
+        if (item.require == null) {
+          item.require = true;
+        }
+        if (item.isPublicAtt == null) {
+          item.isPublicAtt = true;
+        }
       }
       if (item.width == null) {
         let column_comment = item.COLUMN_COMMENT || "";
         if (column_comment) {
-          if (column_comment.indexOf("[") !== -1) {
-            column_comment = column_comment.substring(0, column_comment.indexOf("["));
-          }
           item.width = 16 + column_comment.length * 14;
         } else {
           item.width = 100;
@@ -589,6 +599,15 @@ async function getSchema0(
     const record = records2[i];
     if (record.validators) {
       continue;
+    }
+    const column_name = record.COLUMN_NAME;
+    const column = tables[table_name].columns.find((item: TableCloumn) => item.COLUMN_NAME === column_name);
+    if (column) {
+      const isIcon = column.isIcon;
+      if (isIcon) {
+        record.validators = [ ];
+        continue;
+      }
     }
     record.validators = [ ];
     if (record.COLUMN_NAME === "id") {

@@ -123,6 +123,18 @@ export const routesGen: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: "/base/icon",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "图标库",
+        component: () => import("@/views/base/icon/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
     path: "/base/lang",
     component: Layout1,
     children: [
