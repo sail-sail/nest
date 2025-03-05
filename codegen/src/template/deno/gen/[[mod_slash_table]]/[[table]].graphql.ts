@@ -209,8 +209,15 @@ type <#=modelName#> {<#
       data_type += "!";
     }
     const isAuditColumn = hasAudit && auditColumn === column_name;
+    const isIcon = column.isIcon;
   #><#
-    if (!foreignKey && !column.dict && !column.dictbiz
+    if (isIcon) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: <#=data_type#>
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: <#=data_type#><#
+    } else if (!foreignKey && !column.dict && !column.dictbiz
       && column.DATA_TYPE !== "date" && column.DATA_TYPE !== "datetime"
     ) {
   #>
@@ -576,8 +583,15 @@ input <#=inputName#> {<#
       _data_type = "[String!]";
     }
     if (column_name === 'id') column_comment = 'ID';
+    const isIcon = column.isIcon;
   #><#
-    if (foreignKey) {
+    if (isIcon) {
+  #>
+  "<#=column_comment#>"
+  <#=column_name#>: String
+  "<#=column_comment#>"
+  <#=column_name#>_lbl: String<#
+    } else if (foreignKey) {
   #>
   "<#=column_comment#>"
   <#=column_name#>: <#=data_type#><#

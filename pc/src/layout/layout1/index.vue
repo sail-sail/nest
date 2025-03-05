@@ -219,7 +219,7 @@
                 <el-dropdown-item @click="onToggleDark(!isDark)">
                   <template v-if="!isDark">
                     <ElIcon>
-                      <div un-i="iconfont-moon"></div>
+                      <div un-i="iconfont-moon-fill"></div>
                     </ElIcon>
                     <span>{{ ns('黑暗模式') }}</span>
                   </template>
