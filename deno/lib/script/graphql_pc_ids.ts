@@ -74,6 +74,12 @@ export function getScalars() {
       "output": "I18nId",
     },
     
+    // 图标库
+    "IconId": {
+      "input": "IconId",
+      "output": "IconId",
+    },
+    
     // 语言
     "LangId": {
       "input": "LangId",
