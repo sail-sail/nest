@@ -70,5 +70,8 @@
   "npm.updateStrategy": "LATEST",
   "editor.quickSuggestionsDelay": 0,
   "typescript.suggest.autoImports": false,
-  "typescript.updateImportsOnFileMove.enabled": "never"
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
 }
