@@ -3654,7 +3654,7 @@ async fn _creates(
       let stat = head_object(&<#=column_name#>).await?;
       if stat.is_none() {
         let content_type = <#=column_name#>_lbl
-          .get(<#=column_name#>_lbl.rfind("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
+          .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
           .unwrap_or_default();
         if !content_type.starts_with("image/") {
           error!(
@@ -5024,7 +5024,7 @@ pub async fn update_by_id(
     let stat = head_object(&<#=column_name#>).await?;
     if stat.is_none() {
       let content_type = <#=column_name#>_lbl
-        .get(<#=column_name#>_lbl.rfind("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
+        .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
         .unwrap_or_default();
       if !content_type.starts_with("image/") {
         error!(
