@@ -5161,7 +5161,9 @@ async function showDialog(
       getDefaultInput(),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy(),<#
+      findLastOrderBy({
+        notLoading: !inited,
+      }),<#
       }
       #><#
       for (let i = 0; i < columns.length; i++) {
@@ -5352,7 +5354,9 @@ async function showDialog(
       }),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy(),<#
+      findLastOrderBy({
+        notLoading: !inited,
+      }),<#
       }
       #><#
       for (let i = 0; i < columns.length; i++) {
@@ -5771,7 +5775,9 @@ async function onReset() {
       getDefaultInput(),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy(),<#
+      findLastOrderBy({
+        notLoading: !inited,
+      }),<#
       }
       #>
     ]);
@@ -6859,7 +6865,9 @@ async function onSaveAndCopy() {
     }),<#
     if (hasOrderBy) {
     #>
-    findLastOrderBy(),<#
+    findLastOrderBy({
+      notLoading: !inited,
+    }),<#
     }
     #>
   ]);
