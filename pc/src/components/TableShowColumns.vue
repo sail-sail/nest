@@ -48,7 +48,7 @@
 <script setup lang="ts">
 const {
   ns,
-  nsAsync,
+  // nsAsync,
 } = useI18n();
 
 interface ColumnType {
@@ -65,7 +65,7 @@ const emit = defineEmits<{
 
 const props = withDefaults(
   defineProps<{
-    tableColumns: ColumnType[];
+    tableColumns?: ColumnType[];
   }>(),
   {
     tableColumns: undefined,
@@ -82,7 +82,7 @@ function handleCommand(command: { action: "reset"|"item", item?: ColumnType }) {
     }
     emit("resetColumns");
   } else {
-    const tableColumns = [ ...props.tableColumns ];
+    const tableColumns = [ ...props.tableColumns ?? [ ] ];
     const item = command.item;
     if (!item) {
       return;
