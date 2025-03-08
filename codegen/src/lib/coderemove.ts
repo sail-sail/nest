@@ -22,6 +22,9 @@ export async function coderemove(context: Context, table_name: string) {
   console.log(`删除: ${ out }/deno/gen/${ mod_slash_table }/`);
   await rm(`${ out }/deno/gen/${ mod_slash_table }/`, { force: true, recursive: true });
   
+  console.log(`删除: ${ out }/rust/src/gen/${ mod_slash_table }/`);
+  await rm(`${ out }/rust/src/gen/${ mod_slash_table }/`, { force: true, recursive: true });
+  
   console.log(`删除: ${ out }/pc/src/views/${ mod_slash_table }/`);
   await rm(`${ out }/pc/src/views/${ mod_slash_table }/`, { force: true, recursive: true });
   
@@ -30,6 +33,9 @@ export async function coderemove(context: Context, table_name: string) {
   
   console.log(`删除: ${ projectPh }/deno/gen/${ mod_slash_table }/`);
   await rm(`${ projectPh }/deno/gen/${ mod_slash_table }/`, { force: true, recursive: true });
+  
+  console.log(`删除: ${ projectPh }/rust/src/gen/${ mod_slash_table }/`);
+  await rm(`${ projectPh }/rust/src/gen/${ mod_slash_table }/`, { force: true, recursive: true });
   
   console.log(`删除: ${ projectPh }/pc/src/views/${ mod_slash_table }/`);
   await rm(`${ projectPh }/pc/src/views/${ mod_slash_table }/`, { force: true, recursive: true });
