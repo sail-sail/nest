@@ -9,6 +9,8 @@ scalar TenantId
 type TenantModel {
   "ID"
   id: TenantId!
+  "编码"
+  code: String!
   "名称"
   lbl: String!
   "所属域名"
@@ -63,6 +65,8 @@ type TenantModel {
 type TenantFieldComment {
   "ID"
   id: String!
+  "编码"
+  code: String!
   "名称"
   lbl: String!
   "所属域名"
@@ -113,6 +117,8 @@ type TenantFieldComment {
 input TenantInput {
   "ID"
   id: TenantId
+  "编码"
+  code: String
   "名称"
   lbl: String
   "所属域名"
@@ -151,6 +157,9 @@ input TenantSearch {
   ids: [TenantId!]
   "ID"
   id: TenantId
+  "编码"
+  code: String
+  code_like: String
   "名称"
   lbl: String
   lbl_like: String
