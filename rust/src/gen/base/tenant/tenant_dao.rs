@@ -69,7 +69,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 17 * 2);
+  let mut where_query = String::with_capacity(80 * 19 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -104,6 +104,42 @@ async fn get_where_query(
       where_query.push_str(" and t.id in (");
       where_query.push_str(&arg);
       where_query.push(')');
+    }
+  }
+  // 编码-序列号
+  {
+    let mut code_seq = match search {
+      Some(item) => item.code_seq.unwrap_or_default(),
+      None => Default::default(),
+    };
+    let code_seq_gt = code_seq[0].take();
+    let code_seq_lt = code_seq[1].take();
+    if let Some(code_seq_gt) = code_seq_gt {
+      where_query.push_str(" and t.code_seq >= ?");
+      args.push(code_seq_gt.into());
+    }
+    if let Some(code_seq_lt) = code_seq_lt {
+      where_query.push_str(" and t.code_seq <= ?");
+      args.push(code_seq_lt.into());
+    }
+  }
+  // 编码
+  {
+    let code = match search {
+      Some(item) => item.code.clone(),
+      None => None,
+    };
+    if let Some(code) = code {
+      where_query.push_str(" and t.code=?");
+      args.push(code.into());
+    }
+    let code_like = match search {
+      Some(item) => item.code_like.clone(),
+      None => None,
+    };
+    if let Some(code_like) = code_like {
+      where_query.push_str(" and t.code like ?");
+      args.push(format!("%{}%", sql_like(&code_like)).into());
     }
   }
   // 名称
@@ -907,6 +943,7 @@ pub async fn get_field_comments(
   
   let field_comments = TenantFieldComment {
     id: "ID".into(),
+    code: "编码".into(),
     lbl: "名称".into(),
     domain_ids: "所属域名".into(),
     domain_ids_lbl: "所属域名".into(),
@@ -1625,6 +1662,20 @@ async fn _creates(
     )
     .unwrap_or_default();
   
+  // 设置自动编码
+  let mut inputs = inputs;
+  for input in &mut inputs {
+    if input.code.is_some() && !input.code.as_ref().unwrap().is_empty() {
+      continue;
+    }
+    let (
+      code_seq,
+      code,
+    ) = find_auto_code(options.clone()).await?;
+    input.code_seq = Some(code_seq);
+    input.code = Some(code);
+  }
+  
   let mut ids2: Vec<TenantId> = vec![];
   let mut inputs2: Vec<TenantInput> = vec![];
   
@@ -1673,7 +1724,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 17 + 20);
+  let mut sql_fields = String::with_capacity(80 * 19 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1682,6 +1733,10 @@ async fn _creates(
   sql_fields += ",create_usr_id_lbl";
   sql_fields += ",update_usr_id";
   sql_fields += ",update_usr_id_lbl";
+  // 编码-序列号
+  sql_fields += ",code_seq";
+  // 编码
+  sql_fields += ",code";
   // 名称
   sql_fields += ",lbl";
   // 简介
@@ -1704,7 +1759,7 @@ async fn _creates(
   sql_fields += ",is_sys";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 17 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 19 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1817,6 +1872,20 @@ async fn _creates(
     if let Some(update_usr_id_lbl) = input.update_usr_id_lbl {
       sql_values += ",?";
       args.push(update_usr_id_lbl.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 编码-序列号
+    if let Some(code_seq) = input.code_seq {
+      sql_values += ",?";
+      args.push(code_seq.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 编码
+    if let Some(code) = input.code {
+      sql_values += ",?";
+      args.push(code.into());
     } else {
       sql_values += ",default";
     }
@@ -1974,6 +2043,48 @@ async fn _creates(
   Ok(ids2)
 }
 
+// MARK: findAutoCode
+/// 获得 租户 自动编码
+pub async fn find_auto_code(
+  options: Option<Options>,
+) -> Result<(u32, String)> {
+  
+  let table = "base_tenant";
+  let method = "find_auto_code";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let model = find_one(
+    None,
+    Some(vec![
+      SortInput {
+        prop: "code_seq".to_owned(),
+        order: SortOrderEnum::Desc,
+      },
+    ]),
+    options,
+  ).await?;
+  
+  let code_seq = model
+    .as_ref()
+    .map_or(0, |item| item.code_seq) + 1;
+  
+  let code = format!("ZH{:03}", code_seq);
+  
+  Ok((code_seq, code))
+}
+
 // MARK: create_return
 /// 创建租户并返回
 #[allow(dead_code)]
@@ -2127,9 +2238,21 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 17 + 20);
+  let mut sql_fields = String::with_capacity(80 * 19 + 20);
   
   let mut field_num: usize = 0;
+  // 编码-序列号
+  if let Some(code_seq) = input.code_seq {
+    field_num += 1;
+    sql_fields += "code_seq=?,";
+    args.push(code_seq.into());
+  }
+  // 编码
+  if let Some(code) = input.code {
+    field_num += 1;
+    sql_fields += "code=?,";
+    args.push(code.into());
+  }
   // 名称
   if let Some(lbl) = input.lbl {
     field_num += 1;
