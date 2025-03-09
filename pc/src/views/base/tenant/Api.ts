@@ -32,6 +32,8 @@ export function intoInput(
   const input: TenantInput = {
     // ID
     id: model?.id,
+    // 编码
+    code: model?.code,
     // 名称
     lbl: model?.lbl,
     // 所属域名
