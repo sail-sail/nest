@@ -56,6 +56,12 @@ pub struct TenantModel {
   pub is_sys: u8,
   /// ID
   pub id: TenantId,
+  /// 编码-序列号
+  #[graphql(skip)]
+  pub code_seq: u32,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
@@ -127,6 +133,10 @@ impl FromRow<'_, MySqlRow> for TenantModel {
     let is_sys = row.try_get("is_sys")?;
     // ID
     let id: TenantId = row.try_get("id")?;
+    // 编码-序列号
+    let code_seq: u32 = row.try_get("code_seq")?;
+    // 编码
+    let code: String = row.try_get("code")?;
     // 名称
     let lbl: String = row.try_get("lbl")?;
     // 所属域名
@@ -256,6 +266,8 @@ impl FromRow<'_, MySqlRow> for TenantModel {
       is_sys,
       is_deleted,
       id,
+      code_seq,
+      code,
       lbl,
       domain_ids,
       domain_ids_lbl,
@@ -292,6 +304,9 @@ pub struct TenantFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: String,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: String,
@@ -372,6 +387,15 @@ pub struct TenantSearch {
   /// ID列表
   pub ids: Option<Vec<TenantId>>,
   pub is_deleted: Option<u8>,
+  /// 编码-序列号
+  #[graphql(skip)]
+  pub code_seq: Option<[Option<u32>; 2]>,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: Option<String>,
+  /// 编码
+  #[graphql(name = "code_like")]
+  pub code_like: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -475,6 +499,17 @@ impl std::fmt::Debug for TenantSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
+    // 编码-序列号
+    if let Some(ref code_seq) = self.code_seq {
+      item = item.field("code_seq", code_seq);
+    }
+    // 编码
+    if let Some(ref code) = self.code {
+      item = item.field("code", code);
+    }
+    if let Some(ref code_like) = self.code_like {
+      item = item.field("code_like", code_like);
+    }
     // 名称
     if let Some(ref lbl) = self.lbl {
       item = item.field("lbl", lbl);
@@ -567,6 +602,12 @@ pub struct TenantInput {
   pub is_deleted: Option<u8>,
   /// 系统记录
   pub is_sys: Option<u8>,
+  /// 编码-序列号
+  #[graphql(skip)]
+  pub code_seq: Option<u32>,
+  /// 编码
+  #[graphql(name = "code")]
+  pub code: Option<String>,
   /// 名称
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -650,6 +691,10 @@ impl From<TenantModel> for TenantInput {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       is_sys: model.is_sys.into(),
+      // 编码-序列号
+      code_seq: model.code_seq.into(),
+      // 编码
+      code: model.code.into(),
       // 名称
       lbl: model.lbl.into(),
       // 所属域名
@@ -699,6 +744,10 @@ impl From<TenantInput> for TenantSearch {
       id: input.id,
       ids: None,
       is_deleted: None,
+      // 编码-序列号
+      code_seq: input.code_seq.map(|x| [Some(x), Some(x)]),
+      // 编码
+      code: input.code,
       // 名称
       lbl: input.lbl,
       // 所属域名
