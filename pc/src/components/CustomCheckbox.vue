@@ -12,11 +12,14 @@
   @change="valueChg"
 >
   <template
-    v-for="(key, index) in keys"
-    :key="index"
-    #[key]
+    v-for="(_, name) of $slots"
+    :key="name"
+    #[name]="slotProps"
   >
-    <slot :name="key"></slot>
+    <slot
+      :name="name"
+      v-bind="slotProps"
+    ></slot>
   </template>
 </el-checkbox>
 <template
@@ -32,9 +35,6 @@
 </template>
 
 <script lang="ts" setup>
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const slots: any = useSlots();
-const keys = Object.keys(slots);
 
 const {
   ns,

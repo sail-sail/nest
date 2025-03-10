@@ -1938,10 +1938,11 @@ export async function findAll(
     // <#=column_comment#>
     if (model.<#=column_name#>) {
       const <#=column_name#> = dayjs(model.<#=column_name#>);
-      if (isNaN(<#=column_name#>.toDate().getTime())) {
-        model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
-      } else {
+      if (<#=column_name#>.isValid()) {
+        model.<#=column_name#> = <#=column_name#>.format("YYYY-MM-DDTHH:mm:ss");
         model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
       }
     } else {
       model.<#=column_name#>_lbl = "";
@@ -1952,10 +1953,11 @@ export async function findAll(
     // <#=column_comment#>
     if (model.<#=column_name#>) {
       const <#=column_name#> = dayjs(model.<#=column_name#>);
-      if (isNaN(<#=column_name#>.toDate().getTime())) {
-        model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
-      } else {
+      if (<#=column_name#>.isValid()) {
+        model.<#=column_name#> = <#=column_name#>.format("YYYY-MM-DDTHH:mm:ss");
         model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM-DD");
+      } else {
+        model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
       }
     } else {
       model.<#=column_name#>_lbl = "";
@@ -1966,10 +1968,10 @@ export async function findAll(
     // <#=column_comment#>
     if (model.<#=column_name#>) {
       const <#=column_name#> = dayjs(model.<#=column_name#>);
-      if (!<#=column_name#>.isValid()) {
-        model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
-      } else {
+      if (<#=column_name#>.isValid()) {
         model.<#=column_name#>_lbl = <#=column_name#>.format("YYYY-MM");
+      } else {
+        model.<#=column_name#>_lbl = (model.<#=column_name#> || "").toString();
       }
     } else {
       model.<#=column_name#>_lbl = "";
@@ -3455,7 +3457,10 @@ export async function findAutoCode(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
-  }
+  }<#
+  const dateSeq = autoCodeColumn.autoCode.dateSeq;
+  if (!dateSeq) {
+  #>
   
   const model = await findOne(
     undefined,
@@ -3486,7 +3491,58 @@ export async function findAutoCode(
   return {
     <#=autoCodeColumn.autoCode.seq#>,
     <#=autoCodeColumn.COLUMN_NAME#>,
-  };
+  };<#
+  } else {
+    const dateFormat = autoCodeColumn.autoCode.dateFormat || "YYYYMMDD";
+  #>
+  
+  const model = await findOne(
+    undefined,
+    [
+      {
+        prop: "<#=dateSeq#>",
+        order: SortOrderEnum.Desc,
+      },
+      {
+        prop: "<#=autoCodeColumn.autoCode.seq#>",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  const nowDate = reqDate();
+  const <#=dateSeq#> = dayjs(nowDate).format("<#=dateFormat#>");
+  
+  const <#=dateSeq#>_old = dayjs(model?.<#=dateSeq#>).format("<#=dateFormat#>");
+  
+  let <#=autoCodeColumn.autoCode.seq#> = 0;
+  if (<#=dateSeq#> !== <#=dateSeq#>_old) {
+    <#=autoCodeColumn.autoCode.seq#> = 1;
+  } else {
+    <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
+  }<#
+  if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+  #>
+  const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0");<#
+  } else if (autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
+  #>
+  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0");<#
+  } else if (!autoCodeColumn.autoCode.prefix && autoCodeColumn.autoCode.suffix) {
+  #>
+  const <#=autoCodeColumn.COLUMN_NAME#> = <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0") + "<#=autoCodeColumn.autoCode.suffix#>";<#
+  } else {
+  #>
+  const <#=autoCodeColumn.COLUMN_NAME#> = "<#=autoCodeColumn.autoCode.prefix#>" + <#=dateSeq#> + <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0") + "<#=autoCodeColumn.autoCode.suffix#>";<#
+  }
+  #>
+  
+  return {
+    <#=dateSeq#>,
+    <#=autoCodeColumn.autoCode.seq#>,
+    <#=autoCodeColumn.COLUMN_NAME#>,
+  };<#
+  }
+  #>
 }<#
 }
 #>
@@ -3669,6 +3725,7 @@ async function _creates(
     return [ ];
   }<#
   if (autoCodeColumn) {
+    const dateSeq = autoCodeColumn.autoCode.dateSeq;
   #>
   
   // 设置自动编码
@@ -3676,10 +3733,20 @@ async function _creates(
     if (input.<#=autoCodeColumn.COLUMN_NAME#>) {
       continue;
     }
-    const {
+    const {<#
+      if (dateSeq) {
+      #>
+      <#=dateSeq#>,<#
+      }
+      #>
       <#=autoCodeColumn.autoCode.seq#>,
       <#=autoCodeColumn.COLUMN_NAME#>,
-    } = await findAutoCode(options);
+    } = await findAutoCode(options);<#
+    if (dateSeq) {
+    #>
+    input.<#=dateSeq#> = <#=dateSeq#>;<#
+    }
+    #>
     input.<#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>;
     input.<#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.COLUMN_NAME#>;
   }<#

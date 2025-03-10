@@ -625,12 +625,16 @@ export interface TableCloumn {
   autoCode?: {
     /** 前缀 */
     prefix?: string;
-    /** 序号字段, 一般为: [字段名]_seq, 例如: code_seq */
+    /** 序号编码字段, 一般为: [字段名]_seq, 例如: code_seq */
     seq: string;
-    /** 序号最小长度, 长度不足时补足0 */
+    /** 序号编码最小长度, 长度不足时补足0 */
     seqPadStart0: number;
     /** 后缀 */
     suffix?: string;
+    /** 日期编码字段, 一般为: [字段名]_date_seq, 例如: code_date_seq */
+    dateSeq?: string;
+    /** 日期格式 */
+    dateFormat?: "YYYYMMDD" | "YYYYMM" | "YYYY" | "YY";
   };
   
 }
