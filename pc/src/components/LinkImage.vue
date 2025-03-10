@@ -83,7 +83,7 @@
 
 const props = withDefaults(
   defineProps<{
-    modelValue: string | null;
+    modelValue?: string | null;
     width?: number;
     height?: number;
     quality?: number;
