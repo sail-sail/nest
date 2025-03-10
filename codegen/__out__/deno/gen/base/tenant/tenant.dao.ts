@@ -95,6 +95,20 @@ async function getWhereQuery(
   if (search?.ids != null) {
     whereQuery += ` and t.id in (${ args.push(search.ids) })`;
   }
+  if (search?.code_seq != null) {
+    if (search.code_seq[0] != null) {
+      whereQuery += ` and t.code_seq>=${ args.push(search.code_seq[0]) }`;
+    }
+    if (search.code_seq[1] != null) {
+      whereQuery += ` and t.code_seq<=${ args.push(search.code_seq[1]) }`;
+    }
+  }
+  if (search?.code != null) {
+    whereQuery += ` and t.code=${ args.push(search.code) }`;
+  }
+  if (isNotEmpty(search?.code_like)) {
+    whereQuery += ` and t.code like ${ args.push("%" + sqlLike(search?.code_like) + "%") }`;
+  }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
   }
@@ -555,10 +569,11 @@ export async function findAll(
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
-      if (isNaN(create_time.toDate().getTime())) {
-        model.create_time_lbl = (model.create_time || "").toString();
-      } else {
+      if (create_time.isValid()) {
+        model.create_time = create_time.format("YYYY-MM-DDTHH:mm:ss");
         model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.create_time_lbl = (model.create_time || "").toString();
       }
     } else {
       model.create_time_lbl = "";
@@ -567,10 +582,11 @@ export async function findAll(
     // 更新时间
     if (model.update_time) {
       const update_time = dayjs(model.update_time);
-      if (isNaN(update_time.toDate().getTime())) {
-        model.update_time_lbl = (model.update_time || "").toString();
-      } else {
+      if (update_time.isValid()) {
+        model.update_time = update_time.format("YYYY-MM-DDTHH:mm:ss");
         model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.update_time_lbl = (model.update_time || "").toString();
       }
     } else {
       model.update_time_lbl = "";
@@ -696,6 +712,7 @@ export async function setIdByLbl(
 export async function getFieldComments(): Promise<TenantFieldComment> {
   const fieldComments: TenantFieldComment = {
     id: "ID",
+    code: "编码",
     lbl: "名称",
     domain_ids: "所属域名",
     domain_ids_lbl: "所属域名",
@@ -1104,6 +1121,13 @@ export async function validate(
     fieldComments.id,
   );
   
+  // 编码
+  await validators.chars_max_length(
+    input.code,
+    20,
+    fieldComments.code,
+  );
+  
   // 名称
   await validators.chars_max_length(
     input.lbl,
@@ -1153,6 +1177,48 @@ export async function validate(
     fieldComments.update_usr_id,
   );
   
+}
+
+// MARK: findAutoCode
+/** 获得 租户 自动编码 */
+export async function findAutoCode(
+  options?: {
+    is_debug?: boolean;
+  },
+) {
+  
+  const table = "base_tenant";
+  const method = "findAutoCode";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model = await findOne(
+    undefined,
+    [
+      {
+        prop: "code_seq",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  const code_seq = (model?.code_seq || 0) + 1;
+  const code = "ZH" + code_seq.toString().padStart(3, "0");
+  
+  return {
+    code_seq,
+    code,
+  };
 }
 
 // MARK: createReturn
@@ -1333,6 +1399,19 @@ async function _creates(
     return [ ];
   }
   
+  // 设置自动编码
+  for (const input of inputs) {
+    if (input.code) {
+      continue;
+    }
+    const {
+      code_seq,
+      code,
+    } = await findAutoCode(options);
+    input.code_seq = code_seq;
+    input.code = code;
+  }
+  
   const table = "base_tenant";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1383,7 +1462,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,title,info,lang_id_lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys)values";
+  let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,lbl,title,info,lang_id_lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1465,6 +1544,16 @@ async function _creates(
       }
       if (input.update_usr_id_lbl != null) {
         sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.code_seq != null) {
+        sql += `,${ args.push(input.code_seq) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.code != null) {
+        sql += `,${ args.push(input.code) }`;
       } else {
         sql += ",default";
       }
@@ -1642,6 +1731,18 @@ export async function updateById(
   const args = new QueryArgs();
   let sql = `update base_tenant set `;
   let updateFldNum = 0;
+  if (input.code_seq != null) {
+    if (input.code_seq != oldModel.code_seq) {
+      sql += `code_seq=${ args.push(input.code_seq) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.code != null) {
+    if (input.code != oldModel.code) {
+      sql += `code=${ args.push(input.code) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl=${ args.push(input.lbl) },`;

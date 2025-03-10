@@ -2324,13 +2324,13 @@ export async function getDefaultInput() {<#
       } else if (column_type.startsWith("int") || column_type.startsWith("tinyint")) {
         defaultValue = defaultValue;
       } else if (data_type === "datetime" || data_type === "date") {
-        let valueFormat = "YYYY-MM-DD HH:mm:ss";
+        let valueFormat = "YYYY-MM-DDTHH:mm:ss";
         if (data_type === "date") {
           valueFormat = "YYYY-MM-DD";
         }
         if (defaultValue === "CURRENT_DATE") {
           if (data_type === "datetime") {
-            defaultValue = "dayjs().format('YYYY-MM-DD 00:00:00')";
+            defaultValue = "dayjs().format('YYYY-MM-DDT00:00:00')";
           } else {
             defaultValue = "dayjs().format('YYYY-MM-DD')";
           }
