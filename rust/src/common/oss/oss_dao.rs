@@ -86,7 +86,6 @@ pub async fn put_object<S: AsRef<str>>(
   if res.status_code() == 404 {
     return Err(eyre!("oss bucket not found, please check .env oss_bucket"))
   }
-  dbg!("------------------- put_object -------------------", &res);
   Ok(res)
 }
 
@@ -110,7 +109,6 @@ pub async fn head_object(
       }
     }
   };
-  dbg!(&res);
   let filename: String = {
     if let Some(metadata) = res.metadata.as_ref() {
       if let Some(f) = metadata.get("filename") {

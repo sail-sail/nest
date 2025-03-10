@@ -21,7 +21,7 @@ declare global {
   
   /** 角色 */
   interface RoleSearch extends RoleSearchType {
-    /** 卡号-序列号 */
+    /** 编码-序列号 */
     code_seq?: [(number|undefined|null), (number|undefined|null)];
     /** 首页 */
     home_url?: string;
@@ -41,7 +41,7 @@ declare global {
   }
 
   interface RoleModel extends RoleModelType {
-    /** 卡号-序列号 */
+    /** 编码-序列号 */
     code_seq: number;
     /** 系统字段 */
     is_sys: number;
@@ -57,7 +57,7 @@ declare global {
   }
 
   interface RoleInput extends RoleInputType {
-    /** 卡号-序列号 */
+    /** 编码-序列号 */
     code_seq?: number | null;
     /** 系统字段 */
     is_sys?: number | null;
