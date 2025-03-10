@@ -65,7 +65,7 @@
 <script lang="ts" setup>
 const props = withDefaults(
   defineProps<{
-    modelValue: string[] | undefined;
+    modelValue?: string[] | undefined;
     maxSize?: number;
   }>(),
   {
