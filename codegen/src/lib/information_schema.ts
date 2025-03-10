@@ -593,7 +593,26 @@ async function getSchema0(
       }
     }
     
+    // 自动编码默认固定生成唯一索引配置
+    if (item.autoCode) {
+      tables[table_name].opts = tables[table_name].opts || { };
+      tables[table_name].opts.uniques = tables[table_name].opts.uniques || [ ];
+      if (
+        !tables[table_name].opts.uniques.some(
+          (uniqueItem) => {
+            if (uniqueItem.length !== 1) {
+              return false;
+            }
+            return uniqueItem[0] === column_name;
+          }
+        )
+      ) {
+        tables[table_name].opts.uniques.push([ column_name ]);
+      }
+    }
+    
   }
+  
   // 校验
   for (let i = 0; i < records2.length; i++) {
     const record = records2[i];
