@@ -2,6 +2,8 @@
 drop table if exists `base_tenant`;
 CREATE TABLE if not exists `base_tenant` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `code_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '编码-序列号',
+  `code` varchar(20) NOT NULL DEFAULT '' COMMENT '编码',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `title` varchar(45) NOT NULL DEFAULT '' COMMENT '标题',
   `info` varchar(100) NOT NULL DEFAULT '' COMMENT '简介',
@@ -145,7 +147,7 @@ CREATE TABLE if not exists `base_login_log` (
 drop table if exists `base_role`;
 CREATE TABLE if not exists `base_role` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
-  `code_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '卡号-序列号',
+  `code_seq` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '编码-序列号',
   `code` varchar(45) NOT NULL DEFAULT '' COMMENT '编码',
   `lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '名称',
   `home_url` varchar(200) NOT NULL DEFAULT '' COMMENT '首页',
