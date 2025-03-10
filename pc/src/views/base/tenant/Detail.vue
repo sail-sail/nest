@@ -74,6 +74,20 @@
         @submit.prevent
       >
         
+        <template v-if="(showBuildIn || builtInModel?.code == null)">
+          <el-form-item
+            label="编码"
+            prop="code"
+          >
+            <CustomInput
+              v-model="dialogModel.code"
+              placeholder="请输入 编码"
+              :readonly="true"
+              :readonly-placeholder="inited ? '(自动生成)' : ''"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             label="名称"
@@ -538,7 +552,9 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       getDefaultInput(),
-      findLastOrderBy(),
+      findLastOrderBy({
+        notLoading: !inited,
+      }),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -552,19 +568,24 @@ async function showDialog(
       return await dialogRes.dialogPrm;
     }
     const [
+      defaultInput,
       data,
       order_by,
     ] = await Promise.all([
+      getDefaultInput(),
       findOneModel({
         id,
         is_deleted,
       }),
-      findLastOrderBy(),
+      findLastOrderBy({
+        notLoading: !inited,
+      }),
     ]);
     if (data) {
       dialogModel = {
         ...data,
         id: undefined,
+        code: defaultInput.code,
         is_locked: undefined,
         is_locked_lbl: undefined,
         order_by: order_by + 1,
@@ -648,7 +669,9 @@ async function onReset() {
       order_by,
     ] = await Promise.all([
       getDefaultInput(),
-      findLastOrderBy(),
+      findLastOrderBy({
+        notLoading: !inited,
+      }),
     ]);
     dialogModel = {
       ...defaultModel,

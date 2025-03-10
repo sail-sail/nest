@@ -420,10 +420,11 @@ export async function findAll(
     // 开始时间
     if (model.begin_time) {
       const begin_time = dayjs(model.begin_time);
-      if (isNaN(begin_time.toDate().getTime())) {
-        model.begin_time_lbl = (model.begin_time || "").toString();
-      } else {
+      if (begin_time.isValid()) {
+        model.begin_time = begin_time.format("YYYY-MM-DDTHH:mm:ss");
         model.begin_time_lbl = begin_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.begin_time_lbl = (model.begin_time || "").toString();
       }
     } else {
       model.begin_time_lbl = "";
@@ -432,10 +433,11 @@ export async function findAll(
     // 结束时间
     if (model.end_time) {
       const end_time = dayjs(model.end_time);
-      if (isNaN(end_time.toDate().getTime())) {
-        model.end_time_lbl = (model.end_time || "").toString();
-      } else {
+      if (end_time.isValid()) {
+        model.end_time = end_time.format("YYYY-MM-DDTHH:mm:ss");
         model.end_time_lbl = end_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.end_time_lbl = (model.end_time || "").toString();
       }
     } else {
       model.end_time_lbl = "";
@@ -444,10 +446,11 @@ export async function findAll(
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
-      if (isNaN(create_time.toDate().getTime())) {
-        model.create_time_lbl = (model.create_time || "").toString();
-      } else {
+      if (create_time.isValid()) {
+        model.create_time = create_time.format("YYYY-MM-DDTHH:mm:ss");
         model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.create_time_lbl = (model.create_time || "").toString();
       }
     } else {
       model.create_time_lbl = "";
@@ -456,10 +459,11 @@ export async function findAll(
     // 更新时间
     if (model.update_time) {
       const update_time = dayjs(model.update_time);
-      if (isNaN(update_time.toDate().getTime())) {
-        model.update_time_lbl = (model.update_time || "").toString();
-      } else {
+      if (update_time.isValid()) {
+        model.update_time = update_time.format("YYYY-MM-DDTHH:mm:ss");
         model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.update_time_lbl = (model.update_time || "").toString();
       }
     } else {
       model.update_time_lbl = "";
