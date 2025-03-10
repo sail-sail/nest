@@ -24,6 +24,12 @@ import {
   execSync,
 } from "child_process";
 
+import {
+  resolve,
+} from "path";
+
+const projectPh = resolve(`${ __dirname }/../../`).replace(/\\/gm, "/");
+
 const chalk = new Chalk();
 
 async function exec(context: Context, table_names0: string[]) {
@@ -81,17 +87,24 @@ function validateGitStaging() {
 
 (async function() {
   try {
-    validateGitStaging();
+    // validateGitStaging();
+    
+    execSync("git add -A", {
+      cwd: projectPh,
+    });
+    
     let table = options.table;
     if (table) {
       table = table.split(",");
       table = table.map((item: string) => item.trim());
     }
     console.log(`table:`, table);
+    
     const context = await initContext();
     await exec(context, table);
     await gitDiffOut();
     await denoGenTypes();
+    
   } catch(err) {
     if (err instanceof Error) {
       console.error(chalk.red(err.stack));

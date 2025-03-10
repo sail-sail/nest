@@ -12,6 +12,12 @@ import { unlink } from "fs/promises";
 import { TablesConfigItem } from "../config";
 import { getSchema } from "./information_schema";
 
+import {
+  execSync,
+  exec,
+  ExecException,
+} from "child_process";
+
 if (!shelljs.which("git")) {
   shelljs.echo("请先安装git: https://git-scm.com");
   process.exit(1);
@@ -590,59 +596,107 @@ export async function genRouter(context: Context) {
 }
 
 export async function gitDiffOut() {
-  await writeFile(`${ projectPh }/codegening.txt`, "");
-  shelljs.cd(out);
+  // await writeFile(`${ projectPh }/codegening.txt`, "");
+  // shelljs.cd(out);
   // 覆盖xlsx文件
   // await copyXlsx(out);
   const diffFile = "__test__.diff";
   const diffStr = `git diff --full-index ./* > ${projectPh}/${ diffFile }`;
-  shelljs.cd(projectPh);
-  shelljs.exec(diffStr);
-  shelljs.exec(`git add .`);
+  // shelljs.cd(projectPh);
+  // shelljs.exec(diffStr);
+  
+  execSync(diffStr, {
+    cwd: projectPh,
+  });
+  
+  
+  const arr = execSync("git ls-files --others --exclude-standard", {
+    cwd: projectPh,
+  })
+    .toString()
+    .split("\n")
+    .filter((item: string) => item);
+  
+  // [ 'codegen/__out__/test.txt' ]
+  for (const item of arr) {
+    const file = item.substring("codegen/__out__/".length);
+    await copy(`${ out }/${ file }`, `${ projectPh }/${ file }`);
+  }
+  
+  // shelljs.exec("git add -A");
+  
+  execSync("git add -A", {
+    cwd: projectPh,
+  });
+  
   let str = await readFile(`${ projectPh }/${ diffFile }`, "utf8");
   let applyHasErr = false;
   let applyErrMsg = "";
   if (!isEmpty0(str)) {
     str = str.replace(/\/codegen\/__out__\//gm, "/");
     await writeFile(`${ projectPh }/${ diffFile }`, str);
-    shelljs.cd(projectPh);
-    const applyRes = shelljs.exec(
-      `git apply ${ diffFile } --3way --ignore-space-change --binary --whitespace=nowarn`,
-      {
-        silent: true,
-      },
-    );
-    const applyErr = applyRes.stderr;
-    if (applyErr && applyErr.includes("error: patch failed:")) {
-      applyHasErr = true;
-      console.log("");
-      const errArr = applyErr.split("\n");
-      for (let item of errArr) {
-        if (!item.startsWith("error: ") || !item.endsWith(": patch does not apply")) continue;
-        item = item.substring("error: ".length, item.length - ": patch does not apply".length);
-        // 打开vscode的diff
-        const cmdTmp = `code --diff "${ out }/${ item }" "${ projectPh }/${ item }"`;
-        applyErrMsg += cmdTmp + "\n";
-        shelljs.exec(cmdTmp);
-      }
-      console.log("");
-    } else {
-      const arr = applyErr.split("\n")
-        .filter((item) => item && !item.startsWith("Applied patch to "));
-      if (arr.length > 0) {
+    
+    // shelljs.cd(projectPh);
+    // const applyRes = shelljs.exec(
+    //   `git apply ${ diffFile } --3way --ignore-space-change --binary --whitespace=nowarn`,
+    //   {
+    //     silent: true,
+    //   },
+    // );
+    // const applyErr = applyRes.stderr;
+    
+    const applyRes = await new Promise<{
+      err?: ExecException,
+      stdout: string,
+      stderr: string,
+    }>((resolve) => {
+      exec(
+        `git apply ${ diffFile } --3way --ignore-space-change --binary --whitespace=nowarn`,
+        {
+          cwd: projectPh,
+        },
+        (err, stdout, stderr) => {
+          resolve({ err, stdout, stderr });
+        },
+      );
+    });
+    const applyErr = applyRes.err?.toString();
+    
+    if (applyErr) {
+      if (applyErr.includes("error: patch failed:")) {
         applyHasErr = true;
-        applyErrMsg = arr.join("\n");
+        console.log("");
+        const errArr = applyErr.split("\n");
+        for (let item of errArr) {
+          if (!item.startsWith("error: ") || !item.endsWith(": patch does not apply")) continue;
+          item = item.substring("error: ".length, item.length - ": patch does not apply".length);
+          // 打开vscode的diff
+          const cmdTmp = `code --diff "${ out }/${ item }" "${ projectPh }/${ item }"`;
+          applyErrMsg += cmdTmp + "\n";
+          shelljs.exec(cmdTmp);
+        }
+        console.log("");
+      } else {
+        const arr = applyErr.split("\n")
+          .filter((item) => item && !item.startsWith("Applied patch to "));
+        if (arr.length > 0) {
+          applyHasErr = true;
+          applyErrMsg = arr.join("\n");
+        }
       }
     }
-      
+    
   }
-  await treeDir();
-  await unlink(`${ projectPh }/codegening.txt`);
+  // await treeDir();
+  
   console.log("");
   if (applyHasErr) {
+    // await unlink(`${ projectPh }/codegening.txt`);
     throw `代码合并失败:\n\n${ applyErrMsg }`;
   } else {
     console.log(chalk.green("代码合并成功!"));
+    shelljs.exec("git add -A");
+    // await unlink(`${ projectPh }/codegening.txt`);
   }
 }
 

@@ -62,7 +62,7 @@ pub struct RoleModel {
   pub is_sys: u8,
   /// ID
   pub id: RoleId,
-  /// 卡号-序列号
+  /// 编码-序列号
   #[graphql(skip)]
   pub code_seq: u32,
   /// 编码
@@ -141,7 +141,7 @@ impl FromRow<'_, MySqlRow> for RoleModel {
     let is_sys = row.try_get("is_sys")?;
     // ID
     let id: RoleId = row.try_get("id")?;
-    // 卡号-序列号
+    // 编码-序列号
     let code_seq: u32 = row.try_get("code_seq")?;
     // 编码
     let code: String = row.try_get("code")?;
@@ -454,7 +454,7 @@ pub struct RoleSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
-  /// 卡号-序列号
+  /// 编码-序列号
   #[graphql(skip)]
   pub code_seq: Option<[Option<u32>; 2]>,
   /// 编码
@@ -563,7 +563,7 @@ impl std::fmt::Debug for RoleSearch {
         item = item.field("is_deleted", is_deleted);
       }
     }
-    // 卡号-序列号
+    // 编码-序列号
     if let Some(ref code_seq) = self.code_seq {
       item = item.field("code_seq", code_seq);
     }
@@ -663,7 +663,7 @@ pub struct RoleInput {
   pub tenant_id: Option<TenantId>,
   /// 系统记录
   pub is_sys: Option<u8>,
-  /// 卡号-序列号
+  /// 编码-序列号
   #[graphql(skip)]
   pub code_seq: Option<u32>,
   /// 编码
@@ -753,7 +753,7 @@ impl From<RoleModel> for RoleInput {
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
       is_sys: model.is_sys.into(),
-      // 卡号-序列号
+      // 编码-序列号
       code_seq: model.code_seq.into(),
       // 编码
       code: model.code.into(),
@@ -808,7 +808,7 @@ impl From<RoleInput> for RoleSearch {
       // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
-      // 卡号-序列号
+      // 编码-序列号
       code_seq: input.code_seq.map(|x| [Some(x), Some(x)]),
       // 编码
       code: input.code,
