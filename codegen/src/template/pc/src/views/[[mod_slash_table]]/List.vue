@@ -4202,7 +4202,12 @@ async function openAudit() {
   if (!detailRef) {
     return;
   }
-  if (!permit("audit")) {<#
+  if (
+    !permit("audit_submit") &&
+    !permit("audit_pass") &&
+    !permit("audit_reject") &&
+    !permit("audit_review")
+  ) {<#
     if (isUseI18n) {
     #>
     ElMessage.warning(await nsAsync("无权限"));<#

@@ -32,6 +32,8 @@ declare global {
 export const tenantFields = [
   // ID
   "id",
+  // 编码
+  "code",
   // 名称
   "lbl",
   // 所属域名
