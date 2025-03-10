@@ -796,6 +796,21 @@ export async function findByUnique(
     );
     models.push(...modelTmps);
   }
+  {
+    if (search0.code == null) {
+      return [ ];
+    }
+    const code = search0.code;
+    const modelTmps = await findAll(
+      {
+        code,
+      },
+      undefined,
+      undefined,
+      options,
+    );
+    models.push(...modelTmps);
+  }
   
   return models;
 }
@@ -811,6 +826,11 @@ export function equalsByUnique(
   }
   if (
     oldModel.lbl === input.lbl
+  ) {
+    return true;
+  }
+  if (
+    oldModel.code === input.code
   ) {
     return true;
   }
