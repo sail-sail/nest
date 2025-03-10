@@ -145,6 +145,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验组织是否存在 */
+export async function validateOption(
+  model0?: OrgModel,
+): Promise<OrgModel> {
+  const model = await orgDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除组织
  */

@@ -140,6 +140,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验语言是否存在 */
+export async function validateOption(
+  model0?: LangModel,
+): Promise<LangModel> {
+  const model = await langDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除语言
  */
