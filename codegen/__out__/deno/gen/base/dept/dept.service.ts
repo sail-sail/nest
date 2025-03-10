@@ -174,6 +174,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验部门是否存在 */
+export async function validateOption(
+  model0?: DeptModel,
+): Promise<DeptModel> {
+  const model = await deptDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除部门
  */

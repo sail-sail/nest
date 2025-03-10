@@ -148,6 +148,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验国际化是否存在 */
+export async function validateOption(
+  model0?: I18nModel,
+): Promise<I18nModel> {
+  const model = await i18nDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除国际化
  */

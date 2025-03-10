@@ -295,7 +295,7 @@ for (let i = 0; i < columns.length; i++) {
           }).join("");
           let vIf = [ ];
           if (column.noAdd) {
-            vIf.push("dialogAction !== 'add'");
+            vIf.push("dialogAction !== 'add' && dialogAction !== 'copy'");
           }
           if (column.noEdit) {
             vIf.push("dialogAction !== 'edit'");
