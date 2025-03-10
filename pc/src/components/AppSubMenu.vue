@@ -52,8 +52,8 @@ type MenuModel = MenuModel0 & {
 
 const props = withDefaults(
   defineProps<{
-    children: MenuModel[];
-    openedIndex: MenuId[];
+    children?: MenuModel[];
+    openedIndex?: MenuId[];
     lvl?: number;
   }>(),
   {
