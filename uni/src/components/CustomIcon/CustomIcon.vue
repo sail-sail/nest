@@ -1,13 +1,17 @@
 <template>
 <view
-  v-if="props.modelValue"
+  v-if="props.modelValue && isSvg"
   :style="{
     'mask-image': `url(${ props.modelValue })`,
     '-webkit-mask-image': `url(${ props.modelValue })`,
   }"
   class="iconfont"
->
-</view>
+></view>
+<image
+  v-else-if="props.modelValue"
+  :src="props.modelValue"
+  class="iconfont"
+></image>
 </template>
 
 <script setup lang="ts">
@@ -21,6 +25,9 @@ const props = withDefaults(
   },
 );
 
+const isSvg = computed(() => {
+  return props.modelValue?.startsWith("data:image/svg+xml;");
+});
 </script>
 
 <style scoped lang="scss">
