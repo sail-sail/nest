@@ -430,7 +430,9 @@ async function showDialog(
       order_by,
     ] = await Promise.all([
       getDefaultInput(),
-      findLastOrderBy(),
+      findLastOrderBy({
+        notLoading: !inited,
+      }),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -451,7 +453,9 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderBy(),
+      findLastOrderBy({
+        notLoading: !inited,
+      }),
     ]);
     if (data) {
       dialogModel = {
@@ -540,7 +544,9 @@ async function onReset() {
       order_by,
     ] = await Promise.all([
       getDefaultInput(),
-      findLastOrderBy(),
+      findLastOrderBy({
+        notLoading: !inited,
+      }),
     ]);
     dialogModel = {
       ...defaultModel,

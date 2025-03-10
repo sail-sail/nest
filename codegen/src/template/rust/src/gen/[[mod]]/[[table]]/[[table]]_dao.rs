@@ -3601,6 +3601,7 @@ async fn _creates(
     )
     .unwrap_or_default();<#
   if (autoCodeColumn) {
+    const dateSeq = autoCodeColumn.autoCode.dateSeq;
   #>
   
   // 设置自动编码
@@ -3609,10 +3610,20 @@ async fn _creates(
     if input.<#=autoCodeColumn.COLUMN_NAME#>.is_some() && !input.<#=autoCodeColumn.COLUMN_NAME#>.as_ref().unwrap().is_empty() {
       continue;
     }
-    let (
+    let (<#
+      if (dateSeq) {
+      #>
+      <#=dateSeq#>,<#
+      }
+      #>
       <#=autoCodeColumn.autoCode.seq#>,
       <#=autoCodeColumn.COLUMN_NAME#>,
-    ) = find_auto_code(options.clone()).await?;
+    ) = find_auto_code(options.clone()).await?;<#
+    if (dateSeq) {
+    #>
+    input.<#=dateSeq#> = Some(<#=dateSeq#>);<#
+    }
+    #>
     input.<#=autoCodeColumn.autoCode.seq#> = Some(<#=autoCodeColumn.autoCode.seq#>);
     input.<#=autoCodeColumn.COLUMN_NAME#> = Some(<#=autoCodeColumn.COLUMN_NAME#>);
   }<#
@@ -3654,7 +3665,7 @@ async fn _creates(
       let stat = head_object(&<#=column_name#>).await?;
       if stat.is_none() {
         let content_type = <#=column_name#>_lbl
-          .get(<#=column_name#>_lbl.rfind("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
+          .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
           .unwrap_or_default();
         if !content_type.starts_with("image/") {
           error!(
@@ -4446,7 +4457,8 @@ async fn _creates(
   
   Ok(ids2)
 }<#
-if (autoCodeColumn) {
+const dateSeq = autoCodeColumn?.autoCode?.dateSeq;
+if (autoCodeColumn && !dateSeq) {
 #>
 
 // MARK: findAutoCode
@@ -4489,6 +4501,69 @@ pub async fn find_auto_code(
   let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>", <#=autoCodeColumn.autoCode.seq#>);
   
   Ok((<#=autoCodeColumn.autoCode.seq#>, <#=autoCodeColumn.COLUMN_NAME#>))
+}<#
+} else if (autoCodeColumn && dateSeq) {
+#>
+
+// MARK: findAutoCode
+/// 获得 <#=table_comment#> 自动编码
+pub async fn find_auto_code(
+  options: Option<Options>,
+) -> Result<(chrono::NaiveDate, u32, String)> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let method = "find_auto_code";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let model = find_one(
+    None,
+    Some(vec![
+      SortInput {
+        prop: "<#=dateSeq#>".to_owned(),
+        order: SortOrderEnum::Desc,
+      },
+      SortInput {
+        prop: "<#=autoCodeColumn.autoCode.seq#>".to_owned(),
+        order: SortOrderEnum::Desc,
+      },
+    ]),
+    options,
+  ).await?;
+  
+  let now = get_now();
+  let <#=dateSeq#> = now.format("%Y%m%d").to_string();
+  
+  let <#=dateSeq#>_old = model
+    .as_ref()
+    .map(|item|
+      item.<#=dateSeq#>.format("%Y%m%d").to_string()
+    );
+  
+  let lbl_seq: u32 = {
+    if <#=dateSeq#>_old.is_none() || <#=dateSeq#> != <#=dateSeq#>_old.unwrap() {
+      1
+    } else {
+      model
+        .as_ref()
+        .map_or(0, |item| item.lbl_seq) + 1
+    }
+  };
+  
+  let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{}{:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>", <#=dateSeq#>, <#=autoCodeColumn.autoCode.seq#>);
+  
+  Ok((now.date(), <#=autoCodeColumn.autoCode.seq#>, <#=autoCodeColumn.COLUMN_NAME#>))
 }<#
 }
 #>
@@ -5024,7 +5099,7 @@ pub async fn update_by_id(
     let stat = head_object(&<#=column_name#>).await?;
     if stat.is_none() {
       let content_type = <#=column_name#>_lbl
-        .get(<#=column_name#>_lbl.rfind("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
+        .get(<#=column_name#>_lbl.find("data:").unwrap_or_default() + 5..<#=column_name#>_lbl.find(";").unwrap_or(icon_lbl.len()))
         .unwrap_or_default();
       if !content_type.starts_with("image/") {
         error!(

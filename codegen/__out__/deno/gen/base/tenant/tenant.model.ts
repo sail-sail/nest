@@ -21,6 +21,8 @@ declare global {
   
   /** 租户 */
   interface TenantSearch extends TenantSearchType {
+    /** 编码-序列号 */
+    code_seq?: [(number|undefined|null), (number|undefined|null)];
     /** 简介 */
     title?: string;
     title_like?: string;
@@ -41,6 +43,8 @@ declare global {
   }
 
   interface TenantModel extends TenantModelType {
+    /** 编码-序列号 */
+    code_seq: number;
     /** 系统字段 */
     is_sys: number;
     create_usr_id: UsrId;
@@ -54,6 +58,8 @@ declare global {
   }
 
   interface TenantInput extends TenantInputType {
+    /** 编码-序列号 */
+    code_seq?: number | null;
     /** 系统字段 */
     is_sys?: number | null;
     create_usr_id?: UsrId | null;

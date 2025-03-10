@@ -129,7 +129,7 @@ async fn get_where_query(
       args.push(tenant_id.into());
     }
   }
-  // 卡号-序列号
+  // 编码-序列号
   {
     let mut code_seq = match search {
       Some(item) => item.code_seq.unwrap_or_default(),
@@ -1779,7 +1779,7 @@ async fn _creates(
   sql_fields += ",update_usr_id";
   sql_fields += ",update_usr_id_lbl";
   sql_fields += ",tenant_id";
-  // 卡号-序列号
+  // 编码-序列号
   sql_fields += ",code_seq";
   // 编码
   sql_fields += ",code";
@@ -1925,7 +1925,7 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 卡号-序列号
+    // 编码-序列号
     if let Some(code_seq) = input.code_seq {
       sql_values += ",?";
       args.push(code_seq.into());
@@ -2358,7 +2358,7 @@ pub async fn update_by_id(
     sql_fields += "tenant_id=?,";
     args.push(tenant_id.into());
   }
-  // 卡号-序列号
+  // 编码-序列号
   if let Some(code_seq) = input.code_seq {
     field_num += 1;
     sql_fields += "code_seq=?,";
