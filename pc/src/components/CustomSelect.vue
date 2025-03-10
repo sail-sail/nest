@@ -35,6 +35,8 @@
     @update:model-value="modelValueUpdate"
     @keyup.enter.stop
     @keydown.ctrl.c.stop="copyModelLabel"
+    @keyup.ctrl.delete.stop="onClear"
+    @keyup.ctrl.backspace.stop="onClear"
   >
     <template
       v-if="props.multiple && props.showSelectAll && !props.disabled && !props.readonly && options4SelectV2.length > 0"
@@ -53,11 +55,14 @@
       </el-checkbox>
     </template>
     <template
-      v-for="(key, index) in keys"
-      :key="index"
-      #[key]
+      v-for="(_, name) of $slots"
+      :key="name"
+      #[name]="slotProps"
     >
-      <slot :name="key"></slot>
+      <slot
+        :name="name"
+        v-bind="slotProps"
+      ></slot>
     </template>
   </ElSelectV2>
 </div>
@@ -236,10 +241,6 @@ import {
   copyText,
 } from "@/utils/common";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const slots: any = useSlots();
-const keys = Object.keys(slots);
-
 const t = getCurrentInstance();
 
 const emit = defineEmits<{
@@ -254,6 +255,7 @@ const emit = defineEmits<{
 
 const {
   ns,
+  nsAsync,
   initSysI18ns,
 } = useI18n();
 
@@ -315,13 +317,13 @@ const props = withDefaults(
   },
 );
 
-function copyModelLabel() {
+async function copyModelLabel() {
   const text = modelLabels.join(",");
   if (!text) {
     return;
   }
   copyText(text);
-  ElMessage.success(`${ text } 复制成功!`);
+  ElMessage.success(text + " " + await nsAsync("复制成功"));
 }
 
 let modelValue = $ref(props.modelValue);
