@@ -358,10 +358,11 @@ export async function findAll(
     // 发送时间
     if (model.send_time) {
       const send_time = dayjs(model.send_time);
-      if (isNaN(send_time.toDate().getTime())) {
-        model.send_time_lbl = (model.send_time || "").toString();
-      } else {
+      if (send_time.isValid()) {
+        model.send_time = send_time.format("YYYY-MM-DDTHH:mm:ss");
         model.send_time_lbl = send_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.send_time_lbl = (model.send_time || "").toString();
       }
     } else {
       model.send_time_lbl = "";
@@ -370,10 +371,11 @@ export async function findAll(
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
-      if (isNaN(create_time.toDate().getTime())) {
-        model.create_time_lbl = (model.create_time || "").toString();
-      } else {
+      if (create_time.isValid()) {
+        model.create_time = create_time.format("YYYY-MM-DDTHH:mm:ss");
         model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.create_time_lbl = (model.create_time || "").toString();
       }
     } else {
       model.create_time_lbl = "";
