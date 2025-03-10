@@ -189,26 +189,9 @@
       un-overflow-hidden
       un-justify-center
       un-items-center
-      un-b="1 dotted gray-300"
+      un-b="1 dotted gray-300 dark:gray-600"
       un-rounded="md"
-    >
-      
-      <el-icon
-        v-if="loading"
-        color="gray"
-      >
-        <ElIconLoading />
-      </el-icon>
-            
-      <el-icon
-        v-else
-        color="gray"
-        :size="28"
-      >
-        <ElIconPicture />
-      </el-icon>
-      
-    </div>
+    ></div>
   </div>
 </div>
 <input
