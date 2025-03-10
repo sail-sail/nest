@@ -18,11 +18,14 @@
   @clear="onClear"
 >
   <template
-    v-for="(key, index) in keys"
-    :key="index"
-    #[key]
+    v-for="(_, name) of $slots"
+    :key="name"
+    #[name]="slotProps"
   >
-    <slot :name="key"></slot>
+    <slot
+      :name="name"
+      v-bind="slotProps"
+    ></slot>
   </template>
 </el-date-picker>
 </template>
@@ -33,10 +36,6 @@ import type {
 } from "element-plus";
 
 import dayjs from "dayjs";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const slots: any = useSlots();
-const keys = Object.keys(slots);
 
 type DatePickerType = InstanceType<typeof ElDatePicker>;
 
@@ -136,7 +135,7 @@ const shortcutsComputed = $computed(() => {
         text: "最近三个月",
         value: () => {
           return [
-            now.subtract(3, "month").startOf("month").toDate(),
+            now.subtract(2, "month").startOf("month").toDate(),
             now.endOf("month").toDate(),
           ];
         },
@@ -146,7 +145,7 @@ const shortcutsComputed = $computed(() => {
         text: "最近六个月",
         value: () => {
           return [
-            now.subtract(6, "month").startOf("month").toDate(),
+            now.subtract(5, "month").startOf("month").toDate(),
             now.endOf("month").toDate(),
           ];
         },
@@ -185,7 +184,7 @@ const shortcutsComputed = $computed(() => {
         text: "最近三个月",
         value: () => {
           return [
-            now.subtract(3, "month").startOf("month").toDate(),
+            now.subtract(2, "month").startOf("month").toDate(),
             now.endOf("month").toDate(),
           ];
         },
@@ -195,7 +194,7 @@ const shortcutsComputed = $computed(() => {
         text: "最近六个月",
         value: () => {
           return [
-            now.subtract(6, "month").startOf("month").toDate(),
+            now.subtract(5, "month").startOf("month").toDate(),
             now.endOf("month").toDate(),
           ];
         },

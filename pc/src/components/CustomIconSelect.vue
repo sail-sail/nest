@@ -280,8 +280,8 @@ const icon_models_filtered = $computed<IconModel[]>(() => {
     icon_models2 = [ ...icon_models ];
     if (selectedLbl && !icon_models2.some((item) => item.img_lbl_svg === selectedLbl)) {
       icon_models2.unshift({
-        id: oldSelectedId as unknown as IconId,
-        img: oldSelectedId as unknown as IconId,
+        id: (oldSelectedId || "custom") as unknown as IconId,
+        img: (oldSelectedId || "custom") as unknown as IconId,
         code: "",
         lbl: "",
         img_lbl_svg: selectedLbl,
@@ -373,7 +373,7 @@ async function showDialog(
   }
   
   if (!selectedId && selectedLbl) {
-    const icon_model = icon_models.find((item) => item.img_lbl_svg === selectedLbl);
+    const icon_model = icon_models_filtered.find((item) => item.img_lbl_svg === selectedLbl);
     if (icon_model) {
       selectedId = icon_model.img;
     }
@@ -408,13 +408,13 @@ async function onRefresh() {
       notLoading: true,
     },
   );
-  if (!selectedId && selectedLbl) {
-    const icon_model = icon_models.find((item) => item.img_lbl_svg === selectedLbl);
-    if (icon_model) {
-      selectedId = icon_model.img;
-    }
-  }
-  oldSelectedId = selectedId;
+  // if (!selectedId && selectedLbl) {
+  //   const icon_model = icon_models.find((item) => item.img_lbl_svg === selectedLbl);
+  //   if (icon_model) {
+  //     selectedId = icon_model.img;
+  //   }
+  // }
+  // oldSelectedId = selectedId;
   localStorage.setItem("icon_models", JSON.stringify(icon_models));
   
   nextTick(() => {
@@ -436,17 +436,17 @@ function openAddSvg() {
   svgInputRef.click();
 }
 
-const textEncoder = new TextEncoder();
+// const textEncoder = new TextEncoder();
 
-function arrayBufferToBase64(buffer: ArrayBuffer) {
-  let binary = "";
-  const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
-}
+// function arrayBufferToBase64(buffer: ArrayBuffer) {
+//   let binary = "";
+//   const bytes = new Uint8Array(buffer);
+//   const len = bytes.byteLength;
+//   for (let i = 0; i < len; i++) {
+//       binary += String.fromCharCode(bytes[i]);
+//   }
+//   return btoa(binary);
+// }
 
 let compress = true;
 let maxImageWidth = 1920;
@@ -482,17 +482,17 @@ async function onSvgChange(e: Event) {
     if (!result) {
       return;
     }
-    let changedId: string | undefined;
+    // let changedId: string | undefined;
     let img_lbl_svg = result as string;
     if (img_lbl_svg.startsWith("data:image/svg+xml;base64,")) {
       const img_lbl_svg_base64 = img_lbl_svg.replace("data:image/svg+xml;base64,", "");
       img_lbl_svg = `data:image/svg+xml;utf8,${ encodeURIComponent(atob(img_lbl_svg_base64)) }`;
-      const buffer = await crypto.subtle.digest("SHA-256", textEncoder.encode(img_lbl_svg));
-      changedId = arrayBufferToBase64(buffer).substring(0, 22);
+      // const buffer = await crypto.subtle.digest("SHA-256", textEncoder.encode(img_lbl_svg));
+      // changedId = arrayBufferToBase64(buffer).substring(0, 22);
     }
     onCloseResolve({
       type: "ok",
-      changedId,
+      changedId: undefined,
       changedIdLbl: img_lbl_svg,
     });
   };
@@ -611,6 +611,14 @@ function onEnter() {
   }
   if (selectedId === oldSelectedId) {
     onClose();
+    return;
+  }
+  if (selectedId === "custom") {
+    onCloseResolve({
+      type: "ok",
+      changedId: undefined,
+      changedIdLbl: selectedLbl,
+    });
     return;
   }
   const icon_model = icon_models.find((item) => item.img === selectedId);
