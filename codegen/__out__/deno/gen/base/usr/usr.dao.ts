@@ -676,10 +676,11 @@ export async function findAll(
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
-      if (isNaN(create_time.toDate().getTime())) {
-        model.create_time_lbl = (model.create_time || "").toString();
-      } else {
+      if (create_time.isValid()) {
+        model.create_time = create_time.format("YYYY-MM-DDTHH:mm:ss");
         model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.create_time_lbl = (model.create_time || "").toString();
       }
     } else {
       model.create_time_lbl = "";
@@ -688,10 +689,11 @@ export async function findAll(
     // 更新时间
     if (model.update_time) {
       const update_time = dayjs(model.update_time);
-      if (isNaN(update_time.toDate().getTime())) {
-        model.update_time_lbl = (model.update_time || "").toString();
-      } else {
+      if (update_time.isValid()) {
+        model.update_time = update_time.format("YYYY-MM-DDTHH:mm:ss");
         model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.update_time_lbl = (model.update_time || "").toString();
       }
     } else {
       model.update_time_lbl = "";
