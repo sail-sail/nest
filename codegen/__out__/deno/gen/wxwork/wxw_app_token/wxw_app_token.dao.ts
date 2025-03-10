@@ -426,10 +426,11 @@ export async function findAll(
     // 令牌创建时间
     if (model.token_time) {
       const token_time = dayjs(model.token_time);
-      if (isNaN(token_time.toDate().getTime())) {
-        model.token_time_lbl = (model.token_time || "").toString();
-      } else {
+      if (token_time.isValid()) {
+        model.token_time = token_time.format("YYYY-MM-DDTHH:mm:ss");
         model.token_time_lbl = token_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.token_time_lbl = (model.token_time || "").toString();
       }
     } else {
       model.token_time_lbl = "";
@@ -438,10 +439,11 @@ export async function findAll(
     // 企业jsapi_ticket创建时间
     if (model.jsapi_ticket_time) {
       const jsapi_ticket_time = dayjs(model.jsapi_ticket_time);
-      if (isNaN(jsapi_ticket_time.toDate().getTime())) {
-        model.jsapi_ticket_time_lbl = (model.jsapi_ticket_time || "").toString();
-      } else {
+      if (jsapi_ticket_time.isValid()) {
+        model.jsapi_ticket_time = jsapi_ticket_time.format("YYYY-MM-DDTHH:mm:ss");
         model.jsapi_ticket_time_lbl = jsapi_ticket_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.jsapi_ticket_time_lbl = (model.jsapi_ticket_time || "").toString();
       }
     } else {
       model.jsapi_ticket_time_lbl = "";
@@ -450,10 +452,11 @@ export async function findAll(
     // 应用jsapi_ticket创建时间
     if (model.jsapi_ticket_agent_config_time) {
       const jsapi_ticket_agent_config_time = dayjs(model.jsapi_ticket_agent_config_time);
-      if (isNaN(jsapi_ticket_agent_config_time.toDate().getTime())) {
-        model.jsapi_ticket_agent_config_time_lbl = (model.jsapi_ticket_agent_config_time || "").toString();
-      } else {
+      if (jsapi_ticket_agent_config_time.isValid()) {
+        model.jsapi_ticket_agent_config_time = jsapi_ticket_agent_config_time.format("YYYY-MM-DDTHH:mm:ss");
         model.jsapi_ticket_agent_config_time_lbl = jsapi_ticket_agent_config_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.jsapi_ticket_agent_config_time_lbl = (model.jsapi_ticket_agent_config_time || "").toString();
       }
     } else {
       model.jsapi_ticket_agent_config_time_lbl = "";
@@ -462,10 +465,11 @@ export async function findAll(
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
-      if (isNaN(create_time.toDate().getTime())) {
-        model.create_time_lbl = (model.create_time || "").toString();
-      } else {
+      if (create_time.isValid()) {
+        model.create_time = create_time.format("YYYY-MM-DDTHH:mm:ss");
         model.create_time_lbl = create_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.create_time_lbl = (model.create_time || "").toString();
       }
     } else {
       model.create_time_lbl = "";
@@ -474,10 +478,11 @@ export async function findAll(
     // 更新时间
     if (model.update_time) {
       const update_time = dayjs(model.update_time);
-      if (isNaN(update_time.toDate().getTime())) {
-        model.update_time_lbl = (model.update_time || "").toString();
-      } else {
+      if (update_time.isValid()) {
+        model.update_time = update_time.format("YYYY-MM-DDTHH:mm:ss");
         model.update_time_lbl = update_time.format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        model.update_time_lbl = (model.update_time || "").toString();
       }
     } else {
       model.update_time_lbl = "";
