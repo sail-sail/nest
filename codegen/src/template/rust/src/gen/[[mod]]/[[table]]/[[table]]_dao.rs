@@ -7821,9 +7821,9 @@ pub async fn validate_is_enabled(
 // MARK: validate_option
 /// 校验<#=table_comment#>是否存在
 #[allow(dead_code)]
-pub async fn validate_option<T>(
-  model: Option<T>,
-) -> Result<T> {
+pub async fn validate_option(
+  model: Option<<#=tableUP#>Model>,
+) -> Result<<#=tableUP#>Model> {
   if model.is_none() {<#
     if (isUseI18n) {
     #>
@@ -7848,7 +7848,8 @@ pub async fn validate_option<T>(
     );
     return Err(eyre!(err_msg));
   }
-  Ok(model.unwrap())
+  let model = model.unwrap();
+  Ok(model)
 }<#
 if (false) {
 #>

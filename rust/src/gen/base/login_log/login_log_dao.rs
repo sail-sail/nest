@@ -2126,9 +2126,9 @@ pub async fn force_delete_by_ids(
 // MARK: validate_option
 /// 校验登录日志是否存在
 #[allow(dead_code)]
-pub async fn validate_option<T>(
-  model: Option<T>,
-) -> Result<T> {
+pub async fn validate_option(
+  model: Option<LoginLogModel>,
+) -> Result<LoginLogModel> {
   if model.is_none() {
     let err_msg = "登录日志不存在";
     let backtrace = std::backtrace::Backtrace::capture();
@@ -2138,5 +2138,6 @@ pub async fn validate_option<T>(
     );
     return Err(eyre!(err_msg));
   }
-  Ok(model.unwrap())
+  let model = model.unwrap();
+  Ok(model)
 }

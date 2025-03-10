@@ -422,7 +422,7 @@ pub async fn update_by_id(
   ) {
   #>
   
-  let old_model = <#=table#>_dao::validate_option(
+  let old_model = validate_option(
     <#=table#>_dao::find_by_id(
       id.clone(),
       options.clone(),
@@ -536,7 +536,7 @@ pub async fn update_by_id(
   let <#=table#>_id = <#=table#>_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;<#
   if (mod === "base" && table === "i18n") {
   #>
@@ -546,6 +546,17 @@ pub async fn update_by_id(
   #>
   
   Ok(<#=table#>_id)
+}
+
+/// 校验<#=table_comment#>是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<<#=tableUP#>Model>,
+) -> Result<<#=tableUP#>Model> {
+  
+  let model = <#=table#>_dao::validate_option(model).await?;
+  
+  Ok(model)
 }<#
 if (hasAudit) {
 #>
@@ -556,7 +567,7 @@ pub async fn audit_submit(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = <#=table#>_dao::validate_option(
+  let old_model = validate_option(
     <#=table#>_dao::find_by_id(
       id.clone(),
       options.clone(),
@@ -655,7 +666,7 @@ pub async fn audit_pass(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = <#=table#>_dao::validate_option(
+  let old_model = validate_option(
     <#=table#>_dao::find_by_id(
       id.clone(),
       options.clone(),
@@ -755,7 +766,7 @@ pub async fn audit_reject(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = <#=table#>_dao::validate_option(
+  let old_model = validate_option(
     <#=table#>_dao::find_by_id(
       id.clone(),
       options.clone(),
@@ -861,7 +872,7 @@ pub async fn audit_review(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = <#=table#>_dao::validate_option(
+  let old_model = validate_option(
     <#=table#>_dao::find_by_id(
       id.clone(),
       options.clone(),

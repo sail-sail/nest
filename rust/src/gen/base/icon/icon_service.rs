@@ -135,10 +135,21 @@ pub async fn update_by_id(
   let icon_id = icon_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(icon_id)
+}
+
+/// 校验图标库是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<IconModel>,
+) -> Result<IconModel> {
+  
+  let model = icon_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除图标库

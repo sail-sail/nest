@@ -145,10 +145,21 @@ pub async fn update_by_id(
   let domain_id = domain_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(domain_id)
+}
+
+/// 校验域名是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<DomainModel>,
+) -> Result<DomainModel> {
+  
+  let model = domain_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除域名

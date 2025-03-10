@@ -151,7 +151,7 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<DataPermitId> {
   
-  let old_model = data_permit_dao::validate_option(
+  let old_model = validate_option(
     data_permit_dao::find_by_id(
       id.clone(),
       options.clone(),
@@ -171,10 +171,21 @@ pub async fn update_by_id(
   let data_permit_id = data_permit_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(data_permit_id)
+}
+
+/// 校验数据权限是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<DataPermitModel>,
+) -> Result<DataPermitModel> {
+  
+  let model = data_permit_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除数据权限

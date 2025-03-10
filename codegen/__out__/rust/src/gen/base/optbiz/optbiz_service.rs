@@ -151,7 +151,7 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<OptbizId> {
   
-  let old_model = optbiz_dao::validate_option(
+  let old_model = validate_option(
     optbiz_dao::find_by_id(
       id.clone(),
       options.clone(),
@@ -179,10 +179,21 @@ pub async fn update_by_id(
   let optbiz_id = optbiz_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(optbiz_id)
+}
+
+/// 校验业务选项是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<OptbizModel>,
+) -> Result<OptbizModel> {
+  
+  let model = optbiz_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除业务选项

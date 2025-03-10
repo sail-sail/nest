@@ -145,10 +145,21 @@ pub async fn update_by_id(
   let tenant_id = tenant_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(tenant_id)
+}
+
+/// 校验租户是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<TenantModel>,
+) -> Result<TenantModel> {
+  
+  let model = tenant_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除租户

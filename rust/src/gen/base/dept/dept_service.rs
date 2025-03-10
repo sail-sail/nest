@@ -193,10 +193,21 @@ pub async fn update_by_id(
   let dept_id = dept_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(dept_id)
+}
+
+/// 校验部门是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<DeptModel>,
+) -> Result<DeptModel> {
+  
+  let model = dept_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除部门

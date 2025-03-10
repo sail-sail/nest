@@ -1540,9 +1540,9 @@ pub async fn find_last_order_by(
 // MARK: validate_option
 /// 校验字段权限是否存在
 #[allow(dead_code)]
-pub async fn validate_option<T>(
-  model: Option<T>,
-) -> Result<T> {
+pub async fn validate_option(
+  model: Option<FieldPermitModel>,
+) -> Result<FieldPermitModel> {
   if model.is_none() {
     let err_msg = "字段权限不存在";
     let backtrace = std::backtrace::Backtrace::capture();
@@ -1552,5 +1552,6 @@ pub async fn validate_option<T>(
     );
     return Err(eyre!(err_msg));
   }
-  Ok(model.unwrap())
+  let model = model.unwrap();
+  Ok(model)
 }

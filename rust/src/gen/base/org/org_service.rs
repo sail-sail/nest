@@ -164,10 +164,21 @@ pub async fn update_by_id(
   let org_id = org_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(org_id)
+}
+
+/// 校验组织是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<OrgModel>,
+) -> Result<OrgModel> {
+  
+  let model = org_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除组织

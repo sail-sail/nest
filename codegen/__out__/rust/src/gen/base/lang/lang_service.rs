@@ -135,10 +135,21 @@ pub async fn update_by_id(
   let lang_id = lang_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(lang_id)
+}
+
+/// 校验语言是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<LangModel>,
+) -> Result<LangModel> {
+  
+  let model = lang_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除语言

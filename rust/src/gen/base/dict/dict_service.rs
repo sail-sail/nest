@@ -132,7 +132,7 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<DictId> {
   
-  let old_model = dict_dao::validate_option(
+  let old_model = validate_option(
     dict_dao::find_by_id(
       id.clone(),
       options.clone(),
@@ -154,10 +154,21 @@ pub async fn update_by_id(
   let dict_id = dict_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(dict_id)
+}
+
+/// 校验系统字典是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<DictModel>,
+) -> Result<DictModel> {
+  
+  let model = dict_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除系统字典
