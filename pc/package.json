@@ -28,7 +28,7 @@
     "@vue/reactivity": "3.5.13",
     "@vue/runtime-dom": "3.5.13",
     "@vue/shared": "3.5.13",
-    "@vueuse/core": "12.8.2",
+    "@vueuse/core": "13.0.0",
     "cronstrue": "2.56.0",
     "danmu": "0.15.0",
     "dayjs": "1.11.13",

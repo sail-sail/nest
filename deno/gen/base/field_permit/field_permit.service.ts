@@ -153,6 +153,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验字段权限是否存在 */
+export async function validateOption(
+  model0?: FieldPermitModel,
+): Promise<FieldPermitModel> {
+  const model = await field_permitDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除字段权限
  */
