@@ -172,10 +172,21 @@ pub async fn update_by_id(
   let background_task_id = background_task_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(background_task_id)
+}
+
+/// 校验后台任务是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<BackgroundTaskModel>,
+) -> Result<BackgroundTaskModel> {
+  
+  let model = background_task_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除后台任务

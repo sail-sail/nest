@@ -154,10 +154,21 @@ pub async fn update_by_id(
   let dictbiz_id = dictbiz_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(dictbiz_id)
+}
+
+/// 校验业务字典是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<DictbizModel>,
+) -> Result<DictbizModel> {
+  
+  let model = dictbiz_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除业务字典

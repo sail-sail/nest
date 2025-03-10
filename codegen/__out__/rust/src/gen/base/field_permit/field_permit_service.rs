@@ -132,7 +132,7 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<FieldPermitId> {
   
-  let old_model = field_permit_dao::validate_option(
+  let old_model = validate_option(
     field_permit_dao::find_by_id(
       id.clone(),
       options.clone(),
@@ -151,10 +151,21 @@ pub async fn update_by_id(
   let field_permit_id = field_permit_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(field_permit_id)
+}
+
+/// 校验字段权限是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<FieldPermitModel>,
+) -> Result<FieldPermitModel> {
+  
+  let model = field_permit_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除字段权限

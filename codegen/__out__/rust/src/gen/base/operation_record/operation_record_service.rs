@@ -154,10 +154,21 @@ pub async fn update_by_id(
   let operation_record_id = operation_record_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(operation_record_id)
+}
+
+/// 校验操作记录是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<OperationRecordModel>,
+) -> Result<OperationRecordModel> {
+  
+  let model = operation_record_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除操作记录

@@ -164,10 +164,21 @@ pub async fn update_by_id(
   let usr_id = usr_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(usr_id)
+}
+
+/// 校验用户是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<UsrModel>,
+) -> Result<UsrModel> {
+  
+  let model = usr_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除用户

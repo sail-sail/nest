@@ -138,12 +138,23 @@ pub async fn update_by_id(
   let i18n_id = i18n_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   update_i18n_version().await?;
   
   Ok(i18n_id)
+}
+
+/// 校验国际化是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<I18nModel>,
+) -> Result<I18nModel> {
+  
+  let model = i18n_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除国际化

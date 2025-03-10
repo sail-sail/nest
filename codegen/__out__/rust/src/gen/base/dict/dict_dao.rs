@@ -2592,9 +2592,9 @@ pub async fn validate_is_enabled(
 // MARK: validate_option
 /// 校验系统字典是否存在
 #[allow(dead_code)]
-pub async fn validate_option<T>(
-  model: Option<T>,
-) -> Result<T> {
+pub async fn validate_option(
+  model: Option<DictModel>,
+) -> Result<DictModel> {
   if model.is_none() {
     let err_msg = "系统字典不存在";
     let backtrace = std::backtrace::Backtrace::capture();
@@ -2604,5 +2604,6 @@ pub async fn validate_option<T>(
     );
     return Err(eyre!(err_msg));
   }
-  Ok(model.unwrap())
+  let model = model.unwrap();
+  Ok(model)
 }

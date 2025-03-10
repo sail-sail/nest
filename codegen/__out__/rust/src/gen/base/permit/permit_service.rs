@@ -132,7 +132,7 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<PermitId> {
   
-  let old_model = permit_dao::validate_option(
+  let old_model = validate_option(
     permit_dao::find_by_id(
       id.clone(),
       options.clone(),
@@ -151,10 +151,21 @@ pub async fn update_by_id(
   let permit_id = permit_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(permit_id)
+}
+
+/// 校验按钮权限是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<PermitModel>,
+) -> Result<PermitModel> {
+  
+  let model = permit_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除按钮权限

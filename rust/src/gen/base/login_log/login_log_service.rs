@@ -154,10 +154,21 @@ pub async fn update_by_id(
   let login_log_id = login_log_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(login_log_id)
+}
+
+/// 校验登录日志是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<LoginLogModel>,
+) -> Result<LoginLogModel> {
+  
+  let model = login_log_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除登录日志

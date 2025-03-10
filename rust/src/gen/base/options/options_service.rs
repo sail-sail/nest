@@ -132,7 +132,7 @@ pub async fn update_by_id(
   options: Option<Options>,
 ) -> Result<OptionsId> {
   
-  let old_model = options_dao::validate_option(
+  let old_model = validate_option(
     options_dao::find_by_id(
       id.clone(),
       options.clone(),
@@ -160,10 +160,21 @@ pub async fn update_by_id(
   let options_id = options_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(options_id)
+}
+
+/// 校验系统选项是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<OptionsModel>,
+) -> Result<OptionsModel> {
+  
+  let model = options_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除系统选项

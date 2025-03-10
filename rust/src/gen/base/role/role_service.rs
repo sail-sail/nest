@@ -164,10 +164,21 @@ pub async fn update_by_id(
   let role_id = role_dao::update_by_id(
     id,
     input,
-    options,
+    options.clone(),
   ).await?;
   
   Ok(role_id)
+}
+
+/// 校验角色是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  model: Option<RoleModel>,
+) -> Result<RoleModel> {
+  
+  let model = role_dao::validate_option(model).await?;
+  
+  Ok(model)
 }
 
 /// 根据 ids 删除角色

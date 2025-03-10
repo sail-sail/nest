@@ -3029,9 +3029,9 @@ pub async fn validate_is_enabled(
 // MARK: validate_option
 /// 校验部门是否存在
 #[allow(dead_code)]
-pub async fn validate_option<T>(
-  model: Option<T>,
-) -> Result<T> {
+pub async fn validate_option(
+  model: Option<DeptModel>,
+) -> Result<DeptModel> {
   if model.is_none() {
     let err_msg = "部门不存在";
     let backtrace = std::backtrace::Backtrace::capture();
@@ -3041,5 +3041,6 @@ pub async fn validate_option<T>(
     );
     return Err(eyre!(err_msg));
   }
-  Ok(model.unwrap())
+  let model = model.unwrap();
+  Ok(model)
 }
