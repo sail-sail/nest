@@ -42,6 +42,7 @@ use crate::common::context::{
   get_is_silent_mode,
   get_is_creating,
 };
+use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::common::gql::model::{
   PageInput,
@@ -3605,12 +3606,18 @@ pub async fn validate_option(
 ) -> Result<RoleModel> {
   if model.is_none() {
     let err_msg = "角色不存在";
-    let backtrace = std::backtrace::Backtrace::capture();
     error!(
-      "{req_id} {err_msg}: {backtrace}",
+      "{req_id} {err_msg}",
       req_id = get_req_id(),
     );
-    return Err(eyre!(err_msg));
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        rollback: true,
+        trace: true,
+      },
+    ));
   }
   let model = model.unwrap();
   Ok(model)

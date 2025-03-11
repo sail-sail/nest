@@ -11,6 +11,9 @@ pub struct ServiceException {
   pub message: String,
   #[builder(default = "true")]
   pub rollback: bool,
+  // 是否打印堆栈信息
+  #[builder(default = "false")]
+  pub trace: bool,
 }
 
 impl fmt::Display for ServiceException {

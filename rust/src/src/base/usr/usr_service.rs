@@ -267,7 +267,7 @@ pub async fn login(
     id: usr_id.clone(),
     tenant_id: tenant_id.clone(),
     org_id: org_id.clone(),
-    lang: lang.clone(),
+    lang: Some(lang.clone()),
     exp,
     ..Default::default()
   })?;
@@ -294,7 +294,7 @@ pub async fn select_lang(
   
   let mut auth_model = get_auth_model_err()?;
   
-  auth_model.lang = lang;
+  auth_model.lang = Some(lang);
   
   let authorization = get_token_by_auth_model(&auth_model)?;
   ctx.set_auth_model(auth_model);

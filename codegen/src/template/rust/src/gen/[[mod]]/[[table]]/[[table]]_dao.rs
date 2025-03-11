@@ -232,7 +232,8 @@ use crate::common::context::{
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
-};<#
+};
+use crate::common::exceptions::service_exception::ServiceException;<#
 if (hasIsIcon) {
 #>
 
@@ -7841,12 +7842,18 @@ pub async fn validate_option(
     let err_msg = "<#=table_comment#>不存在";<#
     }
     #>
-    let backtrace = std::backtrace::Backtrace::capture();
     error!(
-      "{req_id} {err_msg}: {backtrace}",
+      "{req_id} {err_msg}",
       req_id = get_req_id(),
     );
-    return Err(eyre!(err_msg));
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        rollback: true,
+        trace: true,
+      },
+    ));
   }
   let model = model.unwrap();
   Ok(model)

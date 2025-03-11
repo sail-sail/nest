@@ -190,10 +190,9 @@ pub fn get_auth_model_err() -> Result<AuthModel> {
 /// 获取当前登录用户的id
 pub fn get_auth_id() -> Option<UsrId> {
   CTX.with(|ctx| {
-    match ctx.auth_model.clone() {
-      Some(item) => item.id.into(),
-      None => None,
-    }
+    ctx.auth_model
+      .as_ref()
+      .and_then(|item| Some(item.id.clone()))
   })
 }
 
@@ -215,20 +214,18 @@ pub fn get_auth_tenant_id() -> Option<TenantId> {
     if ctx.auth_model.is_none() && ctx.client_tenant_id.is_some() {
       return ctx.client_tenant_id.clone();
     }
-    match ctx.auth_model.clone() {
-      Some(item) => item.tenant_id.into(),
-      None => None,
-    }
+    ctx.auth_model
+      .as_ref()
+      .and_then(|item| Some(item.tenant_id.clone()))
   })
 }
 
 /// 获取当前登录用户的组织id
 pub fn get_auth_org_id() -> Option<OrgId> {
   CTX.with(|ctx| {
-    match ctx.auth_model.clone() {
-      Some(item) => item.org_id,
-      None => None,
-    }
+    ctx.auth_model
+      .as_ref()
+      .and_then(|item| item.org_id.clone())
   })
 }
 
@@ -248,10 +245,9 @@ pub fn get_auth_org_id_err() -> Result<OrgId> {
 /// 获取当前登录用户的语言
 pub fn get_auth_lang() -> Option<String> {
   CTX.with(|ctx| {
-    match ctx.auth_model.clone() {
-      Some(item) => item.lang.into(),
-      None => None,
-    }
+    ctx.auth_model
+      .as_ref()
+      .and_then(|item| item.lang.clone())
   })
 }
 
@@ -402,16 +398,22 @@ impl Ctx {
         .try_get(0)?;
       if let Err(err) = res {
         let exception = err.downcast_ref::<ServiceException>();
-        if exception.is_some() {
-          info!(
-            "{} {}",
-            self.req_id,
-            err,
-          );
+        if let Some(exception) = exception {
+          if !exception.trace {
+            info!(
+              "{} {}",
+              self.req_id,
+              err,
+            );
+          } else {
+            error!(
+              "{} {:?}",
+              self.req_id,
+              err,
+            );
+          }
         } else {
-          // 双引号开始并且双引号结束的用 info! 宏打印
-          let msg = format!("{:#?}", err);
-          if msg.starts_with('"') && msg.ends_with('"') {
+          if err.is::<&str>() || err.is::<String>() {
             info!(
               "{} {}",
               self.req_id,
@@ -453,16 +455,22 @@ impl Ctx {
     }
     if let Err(err) = res {
       let exception = err.downcast_ref::<ServiceException>();
-      if exception.is_some() {
-        info!(
-          "{} {}",
-          self.req_id,
-          err,
-        );
+      if let Some(exception) = exception {
+        if !exception.trace {
+          info!(
+            "{} {}",
+            self.req_id,
+            err,
+          );
+        } else {
+          error!(
+            "{} {:?}",
+            self.req_id,
+            err,
+          );
+        }
       } else {
-        // 双引号开始并且双引号结束的用 info! 宏打印
-        let msg = format!("{:#?}", err);
-        if msg.starts_with('"') && msg.ends_with('"') {
+        if err.is::<&str>() || err.is::<String>() {
           info!(
             "{} {}",
             self.req_id,
@@ -1212,7 +1220,27 @@ impl Ctx {
       let status_code = res.status();
       let is_success = !status_code.is_server_error();
       let extensions = res.extensions();
-      let is_rollback = extensions.get::<bool>().copied().unwrap_or(true);
+      let mut is_rollback = extensions.get::<bool>().copied().unwrap_or(true);
+      let exception: Option<&ServiceException> = extensions.get::<ServiceException>();
+      if let Some(exception) = exception {
+        if !exception.rollback {
+          is_rollback = false;
+        }
+        if !exception.trace {
+          info!(
+            "{} {}",
+            ctx.req_id.as_str(),
+            exception,
+          );
+        } else {
+          error!(
+            "{} {:?}",
+            ctx.req_id.as_str(),
+            exception,
+          );
+        }
+      }
+      let is_rollback = is_rollback;
       {
         let mut tran = ctx.tran.lock().await;
         let tran = tran.take();
