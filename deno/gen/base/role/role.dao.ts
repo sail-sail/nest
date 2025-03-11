@@ -318,6 +318,101 @@ export async function findCount(
     options.is_debug = false;
   }
   
+  if (search?.id === "") {
+    return 0;
+  }
+  if (search && search.ids && search.ids.length === 0) {
+    return 0;
+  }
+  // 菜单权限
+  if (search && search.menu_ids != null) {
+    const len = search.menu_ids.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.menu_ids.length > ${ ids_limit }`);
+    }
+  }
+  // 按钮权限
+  if (search && search.permit_ids != null) {
+    const len = search.permit_ids.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.permit_ids.length > ${ ids_limit }`);
+    }
+  }
+  // 数据权限
+  if (search && search.data_permit_ids != null) {
+    const len = search.data_permit_ids.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.data_permit_ids.length > ${ ids_limit }`);
+    }
+  }
+  // 字段权限
+  if (search && search.field_permit_ids != null) {
+    const len = search.field_permit_ids.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.field_permit_ids.length > ${ ids_limit }`);
+    }
+  }
+  // 锁定
+  if (search && search.is_locked != null) {
+    const len = search.is_locked.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_locked.length > ${ ids_limit }`);
+    }
+  }
+  // 启用
+  if (search && search.is_enabled != null) {
+    const len = search.is_enabled.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_enabled.length > ${ ids_limit }`);
+    }
+  }
+  // 创建人
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  // 更新人
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  
   const args = new QueryArgs();
   let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);

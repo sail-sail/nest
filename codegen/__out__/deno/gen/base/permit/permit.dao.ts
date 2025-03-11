@@ -163,6 +163,24 @@ export async function findCount(
     options.is_debug = false;
   }
   
+  if (search?.id === "") {
+    return 0;
+  }
+  if (search && search.ids && search.ids.length === 0) {
+    return 0;
+  }
+  // 菜单
+  if (search && search.menu_id != null) {
+    const len = search.menu_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.menu_id.length > ${ ids_limit }`);
+    }
+  }
+  
   const args = new QueryArgs();
   let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
