@@ -12,6 +12,7 @@ defineGraphql(usrResolver, /* GraphQL */ `
   type GetLoginInfo {
     lbl: String!
     username: String!
+    role_codes: [String!]!
     lang: String
     tenant_id: TenantId!
     org_id: OrgId
