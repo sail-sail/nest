@@ -12,7 +12,7 @@ defineGraphql(usrResolver, /* GraphQL */ `
   type GetLoginInfo {
     lbl: String!
     username: String!
-    lang: String!
+    lang: String
     tenant_id: TenantId!
     org_id: OrgId
     org_id_models: [GetLoginInfoOrgIdModels!]!
@@ -24,7 +24,7 @@ defineGraphql(usrResolver, /* GraphQL */ `
     tenant_id: TenantId!
     org_id: OrgId
     authorization: String!
-    lang: String!
+    lang: String
   }
   
   input LoginInput {
