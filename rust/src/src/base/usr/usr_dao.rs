@@ -61,7 +61,7 @@ pub async fn get_token_by_usr_id(
     id: usr_id.clone(),
     tenant_id: tenant_id.clone(),
     org_id: org_id.clone(),
-    lang: lang.clone(),
+    lang: Some(lang.clone()),
     exp,
     ..Default::default()
   })?;
