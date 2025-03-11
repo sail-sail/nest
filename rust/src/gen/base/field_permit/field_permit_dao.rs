@@ -386,6 +386,22 @@ pub async fn find_count(
       return Ok(0);
     }
   }
+  // 菜单
+  if let Some(search) = &search {
+    if search.menu_id.is_some() {
+      let len = search.menu_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.menu_id.length > {ids_limit}"));
+      }
+    }
+  }
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
