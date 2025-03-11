@@ -899,6 +899,118 @@ pub async fn find_count(
       return Ok(0);
     }
   }
+  // 所属域名
+  if let Some(search) = &search {
+    if search.domain_ids.is_some() {
+      let len = search.domain_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.domain_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 菜单权限
+  if let Some(search) = &search {
+    if search.menu_ids.is_some() {
+      let len = search.menu_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.menu_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 语言
+  if let Some(search) = &search {
+    if search.lang_id.is_some() {
+      let len = search.lang_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.lang_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 锁定
+  if let Some(search) = &search {
+    if search.is_locked.is_some() {
+      let len = search.is_locked.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.is_locked.length > {ids_limit}"));
+      }
+    }
+  }
+  // 启用
+  if let Some(search) = &search {
+    if search.is_enabled.is_some() {
+      let len = search.is_enabled.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.is_enabled.length > {ids_limit}"));
+      }
+    }
+  }
+  // 创建人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
   
   let options = Options::from(options)
     .set_is_debug(Some(false));

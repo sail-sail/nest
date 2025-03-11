@@ -2157,7 +2157,65 @@ pub async fn find_count(
     if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
       return Ok(0);
     }
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+    if (isPassword) {
+      continue;
+    }
+    if (column.isEncrypt) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #><#
+    if (
+      [
+        "is_hidden",
+        "is_sys",
+      ].includes(column_name)
+      || foreignKey
+      || column.dict || column.dictbiz
+    ) {
+  #>
+  // <#=column_comment#>
+  if let Some(search) = &search {
+    if search.<#=column_name_rust#>.is_some() {
+      let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
+      }
+    }
+  }<#
+    }
+  #><#
   }
+  #>
   
   let options = Options::from(options)
     .set_is_debug(Some(false));

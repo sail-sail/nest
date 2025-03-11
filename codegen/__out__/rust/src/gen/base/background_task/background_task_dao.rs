@@ -684,6 +684,70 @@ pub async fn find_count(
       return Ok(0);
     }
   }
+  // 状态
+  if let Some(search) = &search {
+    if search.state.is_some() {
+      let len = search.state.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.state.length > {ids_limit}"));
+      }
+    }
+  }
+  // 类型
+  if let Some(search) = &search {
+    if search.r#type.is_some() {
+      let len = search.r#type.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.type.length > {ids_limit}"));
+      }
+    }
+  }
+  // 创建人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
