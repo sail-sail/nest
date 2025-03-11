@@ -219,6 +219,30 @@ async fn get_where_query(
       where_query.push_str(" and t.role_ids is null");
     }
   }
+  // 所属角色
+  {
+    let role_codes: Option<Vec<String>> = match search {
+      Some(item) => item.role_codes.clone(),
+      None => None,
+    };
+    if let Some(role_codes) = role_codes {
+      let arg = {
+        if role_codes.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(role_codes.len());
+          for item in role_codes {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and base_role.code in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
   // 所属部门
   {
     let dept_ids: Option<Vec<DeptId>> = match search {
@@ -751,6 +775,22 @@ pub async fn find_all(
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
         return Err(eyre!("search.role_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 所属角色
+  if let Some(search) = &search {
+    if search.role_codes.is_some() {
+      let len = search.role_codes.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.role_codes.length > {ids_limit}"));
       }
     }
   }
