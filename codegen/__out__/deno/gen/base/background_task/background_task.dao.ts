@@ -231,6 +231,57 @@ export async function findCount(
     options.is_debug = false;
   }
   
+  if (search?.id === "") {
+    return 0;
+  }
+  if (search && search.ids && search.ids.length === 0) {
+    return 0;
+  }
+  // 状态
+  if (search && search.state != null) {
+    const len = search.state.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.state.length > ${ ids_limit }`);
+    }
+  }
+  // 类型
+  if (search && search.type != null) {
+    const len = search.type.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.type.length > ${ ids_limit }`);
+    }
+  }
+  // 创建人
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  // 更新人
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  
   const args = new QueryArgs();
   let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
   const whereQuery = await getWhereQuery(args, search, options);
