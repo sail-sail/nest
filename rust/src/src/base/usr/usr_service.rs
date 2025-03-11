@@ -30,6 +30,9 @@ use crate::r#gen::base::usr::usr_model::{
   UsrSearch,
 };
 
+// 角色
+use crate::r#gen::base::role::role_dao::find_by_ids as find_by_ids_role;
+
 // 租户
 use crate::r#gen::base::tenant::tenant_dao::{
   find_by_id as find_by_id_tenant,
@@ -393,16 +396,27 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
   
   let auth_model = get_auth_model_err()?;
   
-  let usr_model = find_by_id_usr(
-    auth_model.id,
-    options,
-  ).await?;
   let usr_model = validate_option_usr(
-    usr_model
+    find_by_id_usr(
+      auth_model.id,
+      options.clone(),
+    ).await?
   ).await?;
   
+  let role_ids = usr_model.role_ids;
   let org_ids = usr_model.org_ids;
   let org_ids_lbl = usr_model.org_ids_lbl;
+  
+  // 角色
+  let role_models = find_by_ids_role(
+    role_ids,
+    options.clone(),
+  ).await?;
+  
+  let role_codes = role_models
+    .into_iter()
+    .map(|item| item.code)
+    .collect::<Vec<_>>();
   
   let org_id = get_auth_org_id();
   
@@ -419,6 +433,7 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
   Ok(GetLoginInfo {
     lbl: usr_model.lbl,
     username: usr_model.username,
+    role_codes,
     lang: auth_model.lang,
     org_id,
     org_id_models,
