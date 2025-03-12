@@ -201,6 +201,7 @@ export async function findCount(
   search?: Readonly<MenuSearch>,
   options?: {
     is_debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<number> {
   

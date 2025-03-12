@@ -182,6 +182,7 @@ export async function findCount(
   search?: Readonly<IconSearch>,
   options?: {
     is_debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<number> {
   

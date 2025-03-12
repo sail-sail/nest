@@ -210,6 +210,7 @@ export async function findCount(
   search?: Readonly<BackgroundTaskSearch>,
   options?: {
     is_debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<number> {
   

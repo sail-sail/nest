@@ -1150,7 +1150,8 @@ async function getFromQuery(
 export async function findCount(
   search?: Readonly<<#=searchName#>>,
   options?: {
-    is_debug?: boolean;<#
+    is_debug?: boolean;
+    ids_limit?: number;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
