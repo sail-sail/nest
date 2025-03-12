@@ -176,6 +176,7 @@ export async function findCount(
   search?: Readonly<LangSearch>,
   options?: {
     is_debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<number> {
   
