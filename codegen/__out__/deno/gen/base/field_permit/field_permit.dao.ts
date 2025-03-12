@@ -142,6 +142,7 @@ export async function findCount(
   search?: Readonly<FieldPermitSearch>,
   options?: {
     is_debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<number> {
   
