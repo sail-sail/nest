@@ -871,20 +871,25 @@ const {
 
 const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
 
+/** 当前表格数据对应的搜索条件 */
+let currentSearch = $ref<OperationRecordSearch>({ });
+
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
   clearDirty();
+  const search = getDataSearch();
+  currentSearch = search;
   if (isCount) {
     await Promise.all([
-      useFindAll(opt),
-      useFindCount(opt),
+      useFindAll(search, opt),
+      useFindCount(search, opt),
     ]);
   } else {
     await Promise.all([
-      useFindAll(opt),
+      useFindAll(search, opt),
     ]);
   }
 }
@@ -906,14 +911,14 @@ function getDataSearch() {
 }
 
 async function useFindAll(
+  search: OperationRecordSearch,
   opt?: GqlOpt,
 ) {
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    const search2 = getDataSearch();
     tableData = await findAll(
-      search2,
+      search,
       {
         pgSize,
         pgOffset,
@@ -924,9 +929,8 @@ async function useFindAll(
       opt,
     );
   } else {
-    const search2 = getDataSearch();
     tableData = await findAll(
-      search2,
+      search,
       undefined,
       [
         sort,
@@ -937,6 +941,7 @@ async function useFindAll(
 }
 
 async function useFindCount(
+  search: OperationRecordSearch,
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
@@ -1311,12 +1316,15 @@ watch(
     if (isSearchReset) {
       return;
     }
-    search.is_deleted = builtInSearch.is_deleted;
-    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
-      return;
+    if (builtInSearch.is_deleted != null) {
+      search.is_deleted = builtInSearch.is_deleted;
     }
     if (showBuildIn) {
       Object.assign(search, builtInSearch);
+    }
+    const search2 = getDataSearch();
+    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
+      return;
     }
     await dataGrid(true);
   },

@@ -26,6 +26,10 @@ export function deepCompare(a: any, b: any, strict = false, excludeKeys: string[
   }
   if (a instanceof Object && b instanceof Object) {
     const keys = Object.keys(a);
+    const bKeys = Object.keys(b);
+    if (keys.length !== bKeys.length) {
+      return false;
+    }
     for (const key of keys) {
       if (!deepCompare(a[key], b[key], strict, excludeKeys)) {
         return false;
