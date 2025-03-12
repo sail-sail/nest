@@ -261,6 +261,8 @@ let dialogNotice = $ref("");
 let dialogModel: LangInput = $ref({
 } as LangInput);
 
+let lang_model = $ref<LangModel>();
+
 let ids = $ref<LangId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<LangId[]>([ ]);
@@ -531,11 +533,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  lang_model = data;
 }
 
 /** 键盘按 PageUp */

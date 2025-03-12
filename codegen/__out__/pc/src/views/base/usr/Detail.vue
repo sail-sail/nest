@@ -402,6 +402,8 @@ let dialogModel: UsrInput = $ref({
   org_ids: [ ],
 } as UsrInput);
 
+let usr_model = $ref<UsrModel>();
+
 let ids = $ref<UsrId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<UsrId[]>([ ]);
@@ -706,12 +708,13 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     old_default_org_id = dialogModel.default_org_id;
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  usr_model = data;
 }
 
 /** 键盘按 PageUp */

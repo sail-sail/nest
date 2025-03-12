@@ -4298,7 +4298,9 @@ let dialogModel: <#=inputName#> = $ref({<#
     }
   }
   #>
-} as <#=inputName#>);<#
+} as <#=inputName#>);
+
+let <#=table#>_model = $ref<<#=modelName#>>();<#
 if (county_lbl_column) {
 #>
 
@@ -6067,7 +6069,7 @@ async function onRefresh() {
   }
   #>
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,<#
       for (const inlineForeignTab of inlineForeignTabs) {
         const table = inlineForeignTab.table;
@@ -6087,7 +6089,7 @@ async function onRefresh() {
       #><#
       }
       #>
-    };<#
+    });<#
     if (mod === "base" && table === "usr") {
     #>
     old_default_org_id = dialogModel.default_org_id;<#
@@ -6099,6 +6101,7 @@ async function onRefresh() {
     }
     #>
   }
+  <#=table#>_model = data;
 }
 
 /** 键盘按 PageUp */
