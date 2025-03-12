@@ -165,6 +165,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验系统选项是否存在 */
+export async function validateOption(
+  model0?: OptionsModel,
+): Promise<OptionsModel> {
+  const model = await optionsDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除系统选项
  */

@@ -316,6 +316,8 @@ let dialogModel: DeptInput = $ref({
   usr_ids: [ ],
 } as DeptInput);
 
+let dept_model = $ref<DeptModel>();
+
 let ids = $ref<DeptId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DeptId[]>([ ]);
@@ -608,11 +610,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  dept_model = data;
 }
 
 /** 键盘按 PageUp */

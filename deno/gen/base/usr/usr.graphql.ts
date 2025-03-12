@@ -195,6 +195,7 @@ input UsrSearch {
   role_ids: [RoleId!]
   "所属角色"
   role_ids_is_null: Boolean
+  role_codes: [String!]
   "所属角色"
   role_ids_lbl: [String!]
   "所属角色"

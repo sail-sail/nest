@@ -368,6 +368,8 @@ let dialogModel: TenantInput = $ref({
   menu_ids: [ ],
 } as TenantInput);
 
+let tenant_model = $ref<TenantModel>();
+
 let ids = $ref<TenantId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<TenantId[]>([ ]);
@@ -698,11 +700,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  tenant_model = data;
 }
 
 /** 键盘按 PageUp */

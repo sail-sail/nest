@@ -248,6 +248,8 @@ let dialogNotice = $ref("");
 let dialogModel: OrgInput = $ref({
 } as OrgInput);
 
+let org_model = $ref<OrgModel>();
+
 let ids = $ref<OrgId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<OrgId[]>([ ]);
@@ -533,11 +535,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  org_model = data;
 }
 
 /** 键盘按 PageUp */

@@ -293,6 +293,8 @@ let dialogNotice = $ref("");
 let dialogModel: MenuInput = $ref({
 } as MenuInput);
 
+let menu_model = $ref<MenuModel>();
+
 let ids = $ref<MenuId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<MenuId[]>([ ]);
@@ -578,11 +580,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  menu_model = data;
 }
 
 /** 键盘按 PageUp */
