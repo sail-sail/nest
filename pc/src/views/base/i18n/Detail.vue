@@ -290,6 +290,8 @@ let dialogNotice = $ref("");
 let dialogModel: I18nInput = $ref({
 } as I18nInput);
 
+let i18n_model = $ref<I18nModel>();
+
 let ids = $ref<I18nId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<I18nId[]>([ ]);
@@ -545,11 +547,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  i18n_model = data;
 }
 
 /** 键盘按 PageUp */

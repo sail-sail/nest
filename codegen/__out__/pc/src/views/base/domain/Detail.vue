@@ -261,6 +261,8 @@ let dialogNotice = $ref("");
 let dialogModel: DomainInput = $ref({
 } as DomainInput);
 
+let domain_model = $ref<DomainModel>();
+
 let ids = $ref<DomainId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DomainId[]>([ ]);
@@ -548,11 +550,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  domain_model = data;
 }
 
 /** 键盘按 PageUp */

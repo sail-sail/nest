@@ -275,6 +275,8 @@ let dialogNotice = $ref("");
 let dialogModel: OptionsInput = $ref({
 } as OptionsInput);
 
+let options_model = $ref<OptionsModel>();
+
 let ids = $ref<OptionsId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<OptionsId[]>([ ]);
@@ -562,11 +564,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  options_model = data;
 }
 
 /** 键盘按 PageUp */
