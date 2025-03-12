@@ -284,6 +284,8 @@ let dialogNotice = $ref("");
 let dialogModel: SmsSendRecordInput = $ref({
 } as SmsSendRecordInput);
 
+let sms_send_record_model = $ref<SmsSendRecordModel>();
+
 let ids = $ref<SmsSendRecordId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<SmsSendRecordId[]>([ ]);
@@ -515,10 +517,11 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
   }
+  sms_send_record_model = data;
 }
 
 /** 键盘按 PageUp */
