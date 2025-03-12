@@ -140,6 +140,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验短信发送记录是否存在 */
+export async function validateOption(
+  model0?: SmsSendRecordModel,
+): Promise<SmsSendRecordModel> {
+  const model = await sms_send_recordDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除短信发送记录
  */

@@ -290,6 +290,8 @@ let dialogNotice = $ref("");
 let dialogModel: SmsAppInput = $ref({
 } as SmsAppInput);
 
+let sms_app_model = $ref<SmsAppModel>();
+
 let ids = $ref<SmsAppId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<SmsAppId[]>([ ]);
@@ -582,11 +584,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  sms_app_model = data;
 }
 
 /** 键盘按 PageUp */
