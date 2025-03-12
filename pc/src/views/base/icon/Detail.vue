@@ -277,6 +277,8 @@ let dialogNotice = $ref("");
 let dialogModel: IconInput = $ref({
 } as IconInput);
 
+let icon_model = $ref<IconModel>();
+
 let ids = $ref<IconId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<IconId[]>([ ]);
@@ -554,11 +556,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  icon_model = data;
 }
 
 /** 键盘按 PageUp */

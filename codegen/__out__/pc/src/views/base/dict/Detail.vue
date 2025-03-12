@@ -408,6 +408,8 @@ let dialogNotice = $ref("");
 let dialogModel: DictInput = $ref({
 } as DictInput);
 
+let dict_model = $ref<DictModel>();
+
 let ids = $ref<DictId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DictId[]>([ ]);
@@ -689,11 +691,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  dict_model = data;
 }
 
 /** 键盘按 PageUp */

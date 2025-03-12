@@ -286,6 +286,8 @@ let dialogNotice = $ref("");
 let dialogModel: DictbizDetailInput = $ref({
 } as DictbizDetailInput);
 
+let dictbiz_detail_model = $ref<DictbizDetailModel>();
+
 let ids = $ref<DictbizDetailId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<DictbizDetailId[]>([ ]);
@@ -563,11 +565,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  dictbiz_detail_model = data;
 }
 
 /** 键盘按 PageUp */

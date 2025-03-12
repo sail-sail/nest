@@ -293,6 +293,8 @@ let dialogModel: RoleInput = $ref({
   field_permit_ids: [ ],
 } as RoleInput);
 
+let role_model = $ref<RoleModel>();
+
 let ids = $ref<RoleId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<RoleId[]>([ ]);
@@ -581,11 +583,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  role_model = data;
 }
 
 /** 键盘按 PageUp */
