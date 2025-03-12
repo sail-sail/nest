@@ -140,6 +140,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验图标库是否存在 */
+export async function validateOption(
+  model0?: IconModel,
+): Promise<IconModel> {
+  const model = await iconDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除图标库
  */

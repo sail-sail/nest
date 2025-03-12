@@ -246,6 +246,8 @@ let dialogNotice = $ref("");
 let dialogModel: FieldPermitInput = $ref({
 } as FieldPermitInput);
 
+let field_permit_model = $ref<FieldPermitModel>();
+
 let ids = $ref<FieldPermitId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<FieldPermitId[]>([ ]);
@@ -505,11 +507,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  field_permit_model = data;
 }
 
 /** 键盘按 PageUp */

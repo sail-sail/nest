@@ -55,7 +55,7 @@
         </el-form-item>
       </template>
       
-      <template v-if="(showBuildIn || builtInSearch?.role_ids == null)">
+      <template v-if="(showBuildIn || (builtInSearch?.role_ids == null && builtInSearch?.role_codes == null))">
         <el-form-item
           label="所属角色"
           prop="role_ids"
@@ -896,6 +896,7 @@ const props = defineProps<{
   username?: string; // 用户名
   username_like?: string; // 用户名
   role_ids?: string|string[]; // 所属角色
+  role_codes?: string|string[]; // 所属角色
   role_ids_lbl?: string[]; // 所属角色
   dept_ids?: string|string[]; // 所属部门
   dept_ids_lbl?: string[]; // 所属部门
@@ -916,6 +917,7 @@ const builtInSearchType: { [key: string]: string } = {
   isListSelectDialog: "0|1",
   ids: "string[]",
   role_ids: "string[]",
+  role_codes: "string[]",
   role_ids_lbl: "string[]",
   dept_ids: "string[]",
   dept_ids_lbl: "string[]",
@@ -1360,20 +1362,25 @@ const {
 
 const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
 
+/** 当前表格数据对应的搜索条件 */
+let currentSearch = $ref<UsrSearch>({ });
+
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
   clearDirty();
+  const search = getDataSearch();
+  currentSearch = search;
   if (isCount) {
     await Promise.all([
-      useFindAll(opt),
-      useFindCount(opt),
+      useFindAll(search, opt),
+      useFindCount(search, opt),
     ]);
   } else {
     await Promise.all([
-      useFindAll(opt),
+      useFindAll(search, opt),
     ]);
   }
 }
@@ -1395,14 +1402,14 @@ function getDataSearch() {
 }
 
 async function useFindAll(
+  search: UsrSearch,
   opt?: GqlOpt,
 ) {
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    const search2 = getDataSearch();
     tableData = await findAll(
-      search2,
+      search,
       {
         pgSize,
         pgOffset,
@@ -1413,9 +1420,8 @@ async function useFindAll(
       opt,
     );
   } else {
-    const search2 = getDataSearch();
     tableData = await findAll(
-      search2,
+      search,
       undefined,
       [
         sort,
@@ -1426,11 +1432,11 @@ async function useFindAll(
 }
 
 async function useFindCount(
+  search: UsrSearch,
   opt?: GqlOpt,
 ) {
-  const search2 = getDataSearch();
   page.total = await findCount(
-    search2,
+    search,
     opt,
   );
 }
@@ -2028,12 +2034,15 @@ watch(
     if (isSearchReset) {
       return;
     }
-    search.is_deleted = builtInSearch.is_deleted;
-    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
-      return;
+    if (builtInSearch.is_deleted != null) {
+      search.is_deleted = builtInSearch.is_deleted;
     }
     if (showBuildIn) {
       Object.assign(search, builtInSearch);
+    }
+    const search2 = getDataSearch();
+    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
+      return;
     }
     await dataGrid(true);
   },
