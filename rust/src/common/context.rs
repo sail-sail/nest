@@ -192,7 +192,7 @@ pub fn get_auth_id() -> Option<UsrId> {
   CTX.with(|ctx| {
     ctx.auth_model
       .as_ref()
-      .and_then(|item| Some(item.id.clone()))
+      .map(|item| item.id.clone())
   })
 }
 
@@ -216,7 +216,7 @@ pub fn get_auth_tenant_id() -> Option<TenantId> {
     }
     ctx.auth_model
       .as_ref()
-      .and_then(|item| Some(item.tenant_id.clone()))
+      .map(|item| item.tenant_id.clone())
   })
 }
 
@@ -412,20 +412,18 @@ impl Ctx {
               err,
             );
           }
+        } else if err.is::<&str>() || err.is::<String>() {
+          info!(
+            "{} {}",
+            self.req_id,
+            err,
+          );
         } else {
-          if err.is::<&str>() || err.is::<String>() {
-            info!(
-              "{} {}",
-              self.req_id,
-              err,
-            );
-          } else {
-            error!(
-              "{} {:?}",
-              self.req_id,
-              err,
-            );
-          }
+          error!(
+            "{} {:?}",
+            self.req_id,
+            err,
+          );
         }
         let rollback = match exception {
           Some(err) => err.rollback,
@@ -469,20 +467,18 @@ impl Ctx {
             err,
           );
         }
+      } else if err.is::<&str>() || err.is::<String>() {
+        info!(
+          "{} {}",
+          self.req_id,
+          err,
+        );
       } else {
-        if err.is::<&str>() || err.is::<String>() {
-          info!(
-            "{} {}",
-            self.req_id,
-            err,
-          );
-        } else {
-          error!(
-            "{} {:?}",
-            self.req_id,
-            err,
-          );
-        }
+        error!(
+          "{} {:?}",
+          self.req_id,
+          err,
+        );
       }
       return Err(err);
     }
