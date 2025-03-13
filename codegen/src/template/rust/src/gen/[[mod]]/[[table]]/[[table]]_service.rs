@@ -146,6 +146,7 @@ use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::{
 #[allow(unused_variables)]
 async fn set_search_query(
   search: &mut <#=tableUP#>Search,
+  options: Option<Options>,
 ) -> Result<()> {<#
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
@@ -200,7 +201,10 @@ pub async fn find_all(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;<#
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
@@ -228,7 +232,10 @@ pub async fn find_count(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;<#
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   
@@ -255,7 +262,10 @@ pub async fn find_one(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;<#
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   

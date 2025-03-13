@@ -20,6 +20,7 @@ use super::login_log_dao;
 #[allow(unused_variables)]
 async fn set_search_query(
   search: &mut LoginLogSearch,
+  options: Option<Options>,
 ) -> Result<()> {
   Ok(())
 }
@@ -34,7 +35,10 @@ pub async fn find_all(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
   let res = login_log_dao::find_all(
     Some(search),
@@ -54,7 +58,10 @@ pub async fn find_count(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
   let res = login_log_dao::find_count(
     Some(search),
@@ -73,7 +80,10 @@ pub async fn find_one(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
   let model = login_log_dao::find_one(
     Some(search),
