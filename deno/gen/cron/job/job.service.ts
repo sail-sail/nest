@@ -155,6 +155,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验任务是否存在 */
+export async function validateOption(
+  model0?: JobModel,
+): Promise<JobModel> {
+  const model = await jobDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除任务
  */

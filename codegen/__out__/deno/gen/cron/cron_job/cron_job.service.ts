@@ -145,6 +145,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验定时任务是否存在 */
+export async function validateOption(
+  model0?: CronJobModel,
+): Promise<CronJobModel> {
+  const model = await cron_jobDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除定时任务
  */
