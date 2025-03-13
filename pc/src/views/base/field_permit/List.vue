@@ -173,7 +173,7 @@
     <template v-if="true">
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('edit', '编辑') && !isLocked"
         plain
         type="primary"
         @click="openEdit"

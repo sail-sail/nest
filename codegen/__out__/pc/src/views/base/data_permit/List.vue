@@ -173,7 +173,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('add') && !isLocked"
+        v-if="permit('add', '新增') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -185,7 +185,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('add') && !isLocked"
+        v-if="permit('add', '复制') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -197,7 +197,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('edit', '编辑') && !isLocked"
         plain
         type="primary"
         @click="openEdit"
@@ -292,7 +292,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('add') && !isLocked"
+              v-if="permit('add', '导入') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
