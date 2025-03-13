@@ -858,7 +858,7 @@ for (let i = 0; i < columns.length; i++) {
       #>
       
       <el-button
-        v-if="permit('add') && !isLocked"
+        v-if="permit('add', '新增') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -879,7 +879,7 @@ for (let i = 0; i < columns.length; i++) {
       #>
       
       <el-button
-        v-if="permit('add') && !isLocked"
+        v-if="permit('add', '复制') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -904,7 +904,7 @@ for (let i = 0; i < columns.length; i++) {
       #>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('edit', '编辑') && !isLocked"
         plain
         type="primary"
         @click="openEdit"
@@ -1150,7 +1150,7 @@ for (let i = 0; i < columns.length; i++) {
             #>
             
             <el-dropdown-item
-              v-if="permit('add') && !isLocked"
+              v-if="permit('add', '导入') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             ><#
@@ -1169,7 +1169,7 @@ for (let i = 0; i < columns.length; i++) {
             #>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onEnableByIds(1)"
             ><#
@@ -1184,7 +1184,7 @@ for (let i = 0; i < columns.length; i++) {
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onEnableByIds(0)"
             ><#
@@ -1203,7 +1203,7 @@ for (let i = 0; i < columns.length; i++) {
             #>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onLockByIds(1)"
             ><#
@@ -1218,7 +1218,7 @@ for (let i = 0; i < columns.length; i++) {
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onLockByIds(0)"
             ><#
@@ -1786,7 +1786,7 @@ for (let i = 0; i < columns.length; i++) {
             #>
               <template #default="{ row }">
                 <CustomInputNumber
-                  v-if="permit('edit')<#
+                  v-if="permit('edit', '编辑')<#
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
@@ -1906,7 +1906,7 @@ for (let i = 0; i < columns.length; i++) {
               #>
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit')<#
+                  v-if="permit('edit', '编辑')<#
                   if (hasLocked) {
                   #> && row.is_locked !== 1<#
                   }
@@ -1920,7 +1920,7 @@ for (let i = 0; i < columns.length; i++) {
               #>
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit')<#
+                  v-if="permit('edit', '编辑')<#
                   if (hasLocked && column_name !== "is_locked") {
                   #> && row.is_locked !== 1<#
                   }

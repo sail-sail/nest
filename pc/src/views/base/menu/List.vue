@@ -186,7 +186,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('add') && !isLocked"
+        v-if="permit('add', '新增') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -198,7 +198,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('add') && !isLocked"
+        v-if="permit('add', '复制') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -210,7 +210,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('edit', '编辑') && !isLocked"
         plain
         type="primary"
         @click="openEdit"
@@ -305,7 +305,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('add') && !isLocked"
+              v-if="permit('add', '导入') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
@@ -313,7 +313,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onEnableByIds(1)"
             >
@@ -321,7 +321,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onEnableByIds(0)"
             >
@@ -329,7 +329,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onLockByIds(1)"
             >
@@ -337,7 +337,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onLockByIds(0)"
             >
@@ -563,7 +563,7 @@
             >
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_locked"
                   @change="onIs_locked(row.id, row.is_locked)"
                 ></CustomSwitch>
@@ -579,7 +579,7 @@
             >
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_enabled"
                   @change="onIs_enabled(row.id, row.is_enabled)"
                 ></CustomSwitch>
@@ -595,7 +595,7 @@
             >
               <template #default="{ row }">
                 <CustomInputNumber
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateById(
