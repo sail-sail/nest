@@ -293,6 +293,8 @@ let dialogNotice = $ref("");
 let dialogModel: BackgroundTaskInput = $ref({
 } as BackgroundTaskInput);
 
+let background_task_model = $ref<BackgroundTaskModel>();
+
 let ids = $ref<BackgroundTaskId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<BackgroundTaskId[]>([ ]);
@@ -536,11 +538,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  background_task_model = data;
 }
 
 /** 键盘按 PageUp */

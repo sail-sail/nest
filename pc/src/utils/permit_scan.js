@@ -80,11 +80,11 @@ async function savePermit(context, model) {
     );
     const model0 = res[0][0];
     if (model0) {
-      const lbl0Arr = model0.lbl.split("，");
-      if (!lbl0Arr.includes(model.lbl)) {
-        lbl0Arr.push(model.lbl);
-      }
-      const lbl = lbl0Arr.join("，");
+      let lbl0Arr = [];
+      let lblArr = model.lbl.split("/");
+      lbl0Arr = lbl0Arr.concat(lblArr);
+      lbl0Arr = Array.from(new Set(lbl0Arr));
+      const lbl = lbl0Arr.join("/");
       const sql = `
         update base_permit
         set

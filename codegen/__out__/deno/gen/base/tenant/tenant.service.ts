@@ -145,6 +145,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验租户是否存在 */
+export async function validateOption(
+  model0?: TenantModel,
+): Promise<TenantModel> {
+  const model = await tenantDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除租户
  */

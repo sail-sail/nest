@@ -417,7 +417,7 @@ export async function uniLogin() {
         usrStore.setUsrId(login_model.usr_id);
         usrStore.setUsername(login_model.username);
         usrStore.setTenantId(login_model.tenant_id);
-        usrStore.setLang(login_model.lang);
+        usrStore.setLang(login_model.lang ?? "");
         return true;
       }
     }

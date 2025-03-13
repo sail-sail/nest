@@ -80,8 +80,9 @@ export async function getLoginInfo(
       query {
         getLoginInfo {
           lbl
-          lang
           username
+          role_codes
+          lang
           org_id
           org_id_models {
             id

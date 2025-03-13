@@ -1150,7 +1150,8 @@ async function getFromQuery(
 export async function findCount(
   search?: Readonly<<#=searchName#>>,
   options?: {
-    is_debug?: boolean;<#
+    is_debug?: boolean;
+    ids_limit?: number;<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
     hasDataPermit?: boolean,<#
@@ -1176,6 +1177,66 @@ export async function findCount(
     options = options ?? { };
     options.is_debug = false;
   }
+  
+  if (search?.id === "") {
+    return 0;
+  }
+  if (search && search.ids && search.ids.length === 0) {
+    return 0;
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+    if (isPassword) {
+      continue;
+    }
+    if (column.isEncrypt) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #><#
+    if (
+      [
+        "is_hidden",
+        "is_sys",
+      ].includes(column_name)
+      || foreignKey
+      || column.dict || column.dictbiz
+    ) {
+  #>
+  // <#=column_comment#>
+  if (search && search.<#=column_name#> != null) {
+    const len = search.<#=column_name#>.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.<#=column_name#>.length > ${ ids_limit }`);
+    }
+  }<#
+    }
+  #><#
+  }
+  #>
   
   const args = new QueryArgs();
   let sql = `select count(1) total from (select 1 from ${ await getFromQuery(args, search, options) }`;
