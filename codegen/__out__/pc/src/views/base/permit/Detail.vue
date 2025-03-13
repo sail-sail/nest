@@ -144,7 +144,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -245,6 +245,8 @@ let dialogNotice = $ref("");
 
 let dialogModel: PermitInput = $ref({
 } as PermitInput);
+
+let permit_model = $ref<PermitModel>();
 
 let ids = $ref<PermitId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -499,11 +501,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  permit_model = data;
 }
 
 /** 键盘按 PageUp */

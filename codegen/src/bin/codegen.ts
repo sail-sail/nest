@@ -101,7 +101,14 @@ function validateGitStaging() {
     console.log(`table:`, table);
     
     const context = await initContext();
-    await exec(context, table);
+    try {
+      await exec(context, table);
+    } catch (err) {
+      execSync("git restore .", {
+        cwd: projectPh,
+      });
+      throw err;
+    }
     await gitDiffOut();
     await denoGenTypes();
     

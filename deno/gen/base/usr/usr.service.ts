@@ -145,6 +145,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验用户是否存在 */
+export async function validateOption(
+  model0?: UsrModel,
+): Promise<UsrModel> {
+  const model = await usrDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除用户
  */

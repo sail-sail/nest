@@ -154,6 +154,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验数据权限是否存在 */
+export async function validateOption(
+  model0?: DataPermitModel,
+): Promise<DataPermitModel> {
+  const model = await data_permitDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除数据权限
  */
