@@ -138,6 +138,9 @@ async function getWhereQuery(
   if (search?.role_ids_is_null) {
     whereQuery += ` and base_role.id is null`;
   }
+  if (search?.role_codes != null) {
+    whereQuery += ` and base_role.code in (${ args.push(search.role_codes) })`;
+  }
   if (search?.dept_ids != null) {
     whereQuery += ` and base_dept.id in (${ args.push(search.dept_ids) })`;
   }
@@ -296,6 +299,7 @@ export async function findCount(
   search?: Readonly<UsrSearch>,
   options?: {
     is_debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<number> {
   
@@ -315,6 +319,123 @@ export async function findCount(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+  
+  if (search?.id === "") {
+    return 0;
+  }
+  if (search && search.ids && search.ids.length === 0) {
+    return 0;
+  }
+  // 所属角色
+  if (search && search.role_ids != null) {
+    const len = search.role_ids.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.role_ids.length > ${ ids_limit }`);
+    }
+  }
+  // 所属部门
+  if (search && search.dept_ids != null) {
+    const len = search.dept_ids.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.dept_ids.length > ${ ids_limit }`);
+    }
+  }
+  // 所属组织
+  if (search && search.org_ids != null) {
+    const len = search.org_ids.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.org_ids.length > ${ ids_limit }`);
+    }
+  }
+  // 默认组织
+  if (search && search.default_org_id != null) {
+    const len = search.default_org_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.default_org_id.length > ${ ids_limit }`);
+    }
+  }
+  // 类型
+  if (search && search.type != null) {
+    const len = search.type.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.type.length > ${ ids_limit }`);
+    }
+  }
+  // 锁定
+  if (search && search.is_locked != null) {
+    const len = search.is_locked.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_locked.length > ${ ids_limit }`);
+    }
+  }
+  // 启用
+  if (search && search.is_enabled != null) {
+    const len = search.is_enabled.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_enabled.length > ${ ids_limit }`);
+    }
+  }
+  // 创建人
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  // 更新人
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  // 隐藏记录
+  if (search && search.is_hidden != null) {
+    const len = search.is_hidden.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_hidden.length > ${ ids_limit }`);
+    }
   }
   
   const args = new QueryArgs();
@@ -388,6 +509,17 @@ export async function findAll(
     const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
     if (len > ids_limit) {
       throw new Error(`search.role_ids.length > ${ ids_limit }`);
+    }
+  }
+  // 所属角色
+  if (search && search.role_codes != null) {
+    const len = search.role_codes.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.role_codes.length > ${ ids_limit }`);
     }
   }
   // 所属部门

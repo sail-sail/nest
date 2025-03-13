@@ -140,6 +140,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验登录日志是否存在 */
+export async function validateOption(
+  model0?: LoginLogModel,
+): Promise<LoginLogModel> {
+  const model = await login_logDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除登录日志
  */
