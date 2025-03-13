@@ -140,6 +140,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验公众号用户是否存在 */
+export async function validateOption(
+  model0?: WxoUsrModel,
+): Promise<WxoUsrModel> {
+  const model = await wxo_usrDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除公众号用户
  */

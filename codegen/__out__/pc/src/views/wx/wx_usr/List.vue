@@ -150,7 +150,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('add') && !isLocked"
+        v-if="permit('add', '新增') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -162,7 +162,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('add') && !isLocked"
+        v-if="permit('add', '复制') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -174,7 +174,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('edit', '编辑') && !isLocked"
         plain
         type="primary"
         @click="openEdit"
@@ -269,7 +269,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('add') && !isLocked"
+              v-if="permit('add', '导入') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
@@ -1115,20 +1115,25 @@ const {
 
 const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
 
+/** 当前表格数据对应的搜索条件 */
+let currentSearch = $ref<WxUsrSearch>({ });
+
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
   clearDirty();
+  const search = getDataSearch();
+  currentSearch = search;
   if (isCount) {
     await Promise.all([
-      useFindAll(opt),
-      useFindCount(opt),
+      useFindAll(search, opt),
+      useFindCount(search, opt),
     ]);
   } else {
     await Promise.all([
-      useFindAll(opt),
+      useFindAll(search, opt),
     ]);
   }
 }
@@ -1150,14 +1155,14 @@ function getDataSearch() {
 }
 
 async function useFindAll(
+  search: WxUsrSearch,
   opt?: GqlOpt,
 ) {
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    const search2 = getDataSearch();
     tableData = await findAll(
-      search2,
+      search,
       {
         pgSize,
         pgOffset,
@@ -1168,9 +1173,8 @@ async function useFindAll(
       opt,
     );
   } else {
-    const search2 = getDataSearch();
     tableData = await findAll(
-      search2,
+      search,
       undefined,
       [
         sort,
@@ -1181,6 +1185,7 @@ async function useFindAll(
 }
 
 async function useFindCount(
+  search: WxUsrSearch,
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
@@ -1673,12 +1678,15 @@ watch(
     if (isSearchReset) {
       return;
     }
-    search.is_deleted = builtInSearch.is_deleted;
-    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
-      return;
+    if (builtInSearch.is_deleted != null) {
+      search.is_deleted = builtInSearch.is_deleted;
     }
     if (showBuildIn) {
       Object.assign(search, builtInSearch);
+    }
+    const search2 = getDataSearch();
+    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
+      return;
     }
     await dataGrid(true);
   },

@@ -140,6 +140,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验微信JSAPI下单是否存在 */
+export async function validateOption(
+  model0?: PayTransactionsJsapiModel,
+): Promise<PayTransactionsJsapiModel> {
+  const model = await pay_transactions_jsapiDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除微信JSAPI下单
  */

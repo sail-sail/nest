@@ -140,6 +140,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验小程序用户是否存在 */
+export async function validateOption(
+  model0?: WxUsrModel,
+): Promise<WxUsrModel> {
+  const model = await wx_usrDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除小程序用户
  */
