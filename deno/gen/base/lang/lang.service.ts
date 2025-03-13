@@ -155,14 +155,13 @@ export async function deleteByIds(
   ids: LangId[],
 ): Promise<number> {
   
-  {
-    const models = await langDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_sys === 1) {
-        throw "不能删除系统记录";
-      }
+  const old_models = await langDao.findAll({
+    ids,
+  });
+  
+  for (const old_model of old_models) {
+    if (old_model.is_sys === 1) {
+      throw "不能删除系统记录";
     }
   }
   
