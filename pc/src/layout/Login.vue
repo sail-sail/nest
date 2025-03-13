@@ -306,7 +306,7 @@ async function onLogin() {
   usrStore.usr_id = loginModel.usr_id;
   usrStore.username = loginModel.username;
   usrStore.tenant_id = loginModel.tenant_id;
-  usrStore.lang = loginModel.lang;
+  usrStore.lang = loginModel.lang ?? "";
   tabsStore.clearKeepAliveNames();
   await Promise.all([
     indexStore.initI18nVersion(),

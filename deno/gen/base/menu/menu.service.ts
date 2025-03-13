@@ -145,6 +145,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验菜单是否存在 */
+export async function validateOption(
+  model0?: MenuModel,
+): Promise<MenuModel> {
+  const model = await menuDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除菜单
  */

@@ -150,6 +150,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验系统字典明细是否存在 */
+export async function validateOption(
+  model0?: DictDetailModel,
+): Promise<DictDetailModel> {
+  const model = await dict_detailDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除系统字典明细
  */

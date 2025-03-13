@@ -145,6 +145,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验角色是否存在 */
+export async function validateOption(
+  model0?: RoleModel,
+): Promise<RoleModel> {
+  const model = await roleDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除角色
  */

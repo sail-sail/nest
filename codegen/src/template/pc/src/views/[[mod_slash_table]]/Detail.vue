@@ -295,7 +295,7 @@ for (let i = 0; i < columns.length; i++) {
           }).join("");
           let vIf = [ ];
           if (column.noAdd) {
-            vIf.push("dialogAction !== 'add'");
+            vIf.push("dialogAction !== 'add' && dialogAction !== 'copy'");
           }
           if (column.noEdit) {
             vIf.push("dialogAction !== 'edit'");
@@ -3176,7 +3176,7 @@ for (let i = 0; i < columns.length; i++) {
               #>
               
               <el-table-column
-                v-if="permit('edit') && !isLocked && !isReadonly"
+                v-if="permit('edit', '编辑') && !isLocked && !isReadonly"
                 prop="_operation"<#
                 if (isUseI18n) {
                 #>
@@ -3267,7 +3267,7 @@ for (let i = 0; i < columns.length; i++) {
       #>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSaveAndCopy"
@@ -3290,7 +3290,7 @@ for (let i = 0; i < columns.length; i++) {
       #>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -3317,7 +3317,7 @@ for (let i = 0; i < columns.length; i++) {
         if (hasAudit) {
         #>inited && <#
         }
-        #>(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        #>(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -4298,7 +4298,9 @@ let dialogModel: <#=inputName#> = $ref({<#
     }
   }
   #>
-} as <#=inputName#>);<#
+} as <#=inputName#>);
+
+let <#=table#>_model = $ref<<#=modelName#>>();<#
 if (county_lbl_column) {
 #>
 
@@ -6067,7 +6069,7 @@ async function onRefresh() {
   }
   #>
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,<#
       for (const inlineForeignTab of inlineForeignTabs) {
         const table = inlineForeignTab.table;
@@ -6087,7 +6089,7 @@ async function onRefresh() {
       #><#
       }
       #>
-    };<#
+    });<#
     if (mod === "base" && table === "usr") {
     #>
     old_default_org_id = dialogModel.default_org_id;<#
@@ -6099,6 +6101,7 @@ async function onRefresh() {
     }
     #>
   }
+  <#=table#>_model = data;
 }
 
 /** 键盘按 PageUp */

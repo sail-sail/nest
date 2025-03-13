@@ -570,6 +570,14 @@ export async function updateById(
   }
   #>
   return id2;
+}
+
+/** 校验<#=table_comment#>是否存在 */
+export async function validateOption(
+  model0?: <#=modelName#>,
+): Promise<<#=modelName#>> {
+  const model = await <#=table#>Dao.validateOption(model0);
+  return model;
 }<#
 if (hasAudit) {
 #>

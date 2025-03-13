@@ -624,7 +624,7 @@ async function initFrame() {
       ]);
       loginInfo = loginInfoTmp;
       usrStore.loginInfo = loginInfo;
-      usrStore.lang = loginInfo.lang;
+      usrStore.lang = loginInfo.lang ?? "";
       usrStore.username = loginInfo.username;
     }
   }

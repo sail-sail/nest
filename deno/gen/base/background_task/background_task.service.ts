@@ -160,6 +160,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验后台任务是否存在 */
+export async function validateOption(
+  model0?: BackgroundTaskModel,
+): Promise<BackgroundTaskModel> {
+  const model = await background_taskDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除后台任务
  */
