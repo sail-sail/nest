@@ -252,6 +252,8 @@ let dialogNotice = $ref("");
 let dialogModel: CronJobLogInput = $ref({
 } as CronJobLogInput);
 
+let cron_job_log_model = $ref<CronJobLogModel>();
+
 let ids = $ref<CronJobLogId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
 let changedIds = $ref<CronJobLogId[]>([ ]);
@@ -483,10 +485,11 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
   }
+  cron_job_log_model = data;
 }
 
 /** 键盘按 PageUp */

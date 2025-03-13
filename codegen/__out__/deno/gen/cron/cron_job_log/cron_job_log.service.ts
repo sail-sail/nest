@@ -140,6 +140,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验定时任务日志是否存在 */
+export async function validateOption(
+  model0?: CronJobLogModel,
+): Promise<CronJobLogModel> {
+  const model = await cron_job_logDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除定时任务日志
  */
