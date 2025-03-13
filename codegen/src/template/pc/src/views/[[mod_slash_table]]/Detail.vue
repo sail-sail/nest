@@ -1205,7 +1205,7 @@ for (let i = 0; i < columns.length; i++) {
                 if (foreignKey) {
                   foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
                 }
-                const width = (column.width || 180) + 38;
+                const width = (column.width || 180) + 10;
                 const readonlyPlaceholder = column.readonlyPlaceholder;
                 const modelLabel = column.modelLabel;
                 const isPassword = column.isPassword;
@@ -1232,7 +1232,49 @@ for (let i = 0; i < columns.length; i++) {
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'"><#
                     if (column.isImg) {
-                    #><#
+                    #>
+                    <UploadImage
+                      v-model="row.<#=column_name#>"
+                      db="<#=mod#>_<#=table#>.<#=column_name#>"<#
+                      if (column.attMaxSize > 1) {
+                      #>
+                      :max-size="<#=column.attMaxSize#>"<#
+                      }
+                      #><#
+                      if (column.maxFileSize) {
+                      #>
+                      :max-file-size="<#=column.maxFileSize#>"<#
+                      }
+                      #><#
+                      if (column.attAccept) {
+                      #>
+                      accept="<#=column.attAccept#>"<#
+                      }
+                      #><#
+                      if (column.isPublicAtt) {
+                      #>
+                      :is-public="true"<#
+                      } else {
+                      #>
+                      :is-public="false"<#
+                      }
+                      #><#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!dialogModel.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #>
+                      :page-inited="inited"
+                      :item-height="48"
+                      un-justify="center"
+                    ></UploadImage><#
                     } else if (
                       foreignKey
                       && (foreignKey.selectType === "select" || foreignKey.selectType == null)
