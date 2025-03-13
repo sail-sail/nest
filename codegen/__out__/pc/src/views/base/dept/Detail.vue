@@ -195,7 +195,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -207,7 +207,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -276,6 +276,7 @@ import {
   updateById,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
