@@ -19,6 +19,7 @@ use super::i18n_dao;
 #[allow(unused_variables)]
 async fn set_search_query(
   search: &mut I18nSearch,
+  options: Option<Options>,
 ) -> Result<()> {
   Ok(())
 }
@@ -33,7 +34,10 @@ pub async fn find_all(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
   let res = i18n_dao::find_all(
     Some(search),
@@ -53,7 +57,10 @@ pub async fn find_count(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
   let res = i18n_dao::find_count(
     Some(search),
@@ -72,7 +79,10 @@ pub async fn find_one(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
   let model = i18n_dao::find_one(
     Some(search),

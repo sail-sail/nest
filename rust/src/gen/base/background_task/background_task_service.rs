@@ -25,6 +25,7 @@ use super::background_task_dao;
 #[allow(unused_variables)]
 async fn set_search_query(
   search: &mut BackgroundTaskSearch,
+  options: Option<Options>,
 ) -> Result<()> {
   
   let usr_id = get_auth_id_err()?;
@@ -52,7 +53,10 @@ pub async fn find_all(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
   let res = background_task_dao::find_all(
     Some(search),
@@ -72,7 +76,10 @@ pub async fn find_count(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
   let res = background_task_dao::find_count(
     Some(search),
@@ -91,7 +98,10 @@ pub async fn find_one(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
   let model = background_task_dao::find_one(
     Some(search),
