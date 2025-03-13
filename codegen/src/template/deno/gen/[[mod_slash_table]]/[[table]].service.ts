@@ -890,24 +890,27 @@ export async function auditReview(
 export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
 ): Promise<number> {<#
+  if (hasLocked || hasIsSys || hasAudit) {
+  #>
+  
+  const old_models = await <#=table#>Dao.findAll({
+    ids,
+  });<#
+  }
+  #><#
   if (hasLocked) {
   #>
   
-  {
-    const models = await <#=table#>Dao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {<#
-        if (isUseI18n) {
-        #>
-        throw await ns("不能删除已经锁定的 {0}", await ns("<#=table_comment#>"));<#
-        } else {
-        #>
-        throw "不能删除已经锁定的 <#=table_comment#>";<#
-        }
-        #>
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {<#
+      if (isUseI18n) {
+      #>
+      throw await ns("不能删除已经锁定的 {0}", await ns("<#=table_comment#>"));<#
+      } else {
+      #>
+      throw "不能删除已经锁定的 <#=table_comment#>";<#
       }
+      #>
     }
   }<#
   }
@@ -915,21 +918,35 @@ export async function deleteByIds(
   if (hasIsSys) {
   #>
   
-  {
-    const models = await <#=table#>Dao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_sys === 1) {<#
-        if (isUseI18n) {
-        #>
-        throw await ns("不能删除系统记录");<#
-        } else {
-        #>
-        throw "不能删除系统记录";<#
-        }
-        #>
+  for (const old_model of old_models) {
+    if (old_model.is_sys === 1) {<#
+      if (isUseI18n) {
+      #>
+      throw await ns("不能删除系统记录");<#
+      } else {
+      #>
+      throw "不能删除系统记录";<#
       }
+      #>
+    }
+  }<#
+  }
+  #><#
+  if (hasAudit) {
+  #>
+  
+  for (const old_model of old_models) {
+    if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited &&
+      old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected
+    ) {<#
+      if (isUseI18n) {
+      #>
+      throw await ns("只有未提交的 {0} 才能删除", await ns("<#=table_comment#>"));<#
+      } else {
+      #>
+      throw "只有未提交的 <#=table_comment#> 才能删除";<#
+      }
+      #>
     }
   }<#
   }
