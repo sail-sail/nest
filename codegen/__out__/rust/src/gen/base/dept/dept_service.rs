@@ -227,7 +227,7 @@ pub async fn delete_by_ids(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let models = dept_dao::find_all(
+  let old_models = dept_dao::find_all(
     Some(DeptSearch {
       ids: Some(ids.clone()),
       ..Default::default()
@@ -236,8 +236,9 @@ pub async fn delete_by_ids(
     None,
     options.clone(),
   ).await?;
-  for model in models {
-    if model.is_locked == 1 {
+  
+  for old_model in &old_models {
+    if old_model.is_locked == 1 {
       let err_msg = "不能删除已经锁定的 部门";
       return Err(eyre!(err_msg));
     }

@@ -194,7 +194,7 @@ pub async fn delete_by_ids(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let models = options_dao::find_all(
+  let old_models = options_dao::find_all(
     Some(OptionsSearch {
       ids: Some(ids.clone()),
       ..Default::default()
@@ -203,24 +203,16 @@ pub async fn delete_by_ids(
     None,
     options.clone(),
   ).await?;
-  for model in models {
-    if model.is_locked == 1 {
+  
+  for old_model in &old_models {
+    if old_model.is_locked == 1 {
       let err_msg = "不能删除已经锁定的 系统选项";
       return Err(eyre!(err_msg));
     }
   }
   
-  let models = options_dao::find_all(
-    Some(OptionsSearch {
-      ids: Some(ids.clone()),
-      ..Default::default()
-    }),
-    None,
-    None,
-    options.clone(),
-  ).await?;
-  for model in models {
-    if model.is_sys == 1 {
+  for old_model in &old_models {
+    if old_model.is_sys == 1 {
       let err_msg = "不能删除系统记录";
       return Err(eyre!(err_msg));
     }

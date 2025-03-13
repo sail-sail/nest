@@ -180,25 +180,19 @@ export async function deleteByIds(
   ids: OptbizId[],
 ): Promise<number> {
   
-  {
-    const models = await optbizDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 业务选项";
-      }
+  const old_models = await optbizDao.findAll({
+    ids,
+  });
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 业务选项";
     }
   }
   
-  {
-    const models = await optbizDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_sys === 1) {
-        throw "不能删除系统记录";
-      }
+  for (const old_model of old_models) {
+    if (old_model.is_sys === 1) {
+      throw "不能删除系统记录";
     }
   }
   
