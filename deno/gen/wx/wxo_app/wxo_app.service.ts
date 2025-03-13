@@ -145,6 +145,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验公众号设置是否存在 */
+export async function validateOption(
+  model0?: WxoAppModel,
+): Promise<WxoAppModel> {
+  const model = await wxo_appDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除公众号设置
  */

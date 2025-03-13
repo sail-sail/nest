@@ -145,6 +145,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验微信支付设置是否存在 */
+export async function validateOption(
+  model0?: WxPayModel,
+): Promise<WxPayModel> {
+  const model = await wx_payDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除微信支付设置
  */

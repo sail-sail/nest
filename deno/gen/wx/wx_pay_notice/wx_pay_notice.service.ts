@@ -140,6 +140,14 @@ export async function updateById(
   return id2;
 }
 
+/** 校验微信支付通知是否存在 */
+export async function validateOption(
+  model0?: WxPayNoticeModel,
+): Promise<WxPayNoticeModel> {
+  const model = await wx_pay_noticeDao.validateOption(model0);
+  return model;
+}
+
 /**
  * 根据 ids 删除微信支付通知
  */
