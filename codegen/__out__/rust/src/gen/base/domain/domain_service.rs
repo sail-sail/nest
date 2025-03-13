@@ -179,7 +179,7 @@ pub async fn delete_by_ids(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let models = domain_dao::find_all(
+  let old_models = domain_dao::find_all(
     Some(DomainSearch {
       ids: Some(ids.clone()),
       ..Default::default()
@@ -188,8 +188,9 @@ pub async fn delete_by_ids(
     None,
     options.clone(),
   ).await?;
-  for model in models {
-    if model.is_locked == 1 {
+  
+  for old_model in &old_models {
+    if old_model.is_locked == 1 {
       let err_msg = "不能删除已经锁定的 域名";
       return Err(eyre!(err_msg));
     }

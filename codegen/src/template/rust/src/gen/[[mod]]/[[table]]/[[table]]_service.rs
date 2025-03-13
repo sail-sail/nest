@@ -992,10 +992,10 @@ pub async fn delete_by_ids(
   let options = Some(options);<#
   }
   #><#
-  if (hasLocked) {
+  if (hasLocked || hasIsSys || hasAudit) {
   #>
   
-  let models = <#=table#>_dao::find_all(
+  let old_models = <#=table#>_dao::find_all(
     Some(<#=Table_Up#>Search {
       ids: Some(ids.clone()),
       ..Default::default()
@@ -1003,9 +1003,14 @@ pub async fn delete_by_ids(
     None,
     None,
     options.clone(),
-  ).await?;
-  for model in models {
-    if model.is_locked == 1 {<#
+  ).await?;<#
+  }
+  #><#
+  if (hasLocked) {
+  #>
+  
+  for old_model in &old_models {
+    if old_model.is_locked == 1 {<#
       if (isUseI18n) {
       #>
       let table_comment = ns(
@@ -1032,23 +1037,43 @@ pub async fn delete_by_ids(
   if (hasIsSys) {
   #>
   
-  let models = <#=table#>_dao::find_all(
-    Some(<#=Table_Up#>Search {
-      ids: Some(ids.clone()),
-      ..Default::default()
-    }),
-    None,
-    None,
-    options.clone(),
-  ).await?;
-  for model in models {
-    if model.is_sys == 1 {<#
+  for old_model in &old_models {
+    if old_model.is_sys == 1 {<#
       if (isUseI18n) {
       #>
       let err_msg = ns("不能删除系统记录".to_owned(), None).await?;<#
       } else {
       #>
       let err_msg = "不能删除系统记录";<#
+      }
+      #>
+      return Err(eyre!(err_msg));
+    }
+  }<#
+  }
+  #><#
+  if (hasAudit) {
+  #>
+  
+  for old_model in &old_models {
+    if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
+      old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected {<#
+      if (isUseI18n) {
+      #>
+      let table_comment = ns(
+        "<#=table_comment#>".to_owned(),
+        None,
+      ).await?;
+      let map = HashMap::from([
+        ("0".to_owned(), table_comment),
+      ]);
+      let err_msg = ns(
+        "只有未提交的 {0} 才能删除".to_owned(),
+        map.into(),
+      ).await?;<#
+      } else {
+      #>
+      let err_msg = "只有未提交的 <#=table_comment#> 才能删除";<#
       }
       #>
       return Err(eyre!(err_msg));

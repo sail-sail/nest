@@ -160,14 +160,13 @@ export async function deleteByIds(
   ids: UsrId[],
 ): Promise<number> {
   
-  {
-    const models = await usrDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 用户";
-      }
+  const old_models = await usrDao.findAll({
+    ids,
+  });
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 用户";
     }
   }
   
