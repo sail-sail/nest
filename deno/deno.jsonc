@@ -51,7 +51,7 @@
     "decimal.js": "https://esm.sh/decimal.js@10.4.3",
     "graphql": "npm:graphql@16.10.0",
     "mime": "npm:mime@4.0.6",
-    "jose/": "https://deno.land/x/jose@v6.0.8/",
+    "jose/": "https://deno.land/x/jose@v6.0.10/",
     "mnemonist": "npm:mnemonist@0.40.2",
     "redis": "https://deno.land/x/redis@v0.38.0/mod.ts",
     "sqlstring": "https://deno.land/x/sail_sqlstring@v1.0.0/mod.ts",
