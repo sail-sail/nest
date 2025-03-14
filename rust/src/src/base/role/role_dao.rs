@@ -1,5 +1,9 @@
 use color_eyre::eyre::Result;
-use crate::common::context::{get_auth_model, Options};
+
+use crate::common::context::{
+  get_auth_id,
+  Options,
+};
 
 use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
 
@@ -12,14 +16,12 @@ use crate::r#gen::base::role::role_model::RoleModel;
 #[allow(dead_code)]
 pub async fn get_auth_role_models() -> Result<Vec<RoleModel>> {
   
-  let aut_model = get_auth_model();
-  if aut_model.is_none() {
+  let usr_id = get_auth_id();
+  
+  if usr_id.is_none() {
     return Ok(vec![]);
   }
-  
-  let aut_model = aut_model.unwrap();
-  
-  let usr_id = aut_model.id;
+  let usr_id = usr_id.unwrap();
   
   let options = Options::new()
     .set_is_debug(Some(false));
