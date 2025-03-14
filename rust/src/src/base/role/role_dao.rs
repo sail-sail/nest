@@ -8,9 +8,9 @@ use crate::r#gen::base::role::role_dao::find_by_ids as find_by_ids_role;
 
 use crate::r#gen::base::role::role_model::RoleModel;
 
-/// 获取当前用户拥有的角色ID列表
+/// 获取当前用户拥有的角色列表
 #[allow(dead_code)]
-pub async fn get_auth_role_ids() -> Result<Vec<RoleModel>> {
+pub async fn get_auth_role_models() -> Result<Vec<RoleModel>> {
   
   let aut_model = get_auth_model();
   if aut_model.is_none() {
