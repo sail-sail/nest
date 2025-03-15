@@ -33,7 +33,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   <CustomInput
     v-bind="$attrs"
     ref="inputRef"
-    v-model="inputValue"
+    :model-value="inputValue || props.modelLabel"
     :readonly="props.labelReadonly"
     :clearable="false"
     class="select_input"
@@ -112,7 +112,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     class="custom_select_readonly select_input_readonly"
     v-bind="$attrs"
   >
-    {{ inputValue ?? "" }}
+    {{ inputValue || props.modelLabel }}
   </div>
 </template>
 </template>
@@ -156,6 +156,7 @@ const {
 const props = withDefaults(
   defineProps<{
     modelValue?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null;
+    modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;
     disabled?: boolean;
@@ -165,6 +166,7 @@ const props = withDefaults(
   }>(),
   {
     modelValue: undefined,
+    modelLabel: "",
     multiple: false,
     placeholder: undefined,
     disabled: false,
@@ -176,13 +178,6 @@ const props = withDefaults(
 
 let inputValue = $ref("");
 let oldInputValue = $ref("");
-
-watch(
-  () => inputValue,
-  (value) => {
-    emit("update:modelLabel", value);
-  },
-);
 
 let modelValue = $ref(props.modelValue);
 let selectedValue: <#=modelName#> | (<#=modelName#> | undefined)[] | null | undefined = undefined;
@@ -284,6 +279,7 @@ async function onClear(e?: PointerEvent) {
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  emit("update:modelLabel", inputValue);
   emit("change");
   emit("clear");
   await validateField();
@@ -336,6 +332,7 @@ async function onInput(
     modelValue = selectedIds[0];
   }
   emit("update:modelValue", modelValue);
+  emit("update:modelLabel", inputValue);
 }
 
 const inputRef = $(useTemplateRef<InstanceType<typeof CustomInput>>("inputRef"));

@@ -559,6 +559,11 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               v-model="dialogModel.<#=column_name#>"<#
+              if (modelLabel) {
+              #>
+              v-model:model-label="dialogModel.<#=modelLabel#>"<#
+              }
+              #><#
               if (isUseI18n) {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
@@ -1342,7 +1347,12 @@ for (let i = 0; i < columns.length; i++) {
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
                       }
                       #>
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
                       placeholder=" "<#
                       if (foreignKey.multiple) {
                       #>
@@ -2127,6 +2137,11 @@ for (let i = 0; i < columns.length; i++) {
                     }
                     #>
                     v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
+                    if (modelLabel) {
+                    #>
+                    v-model:model-label="dialogModel.<#=inline_column_name#>.<#=modelLabel#>"<#
+                    }
+                    #><#
                     if (isUseI18n) {
                     #>
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#

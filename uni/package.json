@@ -97,7 +97,7 @@
     "unplugin-auto-import": "19.1.1",
     "unplugin-turbo-console": "1.11.3",
     "unplugin-vue-components": "28.4.1",
-    "vite": "6.2.1",
+    "vite": "6.2.2",
     "vite-plugin-inspect": "11.0.0",
     "vite-plugin-vue-inspector": "5.3.1",
     "vitest": "3.0.8",
