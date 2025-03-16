@@ -15,6 +15,19 @@ export async function getLoginTenants(
   return data;
 }
 
+/** 根据 租户ids 获取 租户信息 */
+export async function getLoginTenantByIds(
+  tenant_ids: QueryGetLoginTenantsArgs["tenant_ids"],
+) {
+  const {
+    getLoginTenantByIds,
+  } = await import("./tenant.service.ts");
+  
+  const data = await getLoginTenantByIds(tenant_ids);
+  
+  return data;
+}
+
 /** 设置租户管理员密码 */
 export async function setTenantAdminPwd(
   input: SetTenantAdminPwdInput,
