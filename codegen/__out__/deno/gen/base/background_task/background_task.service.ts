@@ -43,8 +43,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await background_taskDao.findCount(search);
-  return data;
+  const background_task_num = await background_taskDao.findCount(search);
+  
+  return background_task_num;
 }
 
 /**
@@ -60,8 +61,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: BackgroundTaskModel[] = await background_taskDao.findAll(search, page, sort);
-  return models;
+  const background_task_models = await background_taskDao.findAll(search, page, sort);
+  
+  return background_task_models;
 }
 
 /**
@@ -69,9 +71,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: BackgroundTaskInput,
-) {
-  const data = await background_taskDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await background_taskDao.setIdByLbl(input);
 }
 
 /**
@@ -86,8 +87,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await background_taskDao.findOne(search, sort);
-  return model;
+  const background_task_model = await background_taskDao.findOne(search, sort);
+  
+  return background_task_model;
 }
 
 /**
@@ -96,8 +98,10 @@ export async function findOne(
 export async function findById(
   id?: BackgroundTaskId | null,
 ): Promise<BackgroundTaskModel | undefined> {
-  const model = await background_taskDao.findById(id);
-  return model;
+  
+  const background_task_model = await background_taskDao.findById(id);
+  
+  return background_task_model;
 }
 
 /**
@@ -111,8 +115,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await background_taskDao.exist(search);
-  return data;
+  const background_task_exist = await background_taskDao.exist(search);
+  
+  return background_task_exist;
 }
 
 /**
@@ -121,8 +126,10 @@ export async function exist(
 export async function existById(
   id?: BackgroundTaskId | null,
 ): Promise<boolean> {
-  const data = await background_taskDao.existById(id);
-  return data;
+  
+  const background_task_exist = await background_taskDao.existById(id);
+  
+  return background_task_exist;
 }
 
 /**
@@ -131,8 +138,7 @@ export async function existById(
 export async function validate(
   input: BackgroundTaskInput,
 ): Promise<void> {
-  const data = await background_taskDao.validate(input);
-  return data;
+  await background_taskDao.validate(input);
 }
 
 /**
@@ -144,28 +150,30 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<BackgroundTaskId[]> {
-  const ids = await background_taskDao.creates(inputs, options);
-  return ids;
+  const background_task_ids = await background_taskDao.creates(inputs, options);
+  
+  return background_task_ids;
 }
 
 /**
  * 根据 id 修改后台任务
  */
 export async function updateById(
-  id: BackgroundTaskId,
+  background_task_id: BackgroundTaskId,
   input: BackgroundTaskInput,
 ): Promise<BackgroundTaskId> {
   
-  const id2 = await background_taskDao.updateById(id, input);
-  return id2;
+  const background_task_id2 = await background_taskDao.updateById(background_task_id, input);
+  
+  return background_task_id2;
 }
 
 /** 校验后台任务是否存在 */
 export async function validateOption(
   model0?: BackgroundTaskModel,
 ): Promise<BackgroundTaskModel> {
-  const model = await background_taskDao.validateOption(model0);
-  return model;
+  const background_task_model = await background_taskDao.validateOption(model0);
+  return background_task_model;
 }
 
 /**
@@ -175,8 +183,8 @@ export async function deleteByIds(
   ids: BackgroundTaskId[],
 ): Promise<number> {
   
-  const data = await background_taskDao.deleteByIds(ids);
-  return data;
+  const background_task_num = await background_taskDao.deleteByIds(ids);
+  return background_task_num;
 }
 
 /**
@@ -185,8 +193,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: BackgroundTaskId[],
 ): Promise<number> {
-  const data = await background_taskDao.revertByIds(ids);
-  return data;
+  
+  const background_task_num = await background_taskDao.revertByIds(ids);
+  
+  return background_task_num;
 }
 
 /**
@@ -195,14 +205,16 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: BackgroundTaskId[],
 ): Promise<number> {
-  const data = await background_taskDao.forceDeleteByIds(ids);
-  return data;
+  
+  const background_task_num = await background_taskDao.forceDeleteByIds(ids);
+  
+  return background_task_num;
 }
 
 /**
  * 获取后台任务字段注释
  */
 export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
-  const data = await background_taskDao.getFieldComments();
-  return data;
+  const background_task_fields = await background_taskDao.getFieldComments();
+  return background_task_fields;
 }

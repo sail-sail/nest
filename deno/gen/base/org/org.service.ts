@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await orgDao.findCount(search);
-  return data;
+  const org_num = await orgDao.findCount(search);
+  
+  return org_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: OrgModel[] = await orgDao.findAll(search, page, sort);
-  return models;
+  const org_models = await orgDao.findAll(search, page, sort);
+  
+  return org_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: OrgInput,
-) {
-  const data = await orgDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await orgDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await orgDao.findOne(search, sort);
-  return model;
+  const org_model = await orgDao.findOne(search, sort);
+  
+  return org_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: OrgId | null,
 ): Promise<OrgModel | undefined> {
-  const model = await orgDao.findById(id);
-  return model;
+  
+  const org_model = await orgDao.findById(id);
+  
+  return org_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await orgDao.exist(search);
-  return data;
+  const org_exist = await orgDao.exist(search);
+  
+  return org_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: OrgId | null,
 ): Promise<boolean> {
-  const data = await orgDao.existById(id);
-  return data;
+  
+  const org_exist = await orgDao.existById(id);
+  
+  return org_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: OrgInput,
 ): Promise<void> {
-  const data = await orgDao.validate(input);
-  return data;
+  await orgDao.validate(input);
 }
 
 /**
@@ -124,33 +130,35 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<OrgId[]> {
-  const ids = await orgDao.creates(inputs, options);
-  return ids;
+  const org_ids = await orgDao.creates(inputs, options);
+  
+  return org_ids;
 }
 
 /**
  * 根据 id 修改组织
  */
 export async function updateById(
-  id: OrgId,
+  org_id: OrgId,
   input: OrgInput,
 ): Promise<OrgId> {
   
-  const is_locked = await orgDao.getIsLockedById(id);
+  const is_locked = await orgDao.getIsLockedById(org_id);
   if (is_locked) {
     throw "不能修改已经锁定的 组织";
   }
   
-  const id2 = await orgDao.updateById(id, input);
-  return id2;
+  const org_id2 = await orgDao.updateById(org_id, input);
+  
+  return org_id2;
 }
 
 /** 校验组织是否存在 */
 export async function validateOption(
   model0?: OrgModel,
 ): Promise<OrgModel> {
-  const model = await orgDao.validateOption(model0);
-  return model;
+  const org_model = await orgDao.validateOption(model0);
+  return org_model;
 }
 
 /**
@@ -170,8 +178,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await orgDao.deleteByIds(ids);
-  return data;
+  const org_num = await orgDao.deleteByIds(ids);
+  return org_num;
 }
 
 /**
@@ -181,8 +189,8 @@ export async function enableByIds(
   ids: OrgId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await orgDao.enableByIds(ids, is_enabled);
-  return data;
+  const org_num = await orgDao.enableByIds(ids, is_enabled);
+  return org_num;
 }
 
 /**
@@ -192,8 +200,8 @@ export async function lockByIds(
   ids: OrgId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await orgDao.lockByIds(ids, is_locked);
-  return data;
+  const org_num = await orgDao.lockByIds(ids, is_locked);
+  return org_num;
 }
 
 /**
@@ -202,8 +210,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: OrgId[],
 ): Promise<number> {
-  const data = await orgDao.revertByIds(ids);
-  return data;
+  
+  const org_num = await orgDao.revertByIds(ids);
+  
+  return org_num;
 }
 
 /**
@@ -212,16 +222,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: OrgId[],
 ): Promise<number> {
-  const data = await orgDao.forceDeleteByIds(ids);
-  return data;
+  
+  const org_num = await orgDao.forceDeleteByIds(ids);
+  
+  return org_num;
 }
 
 /**
  * 获取组织字段注释
  */
 export async function getFieldComments(): Promise<OrgFieldComment> {
-  const data = await orgDao.getFieldComments();
-  return data;
+  const org_fields = await orgDao.getFieldComments();
+  return org_fields;
 }
 
 /**
@@ -229,6 +241,6 @@ export async function getFieldComments(): Promise<OrgFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await orgDao.findLastOrderBy();
-  return data;
+  const org_sort = await orgDao.findLastOrderBy();
+  return org_sort;
 }

@@ -27,8 +27,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await i18nDao.findCount(search);
-  return data;
+  const i18n_num = await i18nDao.findCount(search);
+  
+  return i18n_num;
 }
 
 /**
@@ -44,8 +45,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: I18nModel[] = await i18nDao.findAll(search, page, sort);
-  return models;
+  const i18n_models = await i18nDao.findAll(search, page, sort);
+  
+  return i18n_models;
 }
 
 /**
@@ -53,9 +55,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: I18nInput,
-) {
-  const data = await i18nDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await i18nDao.setIdByLbl(input);
 }
 
 /**
@@ -70,8 +71,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await i18nDao.findOne(search, sort);
-  return model;
+  const i18n_model = await i18nDao.findOne(search, sort);
+  
+  return i18n_model;
 }
 
 /**
@@ -80,8 +82,10 @@ export async function findOne(
 export async function findById(
   id?: I18nId | null,
 ): Promise<I18nModel | undefined> {
-  const model = await i18nDao.findById(id);
-  return model;
+  
+  const i18n_model = await i18nDao.findById(id);
+  
+  return i18n_model;
 }
 
 /**
@@ -95,8 +99,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await i18nDao.exist(search);
-  return data;
+  const i18n_exist = await i18nDao.exist(search);
+  
+  return i18n_exist;
 }
 
 /**
@@ -105,8 +110,10 @@ export async function exist(
 export async function existById(
   id?: I18nId | null,
 ): Promise<boolean> {
-  const data = await i18nDao.existById(id);
-  return data;
+  
+  const i18n_exist = await i18nDao.existById(id);
+  
+  return i18n_exist;
 }
 
 /**
@@ -115,8 +122,7 @@ export async function existById(
 export async function validate(
   input: I18nInput,
 ): Promise<void> {
-  const data = await i18nDao.validate(input);
-  return data;
+  await i18nDao.validate(input);
 }
 
 /**
@@ -128,32 +134,34 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<I18nId[]> {
-  const ids = await i18nDao.creates(inputs, options);
+  const i18n_ids = await i18nDao.creates(inputs, options);
   
   await update_i18n_version();
-  return ids;
+  
+  return i18n_ids;
 }
 
 /**
  * 根据 id 修改国际化
  */
 export async function updateById(
-  id: I18nId,
+  i18n_id: I18nId,
   input: I18nInput,
 ): Promise<I18nId> {
   
-  const id2 = await i18nDao.updateById(id, input);
+  const i18n_id2 = await i18nDao.updateById(i18n_id, input);
   
   await update_i18n_version();
-  return id2;
+  
+  return i18n_id2;
 }
 
 /** 校验国际化是否存在 */
 export async function validateOption(
   model0?: I18nModel,
 ): Promise<I18nModel> {
-  const model = await i18nDao.validateOption(model0);
-  return model;
+  const i18n_model = await i18nDao.validateOption(model0);
+  return i18n_model;
 }
 
 /**
@@ -163,10 +171,10 @@ export async function deleteByIds(
   ids: I18nId[],
 ): Promise<number> {
   
-  const data = await i18nDao.deleteByIds(ids);
+  const i18n_num = await i18nDao.deleteByIds(ids);
   
   await update_i18n_version();
-  return data;
+  return i18n_num;
 }
 
 /**
@@ -175,8 +183,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: I18nId[],
 ): Promise<number> {
-  const data = await i18nDao.revertByIds(ids);
-  return data;
+  
+  const i18n_num = await i18nDao.revertByIds(ids);
+  
+  return i18n_num;
 }
 
 /**
@@ -185,14 +195,16 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: I18nId[],
 ): Promise<number> {
-  const data = await i18nDao.forceDeleteByIds(ids);
-  return data;
+  
+  const i18n_num = await i18nDao.forceDeleteByIds(ids);
+  
+  return i18n_num;
 }
 
 /**
  * 获取国际化字段注释
  */
 export async function getFieldComments(): Promise<I18nFieldComment> {
-  const data = await i18nDao.getFieldComments();
-  return data;
+  const i18n_fields = await i18nDao.getFieldComments();
+  return i18n_fields;
 }

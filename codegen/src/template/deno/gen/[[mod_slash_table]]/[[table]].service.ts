@@ -214,7 +214,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await <#=table#>Dao.findCount(search<#
+  const <#=table#>_num = await <#=table#>Dao.findCount(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -225,7 +225,8 @@ export async function findCount(
   }<#
     }
   #>);
-  return data;
+  
+  return <#=table#>_num;
 }
 
 /**
@@ -241,7 +242,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: <#=modelName#>[] = await <#=table#>Dao.findAll(search, page, sort<#
+  const <#=table#>_models = await <#=table#>Dao.findAll(search, page, sort<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -252,7 +253,8 @@ export async function findAll(
   }<#
     }
   #>);
-  return models;
+  
+  return <#=table#>_models;
 }
 
 /**
@@ -260,9 +262,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: <#=inputName#>,
-) {
-  const data = await <#=table#>Dao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await <#=table#>Dao.setIdByLbl(input);
 }<#
 if (hasSummary) {
 #>
@@ -278,7 +279,7 @@ export async function findSummary(
   
   await setSearchQuery(search);
   
-  const data = await <#=table#>Dao.findSummary(search<#
+  const <#=table#>_summary = await <#=table#>Dao.findSummary(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -289,7 +290,8 @@ export async function findSummary(
   }<#
     }
   #>);
-  return data;
+  
+  return <#=table#>_summary;
 }<#
 }
 #>
@@ -306,7 +308,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await <#=table#>Dao.findOne(search, sort<#
+  const <#=table#>_model = await <#=table#>Dao.findOne(search, sort<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -317,7 +319,8 @@ export async function findOne(
   }<#
     }
   #>);
-  return model;
+  
+  return <#=table#>_model;
 }
 
 /**
@@ -326,7 +329,8 @@ export async function findOne(
 export async function findById(
   id?: <#=Table_Up#>Id | null,
 ): Promise<<#=modelName#> | undefined> {
-  const model = await <#=table#>Dao.findById(id<#
+  
+  const <#=table#>_model = await <#=table#>Dao.findById(id<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -337,7 +341,8 @@ export async function findById(
   }<#
     }
   #>);
-  return model;
+  
+  return <#=table#>_model;
 }
 
 /**
@@ -351,7 +356,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await <#=table#>Dao.exist(search<#
+  const <#=table#>_exist = await <#=table#>Dao.exist(search<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -362,7 +367,8 @@ export async function exist(
   }<#
     }
   #>);
-  return data;
+  
+  return <#=table#>_exist;
 }
 
 /**
@@ -371,7 +377,8 @@ export async function exist(
 export async function existById(
   id?: <#=Table_Up#>Id | null,
 ): Promise<boolean> {
-  const data = await <#=table#>Dao.existById(id<#
+  
+  const <#=table#>_exist = await <#=table#>Dao.existById(id<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -382,7 +389,8 @@ export async function existById(
   }<#
     }
   #>);
-  return data;
+  
+  return <#=table#>_exist;
 }
 
 /**
@@ -391,8 +399,7 @@ export async function existById(
 export async function validate(
   input: <#=inputName#>,
 ): Promise<void> {
-  const data = await <#=table#>Dao.validate(input);
-  return data;
+  await <#=table#>Dao.validate(input);
 }
 
 /**
@@ -412,14 +419,15 @@ export async function creates(
   }<#
   }
   #>
-  const ids = await <#=table#>Dao.creates(inputs, options);<#
+  const <#=table#>_ids = await <#=table#>Dao.creates(inputs, options);<#
   if (mod === "base" && table === "i18n") {
   #>
   
   await update_i18n_version();<#
   }
   #>
-  return ids;
+  
+  return <#=table#>_ids;
 }<#
 if (hasVersion) {
 #>
@@ -452,7 +460,7 @@ export async function getEditableDataPermitsByIds(
  * 根据 id 修改<#=table_comment#>
  */
 export async function updateById(
-  id: <#=Table_Up#>Id,
+  <#=table#>_id: <#=Table_Up#>Id,
   input: <#=inputName#>,
 ): Promise<<#=Table_Up#>Id> {<#
   if (
@@ -496,7 +504,7 @@ export async function updateById(
   if (hasLocked) {
   #>
   
-  const is_locked = await <#=table#>Dao.getIsLockedById(id);
+  const is_locked = await <#=table#>Dao.getIsLockedById(<#=table#>_id);
   if (is_locked) {<#
     if (isUseI18n) {
     #>
@@ -552,7 +560,7 @@ export async function updateById(
   }
   #>
   
-  const id2 = await <#=table#>Dao.updateById(id, input<#
+  const <#=table#>_id2 = await <#=table#>Dao.updateById(<#=table#>_id, input<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -569,15 +577,16 @@ export async function updateById(
   await update_i18n_version();<#
   }
   #>
-  return id2;
+  
+  return <#=table#>_id2;
 }
 
 /** 校验<#=table_comment#>是否存在 */
 export async function validateOption(
   model0?: <#=modelName#>,
 ): Promise<<#=modelName#>> {
-  const model = await <#=table#>Dao.validateOption(model0);
-  return model;
+  const <#=table#>_model = await <#=table#>Dao.validateOption(model0);
+  return <#=table#>_model;
 }<#
 if (hasAudit) {
 #>
@@ -952,7 +961,7 @@ export async function deleteByIds(
   }
   #>
   
-  const data = await <#=table#>Dao.deleteByIds(ids<#
+  const <#=table#>_num = await <#=table#>Dao.deleteByIds(ids<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -982,7 +991,7 @@ export async function deleteByIds(
   await deleteByIds<#=auditTable_Up#>(<#=auditTable#>_ids);<#
   }
   #>
-  return data;
+  return <#=table#>_num;
 }<#
   if (hasDefault) {
 #>
@@ -993,8 +1002,8 @@ export async function deleteByIds(
 export async function defaultById(
   id: <#=Table_Up#>Id,
 ): Promise<number> {
-  const data = await <#=table#>Dao.defaultById(id);
-  return data;
+  const <#=table#>_num = await <#=table#>Dao.defaultById(id);
+  return <#=table#>_num;
 }<#
   }
 #><#
@@ -1008,8 +1017,8 @@ export async function enableByIds(
   ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await <#=table#>Dao.enableByIds(ids, is_enabled);
-  return data;
+  const <#=table#>_num = await <#=table#>Dao.enableByIds(ids, is_enabled);
+  return <#=table#>_num;
 }<#
   }
 #><#
@@ -1023,8 +1032,8 @@ export async function lockByIds(
   ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await <#=table#>Dao.lockByIds(ids, is_locked);
-  return data;
+  const <#=table#>_num = await <#=table#>Dao.lockByIds(ids, is_locked);
+  return <#=table#>_num;
 }<#
   }
 #><#
@@ -1051,8 +1060,10 @@ export async function revertByIds(
   await revertByIds<#=auditTable_Up#>(<#=auditTable#>_ids);<#
   }
   #>
-  const data = await <#=table#>Dao.revertByIds(ids);
-  return data;
+  
+  const <#=table#>_num = await <#=table#>Dao.revertByIds(ids);
+  
+  return <#=table#>_num;
 }<#
 }
 #><#
@@ -1079,8 +1090,10 @@ export async function forceDeleteByIds(
   await forceDeleteByIds<#=auditTable_Up#>(<#=auditTable#>_ids);<#
   }
   #>
-  const data = await <#=table#>Dao.forceDeleteByIds(ids);
-  return data;
+  
+  const <#=table#>_num = await <#=table#>Dao.forceDeleteByIds(ids);
+  
+  return <#=table#>_num;
 }<#
 }
 #>
@@ -1089,8 +1102,8 @@ export async function forceDeleteByIds(
  * 获取<#=table_comment#>字段注释
  */
 export async function getFieldComments(): Promise<<#=fieldCommentName#>> {
-  const data = await <#=table#>Dao.getFieldComments();
-  return data;
+  const <#=table#>_fields = await <#=table#>Dao.getFieldComments();
+  return <#=table#>_fields;
 }<#
 if (hasOrderBy) {
 #>
@@ -1100,8 +1113,8 @@ if (hasOrderBy) {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await <#=table#>Dao.findLastOrderBy();
-  return data;
+  const <#=table#>_sort = await <#=table#>Dao.findLastOrderBy();
+  return <#=table#>_sort;
 }<#
 }
 #>

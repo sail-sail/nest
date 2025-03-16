@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await field_permitDao.findCount(search);
-  return data;
+  const field_permit_num = await field_permitDao.findCount(search);
+  
+  return field_permit_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: FieldPermitModel[] = await field_permitDao.findAll(search, page, sort);
-  return models;
+  const field_permit_models = await field_permitDao.findAll(search, page, sort);
+  
+  return field_permit_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: FieldPermitInput,
-) {
-  const data = await field_permitDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await field_permitDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await field_permitDao.findOne(search, sort);
-  return model;
+  const field_permit_model = await field_permitDao.findOne(search, sort);
+  
+  return field_permit_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: FieldPermitId | null,
 ): Promise<FieldPermitModel | undefined> {
-  const model = await field_permitDao.findById(id);
-  return model;
+  
+  const field_permit_model = await field_permitDao.findById(id);
+  
+  return field_permit_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await field_permitDao.exist(search);
-  return data;
+  const field_permit_exist = await field_permitDao.exist(search);
+  
+  return field_permit_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: FieldPermitId | null,
 ): Promise<boolean> {
-  const data = await field_permitDao.existById(id);
-  return data;
+  
+  const field_permit_exist = await field_permitDao.existById(id);
+  
+  return field_permit_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: FieldPermitInput,
 ): Promise<void> {
-  const data = await field_permitDao.validate(input);
-  return data;
+  await field_permitDao.validate(input);
 }
 
 /**
@@ -124,15 +130,16 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<FieldPermitId[]> {
-  const ids = await field_permitDao.creates(inputs, options);
-  return ids;
+  const field_permit_ids = await field_permitDao.creates(inputs, options);
+  
+  return field_permit_ids;
 }
 
 /**
  * 根据 id 修改字段权限
  */
 export async function updateById(
-  id: FieldPermitId,
+  field_permit_id: FieldPermitId,
   input: FieldPermitInput,
 ): Promise<FieldPermitId> {
   
@@ -149,16 +156,17 @@ export async function updateById(
     input.code = undefined;
   }
   
-  const id2 = await field_permitDao.updateById(id, input);
-  return id2;
+  const field_permit_id2 = await field_permitDao.updateById(field_permit_id, input);
+  
+  return field_permit_id2;
 }
 
 /** 校验字段权限是否存在 */
 export async function validateOption(
   model0?: FieldPermitModel,
 ): Promise<FieldPermitModel> {
-  const model = await field_permitDao.validateOption(model0);
-  return model;
+  const field_permit_model = await field_permitDao.validateOption(model0);
+  return field_permit_model;
 }
 
 /**
@@ -178,16 +186,16 @@ export async function deleteByIds(
     }
   }
   
-  const data = await field_permitDao.deleteByIds(ids);
-  return data;
+  const field_permit_num = await field_permitDao.deleteByIds(ids);
+  return field_permit_num;
 }
 
 /**
  * 获取字段权限字段注释
  */
 export async function getFieldComments(): Promise<FieldPermitFieldComment> {
-  const data = await field_permitDao.getFieldComments();
-  return data;
+  const field_permit_fields = await field_permitDao.getFieldComments();
+  return field_permit_fields;
 }
 
 /**
@@ -195,6 +203,6 @@ export async function getFieldComments(): Promise<FieldPermitFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await field_permitDao.findLastOrderBy();
-  return data;
+  const field_permit_sort = await field_permitDao.findLastOrderBy();
+  return field_permit_sort;
 }

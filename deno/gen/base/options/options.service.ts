@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await optionsDao.findCount(search);
-  return data;
+  const options_num = await optionsDao.findCount(search);
+  
+  return options_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: OptionsModel[] = await optionsDao.findAll(search, page, sort);
-  return models;
+  const options_models = await optionsDao.findAll(search, page, sort);
+  
+  return options_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: OptionsInput,
-) {
-  const data = await optionsDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await optionsDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await optionsDao.findOne(search, sort);
-  return model;
+  const options_model = await optionsDao.findOne(search, sort);
+  
+  return options_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: OptionsId | null,
 ): Promise<OptionsModel | undefined> {
-  const model = await optionsDao.findById(id);
-  return model;
+  
+  const options_model = await optionsDao.findById(id);
+  
+  return options_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await optionsDao.exist(search);
-  return data;
+  const options_exist = await optionsDao.exist(search);
+  
+  return options_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: OptionsId | null,
 ): Promise<boolean> {
-  const data = await optionsDao.existById(id);
-  return data;
+  
+  const options_exist = await optionsDao.existById(id);
+  
+  return options_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: OptionsInput,
 ): Promise<void> {
-  const data = await optionsDao.validate(input);
-  return data;
+  await optionsDao.validate(input);
 }
 
 /**
@@ -124,8 +130,9 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<OptionsId[]> {
-  const ids = await optionsDao.creates(inputs, options);
-  return ids;
+  const options_ids = await optionsDao.creates(inputs, options);
+  
+  return options_ids;
 }
 
 /**
@@ -140,7 +147,7 @@ export async function getVersionById(id: OptionsId) {
  * 根据 id 修改系统选项
  */
 export async function updateById(
-  id: OptionsId,
+  options_id: OptionsId,
   input: OptionsInput,
 ): Promise<OptionsId> {
   
@@ -148,7 +155,7 @@ export async function updateById(
     await optionsDao.findById(id),
   );
   
-  const is_locked = await optionsDao.getIsLockedById(id);
+  const is_locked = await optionsDao.getIsLockedById(options_id);
   if (is_locked) {
     throw "不能修改已经锁定的 系统选项";
   }
@@ -161,16 +168,17 @@ export async function updateById(
     input.ky = undefined;
   }
   
-  const id2 = await optionsDao.updateById(id, input);
-  return id2;
+  const options_id2 = await optionsDao.updateById(options_id, input);
+  
+  return options_id2;
 }
 
 /** 校验系统选项是否存在 */
 export async function validateOption(
   model0?: OptionsModel,
 ): Promise<OptionsModel> {
-  const model = await optionsDao.validateOption(model0);
-  return model;
+  const options_model = await optionsDao.validateOption(model0);
+  return options_model;
 }
 
 /**
@@ -196,8 +204,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await optionsDao.deleteByIds(ids);
-  return data;
+  const options_num = await optionsDao.deleteByIds(ids);
+  return options_num;
 }
 
 /**
@@ -207,8 +215,8 @@ export async function enableByIds(
   ids: OptionsId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await optionsDao.enableByIds(ids, is_enabled);
-  return data;
+  const options_num = await optionsDao.enableByIds(ids, is_enabled);
+  return options_num;
 }
 
 /**
@@ -218,8 +226,8 @@ export async function lockByIds(
   ids: OptionsId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await optionsDao.lockByIds(ids, is_locked);
-  return data;
+  const options_num = await optionsDao.lockByIds(ids, is_locked);
+  return options_num;
 }
 
 /**
@@ -228,8 +236,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: OptionsId[],
 ): Promise<number> {
-  const data = await optionsDao.revertByIds(ids);
-  return data;
+  
+  const options_num = await optionsDao.revertByIds(ids);
+  
+  return options_num;
 }
 
 /**
@@ -238,16 +248,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: OptionsId[],
 ): Promise<number> {
-  const data = await optionsDao.forceDeleteByIds(ids);
-  return data;
+  
+  const options_num = await optionsDao.forceDeleteByIds(ids);
+  
+  return options_num;
 }
 
 /**
  * 获取系统选项字段注释
  */
 export async function getFieldComments(): Promise<OptionsFieldComment> {
-  const data = await optionsDao.getFieldComments();
-  return data;
+  const options_fields = await optionsDao.getFieldComments();
+  return options_fields;
 }
 
 /**
@@ -255,6 +267,6 @@ export async function getFieldComments(): Promise<OptionsFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await optionsDao.findLastOrderBy();
-  return data;
+  const options_sort = await optionsDao.findLastOrderBy();
+  return options_sort;
 }

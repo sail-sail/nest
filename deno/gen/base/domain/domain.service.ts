@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await domainDao.findCount(search);
-  return data;
+  const domain_num = await domainDao.findCount(search);
+  
+  return domain_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: DomainModel[] = await domainDao.findAll(search, page, sort);
-  return models;
+  const domain_models = await domainDao.findAll(search, page, sort);
+  
+  return domain_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: DomainInput,
-) {
-  const data = await domainDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await domainDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await domainDao.findOne(search, sort);
-  return model;
+  const domain_model = await domainDao.findOne(search, sort);
+  
+  return domain_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: DomainId | null,
 ): Promise<DomainModel | undefined> {
-  const model = await domainDao.findById(id);
-  return model;
+  
+  const domain_model = await domainDao.findById(id);
+  
+  return domain_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await domainDao.exist(search);
-  return data;
+  const domain_exist = await domainDao.exist(search);
+  
+  return domain_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: DomainId | null,
 ): Promise<boolean> {
-  const data = await domainDao.existById(id);
-  return data;
+  
+  const domain_exist = await domainDao.existById(id);
+  
+  return domain_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: DomainInput,
 ): Promise<void> {
-  const data = await domainDao.validate(input);
-  return data;
+  await domainDao.validate(input);
 }
 
 /**
@@ -124,33 +130,35 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<DomainId[]> {
-  const ids = await domainDao.creates(inputs, options);
-  return ids;
+  const domain_ids = await domainDao.creates(inputs, options);
+  
+  return domain_ids;
 }
 
 /**
  * 根据 id 修改域名
  */
 export async function updateById(
-  id: DomainId,
+  domain_id: DomainId,
   input: DomainInput,
 ): Promise<DomainId> {
   
-  const is_locked = await domainDao.getIsLockedById(id);
+  const is_locked = await domainDao.getIsLockedById(domain_id);
   if (is_locked) {
     throw "不能修改已经锁定的 域名";
   }
   
-  const id2 = await domainDao.updateById(id, input);
-  return id2;
+  const domain_id2 = await domainDao.updateById(domain_id, input);
+  
+  return domain_id2;
 }
 
 /** 校验域名是否存在 */
 export async function validateOption(
   model0?: DomainModel,
 ): Promise<DomainModel> {
-  const model = await domainDao.validateOption(model0);
-  return model;
+  const domain_model = await domainDao.validateOption(model0);
+  return domain_model;
 }
 
 /**
@@ -170,8 +178,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await domainDao.deleteByIds(ids);
-  return data;
+  const domain_num = await domainDao.deleteByIds(ids);
+  return domain_num;
 }
 
 /**
@@ -180,8 +188,8 @@ export async function deleteByIds(
 export async function defaultById(
   id: DomainId,
 ): Promise<number> {
-  const data = await domainDao.defaultById(id);
-  return data;
+  const domain_num = await domainDao.defaultById(id);
+  return domain_num;
 }
 
 /**
@@ -191,8 +199,8 @@ export async function enableByIds(
   ids: DomainId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await domainDao.enableByIds(ids, is_enabled);
-  return data;
+  const domain_num = await domainDao.enableByIds(ids, is_enabled);
+  return domain_num;
 }
 
 /**
@@ -202,8 +210,8 @@ export async function lockByIds(
   ids: DomainId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await domainDao.lockByIds(ids, is_locked);
-  return data;
+  const domain_num = await domainDao.lockByIds(ids, is_locked);
+  return domain_num;
 }
 
 /**
@@ -212,8 +220,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: DomainId[],
 ): Promise<number> {
-  const data = await domainDao.revertByIds(ids);
-  return data;
+  
+  const domain_num = await domainDao.revertByIds(ids);
+  
+  return domain_num;
 }
 
 /**
@@ -222,16 +232,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: DomainId[],
 ): Promise<number> {
-  const data = await domainDao.forceDeleteByIds(ids);
-  return data;
+  
+  const domain_num = await domainDao.forceDeleteByIds(ids);
+  
+  return domain_num;
 }
 
 /**
  * 获取域名字段注释
  */
 export async function getFieldComments(): Promise<DomainFieldComment> {
-  const data = await domainDao.getFieldComments();
-  return data;
+  const domain_fields = await domainDao.getFieldComments();
+  return domain_fields;
 }
 
 /**
@@ -239,6 +251,6 @@ export async function getFieldComments(): Promise<DomainFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await domainDao.findLastOrderBy();
-  return data;
+  const domain_sort = await domainDao.findLastOrderBy();
+  return domain_sort;
 }

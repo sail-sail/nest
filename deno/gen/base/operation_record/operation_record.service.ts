@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await operation_recordDao.findCount(search);
-  return data;
+  const operation_record_num = await operation_recordDao.findCount(search);
+  
+  return operation_record_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: OperationRecordModel[] = await operation_recordDao.findAll(search, page, sort);
-  return models;
+  const operation_record_models = await operation_recordDao.findAll(search, page, sort);
+  
+  return operation_record_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: OperationRecordInput,
-) {
-  const data = await operation_recordDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await operation_recordDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await operation_recordDao.findOne(search, sort);
-  return model;
+  const operation_record_model = await operation_recordDao.findOne(search, sort);
+  
+  return operation_record_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: OperationRecordId | null,
 ): Promise<OperationRecordModel | undefined> {
-  const model = await operation_recordDao.findById(id);
-  return model;
+  
+  const operation_record_model = await operation_recordDao.findById(id);
+  
+  return operation_record_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await operation_recordDao.exist(search);
-  return data;
+  const operation_record_exist = await operation_recordDao.exist(search);
+  
+  return operation_record_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: OperationRecordId | null,
 ): Promise<boolean> {
-  const data = await operation_recordDao.existById(id);
-  return data;
+  
+  const operation_record_exist = await operation_recordDao.existById(id);
+  
+  return operation_record_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: OperationRecordInput,
 ): Promise<void> {
-  const data = await operation_recordDao.validate(input);
-  return data;
+  await operation_recordDao.validate(input);
 }
 
 /**
@@ -124,28 +130,30 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<OperationRecordId[]> {
-  const ids = await operation_recordDao.creates(inputs, options);
-  return ids;
+  const operation_record_ids = await operation_recordDao.creates(inputs, options);
+  
+  return operation_record_ids;
 }
 
 /**
  * 根据 id 修改操作记录
  */
 export async function updateById(
-  id: OperationRecordId,
+  operation_record_id: OperationRecordId,
   input: OperationRecordInput,
 ): Promise<OperationRecordId> {
   
-  const id2 = await operation_recordDao.updateById(id, input);
-  return id2;
+  const operation_record_id2 = await operation_recordDao.updateById(operation_record_id, input);
+  
+  return operation_record_id2;
 }
 
 /** 校验操作记录是否存在 */
 export async function validateOption(
   model0?: OperationRecordModel,
 ): Promise<OperationRecordModel> {
-  const model = await operation_recordDao.validateOption(model0);
-  return model;
+  const operation_record_model = await operation_recordDao.validateOption(model0);
+  return operation_record_model;
 }
 
 /**
@@ -155,8 +163,8 @@ export async function deleteByIds(
   ids: OperationRecordId[],
 ): Promise<number> {
   
-  const data = await operation_recordDao.deleteByIds(ids);
-  return data;
+  const operation_record_num = await operation_recordDao.deleteByIds(ids);
+  return operation_record_num;
 }
 
 /**
@@ -165,8 +173,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: OperationRecordId[],
 ): Promise<number> {
-  const data = await operation_recordDao.revertByIds(ids);
-  return data;
+  
+  const operation_record_num = await operation_recordDao.revertByIds(ids);
+  
+  return operation_record_num;
 }
 
 /**
@@ -175,14 +185,16 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: OperationRecordId[],
 ): Promise<number> {
-  const data = await operation_recordDao.forceDeleteByIds(ids);
-  return data;
+  
+  const operation_record_num = await operation_recordDao.forceDeleteByIds(ids);
+  
+  return operation_record_num;
 }
 
 /**
  * 获取操作记录字段注释
  */
 export async function getFieldComments(): Promise<OperationRecordFieldComment> {
-  const data = await operation_recordDao.getFieldComments();
-  return data;
+  const operation_record_fields = await operation_recordDao.getFieldComments();
+  return operation_record_fields;
 }

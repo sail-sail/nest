@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await dictDao.findCount(search);
-  return data;
+  const dict_num = await dictDao.findCount(search);
+  
+  return dict_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: DictModel[] = await dictDao.findAll(search, page, sort);
-  return models;
+  const dict_models = await dictDao.findAll(search, page, sort);
+  
+  return dict_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: DictInput,
-) {
-  const data = await dictDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await dictDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await dictDao.findOne(search, sort);
-  return model;
+  const dict_model = await dictDao.findOne(search, sort);
+  
+  return dict_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: DictId | null,
 ): Promise<DictModel | undefined> {
-  const model = await dictDao.findById(id);
-  return model;
+  
+  const dict_model = await dictDao.findById(id);
+  
+  return dict_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await dictDao.exist(search);
-  return data;
+  const dict_exist = await dictDao.exist(search);
+  
+  return dict_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: DictId | null,
 ): Promise<boolean> {
-  const data = await dictDao.existById(id);
-  return data;
+  
+  const dict_exist = await dictDao.existById(id);
+  
+  return dict_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: DictInput,
 ): Promise<void> {
-  const data = await dictDao.validate(input);
-  return data;
+  await dictDao.validate(input);
 }
 
 /**
@@ -124,15 +130,16 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<DictId[]> {
-  const ids = await dictDao.creates(inputs, options);
-  return ids;
+  const dict_ids = await dictDao.creates(inputs, options);
+  
+  return dict_ids;
 }
 
 /**
  * 根据 id 修改系统字典
  */
 export async function updateById(
-  id: DictId,
+  dict_id: DictId,
   input: DictInput,
 ): Promise<DictId> {
   
@@ -152,16 +159,17 @@ export async function updateById(
     input.is_enabled_lbl = "";
   }
   
-  const id2 = await dictDao.updateById(id, input);
-  return id2;
+  const dict_id2 = await dictDao.updateById(dict_id, input);
+  
+  return dict_id2;
 }
 
 /** 校验系统字典是否存在 */
 export async function validateOption(
   model0?: DictModel,
 ): Promise<DictModel> {
-  const model = await dictDao.validateOption(model0);
-  return model;
+  const dict_model = await dictDao.validateOption(model0);
+  return dict_model;
 }
 
 /**
@@ -181,8 +189,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await dictDao.deleteByIds(ids);
-  return data;
+  const dict_num = await dictDao.deleteByIds(ids);
+  return dict_num;
 }
 
 /**
@@ -192,8 +200,8 @@ export async function enableByIds(
   ids: DictId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await dictDao.enableByIds(ids, is_enabled);
-  return data;
+  const dict_num = await dictDao.enableByIds(ids, is_enabled);
+  return dict_num;
 }
 
 /**
@@ -202,8 +210,10 @@ export async function enableByIds(
 export async function revertByIds(
   ids: DictId[],
 ): Promise<number> {
-  const data = await dictDao.revertByIds(ids);
-  return data;
+  
+  const dict_num = await dictDao.revertByIds(ids);
+  
+  return dict_num;
 }
 
 /**
@@ -212,16 +222,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: DictId[],
 ): Promise<number> {
-  const data = await dictDao.forceDeleteByIds(ids);
-  return data;
+  
+  const dict_num = await dictDao.forceDeleteByIds(ids);
+  
+  return dict_num;
 }
 
 /**
  * 获取系统字典字段注释
  */
 export async function getFieldComments(): Promise<DictFieldComment> {
-  const data = await dictDao.getFieldComments();
-  return data;
+  const dict_fields = await dictDao.getFieldComments();
+  return dict_fields;
 }
 
 /**
@@ -229,6 +241,6 @@ export async function getFieldComments(): Promise<DictFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await dictDao.findLastOrderBy();
-  return data;
+  const dict_sort = await dictDao.findLastOrderBy();
+  return dict_sort;
 }

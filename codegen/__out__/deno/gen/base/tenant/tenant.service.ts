@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await tenantDao.findCount(search);
-  return data;
+  const tenant_num = await tenantDao.findCount(search);
+  
+  return tenant_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: TenantModel[] = await tenantDao.findAll(search, page, sort);
-  return models;
+  const tenant_models = await tenantDao.findAll(search, page, sort);
+  
+  return tenant_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: TenantInput,
-) {
-  const data = await tenantDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await tenantDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await tenantDao.findOne(search, sort);
-  return model;
+  const tenant_model = await tenantDao.findOne(search, sort);
+  
+  return tenant_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: TenantId | null,
 ): Promise<TenantModel | undefined> {
-  const model = await tenantDao.findById(id);
-  return model;
+  
+  const tenant_model = await tenantDao.findById(id);
+  
+  return tenant_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await tenantDao.exist(search);
-  return data;
+  const tenant_exist = await tenantDao.exist(search);
+  
+  return tenant_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: TenantId | null,
 ): Promise<boolean> {
-  const data = await tenantDao.existById(id);
-  return data;
+  
+  const tenant_exist = await tenantDao.existById(id);
+  
+  return tenant_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: TenantInput,
 ): Promise<void> {
-  const data = await tenantDao.validate(input);
-  return data;
+  await tenantDao.validate(input);
 }
 
 /**
@@ -124,33 +130,35 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<TenantId[]> {
-  const ids = await tenantDao.creates(inputs, options);
-  return ids;
+  const tenant_ids = await tenantDao.creates(inputs, options);
+  
+  return tenant_ids;
 }
 
 /**
  * 根据 id 修改租户
  */
 export async function updateById(
-  id: TenantId,
+  tenant_id: TenantId,
   input: TenantInput,
 ): Promise<TenantId> {
   
-  const is_locked = await tenantDao.getIsLockedById(id);
+  const is_locked = await tenantDao.getIsLockedById(tenant_id);
   if (is_locked) {
     throw "不能修改已经锁定的 租户";
   }
   
-  const id2 = await tenantDao.updateById(id, input);
-  return id2;
+  const tenant_id2 = await tenantDao.updateById(tenant_id, input);
+  
+  return tenant_id2;
 }
 
 /** 校验租户是否存在 */
 export async function validateOption(
   model0?: TenantModel,
 ): Promise<TenantModel> {
-  const model = await tenantDao.validateOption(model0);
-  return model;
+  const tenant_model = await tenantDao.validateOption(model0);
+  return tenant_model;
 }
 
 /**
@@ -176,8 +184,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await tenantDao.deleteByIds(ids);
-  return data;
+  const tenant_num = await tenantDao.deleteByIds(ids);
+  return tenant_num;
 }
 
 /**
@@ -187,8 +195,8 @@ export async function enableByIds(
   ids: TenantId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await tenantDao.enableByIds(ids, is_enabled);
-  return data;
+  const tenant_num = await tenantDao.enableByIds(ids, is_enabled);
+  return tenant_num;
 }
 
 /**
@@ -198,8 +206,8 @@ export async function lockByIds(
   ids: TenantId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await tenantDao.lockByIds(ids, is_locked);
-  return data;
+  const tenant_num = await tenantDao.lockByIds(ids, is_locked);
+  return tenant_num;
 }
 
 /**
@@ -208,8 +216,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: TenantId[],
 ): Promise<number> {
-  const data = await tenantDao.revertByIds(ids);
-  return data;
+  
+  const tenant_num = await tenantDao.revertByIds(ids);
+  
+  return tenant_num;
 }
 
 /**
@@ -218,16 +228,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: TenantId[],
 ): Promise<number> {
-  const data = await tenantDao.forceDeleteByIds(ids);
-  return data;
+  
+  const tenant_num = await tenantDao.forceDeleteByIds(ids);
+  
+  return tenant_num;
 }
 
 /**
  * 获取租户字段注释
  */
 export async function getFieldComments(): Promise<TenantFieldComment> {
-  const data = await tenantDao.getFieldComments();
-  return data;
+  const tenant_fields = await tenantDao.getFieldComments();
+  return tenant_fields;
 }
 
 /**
@@ -235,6 +247,6 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await tenantDao.findLastOrderBy();
-  return data;
+  const tenant_sort = await tenantDao.findLastOrderBy();
+  return tenant_sort;
 }

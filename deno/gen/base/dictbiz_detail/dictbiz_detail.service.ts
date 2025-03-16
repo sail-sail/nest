@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await dictbiz_detailDao.findCount(search);
-  return data;
+  const dictbiz_detail_num = await dictbiz_detailDao.findCount(search);
+  
+  return dictbiz_detail_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: DictbizDetailModel[] = await dictbiz_detailDao.findAll(search, page, sort);
-  return models;
+  const dictbiz_detail_models = await dictbiz_detailDao.findAll(search, page, sort);
+  
+  return dictbiz_detail_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: DictbizDetailInput,
-) {
-  const data = await dictbiz_detailDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await dictbiz_detailDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await dictbiz_detailDao.findOne(search, sort);
-  return model;
+  const dictbiz_detail_model = await dictbiz_detailDao.findOne(search, sort);
+  
+  return dictbiz_detail_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: DictbizDetailId | null,
 ): Promise<DictbizDetailModel | undefined> {
-  const model = await dictbiz_detailDao.findById(id);
-  return model;
+  
+  const dictbiz_detail_model = await dictbiz_detailDao.findById(id);
+  
+  return dictbiz_detail_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await dictbiz_detailDao.exist(search);
-  return data;
+  const dictbiz_detail_exist = await dictbiz_detailDao.exist(search);
+  
+  return dictbiz_detail_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: DictbizDetailId | null,
 ): Promise<boolean> {
-  const data = await dictbiz_detailDao.existById(id);
-  return data;
+  
+  const dictbiz_detail_exist = await dictbiz_detailDao.existById(id);
+  
+  return dictbiz_detail_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: DictbizDetailInput,
 ): Promise<void> {
-  const data = await dictbiz_detailDao.validate(input);
-  return data;
+  await dictbiz_detailDao.validate(input);
 }
 
 /**
@@ -124,28 +130,30 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<DictbizDetailId[]> {
-  const ids = await dictbiz_detailDao.creates(inputs, options);
-  return ids;
+  const dictbiz_detail_ids = await dictbiz_detailDao.creates(inputs, options);
+  
+  return dictbiz_detail_ids;
 }
 
 /**
  * 根据 id 修改业务字典明细
  */
 export async function updateById(
-  id: DictbizDetailId,
+  dictbiz_detail_id: DictbizDetailId,
   input: DictbizDetailInput,
 ): Promise<DictbizDetailId> {
   
-  const id2 = await dictbiz_detailDao.updateById(id, input);
-  return id2;
+  const dictbiz_detail_id2 = await dictbiz_detailDao.updateById(dictbiz_detail_id, input);
+  
+  return dictbiz_detail_id2;
 }
 
 /** 校验业务字典明细是否存在 */
 export async function validateOption(
   model0?: DictbizDetailModel,
 ): Promise<DictbizDetailModel> {
-  const model = await dictbiz_detailDao.validateOption(model0);
-  return model;
+  const dictbiz_detail_model = await dictbiz_detailDao.validateOption(model0);
+  return dictbiz_detail_model;
 }
 
 /**
@@ -165,8 +173,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await dictbiz_detailDao.deleteByIds(ids);
-  return data;
+  const dictbiz_detail_num = await dictbiz_detailDao.deleteByIds(ids);
+  return dictbiz_detail_num;
 }
 
 /**
@@ -176,8 +184,8 @@ export async function enableByIds(
   ids: DictbizDetailId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await dictbiz_detailDao.enableByIds(ids, is_enabled);
-  return data;
+  const dictbiz_detail_num = await dictbiz_detailDao.enableByIds(ids, is_enabled);
+  return dictbiz_detail_num;
 }
 
 /**
@@ -186,8 +194,10 @@ export async function enableByIds(
 export async function revertByIds(
   ids: DictbizDetailId[],
 ): Promise<number> {
-  const data = await dictbiz_detailDao.revertByIds(ids);
-  return data;
+  
+  const dictbiz_detail_num = await dictbiz_detailDao.revertByIds(ids);
+  
+  return dictbiz_detail_num;
 }
 
 /**
@@ -196,16 +206,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: DictbizDetailId[],
 ): Promise<number> {
-  const data = await dictbiz_detailDao.forceDeleteByIds(ids);
-  return data;
+  
+  const dictbiz_detail_num = await dictbiz_detailDao.forceDeleteByIds(ids);
+  
+  return dictbiz_detail_num;
 }
 
 /**
  * 获取业务字典明细字段注释
  */
 export async function getFieldComments(): Promise<DictbizDetailFieldComment> {
-  const data = await dictbiz_detailDao.getFieldComments();
-  return data;
+  const dictbiz_detail_fields = await dictbiz_detailDao.getFieldComments();
+  return dictbiz_detail_fields;
 }
 
 /**
@@ -213,6 +225,6 @@ export async function getFieldComments(): Promise<DictbizDetailFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await dictbiz_detailDao.findLastOrderBy();
-  return data;
+  const dictbiz_detail_sort = await dictbiz_detailDao.findLastOrderBy();
+  return dictbiz_detail_sort;
 }

@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await usrDao.findCount(search);
-  return data;
+  const usr_num = await usrDao.findCount(search);
+  
+  return usr_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: UsrModel[] = await usrDao.findAll(search, page, sort);
-  return models;
+  const usr_models = await usrDao.findAll(search, page, sort);
+  
+  return usr_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: UsrInput,
-) {
-  const data = await usrDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await usrDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await usrDao.findOne(search, sort);
-  return model;
+  const usr_model = await usrDao.findOne(search, sort);
+  
+  return usr_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: UsrId | null,
 ): Promise<UsrModel | undefined> {
-  const model = await usrDao.findById(id);
-  return model;
+  
+  const usr_model = await usrDao.findById(id);
+  
+  return usr_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await usrDao.exist(search);
-  return data;
+  const usr_exist = await usrDao.exist(search);
+  
+  return usr_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: UsrId | null,
 ): Promise<boolean> {
-  const data = await usrDao.existById(id);
-  return data;
+  
+  const usr_exist = await usrDao.existById(id);
+  
+  return usr_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: UsrInput,
 ): Promise<void> {
-  const data = await usrDao.validate(input);
-  return data;
+  await usrDao.validate(input);
 }
 
 /**
@@ -124,33 +130,35 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<UsrId[]> {
-  const ids = await usrDao.creates(inputs, options);
-  return ids;
+  const usr_ids = await usrDao.creates(inputs, options);
+  
+  return usr_ids;
 }
 
 /**
  * 根据 id 修改用户
  */
 export async function updateById(
-  id: UsrId,
+  usr_id: UsrId,
   input: UsrInput,
 ): Promise<UsrId> {
   
-  const is_locked = await usrDao.getIsLockedById(id);
+  const is_locked = await usrDao.getIsLockedById(usr_id);
   if (is_locked) {
     throw "不能修改已经锁定的 用户";
   }
   
-  const id2 = await usrDao.updateById(id, input);
-  return id2;
+  const usr_id2 = await usrDao.updateById(usr_id, input);
+  
+  return usr_id2;
 }
 
 /** 校验用户是否存在 */
 export async function validateOption(
   model0?: UsrModel,
 ): Promise<UsrModel> {
-  const model = await usrDao.validateOption(model0);
-  return model;
+  const usr_model = await usrDao.validateOption(model0);
+  return usr_model;
 }
 
 /**
@@ -170,8 +178,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await usrDao.deleteByIds(ids);
-  return data;
+  const usr_num = await usrDao.deleteByIds(ids);
+  return usr_num;
 }
 
 /**
@@ -181,8 +189,8 @@ export async function enableByIds(
   ids: UsrId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await usrDao.enableByIds(ids, is_enabled);
-  return data;
+  const usr_num = await usrDao.enableByIds(ids, is_enabled);
+  return usr_num;
 }
 
 /**
@@ -192,8 +200,8 @@ export async function lockByIds(
   ids: UsrId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await usrDao.lockByIds(ids, is_locked);
-  return data;
+  const usr_num = await usrDao.lockByIds(ids, is_locked);
+  return usr_num;
 }
 
 /**
@@ -202,8 +210,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: UsrId[],
 ): Promise<number> {
-  const data = await usrDao.revertByIds(ids);
-  return data;
+  
+  const usr_num = await usrDao.revertByIds(ids);
+  
+  return usr_num;
 }
 
 /**
@@ -212,16 +222,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: UsrId[],
 ): Promise<number> {
-  const data = await usrDao.forceDeleteByIds(ids);
-  return data;
+  
+  const usr_num = await usrDao.forceDeleteByIds(ids);
+  
+  return usr_num;
 }
 
 /**
  * 获取用户字段注释
  */
 export async function getFieldComments(): Promise<UsrFieldComment> {
-  const data = await usrDao.getFieldComments();
-  return data;
+  const usr_fields = await usrDao.getFieldComments();
+  return usr_fields;
 }
 
 /**
@@ -229,6 +241,6 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await usrDao.findLastOrderBy();
-  return data;
+  const usr_sort = await usrDao.findLastOrderBy();
+  return usr_sort;
 }

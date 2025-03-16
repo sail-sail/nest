@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await roleDao.findCount(search);
-  return data;
+  const role_num = await roleDao.findCount(search);
+  
+  return role_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: RoleModel[] = await roleDao.findAll(search, page, sort);
-  return models;
+  const role_models = await roleDao.findAll(search, page, sort);
+  
+  return role_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: RoleInput,
-) {
-  const data = await roleDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await roleDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await roleDao.findOne(search, sort);
-  return model;
+  const role_model = await roleDao.findOne(search, sort);
+  
+  return role_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: RoleId | null,
 ): Promise<RoleModel | undefined> {
-  const model = await roleDao.findById(id);
-  return model;
+  
+  const role_model = await roleDao.findById(id);
+  
+  return role_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await roleDao.exist(search);
-  return data;
+  const role_exist = await roleDao.exist(search);
+  
+  return role_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: RoleId | null,
 ): Promise<boolean> {
-  const data = await roleDao.existById(id);
-  return data;
+  
+  const role_exist = await roleDao.existById(id);
+  
+  return role_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: RoleInput,
 ): Promise<void> {
-  const data = await roleDao.validate(input);
-  return data;
+  await roleDao.validate(input);
 }
 
 /**
@@ -124,33 +130,35 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<RoleId[]> {
-  const ids = await roleDao.creates(inputs, options);
-  return ids;
+  const role_ids = await roleDao.creates(inputs, options);
+  
+  return role_ids;
 }
 
 /**
  * 根据 id 修改角色
  */
 export async function updateById(
-  id: RoleId,
+  role_id: RoleId,
   input: RoleInput,
 ): Promise<RoleId> {
   
-  const is_locked = await roleDao.getIsLockedById(id);
+  const is_locked = await roleDao.getIsLockedById(role_id);
   if (is_locked) {
     throw "不能修改已经锁定的 角色";
   }
   
-  const id2 = await roleDao.updateById(id, input);
-  return id2;
+  const role_id2 = await roleDao.updateById(role_id, input);
+  
+  return role_id2;
 }
 
 /** 校验角色是否存在 */
 export async function validateOption(
   model0?: RoleModel,
 ): Promise<RoleModel> {
-  const model = await roleDao.validateOption(model0);
-  return model;
+  const role_model = await roleDao.validateOption(model0);
+  return role_model;
 }
 
 /**
@@ -176,8 +184,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await roleDao.deleteByIds(ids);
-  return data;
+  const role_num = await roleDao.deleteByIds(ids);
+  return role_num;
 }
 
 /**
@@ -187,8 +195,8 @@ export async function enableByIds(
   ids: RoleId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await roleDao.enableByIds(ids, is_enabled);
-  return data;
+  const role_num = await roleDao.enableByIds(ids, is_enabled);
+  return role_num;
 }
 
 /**
@@ -198,8 +206,8 @@ export async function lockByIds(
   ids: RoleId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await roleDao.lockByIds(ids, is_locked);
-  return data;
+  const role_num = await roleDao.lockByIds(ids, is_locked);
+  return role_num;
 }
 
 /**
@@ -208,8 +216,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: RoleId[],
 ): Promise<number> {
-  const data = await roleDao.revertByIds(ids);
-  return data;
+  
+  const role_num = await roleDao.revertByIds(ids);
+  
+  return role_num;
 }
 
 /**
@@ -218,16 +228,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: RoleId[],
 ): Promise<number> {
-  const data = await roleDao.forceDeleteByIds(ids);
-  return data;
+  
+  const role_num = await roleDao.forceDeleteByIds(ids);
+  
+  return role_num;
 }
 
 /**
  * 获取角色字段注释
  */
 export async function getFieldComments(): Promise<RoleFieldComment> {
-  const data = await roleDao.getFieldComments();
-  return data;
+  const role_fields = await roleDao.getFieldComments();
+  return role_fields;
 }
 
 /**
@@ -235,6 +247,6 @@ export async function getFieldComments(): Promise<RoleFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await roleDao.findLastOrderBy();
-  return data;
+  const role_sort = await roleDao.findLastOrderBy();
+  return role_sort;
 }

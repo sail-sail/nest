@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await langDao.findCount(search);
-  return data;
+  const lang_num = await langDao.findCount(search);
+  
+  return lang_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: LangModel[] = await langDao.findAll(search, page, sort);
-  return models;
+  const lang_models = await langDao.findAll(search, page, sort);
+  
+  return lang_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: LangInput,
-) {
-  const data = await langDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await langDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await langDao.findOne(search, sort);
-  return model;
+  const lang_model = await langDao.findOne(search, sort);
+  
+  return lang_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: LangId | null,
 ): Promise<LangModel | undefined> {
-  const model = await langDao.findById(id);
-  return model;
+  
+  const lang_model = await langDao.findById(id);
+  
+  return lang_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await langDao.exist(search);
-  return data;
+  const lang_exist = await langDao.exist(search);
+  
+  return lang_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: LangId | null,
 ): Promise<boolean> {
-  const data = await langDao.existById(id);
-  return data;
+  
+  const lang_exist = await langDao.existById(id);
+  
+  return lang_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: LangInput,
 ): Promise<void> {
-  const data = await langDao.validate(input);
-  return data;
+  await langDao.validate(input);
 }
 
 /**
@@ -124,28 +130,30 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<LangId[]> {
-  const ids = await langDao.creates(inputs, options);
-  return ids;
+  const lang_ids = await langDao.creates(inputs, options);
+  
+  return lang_ids;
 }
 
 /**
  * 根据 id 修改语言
  */
 export async function updateById(
-  id: LangId,
+  lang_id: LangId,
   input: LangInput,
 ): Promise<LangId> {
   
-  const id2 = await langDao.updateById(id, input);
-  return id2;
+  const lang_id2 = await langDao.updateById(lang_id, input);
+  
+  return lang_id2;
 }
 
 /** 校验语言是否存在 */
 export async function validateOption(
   model0?: LangModel,
 ): Promise<LangModel> {
-  const model = await langDao.validateOption(model0);
-  return model;
+  const lang_model = await langDao.validateOption(model0);
+  return lang_model;
 }
 
 /**
@@ -165,8 +173,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await langDao.deleteByIds(ids);
-  return data;
+  const lang_num = await langDao.deleteByIds(ids);
+  return lang_num;
 }
 
 /**
@@ -176,8 +184,8 @@ export async function enableByIds(
   ids: LangId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await langDao.enableByIds(ids, is_enabled);
-  return data;
+  const lang_num = await langDao.enableByIds(ids, is_enabled);
+  return lang_num;
 }
 
 /**
@@ -186,8 +194,10 @@ export async function enableByIds(
 export async function revertByIds(
   ids: LangId[],
 ): Promise<number> {
-  const data = await langDao.revertByIds(ids);
-  return data;
+  
+  const lang_num = await langDao.revertByIds(ids);
+  
+  return lang_num;
 }
 
 /**
@@ -196,16 +206,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: LangId[],
 ): Promise<number> {
-  const data = await langDao.forceDeleteByIds(ids);
-  return data;
+  
+  const lang_num = await langDao.forceDeleteByIds(ids);
+  
+  return lang_num;
 }
 
 /**
  * 获取语言字段注释
  */
 export async function getFieldComments(): Promise<LangFieldComment> {
-  const data = await langDao.getFieldComments();
-  return data;
+  const lang_fields = await langDao.getFieldComments();
+  return lang_fields;
 }
 
 /**
@@ -213,6 +225,6 @@ export async function getFieldComments(): Promise<LangFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await langDao.findLastOrderBy();
-  return data;
+  const lang_sort = await langDao.findLastOrderBy();
+  return lang_sort;
 }

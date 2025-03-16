@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await menuDao.findCount(search);
-  return data;
+  const menu_num = await menuDao.findCount(search);
+  
+  return menu_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: MenuModel[] = await menuDao.findAll(search, page, sort);
-  return models;
+  const menu_models = await menuDao.findAll(search, page, sort);
+  
+  return menu_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: MenuInput,
-) {
-  const data = await menuDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await menuDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await menuDao.findOne(search, sort);
-  return model;
+  const menu_model = await menuDao.findOne(search, sort);
+  
+  return menu_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: MenuId | null,
 ): Promise<MenuModel | undefined> {
-  const model = await menuDao.findById(id);
-  return model;
+  
+  const menu_model = await menuDao.findById(id);
+  
+  return menu_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await menuDao.exist(search);
-  return data;
+  const menu_exist = await menuDao.exist(search);
+  
+  return menu_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: MenuId | null,
 ): Promise<boolean> {
-  const data = await menuDao.existById(id);
-  return data;
+  
+  const menu_exist = await menuDao.existById(id);
+  
+  return menu_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: MenuInput,
 ): Promise<void> {
-  const data = await menuDao.validate(input);
-  return data;
+  await menuDao.validate(input);
 }
 
 /**
@@ -124,33 +130,35 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<MenuId[]> {
-  const ids = await menuDao.creates(inputs, options);
-  return ids;
+  const menu_ids = await menuDao.creates(inputs, options);
+  
+  return menu_ids;
 }
 
 /**
  * 根据 id 修改菜单
  */
 export async function updateById(
-  id: MenuId,
+  menu_id: MenuId,
   input: MenuInput,
 ): Promise<MenuId> {
   
-  const is_locked = await menuDao.getIsLockedById(id);
+  const is_locked = await menuDao.getIsLockedById(menu_id);
   if (is_locked) {
     throw "不能修改已经锁定的 菜单";
   }
   
-  const id2 = await menuDao.updateById(id, input);
-  return id2;
+  const menu_id2 = await menuDao.updateById(menu_id, input);
+  
+  return menu_id2;
 }
 
 /** 校验菜单是否存在 */
 export async function validateOption(
   model0?: MenuModel,
 ): Promise<MenuModel> {
-  const model = await menuDao.validateOption(model0);
-  return model;
+  const menu_model = await menuDao.validateOption(model0);
+  return menu_model;
 }
 
 /**
@@ -170,8 +178,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await menuDao.deleteByIds(ids);
-  return data;
+  const menu_num = await menuDao.deleteByIds(ids);
+  return menu_num;
 }
 
 /**
@@ -181,8 +189,8 @@ export async function enableByIds(
   ids: MenuId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await menuDao.enableByIds(ids, is_enabled);
-  return data;
+  const menu_num = await menuDao.enableByIds(ids, is_enabled);
+  return menu_num;
 }
 
 /**
@@ -192,8 +200,8 @@ export async function lockByIds(
   ids: MenuId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await menuDao.lockByIds(ids, is_locked);
-  return data;
+  const menu_num = await menuDao.lockByIds(ids, is_locked);
+  return menu_num;
 }
 
 /**
@@ -202,8 +210,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: MenuId[],
 ): Promise<number> {
-  const data = await menuDao.revertByIds(ids);
-  return data;
+  
+  const menu_num = await menuDao.revertByIds(ids);
+  
+  return menu_num;
 }
 
 /**
@@ -212,16 +222,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: MenuId[],
 ): Promise<number> {
-  const data = await menuDao.forceDeleteByIds(ids);
-  return data;
+  
+  const menu_num = await menuDao.forceDeleteByIds(ids);
+  
+  return menu_num;
 }
 
 /**
  * 获取菜单字段注释
  */
 export async function getFieldComments(): Promise<MenuFieldComment> {
-  const data = await menuDao.getFieldComments();
-  return data;
+  const menu_fields = await menuDao.getFieldComments();
+  return menu_fields;
 }
 
 /**
@@ -229,6 +241,6 @@ export async function getFieldComments(): Promise<MenuFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await menuDao.findLastOrderBy();
-  return data;
+  const menu_sort = await menuDao.findLastOrderBy();
+  return menu_sort;
 }

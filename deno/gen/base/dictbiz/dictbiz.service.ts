@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await dictbizDao.findCount(search);
-  return data;
+  const dictbiz_num = await dictbizDao.findCount(search);
+  
+  return dictbiz_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: DictbizModel[] = await dictbizDao.findAll(search, page, sort);
-  return models;
+  const dictbiz_models = await dictbizDao.findAll(search, page, sort);
+  
+  return dictbiz_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: DictbizInput,
-) {
-  const data = await dictbizDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await dictbizDao.setIdByLbl(input);
 }
 
 /**
@@ -66,8 +67,9 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await dictbizDao.findOne(search, sort);
-  return model;
+  const dictbiz_model = await dictbizDao.findOne(search, sort);
+  
+  return dictbiz_model;
 }
 
 /**
@@ -76,8 +78,10 @@ export async function findOne(
 export async function findById(
   id?: DictbizId | null,
 ): Promise<DictbizModel | undefined> {
-  const model = await dictbizDao.findById(id);
-  return model;
+  
+  const dictbiz_model = await dictbizDao.findById(id);
+  
+  return dictbiz_model;
 }
 
 /**
@@ -91,8 +95,9 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await dictbizDao.exist(search);
-  return data;
+  const dictbiz_exist = await dictbizDao.exist(search);
+  
+  return dictbiz_exist;
 }
 
 /**
@@ -101,8 +106,10 @@ export async function exist(
 export async function existById(
   id?: DictbizId | null,
 ): Promise<boolean> {
-  const data = await dictbizDao.existById(id);
-  return data;
+  
+  const dictbiz_exist = await dictbizDao.existById(id);
+  
+  return dictbiz_exist;
 }
 
 /**
@@ -111,8 +118,7 @@ export async function existById(
 export async function validate(
   input: DictbizInput,
 ): Promise<void> {
-  const data = await dictbizDao.validate(input);
-  return data;
+  await dictbizDao.validate(input);
 }
 
 /**
@@ -129,30 +135,30 @@ export async function creates(
     input.is_add = undefined;
   }
   
-  const ids = await dictbizDao.creates(inputs, options);
-  return ids;
+  const dictbiz_ids = await dictbizDao.creates(inputs, options);
+  return dictbiz_ids;
 }
 
 /**
  * 根据 id 修改业务字典
  */
 export async function updateById(
-  id: DictbizId,
+  dictbiz_id: DictbizId,
   input: DictbizInput,
 ): Promise<DictbizId> {
   
   input.is_add = undefined;
   
-  const id2 = await dictbizDao.updateById(id, input);
-  return id2;
+  const dictbiz_id2 = await dictbizDao.updateById(dictbiz_id, input);
+  return dictbiz_id2;
 }
 
 /** 校验业务字典是否存在 */
 export async function validateOption(
   model0?: DictbizModel,
 ): Promise<DictbizModel> {
-  const model = await dictbizDao.validateOption(model0);
-  return model;
+  const dictbiz_model = await dictbizDao.validateOption(model0);
+  return dictbiz_model;
 }
 
 /**
@@ -172,8 +178,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await dictbizDao.deleteByIds(ids);
-  return data;
+  const dictbiz_num = await dictbizDao.deleteByIds(ids);
+  return dictbiz_num;
 }
 
 /**
@@ -183,8 +189,8 @@ export async function enableByIds(
   ids: DictbizId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await dictbizDao.enableByIds(ids, is_enabled);
-  return data;
+  const dictbiz_num = await dictbizDao.enableByIds(ids, is_enabled);
+  return dictbiz_num;
 }
 
 /**
@@ -193,8 +199,10 @@ export async function enableByIds(
 export async function revertByIds(
   ids: DictbizId[],
 ): Promise<number> {
-  const data = await dictbizDao.revertByIds(ids);
-  return data;
+  
+  const dictbiz_num = await dictbizDao.revertByIds(ids);
+  
+  return dictbiz_num;
 }
 
 /**
@@ -203,16 +211,18 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: DictbizId[],
 ): Promise<number> {
-  const data = await dictbizDao.forceDeleteByIds(ids);
-  return data;
+  
+  const dictbiz_num = await dictbizDao.forceDeleteByIds(ids);
+  
+  return dictbiz_num;
 }
 
 /**
  * 获取业务字典字段注释
  */
 export async function getFieldComments(): Promise<DictbizFieldComment> {
-  const data = await dictbizDao.getFieldComments();
-  return data;
+  const dictbiz_fields = await dictbizDao.getFieldComments();
+  return dictbiz_fields;
 }
 
 /**
@@ -220,6 +230,6 @@ export async function getFieldComments(): Promise<DictbizFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await dictbizDao.findLastOrderBy();
-  return data;
+  const dictbiz_sort = await dictbizDao.findLastOrderBy();
+  return dictbiz_sort;
 }
