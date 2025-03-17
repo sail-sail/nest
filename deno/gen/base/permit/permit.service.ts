@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找按钮权限
  */
 export async function findById(
-  id?: PermitId | null,
+  permit_id?: PermitId | null,
 ): Promise<PermitModel | undefined> {
   
-  const permit_model = await permitDao.findById(id);
+  const permit_model = await permitDao.findById(permit_id);
   
   return permit_model;
+}
+
+/**
+ * 根据 ids 查找按钮权限
+ */
+export async function findByIds(
+  permit_ids: PermitId[],
+): Promise<PermitModel[]> {
+  
+  const permit_models = await permitDao.findByIds(permit_ids);
+  
+  return permit_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找按钮权限是否存在
  */
 export async function existById(
-  id?: PermitId | null,
+  permit_id?: PermitId | null,
 ): Promise<boolean> {
   
-  const permit_exist = await permitDao.existById(id);
+  const permit_exist = await permitDao.existById(permit_id);
   
   return permit_exist;
 }
@@ -144,7 +156,7 @@ export async function updateById(
 ): Promise<PermitId> {
   
   const old_model = await permitDao.validateOption(
-    await permitDao.findById(id),
+    await permitDao.findById(permit_id),
   );
   
   // 不能修改系统记录的系统字段
@@ -173,12 +185,10 @@ export async function validateOption(
  * 根据 ids 删除按钮权限
  */
 export async function deleteByIds(
-  ids: PermitId[],
+  permit_ids: PermitId[],
 ): Promise<number> {
   
-  const old_models = await permitDao.findAll({
-    ids,
-  });
+  const old_models = await permitDao.findByIds(permit_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -186,7 +196,7 @@ export async function deleteByIds(
     }
   }
   
-  const permit_num = await permitDao.deleteByIds(ids);
+  const permit_num = await permitDao.deleteByIds(permit_ids);
   return permit_num;
 }
 

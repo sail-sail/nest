@@ -105,6 +105,25 @@ export async function findByIdFieldPermit(
 }
 
 /**
+ * 根据 ids 查找字段权限
+ */
+export async function findByIdsFieldPermit(
+  ids: FieldPermitId[],
+): Promise<FieldPermitModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./field_permit.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 根据 id 修改字段权限
  */
 export async function updateByIdFieldPermit(

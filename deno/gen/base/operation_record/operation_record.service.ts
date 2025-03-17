@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找操作记录
  */
 export async function findById(
-  id?: OperationRecordId | null,
+  operation_record_id?: OperationRecordId | null,
 ): Promise<OperationRecordModel | undefined> {
   
-  const operation_record_model = await operation_recordDao.findById(id);
+  const operation_record_model = await operation_recordDao.findById(operation_record_id);
   
   return operation_record_model;
+}
+
+/**
+ * 根据 ids 查找操作记录
+ */
+export async function findByIds(
+  operation_record_ids: OperationRecordId[],
+): Promise<OperationRecordModel[]> {
+  
+  const operation_record_models = await operation_recordDao.findByIds(operation_record_ids);
+  
+  return operation_record_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找操作记录是否存在
  */
 export async function existById(
-  id?: OperationRecordId | null,
+  operation_record_id?: OperationRecordId | null,
 ): Promise<boolean> {
   
-  const operation_record_exist = await operation_recordDao.existById(id);
+  const operation_record_exist = await operation_recordDao.existById(operation_record_id);
   
   return operation_record_exist;
 }
@@ -160,10 +172,10 @@ export async function validateOption(
  * 根据 ids 删除操作记录
  */
 export async function deleteByIds(
-  ids: OperationRecordId[],
+  operation_record_ids: OperationRecordId[],
 ): Promise<number> {
   
-  const operation_record_num = await operation_recordDao.deleteByIds(ids);
+  const operation_record_num = await operation_recordDao.deleteByIds(operation_record_ids);
   return operation_record_num;
 }
 
@@ -171,10 +183,10 @@ export async function deleteByIds(
  * 根据 ids 还原操作记录
  */
 export async function revertByIds(
-  ids: OperationRecordId[],
+  operation_record_ids: OperationRecordId[],
 ): Promise<number> {
   
-  const operation_record_num = await operation_recordDao.revertByIds(ids);
+  const operation_record_num = await operation_recordDao.revertByIds(operation_record_ids);
   
   return operation_record_num;
 }
@@ -183,10 +195,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除操作记录
  */
 export async function forceDeleteByIds(
-  ids: OperationRecordId[],
+  operation_record_ids: OperationRecordId[],
 ): Promise<number> {
   
-  const operation_record_num = await operation_recordDao.forceDeleteByIds(ids);
+  const operation_record_num = await operation_recordDao.forceDeleteByIds(operation_record_ids);
   
   return operation_record_num;
 }

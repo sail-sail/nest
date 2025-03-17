@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找业务字典
  */
 export async function findById(
-  id?: DictbizId | null,
+  dictbiz_id?: DictbizId | null,
 ): Promise<DictbizModel | undefined> {
   
-  const dictbiz_model = await dictbizDao.findById(id);
+  const dictbiz_model = await dictbizDao.findById(dictbiz_id);
   
   return dictbiz_model;
+}
+
+/**
+ * 根据 ids 查找业务字典
+ */
+export async function findByIds(
+  dictbiz_ids: DictbizId[],
+): Promise<DictbizModel[]> {
+  
+  const dictbiz_models = await dictbizDao.findByIds(dictbiz_ids);
+  
+  return dictbiz_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找业务字典是否存在
  */
 export async function existById(
-  id?: DictbizId | null,
+  dictbiz_id?: DictbizId | null,
 ): Promise<boolean> {
   
-  const dictbiz_exist = await dictbizDao.existById(id);
+  const dictbiz_exist = await dictbizDao.existById(dictbiz_id);
   
   return dictbiz_exist;
 }
@@ -165,12 +177,10 @@ export async function validateOption(
  * 根据 ids 删除业务字典
  */
 export async function deleteByIds(
-  ids: DictbizId[],
+  dictbiz_ids: DictbizId[],
 ): Promise<number> {
   
-  const old_models = await dictbizDao.findAll({
-    ids,
-  });
+  const old_models = await dictbizDao.findByIds(dictbiz_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -178,7 +188,7 @@ export async function deleteByIds(
     }
   }
   
-  const dictbiz_num = await dictbizDao.deleteByIds(ids);
+  const dictbiz_num = await dictbizDao.deleteByIds(dictbiz_ids);
   return dictbiz_num;
 }
 
@@ -197,10 +207,10 @@ export async function enableByIds(
  * 根据 ids 还原业务字典
  */
 export async function revertByIds(
-  ids: DictbizId[],
+  dictbiz_ids: DictbizId[],
 ): Promise<number> {
   
-  const dictbiz_num = await dictbizDao.revertByIds(ids);
+  const dictbiz_num = await dictbizDao.revertByIds(dictbiz_ids);
   
   return dictbiz_num;
 }
@@ -209,10 +219,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除业务字典
  */
 export async function forceDeleteByIds(
-  ids: DictbizId[],
+  dictbiz_ids: DictbizId[],
 ): Promise<number> {
   
-  const dictbiz_num = await dictbizDao.forceDeleteByIds(ids);
+  const dictbiz_num = await dictbizDao.forceDeleteByIds(dictbiz_ids);
   
   return dictbiz_num;
 }

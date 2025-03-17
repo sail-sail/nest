@@ -105,12 +105,24 @@ export async function findOne(
  * 根据 id 查找部门
  */
 export async function findById(
-  id?: DeptId | null,
+  dept_id?: DeptId | null,
 ): Promise<DeptModel | undefined> {
   
-  const dept_model = await deptDao.findById(id);
+  const dept_model = await deptDao.findById(dept_id);
   
   return dept_model;
+}
+
+/**
+ * 根据 ids 查找部门
+ */
+export async function findByIds(
+  dept_ids: DeptId[],
+): Promise<DeptModel[]> {
+  
+  const dept_models = await deptDao.findByIds(dept_ids);
+  
+  return dept_models;
 }
 
 /**
@@ -133,10 +145,10 @@ export async function exist(
  * 根据 id 查找部门是否存在
  */
 export async function existById(
-  id?: DeptId | null,
+  dept_id?: DeptId | null,
 ): Promise<boolean> {
   
-  const dept_exist = await deptDao.existById(id);
+  const dept_exist = await deptDao.existById(dept_id);
   
   return dept_exist;
 }
@@ -194,12 +206,10 @@ export async function validateOption(
  * 根据 ids 删除部门
  */
 export async function deleteByIds(
-  ids: DeptId[],
+  dept_ids: DeptId[],
 ): Promise<number> {
   
-  const old_models = await deptDao.findAll({
-    ids,
-  });
+  const old_models = await deptDao.findByIds(dept_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -207,7 +217,7 @@ export async function deleteByIds(
     }
   }
   
-  const dept_num = await deptDao.deleteByIds(ids);
+  const dept_num = await deptDao.deleteByIds(dept_ids);
   return dept_num;
 }
 
@@ -226,10 +236,10 @@ export async function enableByIds(
  * 根据 ids 锁定或者解锁部门
  */
 export async function lockByIds(
-  ids: DeptId[],
+  dept_ids: DeptId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const dept_num = await deptDao.lockByIds(ids, is_locked);
+  const dept_num = await deptDao.lockByIds(dept_ids, is_locked);
   return dept_num;
 }
 
@@ -237,10 +247,10 @@ export async function lockByIds(
  * 根据 ids 还原部门
  */
 export async function revertByIds(
-  ids: DeptId[],
+  dept_ids: DeptId[],
 ): Promise<number> {
   
-  const dept_num = await deptDao.revertByIds(ids);
+  const dept_num = await deptDao.revertByIds(dept_ids);
   
   return dept_num;
 }
@@ -249,10 +259,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除部门
  */
 export async function forceDeleteByIds(
-  ids: DeptId[],
+  dept_ids: DeptId[],
 ): Promise<number> {
   
-  const dept_num = await deptDao.forceDeleteByIds(ids);
+  const dept_num = await deptDao.forceDeleteByIds(dept_ids);
   
   return dept_num;
 }

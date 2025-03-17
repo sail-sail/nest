@@ -102,7 +102,7 @@
     "vite-plugin-vue-inspector": "5.3.1",
     "vitest": "3.0.8",
     "vue-router": "4.5.0",
-    "vue-tsc": "2.2.8"
+    "vue-tsc": "3.0.0-alpha.2"
   },
   "lint-staged": {
     "*.ts": [

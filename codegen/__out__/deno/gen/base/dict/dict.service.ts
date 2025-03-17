@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找系统字典
  */
 export async function findById(
-  id?: DictId | null,
+  dict_id?: DictId | null,
 ): Promise<DictModel | undefined> {
   
-  const dict_model = await dictDao.findById(id);
+  const dict_model = await dictDao.findById(dict_id);
   
   return dict_model;
+}
+
+/**
+ * 根据 ids 查找系统字典
+ */
+export async function findByIds(
+  dict_ids: DictId[],
+): Promise<DictModel[]> {
+  
+  const dict_models = await dictDao.findByIds(dict_ids);
+  
+  return dict_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找系统字典是否存在
  */
 export async function existById(
-  id?: DictId | null,
+  dict_id?: DictId | null,
 ): Promise<boolean> {
   
-  const dict_exist = await dictDao.existById(id);
+  const dict_exist = await dictDao.existById(dict_id);
   
   return dict_exist;
 }
@@ -144,7 +156,7 @@ export async function updateById(
 ): Promise<DictId> {
   
   const old_model = await dictDao.validateOption(
-    await dictDao.findById(id),
+    await dictDao.findById(dict_id),
   );
   
   // 不能修改系统记录的系统字段
@@ -176,12 +188,10 @@ export async function validateOption(
  * 根据 ids 删除系统字典
  */
 export async function deleteByIds(
-  ids: DictId[],
+  dict_ids: DictId[],
 ): Promise<number> {
   
-  const old_models = await dictDao.findAll({
-    ids,
-  });
+  const old_models = await dictDao.findByIds(dict_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -189,7 +199,7 @@ export async function deleteByIds(
     }
   }
   
-  const dict_num = await dictDao.deleteByIds(ids);
+  const dict_num = await dictDao.deleteByIds(dict_ids);
   return dict_num;
 }
 
@@ -208,10 +218,10 @@ export async function enableByIds(
  * 根据 ids 还原系统字典
  */
 export async function revertByIds(
-  ids: DictId[],
+  dict_ids: DictId[],
 ): Promise<number> {
   
-  const dict_num = await dictDao.revertByIds(ids);
+  const dict_num = await dictDao.revertByIds(dict_ids);
   
   return dict_num;
 }
@@ -220,10 +230,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除系统字典
  */
 export async function forceDeleteByIds(
-  ids: DictId[],
+  dict_ids: DictId[],
 ): Promise<number> {
   
-  const dict_num = await dictDao.forceDeleteByIds(ids);
+  const dict_num = await dictDao.forceDeleteByIds(dict_ids);
   
   return dict_num;
 }

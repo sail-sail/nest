@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找菜单
  */
 export async function findById(
-  id?: MenuId | null,
+  menu_id?: MenuId | null,
 ): Promise<MenuModel | undefined> {
   
-  const menu_model = await menuDao.findById(id);
+  const menu_model = await menuDao.findById(menu_id);
   
   return menu_model;
+}
+
+/**
+ * 根据 ids 查找菜单
+ */
+export async function findByIds(
+  menu_ids: MenuId[],
+): Promise<MenuModel[]> {
+  
+  const menu_models = await menuDao.findByIds(menu_ids);
+  
+  return menu_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找菜单是否存在
  */
 export async function existById(
-  id?: MenuId | null,
+  menu_id?: MenuId | null,
 ): Promise<boolean> {
   
-  const menu_exist = await menuDao.existById(id);
+  const menu_exist = await menuDao.existById(menu_id);
   
   return menu_exist;
 }
@@ -165,12 +177,10 @@ export async function validateOption(
  * 根据 ids 删除菜单
  */
 export async function deleteByIds(
-  ids: MenuId[],
+  menu_ids: MenuId[],
 ): Promise<number> {
   
-  const old_models = await menuDao.findAll({
-    ids,
-  });
+  const old_models = await menuDao.findByIds(menu_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -178,7 +188,7 @@ export async function deleteByIds(
     }
   }
   
-  const menu_num = await menuDao.deleteByIds(ids);
+  const menu_num = await menuDao.deleteByIds(menu_ids);
   return menu_num;
 }
 
@@ -197,10 +207,10 @@ export async function enableByIds(
  * 根据 ids 锁定或者解锁菜单
  */
 export async function lockByIds(
-  ids: MenuId[],
+  menu_ids: MenuId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const menu_num = await menuDao.lockByIds(ids, is_locked);
+  const menu_num = await menuDao.lockByIds(menu_ids, is_locked);
   return menu_num;
 }
 
@@ -208,10 +218,10 @@ export async function lockByIds(
  * 根据 ids 还原菜单
  */
 export async function revertByIds(
-  ids: MenuId[],
+  menu_ids: MenuId[],
 ): Promise<number> {
   
-  const menu_num = await menuDao.revertByIds(ids);
+  const menu_num = await menuDao.revertByIds(menu_ids);
   
   return menu_num;
 }
@@ -220,10 +230,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除菜单
  */
 export async function forceDeleteByIds(
-  ids: MenuId[],
+  menu_ids: MenuId[],
 ): Promise<number> {
   
-  const menu_num = await menuDao.forceDeleteByIds(ids);
+  const menu_num = await menuDao.forceDeleteByIds(menu_ids);
   
   return menu_num;
 }

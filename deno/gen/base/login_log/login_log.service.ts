@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找登录日志
  */
 export async function findById(
-  id?: LoginLogId | null,
+  login_log_id?: LoginLogId | null,
 ): Promise<LoginLogModel | undefined> {
   
-  const login_log_model = await login_logDao.findById(id);
+  const login_log_model = await login_logDao.findById(login_log_id);
   
   return login_log_model;
+}
+
+/**
+ * 根据 ids 查找登录日志
+ */
+export async function findByIds(
+  login_log_ids: LoginLogId[],
+): Promise<LoginLogModel[]> {
+  
+  const login_log_models = await login_logDao.findByIds(login_log_ids);
+  
+  return login_log_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找登录日志是否存在
  */
 export async function existById(
-  id?: LoginLogId | null,
+  login_log_id?: LoginLogId | null,
 ): Promise<boolean> {
   
-  const login_log_exist = await login_logDao.existById(id);
+  const login_log_exist = await login_logDao.existById(login_log_id);
   
   return login_log_exist;
 }
@@ -160,10 +172,10 @@ export async function validateOption(
  * 根据 ids 删除登录日志
  */
 export async function deleteByIds(
-  ids: LoginLogId[],
+  login_log_ids: LoginLogId[],
 ): Promise<number> {
   
-  const login_log_num = await login_logDao.deleteByIds(ids);
+  const login_log_num = await login_logDao.deleteByIds(login_log_ids);
   return login_log_num;
 }
 
@@ -171,10 +183,10 @@ export async function deleteByIds(
  * 根据 ids 还原登录日志
  */
 export async function revertByIds(
-  ids: LoginLogId[],
+  login_log_ids: LoginLogId[],
 ): Promise<number> {
   
-  const login_log_num = await login_logDao.revertByIds(ids);
+  const login_log_num = await login_logDao.revertByIds(login_log_ids);
   
   return login_log_num;
 }
@@ -183,10 +195,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除登录日志
  */
 export async function forceDeleteByIds(
-  ids: LoginLogId[],
+  login_log_ids: LoginLogId[],
 ): Promise<number> {
   
-  const login_log_num = await login_logDao.forceDeleteByIds(ids);
+  const login_log_num = await login_logDao.forceDeleteByIds(login_log_ids);
   
   return login_log_num;
 }

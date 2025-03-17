@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找用户
  */
 export async function findById(
-  id?: UsrId | null,
+  usr_id?: UsrId | null,
 ): Promise<UsrModel | undefined> {
   
-  const usr_model = await usrDao.findById(id);
+  const usr_model = await usrDao.findById(usr_id);
   
   return usr_model;
+}
+
+/**
+ * 根据 ids 查找用户
+ */
+export async function findByIds(
+  usr_ids: UsrId[],
+): Promise<UsrModel[]> {
+  
+  const usr_models = await usrDao.findByIds(usr_ids);
+  
+  return usr_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找用户是否存在
  */
 export async function existById(
-  id?: UsrId | null,
+  usr_id?: UsrId | null,
 ): Promise<boolean> {
   
-  const usr_exist = await usrDao.existById(id);
+  const usr_exist = await usrDao.existById(usr_id);
   
   return usr_exist;
 }
@@ -165,12 +177,10 @@ export async function validateOption(
  * 根据 ids 删除用户
  */
 export async function deleteByIds(
-  ids: UsrId[],
+  usr_ids: UsrId[],
 ): Promise<number> {
   
-  const old_models = await usrDao.findAll({
-    ids,
-  });
+  const old_models = await usrDao.findByIds(usr_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -178,7 +188,7 @@ export async function deleteByIds(
     }
   }
   
-  const usr_num = await usrDao.deleteByIds(ids);
+  const usr_num = await usrDao.deleteByIds(usr_ids);
   return usr_num;
 }
 
@@ -197,10 +207,10 @@ export async function enableByIds(
  * 根据 ids 锁定或者解锁用户
  */
 export async function lockByIds(
-  ids: UsrId[],
+  usr_ids: UsrId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const usr_num = await usrDao.lockByIds(ids, is_locked);
+  const usr_num = await usrDao.lockByIds(usr_ids, is_locked);
   return usr_num;
 }
 
@@ -208,10 +218,10 @@ export async function lockByIds(
  * 根据 ids 还原用户
  */
 export async function revertByIds(
-  ids: UsrId[],
+  usr_ids: UsrId[],
 ): Promise<number> {
   
-  const usr_num = await usrDao.revertByIds(ids);
+  const usr_num = await usrDao.revertByIds(usr_ids);
   
   return usr_num;
 }
@@ -220,10 +230,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除用户
  */
 export async function forceDeleteByIds(
-  ids: UsrId[],
+  usr_ids: UsrId[],
 ): Promise<number> {
   
-  const usr_num = await usrDao.forceDeleteByIds(ids);
+  const usr_num = await usrDao.forceDeleteByIds(usr_ids);
   
   return usr_num;
 }

@@ -96,12 +96,24 @@ export async function findOne(
  * 根据 id 查找后台任务
  */
 export async function findById(
-  id?: BackgroundTaskId | null,
+  background_task_id?: BackgroundTaskId | null,
 ): Promise<BackgroundTaskModel | undefined> {
   
-  const background_task_model = await background_taskDao.findById(id);
+  const background_task_model = await background_taskDao.findById(background_task_id);
   
   return background_task_model;
+}
+
+/**
+ * 根据 ids 查找后台任务
+ */
+export async function findByIds(
+  background_task_ids: BackgroundTaskId[],
+): Promise<BackgroundTaskModel[]> {
+  
+  const background_task_models = await background_taskDao.findByIds(background_task_ids);
+  
+  return background_task_models;
 }
 
 /**
@@ -124,10 +136,10 @@ export async function exist(
  * 根据 id 查找后台任务是否存在
  */
 export async function existById(
-  id?: BackgroundTaskId | null,
+  background_task_id?: BackgroundTaskId | null,
 ): Promise<boolean> {
   
-  const background_task_exist = await background_taskDao.existById(id);
+  const background_task_exist = await background_taskDao.existById(background_task_id);
   
   return background_task_exist;
 }
@@ -180,10 +192,10 @@ export async function validateOption(
  * 根据 ids 删除后台任务
  */
 export async function deleteByIds(
-  ids: BackgroundTaskId[],
+  background_task_ids: BackgroundTaskId[],
 ): Promise<number> {
   
-  const background_task_num = await background_taskDao.deleteByIds(ids);
+  const background_task_num = await background_taskDao.deleteByIds(background_task_ids);
   return background_task_num;
 }
 
@@ -191,10 +203,10 @@ export async function deleteByIds(
  * 根据 ids 还原后台任务
  */
 export async function revertByIds(
-  ids: BackgroundTaskId[],
+  background_task_ids: BackgroundTaskId[],
 ): Promise<number> {
   
-  const background_task_num = await background_taskDao.revertByIds(ids);
+  const background_task_num = await background_taskDao.revertByIds(background_task_ids);
   
   return background_task_num;
 }
@@ -203,10 +215,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除后台任务
  */
 export async function forceDeleteByIds(
-  ids: BackgroundTaskId[],
+  background_task_ids: BackgroundTaskId[],
 ): Promise<number> {
   
-  const background_task_num = await background_taskDao.forceDeleteByIds(ids);
+  const background_task_num = await background_taskDao.forceDeleteByIds(background_task_ids);
   
   return background_task_num;
 }

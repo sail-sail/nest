@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找字段权限
  */
 export async function findById(
-  id?: FieldPermitId | null,
+  field_permit_id?: FieldPermitId | null,
 ): Promise<FieldPermitModel | undefined> {
   
-  const field_permit_model = await field_permitDao.findById(id);
+  const field_permit_model = await field_permitDao.findById(field_permit_id);
   
   return field_permit_model;
+}
+
+/**
+ * 根据 ids 查找字段权限
+ */
+export async function findByIds(
+  field_permit_ids: FieldPermitId[],
+): Promise<FieldPermitModel[]> {
+  
+  const field_permit_models = await field_permitDao.findByIds(field_permit_ids);
+  
+  return field_permit_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找字段权限是否存在
  */
 export async function existById(
-  id?: FieldPermitId | null,
+  field_permit_id?: FieldPermitId | null,
 ): Promise<boolean> {
   
-  const field_permit_exist = await field_permitDao.existById(id);
+  const field_permit_exist = await field_permitDao.existById(field_permit_id);
   
   return field_permit_exist;
 }
@@ -144,7 +156,7 @@ export async function updateById(
 ): Promise<FieldPermitId> {
   
   const old_model = await field_permitDao.validateOption(
-    await field_permitDao.findById(id),
+    await field_permitDao.findById(field_permit_id),
   );
   
   // 不能修改系统记录的系统字段
@@ -173,12 +185,10 @@ export async function validateOption(
  * 根据 ids 删除字段权限
  */
 export async function deleteByIds(
-  ids: FieldPermitId[],
+  field_permit_ids: FieldPermitId[],
 ): Promise<number> {
   
-  const old_models = await field_permitDao.findAll({
-    ids,
-  });
+  const old_models = await field_permitDao.findByIds(field_permit_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -186,7 +196,7 @@ export async function deleteByIds(
     }
   }
   
-  const field_permit_num = await field_permitDao.deleteByIds(ids);
+  const field_permit_num = await field_permitDao.deleteByIds(field_permit_ids);
   return field_permit_num;
 }
 

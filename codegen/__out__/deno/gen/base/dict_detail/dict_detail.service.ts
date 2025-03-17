@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找系统字典明细
  */
 export async function findById(
-  id?: DictDetailId | null,
+  dict_detail_id?: DictDetailId | null,
 ): Promise<DictDetailModel | undefined> {
   
-  const dict_detail_model = await dict_detailDao.findById(id);
+  const dict_detail_model = await dict_detailDao.findById(dict_detail_id);
   
   return dict_detail_model;
+}
+
+/**
+ * 根据 ids 查找系统字典明细
+ */
+export async function findByIds(
+  dict_detail_ids: DictDetailId[],
+): Promise<DictDetailModel[]> {
+  
+  const dict_detail_models = await dict_detailDao.findByIds(dict_detail_ids);
+  
+  return dict_detail_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找系统字典明细是否存在
  */
 export async function existById(
-  id?: DictDetailId | null,
+  dict_detail_id?: DictDetailId | null,
 ): Promise<boolean> {
   
-  const dict_detail_exist = await dict_detailDao.existById(id);
+  const dict_detail_exist = await dict_detailDao.existById(dict_detail_id);
   
   return dict_detail_exist;
 }
@@ -144,7 +156,7 @@ export async function updateById(
 ): Promise<DictDetailId> {
   
   const old_model = await dict_detailDao.validateOption(
-    await dict_detailDao.findById(id),
+    await dict_detailDao.findById(dict_detail_id),
   );
   
   // 不能修改系统记录的系统字段
@@ -170,12 +182,10 @@ export async function validateOption(
  * 根据 ids 删除系统字典明细
  */
 export async function deleteByIds(
-  ids: DictDetailId[],
+  dict_detail_ids: DictDetailId[],
 ): Promise<number> {
   
-  const old_models = await dict_detailDao.findAll({
-    ids,
-  });
+  const old_models = await dict_detailDao.findByIds(dict_detail_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -183,7 +193,7 @@ export async function deleteByIds(
     }
   }
   
-  const dict_detail_num = await dict_detailDao.deleteByIds(ids);
+  const dict_detail_num = await dict_detailDao.deleteByIds(dict_detail_ids);
   return dict_detail_num;
 }
 
@@ -202,10 +212,10 @@ export async function enableByIds(
  * 根据 ids 还原系统字典明细
  */
 export async function revertByIds(
-  ids: DictDetailId[],
+  dict_detail_ids: DictDetailId[],
 ): Promise<number> {
   
-  const dict_detail_num = await dict_detailDao.revertByIds(ids);
+  const dict_detail_num = await dict_detailDao.revertByIds(dict_detail_ids);
   
   return dict_detail_num;
 }
@@ -214,10 +224,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除系统字典明细
  */
 export async function forceDeleteByIds(
-  ids: DictDetailId[],
+  dict_detail_ids: DictDetailId[],
 ): Promise<number> {
   
-  const dict_detail_num = await dict_detailDao.forceDeleteByIds(ids);
+  const dict_detail_num = await dict_detailDao.forceDeleteByIds(dict_detail_ids);
   
   return dict_detail_num;
 }

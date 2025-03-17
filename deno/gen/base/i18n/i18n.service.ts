@@ -80,12 +80,24 @@ export async function findOne(
  * 根据 id 查找国际化
  */
 export async function findById(
-  id?: I18nId | null,
+  i18n_id?: I18nId | null,
 ): Promise<I18nModel | undefined> {
   
-  const i18n_model = await i18nDao.findById(id);
+  const i18n_model = await i18nDao.findById(i18n_id);
   
   return i18n_model;
+}
+
+/**
+ * 根据 ids 查找国际化
+ */
+export async function findByIds(
+  i18n_ids: I18nId[],
+): Promise<I18nModel[]> {
+  
+  const i18n_models = await i18nDao.findByIds(i18n_ids);
+  
+  return i18n_models;
 }
 
 /**
@@ -108,10 +120,10 @@ export async function exist(
  * 根据 id 查找国际化是否存在
  */
 export async function existById(
-  id?: I18nId | null,
+  i18n_id?: I18nId | null,
 ): Promise<boolean> {
   
-  const i18n_exist = await i18nDao.existById(id);
+  const i18n_exist = await i18nDao.existById(i18n_id);
   
   return i18n_exist;
 }
@@ -168,10 +180,10 @@ export async function validateOption(
  * 根据 ids 删除国际化
  */
 export async function deleteByIds(
-  ids: I18nId[],
+  i18n_ids: I18nId[],
 ): Promise<number> {
   
-  const i18n_num = await i18nDao.deleteByIds(ids);
+  const i18n_num = await i18nDao.deleteByIds(i18n_ids);
   
   await update_i18n_version();
   return i18n_num;
@@ -181,10 +193,10 @@ export async function deleteByIds(
  * 根据 ids 还原国际化
  */
 export async function revertByIds(
-  ids: I18nId[],
+  i18n_ids: I18nId[],
 ): Promise<number> {
   
-  const i18n_num = await i18nDao.revertByIds(ids);
+  const i18n_num = await i18nDao.revertByIds(i18n_ids);
   
   return i18n_num;
 }
@@ -193,10 +205,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除国际化
  */
 export async function forceDeleteByIds(
-  ids: I18nId[],
+  i18n_ids: I18nId[],
 ): Promise<number> {
   
-  const i18n_num = await i18nDao.forceDeleteByIds(ids);
+  const i18n_num = await i18nDao.forceDeleteByIds(i18n_ids);
   
   return i18n_num;
 }

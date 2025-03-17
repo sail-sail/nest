@@ -1,5 +1,6 @@
 import type {
   QueryGetLoginTenantsArgs,
+  QueryGetLoginTenantByIdsArgs,
   SetTenantAdminPwdInput,
 } from "/gen/types.ts";
 
@@ -17,7 +18,7 @@ export async function getLoginTenants(
 
 /** 根据 租户ids 获取 租户信息 */
 export async function getLoginTenantByIds(
-  tenant_ids: QueryGetLoginTenantsArgs["tenant_ids"],
+  tenant_ids: QueryGetLoginTenantByIdsArgs["tenant_ids"],
 ) {
   const {
     getLoginTenantByIds,

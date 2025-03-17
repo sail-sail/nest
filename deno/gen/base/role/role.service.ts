@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找角色
  */
 export async function findById(
-  id?: RoleId | null,
+  role_id?: RoleId | null,
 ): Promise<RoleModel | undefined> {
   
-  const role_model = await roleDao.findById(id);
+  const role_model = await roleDao.findById(role_id);
   
   return role_model;
+}
+
+/**
+ * 根据 ids 查找角色
+ */
+export async function findByIds(
+  role_ids: RoleId[],
+): Promise<RoleModel[]> {
+  
+  const role_models = await roleDao.findByIds(role_ids);
+  
+  return role_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找角色是否存在
  */
 export async function existById(
-  id?: RoleId | null,
+  role_id?: RoleId | null,
 ): Promise<boolean> {
   
-  const role_exist = await roleDao.existById(id);
+  const role_exist = await roleDao.existById(role_id);
   
   return role_exist;
 }
@@ -165,12 +177,10 @@ export async function validateOption(
  * 根据 ids 删除角色
  */
 export async function deleteByIds(
-  ids: RoleId[],
+  role_ids: RoleId[],
 ): Promise<number> {
   
-  const old_models = await roleDao.findAll({
-    ids,
-  });
+  const old_models = await roleDao.findByIds(role_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -184,7 +194,7 @@ export async function deleteByIds(
     }
   }
   
-  const role_num = await roleDao.deleteByIds(ids);
+  const role_num = await roleDao.deleteByIds(role_ids);
   return role_num;
 }
 
@@ -203,10 +213,10 @@ export async function enableByIds(
  * 根据 ids 锁定或者解锁角色
  */
 export async function lockByIds(
-  ids: RoleId[],
+  role_ids: RoleId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const role_num = await roleDao.lockByIds(ids, is_locked);
+  const role_num = await roleDao.lockByIds(role_ids, is_locked);
   return role_num;
 }
 
@@ -214,10 +224,10 @@ export async function lockByIds(
  * 根据 ids 还原角色
  */
 export async function revertByIds(
-  ids: RoleId[],
+  role_ids: RoleId[],
 ): Promise<number> {
   
-  const role_num = await roleDao.revertByIds(ids);
+  const role_num = await roleDao.revertByIds(role_ids);
   
   return role_num;
 }
@@ -226,10 +236,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除角色
  */
 export async function forceDeleteByIds(
-  ids: RoleId[],
+  role_ids: RoleId[],
 ): Promise<number> {
   
-  const role_num = await roleDao.forceDeleteByIds(ids);
+  const role_num = await roleDao.forceDeleteByIds(role_ids);
   
   return role_num;
 }

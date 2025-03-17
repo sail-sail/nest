@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找系统选项
  */
 export async function findById(
-  id?: OptionsId | null,
+  options_id?: OptionsId | null,
 ): Promise<OptionsModel | undefined> {
   
-  const options_model = await optionsDao.findById(id);
+  const options_model = await optionsDao.findById(options_id);
   
   return options_model;
+}
+
+/**
+ * 根据 ids 查找系统选项
+ */
+export async function findByIds(
+  options_ids: OptionsId[],
+): Promise<OptionsModel[]> {
+  
+  const options_models = await optionsDao.findByIds(options_ids);
+  
+  return options_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找系统选项是否存在
  */
 export async function existById(
-  id?: OptionsId | null,
+  options_id?: OptionsId | null,
 ): Promise<boolean> {
   
-  const options_exist = await optionsDao.existById(id);
+  const options_exist = await optionsDao.existById(options_id);
   
   return options_exist;
 }
@@ -152,7 +164,7 @@ export async function updateById(
 ): Promise<OptionsId> {
   
   const old_model = await optionsDao.validateOption(
-    await optionsDao.findById(id),
+    await optionsDao.findById(options_id),
   );
   
   const is_locked = await optionsDao.getIsLockedById(options_id);
@@ -185,12 +197,10 @@ export async function validateOption(
  * 根据 ids 删除系统选项
  */
 export async function deleteByIds(
-  ids: OptionsId[],
+  options_ids: OptionsId[],
 ): Promise<number> {
   
-  const old_models = await optionsDao.findAll({
-    ids,
-  });
+  const old_models = await optionsDao.findByIds(options_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -204,7 +214,7 @@ export async function deleteByIds(
     }
   }
   
-  const options_num = await optionsDao.deleteByIds(ids);
+  const options_num = await optionsDao.deleteByIds(options_ids);
   return options_num;
 }
 
@@ -223,10 +233,10 @@ export async function enableByIds(
  * 根据 ids 锁定或者解锁系统选项
  */
 export async function lockByIds(
-  ids: OptionsId[],
+  options_ids: OptionsId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const options_num = await optionsDao.lockByIds(ids, is_locked);
+  const options_num = await optionsDao.lockByIds(options_ids, is_locked);
   return options_num;
 }
 
@@ -234,10 +244,10 @@ export async function lockByIds(
  * 根据 ids 还原系统选项
  */
 export async function revertByIds(
-  ids: OptionsId[],
+  options_ids: OptionsId[],
 ): Promise<number> {
   
-  const options_num = await optionsDao.revertByIds(ids);
+  const options_num = await optionsDao.revertByIds(options_ids);
   
   return options_num;
 }
@@ -246,10 +256,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除系统选项
  */
 export async function forceDeleteByIds(
-  ids: OptionsId[],
+  options_ids: OptionsId[],
 ): Promise<number> {
   
-  const options_num = await optionsDao.forceDeleteByIds(ids);
+  const options_num = await optionsDao.forceDeleteByIds(options_ids);
   
   return options_num;
 }

@@ -104,7 +104,7 @@ import {
 import SelectList from "./SelectList.vue";
 
 import {
-  findAll,
+  findByIds,
   getPagePath,
 } from "./Api";
 
@@ -203,9 +203,10 @@ async function getModelsByIds(ids: UsrId[]) {
   if (ids.length === 0) {
     return [ ];
   }
-  const res = await findAll(
+  const res = await findByIds(
+    ids,
     {
-      ids,
+      notLoading: true,
     },
   );
   return res;

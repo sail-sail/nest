@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找图标库
  */
 export async function findById(
-  id?: IconId | null,
+  icon_id?: IconId | null,
 ): Promise<IconModel | undefined> {
   
-  const icon_model = await iconDao.findById(id);
+  const icon_model = await iconDao.findById(icon_id);
   
   return icon_model;
+}
+
+/**
+ * 根据 ids 查找图标库
+ */
+export async function findByIds(
+  icon_ids: IconId[],
+): Promise<IconModel[]> {
+  
+  const icon_models = await iconDao.findByIds(icon_ids);
+  
+  return icon_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找图标库是否存在
  */
 export async function existById(
-  id?: IconId | null,
+  icon_id?: IconId | null,
 ): Promise<boolean> {
   
-  const icon_exist = await iconDao.existById(id);
+  const icon_exist = await iconDao.existById(icon_id);
   
   return icon_exist;
 }
@@ -160,10 +172,10 @@ export async function validateOption(
  * 根据 ids 删除图标库
  */
 export async function deleteByIds(
-  ids: IconId[],
+  icon_ids: IconId[],
 ): Promise<number> {
   
-  const icon_num = await iconDao.deleteByIds(ids);
+  const icon_num = await iconDao.deleteByIds(icon_ids);
   return icon_num;
 }
 
@@ -182,10 +194,10 @@ export async function enableByIds(
  * 根据 ids 还原图标库
  */
 export async function revertByIds(
-  ids: IconId[],
+  icon_ids: IconId[],
 ): Promise<number> {
   
-  const icon_num = await iconDao.revertByIds(ids);
+  const icon_num = await iconDao.revertByIds(icon_ids);
   
   return icon_num;
 }
@@ -194,10 +206,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除图标库
  */
 export async function forceDeleteByIds(
-  ids: IconId[],
+  icon_ids: IconId[],
 ): Promise<number> {
   
-  const icon_num = await iconDao.forceDeleteByIds(ids);
+  const icon_num = await iconDao.forceDeleteByIds(icon_ids);
   
   return icon_num;
 }

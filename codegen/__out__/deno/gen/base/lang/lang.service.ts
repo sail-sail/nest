@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找语言
  */
 export async function findById(
-  id?: LangId | null,
+  lang_id?: LangId | null,
 ): Promise<LangModel | undefined> {
   
-  const lang_model = await langDao.findById(id);
+  const lang_model = await langDao.findById(lang_id);
   
   return lang_model;
+}
+
+/**
+ * 根据 ids 查找语言
+ */
+export async function findByIds(
+  lang_ids: LangId[],
+): Promise<LangModel[]> {
+  
+  const lang_models = await langDao.findByIds(lang_ids);
+  
+  return lang_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找语言是否存在
  */
 export async function existById(
-  id?: LangId | null,
+  lang_id?: LangId | null,
 ): Promise<boolean> {
   
-  const lang_exist = await langDao.existById(id);
+  const lang_exist = await langDao.existById(lang_id);
   
   return lang_exist;
 }
@@ -160,12 +172,10 @@ export async function validateOption(
  * 根据 ids 删除语言
  */
 export async function deleteByIds(
-  ids: LangId[],
+  lang_ids: LangId[],
 ): Promise<number> {
   
-  const old_models = await langDao.findAll({
-    ids,
-  });
+  const old_models = await langDao.findByIds(lang_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -173,7 +183,7 @@ export async function deleteByIds(
     }
   }
   
-  const lang_num = await langDao.deleteByIds(ids);
+  const lang_num = await langDao.deleteByIds(lang_ids);
   return lang_num;
 }
 
@@ -192,10 +202,10 @@ export async function enableByIds(
  * 根据 ids 还原语言
  */
 export async function revertByIds(
-  ids: LangId[],
+  lang_ids: LangId[],
 ): Promise<number> {
   
-  const lang_num = await langDao.revertByIds(ids);
+  const lang_num = await langDao.revertByIds(lang_ids);
   
   return lang_num;
 }
@@ -204,10 +214,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除语言
  */
 export async function forceDeleteByIds(
-  ids: LangId[],
+  lang_ids: LangId[],
 ): Promise<number> {
   
-  const lang_num = await langDao.forceDeleteByIds(ids);
+  const lang_num = await langDao.forceDeleteByIds(lang_ids);
   
   return lang_num;
 }

@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找租户
  */
 export async function findById(
-  id?: TenantId | null,
+  tenant_id?: TenantId | null,
 ): Promise<TenantModel | undefined> {
   
-  const tenant_model = await tenantDao.findById(id);
+  const tenant_model = await tenantDao.findById(tenant_id);
   
   return tenant_model;
+}
+
+/**
+ * 根据 ids 查找租户
+ */
+export async function findByIds(
+  tenant_ids: TenantId[],
+): Promise<TenantModel[]> {
+  
+  const tenant_models = await tenantDao.findByIds(tenant_ids);
+  
+  return tenant_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找租户是否存在
  */
 export async function existById(
-  id?: TenantId | null,
+  tenant_id?: TenantId | null,
 ): Promise<boolean> {
   
-  const tenant_exist = await tenantDao.existById(id);
+  const tenant_exist = await tenantDao.existById(tenant_id);
   
   return tenant_exist;
 }
@@ -165,12 +177,10 @@ export async function validateOption(
  * 根据 ids 删除租户
  */
 export async function deleteByIds(
-  ids: TenantId[],
+  tenant_ids: TenantId[],
 ): Promise<number> {
   
-  const old_models = await tenantDao.findAll({
-    ids,
-  });
+  const old_models = await tenantDao.findByIds(tenant_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -184,7 +194,7 @@ export async function deleteByIds(
     }
   }
   
-  const tenant_num = await tenantDao.deleteByIds(ids);
+  const tenant_num = await tenantDao.deleteByIds(tenant_ids);
   return tenant_num;
 }
 
@@ -203,10 +213,10 @@ export async function enableByIds(
  * 根据 ids 锁定或者解锁租户
  */
 export async function lockByIds(
-  ids: TenantId[],
+  tenant_ids: TenantId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const tenant_num = await tenantDao.lockByIds(ids, is_locked);
+  const tenant_num = await tenantDao.lockByIds(tenant_ids, is_locked);
   return tenant_num;
 }
 
@@ -214,10 +224,10 @@ export async function lockByIds(
  * 根据 ids 还原租户
  */
 export async function revertByIds(
-  ids: TenantId[],
+  tenant_ids: TenantId[],
 ): Promise<number> {
   
-  const tenant_num = await tenantDao.revertByIds(ids);
+  const tenant_num = await tenantDao.revertByIds(tenant_ids);
   
   return tenant_num;
 }
@@ -226,10 +236,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除租户
  */
 export async function forceDeleteByIds(
-  ids: TenantId[],
+  tenant_ids: TenantId[],
 ): Promise<number> {
   
-  const tenant_num = await tenantDao.forceDeleteByIds(ids);
+  const tenant_num = await tenantDao.forceDeleteByIds(tenant_ids);
   
   return tenant_num;
 }

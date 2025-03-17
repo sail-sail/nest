@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找数据权限
  */
 export async function findById(
-  id?: DataPermitId | null,
+  data_permit_id?: DataPermitId | null,
 ): Promise<DataPermitModel | undefined> {
   
-  const data_permit_model = await data_permitDao.findById(id);
+  const data_permit_model = await data_permitDao.findById(data_permit_id);
   
   return data_permit_model;
+}
+
+/**
+ * 根据 ids 查找数据权限
+ */
+export async function findByIds(
+  data_permit_ids: DataPermitId[],
+): Promise<DataPermitModel[]> {
+  
+  const data_permit_models = await data_permitDao.findByIds(data_permit_ids);
+  
+  return data_permit_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找数据权限是否存在
  */
 export async function existById(
-  id?: DataPermitId | null,
+  data_permit_id?: DataPermitId | null,
 ): Promise<boolean> {
   
-  const data_permit_exist = await data_permitDao.existById(id);
+  const data_permit_exist = await data_permitDao.existById(data_permit_id);
   
   return data_permit_exist;
 }
@@ -144,7 +156,7 @@ export async function updateById(
 ): Promise<DataPermitId> {
   
   const old_model = await data_permitDao.validateOption(
-    await data_permitDao.findById(id),
+    await data_permitDao.findById(data_permit_id),
   );
   
   // 不能修改系统记录的系统字段
@@ -174,12 +186,10 @@ export async function validateOption(
  * 根据 ids 删除数据权限
  */
 export async function deleteByIds(
-  ids: DataPermitId[],
+  data_permit_ids: DataPermitId[],
 ): Promise<number> {
   
-  const old_models = await data_permitDao.findAll({
-    ids,
-  });
+  const old_models = await data_permitDao.findByIds(data_permit_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -187,7 +197,7 @@ export async function deleteByIds(
     }
   }
   
-  const data_permit_num = await data_permitDao.deleteByIds(ids);
+  const data_permit_num = await data_permitDao.deleteByIds(data_permit_ids);
   return data_permit_num;
 }
 
@@ -195,10 +205,10 @@ export async function deleteByIds(
  * 根据 ids 还原数据权限
  */
 export async function revertByIds(
-  ids: DataPermitId[],
+  data_permit_ids: DataPermitId[],
 ): Promise<number> {
   
-  const data_permit_num = await data_permitDao.revertByIds(ids);
+  const data_permit_num = await data_permitDao.revertByIds(data_permit_ids);
   
   return data_permit_num;
 }
@@ -207,10 +217,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除数据权限
  */
 export async function forceDeleteByIds(
-  ids: DataPermitId[],
+  data_permit_ids: DataPermitId[],
 ): Promise<number> {
   
-  const data_permit_num = await data_permitDao.forceDeleteByIds(ids);
+  const data_permit_num = await data_permitDao.forceDeleteByIds(data_permit_ids);
   
   return data_permit_num;
 }

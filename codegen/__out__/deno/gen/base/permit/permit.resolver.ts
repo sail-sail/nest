@@ -105,6 +105,25 @@ export async function findByIdPermit(
 }
 
 /**
+ * 根据 ids 查找按钮权限
+ */
+export async function findByIdsPermit(
+  ids: PermitId[],
+): Promise<PermitModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./permit.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 根据 id 修改按钮权限
  */
 export async function updateByIdPermit(

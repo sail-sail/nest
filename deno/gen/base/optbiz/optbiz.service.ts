@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找业务选项
  */
 export async function findById(
-  id?: OptbizId | null,
+  optbiz_id?: OptbizId | null,
 ): Promise<OptbizModel | undefined> {
   
-  const optbiz_model = await optbizDao.findById(id);
+  const optbiz_model = await optbizDao.findById(optbiz_id);
   
   return optbiz_model;
+}
+
+/**
+ * 根据 ids 查找业务选项
+ */
+export async function findByIds(
+  optbiz_ids: OptbizId[],
+): Promise<OptbizModel[]> {
+  
+  const optbiz_models = await optbizDao.findByIds(optbiz_ids);
+  
+  return optbiz_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找业务选项是否存在
  */
 export async function existById(
-  id?: OptbizId | null,
+  optbiz_id?: OptbizId | null,
 ): Promise<boolean> {
   
-  const optbiz_exist = await optbizDao.existById(id);
+  const optbiz_exist = await optbizDao.existById(optbiz_id);
   
   return optbiz_exist;
 }
@@ -152,7 +164,7 @@ export async function updateById(
 ): Promise<OptbizId> {
   
   const old_model = await optbizDao.validateOption(
-    await optbizDao.findById(id),
+    await optbizDao.findById(optbiz_id),
   );
   
   const is_locked = await optbizDao.getIsLockedById(optbiz_id);
@@ -185,12 +197,10 @@ export async function validateOption(
  * 根据 ids 删除业务选项
  */
 export async function deleteByIds(
-  ids: OptbizId[],
+  optbiz_ids: OptbizId[],
 ): Promise<number> {
   
-  const old_models = await optbizDao.findAll({
-    ids,
-  });
+  const old_models = await optbizDao.findByIds(optbiz_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -204,7 +214,7 @@ export async function deleteByIds(
     }
   }
   
-  const optbiz_num = await optbizDao.deleteByIds(ids);
+  const optbiz_num = await optbizDao.deleteByIds(optbiz_ids);
   return optbiz_num;
 }
 
@@ -223,10 +233,10 @@ export async function enableByIds(
  * 根据 ids 锁定或者解锁业务选项
  */
 export async function lockByIds(
-  ids: OptbizId[],
+  optbiz_ids: OptbizId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const optbiz_num = await optbizDao.lockByIds(ids, is_locked);
+  const optbiz_num = await optbizDao.lockByIds(optbiz_ids, is_locked);
   return optbiz_num;
 }
 
@@ -234,10 +244,10 @@ export async function lockByIds(
  * 根据 ids 还原业务选项
  */
 export async function revertByIds(
-  ids: OptbizId[],
+  optbiz_ids: OptbizId[],
 ): Promise<number> {
   
-  const optbiz_num = await optbizDao.revertByIds(ids);
+  const optbiz_num = await optbizDao.revertByIds(optbiz_ids);
   
   return optbiz_num;
 }
@@ -246,10 +256,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除业务选项
  */
 export async function forceDeleteByIds(
-  ids: OptbizId[],
+  optbiz_ids: OptbizId[],
 ): Promise<number> {
   
-  const optbiz_num = await optbizDao.forceDeleteByIds(ids);
+  const optbiz_num = await optbizDao.forceDeleteByIds(optbiz_ids);
   
   return optbiz_num;
 }

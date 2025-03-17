@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找域名
  */
 export async function findById(
-  id?: DomainId | null,
+  domain_id?: DomainId | null,
 ): Promise<DomainModel | undefined> {
   
-  const domain_model = await domainDao.findById(id);
+  const domain_model = await domainDao.findById(domain_id);
   
   return domain_model;
+}
+
+/**
+ * 根据 ids 查找域名
+ */
+export async function findByIds(
+  domain_ids: DomainId[],
+): Promise<DomainModel[]> {
+  
+  const domain_models = await domainDao.findByIds(domain_ids);
+  
+  return domain_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找域名是否存在
  */
 export async function existById(
-  id?: DomainId | null,
+  domain_id?: DomainId | null,
 ): Promise<boolean> {
   
-  const domain_exist = await domainDao.existById(id);
+  const domain_exist = await domainDao.existById(domain_id);
   
   return domain_exist;
 }
@@ -165,12 +177,10 @@ export async function validateOption(
  * 根据 ids 删除域名
  */
 export async function deleteByIds(
-  ids: DomainId[],
+  domain_ids: DomainId[],
 ): Promise<number> {
   
-  const old_models = await domainDao.findAll({
-    ids,
-  });
+  const old_models = await domainDao.findByIds(domain_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -178,7 +188,7 @@ export async function deleteByIds(
     }
   }
   
-  const domain_num = await domainDao.deleteByIds(ids);
+  const domain_num = await domainDao.deleteByIds(domain_ids);
   return domain_num;
 }
 
@@ -207,10 +217,10 @@ export async function enableByIds(
  * 根据 ids 锁定或者解锁域名
  */
 export async function lockByIds(
-  ids: DomainId[],
+  domain_ids: DomainId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const domain_num = await domainDao.lockByIds(ids, is_locked);
+  const domain_num = await domainDao.lockByIds(domain_ids, is_locked);
   return domain_num;
 }
 
@@ -218,10 +228,10 @@ export async function lockByIds(
  * 根据 ids 还原域名
  */
 export async function revertByIds(
-  ids: DomainId[],
+  domain_ids: DomainId[],
 ): Promise<number> {
   
-  const domain_num = await domainDao.revertByIds(ids);
+  const domain_num = await domainDao.revertByIds(domain_ids);
   
   return domain_num;
 }
@@ -230,10 +240,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除域名
  */
 export async function forceDeleteByIds(
-  ids: DomainId[],
+  domain_ids: DomainId[],
 ): Promise<number> {
   
-  const domain_num = await domainDao.forceDeleteByIds(ids);
+  const domain_num = await domainDao.forceDeleteByIds(domain_ids);
   
   return domain_num;
 }

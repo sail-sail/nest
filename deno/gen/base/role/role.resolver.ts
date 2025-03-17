@@ -107,6 +107,25 @@ export async function findByIdRole(
 }
 
 /**
+ * 根据 ids 查找角色
+ */
+export async function findByIdsRole(
+  ids: RoleId[],
+): Promise<RoleModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./role.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建角色
  */
 export async function createsRole(

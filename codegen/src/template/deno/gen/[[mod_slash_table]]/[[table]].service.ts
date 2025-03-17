@@ -327,10 +327,10 @@ export async function findOne(
  * 根据 id 查找<#=table_comment#>
  */
 export async function findById(
-  id?: <#=Table_Up#>Id | null,
+  <#=table#>_id?: <#=Table_Up#>Id | null,
 ): Promise<<#=modelName#> | undefined> {
   
-  const <#=table#>_model = await <#=table#>Dao.findById(id<#
+  const <#=table#>_model = await <#=table#>Dao.findById(<#=table#>_id<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -343,6 +343,28 @@ export async function findById(
   #>);
   
   return <#=table#>_model;
+}
+
+/**
+ * 根据 ids 查找<#=table_comment#>
+ */
+export async function findByIds(
+  <#=table#>_ids: <#=Table_Up#>Id[],
+): Promise<<#=modelName#>[]> {
+  
+  const <#=table#>_models = await <#=table#>Dao.findByIds(<#=table#>_ids<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>, {<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit: true,<#
+    }
+    #>
+  }<#
+    }
+  #>);
+  
+  return <#=table#>_models;
 }
 
 /**
@@ -375,10 +397,10 @@ export async function exist(
  * 根据 id 查找<#=table_comment#>是否存在
  */
 export async function existById(
-  id?: <#=Table_Up#>Id | null,
+  <#=table#>_id?: <#=Table_Up#>Id | null,
 ): Promise<boolean> {
   
-  const <#=table#>_exist = await <#=table#>Dao.existById(id<#
+  const <#=table#>_exist = await <#=table#>Dao.existById(<#=table#>_id<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -448,9 +470,9 @@ if (hasDataPermit() && hasCreateUsrId) {
  * 根据 ids 获取<#=table_comment#>是否可编辑数据权限
  */
 export async function getEditableDataPermitsByIds(
-  ids: <#=Table_Up#>Id[],
+  <#=table#>_ids: <#=Table_Up#>Id[],
 ) {
-  const data = await <#=table#>Dao.getEditableDataPermitsByIds(ids);
+  const data = await <#=table#>Dao.getEditableDataPermitsByIds(<#=table#>_ids);
   return data;
 }<#
 }
@@ -470,7 +492,7 @@ export async function updateById(
   #>
   
   const old_model = await <#=table#>Dao.validateOption(
-    await <#=table#>Dao.findById(id<#
+    await <#=table#>Dao.findById(<#=table#>_id<#
       if (hasDataPermit() && hasCreateUsrId) {
       #>, {<#
       if (hasDataPermit() && hasCreateUsrId) {
@@ -593,11 +615,11 @@ if (hasAudit) {
 
 /** <#=table_comment#> 审核提交 */
 export async function auditSubmit(
-  id: <#=Table_Up#>Id,
+  <#=table#>_id: <#=Table_Up#>Id,
 ) {
   
   const old_model = await <#=table#>Dao.validateOption(
-    await <#=table#>Dao.findById(id),
+    await <#=table#>Dao.findById(<#=table#>_id),
   );
   
   if (
@@ -648,7 +670,7 @@ export async function auditSubmit(
   const audit_usr_id_lbl = audit_usr_model.lbl;
   
   await create<#=auditTable_Up#>({
-    <#=table#>_id: id,<#
+    <#=table#>_id,<#
     if (auditModelLabel) {
     #>
     <#=auditModelLabel#>,<#
@@ -667,11 +689,11 @@ export async function auditSubmit(
 
 /** <#=table_comment#> 审核通过 */
 export async function auditPass(
-  id: <#=Table_Up#>Id,
+  <#=table#>_id: <#=Table_Up#>Id,
 ) {
   
   const old_model = await <#=table#>Dao.validateOption(
-    await <#=table#>Dao.findById(id),
+    await <#=table#>Dao.findById(<#=table#>_id),
   );
   
   if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unaudited) {<#
@@ -719,7 +741,7 @@ export async function auditPass(
   const audit_usr_id_lbl = audit_usr_model.lbl;
   
   await create<#=auditTable_Up#>({
-    <#=table#>_id: id,<#
+    <#=table#>_id,<#
     if (auditModelLabel) {
     #>
     <#=auditModelLabel#>,<#
@@ -738,12 +760,12 @@ export async function auditPass(
 
 /** <#=table_comment#> 审核拒绝 */
 export async function auditReject(
-  id: <#=Table_Up#>Id,
+  <#=table#>_id: <#=Table_Up#>Id,
   audit_input: <#=auditTable_Up#>Input,
 ) {
   
   const old_model = await <#=table#>Dao.validateOption(
-    await <#=table#>Dao.findById(id),
+    await <#=table#>Dao.findById(<#=table#>_id),
   );
   
   if (
@@ -798,7 +820,7 @@ export async function auditReject(
   const audit_usr_id_lbl = audit_usr_model.lbl;
   
   await create<#=auditTable_Up#>({
-    <#=table#>_id: id,<#
+    <#=table#>_id,<#
     if (auditModelLabel) {
     #>
     <#=auditModelLabel#>,<#
@@ -820,11 +842,11 @@ if (hasReviewed) {
 
 /** <#=table_comment#> 复核通过 */
 export async function auditReview(
-  id: <#=Table_Up#>Id,
+  <#=table#>_id: <#=Table_Up#>Id,
 ) {
   
   const old_model = await <#=table#>Dao.validateOption(
-    await <#=table#>Dao.findById(id),
+    await <#=table#>Dao.findById(<#=table#>_id),
   );
   
   if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Audited) {<#
@@ -872,7 +894,7 @@ export async function auditReview(
   const audit_usr_id_lbl = audit_usr_model.lbl;
   
   await create<#=auditTable_Up#>({
-    <#=table#>_id: id,<#
+    <#=table#>_id,<#
     if (auditModelLabel) {
     #>
     <#=auditModelLabel#>,<#
@@ -897,14 +919,12 @@ export async function auditReview(
  * 根据 ids 删除<#=table_comment#>
  */
 export async function deleteByIds(
-  ids: <#=Table_Up#>Id[],
+  <#=table#>_ids: <#=Table_Up#>Id[],
 ): Promise<number> {<#
   if (hasLocked || hasIsSys || hasAudit) {
   #>
   
-  const old_models = await <#=table#>Dao.findAll({
-    ids,
-  });<#
+  const old_models = await <#=table#>Dao.findByIds(<#=table#>_ids);<#
   }
   #><#
   if (hasLocked) {
@@ -961,7 +981,7 @@ export async function deleteByIds(
   }
   #>
   
-  const <#=table#>_num = await <#=table#>Dao.deleteByIds(ids<#
+  const <#=table#>_num = await <#=table#>Dao.deleteByIds(<#=table#>_ids<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>, {<#
     if (hasDataPermit() && hasCreateUsrId) {
@@ -983,7 +1003,7 @@ export async function deleteByIds(
   
   // 级联删除审核记录
   const <#=auditTable#>_models = await findAll<#=auditTable_Up#>({
-    <#=table#>_id: ids,
+    <#=table#>_id: <#=table#>_ids,
   });
   
   const <#=auditTable#>_ids = <#=auditTable#>_models.map(item => item.id);
@@ -1029,10 +1049,10 @@ export async function enableByIds(
  * 根据 ids 锁定或者解锁<#=table_comment#>
  */
 export async function lockByIds(
-  ids: <#=Table_Up#>Id[],
+  <#=table#>_ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const <#=table#>_num = await <#=table#>Dao.lockByIds(ids, is_locked);
+  const <#=table#>_num = await <#=table#>Dao.lockByIds(<#=table#>_ids, is_locked);
   return <#=table#>_num;
 }<#
   }
@@ -1044,14 +1064,14 @@ if (hasIsDeleted) {
  * 根据 ids 还原<#=table_comment#>
  */
 export async function revertByIds(
-  ids: <#=Table_Up#>Id[],
+  <#=table#>_ids: <#=Table_Up#>Id[],
 ): Promise<number> {<#
   if (hasAudit && auditTable_Up) {
   #>
   
    // 级联还原审核记录
   const <#=auditTable#>_models = await findAll<#=auditTable_Up#>({
-    <#=table#>_id: ids,
+    <#=table#>_id: <#=table#>_ids,
     is_deleted: 1,
   });
   
@@ -1061,7 +1081,7 @@ export async function revertByIds(
   }
   #>
   
-  const <#=table#>_num = await <#=table#>Dao.revertByIds(ids);
+  const <#=table#>_num = await <#=table#>Dao.revertByIds(<#=table#>_ids);
   
   return <#=table#>_num;
 }<#
@@ -1074,14 +1094,14 @@ if (hasIsDeleted) {
  * 根据 ids 彻底删除<#=table_comment#>
  */
 export async function forceDeleteByIds(
-  ids: <#=Table_Up#>Id[],
+  <#=table#>_ids: <#=Table_Up#>Id[],
 ): Promise<number> {<#
   if (hasAudit && auditTable_Up) {
   #>
   
   // 级联彻底删除审核记录
   const <#=auditTable#>_models = await findAll<#=auditTable_Up#>({
-    <#=table#>_id: ids,
+    <#=table#>_id: <#=table#>_ids,
     is_deleted: 1,
   });
   
@@ -1091,7 +1111,7 @@ export async function forceDeleteByIds(
   }
   #>
   
-  const <#=table#>_num = await <#=table#>Dao.forceDeleteByIds(ids);
+  const <#=table#>_num = await <#=table#>Dao.forceDeleteByIds(<#=table#>_ids);
   
   return <#=table#>_num;
 }<#

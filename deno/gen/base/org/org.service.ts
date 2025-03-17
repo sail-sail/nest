@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找组织
  */
 export async function findById(
-  id?: OrgId | null,
+  org_id?: OrgId | null,
 ): Promise<OrgModel | undefined> {
   
-  const org_model = await orgDao.findById(id);
+  const org_model = await orgDao.findById(org_id);
   
   return org_model;
+}
+
+/**
+ * 根据 ids 查找组织
+ */
+export async function findByIds(
+  org_ids: OrgId[],
+): Promise<OrgModel[]> {
+  
+  const org_models = await orgDao.findByIds(org_ids);
+  
+  return org_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找组织是否存在
  */
 export async function existById(
-  id?: OrgId | null,
+  org_id?: OrgId | null,
 ): Promise<boolean> {
   
-  const org_exist = await orgDao.existById(id);
+  const org_exist = await orgDao.existById(org_id);
   
   return org_exist;
 }
@@ -165,12 +177,10 @@ export async function validateOption(
  * 根据 ids 删除组织
  */
 export async function deleteByIds(
-  ids: OrgId[],
+  org_ids: OrgId[],
 ): Promise<number> {
   
-  const old_models = await orgDao.findAll({
-    ids,
-  });
+  const old_models = await orgDao.findByIds(org_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -178,7 +188,7 @@ export async function deleteByIds(
     }
   }
   
-  const org_num = await orgDao.deleteByIds(ids);
+  const org_num = await orgDao.deleteByIds(org_ids);
   return org_num;
 }
 
@@ -197,10 +207,10 @@ export async function enableByIds(
  * 根据 ids 锁定或者解锁组织
  */
 export async function lockByIds(
-  ids: OrgId[],
+  org_ids: OrgId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const org_num = await orgDao.lockByIds(ids, is_locked);
+  const org_num = await orgDao.lockByIds(org_ids, is_locked);
   return org_num;
 }
 
@@ -208,10 +218,10 @@ export async function lockByIds(
  * 根据 ids 还原组织
  */
 export async function revertByIds(
-  ids: OrgId[],
+  org_ids: OrgId[],
 ): Promise<number> {
   
-  const org_num = await orgDao.revertByIds(ids);
+  const org_num = await orgDao.revertByIds(org_ids);
   
   return org_num;
 }
@@ -220,10 +230,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除组织
  */
 export async function forceDeleteByIds(
-  ids: OrgId[],
+  org_ids: OrgId[],
 ): Promise<number> {
   
-  const org_num = await orgDao.forceDeleteByIds(ids);
+  const org_num = await orgDao.forceDeleteByIds(org_ids);
   
   return org_num;
 }

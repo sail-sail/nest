@@ -76,12 +76,24 @@ export async function findOne(
  * 根据 id 查找业务字典明细
  */
 export async function findById(
-  id?: DictbizDetailId | null,
+  dictbiz_detail_id?: DictbizDetailId | null,
 ): Promise<DictbizDetailModel | undefined> {
   
-  const dictbiz_detail_model = await dictbiz_detailDao.findById(id);
+  const dictbiz_detail_model = await dictbiz_detailDao.findById(dictbiz_detail_id);
   
   return dictbiz_detail_model;
+}
+
+/**
+ * 根据 ids 查找业务字典明细
+ */
+export async function findByIds(
+  dictbiz_detail_ids: DictbizDetailId[],
+): Promise<DictbizDetailModel[]> {
+  
+  const dictbiz_detail_models = await dictbiz_detailDao.findByIds(dictbiz_detail_ids);
+  
+  return dictbiz_detail_models;
 }
 
 /**
@@ -104,10 +116,10 @@ export async function exist(
  * 根据 id 查找业务字典明细是否存在
  */
 export async function existById(
-  id?: DictbizDetailId | null,
+  dictbiz_detail_id?: DictbizDetailId | null,
 ): Promise<boolean> {
   
-  const dictbiz_detail_exist = await dictbiz_detailDao.existById(id);
+  const dictbiz_detail_exist = await dictbiz_detailDao.existById(dictbiz_detail_id);
   
   return dictbiz_detail_exist;
 }
@@ -160,12 +172,10 @@ export async function validateOption(
  * 根据 ids 删除业务字典明细
  */
 export async function deleteByIds(
-  ids: DictbizDetailId[],
+  dictbiz_detail_ids: DictbizDetailId[],
 ): Promise<number> {
   
-  const old_models = await dictbiz_detailDao.findAll({
-    ids,
-  });
+  const old_models = await dictbiz_detailDao.findByIds(dictbiz_detail_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -173,7 +183,7 @@ export async function deleteByIds(
     }
   }
   
-  const dictbiz_detail_num = await dictbiz_detailDao.deleteByIds(ids);
+  const dictbiz_detail_num = await dictbiz_detailDao.deleteByIds(dictbiz_detail_ids);
   return dictbiz_detail_num;
 }
 
@@ -192,10 +202,10 @@ export async function enableByIds(
  * 根据 ids 还原业务字典明细
  */
 export async function revertByIds(
-  ids: DictbizDetailId[],
+  dictbiz_detail_ids: DictbizDetailId[],
 ): Promise<number> {
   
-  const dictbiz_detail_num = await dictbiz_detailDao.revertByIds(ids);
+  const dictbiz_detail_num = await dictbiz_detailDao.revertByIds(dictbiz_detail_ids);
   
   return dictbiz_detail_num;
 }
@@ -204,10 +214,10 @@ export async function revertByIds(
  * 根据 ids 彻底删除业务字典明细
  */
 export async function forceDeleteByIds(
-  ids: DictbizDetailId[],
+  dictbiz_detail_ids: DictbizDetailId[],
 ): Promise<number> {
   
-  const dictbiz_detail_num = await dictbiz_detailDao.forceDeleteByIds(ids);
+  const dictbiz_detail_num = await dictbiz_detailDao.forceDeleteByIds(dictbiz_detail_ids);
   
   return dictbiz_detail_num;
 }
