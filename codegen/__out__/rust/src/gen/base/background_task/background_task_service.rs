@@ -19,6 +19,8 @@ use crate::r#gen::base::usr::usr_dao::{
   validate_option as validate_option_usr,
 };
 
+use crate::src::base::usr::usr_dao::is_admin;
+
 use super::background_task_model::*;
 use super::background_task_dao;
 
@@ -32,12 +34,11 @@ async fn set_search_query(
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id.clone(),
-      None,
+      options.clone(),
     ).await?,
   ).await?;
-  let username = usr_model.username.clone();
   
-  if username != "admin" {
+  if !is_admin(usr_id.clone(), options.clone()).await? {
     search.create_usr_id = Some(vec![usr_id]);
   }
   Ok(())
