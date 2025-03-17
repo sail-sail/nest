@@ -767,7 +767,7 @@ pub async fn audit_pass(
   let audit_usr_id_lbl = audit_usr_model.lbl;
   
   let <#=table#>_input = <#=auditTable_Up#>Input {
-    <#=table#>_id: Some(id),<#
+    <#=table#>_id: Some(<#=table#>_id),<#
     if (auditModelLabel) {
     #>
     <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
@@ -872,7 +872,7 @@ pub async fn audit_reject(
   let audit_usr_id_lbl = audit_usr_model.lbl;
   
   let <#=table#>_input = <#=auditTable_Up#>Input {
-    <#=table#>_id: Some(id),<#
+    <#=table#>_id: Some(<#=table#>_id),<#
     if (auditModelLabel) {
     #>
     <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
@@ -973,7 +973,7 @@ pub async fn audit_review(
   let audit_usr_id_lbl = audit_usr_model.lbl;
   
   let <#=table#>_input = <#=auditTable_Up#>Input {
-    <#=table#>_id: Some(id),<#
+    <#=table#>_id: Some(<#=table#>_id),<#
     if (auditModelLabel) {
     #>
     <#=auditModelLabel#>: Some(<#=auditModelLabel#>),<#
@@ -1128,7 +1128,7 @@ pub async fn delete_by_ids(
   // 级联删除审核记录
   let <#=auditTable#>_models = find_all_<#=auditTable#>(
     Some(<#=auditTable_Up#>Search {
-      ids: Some(<#=table#>_ids),
+      <#=table#>_id: Some(<#=table#>_ids),
       ..Default::default()
     }),
     None,
@@ -1352,7 +1352,7 @@ pub async fn revert_by_ids(
   // 级联还原审核记录
   let <#=auditTable#>_models = find_all_<#=auditTable#>(
     Some(<#=auditTable_Up#>Search {
-      ids: Some(<#=table#>_ids),
+      <#=table#>_id: Some(<#=table#>_ids),
       is_deleted: Some(1),
       ..Default::default()
     }),
@@ -1413,7 +1413,7 @@ pub async fn force_delete_by_ids(
   // 级联彻底删除审核记录
   let <#=auditTable#>_models = find_all_<#=auditTable#>(
     Some(<#=auditTable_Up#>Search {
-      ids: Some(<#=table#>_ids),
+      <#=table#>_id: Some(<#=table#>_ids),
       is_deleted: Some(1),
       ..Default::default()
     }),
