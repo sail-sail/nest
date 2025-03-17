@@ -116,6 +116,16 @@ if (mod === "base" && table === "i18n") {
 #>
 use crate::src::base::options::options_dao::update_i18n_version;<#
 }
+#><#
+if (
+  (hasAudit && auditTable_Up) ||
+  opts.filterDataByCreateUsr ||
+  hasOrgId
+) {
+#>
+
+use crate::src::base::usr::usr_dao::is_admin;<#
+}
 #>
 
 use super::<#=table#>_model::*;
@@ -155,7 +165,7 @@ async fn set_search_query(
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id.clone(),
-      None,
+      options.clone(),
     ).await?,
   ).await?;<#
     if (hasOrgId) {
@@ -170,20 +180,19 @@ async fn set_search_query(
     org_ids.push(OrgId::default());
   }<#
     }
-  #>
-  let username = usr_model.username.clone();<#
+  #><#
   }
   #><#
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if username != "admin" {
+  if !is_admin(usr_id.clone(), options.clone()).await? {
     search.create_usr_id = Some(vec![usr_id]);
   }<#
   } else if (hasOrgId) {
   #>
   
-  if username != "admin" {
+  if !is_admin(usr_id.clone(), options.clone()).await? {
     search.org_id = Some(org_ids);
   }<#
   }
@@ -465,7 +474,9 @@ pub async fn update_by_id(
   if (hasAudit) {
   #>
   
-  if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
+  let usr_id = get_auth_id_err()?;
+  if !is_admin(usr_id, options.clone()).await? &&
+    old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
     old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected {<#
     if (isUseI18n) {
     #>
@@ -1077,28 +1088,31 @@ pub async fn delete_by_ids(
   if (hasAudit) {
   #>
   
-  for old_model in &old_models {
-    if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
-      old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected {<#
-      if (isUseI18n) {
-      #>
-      let table_comment = ns(
-        "<#=table_comment#>".to_owned(),
-        options.clone(),
-      ).await?;
-      let map = HashMap::from([
-        ("0".to_owned(), table_comment),
-      ]);
-      let err_msg = ns(
-        "只有未提交的 {0} 才能删除".to_owned(),
-        map.into(),
-      ).await?;<#
-      } else {
-      #>
-      let err_msg = "只有未提交的 <#=table_comment#> 才能删除";<#
+  let usr_id = get_auth_id_err()?;
+  if !is_admin(usr_id, options.clone()).await? {
+    for old_model in &old_models {
+      if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
+        old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected {<#
+        if (isUseI18n) {
+        #>
+        let table_comment = ns(
+          "<#=table_comment#>".to_owned(),
+          options.clone(),
+        ).await?;
+        let map = HashMap::from([
+          ("0".to_owned(), table_comment),
+        ]);
+        let err_msg = ns(
+          "只有未提交的 {0} 才能删除".to_owned(),
+          map.into(),
+        ).await?;<#
+        } else {
+        #>
+        let err_msg = "只有未提交的 <#=table_comment#> 才能删除";<#
+        }
+        #>
+        return Err(eyre!(err_msg));
       }
-      #>
-      return Err(eyre!(err_msg));
     }
   }<#
   }
