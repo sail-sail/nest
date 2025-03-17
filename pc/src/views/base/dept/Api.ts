@@ -240,9 +240,12 @@ export async function updateById(
  * 根据 id 查找部门
  */
 export async function findById(
-  id: DeptId,
+  id?: DeptId,
   opt?: GqlOpt,
-) {
+): Promise<DeptModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdDept?: DeptModel;
   } = await query({
@@ -263,12 +266,47 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找部门
+ */
+export async function findByIds(
+  ids: DeptId[],
+  opt?: GqlOpt,
+): Promise<DeptModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsDept: DeptModel[];
+  } = await query({
+    query: `
+      query($ids: [DeptId!]!) {
+        findByIdsDept(ids: $ids) {
+          ${ deptQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsDept;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除部门
  */
 export async function deleteByIds(
   ids: DeptId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsDept: Mutation["deleteByIdsDept"];
   } = await mutation({
@@ -292,7 +330,10 @@ export async function enableByIds(
   ids: DeptId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsDept: Mutation["enableByIdsDept"];
   } = await mutation({
@@ -317,7 +358,10 @@ export async function lockByIds(
   ids: DeptId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsDept: Mutation["lockByIdsDept"];
   } = await mutation({
@@ -341,7 +385,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: DeptId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsDept: Mutation["revertByIdsDept"];
   } = await mutation({
@@ -364,7 +411,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: DeptId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsDept: Mutation["forceDeleteByIdsDept"];
   } = await mutation({

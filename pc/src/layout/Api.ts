@@ -7,10 +7,6 @@ import type {
 
 /**
  * 根据 当前网址的域名+端口 获取 租户列表
- * @export
- * @param {{ host: string }} variables
- * @param {GqlOpt} [opt]
- * @return {Promise<GetLoginTenants[]>}
  */
 export async function getLoginTenants(
   variables: { domain: string },
@@ -31,8 +27,39 @@ export async function getLoginTenants(
       }
     `,
     variables,
-  },opt);
+  }, opt);
   return data.getLoginTenants;
+}
+
+/**
+ * 根据 租户ids 获取 租户信息
+ */
+export async function getLoginTenantByIds(
+  tenant_ids: TenantId[],
+  opt?: GqlOpt,
+): Promise<GetLoginTenants[]> {
+  const res: {
+    getLoginTenantByIds: Query["getLoginTenantByIds"];
+  } = await query({
+    query: /* GraphQL */ `
+      query($tenant_ids: [TenantId!]!) {
+        getLoginTenantByIds(tenant_ids: $tenant_ids) {
+          id
+          lbl
+          title
+          info
+          lang
+        }
+      }
+    `,
+    variables: {
+      tenant_ids,
+    },
+  }, opt);
+  
+  const data = res.getLoginTenantByIds;
+  
+  return data;
 }
 
 export async function login(

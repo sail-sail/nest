@@ -465,6 +465,7 @@ for (let i = 0; i < columns.length; i++) {
               :method="get<#=Foreign_Table_Up#>List"<#
               }
               #>
+              :find-by-values="findByIds<#=Foreign_Table_Up#>"
               :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                 return {
                   label: item.<#=foreignKey.lbl#>,
@@ -559,6 +560,11 @@ for (let i = 0; i < columns.length; i++) {
               }
               #>
               v-model="dialogModel.<#=column_name#>"<#
+              if (modelLabel) {
+              #>
+              v-model:model-label="dialogModel.<#=modelLabel#>"<#
+              }
+              #><#
               if (isUseI18n) {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
@@ -1205,7 +1211,7 @@ for (let i = 0; i < columns.length; i++) {
                 if (foreignKey) {
                   foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
                 }
-                const width = (column.width || 180) + 38;
+                const width = (column.width || 180) + 10;
                 const readonlyPlaceholder = column.readonlyPlaceholder;
                 const modelLabel = column.modelLabel;
                 const isPassword = column.isPassword;
@@ -1232,7 +1238,49 @@ for (let i = 0; i < columns.length; i++) {
                 <template #default="{ row }">
                   <template v-if="row._type !== 'add'"><#
                     if (column.isImg) {
-                    #><#
+                    #>
+                    <UploadImage
+                      v-model="row.<#=column_name#>"
+                      db="<#=mod#>_<#=table#>.<#=column_name#>"<#
+                      if (column.attMaxSize > 1) {
+                      #>
+                      :max-size="<#=column.attMaxSize#>"<#
+                      }
+                      #><#
+                      if (column.maxFileSize) {
+                      #>
+                      :max-file-size="<#=column.maxFileSize#>"<#
+                      }
+                      #><#
+                      if (column.attAccept) {
+                      #>
+                      accept="<#=column.attAccept#>"<#
+                      }
+                      #><#
+                      if (column.isPublicAtt) {
+                      #>
+                      :is-public="true"<#
+                      } else {
+                      #>
+                      :is-public="false"<#
+                      }
+                      #><#
+                      if (column.readonly) {
+                      #>
+                      :readonly="true"<#
+                      } else {
+                      #>
+                      :readonly="isLocked || isReadonly<#
+                        if (hasIsSys && opts.sys_fields?.includes(column_name)) {
+                        #> || !!dialogModel.is_sys<#
+                        }
+                        #>"<#
+                      }
+                      #>
+                      :page-inited="inited"
+                      :item-height="48"
+                      un-justify="center"
+                    ></UploadImage><#
                     } else if (
                       foreignKey
                       && (foreignKey.selectType === "select" || foreignKey.selectType == null)
@@ -1252,6 +1300,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       :method="get<#=Foreign_Table_Up#>List"
+                      :find-by-values="findByIds<#=Foreign_Table_Up#>"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
                           label: item.<#=foreignKey.lbl#>,
@@ -1300,7 +1349,12 @@ for (let i = 0; i < columns.length; i++) {
                       :set="row.<#=column_name#> = row.<#=column_name#> ?? [ ]"<#
                       }
                       #>
-                      v-model="row.<#=column_name#>"
+                      v-model="row.<#=column_name#>"<#
+                      if (modelLabel) {
+                      #>
+                      v-model:model-label="row.<#=modelLabel#>"<#
+                      }
+                      #>
                       placeholder=" "<#
                       if (foreignKey.multiple) {
                       #>
@@ -1991,6 +2045,7 @@ for (let i = 0; i < columns.length; i++) {
                     :method="get<#=Foreign_Table_Up#>List"<#
                     }
                     #>
+                    :find-by-values="findByIds<#=Foreign_Table_Up#>"
                     :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                       return {
                         label: item.<#=foreignKey.lbl#>,
@@ -2085,6 +2140,11 @@ for (let i = 0; i < columns.length; i++) {
                     }
                     #>
                     v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"<#
+                    if (modelLabel) {
+                    #>
+                    v-model:model-label="dialogModel.<#=inline_column_name#>.<#=modelLabel#>"<#
+                    }
+                    #><#
                     if (isUseI18n) {
                     #>
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
@@ -2715,6 +2775,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       :method="get<#=Foreign_Table_Up#>List"
+                      :find-by-values="findByIds<#=Foreign_Table_Up#>"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
                           label: item.<#=foreignKey.lbl#>,
@@ -3676,6 +3737,7 @@ import AuditDialog from "./AuditDialog.vue";<#
 #><#
 const foreignTableArr2 = [];
 const foreignTableArr3 = [];
+const foreignTableFindByIdsArr = [];
 if (
   columns.some((column) => {
     const column_name = column.COLUMN_NAME;
@@ -3755,6 +3817,48 @@ import {<#
   }
   #>
 } from "./Api";<#
+}
+#><#
+for (let i = 0; i < columns.length; i++) {
+  const column = columns[i];
+  if (column.ignoreCodegen) continue;
+  if (column.onlyCodegenDeno) continue;
+  const column_name = column.COLUMN_NAME;
+  if (column_name === "id") continue;
+  if (column_name === "tenant_id") continue;
+  let data_type = column.DATA_TYPE;
+  let column_type = column.COLUMN_TYPE;
+  let column_comment = column.COLUMN_COMMENT || "";
+  if (column_comment.indexOf("[") !== -1) {
+    column_comment = column_comment.substring(0, column_comment.indexOf("["));
+  }
+  const foreignKey = column.foreignKey;
+  if (!foreignKey) continue;
+  if (foreignKey.showType === "dialog") {
+    continue;
+  }
+  if (column.noAdd && column.noEdit) {
+    continue;
+  }
+  if (column.inlineMany2manyTab) {
+    continue;
+  }
+  const foreignTable = foreignKey && foreignKey.table;
+  const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+  const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+    return item.substring(0, 1).toUpperCase() + item.substring(1);
+  }).join("");
+  const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
+  if (foreignSchema && foreignSchema.opts?.list_tree) {
+    continue;
+  }
+  if (foreignTableFindByIdsArr.includes(foreignTable)) continue;
+  foreignTableFindByIdsArr.push(foreignTable);
+#>
+
+import {
+  findByIds as findByIds<#=Foreign_Table_Up#>,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignKey.table#>/Api.ts";<#
 }
 #><#
 for (let i = 0; i < columns.length; i++) {

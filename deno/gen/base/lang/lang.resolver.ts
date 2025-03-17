@@ -107,6 +107,25 @@ export async function findByIdLang(
 }
 
 /**
+ * 根据 ids 查找语言
+ */
+export async function findByIdsLang(
+  ids: LangId[],
+): Promise<LangModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./lang.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建语言
  */
 export async function createsLang(

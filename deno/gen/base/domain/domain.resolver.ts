@@ -107,6 +107,25 @@ export async function findByIdDomain(
 }
 
 /**
+ * 根据 ids 查找域名
+ */
+export async function findByIdsDomain(
+  ids: DomainId[],
+): Promise<DomainModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./domain.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建域名
  */
 export async function createsDomain(
