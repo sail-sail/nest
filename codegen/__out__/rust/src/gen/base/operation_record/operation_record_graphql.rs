@@ -99,6 +99,23 @@ impl OperationRecordGenQuery {
       }).await
   }
   
+  /// 根据 id 查找操作记录
+  async fn find_by_ids_operation_record(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OperationRecordId>,
+  ) -> Result<Vec<OperationRecordModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        operation_record_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取操作记录字段注释
   async fn get_field_comments_operation_record(
     &self,

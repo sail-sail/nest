@@ -97,6 +97,23 @@ impl DictGenQuery {
       }).await
   }
   
+  /// 根据 id 查找系统字典
+  async fn find_by_ids_dict(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DictId>,
+  ) -> Result<Vec<DictModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统字典是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_dict(

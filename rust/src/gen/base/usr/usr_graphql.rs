@@ -99,6 +99,23 @@ impl UsrGenQuery {
       }).await
   }
   
+  /// 根据 id 查找用户
+  async fn find_by_ids_usr(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<UsrId>,
+  ) -> Result<Vec<UsrModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        usr_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找用户是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_usr(

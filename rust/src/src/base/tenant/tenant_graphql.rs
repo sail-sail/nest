@@ -7,6 +7,7 @@ use super::tenant_resolver;
 use super::tenant_model::GetLoginTenants;
 
 use super::tenant_model::SetTenantAdminPwdInput;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 #[derive(Default)]
 pub struct TenantQuery;
@@ -28,6 +29,21 @@ impl TenantQuery {
       .scope({
         tenant_resolver::get_login_tenants(
           domain,
+        )
+      }).await
+  }
+  
+  /// 根据 tenant_ids 获取 租户信息
+  async fn get_login_tenant_by_ids(
+    &self,
+    ctx: &Context<'_>,
+    tenant_ids: Vec<TenantId>,
+  ) -> Result<Vec<GetLoginTenants>> {
+    Ctx::builder(ctx)
+      .build()
+      .scope({
+        tenant_resolver::get_login_tenant_by_ids(
+          tenant_ids,
         )
       }).await
   }

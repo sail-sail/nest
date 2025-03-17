@@ -97,6 +97,23 @@ impl DictDetailGenQuery {
       }).await
   }
   
+  /// 根据 id 查找系统字典明细
+  async fn find_by_ids_dict_detail(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DictDetailId>,
+  ) -> Result<Vec<DictDetailModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_detail_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统字典明细是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_dict_detail(

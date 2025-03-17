@@ -97,6 +97,23 @@ impl DomainGenQuery {
       }).await
   }
   
+  /// 根据 id 查找域名
+  async fn find_by_ids_domain(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DomainId>,
+  ) -> Result<Vec<DomainModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        domain_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找域名是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_domain(

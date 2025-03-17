@@ -190,6 +190,28 @@ impl <#=tableUP#>GenQuery {
           None,
         )
       }).await
+  }
+  
+  /// 根据 id 查找<#=table_comment#><#
+  if (table === "i18n") {
+  #>
+  #[graphql(name = "findByIdsI18n")]<#
+  }
+  #>
+  async fn find_by_ids_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<<#=Table_Up#>Id>,
+  ) -> Result<Vec<<#=tableUP#>Model>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        <#=table#>_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>

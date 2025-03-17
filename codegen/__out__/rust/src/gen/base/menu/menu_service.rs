@@ -38,14 +38,14 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let res = menu_dao::find_all(
+  let menu_models = menu_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(menu_models)
 }
 
 /// 根据条件查找菜单总数
@@ -61,12 +61,12 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let res = menu_dao::find_count(
+  let menu_num = menu_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(menu_num)
 }
 
 /// 根据条件查找第一个菜单
@@ -83,67 +83,81 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let model = menu_dao::find_one(
+  let menu_model = menu_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(menu_model)
 }
 
 /// 根据 id 查找菜单
 pub async fn find_by_id(
-  id: MenuId,
+  menu_id: MenuId,
   options: Option<Options>,
 ) -> Result<Option<MenuModel>> {
   
-  let model = menu_dao::find_by_id(
-    id,
+  let menu_model = menu_dao::find_by_id(
+    menu_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(menu_model)
+}
+
+/// 根据 menu_ids 查找菜单
+pub async fn find_by_ids(
+  menu_ids: Vec<MenuId>,
+  options: Option<Options>,
+) -> Result<Vec<MenuModel>> {
+  
+  let menu_models = menu_dao::find_by_ids(
+    menu_ids,
+    options,
+  ).await?;
+  
+  Ok(menu_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: MenuInput,
+  menu_input: MenuInput,
 ) -> Result<MenuInput> {
   
-  let input = menu_dao::set_id_by_lbl(
-    input,
+  let menu_input = menu_dao::set_id_by_lbl(
+    menu_input,
   ).await?;
   
-  Ok(input)
+  Ok(menu_input)
 }
 
 /// 创建菜单
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<MenuInput>,
+  menu_inputs: Vec<MenuInput>,
   options: Option<Options>,
 ) -> Result<Vec<MenuId>> {
   
   let menu_ids = menu_dao::creates(
-    inputs,
+    menu_inputs,
     options,
   ).await?;
   
   Ok(menu_ids)
 }
 
-/// 根据 id 修改菜单
+/// 根据 menu_id 修改菜单
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: MenuId,
-  mut input: MenuInput,
+  menu_id: MenuId,
+  mut menu_input: MenuInput,
   options: Option<Options>,
 ) -> Result<MenuId> {
   
   let is_locked = menu_dao::get_is_locked_by_id(
-    id.clone(),
+    menu_id.clone(),
     None,
   ).await?;
   
@@ -153,8 +167,8 @@ pub async fn update_by_id(
   }
   
   let menu_id = menu_dao::update_by_id(
-    id,
-    input,
+    menu_id,
+    menu_input,
     options.clone(),
   ).await?;
   
@@ -164,24 +178,24 @@ pub async fn update_by_id(
 /// 校验菜单是否存在
 #[allow(dead_code)]
 pub async fn validate_option(
-  model: Option<MenuModel>,
+  menu_model: Option<MenuModel>,
 ) -> Result<MenuModel> {
   
-  let model = menu_dao::validate_option(model).await?;
+  let menu_model = menu_dao::validate_option(menu_model).await?;
   
-  Ok(model)
+  Ok(menu_model)
 }
 
-/// 根据 ids 删除菜单
+/// 根据 menu_ids 删除菜单
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<MenuId>,
+  menu_ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let old_models = menu_dao::find_all(
     Some(MenuSearch {
-      ids: Some(ids.clone()),
+      ids: Some(menu_ids.clone()),
       ..Default::default()
     }),
     None,
@@ -197,39 +211,39 @@ pub async fn delete_by_ids(
   }
   
   let num = menu_dao::delete_by_ids(
-    ids,
+    menu_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 id 查找菜单是否已启用
+/// 根据 menu_id 查找菜单是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  id: MenuId,
+  menu_id: MenuId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_enabled = menu_dao::get_is_enabled_by_id(
-    id,
+    menu_id,
     options,
   ).await?;
   
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或者禁用菜单
+/// 根据 menu_ids 启用或者禁用菜单
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ids: Vec<MenuId>,
+  menu_ids: Vec<MenuId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = menu_dao::enable_by_ids(
-    ids,
+    menu_ids,
     is_enabled,
     options,
   ).await?;
@@ -237,33 +251,33 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找菜单是否已锁定
+/// 根据 menu_id 查找菜单是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_locked_by_id(
-  id: MenuId,
+  menu_id: MenuId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_locked = menu_dao::get_is_locked_by_id(
-    id,
+    menu_id,
     options,
   ).await?;
   
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁菜单
+/// 根据 menu_ids 锁定或者解锁菜单
 #[allow(dead_code)]
 pub async fn lock_by_ids(
-  ids: Vec<MenuId>,
+  menu_ids: Vec<MenuId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = menu_dao::lock_by_ids(
-    ids,
+    menu_ids,
     is_locked,
     options,
   ).await?;
@@ -283,30 +297,30 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原菜单
+/// 根据 menu_ids 还原菜单
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<MenuId>,
+  menu_ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = menu_dao::revert_by_ids(
-    ids,
+    menu_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 ids 彻底删除菜单
+/// 根据 menu_ids 彻底删除菜单
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<MenuId>,
+  menu_ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = menu_dao::force_delete_by_ids(
-    ids,
+    menu_ids,
     options,
   ).await?;
   

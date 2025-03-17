@@ -99,6 +99,23 @@ impl DictbizDetailGenQuery {
       }).await
   }
   
+  /// 根据 id 查找业务字典明细
+  async fn find_by_ids_dictbiz_detail(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DictbizDetailId>,
+  ) -> Result<Vec<DictbizDetailModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dictbiz_detail_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务字典明细是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_dictbiz_detail(

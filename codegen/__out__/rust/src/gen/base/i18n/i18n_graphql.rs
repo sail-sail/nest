@@ -101,6 +101,24 @@ impl I18nGenQuery {
       }).await
   }
   
+  /// 根据 id 查找国际化
+  #[graphql(name = "findByIdsI18n")]
+  async fn find_by_ids_i18n(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<I18nId>,
+  ) -> Result<Vec<I18nModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        i18n_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取国际化字段注释
   #[graphql(name = "getFieldCommentsI18n")]
   async fn get_field_comments_i18n(

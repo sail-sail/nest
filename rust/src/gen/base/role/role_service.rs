@@ -40,14 +40,14 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let res = role_dao::find_all(
+  let role_models = role_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(role_models)
 }
 
 /// 根据条件查找角色总数
@@ -63,12 +63,12 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let res = role_dao::find_count(
+  let role_num = role_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(role_num)
 }
 
 /// 根据条件查找第一个角色
@@ -85,67 +85,81 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let model = role_dao::find_one(
+  let role_model = role_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(role_model)
 }
 
 /// 根据 id 查找角色
 pub async fn find_by_id(
-  id: RoleId,
+  role_id: RoleId,
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
   
-  let model = role_dao::find_by_id(
-    id,
+  let role_model = role_dao::find_by_id(
+    role_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(role_model)
+}
+
+/// 根据 role_ids 查找角色
+pub async fn find_by_ids(
+  role_ids: Vec<RoleId>,
+  options: Option<Options>,
+) -> Result<Vec<RoleModel>> {
+  
+  let role_models = role_dao::find_by_ids(
+    role_ids,
+    options,
+  ).await?;
+  
+  Ok(role_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: RoleInput,
+  role_input: RoleInput,
 ) -> Result<RoleInput> {
   
-  let input = role_dao::set_id_by_lbl(
-    input,
+  let role_input = role_dao::set_id_by_lbl(
+    role_input,
   ).await?;
   
-  Ok(input)
+  Ok(role_input)
 }
 
 /// 创建角色
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<RoleInput>,
+  role_inputs: Vec<RoleInput>,
   options: Option<Options>,
 ) -> Result<Vec<RoleId>> {
   
   let role_ids = role_dao::creates(
-    inputs,
+    role_inputs,
     options,
   ).await?;
   
   Ok(role_ids)
 }
 
-/// 角色根据id修改租户id
+/// 角色根据 role_id 修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  id: RoleId,
+  role_id: RoleId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = role_dao::update_tenant_by_id(
-    id,
+    role_id,
     tenant_id,
     options,
   ).await?;
@@ -153,16 +167,16 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-/// 根据 id 修改角色
+/// 根据 role_id 修改角色
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: RoleId,
-  mut input: RoleInput,
+  role_id: RoleId,
+  mut role_input: RoleInput,
   options: Option<Options>,
 ) -> Result<RoleId> {
   
   let is_locked = role_dao::get_is_locked_by_id(
-    id.clone(),
+    role_id.clone(),
     None,
   ).await?;
   
@@ -172,8 +186,8 @@ pub async fn update_by_id(
   }
   
   let role_id = role_dao::update_by_id(
-    id,
-    input,
+    role_id,
+    role_input,
     options.clone(),
   ).await?;
   
@@ -183,24 +197,24 @@ pub async fn update_by_id(
 /// 校验角色是否存在
 #[allow(dead_code)]
 pub async fn validate_option(
-  model: Option<RoleModel>,
+  role_model: Option<RoleModel>,
 ) -> Result<RoleModel> {
   
-  let model = role_dao::validate_option(model).await?;
+  let role_model = role_dao::validate_option(role_model).await?;
   
-  Ok(model)
+  Ok(role_model)
 }
 
-/// 根据 ids 删除角色
+/// 根据 role_ids 删除角色
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<RoleId>,
+  role_ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let old_models = role_dao::find_all(
     Some(RoleSearch {
-      ids: Some(ids.clone()),
+      ids: Some(role_ids.clone()),
       ..Default::default()
     }),
     None,
@@ -223,39 +237,39 @@ pub async fn delete_by_ids(
   }
   
   let num = role_dao::delete_by_ids(
-    ids,
+    role_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 id 查找角色是否已启用
+/// 根据 role_id 查找角色是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  id: RoleId,
+  role_id: RoleId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_enabled = role_dao::get_is_enabled_by_id(
-    id,
+    role_id,
     options,
   ).await?;
   
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或者禁用角色
+/// 根据 role_ids 启用或者禁用角色
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ids: Vec<RoleId>,
+  role_ids: Vec<RoleId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = role_dao::enable_by_ids(
-    ids,
+    role_ids,
     is_enabled,
     options,
   ).await?;
@@ -263,33 +277,33 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找角色是否已锁定
+/// 根据 role_id 查找角色是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_locked_by_id(
-  id: RoleId,
+  role_id: RoleId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_locked = role_dao::get_is_locked_by_id(
-    id,
+    role_id,
     options,
   ).await?;
   
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁角色
+/// 根据 role_ids 锁定或者解锁角色
 #[allow(dead_code)]
 pub async fn lock_by_ids(
-  ids: Vec<RoleId>,
+  role_ids: Vec<RoleId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = role_dao::lock_by_ids(
-    ids,
+    role_ids,
     is_locked,
     options,
   ).await?;
@@ -309,30 +323,30 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原角色
+/// 根据 role_ids 还原角色
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<RoleId>,
+  role_ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = role_dao::revert_by_ids(
-    ids,
+    role_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 ids 彻底删除角色
+/// 根据 role_ids 彻底删除角色
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<RoleId>,
+  role_ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = role_dao::force_delete_by_ids(
-    ids,
+    role_ids,
     options,
   ).await?;
   

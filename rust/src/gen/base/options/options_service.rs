@@ -38,14 +38,14 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let res = options_dao::find_all(
+  let options_models = options_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(options_models)
 }
 
 /// 根据条件查找系统选项总数
@@ -61,12 +61,12 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let res = options_dao::find_count(
+  let options_num = options_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(options_num)
 }
 
 /// 根据条件查找第一个系统选项
@@ -83,74 +83,88 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let model = options_dao::find_one(
+  let options_model = options_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(options_model)
 }
 
 /// 根据 id 查找系统选项
 pub async fn find_by_id(
-  id: OptionsId,
+  options_id: OptionsId,
   options: Option<Options>,
 ) -> Result<Option<OptionsModel>> {
   
-  let model = options_dao::find_by_id(
-    id,
+  let options_model = options_dao::find_by_id(
+    options_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(options_model)
+}
+
+/// 根据 options_ids 查找系统选项
+pub async fn find_by_ids(
+  options_ids: Vec<OptionsId>,
+  options: Option<Options>,
+) -> Result<Vec<OptionsModel>> {
+  
+  let options_models = options_dao::find_by_ids(
+    options_ids,
+    options,
+  ).await?;
+  
+  Ok(options_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: OptionsInput,
+  options_input: OptionsInput,
 ) -> Result<OptionsInput> {
   
-  let input = options_dao::set_id_by_lbl(
-    input,
+  let options_input = options_dao::set_id_by_lbl(
+    options_input,
   ).await?;
   
-  Ok(input)
+  Ok(options_input)
 }
 
 /// 创建系统选项
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<OptionsInput>,
+  options_inputs: Vec<OptionsInput>,
   options: Option<Options>,
 ) -> Result<Vec<OptionsId>> {
   
   let options_ids = options_dao::creates(
-    inputs,
+    options_inputs,
     options,
   ).await?;
   
   Ok(options_ids)
 }
 
-/// 根据 id 修改系统选项
+/// 根据 options_id 修改系统选项
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: OptionsId,
-  mut input: OptionsInput,
+  options_id: OptionsId,
+  mut options_input: OptionsInput,
   options: Option<Options>,
 ) -> Result<OptionsId> {
   
   let old_model = validate_option(
     options_dao::find_by_id(
-      id.clone(),
+      options_id.clone(),
       options.clone(),
     ).await?,
   ).await?;
   
   let is_locked = options_dao::get_is_locked_by_id(
-    id.clone(),
+    options_id.clone(),
     None,
   ).await?;
   
@@ -162,14 +176,14 @@ pub async fn update_by_id(
   // 不能修改系统记录的系统字段
   if old_model.is_sys == 1 {
     // 名称
-    input.lbl = None;
+    options_input.lbl = None;
     // 键
-    input.ky = None;
+    options_input.ky = None;
   }
   
   let options_id = options_dao::update_by_id(
-    id,
-    input,
+    options_id,
+    options_input,
     options.clone(),
   ).await?;
   
@@ -179,24 +193,24 @@ pub async fn update_by_id(
 /// 校验系统选项是否存在
 #[allow(dead_code)]
 pub async fn validate_option(
-  model: Option<OptionsModel>,
+  options_model: Option<OptionsModel>,
 ) -> Result<OptionsModel> {
   
-  let model = options_dao::validate_option(model).await?;
+  let options_model = options_dao::validate_option(options_model).await?;
   
-  Ok(model)
+  Ok(options_model)
 }
 
-/// 根据 ids 删除系统选项
+/// 根据 options_ids 删除系统选项
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<OptionsId>,
+  options_ids: Vec<OptionsId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let old_models = options_dao::find_all(
     Some(OptionsSearch {
-      ids: Some(ids.clone()),
+      ids: Some(options_ids.clone()),
       ..Default::default()
     }),
     None,
@@ -219,39 +233,39 @@ pub async fn delete_by_ids(
   }
   
   let num = options_dao::delete_by_ids(
-    ids,
+    options_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 id 查找系统选项是否已启用
+/// 根据 options_id 查找系统选项是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  id: OptionsId,
+  options_id: OptionsId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_enabled = options_dao::get_is_enabled_by_id(
-    id,
+    options_id,
     options,
   ).await?;
   
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或者禁用系统选项
+/// 根据 options_ids 启用或者禁用系统选项
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ids: Vec<OptionsId>,
+  options_ids: Vec<OptionsId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = options_dao::enable_by_ids(
-    ids,
+    options_ids,
     is_enabled,
     options,
   ).await?;
@@ -259,33 +273,33 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找系统选项是否已锁定
+/// 根据 options_id 查找系统选项是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_locked_by_id(
-  id: OptionsId,
+  options_id: OptionsId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_locked = options_dao::get_is_locked_by_id(
-    id,
+    options_id,
     options,
   ).await?;
   
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁系统选项
+/// 根据 options_ids 锁定或者解锁系统选项
 #[allow(dead_code)]
 pub async fn lock_by_ids(
-  ids: Vec<OptionsId>,
+  options_ids: Vec<OptionsId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = options_dao::lock_by_ids(
-    ids,
+    options_ids,
     is_locked,
     options,
   ).await?;
@@ -305,30 +319,30 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原系统选项
+/// 根据 options_ids 还原系统选项
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<OptionsId>,
+  options_ids: Vec<OptionsId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = options_dao::revert_by_ids(
-    ids,
+    options_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 ids 彻底删除系统选项
+/// 根据 options_ids 彻底删除系统选项
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<OptionsId>,
+  options_ids: Vec<OptionsId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = options_dao::force_delete_by_ids(
-    ids,
+    options_ids,
     options,
   ).await?;
   

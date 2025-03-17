@@ -382,6 +382,71 @@ pub async fn find_by_id(
   #>
   
   Ok(model)
+}
+
+/// 根据 ids 查找<#=table_comment#>
+#[function_name::named]
+pub async fn find_by_ids(
+  ids: Vec<<#=Table_Up#>Id>,
+  options: Option<Options>,
+) -> Result<Vec<<#=tableUP#>Model>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = <#=table#>_service::find_by_ids(
+    ids,
+    options,
+  ).await?;<#
+  if (hasPassword) {
+  #>
+  
+  let mut models = models;
+  for model in models.iter_mut() {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      const column_name_rust = rustKeyEscape(column_name);
+      if (column_name === "id") continue;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const isPassword = column.isPassword;
+    #><#
+      if (isPassword) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name_rust#> = String::new();<#
+      }
+    #><#
+    }
+    #>
+  }
+  let models = models;<#
+  }
+  #><#
+  if (tableFieldPermit) {
+  #>
+  
+  let mut models = models;
+  {
+    let fields = get_field_permit(
+      get_route_path_<#=table#>(),
+    ).await?;
+    for model in models.iter_mut() {
+      field_permit_model_<#=table#>(
+        model,
+        fields.clone(),
+      ).await?;
+    }
+  }
+  let models = models;<#
+  }
+  #>
+  
+  Ok(models)
 }<#
 if (hasDataPermit() && hasCreateUsrId) {
 #>
