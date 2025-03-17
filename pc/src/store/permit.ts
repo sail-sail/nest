@@ -21,7 +21,7 @@ export default defineStore("permit", function() {
     );
     
     return function(code: string, lbl?: string) {
-      if (usrStore.username === "admin") {
+      if (usrStore.isAdmin()) {
         return true;
       }
       return permitObj.value[code];
