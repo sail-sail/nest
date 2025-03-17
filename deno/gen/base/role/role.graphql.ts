@@ -223,6 +223,8 @@ type Query {
   findOneRole(search: RoleSearch, sort: [SortInput!]): RoleModel
   "根据 id 查找角色"
   findByIdRole(id: RoleId!): RoleModel
+  "根据 ids 查找角色"
+  findByIdsRole(ids: [RoleId!]!): [RoleModel]!
   "查找角色 order_by 字段的最大值"
   findLastOrderByRole: Int!
 }

@@ -139,6 +139,8 @@ type Query {
   findOneIcon(search: IconSearch, sort: [SortInput!]): IconModel
   "根据 id 查找图标库"
   findByIdIcon(id: IconId!): IconModel
+  "根据 ids 查找图标库"
+  findByIdsIcon(ids: [IconId!]!): [IconModel]!
   "查找图标库 order_by 字段的最大值"
   findLastOrderByIcon: Int!
 }

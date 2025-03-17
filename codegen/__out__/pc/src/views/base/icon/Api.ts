@@ -213,9 +213,12 @@ export async function updateById(
  * 根据 id 查找图标库
  */
 export async function findById(
-  id: IconId,
+  id?: IconId,
   opt?: GqlOpt,
-) {
+): Promise<IconModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdIcon?: IconModel;
   } = await query({
@@ -236,12 +239,47 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找图标库
+ */
+export async function findByIds(
+  ids: IconId[],
+  opt?: GqlOpt,
+): Promise<IconModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsIcon: IconModel[];
+  } = await query({
+    query: `
+      query($ids: [IconId!]!) {
+        findByIdsIcon(ids: $ids) {
+          ${ iconQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsIcon;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除图标库
  */
 export async function deleteByIds(
   ids: IconId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsIcon: Mutation["deleteByIdsIcon"];
   } = await mutation({
@@ -265,7 +303,10 @@ export async function enableByIds(
   ids: IconId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsIcon: Mutation["enableByIdsIcon"];
   } = await mutation({
@@ -289,7 +330,10 @@ export async function enableByIds(
 export async function revertByIds(
   ids: IconId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsIcon: Mutation["revertByIdsIcon"];
   } = await mutation({
@@ -312,7 +356,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: IconId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsIcon: Mutation["forceDeleteByIdsIcon"];
   } = await mutation({

@@ -122,6 +122,8 @@ type Query {
   findOneOperationRecord(search: OperationRecordSearch, sort: [SortInput!]): OperationRecordModel
   "根据 id 查找操作记录"
   findByIdOperationRecord(id: OperationRecordId!): OperationRecordModel
+  "根据 ids 查找操作记录"
+  findByIdsOperationRecord(ids: [OperationRecordId!]!): [OperationRecordModel]!
 }
 type Mutation {
   "根据 ids 删除操作记录"

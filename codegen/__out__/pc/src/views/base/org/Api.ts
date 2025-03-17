@@ -204,9 +204,12 @@ export async function updateById(
  * 根据 id 查找组织
  */
 export async function findById(
-  id: OrgId,
+  id?: OrgId,
   opt?: GqlOpt,
-) {
+): Promise<OrgModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdOrg?: OrgModel;
   } = await query({
@@ -227,12 +230,47 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找组织
+ */
+export async function findByIds(
+  ids: OrgId[],
+  opt?: GqlOpt,
+): Promise<OrgModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsOrg: OrgModel[];
+  } = await query({
+    query: `
+      query($ids: [OrgId!]!) {
+        findByIdsOrg(ids: $ids) {
+          ${ orgQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsOrg;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除组织
  */
 export async function deleteByIds(
   ids: OrgId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsOrg: Mutation["deleteByIdsOrg"];
   } = await mutation({
@@ -256,7 +294,10 @@ export async function enableByIds(
   ids: OrgId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsOrg: Mutation["enableByIdsOrg"];
   } = await mutation({
@@ -281,7 +322,10 @@ export async function lockByIds(
   ids: OrgId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsOrg: Mutation["lockByIdsOrg"];
   } = await mutation({
@@ -305,7 +349,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: OrgId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsOrg: Mutation["revertByIdsOrg"];
   } = await mutation({
@@ -328,7 +375,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: OrgId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsOrg: Mutation["forceDeleteByIdsOrg"];
   } = await mutation({

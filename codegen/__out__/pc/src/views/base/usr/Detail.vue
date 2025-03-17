@@ -139,6 +139,7 @@
               v-model="dialogModel.role_ids"
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               :method="getRoleList"
+              :find-by-values="findByIdsRole"
               :options-map="((item: RoleModel) => {
                 return {
                   label: item.lbl,
@@ -177,6 +178,7 @@
               v-model="dialogModel.org_ids"
               :set="dialogModel.org_ids = dialogModel.org_ids ?? [ ]"
               :method="getOrgList"
+              :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
                   label: item.lbl,
@@ -200,6 +202,7 @@
               v-model="dialogModel.default_org_id"
               :init="false"
               :method="getOrgListApi"
+              :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
                   label: item.lbl,
@@ -367,6 +370,14 @@ import {
   getRoleList,
   getOrgList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsRole,
+} from "@/views/base/role/Api.ts";
+
+import {
+  findByIds as findByIdsOrg,
+} from "@/views/base/org/Api.ts";
 
 import {
   getDeptTree,

@@ -6,10 +6,16 @@ import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+// 角色
+import {
+  findByIds as findByIdsRole,
+} from "/gen/base/role/role.dao.ts";
+
 /**
- * 获取当前用户拥有的角色id列表
+ * 获取当前用户拥有的角色列表
+ * 未登录用户返回角色空数组
  */
-export async function getAuthRoleIds() {
+export async function getAuthRoleModels(): Promise<RoleModel[]> {
   const auth_model = await getAuthModel(false);
   if (!auth_model) {
     return [ ];
@@ -24,25 +30,11 @@ export async function getAuthRoleIds() {
     return [ ];
   }
   const role_ids = usr_model.role_ids || [ ];
-  return role_ids;
-}
-
-/**
- * 获取用户拥有的角色id列表
- * @param {UsrId} usr_id
- */
-export async function getRoleIds(
-  usr_id?: UsrId,
-) {
-  const usr_model = await findByIdUsr(
-    usr_id,
+  const role_models = await findByIdsRole(
+    role_ids,
     {
       is_debug: false,
     },
   );
-  if (!usr_model || !usr_model.is_enabled) {
-    return [ ];
-  }
-  const role_ids = usr_model.role_ids || [ ];
-  return role_ids;
+  return role_models;
 }

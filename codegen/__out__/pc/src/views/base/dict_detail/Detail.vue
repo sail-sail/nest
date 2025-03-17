@@ -82,6 +82,7 @@
             <CustomSelect
               v-model="dialogModel.dict_id"
               :method="getDictList"
+              :find-by-values="findByIdsDict"
               :options-map="((item: DictModel) => {
                 return {
                   label: item.lbl,
@@ -258,6 +259,10 @@ import {
 import {
   getDictList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsDict,
+} from "@/views/base/dict/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
