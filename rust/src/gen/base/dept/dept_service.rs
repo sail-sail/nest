@@ -21,6 +21,8 @@ use crate::r#gen::base::usr::usr_dao::{
   validate_option as validate_option_usr,
 };
 
+use crate::src::base::usr::usr_dao::is_admin;
+
 use super::dept_model::*;
 use super::dept_dao;
 
@@ -34,7 +36,7 @@ async fn set_search_query(
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id.clone(),
-      None,
+      options.clone(),
     ).await?,
   ).await?;
   
@@ -46,9 +48,8 @@ async fn set_search_query(
     org_ids.append(&mut usr_model.org_ids.clone());
     org_ids.push(OrgId::default());
   }
-  let username = usr_model.username.clone();
   
-  if username != "admin" {
+  if !is_admin(usr_id.clone(), options.clone()).await? {
     search.org_id = Some(org_ids);
   }
   Ok(())
