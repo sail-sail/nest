@@ -95,6 +95,7 @@
             <CustomSelect
               v-model="dialogModel.job_id"
               :method="getJobList"
+              :find-by-values="findByIdsJob"
               :options-map="((item: JobModel) => {
                 return {
                   label: item.lbl,
@@ -275,6 +276,10 @@ import {
 import {
   getJobList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsJob,
+} from "@/views/cron/job/Api.ts";
 
 import cronstrue from "cronstrue/i18n";
 import { lang } from "@/locales/index";

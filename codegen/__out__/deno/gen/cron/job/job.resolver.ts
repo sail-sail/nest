@@ -107,6 +107,25 @@ export async function findByIdJob(
 }
 
 /**
+ * 根据 ids 查找任务
+ */
+export async function findByIdsJob(
+  ids: JobId[],
+): Promise<JobModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./job.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建任务
  */
 export async function createsJob(

@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await cron_job_logDao.findCount(search);
-  return data;
+  const cron_job_log_num = await cron_job_logDao.findCount(search);
+  
+  return cron_job_log_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: CronJobLogModel[] = await cron_job_logDao.findAll(search, page, sort);
-  return models;
+  const cron_job_log_models = await cron_job_logDao.findAll(search, page, sort);
+  
+  return cron_job_log_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: CronJobLogInput,
-) {
-  const data = await cron_job_logDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await cron_job_logDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await cron_job_logDao.findOne(search, sort);
-  return model;
+  const cron_job_log_model = await cron_job_logDao.findOne(search, sort);
+  
+  return cron_job_log_model;
 }
 
 /**
  * 根据 id 查找定时任务日志
  */
 export async function findById(
-  id?: CronJobLogId | null,
+  cron_job_log_id?: CronJobLogId | null,
 ): Promise<CronJobLogModel | undefined> {
-  const model = await cron_job_logDao.findById(id);
-  return model;
+  
+  const cron_job_log_model = await cron_job_logDao.findById(cron_job_log_id);
+  
+  return cron_job_log_model;
+}
+
+/**
+ * 根据 ids 查找定时任务日志
+ */
+export async function findByIds(
+  cron_job_log_ids: CronJobLogId[],
+): Promise<CronJobLogModel[]> {
+  
+  const cron_job_log_models = await cron_job_logDao.findByIds(cron_job_log_ids);
+  
+  return cron_job_log_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await cron_job_logDao.exist(search);
-  return data;
+  const cron_job_log_exist = await cron_job_logDao.exist(search);
+  
+  return cron_job_log_exist;
 }
 
 /**
  * 根据 id 查找定时任务日志是否存在
  */
 export async function existById(
-  id?: CronJobLogId | null,
+  cron_job_log_id?: CronJobLogId | null,
 ): Promise<boolean> {
-  const data = await cron_job_logDao.existById(id);
-  return data;
+  
+  const cron_job_log_exist = await cron_job_logDao.existById(cron_job_log_id);
+  
+  return cron_job_log_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: CronJobLogInput,
 ): Promise<void> {
-  const data = await cron_job_logDao.validate(input);
-  return data;
+  await cron_job_logDao.validate(input);
 }
 
 /**
@@ -124,65 +142,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<CronJobLogId[]> {
-  const ids = await cron_job_logDao.creates(inputs, options);
-  return ids;
+  const cron_job_log_ids = await cron_job_logDao.creates(inputs, options);
+  
+  return cron_job_log_ids;
 }
 
 /**
  * 根据 id 修改定时任务日志
  */
 export async function updateById(
-  id: CronJobLogId,
+  cron_job_log_id: CronJobLogId,
   input: CronJobLogInput,
 ): Promise<CronJobLogId> {
   
-  const id2 = await cron_job_logDao.updateById(id, input);
-  return id2;
+  const cron_job_log_id2 = await cron_job_logDao.updateById(cron_job_log_id, input);
+  
+  return cron_job_log_id2;
 }
 
 /** 校验定时任务日志是否存在 */
 export async function validateOption(
   model0?: CronJobLogModel,
 ): Promise<CronJobLogModel> {
-  const model = await cron_job_logDao.validateOption(model0);
-  return model;
+  const cron_job_log_model = await cron_job_logDao.validateOption(model0);
+  return cron_job_log_model;
 }
 
 /**
  * 根据 ids 删除定时任务日志
  */
 export async function deleteByIds(
-  ids: CronJobLogId[],
+  cron_job_log_ids: CronJobLogId[],
 ): Promise<number> {
   
-  const data = await cron_job_logDao.deleteByIds(ids);
-  return data;
+  const cron_job_log_num = await cron_job_logDao.deleteByIds(cron_job_log_ids);
+  return cron_job_log_num;
 }
 
 /**
  * 根据 ids 还原定时任务日志
  */
 export async function revertByIds(
-  ids: CronJobLogId[],
+  cron_job_log_ids: CronJobLogId[],
 ): Promise<number> {
-  const data = await cron_job_logDao.revertByIds(ids);
-  return data;
+  
+  const cron_job_log_num = await cron_job_logDao.revertByIds(cron_job_log_ids);
+  
+  return cron_job_log_num;
 }
 
 /**
  * 根据 ids 彻底删除定时任务日志
  */
 export async function forceDeleteByIds(
-  ids: CronJobLogId[],
+  cron_job_log_ids: CronJobLogId[],
 ): Promise<number> {
-  const data = await cron_job_logDao.forceDeleteByIds(ids);
-  return data;
+  
+  const cron_job_log_num = await cron_job_logDao.forceDeleteByIds(cron_job_log_ids);
+  
+  return cron_job_log_num;
 }
 
 /**
  * 获取定时任务日志字段注释
  */
 export async function getFieldComments(): Promise<CronJobLogFieldComment> {
-  const data = await cron_job_logDao.getFieldComments();
-  return data;
+  const cron_job_log_fields = await cron_job_logDao.getFieldComments();
+  return cron_job_log_fields;
 }
