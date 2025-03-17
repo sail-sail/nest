@@ -287,7 +287,7 @@ export default defineConfig({
     sourcemap: false,
   },
   define: {
-    __VUE_OPTIONS_API__: false,
+    __VUE_OPTIONS_API__: true,
   },
   preview: {
     port: 4000,
