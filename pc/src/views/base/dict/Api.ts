@@ -218,9 +218,12 @@ export async function updateById(
  * 根据 id 查找系统字典
  */
 export async function findById(
-  id: DictId,
+  id?: DictId,
   opt?: GqlOpt,
-) {
+): Promise<DictModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdDict?: DictModel;
   } = await query({
@@ -241,12 +244,47 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找系统字典
+ */
+export async function findByIds(
+  ids: DictId[],
+  opt?: GqlOpt,
+): Promise<DictModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsDict: DictModel[];
+  } = await query({
+    query: `
+      query($ids: [DictId!]!) {
+        findByIdsDict(ids: $ids) {
+          ${ dictQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsDict;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除系统字典
  */
 export async function deleteByIds(
   ids: DictId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsDict: Mutation["deleteByIdsDict"];
   } = await mutation({
@@ -270,7 +308,10 @@ export async function enableByIds(
   ids: DictId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsDict: Mutation["enableByIdsDict"];
   } = await mutation({
@@ -294,7 +335,10 @@ export async function enableByIds(
 export async function revertByIds(
   ids: DictId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsDict: Mutation["revertByIdsDict"];
   } = await mutation({
@@ -317,7 +361,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: DictId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsDict: Mutation["forceDeleteByIdsDict"];
   } = await mutation({

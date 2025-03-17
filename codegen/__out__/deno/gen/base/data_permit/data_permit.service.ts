@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await data_permitDao.findCount(search);
-  return data;
+  const data_permit_num = await data_permitDao.findCount(search);
+  
+  return data_permit_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: DataPermitModel[] = await data_permitDao.findAll(search, page, sort);
-  return models;
+  const data_permit_models = await data_permitDao.findAll(search, page, sort);
+  
+  return data_permit_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: DataPermitInput,
-) {
-  const data = await data_permitDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await data_permitDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await data_permitDao.findOne(search, sort);
-  return model;
+  const data_permit_model = await data_permitDao.findOne(search, sort);
+  
+  return data_permit_model;
 }
 
 /**
  * 根据 id 查找数据权限
  */
 export async function findById(
-  id?: DataPermitId | null,
+  data_permit_id?: DataPermitId | null,
 ): Promise<DataPermitModel | undefined> {
-  const model = await data_permitDao.findById(id);
-  return model;
+  
+  const data_permit_model = await data_permitDao.findById(data_permit_id);
+  
+  return data_permit_model;
+}
+
+/**
+ * 根据 ids 查找数据权限
+ */
+export async function findByIds(
+  data_permit_ids: DataPermitId[],
+): Promise<DataPermitModel[]> {
+  
+  const data_permit_models = await data_permitDao.findByIds(data_permit_ids);
+  
+  return data_permit_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await data_permitDao.exist(search);
-  return data;
+  const data_permit_exist = await data_permitDao.exist(search);
+  
+  return data_permit_exist;
 }
 
 /**
  * 根据 id 查找数据权限是否存在
  */
 export async function existById(
-  id?: DataPermitId | null,
+  data_permit_id?: DataPermitId | null,
 ): Promise<boolean> {
-  const data = await data_permitDao.existById(id);
-  return data;
+  
+  const data_permit_exist = await data_permitDao.existById(data_permit_id);
+  
+  return data_permit_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: DataPermitInput,
 ): Promise<void> {
-  const data = await data_permitDao.validate(input);
-  return data;
+  await data_permitDao.validate(input);
 }
 
 /**
@@ -124,20 +142,21 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<DataPermitId[]> {
-  const ids = await data_permitDao.creates(inputs, options);
-  return ids;
+  const data_permit_ids = await data_permitDao.creates(inputs, options);
+  
+  return data_permit_ids;
 }
 
 /**
  * 根据 id 修改数据权限
  */
 export async function updateById(
-  id: DataPermitId,
+  data_permit_id: DataPermitId,
   input: DataPermitInput,
 ): Promise<DataPermitId> {
   
   const old_model = await data_permitDao.validateOption(
-    await data_permitDao.findById(id),
+    await data_permitDao.findById(data_permit_id),
   );
   
   // 不能修改系统记录的系统字段
@@ -150,28 +169,27 @@ export async function updateById(
     input.scope_lbl = "";
   }
   
-  const id2 = await data_permitDao.updateById(id, input);
-  return id2;
+  const data_permit_id2 = await data_permitDao.updateById(data_permit_id, input);
+  
+  return data_permit_id2;
 }
 
 /** 校验数据权限是否存在 */
 export async function validateOption(
   model0?: DataPermitModel,
 ): Promise<DataPermitModel> {
-  const model = await data_permitDao.validateOption(model0);
-  return model;
+  const data_permit_model = await data_permitDao.validateOption(model0);
+  return data_permit_model;
 }
 
 /**
  * 根据 ids 删除数据权限
  */
 export async function deleteByIds(
-  ids: DataPermitId[],
+  data_permit_ids: DataPermitId[],
 ): Promise<number> {
   
-  const old_models = await data_permitDao.findAll({
-    ids,
-  });
+  const old_models = await data_permitDao.findByIds(data_permit_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -179,34 +197,38 @@ export async function deleteByIds(
     }
   }
   
-  const data = await data_permitDao.deleteByIds(ids);
-  return data;
+  const data_permit_num = await data_permitDao.deleteByIds(data_permit_ids);
+  return data_permit_num;
 }
 
 /**
  * 根据 ids 还原数据权限
  */
 export async function revertByIds(
-  ids: DataPermitId[],
+  data_permit_ids: DataPermitId[],
 ): Promise<number> {
-  const data = await data_permitDao.revertByIds(ids);
-  return data;
+  
+  const data_permit_num = await data_permitDao.revertByIds(data_permit_ids);
+  
+  return data_permit_num;
 }
 
 /**
  * 根据 ids 彻底删除数据权限
  */
 export async function forceDeleteByIds(
-  ids: DataPermitId[],
+  data_permit_ids: DataPermitId[],
 ): Promise<number> {
-  const data = await data_permitDao.forceDeleteByIds(ids);
-  return data;
+  
+  const data_permit_num = await data_permitDao.forceDeleteByIds(data_permit_ids);
+  
+  return data_permit_num;
 }
 
 /**
  * 获取数据权限字段注释
  */
 export async function getFieldComments(): Promise<DataPermitFieldComment> {
-  const data = await data_permitDao.getFieldComments();
-  return data;
+  const data_permit_fields = await data_permitDao.getFieldComments();
+  return data_permit_fields;
 }

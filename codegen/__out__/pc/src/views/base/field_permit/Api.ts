@@ -161,9 +161,12 @@ export async function updateById(
  * 根据 id 查找字段权限
  */
 export async function findById(
-  id: FieldPermitId,
+  id?: FieldPermitId,
   opt?: GqlOpt,
-) {
+): Promise<FieldPermitModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdFieldPermit?: FieldPermitModel;
   } = await query({
@@ -181,6 +184,38 @@ export async function findById(
   const model = data.findByIdFieldPermit;
   await setLblById(model);
   return model;
+}
+
+/**
+ * 根据 ids 查找字段权限
+ */
+export async function findByIds(
+  ids: FieldPermitId[],
+  opt?: GqlOpt,
+): Promise<FieldPermitModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsFieldPermit: FieldPermitModel[];
+  } = await query({
+    query: `
+      query($ids: [FieldPermitId!]!) {
+        findByIdsFieldPermit(ids: $ids) {
+          ${ fieldPermitQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsFieldPermit;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
 }
 
 export async function findAllMenu(
