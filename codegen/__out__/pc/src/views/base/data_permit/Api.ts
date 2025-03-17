@@ -212,9 +212,12 @@ export async function updateById(
  * 根据 id 查找数据权限
  */
 export async function findById(
-  id: DataPermitId,
+  id?: DataPermitId,
   opt?: GqlOpt,
-) {
+): Promise<DataPermitModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdDataPermit?: DataPermitModel;
   } = await query({
@@ -235,12 +238,47 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找数据权限
+ */
+export async function findByIds(
+  ids: DataPermitId[],
+  opt?: GqlOpt,
+): Promise<DataPermitModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsDataPermit: DataPermitModel[];
+  } = await query({
+    query: `
+      query($ids: [DataPermitId!]!) {
+        findByIdsDataPermit(ids: $ids) {
+          ${ dataPermitQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsDataPermit;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除数据权限
  */
 export async function deleteByIds(
   ids: DataPermitId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsDataPermit: Mutation["deleteByIdsDataPermit"];
   } = await mutation({
@@ -263,7 +301,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: DataPermitId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsDataPermit: Mutation["revertByIdsDataPermit"];
   } = await mutation({
@@ -286,7 +327,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: DataPermitId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsDataPermit: Mutation["forceDeleteByIdsDataPermit"];
   } = await mutation({

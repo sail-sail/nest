@@ -223,9 +223,12 @@ export async function updateById(
  * 根据 id 查找租户
  */
 export async function findById(
-  id: TenantId,
+  id?: TenantId,
   opt?: GqlOpt,
-) {
+): Promise<TenantModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdTenant?: TenantModel;
   } = await query({
@@ -246,12 +249,47 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找租户
+ */
+export async function findByIds(
+  ids: TenantId[],
+  opt?: GqlOpt,
+): Promise<TenantModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsTenant: TenantModel[];
+  } = await query({
+    query: `
+      query($ids: [TenantId!]!) {
+        findByIdsTenant(ids: $ids) {
+          ${ tenantQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsTenant;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除租户
  */
 export async function deleteByIds(
   ids: TenantId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsTenant: Mutation["deleteByIdsTenant"];
   } = await mutation({
@@ -275,7 +313,10 @@ export async function enableByIds(
   ids: TenantId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsTenant: Mutation["enableByIdsTenant"];
   } = await mutation({
@@ -300,7 +341,10 @@ export async function lockByIds(
   ids: TenantId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsTenant: Mutation["lockByIdsTenant"];
   } = await mutation({
@@ -324,7 +368,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: TenantId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsTenant: Mutation["revertByIdsTenant"];
   } = await mutation({
@@ -347,7 +394,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: TenantId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsTenant: Mutation["forceDeleteByIdsTenant"];
   } = await mutation({

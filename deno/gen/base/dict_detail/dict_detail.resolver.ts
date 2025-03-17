@@ -107,6 +107,25 @@ export async function findByIdDictDetail(
 }
 
 /**
+ * 根据 ids 查找系统字典明细
+ */
+export async function findByIdsDictDetail(
+  ids: DictDetailId[],
+): Promise<DictDetailModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./dict_detail.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建系统字典明细
  */
 export async function createsDictDetail(
