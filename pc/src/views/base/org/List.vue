@@ -13,7 +13,6 @@
   >
     <el-form
       ref="searchFormRef"
-      v-search-form-item-width-auto="inited"
       
       size="default"
       :model="search"
@@ -789,13 +788,9 @@ function initSearch() {
   const search = {
     is_deleted: 0,
   } as OrgSearch;
-  if (props.propsNotReset && props.propsNotReset.length > 0) {
-    for (let i = 0; i < props.propsNotReset.length; i++) {
-      const key = props.propsNotReset[i];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (search as any)[key] = (builtInSearch as any)[key];
-    }
-  }
+  props.propsNotReset?.forEach((key) => {
+    search[key] = builtInSearch[key];
+  });
   return search;
 }
 
