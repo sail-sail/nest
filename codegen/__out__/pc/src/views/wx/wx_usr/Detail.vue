@@ -96,6 +96,7 @@
               v-model="dialogModel.usr_id"
               v-model:model-label="dialogModel.usr_id_lbl"
               :method="getUsrList"
+              :find-by-values="findByIdsUsr"
               :options-map="((item: UsrModel) => {
                 return {
                   label: item.lbl,
@@ -366,6 +367,10 @@ import {
 import {
   getUsrList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsUsr,
+} from "@/views/base/usr/Api.ts";
 
 const emit = defineEmits<{
   nextId: [

@@ -179,6 +179,8 @@ type Query {
   findOneWxPay(search: WxPaySearch, sort: [SortInput!]): WxPayModel
   "根据 id 查找微信支付设置"
   findByIdWxPay(id: WxPayId!): WxPayModel
+  "根据 ids 查找微信支付设置"
+  findByIdsWxPay(ids: [WxPayId!]!): [WxPayModel]!
   "查找微信支付设置 order_by 字段的最大值"
   findLastOrderByWxPay: Int!
 }

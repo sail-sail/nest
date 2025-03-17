@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await pay_transactions_jsapiDao.findCount(search);
-  return data;
+  const pay_transactions_jsapi_num = await pay_transactions_jsapiDao.findCount(search);
+  
+  return pay_transactions_jsapi_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: PayTransactionsJsapiModel[] = await pay_transactions_jsapiDao.findAll(search, page, sort);
-  return models;
+  const pay_transactions_jsapi_models = await pay_transactions_jsapiDao.findAll(search, page, sort);
+  
+  return pay_transactions_jsapi_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: PayTransactionsJsapiInput,
-) {
-  const data = await pay_transactions_jsapiDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await pay_transactions_jsapiDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await pay_transactions_jsapiDao.findOne(search, sort);
-  return model;
+  const pay_transactions_jsapi_model = await pay_transactions_jsapiDao.findOne(search, sort);
+  
+  return pay_transactions_jsapi_model;
 }
 
 /**
  * 根据 id 查找微信JSAPI下单
  */
 export async function findById(
-  id?: PayTransactionsJsapiId | null,
+  pay_transactions_jsapi_id?: PayTransactionsJsapiId | null,
 ): Promise<PayTransactionsJsapiModel | undefined> {
-  const model = await pay_transactions_jsapiDao.findById(id);
-  return model;
+  
+  const pay_transactions_jsapi_model = await pay_transactions_jsapiDao.findById(pay_transactions_jsapi_id);
+  
+  return pay_transactions_jsapi_model;
+}
+
+/**
+ * 根据 ids 查找微信JSAPI下单
+ */
+export async function findByIds(
+  pay_transactions_jsapi_ids: PayTransactionsJsapiId[],
+): Promise<PayTransactionsJsapiModel[]> {
+  
+  const pay_transactions_jsapi_models = await pay_transactions_jsapiDao.findByIds(pay_transactions_jsapi_ids);
+  
+  return pay_transactions_jsapi_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await pay_transactions_jsapiDao.exist(search);
-  return data;
+  const pay_transactions_jsapi_exist = await pay_transactions_jsapiDao.exist(search);
+  
+  return pay_transactions_jsapi_exist;
 }
 
 /**
  * 根据 id 查找微信JSAPI下单是否存在
  */
 export async function existById(
-  id?: PayTransactionsJsapiId | null,
+  pay_transactions_jsapi_id?: PayTransactionsJsapiId | null,
 ): Promise<boolean> {
-  const data = await pay_transactions_jsapiDao.existById(id);
-  return data;
+  
+  const pay_transactions_jsapi_exist = await pay_transactions_jsapiDao.existById(pay_transactions_jsapi_id);
+  
+  return pay_transactions_jsapi_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: PayTransactionsJsapiInput,
 ): Promise<void> {
-  const data = await pay_transactions_jsapiDao.validate(input);
-  return data;
+  await pay_transactions_jsapiDao.validate(input);
 }
 
 /**
@@ -124,65 +142,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<PayTransactionsJsapiId[]> {
-  const ids = await pay_transactions_jsapiDao.creates(inputs, options);
-  return ids;
+  const pay_transactions_jsapi_ids = await pay_transactions_jsapiDao.creates(inputs, options);
+  
+  return pay_transactions_jsapi_ids;
 }
 
 /**
  * 根据 id 修改微信JSAPI下单
  */
 export async function updateById(
-  id: PayTransactionsJsapiId,
+  pay_transactions_jsapi_id: PayTransactionsJsapiId,
   input: PayTransactionsJsapiInput,
 ): Promise<PayTransactionsJsapiId> {
   
-  const id2 = await pay_transactions_jsapiDao.updateById(id, input);
-  return id2;
+  const pay_transactions_jsapi_id2 = await pay_transactions_jsapiDao.updateById(pay_transactions_jsapi_id, input);
+  
+  return pay_transactions_jsapi_id2;
 }
 
 /** 校验微信JSAPI下单是否存在 */
 export async function validateOption(
   model0?: PayTransactionsJsapiModel,
 ): Promise<PayTransactionsJsapiModel> {
-  const model = await pay_transactions_jsapiDao.validateOption(model0);
-  return model;
+  const pay_transactions_jsapi_model = await pay_transactions_jsapiDao.validateOption(model0);
+  return pay_transactions_jsapi_model;
 }
 
 /**
  * 根据 ids 删除微信JSAPI下单
  */
 export async function deleteByIds(
-  ids: PayTransactionsJsapiId[],
+  pay_transactions_jsapi_ids: PayTransactionsJsapiId[],
 ): Promise<number> {
   
-  const data = await pay_transactions_jsapiDao.deleteByIds(ids);
-  return data;
+  const pay_transactions_jsapi_num = await pay_transactions_jsapiDao.deleteByIds(pay_transactions_jsapi_ids);
+  return pay_transactions_jsapi_num;
 }
 
 /**
  * 根据 ids 还原微信JSAPI下单
  */
 export async function revertByIds(
-  ids: PayTransactionsJsapiId[],
+  pay_transactions_jsapi_ids: PayTransactionsJsapiId[],
 ): Promise<number> {
-  const data = await pay_transactions_jsapiDao.revertByIds(ids);
-  return data;
+  
+  const pay_transactions_jsapi_num = await pay_transactions_jsapiDao.revertByIds(pay_transactions_jsapi_ids);
+  
+  return pay_transactions_jsapi_num;
 }
 
 /**
  * 根据 ids 彻底删除微信JSAPI下单
  */
 export async function forceDeleteByIds(
-  ids: PayTransactionsJsapiId[],
+  pay_transactions_jsapi_ids: PayTransactionsJsapiId[],
 ): Promise<number> {
-  const data = await pay_transactions_jsapiDao.forceDeleteByIds(ids);
-  return data;
+  
+  const pay_transactions_jsapi_num = await pay_transactions_jsapiDao.forceDeleteByIds(pay_transactions_jsapi_ids);
+  
+  return pay_transactions_jsapi_num;
 }
 
 /**
  * 获取微信JSAPI下单字段注释
  */
 export async function getFieldComments(): Promise<PayTransactionsJsapiFieldComment> {
-  const data = await pay_transactions_jsapiDao.getFieldComments();
-  return data;
+  const pay_transactions_jsapi_fields = await pay_transactions_jsapiDao.getFieldComments();
+  return pay_transactions_jsapi_fields;
 }

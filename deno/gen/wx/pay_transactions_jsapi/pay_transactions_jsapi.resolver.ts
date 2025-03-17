@@ -103,3 +103,22 @@ export async function findByIdPayTransactionsJsapi(
   
   return model;
 }
+
+/**
+ * 根据 ids 查找微信JSAPI下单
+ */
+export async function findByIdsPayTransactionsJsapi(
+  ids: PayTransactionsJsapiId[],
+): Promise<PayTransactionsJsapiModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./pay_transactions_jsapi.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}

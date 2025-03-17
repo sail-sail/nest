@@ -190,6 +190,7 @@
             <CustomSelect
               v-model="dialogModel.domain_id"
               :method="getDomainList"
+              :find-by-values="findByIdsDomain"
               :options-map="((item: DomainModel) => {
                 return {
                   label: item.lbl,
@@ -340,6 +341,10 @@ import {
 import {
   getDomainList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsDomain,
+} from "@/views/base/domain/Api.ts";
 
 const emit = defineEmits<{
   nextId: [

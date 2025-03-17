@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await wxo_usrDao.findCount(search);
-  return data;
+  const wxo_usr_num = await wxo_usrDao.findCount(search);
+  
+  return wxo_usr_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: WxoUsrModel[] = await wxo_usrDao.findAll(search, page, sort);
-  return models;
+  const wxo_usr_models = await wxo_usrDao.findAll(search, page, sort);
+  
+  return wxo_usr_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: WxoUsrInput,
-) {
-  const data = await wxo_usrDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await wxo_usrDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await wxo_usrDao.findOne(search, sort);
-  return model;
+  const wxo_usr_model = await wxo_usrDao.findOne(search, sort);
+  
+  return wxo_usr_model;
 }
 
 /**
  * 根据 id 查找公众号用户
  */
 export async function findById(
-  id?: WxoUsrId | null,
+  wxo_usr_id?: WxoUsrId | null,
 ): Promise<WxoUsrModel | undefined> {
-  const model = await wxo_usrDao.findById(id);
-  return model;
+  
+  const wxo_usr_model = await wxo_usrDao.findById(wxo_usr_id);
+  
+  return wxo_usr_model;
+}
+
+/**
+ * 根据 ids 查找公众号用户
+ */
+export async function findByIds(
+  wxo_usr_ids: WxoUsrId[],
+): Promise<WxoUsrModel[]> {
+  
+  const wxo_usr_models = await wxo_usrDao.findByIds(wxo_usr_ids);
+  
+  return wxo_usr_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await wxo_usrDao.exist(search);
-  return data;
+  const wxo_usr_exist = await wxo_usrDao.exist(search);
+  
+  return wxo_usr_exist;
 }
 
 /**
  * 根据 id 查找公众号用户是否存在
  */
 export async function existById(
-  id?: WxoUsrId | null,
+  wxo_usr_id?: WxoUsrId | null,
 ): Promise<boolean> {
-  const data = await wxo_usrDao.existById(id);
-  return data;
+  
+  const wxo_usr_exist = await wxo_usrDao.existById(wxo_usr_id);
+  
+  return wxo_usr_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: WxoUsrInput,
 ): Promise<void> {
-  const data = await wxo_usrDao.validate(input);
-  return data;
+  await wxo_usrDao.validate(input);
 }
 
 /**
@@ -124,65 +142,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<WxoUsrId[]> {
-  const ids = await wxo_usrDao.creates(inputs, options);
-  return ids;
+  const wxo_usr_ids = await wxo_usrDao.creates(inputs, options);
+  
+  return wxo_usr_ids;
 }
 
 /**
  * 根据 id 修改公众号用户
  */
 export async function updateById(
-  id: WxoUsrId,
+  wxo_usr_id: WxoUsrId,
   input: WxoUsrInput,
 ): Promise<WxoUsrId> {
   
-  const id2 = await wxo_usrDao.updateById(id, input);
-  return id2;
+  const wxo_usr_id2 = await wxo_usrDao.updateById(wxo_usr_id, input);
+  
+  return wxo_usr_id2;
 }
 
 /** 校验公众号用户是否存在 */
 export async function validateOption(
   model0?: WxoUsrModel,
 ): Promise<WxoUsrModel> {
-  const model = await wxo_usrDao.validateOption(model0);
-  return model;
+  const wxo_usr_model = await wxo_usrDao.validateOption(model0);
+  return wxo_usr_model;
 }
 
 /**
  * 根据 ids 删除公众号用户
  */
 export async function deleteByIds(
-  ids: WxoUsrId[],
+  wxo_usr_ids: WxoUsrId[],
 ): Promise<number> {
   
-  const data = await wxo_usrDao.deleteByIds(ids);
-  return data;
+  const wxo_usr_num = await wxo_usrDao.deleteByIds(wxo_usr_ids);
+  return wxo_usr_num;
 }
 
 /**
  * 根据 ids 还原公众号用户
  */
 export async function revertByIds(
-  ids: WxoUsrId[],
+  wxo_usr_ids: WxoUsrId[],
 ): Promise<number> {
-  const data = await wxo_usrDao.revertByIds(ids);
-  return data;
+  
+  const wxo_usr_num = await wxo_usrDao.revertByIds(wxo_usr_ids);
+  
+  return wxo_usr_num;
 }
 
 /**
  * 根据 ids 彻底删除公众号用户
  */
 export async function forceDeleteByIds(
-  ids: WxoUsrId[],
+  wxo_usr_ids: WxoUsrId[],
 ): Promise<number> {
-  const data = await wxo_usrDao.forceDeleteByIds(ids);
-  return data;
+  
+  const wxo_usr_num = await wxo_usrDao.forceDeleteByIds(wxo_usr_ids);
+  
+  return wxo_usr_num;
 }
 
 /**
  * 获取公众号用户字段注释
  */
 export async function getFieldComments(): Promise<WxoUsrFieldComment> {
-  const data = await wxo_usrDao.getFieldComments();
-  return data;
+  const wxo_usr_fields = await wxo_usrDao.getFieldComments();
+  return wxo_usr_fields;
 }

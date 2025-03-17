@@ -107,6 +107,25 @@ export async function findByIdWxoApp(
 }
 
 /**
+ * 根据 ids 查找公众号设置
+ */
+export async function findByIdsWxoApp(
+  ids: WxoAppId[],
+): Promise<WxoAppModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./wxo_app.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建公众号设置
  */
 export async function createsWxoApp(

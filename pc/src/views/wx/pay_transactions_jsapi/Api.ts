@@ -161,9 +161,12 @@ export async function findCount(
  * 根据 id 查找微信JSAPI下单
  */
 export async function findById(
-  id: PayTransactionsJsapiId,
+  id?: PayTransactionsJsapiId,
   opt?: GqlOpt,
-) {
+): Promise<PayTransactionsJsapiModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdPayTransactionsJsapi?: PayTransactionsJsapiModel;
   } = await query({
@@ -181,6 +184,38 @@ export async function findById(
   const model = data.findByIdPayTransactionsJsapi;
   await setLblById(model);
   return model;
+}
+
+/**
+ * 根据 ids 查找微信JSAPI下单
+ */
+export async function findByIds(
+  ids: PayTransactionsJsapiId[],
+  opt?: GqlOpt,
+): Promise<PayTransactionsJsapiModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsPayTransactionsJsapi: PayTransactionsJsapiModel[];
+  } = await query({
+    query: `
+      query($ids: [PayTransactionsJsapiId!]!) {
+        findByIdsPayTransactionsJsapi(ids: $ids) {
+          ${ payTransactionsJsapiQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsPayTransactionsJsapi;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
 }
 
 /**

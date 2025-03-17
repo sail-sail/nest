@@ -275,6 +275,8 @@ type Query {
   findOneWxPayNotice(search: WxPayNoticeSearch, sort: [SortInput!]): WxPayNoticeModel
   "根据 id 查找微信支付通知"
   findByIdWxPayNotice(id: WxPayNoticeId!): WxPayNoticeModel
+  "根据 ids 查找微信支付通知"
+  findByIdsWxPayNotice(ids: [WxPayNoticeId!]!): [WxPayNoticeModel]!
 }
 
 `);

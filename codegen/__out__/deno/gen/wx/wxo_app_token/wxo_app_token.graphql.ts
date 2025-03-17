@@ -85,6 +85,8 @@ type Query {
   findOneWxoAppToken(search: WxoAppTokenSearch, sort: [SortInput!]): WxoAppTokenModel
   "根据 id 查找小程序接口凭据"
   findByIdWxoAppToken(id: WxoAppTokenId!): WxoAppTokenModel
+  "根据 ids 查找小程序接口凭据"
+  findByIdsWxoAppToken(ids: [WxoAppTokenId!]!): [WxoAppTokenModel]!
 }
 type Mutation {
   "批量创建小程序接口凭据"
