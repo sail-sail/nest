@@ -203,9 +203,12 @@ export async function updateById(
  * 根据 id 查找语言
  */
 export async function findById(
-  id: LangId,
+  id?: LangId,
   opt?: GqlOpt,
-) {
+): Promise<LangModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdLang?: LangModel;
   } = await query({
@@ -226,12 +229,47 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找语言
+ */
+export async function findByIds(
+  ids: LangId[],
+  opt?: GqlOpt,
+): Promise<LangModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsLang: LangModel[];
+  } = await query({
+    query: `
+      query($ids: [LangId!]!) {
+        findByIdsLang(ids: $ids) {
+          ${ langQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsLang;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除语言
  */
 export async function deleteByIds(
   ids: LangId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsLang: Mutation["deleteByIdsLang"];
   } = await mutation({
@@ -255,7 +293,10 @@ export async function enableByIds(
   ids: LangId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsLang: Mutation["enableByIdsLang"];
   } = await mutation({
@@ -279,7 +320,10 @@ export async function enableByIds(
 export async function revertByIds(
   ids: LangId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsLang: Mutation["revertByIdsLang"];
   } = await mutation({
@@ -302,7 +346,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: LangId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsLang: Mutation["forceDeleteByIdsLang"];
   } = await mutation({

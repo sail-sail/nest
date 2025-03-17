@@ -107,6 +107,25 @@ export async function findByIdI18n(
 }
 
 /**
+ * 根据 ids 查找国际化
+ */
+export async function findByIdsI18n(
+  ids: I18nId[],
+): Promise<I18nModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./i18n.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建国际化
  */
 export async function createsI18n(

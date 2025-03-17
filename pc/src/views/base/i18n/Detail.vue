@@ -82,6 +82,7 @@
             <CustomSelect
               v-model="dialogModel.lang_id"
               :method="getLangList"
+              :find-by-values="findByIdsLang"
               :options-map="((item: LangModel) => {
                 return {
                   label: item.lbl,
@@ -258,6 +259,10 @@ import {
 import {
   getLangList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsLang,
+} from "@/views/base/lang/Api.ts";
 
 import {
   getMenuTree,

@@ -52,8 +52,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await deptDao.findCount(search);
-  return data;
+  const dept_num = await deptDao.findCount(search);
+  
+  return dept_num;
 }
 
 /**
@@ -69,8 +70,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: DeptModel[] = await deptDao.findAll(search, page, sort);
-  return models;
+  const dept_models = await deptDao.findAll(search, page, sort);
+  
+  return dept_models;
 }
 
 /**
@@ -78,9 +80,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: DeptInput,
-) {
-  const data = await deptDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await deptDao.setIdByLbl(input);
 }
 
 /**
@@ -95,18 +96,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await deptDao.findOne(search, sort);
-  return model;
+  const dept_model = await deptDao.findOne(search, sort);
+  
+  return dept_model;
 }
 
 /**
  * 根据 id 查找部门
  */
 export async function findById(
-  id?: DeptId | null,
+  dept_id?: DeptId | null,
 ): Promise<DeptModel | undefined> {
-  const model = await deptDao.findById(id);
-  return model;
+  
+  const dept_model = await deptDao.findById(dept_id);
+  
+  return dept_model;
+}
+
+/**
+ * 根据 ids 查找部门
+ */
+export async function findByIds(
+  dept_ids: DeptId[],
+): Promise<DeptModel[]> {
+  
+  const dept_models = await deptDao.findByIds(dept_ids);
+  
+  return dept_models;
 }
 
 /**
@@ -120,18 +136,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await deptDao.exist(search);
-  return data;
+  const dept_exist = await deptDao.exist(search);
+  
+  return dept_exist;
 }
 
 /**
  * 根据 id 查找部门是否存在
  */
 export async function existById(
-  id?: DeptId | null,
+  dept_id?: DeptId | null,
 ): Promise<boolean> {
-  const data = await deptDao.existById(id);
-  return data;
+  
+  const dept_exist = await deptDao.existById(dept_id);
+  
+  return dept_exist;
 }
 
 /**
@@ -140,8 +159,7 @@ export async function existById(
 export async function validate(
   input: DeptInput,
 ): Promise<void> {
-  const data = await deptDao.validate(input);
-  return data;
+  await deptDao.validate(input);
 }
 
 /**
@@ -153,45 +171,45 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<DeptId[]> {
-  const ids = await deptDao.creates(inputs, options);
-  return ids;
+  const dept_ids = await deptDao.creates(inputs, options);
+  
+  return dept_ids;
 }
 
 /**
  * 根据 id 修改部门
  */
 export async function updateById(
-  id: DeptId,
+  dept_id: DeptId,
   input: DeptInput,
 ): Promise<DeptId> {
   
-  const is_locked = await deptDao.getIsLockedById(id);
+  const is_locked = await deptDao.getIsLockedById(dept_id);
   if (is_locked) {
     throw "不能修改已经锁定的 部门";
   }
   
-  const id2 = await deptDao.updateById(id, input);
-  return id2;
+  const dept_id2 = await deptDao.updateById(dept_id, input);
+  
+  return dept_id2;
 }
 
 /** 校验部门是否存在 */
 export async function validateOption(
   model0?: DeptModel,
 ): Promise<DeptModel> {
-  const model = await deptDao.validateOption(model0);
-  return model;
+  const dept_model = await deptDao.validateOption(model0);
+  return dept_model;
 }
 
 /**
  * 根据 ids 删除部门
  */
 export async function deleteByIds(
-  ids: DeptId[],
+  dept_ids: DeptId[],
 ): Promise<number> {
   
-  const old_models = await deptDao.findAll({
-    ids,
-  });
+  const old_models = await deptDao.findByIds(dept_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -199,8 +217,8 @@ export async function deleteByIds(
     }
   }
   
-  const data = await deptDao.deleteByIds(ids);
-  return data;
+  const dept_num = await deptDao.deleteByIds(dept_ids);
+  return dept_num;
 }
 
 /**
@@ -210,47 +228,51 @@ export async function enableByIds(
   ids: DeptId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await deptDao.enableByIds(ids, is_enabled);
-  return data;
+  const dept_num = await deptDao.enableByIds(ids, is_enabled);
+  return dept_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁部门
  */
 export async function lockByIds(
-  ids: DeptId[],
+  dept_ids: DeptId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await deptDao.lockByIds(ids, is_locked);
-  return data;
+  const dept_num = await deptDao.lockByIds(dept_ids, is_locked);
+  return dept_num;
 }
 
 /**
  * 根据 ids 还原部门
  */
 export async function revertByIds(
-  ids: DeptId[],
+  dept_ids: DeptId[],
 ): Promise<number> {
-  const data = await deptDao.revertByIds(ids);
-  return data;
+  
+  const dept_num = await deptDao.revertByIds(dept_ids);
+  
+  return dept_num;
 }
 
 /**
  * 根据 ids 彻底删除部门
  */
 export async function forceDeleteByIds(
-  ids: DeptId[],
+  dept_ids: DeptId[],
 ): Promise<number> {
-  const data = await deptDao.forceDeleteByIds(ids);
-  return data;
+  
+  const dept_num = await deptDao.forceDeleteByIds(dept_ids);
+  
+  return dept_num;
 }
 
 /**
  * 获取部门字段注释
  */
 export async function getFieldComments(): Promise<DeptFieldComment> {
-  const data = await deptDao.getFieldComments();
-  return data;
+  const dept_fields = await deptDao.getFieldComments();
+  return dept_fields;
 }
 
 /**
@@ -258,6 +280,6 @@ export async function getFieldComments(): Promise<DeptFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await deptDao.findLastOrderBy();
-  return data;
+  const dept_sort = await deptDao.findLastOrderBy();
+  return dept_sort;
 }
