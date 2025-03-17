@@ -77,6 +77,10 @@ export default defineStore("usr", function() {
     return loginInfo.value.role_codes.some((item) => item === role_code);
   }
   
+  function isAdmin() {
+    return username.value === "admin";
+  }
+  
   return {
     authorization,
     isLogining,
@@ -90,6 +94,7 @@ export default defineStore("usr", function() {
     logout,
     onLogin,
     hasRole,
+    isAdmin,
     setLang,
     clear,
     reset,
