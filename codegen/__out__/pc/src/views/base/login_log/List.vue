@@ -1043,14 +1043,12 @@ async function onDeleteByIds() {
     return;
   }
   const num = await deleteByIds(selectedIds);
-  if (num) {
-    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
-    selectedIds = [ ];
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-    ElMessage.success(`删除 ${ num } 登录日志 成功`);
-    emit("remove", num);
-  }
+  tableData = tableData.filter((item) => !selectedIds.includes(item.id));
+  selectedIds = [ ];
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
+  ElMessage.success(`删除 ${ num } 登录日志 成功`);
+  emit("remove", num);
 }
 
 /** 点击彻底删除 */
