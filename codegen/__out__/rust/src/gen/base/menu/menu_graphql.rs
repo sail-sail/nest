@@ -97,6 +97,23 @@ impl MenuGenQuery {
       }).await
   }
   
+  /// 根据 id 查找菜单
+  async fn find_by_ids_menu(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<MenuId>,
+  ) -> Result<Vec<MenuModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        menu_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找菜单是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_menu(

@@ -109,6 +109,27 @@ pub async fn find_by_id(
   Ok(model)
 }
 
+/// 根据 ids 查找图标库
+#[function_name::named]
+pub async fn find_by_ids(
+  ids: Vec<IconId>,
+  options: Option<Options>,
+) -> Result<Vec<IconModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = icon_service::find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
 /// 创建图标库
 #[allow(dead_code)]
 #[function_name::named]

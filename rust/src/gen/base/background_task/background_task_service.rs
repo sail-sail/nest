@@ -58,14 +58,14 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let res = background_task_dao::find_all(
+  let background_task_models = background_task_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(background_task_models)
 }
 
 /// 根据条件查找后台任务总数
@@ -81,12 +81,12 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let res = background_task_dao::find_count(
+  let background_task_num = background_task_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(background_task_num)
 }
 
 /// 根据条件查找第一个后台任务
@@ -103,67 +103,81 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let model = background_task_dao::find_one(
+  let background_task_model = background_task_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(background_task_model)
 }
 
 /// 根据 id 查找后台任务
 pub async fn find_by_id(
-  id: BackgroundTaskId,
+  background_task_id: BackgroundTaskId,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
   
-  let model = background_task_dao::find_by_id(
-    id,
+  let background_task_model = background_task_dao::find_by_id(
+    background_task_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(background_task_model)
+}
+
+/// 根据 background_task_ids 查找后台任务
+pub async fn find_by_ids(
+  background_task_ids: Vec<BackgroundTaskId>,
+  options: Option<Options>,
+) -> Result<Vec<BackgroundTaskModel>> {
+  
+  let background_task_models = background_task_dao::find_by_ids(
+    background_task_ids,
+    options,
+  ).await?;
+  
+  Ok(background_task_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: BackgroundTaskInput,
+  background_task_input: BackgroundTaskInput,
 ) -> Result<BackgroundTaskInput> {
   
-  let input = background_task_dao::set_id_by_lbl(
-    input,
+  let background_task_input = background_task_dao::set_id_by_lbl(
+    background_task_input,
   ).await?;
   
-  Ok(input)
+  Ok(background_task_input)
 }
 
 /// 创建后台任务
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<BackgroundTaskInput>,
+  background_task_inputs: Vec<BackgroundTaskInput>,
   options: Option<Options>,
 ) -> Result<Vec<BackgroundTaskId>> {
   
   let background_task_ids = background_task_dao::creates(
-    inputs,
+    background_task_inputs,
     options,
   ).await?;
   
   Ok(background_task_ids)
 }
 
-/// 后台任务根据id修改租户id
+/// 后台任务根据 background_task_id 修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  id: BackgroundTaskId,
+  background_task_id: BackgroundTaskId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = background_task_dao::update_tenant_by_id(
-    id,
+    background_task_id,
     tenant_id,
     options,
   ).await?;
@@ -171,17 +185,17 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-/// 根据 id 修改后台任务
+/// 根据 background_task_id 修改后台任务
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: BackgroundTaskId,
-  mut input: BackgroundTaskInput,
+  background_task_id: BackgroundTaskId,
+  mut background_task_input: BackgroundTaskInput,
   options: Option<Options>,
 ) -> Result<BackgroundTaskId> {
   
   let background_task_id = background_task_dao::update_by_id(
-    id,
-    input,
+    background_task_id,
+    background_task_input,
     options.clone(),
   ).await?;
   
@@ -191,23 +205,23 @@ pub async fn update_by_id(
 /// 校验后台任务是否存在
 #[allow(dead_code)]
 pub async fn validate_option(
-  model: Option<BackgroundTaskModel>,
+  background_task_model: Option<BackgroundTaskModel>,
 ) -> Result<BackgroundTaskModel> {
   
-  let model = background_task_dao::validate_option(model).await?;
+  let background_task_model = background_task_dao::validate_option(background_task_model).await?;
   
-  Ok(model)
+  Ok(background_task_model)
 }
 
-/// 根据 ids 删除后台任务
+/// 根据 background_task_ids 删除后台任务
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<BackgroundTaskId>,
+  background_task_ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = background_task_dao::delete_by_ids(
-    ids,
+    background_task_ids,
     options,
   ).await?;
   
@@ -226,30 +240,30 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原后台任务
+/// 根据 background_task_ids 还原后台任务
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<BackgroundTaskId>,
+  background_task_ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = background_task_dao::revert_by_ids(
-    ids,
+    background_task_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 ids 彻底删除后台任务
+/// 根据 background_task_ids 彻底删除后台任务
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<BackgroundTaskId>,
+  background_task_ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = background_task_dao::force_delete_by_ids(
-    ids,
+    background_task_ids,
     options,
   ).await?;
   

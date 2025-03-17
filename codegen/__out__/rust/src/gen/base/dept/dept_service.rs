@@ -69,14 +69,14 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let res = dept_dao::find_all(
+  let dept_models = dept_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(dept_models)
 }
 
 /// 根据条件查找部门总数
@@ -92,12 +92,12 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let res = dept_dao::find_count(
+  let dept_num = dept_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(dept_num)
 }
 
 /// 根据条件查找第一个部门
@@ -114,67 +114,81 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let model = dept_dao::find_one(
+  let dept_model = dept_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(dept_model)
 }
 
 /// 根据 id 查找部门
 pub async fn find_by_id(
-  id: DeptId,
+  dept_id: DeptId,
   options: Option<Options>,
 ) -> Result<Option<DeptModel>> {
   
-  let model = dept_dao::find_by_id(
-    id,
+  let dept_model = dept_dao::find_by_id(
+    dept_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(dept_model)
+}
+
+/// 根据 dept_ids 查找部门
+pub async fn find_by_ids(
+  dept_ids: Vec<DeptId>,
+  options: Option<Options>,
+) -> Result<Vec<DeptModel>> {
+  
+  let dept_models = dept_dao::find_by_ids(
+    dept_ids,
+    options,
+  ).await?;
+  
+  Ok(dept_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: DeptInput,
+  dept_input: DeptInput,
 ) -> Result<DeptInput> {
   
-  let input = dept_dao::set_id_by_lbl(
-    input,
+  let dept_input = dept_dao::set_id_by_lbl(
+    dept_input,
   ).await?;
   
-  Ok(input)
+  Ok(dept_input)
 }
 
 /// 创建部门
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<DeptInput>,
+  dept_inputs: Vec<DeptInput>,
   options: Option<Options>,
 ) -> Result<Vec<DeptId>> {
   
   let dept_ids = dept_dao::creates(
-    inputs,
+    dept_inputs,
     options,
   ).await?;
   
   Ok(dept_ids)
 }
 
-/// 部门根据id修改租户id
+/// 部门根据 dept_id 修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  id: DeptId,
+  dept_id: DeptId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = dept_dao::update_tenant_by_id(
-    id,
+    dept_id,
     tenant_id,
     options,
   ).await?;
@@ -182,16 +196,16 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-/// 根据 id 修改部门
+/// 根据 dept_id 修改部门
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: DeptId,
-  mut input: DeptInput,
+  dept_id: DeptId,
+  mut dept_input: DeptInput,
   options: Option<Options>,
 ) -> Result<DeptId> {
   
   let is_locked = dept_dao::get_is_locked_by_id(
-    id.clone(),
+    dept_id.clone(),
     None,
   ).await?;
   
@@ -201,8 +215,8 @@ pub async fn update_by_id(
   }
   
   let dept_id = dept_dao::update_by_id(
-    id,
-    input,
+    dept_id,
+    dept_input,
     options.clone(),
   ).await?;
   
@@ -212,24 +226,24 @@ pub async fn update_by_id(
 /// 校验部门是否存在
 #[allow(dead_code)]
 pub async fn validate_option(
-  model: Option<DeptModel>,
+  dept_model: Option<DeptModel>,
 ) -> Result<DeptModel> {
   
-  let model = dept_dao::validate_option(model).await?;
+  let dept_model = dept_dao::validate_option(dept_model).await?;
   
-  Ok(model)
+  Ok(dept_model)
 }
 
-/// 根据 ids 删除部门
+/// 根据 dept_ids 删除部门
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<DeptId>,
+  dept_ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let old_models = dept_dao::find_all(
     Some(DeptSearch {
-      ids: Some(ids.clone()),
+      ids: Some(dept_ids.clone()),
       ..Default::default()
     }),
     None,
@@ -245,39 +259,39 @@ pub async fn delete_by_ids(
   }
   
   let num = dept_dao::delete_by_ids(
-    ids,
+    dept_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 id 查找部门是否已启用
+/// 根据 dept_id 查找部门是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  id: DeptId,
+  dept_id: DeptId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_enabled = dept_dao::get_is_enabled_by_id(
-    id,
+    dept_id,
     options,
   ).await?;
   
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或者禁用部门
+/// 根据 dept_ids 启用或者禁用部门
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ids: Vec<DeptId>,
+  dept_ids: Vec<DeptId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = dept_dao::enable_by_ids(
-    ids,
+    dept_ids,
     is_enabled,
     options,
   ).await?;
@@ -285,33 +299,33 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找部门是否已锁定
+/// 根据 dept_id 查找部门是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_locked_by_id(
-  id: DeptId,
+  dept_id: DeptId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_locked = dept_dao::get_is_locked_by_id(
-    id,
+    dept_id,
     options,
   ).await?;
   
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁部门
+/// 根据 dept_ids 锁定或者解锁部门
 #[allow(dead_code)]
 pub async fn lock_by_ids(
-  ids: Vec<DeptId>,
+  dept_ids: Vec<DeptId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = dept_dao::lock_by_ids(
-    ids,
+    dept_ids,
     is_locked,
     options,
   ).await?;
@@ -331,30 +345,30 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原部门
+/// 根据 dept_ids 还原部门
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<DeptId>,
+  dept_ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = dept_dao::revert_by_ids(
-    ids,
+    dept_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 ids 彻底删除部门
+/// 根据 dept_ids 彻底删除部门
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<DeptId>,
+  dept_ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = dept_dao::force_delete_by_ids(
-    ids,
+    dept_ids,
     options,
   ).await?;
   

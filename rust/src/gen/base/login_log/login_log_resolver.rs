@@ -111,6 +111,27 @@ pub async fn find_by_id(
   Ok(model)
 }
 
+/// 根据 ids 查找登录日志
+#[function_name::named]
+pub async fn find_by_ids(
+  ids: Vec<LoginLogId>,
+  options: Option<Options>,
+) -> Result<Vec<LoginLogModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = login_log_service::find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
 /// 登录日志根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]

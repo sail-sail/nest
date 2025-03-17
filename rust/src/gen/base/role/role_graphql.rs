@@ -99,6 +99,23 @@ impl RoleGenQuery {
       }).await
   }
   
+  /// 根据 id 查找角色
+  async fn find_by_ids_role(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<RoleId>,
+  ) -> Result<Vec<RoleModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        role_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找角色是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_role(

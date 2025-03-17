@@ -99,6 +99,23 @@ impl DeptGenQuery {
       }).await
   }
   
+  /// 根据 id 查找部门
+  async fn find_by_ids_dept(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DeptId>,
+  ) -> Result<Vec<DeptModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dept_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找部门是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_dept(

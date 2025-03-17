@@ -99,6 +99,23 @@ impl LoginLogGenQuery {
       }).await
   }
   
+  /// 根据 id 查找登录日志
+  async fn find_by_ids_login_log(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<LoginLogId>,
+  ) -> Result<Vec<LoginLogModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        login_log_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取登录日志字段注释
   async fn get_field_comments_login_log(
     &self,

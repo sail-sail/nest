@@ -99,6 +99,23 @@ impl DataPermitGenQuery {
       }).await
   }
   
+  /// 根据 id 查找数据权限
+  async fn find_by_ids_data_permit(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DataPermitId>,
+  ) -> Result<Vec<DataPermitModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        data_permit_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取数据权限字段注释
   async fn get_field_comments_data_permit(
     &self,

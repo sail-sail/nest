@@ -38,14 +38,14 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let res = lang_dao::find_all(
+  let lang_models = lang_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(lang_models)
 }
 
 /// 根据条件查找语言总数
@@ -61,12 +61,12 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let res = lang_dao::find_count(
+  let lang_num = lang_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(lang_num)
 }
 
 /// 根据条件查找第一个语言
@@ -83,68 +83,82 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let model = lang_dao::find_one(
+  let lang_model = lang_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(lang_model)
 }
 
 /// 根据 id 查找语言
 pub async fn find_by_id(
-  id: LangId,
+  lang_id: LangId,
   options: Option<Options>,
 ) -> Result<Option<LangModel>> {
   
-  let model = lang_dao::find_by_id(
-    id,
+  let lang_model = lang_dao::find_by_id(
+    lang_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(lang_model)
+}
+
+/// 根据 lang_ids 查找语言
+pub async fn find_by_ids(
+  lang_ids: Vec<LangId>,
+  options: Option<Options>,
+) -> Result<Vec<LangModel>> {
+  
+  let lang_models = lang_dao::find_by_ids(
+    lang_ids,
+    options,
+  ).await?;
+  
+  Ok(lang_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: LangInput,
+  lang_input: LangInput,
 ) -> Result<LangInput> {
   
-  let input = lang_dao::set_id_by_lbl(
-    input,
+  let lang_input = lang_dao::set_id_by_lbl(
+    lang_input,
   ).await?;
   
-  Ok(input)
+  Ok(lang_input)
 }
 
 /// 创建语言
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<LangInput>,
+  lang_inputs: Vec<LangInput>,
   options: Option<Options>,
 ) -> Result<Vec<LangId>> {
   
   let lang_ids = lang_dao::creates(
-    inputs,
+    lang_inputs,
     options,
   ).await?;
   
   Ok(lang_ids)
 }
 
-/// 根据 id 修改语言
+/// 根据 lang_id 修改语言
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: LangId,
-  mut input: LangInput,
+  lang_id: LangId,
+  mut lang_input: LangInput,
   options: Option<Options>,
 ) -> Result<LangId> {
   
   let lang_id = lang_dao::update_by_id(
-    id,
-    input,
+    lang_id,
+    lang_input,
     options.clone(),
   ).await?;
   
@@ -154,24 +168,24 @@ pub async fn update_by_id(
 /// 校验语言是否存在
 #[allow(dead_code)]
 pub async fn validate_option(
-  model: Option<LangModel>,
+  lang_model: Option<LangModel>,
 ) -> Result<LangModel> {
   
-  let model = lang_dao::validate_option(model).await?;
+  let lang_model = lang_dao::validate_option(lang_model).await?;
   
-  Ok(model)
+  Ok(lang_model)
 }
 
-/// 根据 ids 删除语言
+/// 根据 lang_ids 删除语言
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<LangId>,
+  lang_ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let old_models = lang_dao::find_all(
     Some(LangSearch {
-      ids: Some(ids.clone()),
+      ids: Some(lang_ids.clone()),
       ..Default::default()
     }),
     None,
@@ -187,39 +201,39 @@ pub async fn delete_by_ids(
   }
   
   let num = lang_dao::delete_by_ids(
-    ids,
+    lang_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 id 查找语言是否已启用
+/// 根据 lang_id 查找语言是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  id: LangId,
+  lang_id: LangId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_enabled = lang_dao::get_is_enabled_by_id(
-    id,
+    lang_id,
     options,
   ).await?;
   
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或者禁用语言
+/// 根据 lang_ids 启用或者禁用语言
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ids: Vec<LangId>,
+  lang_ids: Vec<LangId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = lang_dao::enable_by_ids(
-    ids,
+    lang_ids,
     is_enabled,
     options,
   ).await?;
@@ -239,30 +253,30 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原语言
+/// 根据 lang_ids 还原语言
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<LangId>,
+  lang_ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = lang_dao::revert_by_ids(
-    ids,
+    lang_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 ids 彻底删除语言
+/// 根据 lang_ids 彻底删除语言
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<LangId>,
+  lang_ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = lang_dao::force_delete_by_ids(
-    ids,
+    lang_ids,
     options,
   ).await?;
   

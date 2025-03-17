@@ -38,14 +38,14 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let res = field_permit_dao::find_all(
+  let field_permit_models = field_permit_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(field_permit_models)
 }
 
 /// 根据条件查找字段权限总数
@@ -61,12 +61,12 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let res = field_permit_dao::find_count(
+  let field_permit_num = field_permit_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(field_permit_num)
 }
 
 /// 根据条件查找第一个字段权限
@@ -83,68 +83,82 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let model = field_permit_dao::find_one(
+  let field_permit_model = field_permit_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(field_permit_model)
 }
 
 /// 根据 id 查找字段权限
 pub async fn find_by_id(
-  id: FieldPermitId,
+  field_permit_id: FieldPermitId,
   options: Option<Options>,
 ) -> Result<Option<FieldPermitModel>> {
   
-  let model = field_permit_dao::find_by_id(
-    id,
+  let field_permit_model = field_permit_dao::find_by_id(
+    field_permit_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(field_permit_model)
+}
+
+/// 根据 field_permit_ids 查找字段权限
+pub async fn find_by_ids(
+  field_permit_ids: Vec<FieldPermitId>,
+  options: Option<Options>,
+) -> Result<Vec<FieldPermitModel>> {
+  
+  let field_permit_models = field_permit_dao::find_by_ids(
+    field_permit_ids,
+    options,
+  ).await?;
+  
+  Ok(field_permit_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: FieldPermitInput,
+  field_permit_input: FieldPermitInput,
 ) -> Result<FieldPermitInput> {
   
-  let input = field_permit_dao::set_id_by_lbl(
-    input,
+  let field_permit_input = field_permit_dao::set_id_by_lbl(
+    field_permit_input,
   ).await?;
   
-  Ok(input)
+  Ok(field_permit_input)
 }
 
 /// 创建字段权限
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<FieldPermitInput>,
+  field_permit_inputs: Vec<FieldPermitInput>,
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitId>> {
   
   let field_permit_ids = field_permit_dao::creates(
-    inputs,
+    field_permit_inputs,
     options,
   ).await?;
   
   Ok(field_permit_ids)
 }
 
-/// 根据 id 修改字段权限
+/// 根据 field_permit_id 修改字段权限
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: FieldPermitId,
-  mut input: FieldPermitInput,
+  field_permit_id: FieldPermitId,
+  mut field_permit_input: FieldPermitInput,
   options: Option<Options>,
 ) -> Result<FieldPermitId> {
   
   let old_model = validate_option(
     field_permit_dao::find_by_id(
-      id.clone(),
+      field_permit_id.clone(),
       options.clone(),
     ).await?,
   ).await?;
@@ -152,15 +166,15 @@ pub async fn update_by_id(
   // 不能修改系统记录的系统字段
   if old_model.is_sys == 1 {
     // 菜单
-    input.menu_id = None;
-    input.menu_id_lbl = None;
+    field_permit_input.menu_id = None;
+    field_permit_input.menu_id_lbl = None;
     // 编码
-    input.code = None;
+    field_permit_input.code = None;
   }
   
   let field_permit_id = field_permit_dao::update_by_id(
-    id,
-    input,
+    field_permit_id,
+    field_permit_input,
     options.clone(),
   ).await?;
   
@@ -170,24 +184,24 @@ pub async fn update_by_id(
 /// 校验字段权限是否存在
 #[allow(dead_code)]
 pub async fn validate_option(
-  model: Option<FieldPermitModel>,
+  field_permit_model: Option<FieldPermitModel>,
 ) -> Result<FieldPermitModel> {
   
-  let model = field_permit_dao::validate_option(model).await?;
+  let field_permit_model = field_permit_dao::validate_option(field_permit_model).await?;
   
-  Ok(model)
+  Ok(field_permit_model)
 }
 
-/// 根据 ids 删除字段权限
+/// 根据 field_permit_ids 删除字段权限
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<FieldPermitId>,
+  field_permit_ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let old_models = field_permit_dao::find_all(
     Some(FieldPermitSearch {
-      ids: Some(ids.clone()),
+      ids: Some(field_permit_ids.clone()),
       ..Default::default()
     }),
     None,
@@ -203,7 +217,7 @@ pub async fn delete_by_ids(
   }
   
   let num = field_permit_dao::delete_by_ids(
-    ids,
+    field_permit_ids,
     options,
   ).await?;
   

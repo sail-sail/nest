@@ -99,6 +99,23 @@ impl BackgroundTaskGenQuery {
       }).await
   }
   
+  /// 根据 id 查找后台任务
+  async fn find_by_ids_background_task(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<BackgroundTaskId>,
+  ) -> Result<Vec<BackgroundTaskModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        background_task_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取后台任务字段注释
   async fn get_field_comments_background_task(
     &self,

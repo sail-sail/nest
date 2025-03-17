@@ -97,6 +97,23 @@ impl OptionsGenQuery {
       }).await
   }
   
+  /// 根据 id 查找系统选项
+  async fn find_by_ids_options(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OptionsId>,
+  ) -> Result<Vec<OptionsModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        options_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统选项是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_options(

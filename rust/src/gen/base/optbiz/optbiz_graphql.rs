@@ -99,6 +99,23 @@ impl OptbizGenQuery {
       }).await
   }
   
+  /// 根据 id 查找业务选项
+  async fn find_by_ids_optbiz(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OptbizId>,
+  ) -> Result<Vec<OptbizModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        optbiz_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务选项是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_optbiz(

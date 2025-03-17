@@ -99,6 +99,23 @@ impl OrgGenQuery {
       }).await
   }
   
+  /// 根据 id 查找组织
+  async fn find_by_ids_org(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OrgId>,
+  ) -> Result<Vec<OrgModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        org_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找组织是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_org(

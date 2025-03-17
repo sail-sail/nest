@@ -97,6 +97,23 @@ impl LangGenQuery {
       }).await
   }
   
+  /// 根据 id 查找语言
+  async fn find_by_ids_lang(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<LangId>,
+  ) -> Result<Vec<LangModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        lang_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找语言是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_lang(

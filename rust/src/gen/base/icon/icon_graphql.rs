@@ -97,6 +97,23 @@ impl IconGenQuery {
       }).await
   }
   
+  /// 根据 id 查找图标库
+  async fn find_by_ids_icon(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<IconId>,
+  ) -> Result<Vec<IconModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        icon_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找图标库是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_icon(
