@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await wx_pay_noticeDao.findCount(search);
-  return data;
+  const wx_pay_notice_num = await wx_pay_noticeDao.findCount(search);
+  
+  return wx_pay_notice_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: WxPayNoticeModel[] = await wx_pay_noticeDao.findAll(search, page, sort);
-  return models;
+  const wx_pay_notice_models = await wx_pay_noticeDao.findAll(search, page, sort);
+  
+  return wx_pay_notice_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: WxPayNoticeInput,
-) {
-  const data = await wx_pay_noticeDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await wx_pay_noticeDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await wx_pay_noticeDao.findOne(search, sort);
-  return model;
+  const wx_pay_notice_model = await wx_pay_noticeDao.findOne(search, sort);
+  
+  return wx_pay_notice_model;
 }
 
 /**
  * 根据 id 查找微信支付通知
  */
 export async function findById(
-  id?: WxPayNoticeId | null,
+  wx_pay_notice_id?: WxPayNoticeId | null,
 ): Promise<WxPayNoticeModel | undefined> {
-  const model = await wx_pay_noticeDao.findById(id);
-  return model;
+  
+  const wx_pay_notice_model = await wx_pay_noticeDao.findById(wx_pay_notice_id);
+  
+  return wx_pay_notice_model;
+}
+
+/**
+ * 根据 ids 查找微信支付通知
+ */
+export async function findByIds(
+  wx_pay_notice_ids: WxPayNoticeId[],
+): Promise<WxPayNoticeModel[]> {
+  
+  const wx_pay_notice_models = await wx_pay_noticeDao.findByIds(wx_pay_notice_ids);
+  
+  return wx_pay_notice_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await wx_pay_noticeDao.exist(search);
-  return data;
+  const wx_pay_notice_exist = await wx_pay_noticeDao.exist(search);
+  
+  return wx_pay_notice_exist;
 }
 
 /**
  * 根据 id 查找微信支付通知是否存在
  */
 export async function existById(
-  id?: WxPayNoticeId | null,
+  wx_pay_notice_id?: WxPayNoticeId | null,
 ): Promise<boolean> {
-  const data = await wx_pay_noticeDao.existById(id);
-  return data;
+  
+  const wx_pay_notice_exist = await wx_pay_noticeDao.existById(wx_pay_notice_id);
+  
+  return wx_pay_notice_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: WxPayNoticeInput,
 ): Promise<void> {
-  const data = await wx_pay_noticeDao.validate(input);
-  return data;
+  await wx_pay_noticeDao.validate(input);
 }
 
 /**
@@ -124,65 +142,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<WxPayNoticeId[]> {
-  const ids = await wx_pay_noticeDao.creates(inputs, options);
-  return ids;
+  const wx_pay_notice_ids = await wx_pay_noticeDao.creates(inputs, options);
+  
+  return wx_pay_notice_ids;
 }
 
 /**
  * 根据 id 修改微信支付通知
  */
 export async function updateById(
-  id: WxPayNoticeId,
+  wx_pay_notice_id: WxPayNoticeId,
   input: WxPayNoticeInput,
 ): Promise<WxPayNoticeId> {
   
-  const id2 = await wx_pay_noticeDao.updateById(id, input);
-  return id2;
+  const wx_pay_notice_id2 = await wx_pay_noticeDao.updateById(wx_pay_notice_id, input);
+  
+  return wx_pay_notice_id2;
 }
 
 /** 校验微信支付通知是否存在 */
 export async function validateOption(
   model0?: WxPayNoticeModel,
 ): Promise<WxPayNoticeModel> {
-  const model = await wx_pay_noticeDao.validateOption(model0);
-  return model;
+  const wx_pay_notice_model = await wx_pay_noticeDao.validateOption(model0);
+  return wx_pay_notice_model;
 }
 
 /**
  * 根据 ids 删除微信支付通知
  */
 export async function deleteByIds(
-  ids: WxPayNoticeId[],
+  wx_pay_notice_ids: WxPayNoticeId[],
 ): Promise<number> {
   
-  const data = await wx_pay_noticeDao.deleteByIds(ids);
-  return data;
+  const wx_pay_notice_num = await wx_pay_noticeDao.deleteByIds(wx_pay_notice_ids);
+  return wx_pay_notice_num;
 }
 
 /**
  * 根据 ids 还原微信支付通知
  */
 export async function revertByIds(
-  ids: WxPayNoticeId[],
+  wx_pay_notice_ids: WxPayNoticeId[],
 ): Promise<number> {
-  const data = await wx_pay_noticeDao.revertByIds(ids);
-  return data;
+  
+  const wx_pay_notice_num = await wx_pay_noticeDao.revertByIds(wx_pay_notice_ids);
+  
+  return wx_pay_notice_num;
 }
 
 /**
  * 根据 ids 彻底删除微信支付通知
  */
 export async function forceDeleteByIds(
-  ids: WxPayNoticeId[],
+  wx_pay_notice_ids: WxPayNoticeId[],
 ): Promise<number> {
-  const data = await wx_pay_noticeDao.forceDeleteByIds(ids);
-  return data;
+  
+  const wx_pay_notice_num = await wx_pay_noticeDao.forceDeleteByIds(wx_pay_notice_ids);
+  
+  return wx_pay_notice_num;
 }
 
 /**
  * 获取微信支付通知字段注释
  */
 export async function getFieldComments(): Promise<WxPayNoticeFieldComment> {
-  const data = await wx_pay_noticeDao.getFieldComments();
-  return data;
+  const wx_pay_notice_fields = await wx_pay_noticeDao.getFieldComments();
+  return wx_pay_notice_fields;
 }

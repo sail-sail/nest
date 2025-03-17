@@ -107,6 +107,25 @@ export async function findByIdWxoUsr(
 }
 
 /**
+ * 根据 ids 查找公众号用户
+ */
+export async function findByIdsWxoUsr(
+  ids: WxoUsrId[],
+): Promise<WxoUsrModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./wxo_usr.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建公众号用户
  */
 export async function createsWxoUsr(

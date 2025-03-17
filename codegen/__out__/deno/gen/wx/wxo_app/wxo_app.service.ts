@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await wxo_appDao.findCount(search);
-  return data;
+  const wxo_app_num = await wxo_appDao.findCount(search);
+  
+  return wxo_app_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: WxoAppModel[] = await wxo_appDao.findAll(search, page, sort);
-  return models;
+  const wxo_app_models = await wxo_appDao.findAll(search, page, sort);
+  
+  return wxo_app_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: WxoAppInput,
-) {
-  const data = await wxo_appDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await wxo_appDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await wxo_appDao.findOne(search, sort);
-  return model;
+  const wxo_app_model = await wxo_appDao.findOne(search, sort);
+  
+  return wxo_app_model;
 }
 
 /**
  * 根据 id 查找公众号设置
  */
 export async function findById(
-  id?: WxoAppId | null,
+  wxo_app_id?: WxoAppId | null,
 ): Promise<WxoAppModel | undefined> {
-  const model = await wxo_appDao.findById(id);
-  return model;
+  
+  const wxo_app_model = await wxo_appDao.findById(wxo_app_id);
+  
+  return wxo_app_model;
+}
+
+/**
+ * 根据 ids 查找公众号设置
+ */
+export async function findByIds(
+  wxo_app_ids: WxoAppId[],
+): Promise<WxoAppModel[]> {
+  
+  const wxo_app_models = await wxo_appDao.findByIds(wxo_app_ids);
+  
+  return wxo_app_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await wxo_appDao.exist(search);
-  return data;
+  const wxo_app_exist = await wxo_appDao.exist(search);
+  
+  return wxo_app_exist;
 }
 
 /**
  * 根据 id 查找公众号设置是否存在
  */
 export async function existById(
-  id?: WxoAppId | null,
+  wxo_app_id?: WxoAppId | null,
 ): Promise<boolean> {
-  const data = await wxo_appDao.existById(id);
-  return data;
+  
+  const wxo_app_exist = await wxo_appDao.existById(wxo_app_id);
+  
+  return wxo_app_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: WxoAppInput,
 ): Promise<void> {
-  const data = await wxo_appDao.validate(input);
-  return data;
+  await wxo_appDao.validate(input);
 }
 
 /**
@@ -124,55 +142,54 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<WxoAppId[]> {
-  const ids = await wxo_appDao.creates(inputs, options);
-  return ids;
+  const wxo_app_ids = await wxo_appDao.creates(inputs, options);
+  
+  return wxo_app_ids;
 }
 
 /**
  * 根据 id 修改公众号设置
  */
 export async function updateById(
-  id: WxoAppId,
+  wxo_app_id: WxoAppId,
   input: WxoAppInput,
 ): Promise<WxoAppId> {
   
-  const is_locked = await wxo_appDao.getIsLockedById(id);
+  const is_locked = await wxo_appDao.getIsLockedById(wxo_app_id);
   if (is_locked) {
     throw "不能修改已经锁定的 公众号设置";
   }
   
-  const id2 = await wxo_appDao.updateById(id, input);
-  return id2;
+  const wxo_app_id2 = await wxo_appDao.updateById(wxo_app_id, input);
+  
+  return wxo_app_id2;
 }
 
 /** 校验公众号设置是否存在 */
 export async function validateOption(
   model0?: WxoAppModel,
 ): Promise<WxoAppModel> {
-  const model = await wxo_appDao.validateOption(model0);
-  return model;
+  const wxo_app_model = await wxo_appDao.validateOption(model0);
+  return wxo_app_model;
 }
 
 /**
  * 根据 ids 删除公众号设置
  */
 export async function deleteByIds(
-  ids: WxoAppId[],
+  wxo_app_ids: WxoAppId[],
 ): Promise<number> {
   
-  {
-    const models = await wxo_appDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 公众号设置";
-      }
+  const old_models = await wxo_appDao.findByIds(wxo_app_ids);
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 公众号设置";
     }
   }
   
-  const data = await wxo_appDao.deleteByIds(ids);
-  return data;
+  const wxo_app_num = await wxo_appDao.deleteByIds(wxo_app_ids);
+  return wxo_app_num;
 }
 
 /**
@@ -182,47 +199,51 @@ export async function enableByIds(
   ids: WxoAppId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await wxo_appDao.enableByIds(ids, is_enabled);
-  return data;
+  const wxo_app_num = await wxo_appDao.enableByIds(ids, is_enabled);
+  return wxo_app_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁公众号设置
  */
 export async function lockByIds(
-  ids: WxoAppId[],
+  wxo_app_ids: WxoAppId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await wxo_appDao.lockByIds(ids, is_locked);
-  return data;
+  const wxo_app_num = await wxo_appDao.lockByIds(wxo_app_ids, is_locked);
+  return wxo_app_num;
 }
 
 /**
  * 根据 ids 还原公众号设置
  */
 export async function revertByIds(
-  ids: WxoAppId[],
+  wxo_app_ids: WxoAppId[],
 ): Promise<number> {
-  const data = await wxo_appDao.revertByIds(ids);
-  return data;
+  
+  const wxo_app_num = await wxo_appDao.revertByIds(wxo_app_ids);
+  
+  return wxo_app_num;
 }
 
 /**
  * 根据 ids 彻底删除公众号设置
  */
 export async function forceDeleteByIds(
-  ids: WxoAppId[],
+  wxo_app_ids: WxoAppId[],
 ): Promise<number> {
-  const data = await wxo_appDao.forceDeleteByIds(ids);
-  return data;
+  
+  const wxo_app_num = await wxo_appDao.forceDeleteByIds(wxo_app_ids);
+  
+  return wxo_app_num;
 }
 
 /**
  * 获取公众号设置字段注释
  */
 export async function getFieldComments(): Promise<WxoAppFieldComment> {
-  const data = await wxo_appDao.getFieldComments();
-  return data;
+  const wxo_app_fields = await wxo_appDao.getFieldComments();
+  return wxo_app_fields;
 }
 
 /**
@@ -230,6 +251,6 @@ export async function getFieldComments(): Promise<WxoAppFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await wxo_appDao.findLastOrderBy();
-  return data;
+  const wxo_app_sort = await wxo_appDao.findLastOrderBy();
+  return wxo_app_sort;
 }

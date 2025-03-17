@@ -166,9 +166,12 @@ export async function findCount(
  * 根据 id 查找微信支付通知
  */
 export async function findById(
-  id: WxPayNoticeId,
+  id?: WxPayNoticeId,
   opt?: GqlOpt,
-) {
+): Promise<WxPayNoticeModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdWxPayNotice?: WxPayNoticeModel;
   } = await query({
@@ -186,6 +189,38 @@ export async function findById(
   const model = data.findByIdWxPayNotice;
   await setLblById(model);
   return model;
+}
+
+/**
+ * 根据 ids 查找微信支付通知
+ */
+export async function findByIds(
+  ids: WxPayNoticeId[],
+  opt?: GqlOpt,
+): Promise<WxPayNoticeModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsWxPayNotice: WxPayNoticeModel[];
+  } = await query({
+    query: `
+      query($ids: [WxPayNoticeId!]!) {
+        findByIdsWxPayNotice(ids: $ids) {
+          ${ wxPayNoticeQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsWxPayNotice;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
 }
 
 /**

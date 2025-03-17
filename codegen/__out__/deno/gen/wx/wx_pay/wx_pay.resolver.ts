@@ -107,6 +107,25 @@ export async function findByIdWxPay(
 }
 
 /**
+ * 根据 ids 查找微信支付设置
+ */
+export async function findByIdsWxPay(
+  ids: WxPayId[],
+): Promise<WxPayModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./wx_pay.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建微信支付设置
  */
 export async function createsWxPay(
