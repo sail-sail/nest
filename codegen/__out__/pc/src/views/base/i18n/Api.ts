@@ -208,9 +208,12 @@ export async function updateById(
  * 根据 id 查找国际化
  */
 export async function findById(
-  id: I18nId,
+  id?: I18nId,
   opt?: GqlOpt,
-) {
+): Promise<I18nModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdI18n?: I18nModel;
   } = await query({
@@ -231,12 +234,47 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找国际化
+ */
+export async function findByIds(
+  ids: I18nId[],
+  opt?: GqlOpt,
+): Promise<I18nModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  const data: {
+    findByIdsI18n: I18nModel[];
+  } = await query({
+    query: `
+      query($ids: [I18nId!]!) {
+        findByIdsI18n(ids: $ids) {
+          ${ i18nQueryField }
+        }
+      }
+    `,
+    variables: {
+      ids,
+    },
+  }, opt);
+  const models = data.findByIdsI18n;
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除国际化
  */
 export async function deleteByIds(
   ids: I18nId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsI18n: Mutation["deleteByIdsI18n"];
   } = await mutation({
@@ -259,7 +297,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: I18nId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsI18n: Mutation["revertByIdsI18n"];
   } = await mutation({
@@ -282,7 +323,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: I18nId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsI18n: Mutation["forceDeleteByIdsI18n"];
   } = await mutation({

@@ -107,6 +107,25 @@ export async function findByIdDept(
 }
 
 /**
+ * 根据 ids 查找部门
+ */
+export async function findByIdsDept(
+  ids: DeptId[],
+): Promise<DeptModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./dept.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建部门
  */
 export async function createsDept(
