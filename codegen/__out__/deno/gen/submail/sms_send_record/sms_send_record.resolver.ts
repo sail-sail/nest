@@ -105,6 +105,25 @@ export async function findByIdSmsSendRecord(
 }
 
 /**
+ * 根据 ids 查找短信发送记录
+ */
+export async function findByIdsSmsSendRecord(
+  ids: SmsSendRecordId[],
+): Promise<SmsSendRecordModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./sms_send_record.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 根据 ids 删除短信发送记录
  */
 export async function deleteByIdsSmsSendRecord(

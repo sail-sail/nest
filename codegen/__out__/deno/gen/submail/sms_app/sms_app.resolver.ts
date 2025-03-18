@@ -107,6 +107,25 @@ export async function findByIdSmsApp(
 }
 
 /**
+ * 根据 ids 查找短信应用
+ */
+export async function findByIdsSmsApp(
+  ids: SmsAppId[],
+): Promise<SmsAppModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./sms_app.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建短信应用
  */
 export async function createsSmsApp(

@@ -211,9 +211,12 @@ export async function updateById(
  * 根据 id 查找短信应用
  */
 export async function findById(
-  id: SmsAppId,
+  id?: SmsAppId,
   opt?: GqlOpt,
-) {
+): Promise<SmsAppModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdSmsApp?: SmsAppModel;
   } = await query({
@@ -234,12 +237,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找短信应用
+ */
+export async function findByIds(
+  ids: SmsAppId[],
+  opt?: GqlOpt,
+): Promise<SmsAppModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: SmsAppModel[] = [ ];
+  try {
+    const data: {
+      findByIdsSmsApp: SmsAppModel[];
+    } = await query({
+      query: `
+        query($ids: [SmsAppId!]!) {
+          findByIdsSmsApp(ids: $ids) {
+            ${ smsAppQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsSmsApp;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除短信应用
  */
 export async function deleteByIds(
   ids: SmsAppId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsSmsApp: Mutation["deleteByIdsSmsApp"];
   } = await mutation({
@@ -263,7 +306,10 @@ export async function enableByIds(
   ids: SmsAppId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsSmsApp: Mutation["enableByIdsSmsApp"];
   } = await mutation({
@@ -288,7 +334,10 @@ export async function lockByIds(
   ids: SmsAppId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsSmsApp: Mutation["lockByIdsSmsApp"];
   } = await mutation({
@@ -312,7 +361,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: SmsAppId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsSmsApp: Mutation["revertByIdsSmsApp"];
   } = await mutation({
@@ -335,7 +387,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: SmsAppId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsSmsApp: Mutation["forceDeleteByIdsSmsApp"];
   } = await mutation({
