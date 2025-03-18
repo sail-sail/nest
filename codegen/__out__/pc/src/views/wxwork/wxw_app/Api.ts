@@ -220,9 +220,12 @@ export async function updateById(
  * 根据 id 查找企微应用
  */
 export async function findById(
-  id: WxwAppId,
+  id?: WxwAppId,
   opt?: GqlOpt,
-) {
+): Promise<WxwAppModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdWxwApp?: WxwAppModel;
   } = await query({
@@ -243,12 +246,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找企微应用
+ */
+export async function findByIds(
+  ids: WxwAppId[],
+  opt?: GqlOpt,
+): Promise<WxwAppModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: WxwAppModel[] = [ ];
+  try {
+    const data: {
+      findByIdsWxwApp: WxwAppModel[];
+    } = await query({
+      query: `
+        query($ids: [WxwAppId!]!) {
+          findByIdsWxwApp(ids: $ids) {
+            ${ wxwAppQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsWxwApp;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除企微应用
  */
 export async function deleteByIds(
   ids: WxwAppId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsWxwApp: Mutation["deleteByIdsWxwApp"];
   } = await mutation({
@@ -272,7 +315,10 @@ export async function enableByIds(
   ids: WxwAppId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsWxwApp: Mutation["enableByIdsWxwApp"];
   } = await mutation({
@@ -297,7 +343,10 @@ export async function lockByIds(
   ids: WxwAppId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsWxwApp: Mutation["lockByIdsWxwApp"];
   } = await mutation({
@@ -321,7 +370,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: WxwAppId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsWxwApp: Mutation["revertByIdsWxwApp"];
   } = await mutation({
@@ -344,7 +396,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: WxwAppId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsWxwApp: Mutation["forceDeleteByIdsWxwApp"];
   } = await mutation({
