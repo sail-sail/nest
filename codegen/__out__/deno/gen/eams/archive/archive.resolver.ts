@@ -107,6 +107,25 @@ export async function findByIdArchive(
 }
 
 /**
+ * 根据 ids 查找全宗设置
+ */
+export async function findByIdsArchive(
+  ids: ArchiveId[],
+): Promise<ArchiveModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./archive.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建全宗设置
  */
 export async function createsArchive(

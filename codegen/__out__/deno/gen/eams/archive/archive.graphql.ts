@@ -137,6 +137,8 @@ type Query {
   findOneArchive(search: ArchiveSearch, sort: [SortInput!]): ArchiveModel
   "根据 id 查找全宗设置"
   findByIdArchive(id: ArchiveId!): ArchiveModel
+  "根据 ids 查找全宗设置"
+  findByIdsArchive(ids: [ArchiveId!]!): [ArchiveModel]!
   "查找全宗设置 order_by 字段的最大值"
   findLastOrderByArchive: Int!
 }

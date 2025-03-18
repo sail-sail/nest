@@ -107,6 +107,25 @@ export async function findByIdCompany(
 }
 
 /**
+ * 根据 ids 查找单位
+ */
+export async function findByIdsCompany(
+  ids: CompanyId[],
+): Promise<CompanyModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./company.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建单位
  */
 export async function createsCompany(
