@@ -13,7 +13,6 @@
   >
     <el-form
       ref="searchFormRef"
-      v-search-form-item-width-auto="inited"
       
       size="default"
       :model="search"
@@ -715,13 +714,9 @@ function initSearch() {
   const search = {
     is_deleted: 0,
   } as PayTransactionsJsapiSearch;
-  if (props.propsNotReset && props.propsNotReset.length > 0) {
-    for (let i = 0; i < props.propsNotReset.length; i++) {
-      const key = props.propsNotReset[i];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (search as any)[key] = (builtInSearch as any)[key];
-    }
-  }
+  props.propsNotReset?.forEach((key) => {
+    search[key] = builtInSearch[key];
+  });
   return search;
 }
 
@@ -1221,7 +1216,7 @@ async function onCancelExport() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowEnter", e);
     return;
   }
@@ -1239,7 +1234,7 @@ async function onRowDblclick(
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowDblclick", row);
     return;
   }

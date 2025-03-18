@@ -245,21 +245,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsWxApp: WxAppModel[];
-  } = await query({
-    query: `
-      query($ids: [WxAppId!]!) {
-        findByIdsWxApp(ids: $ids) {
-          ${ wxAppQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: WxAppModel[] = [ ];
+  try {
+    const data: {
+      findByIdsWxApp: WxAppModel[];
+    } = await query({
+      query: `
+        query($ids: [WxAppId!]!) {
+          findByIdsWxApp(ids: $ids) {
+            ${ wxAppQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsWxApp;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsWxApp;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
