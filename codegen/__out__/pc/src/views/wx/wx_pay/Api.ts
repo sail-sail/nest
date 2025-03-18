@@ -218,9 +218,12 @@ export async function updateById(
  * 根据 id 查找微信支付设置
  */
 export async function findById(
-  id: WxPayId,
+  id?: WxPayId,
   opt?: GqlOpt,
-) {
+): Promise<WxPayModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdWxPay?: WxPayModel;
   } = await query({
@@ -241,12 +244,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找微信支付设置
+ */
+export async function findByIds(
+  ids: WxPayId[],
+  opt?: GqlOpt,
+): Promise<WxPayModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: WxPayModel[] = [ ];
+  try {
+    const data: {
+      findByIdsWxPay: WxPayModel[];
+    } = await query({
+      query: `
+        query($ids: [WxPayId!]!) {
+          findByIdsWxPay(ids: $ids) {
+            ${ wxPayQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsWxPay;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除微信支付设置
  */
 export async function deleteByIds(
   ids: WxPayId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsWxPay: Mutation["deleteByIdsWxPay"];
   } = await mutation({
@@ -270,7 +313,10 @@ export async function enableByIds(
   ids: WxPayId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsWxPay: Mutation["enableByIdsWxPay"];
   } = await mutation({
@@ -295,7 +341,10 @@ export async function lockByIds(
   ids: WxPayId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsWxPay: Mutation["lockByIdsWxPay"];
   } = await mutation({
@@ -319,7 +368,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: WxPayId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsWxPay: Mutation["revertByIdsWxPay"];
   } = await mutation({
@@ -342,7 +394,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: WxPayId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsWxPay: Mutation["forceDeleteByIdsWxPay"];
   } = await mutation({
