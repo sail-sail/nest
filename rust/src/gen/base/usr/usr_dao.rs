@@ -1468,7 +1468,8 @@ pub async fn find_by_ids(
   ).await?;
   
   if models.len() != len {
-    return Err(eyre!("find_by_ids: models.length !== ids.length"));
+    let err_msg = "此 用户 已被删除";
+    return Err(eyre!(err_msg));
   }
   
   let models = ids
@@ -1480,7 +1481,8 @@ pub async fn find_by_ids(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      Err(eyre!("find_by_ids: id: {id} not found"))
+      let err_msg = "此 用户 已经被删除";
+      Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<UsrModel>>>()?;
   
