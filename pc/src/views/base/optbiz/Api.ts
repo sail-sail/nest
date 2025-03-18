@@ -209,9 +209,12 @@ export async function updateById(
  * 根据 id 查找业务选项
  */
 export async function findById(
-  id: OptbizId,
+  id?: OptbizId,
   opt?: GqlOpt,
-) {
+): Promise<OptbizModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdOptbiz?: OptbizModel;
   } = await query({
@@ -232,12 +235,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找业务选项
+ */
+export async function findByIds(
+  ids: OptbizId[],
+  opt?: GqlOpt,
+): Promise<OptbizModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: OptbizModel[] = [ ];
+  try {
+    const data: {
+      findByIdsOptbiz: OptbizModel[];
+    } = await query({
+      query: `
+        query($ids: [OptbizId!]!) {
+          findByIdsOptbiz(ids: $ids) {
+            ${ optbizQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsOptbiz;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除业务选项
  */
 export async function deleteByIds(
   ids: OptbizId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsOptbiz: Mutation["deleteByIdsOptbiz"];
   } = await mutation({
@@ -261,7 +304,10 @@ export async function enableByIds(
   ids: OptbizId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsOptbiz: Mutation["enableByIdsOptbiz"];
   } = await mutation({
@@ -286,7 +332,10 @@ export async function lockByIds(
   ids: OptbizId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsOptbiz: Mutation["lockByIdsOptbiz"];
   } = await mutation({
@@ -310,7 +359,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: OptbizId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsOptbiz: Mutation["revertByIdsOptbiz"];
   } = await mutation({
@@ -333,7 +385,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: OptbizId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsOptbiz: Mutation["forceDeleteByIdsOptbiz"];
   } = await mutation({

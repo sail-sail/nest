@@ -209,9 +209,12 @@ export async function updateById(
  * 根据 id 查找域名
  */
 export async function findById(
-  id: DomainId,
+  id?: DomainId,
   opt?: GqlOpt,
-) {
+): Promise<DomainModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdDomain?: DomainModel;
   } = await query({
@@ -232,12 +235,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找域名
+ */
+export async function findByIds(
+  ids: DomainId[],
+  opt?: GqlOpt,
+): Promise<DomainModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: DomainModel[] = [ ];
+  try {
+    const data: {
+      findByIdsDomain: DomainModel[];
+    } = await query({
+      query: `
+        query($ids: [DomainId!]!) {
+          findByIdsDomain(ids: $ids) {
+            ${ domainQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsDomain;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除域名
  */
 export async function deleteByIds(
   ids: DomainId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsDomain: Mutation["deleteByIdsDomain"];
   } = await mutation({
@@ -258,9 +301,12 @@ export async function deleteByIds(
  * 根据 id 设置默认域名
  */
 export async function defaultById(
-  id: DomainId,
+  id?: DomainId,
   opt?: GqlOpt,
 ) {
+  if (!id) {
+    return 0;
+  }
   const data: {
     defaultByIdDomain: Mutation["defaultByIdDomain"];
   } = await mutation({
@@ -284,7 +330,10 @@ export async function enableByIds(
   ids: DomainId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsDomain: Mutation["enableByIdsDomain"];
   } = await mutation({
@@ -309,7 +358,10 @@ export async function lockByIds(
   ids: DomainId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsDomain: Mutation["lockByIdsDomain"];
   } = await mutation({
@@ -333,7 +385,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: DomainId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsDomain: Mutation["revertByIdsDomain"];
   } = await mutation({
@@ -356,7 +411,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: DomainId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsDomain: Mutation["forceDeleteByIdsDomain"];
   } = await mutation({

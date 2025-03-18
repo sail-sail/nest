@@ -87,6 +87,8 @@ type Query {
   findOneFieldPermit(search: FieldPermitSearch, sort: [SortInput!]): FieldPermitModel
   "根据 id 查找字段权限"
   findByIdFieldPermit(id: FieldPermitId!): FieldPermitModel
+  "根据 ids 查找字段权限"
+  findByIdsFieldPermit(ids: [FieldPermitId!]!): [FieldPermitModel]!
   "查找字段权限 order_by 字段的最大值"
   findLastOrderByFieldPermit: Int!
 }

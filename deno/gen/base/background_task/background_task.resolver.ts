@@ -105,6 +105,25 @@ export async function findByIdBackgroundTask(
 }
 
 /**
+ * 根据 ids 查找后台任务
+ */
+export async function findByIdsBackgroundTask(
+  ids: BackgroundTaskId[],
+): Promise<BackgroundTaskModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./background_task.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 根据 ids 删除后台任务
  */
 export async function deleteByIdsBackgroundTask(
