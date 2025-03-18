@@ -107,6 +107,25 @@ export async function findByIdCardRecharge(
 }
 
 /**
+ * 根据 ids 查找会员卡充值记录
+ */
+export async function findByIdsCardRecharge(
+  ids: CardRechargeId[],
+): Promise<CardRechargeModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./card_recharge.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 根据 ids 删除会员卡充值记录
  */
 export async function deleteByIdsCardRecharge(

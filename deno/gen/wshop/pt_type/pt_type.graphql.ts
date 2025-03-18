@@ -164,6 +164,8 @@ type Query {
   findOnePtType(search: PtTypeSearch, sort: [SortInput!]): PtTypeModel
   "根据 id 查找产品类别"
   findByIdPtType(id: PtTypeId!): PtTypeModel
+  "根据 ids 查找产品类别"
+  findByIdsPtType(ids: [PtTypeId!]!): [PtTypeModel]!
   "查找产品类别 order_by 字段的最大值"
   findLastOrderByPtType: Int!
 }

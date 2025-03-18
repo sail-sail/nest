@@ -14,6 +14,10 @@ import {
   validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  isAdmin,
+} from "/src/base/usr/usr.dao.ts";
+
 import * as wxapp_configDao from "./wxapp_config.dao.ts";
 
 async function setSearchQuery(
@@ -33,9 +37,8 @@ async function setSearchQuery(
     org_ids.push(...usr_model.org_ids);
     org_ids.push("" as OrgId);
   }
-  const username = usr_model.username;
   
-  if (username !== "admin") {
+  if (!await isAdmin(usr_id)) {
     search.org_id = org_ids;
   }
   
@@ -52,8 +55,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await wxapp_configDao.findCount(search);
-  return data;
+  const wxapp_config_num = await wxapp_configDao.findCount(search);
+  
+  return wxapp_config_num;
 }
 
 /**
@@ -69,8 +73,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: WxappConfigModel[] = await wxapp_configDao.findAll(search, page, sort);
-  return models;
+  const wxapp_config_models = await wxapp_configDao.findAll(search, page, sort);
+  
+  return wxapp_config_models;
 }
 
 /**
@@ -78,9 +83,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: WxappConfigInput,
-) {
-  const data = await wxapp_configDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await wxapp_configDao.setIdByLbl(input);
 }
 
 /**
@@ -95,18 +99,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await wxapp_configDao.findOne(search, sort);
-  return model;
+  const wxapp_config_model = await wxapp_configDao.findOne(search, sort);
+  
+  return wxapp_config_model;
 }
 
 /**
  * 根据 id 查找小程序配置
  */
 export async function findById(
-  id?: WxappConfigId | null,
+  wxapp_config_id?: WxappConfigId | null,
 ): Promise<WxappConfigModel | undefined> {
-  const model = await wxapp_configDao.findById(id);
-  return model;
+  
+  const wxapp_config_model = await wxapp_configDao.findById(wxapp_config_id);
+  
+  return wxapp_config_model;
+}
+
+/**
+ * 根据 ids 查找小程序配置
+ */
+export async function findByIds(
+  wxapp_config_ids: WxappConfigId[],
+): Promise<WxappConfigModel[]> {
+  
+  const wxapp_config_models = await wxapp_configDao.findByIds(wxapp_config_ids);
+  
+  return wxapp_config_models;
 }
 
 /**
@@ -120,18 +139,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await wxapp_configDao.exist(search);
-  return data;
+  const wxapp_config_exist = await wxapp_configDao.exist(search);
+  
+  return wxapp_config_exist;
 }
 
 /**
  * 根据 id 查找小程序配置是否存在
  */
 export async function existById(
-  id?: WxappConfigId | null,
+  wxapp_config_id?: WxappConfigId | null,
 ): Promise<boolean> {
-  const data = await wxapp_configDao.existById(id);
-  return data;
+  
+  const wxapp_config_exist = await wxapp_configDao.existById(wxapp_config_id);
+  
+  return wxapp_config_exist;
 }
 
 /**
@@ -140,8 +162,7 @@ export async function existById(
 export async function validate(
   input: WxappConfigInput,
 ): Promise<void> {
-  const data = await wxapp_configDao.validate(input);
-  return data;
+  await wxapp_configDao.validate(input);
 }
 
 /**
@@ -153,23 +174,24 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<WxappConfigId[]> {
-  const ids = await wxapp_configDao.creates(inputs, options);
-  return ids;
+  const wxapp_config_ids = await wxapp_configDao.creates(inputs, options);
+  
+  return wxapp_config_ids;
 }
 
 /**
  * 根据 id 修改小程序配置
  */
 export async function updateById(
-  id: WxappConfigId,
+  wxapp_config_id: WxappConfigId,
   input: WxappConfigInput,
 ): Promise<WxappConfigId> {
   
   const old_model = await wxapp_configDao.validateOption(
-    await wxapp_configDao.findById(id),
+    await wxapp_configDao.findById(wxapp_config_id),
   );
   
-  const is_locked = await wxapp_configDao.getIsLockedById(id);
+  const is_locked = await wxapp_configDao.getIsLockedById(wxapp_config_id);
   if (is_locked) {
     throw "不能修改已经锁定的 小程序配置";
   }
@@ -180,41 +202,42 @@ export async function updateById(
     input.lbl = undefined;
   }
   
-  const id2 = await wxapp_configDao.updateById(id, input);
-  return id2;
+  const wxapp_config_id2 = await wxapp_configDao.updateById(wxapp_config_id, input);
+  
+  return wxapp_config_id2;
+}
+
+/** 校验小程序配置是否存在 */
+export async function validateOption(
+  model0?: WxappConfigModel,
+): Promise<WxappConfigModel> {
+  const wxapp_config_model = await wxapp_configDao.validateOption(model0);
+  return wxapp_config_model;
 }
 
 /**
  * 根据 ids 删除小程序配置
  */
 export async function deleteByIds(
-  ids: WxappConfigId[],
+  wxapp_config_ids: WxappConfigId[],
 ): Promise<number> {
   
-  {
-    const models = await wxapp_configDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 小程序配置";
-      }
+  const old_models = await wxapp_configDao.findByIds(wxapp_config_ids);
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 小程序配置";
     }
   }
   
-  {
-    const models = await wxapp_configDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_sys === 1) {
-        throw "不能删除系统记录";
-      }
+  for (const old_model of old_models) {
+    if (old_model.is_sys === 1) {
+      throw "不能删除系统记录";
     }
   }
   
-  const data = await wxapp_configDao.deleteByIds(ids);
-  return data;
+  const wxapp_config_num = await wxapp_configDao.deleteByIds(wxapp_config_ids);
+  return wxapp_config_num;
 }
 
 /**
@@ -224,45 +247,49 @@ export async function enableByIds(
   ids: WxappConfigId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await wxapp_configDao.enableByIds(ids, is_enabled);
-  return data;
+  const wxapp_config_num = await wxapp_configDao.enableByIds(ids, is_enabled);
+  return wxapp_config_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁小程序配置
  */
 export async function lockByIds(
-  ids: WxappConfigId[],
+  wxapp_config_ids: WxappConfigId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await wxapp_configDao.lockByIds(ids, is_locked);
-  return data;
+  const wxapp_config_num = await wxapp_configDao.lockByIds(wxapp_config_ids, is_locked);
+  return wxapp_config_num;
 }
 
 /**
  * 根据 ids 还原小程序配置
  */
 export async function revertByIds(
-  ids: WxappConfigId[],
+  wxapp_config_ids: WxappConfigId[],
 ): Promise<number> {
-  const data = await wxapp_configDao.revertByIds(ids);
-  return data;
+  
+  const wxapp_config_num = await wxapp_configDao.revertByIds(wxapp_config_ids);
+  
+  return wxapp_config_num;
 }
 
 /**
  * 根据 ids 彻底删除小程序配置
  */
 export async function forceDeleteByIds(
-  ids: WxappConfigId[],
+  wxapp_config_ids: WxappConfigId[],
 ): Promise<number> {
-  const data = await wxapp_configDao.forceDeleteByIds(ids);
-  return data;
+  
+  const wxapp_config_num = await wxapp_configDao.forceDeleteByIds(wxapp_config_ids);
+  
+  return wxapp_config_num;
 }
 
 /**
  * 获取小程序配置字段注释
  */
 export async function getFieldComments(): Promise<WxappConfigFieldComment> {
-  const data = await wxapp_configDao.getFieldComments();
-  return data;
+  const wxapp_config_fields = await wxapp_configDao.getFieldComments();
+  return wxapp_config_fields;
 }

@@ -142,6 +142,8 @@ type Query {
   findOneWxappConfig(search: WxappConfigSearch, sort: [SortInput!]): WxappConfigModel
   "根据 id 查找小程序配置"
   findByIdWxappConfig(id: WxappConfigId!): WxappConfigModel
+  "根据 ids 查找小程序配置"
+  findByIdsWxappConfig(ids: [WxappConfigId!]!): [WxappConfigModel]!
 }
 type Mutation {
   "批量创建小程序配置"

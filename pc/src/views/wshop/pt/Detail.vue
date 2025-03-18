@@ -113,6 +113,7 @@
               v-model="dialogModel.pt_type_ids"
               :set="dialogModel.pt_type_ids = dialogModel.pt_type_ids ?? [ ]"
               :method="getPtTypeList"
+              :find-by-values="findByIdsPtType"
               :options-map="((item: PtTypeModel) => {
                 return {
                   label: item.lbl,
@@ -299,7 +300,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -311,7 +312,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -380,11 +381,16 @@ import {
   updateById,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
   getPtTypeList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsPtType,
+} from "@/views/wshop/pt_type/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -414,6 +420,8 @@ let dialogNotice = $ref("");
 let dialogModel: PtInput = $ref({
   pt_type_ids: [ ],
 } as PtInput);
+
+let pt_model = $ref<PtModel>();
 
 let ids = $ref<PtId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -707,11 +715,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  pt_model = data;
 }
 
 /** 键盘按 PageUp */

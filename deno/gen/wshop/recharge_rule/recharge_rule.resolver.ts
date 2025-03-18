@@ -109,6 +109,25 @@ export async function findByIdRechargeRule(
 }
 
 /**
+ * 根据 ids 查找充值赠送规则
+ */
+export async function findByIdsRechargeRule(
+  ids: RechargeRuleId[],
+): Promise<RechargeRuleModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./recharge_rule.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建充值赠送规则
  */
 export async function createsRechargeRule(

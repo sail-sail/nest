@@ -187,9 +187,12 @@ export async function findCount(
  * 根据 id 查找会员卡消费记录
  */
 export async function findById(
-  id: CardConsumeId,
+  id?: CardConsumeId,
   opt?: GqlOpt,
-) {
+): Promise<CardConsumeModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdCardConsume?: CardConsumeModel;
   } = await query({
@@ -210,12 +213,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找会员卡消费记录
+ */
+export async function findByIds(
+  ids: CardConsumeId[],
+  opt?: GqlOpt,
+): Promise<CardConsumeModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: CardConsumeModel[] = [ ];
+  try {
+    const data: {
+      findByIdsCardConsume: CardConsumeModel[];
+    } = await query({
+      query: `
+        query($ids: [CardConsumeId!]!) {
+          findByIdsCardConsume(ids: $ids) {
+            ${ cardConsumeQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsCardConsume;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除会员卡消费记录
  */
 export async function deleteByIds(
   ids: CardConsumeId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsCardConsume: Mutation["deleteByIdsCardConsume"];
   } = await mutation({
@@ -238,7 +281,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: CardConsumeId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsCardConsume: Mutation["revertByIdsCardConsume"];
   } = await mutation({
@@ -261,7 +307,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: CardConsumeId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsCardConsume: Mutation["forceDeleteByIdsCardConsume"];
   } = await mutation({

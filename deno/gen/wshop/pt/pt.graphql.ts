@@ -214,6 +214,8 @@ type Query {
   findOnePt(search: PtSearch, sort: [SortInput!]): PtModel
   "根据 id 查找产品"
   findByIdPt(id: PtId!): PtModel
+  "根据 ids 查找产品"
+  findByIdsPt(ids: [PtId!]!): [PtModel]!
   "查找产品 order_by 字段的最大值"
   findLastOrderByPt: Int!
 }

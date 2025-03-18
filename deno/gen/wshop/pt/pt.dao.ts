@@ -289,6 +289,7 @@ export async function findCount(
   search?: Readonly<PtSearch>,
   options?: {
     is_debug?: boolean;
+    ids_limit?: number;
   },
 ): Promise<number> {
   
@@ -308,6 +309,90 @@ export async function findCount(
     log(msg);
     options = options ?? { };
     options.is_debug = false;
+  }
+  
+  if (search?.id === "") {
+    return 0;
+  }
+  if (search && search.ids && search.ids.length === 0) {
+    return 0;
+  }
+  // 产品类别
+  if (search && search.pt_type_ids != null) {
+    const len = search.pt_type_ids.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.pt_type_ids.length > ${ ids_limit }`);
+    }
+  }
+  // 新品
+  if (search && search.is_new != null) {
+    const len = search.is_new.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_new.length > ${ ids_limit }`);
+    }
+  }
+  // 锁定
+  if (search && search.is_locked != null) {
+    const len = search.is_locked.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_locked.length > ${ ids_limit }`);
+    }
+  }
+  // 启用
+  if (search && search.is_enabled != null) {
+    const len = search.is_enabled.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.is_enabled.length > ${ ids_limit }`);
+    }
+  }
+  // 创建人
+  if (search && search.create_usr_id != null) {
+    const len = search.create_usr_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.create_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  // 更新人
+  if (search && search.update_usr_id != null) {
+    const len = search.update_usr_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.update_usr_id.length > ${ ids_limit }`);
+    }
+  }
+  // 组织
+  if (search && search.org_id != null) {
+    const len = search.org_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.org_id.length > ${ ids_limit }`);
+    }
   }
   
   const args = new QueryArgs();
@@ -1010,13 +1095,15 @@ export async function findByIds(
   );
   
   if (models.length !== ids.length) {
-    throw new Error("findByIds: models.length !== ids.length");
+    const err_msg = "此 产品 已被删除";
+    throw err_msg;
   }
   
   const models2 = ids.map((id) => {
     const model = models.find((item) => item.id === id);
     if (!model) {
-      throw new Error(`findByIds: id: ${ id } not found`);
+      const err_msg = "此 产品 已被删除";
+      throw err_msg;
     }
     return model;
   });

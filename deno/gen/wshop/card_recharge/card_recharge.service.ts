@@ -14,6 +14,10 @@ import {
   validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  isAdmin,
+} from "/src/base/usr/usr.dao.ts";
+
 import * as card_rechargeDao from "./card_recharge.dao.ts";
 
 async function setSearchQuery(
@@ -33,9 +37,8 @@ async function setSearchQuery(
     org_ids.push(...usr_model.org_ids);
     org_ids.push("" as OrgId);
   }
-  const username = usr_model.username;
   
-  if (username !== "admin") {
+  if (!await isAdmin(usr_id)) {
     search.org_id = org_ids;
   }
   
@@ -52,8 +55,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await card_rechargeDao.findCount(search);
-  return data;
+  const card_recharge_num = await card_rechargeDao.findCount(search);
+  
+  return card_recharge_num;
 }
 
 /**
@@ -69,8 +73,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: CardRechargeModel[] = await card_rechargeDao.findAll(search, page, sort);
-  return models;
+  const card_recharge_models = await card_rechargeDao.findAll(search, page, sort);
+  
+  return card_recharge_models;
 }
 
 /**
@@ -78,9 +83,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: CardRechargeInput,
-) {
-  const data = await card_rechargeDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await card_rechargeDao.setIdByLbl(input);
 }
 
 /**
@@ -95,18 +99,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await card_rechargeDao.findOne(search, sort);
-  return model;
+  const card_recharge_model = await card_rechargeDao.findOne(search, sort);
+  
+  return card_recharge_model;
 }
 
 /**
  * 根据 id 查找会员卡充值记录
  */
 export async function findById(
-  id?: CardRechargeId | null,
+  card_recharge_id?: CardRechargeId | null,
 ): Promise<CardRechargeModel | undefined> {
-  const model = await card_rechargeDao.findById(id);
-  return model;
+  
+  const card_recharge_model = await card_rechargeDao.findById(card_recharge_id);
+  
+  return card_recharge_model;
+}
+
+/**
+ * 根据 ids 查找会员卡充值记录
+ */
+export async function findByIds(
+  card_recharge_ids: CardRechargeId[],
+): Promise<CardRechargeModel[]> {
+  
+  const card_recharge_models = await card_rechargeDao.findByIds(card_recharge_ids);
+  
+  return card_recharge_models;
 }
 
 /**
@@ -120,18 +139,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await card_rechargeDao.exist(search);
-  return data;
+  const card_recharge_exist = await card_rechargeDao.exist(search);
+  
+  return card_recharge_exist;
 }
 
 /**
  * 根据 id 查找会员卡充值记录是否存在
  */
 export async function existById(
-  id?: CardRechargeId | null,
+  card_recharge_id?: CardRechargeId | null,
 ): Promise<boolean> {
-  const data = await card_rechargeDao.existById(id);
-  return data;
+  
+  const card_recharge_exist = await card_rechargeDao.existById(card_recharge_id);
+  
+  return card_recharge_exist;
 }
 
 /**
@@ -140,8 +162,7 @@ export async function existById(
 export async function validate(
   input: CardRechargeInput,
 ): Promise<void> {
-  const data = await card_rechargeDao.validate(input);
-  return data;
+  await card_rechargeDao.validate(input);
 }
 
 /**
@@ -153,57 +174,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<CardRechargeId[]> {
-  const ids = await card_rechargeDao.creates(inputs, options);
-  return ids;
+  const card_recharge_ids = await card_rechargeDao.creates(inputs, options);
+  
+  return card_recharge_ids;
 }
 
 /**
  * 根据 id 修改会员卡充值记录
  */
 export async function updateById(
-  id: CardRechargeId,
+  card_recharge_id: CardRechargeId,
   input: CardRechargeInput,
 ): Promise<CardRechargeId> {
   
-  const id2 = await card_rechargeDao.updateById(id, input);
-  return id2;
+  const card_recharge_id2 = await card_rechargeDao.updateById(card_recharge_id, input);
+  
+  return card_recharge_id2;
+}
+
+/** 校验会员卡充值记录是否存在 */
+export async function validateOption(
+  model0?: CardRechargeModel,
+): Promise<CardRechargeModel> {
+  const card_recharge_model = await card_rechargeDao.validateOption(model0);
+  return card_recharge_model;
 }
 
 /**
  * 根据 ids 删除会员卡充值记录
  */
 export async function deleteByIds(
-  ids: CardRechargeId[],
+  card_recharge_ids: CardRechargeId[],
 ): Promise<number> {
   
-  const data = await card_rechargeDao.deleteByIds(ids);
-  return data;
+  const card_recharge_num = await card_rechargeDao.deleteByIds(card_recharge_ids);
+  return card_recharge_num;
 }
 
 /**
  * 根据 ids 还原会员卡充值记录
  */
 export async function revertByIds(
-  ids: CardRechargeId[],
+  card_recharge_ids: CardRechargeId[],
 ): Promise<number> {
-  const data = await card_rechargeDao.revertByIds(ids);
-  return data;
+  
+  const card_recharge_num = await card_rechargeDao.revertByIds(card_recharge_ids);
+  
+  return card_recharge_num;
 }
 
 /**
  * 根据 ids 彻底删除会员卡充值记录
  */
 export async function forceDeleteByIds(
-  ids: CardRechargeId[],
+  card_recharge_ids: CardRechargeId[],
 ): Promise<number> {
-  const data = await card_rechargeDao.forceDeleteByIds(ids);
-  return data;
+  
+  const card_recharge_num = await card_rechargeDao.forceDeleteByIds(card_recharge_ids);
+  
+  return card_recharge_num;
 }
 
 /**
  * 获取会员卡充值记录字段注释
  */
 export async function getFieldComments(): Promise<CardRechargeFieldComment> {
-  const data = await card_rechargeDao.getFieldComments();
-  return data;
+  const card_recharge_fields = await card_rechargeDao.getFieldComments();
+  return card_recharge_fields;
 }

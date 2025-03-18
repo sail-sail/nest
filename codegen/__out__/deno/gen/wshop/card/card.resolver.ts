@@ -109,6 +109,25 @@ export async function findByIdCard(
 }
 
 /**
+ * 根据 ids 查找会员卡
+ */
+export async function findByIdsCard(
+  ids: CardId[],
+): Promise<CardModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./card.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建会员卡
  */
 export async function createsCard(

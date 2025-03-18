@@ -266,9 +266,12 @@ export async function updateById(
  * 根据 id 查找会员卡
  */
 export async function findById(
-  id: CardId,
+  id?: CardId,
   opt?: GqlOpt,
-) {
+): Promise<CardModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdCard?: CardModel;
   } = await query({
@@ -289,12 +292,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找会员卡
+ */
+export async function findByIds(
+  ids: CardId[],
+  opt?: GqlOpt,
+): Promise<CardModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: CardModel[] = [ ];
+  try {
+    const data: {
+      findByIdsCard: CardModel[];
+    } = await query({
+      query: `
+        query($ids: [CardId!]!) {
+          findByIdsCard(ids: $ids) {
+            ${ cardQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsCard;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除会员卡
  */
 export async function deleteByIds(
   ids: CardId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsCard: Mutation["deleteByIdsCard"];
   } = await mutation({
@@ -318,7 +361,10 @@ export async function enableByIds(
   ids: CardId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsCard: Mutation["enableByIdsCard"];
   } = await mutation({
@@ -343,7 +389,10 @@ export async function lockByIds(
   ids: CardId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsCard: Mutation["lockByIdsCard"];
   } = await mutation({
@@ -367,7 +416,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: CardId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsCard: Mutation["revertByIdsCard"];
   } = await mutation({
@@ -390,7 +442,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: CardId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsCard: Mutation["forceDeleteByIdsCard"];
   } = await mutation({

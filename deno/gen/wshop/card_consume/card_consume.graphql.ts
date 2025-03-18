@@ -163,6 +163,8 @@ type Query {
   findOneCardConsume(search: CardConsumeSearch, sort: [SortInput!]): CardConsumeModel
   "根据 id 查找会员卡消费记录"
   findByIdCardConsume(id: CardConsumeId!): CardConsumeModel
+  "根据 ids 查找会员卡消费记录"
+  findByIdsCardConsume(ids: [CardConsumeId!]!): [CardConsumeModel]!
 }
 type Mutation {
   "根据 ids 删除会员卡消费记录"

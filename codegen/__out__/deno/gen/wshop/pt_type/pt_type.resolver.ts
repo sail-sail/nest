@@ -107,6 +107,25 @@ export async function findByIdPtType(
 }
 
 /**
+ * 根据 ids 查找产品类别
+ */
+export async function findByIdsPtType(
+  ids: PtTypeId[],
+): Promise<PtTypeModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./pt_type.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建产品类别
  */
 export async function createsPtType(
