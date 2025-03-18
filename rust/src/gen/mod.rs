@@ -1,4 +1,5 @@
 pub mod base;
+pub mod wx;
 
 
 use async_graphql::MergedObject;
@@ -27,6 +28,15 @@ pub struct GenQuery(
   crate::r#gen::base::role::role_graphql::RoleGenQuery,
   crate::r#gen::base::tenant::tenant_graphql::TenantGenQuery,
   crate::r#gen::base::usr::usr_graphql::UsrGenQuery,
+  crate::r#gen::wx::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiGenQuery,
+  crate::r#gen::wx::wx_app::wx_app_graphql::WxAppGenQuery,
+  crate::r#gen::wx::wx_app_token::wx_app_token_graphql::WxAppTokenGenQuery,
+  crate::r#gen::wx::wx_pay::wx_pay_graphql::WxPayGenQuery,
+  crate::r#gen::wx::wx_pay_notice::wx_pay_notice_graphql::WxPayNoticeGenQuery,
+  crate::r#gen::wx::wx_usr::wx_usr_graphql::WxUsrGenQuery,
+  crate::r#gen::wx::wxo_app::wxo_app_graphql::WxoAppGenQuery,
+  crate::r#gen::wx::wxo_app_token::wxo_app_token_graphql::WxoAppTokenGenQuery,
+  crate::r#gen::wx::wxo_usr::wxo_usr_graphql::WxoUsrGenQuery,
 );
 
 #[derive(MergedObject, Default)]
@@ -53,4 +63,13 @@ pub struct GenMutation(
   crate::r#gen::base::role::role_graphql::RoleGenMutation,
   crate::r#gen::base::tenant::tenant_graphql::TenantGenMutation,
   crate::r#gen::base::usr::usr_graphql::UsrGenMutation,
+  crate::r#gen::wx::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiGenMutation,
+  crate::r#gen::wx::wx_app::wx_app_graphql::WxAppGenMutation,
+  crate::r#gen::wx::wx_app_token::wx_app_token_graphql::WxAppTokenGenMutation,
+  crate::r#gen::wx::wx_pay::wx_pay_graphql::WxPayGenMutation,
+  crate::r#gen::wx::wx_pay_notice::wx_pay_notice_graphql::WxPayNoticeGenMutation,
+  crate::r#gen::wx::wx_usr::wx_usr_graphql::WxUsrGenMutation,
+  crate::r#gen::wx::wxo_app::wxo_app_graphql::WxoAppGenMutation,
+  crate::r#gen::wx::wxo_app_token::wxo_app_token_graphql::WxoAppTokenGenMutation,
+  crate::r#gen::wx::wxo_usr::wxo_usr_graphql::WxoUsrGenMutation,
 );

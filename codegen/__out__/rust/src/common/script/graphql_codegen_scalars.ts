@@ -133,6 +133,60 @@ export function getScalars() {
       "output": `import("/gen/base/usr/usr.model.ts").UsrId`,
     },
     
+    // 微信JSAPI下单
+    "PayTransactionsJsapiId": {
+      "input": `import("/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts").PayTransactionsJsapiId`,
+      "output": `import("/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.model.ts").PayTransactionsJsapiId`,
+    },
+    
+    // 小程序设置
+    "WxAppId": {
+      "input": `import("/gen/wx/wx_app/wx_app.model.ts").WxAppId`,
+      "output": `import("/gen/wx/wx_app/wx_app.model.ts").WxAppId`,
+    },
+    
+    // 小程序接口凭据
+    "WxAppTokenId": {
+      "input": `import("/gen/wx/wx_app_token/wx_app_token.model.ts").WxAppTokenId`,
+      "output": `import("/gen/wx/wx_app_token/wx_app_token.model.ts").WxAppTokenId`,
+    },
+    
+    // 微信支付设置
+    "WxPayId": {
+      "input": `import("/gen/wx/wx_pay/wx_pay.model.ts").WxPayId`,
+      "output": `import("/gen/wx/wx_pay/wx_pay.model.ts").WxPayId`,
+    },
+    
+    // 微信支付通知
+    "WxPayNoticeId": {
+      "input": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxPayNoticeId`,
+      "output": `import("/gen/wx/wx_pay_notice/wx_pay_notice.model.ts").WxPayNoticeId`,
+    },
+    
+    // 小程序用户
+    "WxUsrId": {
+      "input": `import("/gen/wx/wx_usr/wx_usr.model.ts").WxUsrId`,
+      "output": `import("/gen/wx/wx_usr/wx_usr.model.ts").WxUsrId`,
+    },
+    
+    // 公众号设置
+    "WxoAppId": {
+      "input": `import("/gen/wx/wxo_app/wxo_app.model.ts").WxoAppId`,
+      "output": `import("/gen/wx/wxo_app/wxo_app.model.ts").WxoAppId`,
+    },
+    
+    // 小程序接口凭据
+    "WxoAppTokenId": {
+      "input": `import("/gen/wx/wxo_app_token/wxo_app_token.model.ts").WxoAppTokenId`,
+      "output": `import("/gen/wx/wxo_app_token/wxo_app_token.model.ts").WxoAppTokenId`,
+    },
+    
+    // 公众号用户
+    "WxoUsrId": {
+      "input": `import("/gen/wx/wxo_usr/wxo_usr.model.ts").WxoUsrId`,
+      "output": `import("/gen/wx/wxo_usr/wxo_usr.model.ts").WxoUsrId`,
+    },
+    
   };
   return scalars;
 }
