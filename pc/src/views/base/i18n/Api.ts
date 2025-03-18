@@ -243,21 +243,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsI18n: I18nModel[];
-  } = await query({
-    query: `
-      query($ids: [I18nId!]!) {
-        findByIdsI18n(ids: $ids) {
-          ${ i18nQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: I18nModel[] = [ ];
+  try {
+    const data: {
+      findByIdsI18n: I18nModel[];
+    } = await query({
+      query: `
+        query($ids: [I18nId!]!) {
+          findByIdsI18n(ids: $ids) {
+            ${ i18nQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsI18n;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsI18n;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
