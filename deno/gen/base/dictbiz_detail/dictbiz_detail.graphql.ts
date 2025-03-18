@@ -153,6 +153,8 @@ type Query {
   findOneDictbizDetail(search: DictbizDetailSearch, sort: [SortInput!]): DictbizDetailModel
   "根据 id 查找业务字典明细"
   findByIdDictbizDetail(id: DictbizDetailId!): DictbizDetailModel
+  "根据 ids 查找业务字典明细"
+  findByIdsDictbizDetail(ids: [DictbizDetailId!]!): [DictbizDetailModel]!
   "查找业务字典明细 order_by 字段的最大值"
   findLastOrderByDictbizDetail: Int!
 }

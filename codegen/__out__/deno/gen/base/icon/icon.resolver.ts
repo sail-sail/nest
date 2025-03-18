@@ -107,6 +107,25 @@ export async function findByIdIcon(
 }
 
 /**
+ * 根据 ids 查找图标库
+ */
+export async function findByIdsIcon(
+  ids: IconId[],
+): Promise<IconModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./icon.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建图标库
  */
 export async function createsIcon(

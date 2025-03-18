@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await optbizDao.findCount(search);
-  return data;
+  const optbiz_num = await optbizDao.findCount(search);
+  
+  return optbiz_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: OptbizModel[] = await optbizDao.findAll(search, page, sort);
-  return models;
+  const optbiz_models = await optbizDao.findAll(search, page, sort);
+  
+  return optbiz_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: OptbizInput,
-) {
-  const data = await optbizDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await optbizDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await optbizDao.findOne(search, sort);
-  return model;
+  const optbiz_model = await optbizDao.findOne(search, sort);
+  
+  return optbiz_model;
 }
 
 /**
  * 根据 id 查找业务选项
  */
 export async function findById(
-  id?: OptbizId | null,
+  optbiz_id?: OptbizId | null,
 ): Promise<OptbizModel | undefined> {
-  const model = await optbizDao.findById(id);
-  return model;
+  
+  const optbiz_model = await optbizDao.findById(optbiz_id);
+  
+  return optbiz_model;
+}
+
+/**
+ * 根据 ids 查找业务选项
+ */
+export async function findByIds(
+  optbiz_ids: OptbizId[],
+): Promise<OptbizModel[]> {
+  
+  const optbiz_models = await optbizDao.findByIds(optbiz_ids);
+  
+  return optbiz_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await optbizDao.exist(search);
-  return data;
+  const optbiz_exist = await optbizDao.exist(search);
+  
+  return optbiz_exist;
 }
 
 /**
  * 根据 id 查找业务选项是否存在
  */
 export async function existById(
-  id?: OptbizId | null,
+  optbiz_id?: OptbizId | null,
 ): Promise<boolean> {
-  const data = await optbizDao.existById(id);
-  return data;
+  
+  const optbiz_exist = await optbizDao.existById(optbiz_id);
+  
+  return optbiz_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: OptbizInput,
 ): Promise<void> {
-  const data = await optbizDao.validate(input);
-  return data;
+  await optbizDao.validate(input);
 }
 
 /**
@@ -124,8 +142,9 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<OptbizId[]> {
-  const ids = await optbizDao.creates(inputs, options);
-  return ids;
+  const optbiz_ids = await optbizDao.creates(inputs, options);
+  
+  return optbiz_ids;
 }
 
 /**
@@ -140,15 +159,15 @@ export async function getVersionById(id: OptbizId) {
  * 根据 id 修改业务选项
  */
 export async function updateById(
-  id: OptbizId,
+  optbiz_id: OptbizId,
   input: OptbizInput,
 ): Promise<OptbizId> {
   
   const old_model = await optbizDao.validateOption(
-    await optbizDao.findById(id),
+    await optbizDao.findById(optbiz_id),
   );
   
-  const is_locked = await optbizDao.getIsLockedById(id);
+  const is_locked = await optbizDao.getIsLockedById(optbiz_id);
   if (is_locked) {
     throw "不能修改已经锁定的 业务选项";
   }
@@ -161,41 +180,42 @@ export async function updateById(
     input.ky = undefined;
   }
   
-  const id2 = await optbizDao.updateById(id, input);
-  return id2;
+  const optbiz_id2 = await optbizDao.updateById(optbiz_id, input);
+  
+  return optbiz_id2;
+}
+
+/** 校验业务选项是否存在 */
+export async function validateOption(
+  model0?: OptbizModel,
+): Promise<OptbizModel> {
+  const optbiz_model = await optbizDao.validateOption(model0);
+  return optbiz_model;
 }
 
 /**
  * 根据 ids 删除业务选项
  */
 export async function deleteByIds(
-  ids: OptbizId[],
+  optbiz_ids: OptbizId[],
 ): Promise<number> {
   
-  {
-    const models = await optbizDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 业务选项";
-      }
+  const old_models = await optbizDao.findByIds(optbiz_ids);
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 业务选项";
     }
   }
   
-  {
-    const models = await optbizDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_sys === 1) {
-        throw "不能删除系统记录";
-      }
+  for (const old_model of old_models) {
+    if (old_model.is_sys === 1) {
+      throw "不能删除系统记录";
     }
   }
   
-  const data = await optbizDao.deleteByIds(ids);
-  return data;
+  const optbiz_num = await optbizDao.deleteByIds(optbiz_ids);
+  return optbiz_num;
 }
 
 /**
@@ -205,47 +225,51 @@ export async function enableByIds(
   ids: OptbizId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await optbizDao.enableByIds(ids, is_enabled);
-  return data;
+  const optbiz_num = await optbizDao.enableByIds(ids, is_enabled);
+  return optbiz_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁业务选项
  */
 export async function lockByIds(
-  ids: OptbizId[],
+  optbiz_ids: OptbizId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await optbizDao.lockByIds(ids, is_locked);
-  return data;
+  const optbiz_num = await optbizDao.lockByIds(optbiz_ids, is_locked);
+  return optbiz_num;
 }
 
 /**
  * 根据 ids 还原业务选项
  */
 export async function revertByIds(
-  ids: OptbizId[],
+  optbiz_ids: OptbizId[],
 ): Promise<number> {
-  const data = await optbizDao.revertByIds(ids);
-  return data;
+  
+  const optbiz_num = await optbizDao.revertByIds(optbiz_ids);
+  
+  return optbiz_num;
 }
 
 /**
  * 根据 ids 彻底删除业务选项
  */
 export async function forceDeleteByIds(
-  ids: OptbizId[],
+  optbiz_ids: OptbizId[],
 ): Promise<number> {
-  const data = await optbizDao.forceDeleteByIds(ids);
-  return data;
+  
+  const optbiz_num = await optbizDao.forceDeleteByIds(optbiz_ids);
+  
+  return optbiz_num;
 }
 
 /**
  * 获取业务选项字段注释
  */
 export async function getFieldComments(): Promise<OptbizFieldComment> {
-  const data = await optbizDao.getFieldComments();
-  return data;
+  const optbiz_fields = await optbizDao.getFieldComments();
+  return optbiz_fields;
 }
 
 /**
@@ -253,6 +277,6 @@ export async function getFieldComments(): Promise<OptbizFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await optbizDao.findLastOrderBy();
-  return data;
+  const optbiz_sort = await optbizDao.findLastOrderBy();
+  return optbiz_sort;
 }

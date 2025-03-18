@@ -948,7 +948,9 @@ type Query {
   "根据条件查找第一个<#=table_comment#>"
   findOne<#=Table_Up2#>(search: <#=searchName#>, sort: [SortInput!]): <#=modelName#>
   "根据 id 查找<#=table_comment#>"
-  findById<#=Table_Up2#>(id: <#=Table_Up#>Id!): <#=modelName#><#
+  findById<#=Table_Up2#>(id: <#=Table_Up#>Id!): <#=modelName#>
+  "根据 ids 查找<#=table_comment#>"
+  findByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): [<#=modelName#>]!<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
   "根据 ids 获取<#=table_comment#>是否可编辑数据权限"

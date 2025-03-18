@@ -87,6 +87,8 @@ type Query {
   findOnePermit(search: PermitSearch, sort: [SortInput!]): PermitModel
   "根据 id 查找按钮权限"
   findByIdPermit(id: PermitId!): PermitModel
+  "根据 ids 查找按钮权限"
+  findByIdsPermit(ids: [PermitId!]!): [PermitModel]!
   "查找按钮权限 order_by 字段的最大值"
   findLastOrderByPermit: Int!
 }

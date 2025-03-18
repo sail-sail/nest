@@ -166,6 +166,8 @@ type Query {
   findOneMenu(search: MenuSearch, sort: [SortInput!]): MenuModel
   "根据 id 查找菜单"
   findByIdMenu(id: MenuId!): MenuModel
+  "根据 ids 查找菜单"
+  findByIdsMenu(ids: [MenuId!]!): [MenuModel]!
   "查找菜单 order_by 字段的最大值"
   findLastOrderByMenu: Int!
 }

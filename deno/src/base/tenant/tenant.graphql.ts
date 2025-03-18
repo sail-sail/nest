@@ -33,6 +33,9 @@ type Query {
   "根据 当前网址的域名+端口 获取 租户列表"
   getLoginTenants(domain: String!): [GetLoginTenants!]!
   # getHostTenant: GetHostTenant!
+  
+  "根据 租户ids 获取 租户信息"
+  getLoginTenantByIds(tenant_ids: [TenantId!]!): [GetLoginTenants!]!
 }
 
 type Mutation {

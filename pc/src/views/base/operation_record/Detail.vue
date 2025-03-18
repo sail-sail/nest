@@ -223,6 +223,7 @@ import {
   findOne,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -252,6 +253,8 @@ let dialogNotice = $ref("");
 
 let dialogModel: OperationRecordInput = $ref({
 } as OperationRecordInput);
+
+let operation_record_model = $ref<OperationRecordModel>();
 
 let ids = $ref<OperationRecordId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -482,11 +485,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  operation_record_model = data;
 }
 
 /** 键盘按 PageUp */
