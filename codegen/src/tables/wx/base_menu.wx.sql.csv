@@ -1,0 +1,9 @@
+id,parent_id,lbl,route_path,route_query,is_enabled,order_by
+a39GOObeQt6dbIHH1co18g,,微信管理,,,1,10100
+a/7XlyOxT52cohD4tbw1ag,a39GOObeQt6dbIHH1co18g,小程序设置,/wx/wx_app,,1,10101
+GYC3rDTsTfKoMk8aLeDRaQ,a39GOObeQt6dbIHH1co18g,小程序用户,/wx/wx_usr,,1,10102
+x9ET3g+mQaigDij/F6hyyg,a39GOObeQt6dbIHH1co18g,公众号设置,/wx/wxo_app,,1,10103
+VjtC3FpWSuug1QGqVKlSUw,a39GOObeQt6dbIHH1co18g,公众号用户,/wx/wxo_usr,,1,10104
+atlpWh9kSXCkTpZSBVkLcw,a39GOObeQt6dbIHH1co18g,微信支付设置,/wx/wx_pay,,1,10105
++bfcjNUaSTm4wd53X4QKjg,a39GOObeQt6dbIHH1co18g,微信JSAPI下单,/wx/pay_transactions_jsapi,,1,10106
+GNhDacekTzqt5tuZ6ZkwEA,a39GOObeQt6dbIHH1co18g,微信支付通知,/wx/wx_pay_notice,,1,10107

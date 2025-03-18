@@ -1,0 +1,8 @@
+id,code,lbl,type,order_by,is_sys,is_add
+D/YHbZPUS4OqHrJUa6e3dg,wx_usr_gender,微信用户-性别,number,101,1,0
+VkG+mAlHR7y6IlfsDCoROw,wx_unified_order_trade_type,微信统一下单-交易类型,string,102,1,0
+Pz11MYjESMaE8ift9DOCpg,wx_pay_notice_trade_state,微信支付通知-交易状态,string,104,1,0
+A+3vwR6vS7eFqf8mewVXlA,wx_pay_notice_currency,微信支付通知-货币类型,string,105,1,0
+qdUtCjusRjiO22jxXk7ipA,wx_pay_notice_payer_currency,微信支付通知-用户支付币种,string,106,1,0
+XsJS1HyjRQuwgi2za8vmJw,wxo_app_encoding_type,公众号设置-消息加解密方式,string,107,1,0
+THoRcre6SEy9JConjQz6Hg,wxo_app_scope,公众号设置-授权作用域,string,108,1,0
