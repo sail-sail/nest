@@ -3310,12 +3310,16 @@ pub async fn set_id_by_lbl(
       input.<#=column_name_rust#> = val<#
         if (columnDictModels.length > 0 && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
       #>.parse::<<#=enumColumnName#>>()?<#
-        } else if ([ "int" ].includes(data_type)) {
+        } else if ([ "int" ].includes(data_type) && column_type.endsWith("unsigned")) {
       #>.parse::<u32>()?<#
+        } else if ([ "int" ].includes(data_type) && !column_type.endsWith("unsigned")) {
+      #>.parse::<i32>()?<#
         } else if ([ "decimal" ].includes(data_type)) {
       #>.parse::<rust_decimal::Decimal>()?<#
-        } else if ([ "tinyint" ].includes(data_type)) {
+        } else if ([ "tinyint" ].includes(data_type) && column_type.endsWith("unsigned")) {
       #>.parse::<u8>()?<#
+        } else if ([ "tinyint" ].includes(data_type) && !column_type.endsWith("unsigned")) {
+      #>.parse::<i8>()?<#
         }
       #>.into();
     }
