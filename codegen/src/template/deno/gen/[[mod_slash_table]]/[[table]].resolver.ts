@@ -344,6 +344,47 @@ export async function findById<#=Table_Up2#>(
   #>
   
   return model;
+}
+
+/**
+ * 根据 ids 查找<#=table_comment#>
+ */
+export async function findByIds<#=Table_Up2#>(
+  ids: <#=Table_Up#>Id[],
+): Promise<<#=modelName#>[]> {
+  
+  const {
+    findByIds,
+  } = await import("./<#=table#>.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {<#
+    for (let i = 0; i < columns.length; i++) {
+      const column = columns[i];
+      if (column.ignoreCodegen) continue;
+      const column_name = column.COLUMN_NAME;
+      if (column_name === "id") continue;
+      const column_comment = column.COLUMN_COMMENT || "";
+      const isPassword = column.isPassword;
+    #><#
+      if (isPassword) {
+    #>
+    // <#=column_comment#>
+    model.<#=column_name#> = "";<#
+    }
+    #><#
+    }
+    #>
+  }<#
+  if (tableFieldPermit) {
+  #>
+  
+  await fieldPermitModel<#=Table_Up2#>(models);<#
+  }
+  #>
+  
+  return models;
 }<#
 if (opts.noAdd !== true) {
 #>

@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await permitDao.findCount(search);
-  return data;
+  const permit_num = await permitDao.findCount(search);
+  
+  return permit_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: PermitModel[] = await permitDao.findAll(search, page, sort);
-  return models;
+  const permit_models = await permitDao.findAll(search, page, sort);
+  
+  return permit_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: PermitInput,
-) {
-  const data = await permitDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await permitDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await permitDao.findOne(search, sort);
-  return model;
+  const permit_model = await permitDao.findOne(search, sort);
+  
+  return permit_model;
 }
 
 /**
  * 根据 id 查找按钮权限
  */
 export async function findById(
-  id?: PermitId | null,
+  permit_id?: PermitId | null,
 ): Promise<PermitModel | undefined> {
-  const model = await permitDao.findById(id);
-  return model;
+  
+  const permit_model = await permitDao.findById(permit_id);
+  
+  return permit_model;
+}
+
+/**
+ * 根据 ids 查找按钮权限
+ */
+export async function findByIds(
+  permit_ids: PermitId[],
+): Promise<PermitModel[]> {
+  
+  const permit_models = await permitDao.findByIds(permit_ids);
+  
+  return permit_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await permitDao.exist(search);
-  return data;
+  const permit_exist = await permitDao.exist(search);
+  
+  return permit_exist;
 }
 
 /**
  * 根据 id 查找按钮权限是否存在
  */
 export async function existById(
-  id?: PermitId | null,
+  permit_id?: PermitId | null,
 ): Promise<boolean> {
-  const data = await permitDao.existById(id);
-  return data;
+  
+  const permit_exist = await permitDao.existById(permit_id);
+  
+  return permit_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: PermitInput,
 ): Promise<void> {
-  const data = await permitDao.validate(input);
-  return data;
+  await permitDao.validate(input);
 }
 
 /**
@@ -124,20 +142,21 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<PermitId[]> {
-  const ids = await permitDao.creates(inputs, options);
-  return ids;
+  const permit_ids = await permitDao.creates(inputs, options);
+  
+  return permit_ids;
 }
 
 /**
  * 根据 id 修改按钮权限
  */
 export async function updateById(
-  id: PermitId,
+  permit_id: PermitId,
   input: PermitInput,
 ): Promise<PermitId> {
   
   const old_model = await permitDao.validateOption(
-    await permitDao.findById(id),
+    await permitDao.findById(permit_id),
   );
   
   // 不能修改系统记录的系统字段
@@ -149,38 +168,44 @@ export async function updateById(
     input.code = undefined;
   }
   
-  const id2 = await permitDao.updateById(id, input);
-  return id2;
+  const permit_id2 = await permitDao.updateById(permit_id, input);
+  
+  return permit_id2;
+}
+
+/** 校验按钮权限是否存在 */
+export async function validateOption(
+  model0?: PermitModel,
+): Promise<PermitModel> {
+  const permit_model = await permitDao.validateOption(model0);
+  return permit_model;
 }
 
 /**
  * 根据 ids 删除按钮权限
  */
 export async function deleteByIds(
-  ids: PermitId[],
+  permit_ids: PermitId[],
 ): Promise<number> {
   
-  {
-    const models = await permitDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_sys === 1) {
-        throw "不能删除系统记录";
-      }
+  const old_models = await permitDao.findByIds(permit_ids);
+  
+  for (const old_model of old_models) {
+    if (old_model.is_sys === 1) {
+      throw "不能删除系统记录";
     }
   }
   
-  const data = await permitDao.deleteByIds(ids);
-  return data;
+  const permit_num = await permitDao.deleteByIds(permit_ids);
+  return permit_num;
 }
 
 /**
  * 获取按钮权限字段注释
  */
 export async function getFieldComments(): Promise<PermitFieldComment> {
-  const data = await permitDao.getFieldComments();
-  return data;
+  const permit_fields = await permitDao.getFieldComments();
+  return permit_fields;
 }
 
 /**
@@ -188,6 +213,6 @@ export async function getFieldComments(): Promise<PermitFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await permitDao.findLastOrderBy();
-  return data;
+  const permit_sort = await permitDao.findLastOrderBy();
+  return permit_sort;
 }

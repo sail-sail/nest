@@ -1070,9 +1070,12 @@ export async function auditReview(
  * 根据 id 查找<#=table_comment#>
  */
 export async function findById(
-  id: <#=Table_Up#>Id,
+  id?: <#=Table_Up#>Id,
   opt?: GqlOpt,
-) {
+): Promise<<#=modelName#> | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findById<#=Table_Up2#>?: <#=modelName#>;
   } = await query({
@@ -1102,6 +1105,55 @@ export async function findById(
   const model = data.findById<#=Table_Up2#>;
   await setLblById(model);
   return model;
+}
+
+/**
+ * 根据 ids 查找<#=table_comment#>
+ */
+export async function findByIds(
+  ids: <#=Table_Up#>Id[],
+  opt?: GqlOpt,
+): Promise<<#=modelName#>[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: <#=modelName#>[] = [ ];
+  try {
+    const data: {
+      findByIds<#=Table_Up2#>: <#=modelName#>[];
+    } = await query({
+      query: `
+        query($ids: [<#=Table_Up#>Id!]!) {
+          findByIds<#=Table_Up2#>(ids: $ids) {
+            ${ <#=table_Up#>QueryField }<#
+            if (hasAudit && auditTable_Up) {
+            #>
+            <#=auditColumn#>_recent_model {
+              id
+              audit
+              audit_usr_id
+              audit_usr_id_lbl
+              audit_time
+              rem
+            }<#
+            }
+            #>
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIds<#=Table_Up2#>;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
 }<#
 if (opts.noDelete !== true) {
 #>
@@ -1112,7 +1164,10 @@ if (opts.noDelete !== true) {
 export async function deleteByIds(
   ids: <#=Table_Up#>Id[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIds<#=Table_Up2#>: Mutation["deleteByIds<#=Table_Up2#>"];
   } = await mutation({
@@ -1137,9 +1192,12 @@ if (hasDefault && opts.noEdit !== true) {
  * 根据 id 设置默认<#=table_comment#>
  */
 export async function defaultById(
-  id: <#=Table_Up#>Id,
+  id?: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ) {
+  if (!id) {
+    return 0;
+  }
   const data: {
     defaultById<#=Table_Up2#>: Mutation["defaultById<#=Table_Up2#>"];
   } = await mutation({
@@ -1167,7 +1225,10 @@ export async function enableByIds(
   ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIds<#=Table_Up2#>: Mutation["enableByIds<#=Table_Up2#>"];
   } = await mutation({
@@ -1196,7 +1257,10 @@ export async function lockByIds(
   ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIds<#=Table_Up2#>: Mutation["lockByIds<#=Table_Up2#>"];
   } = await mutation({
@@ -1224,7 +1288,10 @@ if (opts.noRevert !== true && hasIsDeleted) {
 export async function revertByIds(
   ids: <#=Table_Up#>Id[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIds<#=Table_Up2#>: Mutation["revertByIds<#=Table_Up2#>"];
   } = await mutation({
@@ -1251,7 +1318,10 @@ if (opts.noForceDelete !== true && hasIsDeleted) {
 export async function forceDeleteByIds(
   ids: <#=Table_Up#>Id[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIds<#=Table_Up2#>: Mutation["forceDeleteByIds<#=Table_Up2#>"];
   } = await mutation({

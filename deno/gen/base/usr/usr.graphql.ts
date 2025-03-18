@@ -195,6 +195,7 @@ input UsrSearch {
   role_ids: [RoleId!]
   "所属角色"
   role_ids_is_null: Boolean
+  role_codes: [String!]
   "所属角色"
   role_ids_lbl: [String!]
   "所属角色"
@@ -253,6 +254,8 @@ type Query {
   findOneUsr(search: UsrSearch, sort: [SortInput!]): UsrModel
   "根据 id 查找用户"
   findByIdUsr(id: UsrId!): UsrModel
+  "根据 ids 查找用户"
+  findByIdsUsr(ids: [UsrId!]!): [UsrModel]!
   "查找用户 order_by 字段的最大值"
   findLastOrderByUsr: Int!
 }
