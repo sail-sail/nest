@@ -239,7 +239,7 @@
                 </el-dropdown-item>
                 
                 <el-dropdown-item
-                  v-if="usrStore.username === 'admin'"
+                  v-if="usrStore.isAdmin()"
                   @click="onClearCache"
                 >
                   <ElIcon>

@@ -194,6 +194,8 @@ type Query {
   findOneDept(search: DeptSearch, sort: [SortInput!]): DeptModel
   "根据 id 查找部门"
   findByIdDept(id: DeptId!): DeptModel
+  "根据 ids 查找部门"
+  findByIdsDept(ids: [DeptId!]!): [DeptModel]!
   "查找部门 order_by 字段的最大值"
   findLastOrderByDept: Int!
 }

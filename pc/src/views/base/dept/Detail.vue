@@ -110,6 +110,7 @@
               v-model="dialogModel.usr_ids"
               :set="dialogModel.usr_ids = dialogModel.usr_ids ?? [ ]"
               :method="getUsrList"
+              :find-by-values="findByIdsUsr"
               :options-map="((item: UsrModel) => {
                 return {
                   label: item.lbl,
@@ -145,6 +146,7 @@
               v-model="dialogModel.org_id"
               v-model:model-label="dialogModel.org_id_lbl"
               :method="getOrgList"
+              :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
                   label: item.lbl,
@@ -195,7 +197,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -207,7 +209,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -276,12 +278,21 @@ import {
   updateById,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
   getUsrList,
   getOrgList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsUsr,
+} from "@/views/base/usr/Api.ts";
+
+import {
+  findByIds as findByIdsOrg,
+} from "@/views/base/org/Api.ts";
 
 import {
   getDeptTree,

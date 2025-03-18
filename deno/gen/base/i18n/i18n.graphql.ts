@@ -151,6 +151,8 @@ type Query {
   findOneI18n(search: I18nSearch, sort: [SortInput!]): I18nModel
   "根据 id 查找国际化"
   findByIdI18n(id: I18nId!): I18nModel
+  "根据 ids 查找国际化"
+  findByIdsI18n(ids: [I18nId!]!): [I18nModel]!
 }
 type Mutation {
   "批量创建国际化"

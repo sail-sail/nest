@@ -237,9 +237,12 @@ export async function updateById(
  * 根据 id 查找菜单
  */
 export async function findById(
-  id: MenuId,
+  id?: MenuId,
   opt?: GqlOpt,
-) {
+): Promise<MenuModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdMenu?: MenuModel;
   } = await query({
@@ -260,12 +263,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找菜单
+ */
+export async function findByIds(
+  ids: MenuId[],
+  opt?: GqlOpt,
+): Promise<MenuModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: MenuModel[] = [ ];
+  try {
+    const data: {
+      findByIdsMenu: MenuModel[];
+    } = await query({
+      query: `
+        query($ids: [MenuId!]!) {
+          findByIdsMenu(ids: $ids) {
+            ${ menuQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsMenu;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除菜单
  */
 export async function deleteByIds(
   ids: MenuId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsMenu: Mutation["deleteByIdsMenu"];
   } = await mutation({
@@ -289,7 +332,10 @@ export async function enableByIds(
   ids: MenuId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsMenu: Mutation["enableByIdsMenu"];
   } = await mutation({
@@ -314,7 +360,10 @@ export async function lockByIds(
   ids: MenuId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsMenu: Mutation["lockByIdsMenu"];
   } = await mutation({
@@ -338,7 +387,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: MenuId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsMenu: Mutation["revertByIdsMenu"];
   } = await mutation({
@@ -361,7 +413,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: MenuId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsMenu: Mutation["forceDeleteByIdsMenu"];
   } = await mutation({

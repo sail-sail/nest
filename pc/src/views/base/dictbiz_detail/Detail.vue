@@ -82,6 +82,7 @@
             <CustomSelect
               v-model="dialogModel.dictbiz_id"
               :method="getDictbizList"
+              :find-by-values="findByIdsDictbiz"
               :options-map="((item: DictbizModel) => {
                 return {
                   label: item.lbl,
@@ -171,7 +172,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -183,7 +184,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -252,11 +253,16 @@ import {
   updateById,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
   getDictbizList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsDictbiz,
+} from "@/views/base/dictbiz/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
