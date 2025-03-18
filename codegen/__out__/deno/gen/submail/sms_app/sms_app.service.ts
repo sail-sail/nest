@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await sms_appDao.findCount(search);
-  return data;
+  const sms_app_num = await sms_appDao.findCount(search);
+  
+  return sms_app_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: SmsAppModel[] = await sms_appDao.findAll(search, page, sort);
-  return models;
+  const sms_app_models = await sms_appDao.findAll(search, page, sort);
+  
+  return sms_app_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: SmsAppInput,
-) {
-  const data = await sms_appDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await sms_appDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await sms_appDao.findOne(search, sort);
-  return model;
+  const sms_app_model = await sms_appDao.findOne(search, sort);
+  
+  return sms_app_model;
 }
 
 /**
  * 根据 id 查找短信应用
  */
 export async function findById(
-  id?: SmsAppId | null,
+  sms_app_id?: SmsAppId | null,
 ): Promise<SmsAppModel | undefined> {
-  const model = await sms_appDao.findById(id);
-  return model;
+  
+  const sms_app_model = await sms_appDao.findById(sms_app_id);
+  
+  return sms_app_model;
+}
+
+/**
+ * 根据 ids 查找短信应用
+ */
+export async function findByIds(
+  sms_app_ids: SmsAppId[],
+): Promise<SmsAppModel[]> {
+  
+  const sms_app_models = await sms_appDao.findByIds(sms_app_ids);
+  
+  return sms_app_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await sms_appDao.exist(search);
-  return data;
+  const sms_app_exist = await sms_appDao.exist(search);
+  
+  return sms_app_exist;
 }
 
 /**
  * 根据 id 查找短信应用是否存在
  */
 export async function existById(
-  id?: SmsAppId | null,
+  sms_app_id?: SmsAppId | null,
 ): Promise<boolean> {
-  const data = await sms_appDao.existById(id);
-  return data;
+  
+  const sms_app_exist = await sms_appDao.existById(sms_app_id);
+  
+  return sms_app_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: SmsAppInput,
 ): Promise<void> {
-  const data = await sms_appDao.validate(input);
-  return data;
+  await sms_appDao.validate(input);
 }
 
 /**
@@ -124,55 +142,54 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<SmsAppId[]> {
-  const ids = await sms_appDao.creates(inputs, options);
-  return ids;
+  const sms_app_ids = await sms_appDao.creates(inputs, options);
+  
+  return sms_app_ids;
 }
 
 /**
  * 根据 id 修改短信应用
  */
 export async function updateById(
-  id: SmsAppId,
+  sms_app_id: SmsAppId,
   input: SmsAppInput,
 ): Promise<SmsAppId> {
   
-  const is_locked = await sms_appDao.getIsLockedById(id);
+  const is_locked = await sms_appDao.getIsLockedById(sms_app_id);
   if (is_locked) {
     throw "不能修改已经锁定的 短信应用";
   }
   
-  const id2 = await sms_appDao.updateById(id, input);
-  return id2;
+  const sms_app_id2 = await sms_appDao.updateById(sms_app_id, input);
+  
+  return sms_app_id2;
 }
 
 /** 校验短信应用是否存在 */
 export async function validateOption(
   model0?: SmsAppModel,
 ): Promise<SmsAppModel> {
-  const model = await sms_appDao.validateOption(model0);
-  return model;
+  const sms_app_model = await sms_appDao.validateOption(model0);
+  return sms_app_model;
 }
 
 /**
  * 根据 ids 删除短信应用
  */
 export async function deleteByIds(
-  ids: SmsAppId[],
+  sms_app_ids: SmsAppId[],
 ): Promise<number> {
   
-  {
-    const models = await sms_appDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 短信应用";
-      }
+  const old_models = await sms_appDao.findByIds(sms_app_ids);
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 短信应用";
     }
   }
   
-  const data = await sms_appDao.deleteByIds(ids);
-  return data;
+  const sms_app_num = await sms_appDao.deleteByIds(sms_app_ids);
+  return sms_app_num;
 }
 
 /**
@@ -182,47 +199,51 @@ export async function enableByIds(
   ids: SmsAppId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await sms_appDao.enableByIds(ids, is_enabled);
-  return data;
+  const sms_app_num = await sms_appDao.enableByIds(ids, is_enabled);
+  return sms_app_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁短信应用
  */
 export async function lockByIds(
-  ids: SmsAppId[],
+  sms_app_ids: SmsAppId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await sms_appDao.lockByIds(ids, is_locked);
-  return data;
+  const sms_app_num = await sms_appDao.lockByIds(sms_app_ids, is_locked);
+  return sms_app_num;
 }
 
 /**
  * 根据 ids 还原短信应用
  */
 export async function revertByIds(
-  ids: SmsAppId[],
+  sms_app_ids: SmsAppId[],
 ): Promise<number> {
-  const data = await sms_appDao.revertByIds(ids);
-  return data;
+  
+  const sms_app_num = await sms_appDao.revertByIds(sms_app_ids);
+  
+  return sms_app_num;
 }
 
 /**
  * 根据 ids 彻底删除短信应用
  */
 export async function forceDeleteByIds(
-  ids: SmsAppId[],
+  sms_app_ids: SmsAppId[],
 ): Promise<number> {
-  const data = await sms_appDao.forceDeleteByIds(ids);
-  return data;
+  
+  const sms_app_num = await sms_appDao.forceDeleteByIds(sms_app_ids);
+  
+  return sms_app_num;
 }
 
 /**
  * 获取短信应用字段注释
  */
 export async function getFieldComments(): Promise<SmsAppFieldComment> {
-  const data = await sms_appDao.getFieldComments();
-  return data;
+  const sms_app_fields = await sms_appDao.getFieldComments();
+  return sms_app_fields;
 }
 
 /**
@@ -230,6 +251,6 @@ export async function getFieldComments(): Promise<SmsAppFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await sms_appDao.findLastOrderBy();
-  return data;
+  const sms_app_sort = await sms_appDao.findLastOrderBy();
+  return sms_app_sort;
 }

@@ -79,6 +79,7 @@
               v-model="dialogModel.sms_app_id"
               v-model:model-label="dialogModel.sms_app_id_lbl"
               :method="getSmsAppList"
+              :find-by-values="findByIdsSmsApp"
               :options-map="((item: SmsAppModel) => {
                 return {
                   label: item.lbl,
@@ -250,11 +251,16 @@ import {
   findOne,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
   getSmsAppList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsSmsApp,
+} from "@/views/submail/sms_app/Api.ts";
 
 const emit = defineEmits<{
   nextId: [

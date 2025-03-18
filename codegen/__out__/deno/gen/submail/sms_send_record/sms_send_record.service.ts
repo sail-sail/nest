@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await sms_send_recordDao.findCount(search);
-  return data;
+  const sms_send_record_num = await sms_send_recordDao.findCount(search);
+  
+  return sms_send_record_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: SmsSendRecordModel[] = await sms_send_recordDao.findAll(search, page, sort);
-  return models;
+  const sms_send_record_models = await sms_send_recordDao.findAll(search, page, sort);
+  
+  return sms_send_record_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: SmsSendRecordInput,
-) {
-  const data = await sms_send_recordDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await sms_send_recordDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await sms_send_recordDao.findOne(search, sort);
-  return model;
+  const sms_send_record_model = await sms_send_recordDao.findOne(search, sort);
+  
+  return sms_send_record_model;
 }
 
 /**
  * 根据 id 查找短信发送记录
  */
 export async function findById(
-  id?: SmsSendRecordId | null,
+  sms_send_record_id?: SmsSendRecordId | null,
 ): Promise<SmsSendRecordModel | undefined> {
-  const model = await sms_send_recordDao.findById(id);
-  return model;
+  
+  const sms_send_record_model = await sms_send_recordDao.findById(sms_send_record_id);
+  
+  return sms_send_record_model;
+}
+
+/**
+ * 根据 ids 查找短信发送记录
+ */
+export async function findByIds(
+  sms_send_record_ids: SmsSendRecordId[],
+): Promise<SmsSendRecordModel[]> {
+  
+  const sms_send_record_models = await sms_send_recordDao.findByIds(sms_send_record_ids);
+  
+  return sms_send_record_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await sms_send_recordDao.exist(search);
-  return data;
+  const sms_send_record_exist = await sms_send_recordDao.exist(search);
+  
+  return sms_send_record_exist;
 }
 
 /**
  * 根据 id 查找短信发送记录是否存在
  */
 export async function existById(
-  id?: SmsSendRecordId | null,
+  sms_send_record_id?: SmsSendRecordId | null,
 ): Promise<boolean> {
-  const data = await sms_send_recordDao.existById(id);
-  return data;
+  
+  const sms_send_record_exist = await sms_send_recordDao.existById(sms_send_record_id);
+  
+  return sms_send_record_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: SmsSendRecordInput,
 ): Promise<void> {
-  const data = await sms_send_recordDao.validate(input);
-  return data;
+  await sms_send_recordDao.validate(input);
 }
 
 /**
@@ -124,65 +142,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<SmsSendRecordId[]> {
-  const ids = await sms_send_recordDao.creates(inputs, options);
-  return ids;
+  const sms_send_record_ids = await sms_send_recordDao.creates(inputs, options);
+  
+  return sms_send_record_ids;
 }
 
 /**
  * 根据 id 修改短信发送记录
  */
 export async function updateById(
-  id: SmsSendRecordId,
+  sms_send_record_id: SmsSendRecordId,
   input: SmsSendRecordInput,
 ): Promise<SmsSendRecordId> {
   
-  const id2 = await sms_send_recordDao.updateById(id, input);
-  return id2;
+  const sms_send_record_id2 = await sms_send_recordDao.updateById(sms_send_record_id, input);
+  
+  return sms_send_record_id2;
 }
 
 /** 校验短信发送记录是否存在 */
 export async function validateOption(
   model0?: SmsSendRecordModel,
 ): Promise<SmsSendRecordModel> {
-  const model = await sms_send_recordDao.validateOption(model0);
-  return model;
+  const sms_send_record_model = await sms_send_recordDao.validateOption(model0);
+  return sms_send_record_model;
 }
 
 /**
  * 根据 ids 删除短信发送记录
  */
 export async function deleteByIds(
-  ids: SmsSendRecordId[],
+  sms_send_record_ids: SmsSendRecordId[],
 ): Promise<number> {
   
-  const data = await sms_send_recordDao.deleteByIds(ids);
-  return data;
+  const sms_send_record_num = await sms_send_recordDao.deleteByIds(sms_send_record_ids);
+  return sms_send_record_num;
 }
 
 /**
  * 根据 ids 还原短信发送记录
  */
 export async function revertByIds(
-  ids: SmsSendRecordId[],
+  sms_send_record_ids: SmsSendRecordId[],
 ): Promise<number> {
-  const data = await sms_send_recordDao.revertByIds(ids);
-  return data;
+  
+  const sms_send_record_num = await sms_send_recordDao.revertByIds(sms_send_record_ids);
+  
+  return sms_send_record_num;
 }
 
 /**
  * 根据 ids 彻底删除短信发送记录
  */
 export async function forceDeleteByIds(
-  ids: SmsSendRecordId[],
+  sms_send_record_ids: SmsSendRecordId[],
 ): Promise<number> {
-  const data = await sms_send_recordDao.forceDeleteByIds(ids);
-  return data;
+  
+  const sms_send_record_num = await sms_send_recordDao.forceDeleteByIds(sms_send_record_ids);
+  
+  return sms_send_record_num;
 }
 
 /**
  * 获取短信发送记录字段注释
  */
 export async function getFieldComments(): Promise<SmsSendRecordFieldComment> {
-  const data = await sms_send_recordDao.getFieldComments();
-  return data;
+  const sms_send_record_fields = await sms_send_recordDao.getFieldComments();
+  return sms_send_record_fields;
 }

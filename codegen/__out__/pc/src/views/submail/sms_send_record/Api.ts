@@ -139,9 +139,12 @@ export async function findCount(
  * 根据 id 查找短信发送记录
  */
 export async function findById(
-  id: SmsSendRecordId,
+  id?: SmsSendRecordId,
   opt?: GqlOpt,
-) {
+): Promise<SmsSendRecordModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdSmsSendRecord?: SmsSendRecordModel;
   } = await query({
@@ -162,12 +165,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找短信发送记录
+ */
+export async function findByIds(
+  ids: SmsSendRecordId[],
+  opt?: GqlOpt,
+): Promise<SmsSendRecordModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: SmsSendRecordModel[] = [ ];
+  try {
+    const data: {
+      findByIdsSmsSendRecord: SmsSendRecordModel[];
+    } = await query({
+      query: `
+        query($ids: [SmsSendRecordId!]!) {
+          findByIdsSmsSendRecord(ids: $ids) {
+            ${ smsSendRecordQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsSmsSendRecord;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除短信发送记录
  */
 export async function deleteByIds(
   ids: SmsSendRecordId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsSmsSendRecord: Mutation["deleteByIdsSmsSendRecord"];
   } = await mutation({
@@ -190,7 +233,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: SmsSendRecordId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsSmsSendRecord: Mutation["revertByIdsSmsSendRecord"];
   } = await mutation({
@@ -213,7 +259,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: SmsSendRecordId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsSmsSendRecord: Mutation["forceDeleteByIdsSmsSendRecord"];
   } = await mutation({
