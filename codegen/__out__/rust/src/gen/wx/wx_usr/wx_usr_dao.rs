@@ -1425,7 +1425,7 @@ pub async fn set_id_by_lbl(
     });
     let val = dict_model.map(|item| item.val.to_string());
     if let Some(val) = val {
-      input.gender = val.parse::<u32>()?.into();
+      input.gender = val.parse::<i32>()?.into();
     }
   } else if
     (input.gender_lbl.is_none() || input.gender_lbl.as_ref().unwrap().is_empty())
