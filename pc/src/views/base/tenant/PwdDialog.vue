@@ -101,7 +101,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('pwd')"
+        v-if="permit('pwd', '租户管理员密码')"
         plain
         type="primary"
         @click="onSave"

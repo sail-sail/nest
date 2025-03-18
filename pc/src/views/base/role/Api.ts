@@ -230,9 +230,12 @@ export async function updateById(
  * 根据 id 查找角色
  */
 export async function findById(
-  id: RoleId,
+  id?: RoleId,
   opt?: GqlOpt,
-) {
+): Promise<RoleModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdRole?: RoleModel;
   } = await query({
@@ -253,12 +256,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找角色
+ */
+export async function findByIds(
+  ids: RoleId[],
+  opt?: GqlOpt,
+): Promise<RoleModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: RoleModel[] = [ ];
+  try {
+    const data: {
+      findByIdsRole: RoleModel[];
+    } = await query({
+      query: `
+        query($ids: [RoleId!]!) {
+          findByIdsRole(ids: $ids) {
+            ${ roleQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsRole;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除角色
  */
 export async function deleteByIds(
   ids: RoleId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsRole: Mutation["deleteByIdsRole"];
   } = await mutation({
@@ -282,7 +325,10 @@ export async function enableByIds(
   ids: RoleId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsRole: Mutation["enableByIdsRole"];
   } = await mutation({
@@ -307,7 +353,10 @@ export async function lockByIds(
   ids: RoleId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsRole: Mutation["lockByIdsRole"];
   } = await mutation({
@@ -331,7 +380,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: RoleId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsRole: Mutation["revertByIdsRole"];
   } = await mutation({
@@ -354,7 +406,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: RoleId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsRole: Mutation["forceDeleteByIdsRole"];
   } = await mutation({

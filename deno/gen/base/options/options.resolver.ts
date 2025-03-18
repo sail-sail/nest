@@ -107,6 +107,25 @@ export async function findByIdOptions(
 }
 
 /**
+ * 根据 ids 查找系统选项
+ */
+export async function findByIdsOptions(
+  ids: OptionsId[],
+): Promise<OptionsModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./options.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建系统选项
  */
 export async function createsOptions(

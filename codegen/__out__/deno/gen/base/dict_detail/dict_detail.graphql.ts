@@ -153,6 +153,8 @@ type Query {
   findOneDictDetail(search: DictDetailSearch, sort: [SortInput!]): DictDetailModel
   "根据 id 查找系统字典明细"
   findByIdDictDetail(id: DictDetailId!): DictDetailModel
+  "根据 ids 查找系统字典明细"
+  findByIdsDictDetail(ids: [DictDetailId!]!): [DictDetailModel]!
   "查找系统字典明细 order_by 字段的最大值"
   findLastOrderByDictDetail: Int!
 }

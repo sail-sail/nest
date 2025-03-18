@@ -105,6 +105,25 @@ export async function findByIdLoginLog(
 }
 
 /**
+ * 根据 ids 查找登录日志
+ */
+export async function findByIdsLoginLog(
+  ids: LoginLogId[],
+): Promise<LoginLogModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./login_log.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 根据 ids 删除登录日志
  */
 export async function deleteByIdsLoginLog(

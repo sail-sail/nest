@@ -184,7 +184,7 @@
               <el-table-column
                 prop="lbl"
                 label="名称"
-                width="278"
+                width="250"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -201,7 +201,7 @@
               <el-table-column
                 prop="val"
                 label="值"
-                width="278"
+                width="250"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -218,7 +218,7 @@
               <el-table-column
                 prop="rem"
                 label="备注"
-                width="258"
+                width="230"
                 header-align="center"
               >
                 <template #default="{ row }">
@@ -293,7 +293,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -305,7 +305,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -374,6 +374,7 @@ import {
   updateById,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {

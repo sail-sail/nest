@@ -71,43 +71,46 @@ async function savePermit(context, model) {
   );
   // 如果记录已经存在, 则不插入
   {
-    const res = await context.conn.query(
-      `select * from base_permit where menu_id = ? and code = ?`,
-      [
-        model.menu_id,
-        model.code,
-      ],
-    );
-    const model0 = res[0][0];
+    const permit_models = await findAllPermit(context);
+    const model0 = permit_models.find((item) => {
+      return item.menu_id === model.menu_id && item.code === model.code;
+    });
     if (model0) {
-      const lbl0Arr = model0.lbl.split("，");
-      if (!lbl0Arr.includes(model.lbl)) {
-        lbl0Arr.push(model.lbl);
-      }
-      const lbl = lbl0Arr.join("，");
-      const sql = `
-        update base_permit
-        set
-          menu_id = ?,
-          code = ?,
-          lbl = ?,
-          order_by = ?,
-          is_sys = 1
-        where
-          id = ?
-      `;
-      const args = [
-        model.menu_id,
-        model.code,
-        lbl,
-        model.order_by,
-        model0.id,
-      ];
-      try {
-        await context.conn.execute(sql, args);
-      } catch (err) {
-        console.error(model);
-        throw err;
+      let lbl0Arr = [];
+      let lblArr = model.lbl.split("/");
+      lbl0Arr = lbl0Arr.concat(lblArr);
+      lbl0Arr = Array.from(new Set(lbl0Arr));
+      const lbl = lbl0Arr.join("/");
+      if (
+        model0.menu_id !== model.menu_id ||
+        model0.code !== model.code ||
+        model0.lbl !== lbl ||
+        model0.order_by !== model.order_by
+      ) {
+        const sql = `
+          update base_permit
+          set
+            menu_id = ?,
+            code = ?,
+            lbl = ?,
+            order_by = ?,
+            is_sys = 1
+          where
+            id = ?
+        `;
+        const args = [
+          model.menu_id,
+          model.code,
+          lbl,
+          model.order_by,
+          model0.id,
+        ];
+        try {
+          await context.conn.execute(sql, args);
+        } catch (err) {
+          console.error(model);
+          throw err;
+        }
       }
       return;
     }
@@ -248,6 +251,7 @@ async function treeFiles(root, callback) {
 }
 
 async function exec(context) {
+  const permit_models = await findAllPermit(context);
   let files = await readdir(`${ __dirname }/../router`);
   files = files.filter((file) => {
     return ![
@@ -318,14 +322,16 @@ async function exec(context) {
   }
   // 删除多余的权限
   _permitModels = undefined;
-  const permitModels2 = await findAllPermit(context);
-  for (const permitModel of permitModels2) {
+  for (const permit_model of permit_models) {
     const has = permitModelsAll.find((item) => {
-      return item.menu_id === permitModel.menu_id && item.code === permitModel.code;
+      return item.menu_id === permit_model.menu_id && item.code === permit_model.code;
     });
+    // if (permit_model.menu_id === "dswbRB6iQyagjTlxUZquEA" && permit_model.code === "add") {
+    //   console.log("has", has);
+    // }
     if (!has) {
-      console.log("删除", permitModel.id, permitModel.code, permitModel.lbl);
-      await deletePermit(context, permitModel.id);
+      console.log("删除", permit_model.id, permit_model.code, permit_model.lbl);
+      await deletePermit(context, permit_model.id);
     }
   }
 }

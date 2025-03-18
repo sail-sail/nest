@@ -3163,14 +3163,30 @@ export async function findByIds(
     options,
   );
   
-  if (models.length !== ids.length) {
-    throw new Error("findByIds: models.length !== ids.length");
+  if (models.length !== ids.length) {<#
+    if (isUseI18n) {
+    #>
+    const err_msg = await ns("此 {0} 已被删除", await ns("<#=table_comment#>"));<#
+    } else {
+    #>
+    const err_msg = "此 <#=table_comment#> 已被删除";<#
+    }
+    #>
+    throw err_msg;
   }
   
   const models2 = ids.map((id) => {
     const model = models.find((item) => item.id === id);
-    if (!model) {
-      throw new Error(`findByIds: id: ${ id } not found`);
+    if (!model) {<#
+      if (isUseI18n) {
+      #>
+      const err_msg = await ns("此 {0} 已被删除", await ns("<#=table_comment#>"));<#
+      } else {
+      #>
+      const err_msg = "此 <#=table_comment#> 已被删除";<#
+      }
+      #>
+      throw err_msg;
     }
     return model;
   });

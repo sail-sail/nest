@@ -116,6 +116,7 @@ import {
   login,
   getLoginTenants, // 根据 当前网址的域名+端口 获取 租户列表
   clearCache,
+  getLoginTenantByIds,
 } from "./Api";
 
 import type {
@@ -123,21 +124,23 @@ import type {
   MutationLoginArgs,
 } from "#/types";
 
-let i18n = $ref(useI18n("/base/usr"));
-
-let ns = i18n.ns;
-let n = i18n.n;
+const route = useRouter();
 
 const usrStore = useUsrStore();
 const indexStore = useIndexStore();
 const tabsStore = useTabsStore();
 
+let i18n = $ref(useI18n("/base/usr"));
+
+let ns = i18n.ns;
+let n = i18n.n;
+
 usrStore.isLogining = true;
 
 const inputStyle = {
-  backgroundColor: 'transparent',
+  backgroundColor: "transparent",
   border: 0,
-  borderBottom: '1px var(--el-text-color-regular) solid',
+  borderBottom: "1px var(--el-text-color-regular) solid",
   borderRadius: 0,
 };
 
@@ -314,6 +317,9 @@ async function onLogin() {
   if (old_username !== model.username || old_tenant_id !== model.tenant_id) {
     tabsStore.tabs = [ ];
     location.href = "/";
+  } else if (route.currentRoute.value.query.tenant_id) {
+    tabsStore.tabs = [ ];
+    location.href = "/";
   } else {
     window.history.go(0);
   }
@@ -323,7 +329,25 @@ async function onLogin() {
  * 获取租户列表
  */
 async function onGetLoginTenants() {
-  tenants = await getLoginTenants({ domain: window.location.host });
+  const query = route.currentRoute.value.query;
+  let tenant_ids: TenantId[] | undefined = undefined;
+  let tenant_id_str = query.tenant_id as string | undefined;
+  if (!tenant_id_str) {
+    tenant_id_str = localStorage.getItem("login/tenant_id_str") ?? undefined;
+  }
+  if (tenant_id_str) {
+    localStorage.setItem("login/tenant_id_str", tenant_id_str);
+    tenant_ids = tenant_id_str
+      .split(",")
+      .filter(item => item) as TenantId[];
+  }
+  if (!tenant_ids) {
+    tenants = await getLoginTenants({
+      domain: window.location.host,
+    });
+  } else {
+    tenants = await getLoginTenantByIds(tenant_ids);
+  }
   if (!model.tenant_id && tenants.length > 0) {
     let tenant_id = tenants[0].id;
     for (const item of tenants) {

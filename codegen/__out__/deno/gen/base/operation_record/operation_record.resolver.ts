@@ -105,6 +105,25 @@ export async function findByIdOperationRecord(
 }
 
 /**
+ * 根据 ids 查找操作记录
+ */
+export async function findByIdsOperationRecord(
+  ids: OperationRecordId[],
+): Promise<OperationRecordModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./operation_record.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 根据 ids 删除操作记录
  */
 export async function deleteByIdsOperationRecord(

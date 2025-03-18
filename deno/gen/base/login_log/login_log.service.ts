@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await login_logDao.findCount(search);
-  return data;
+  const login_log_num = await login_logDao.findCount(search);
+  
+  return login_log_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: LoginLogModel[] = await login_logDao.findAll(search, page, sort);
-  return models;
+  const login_log_models = await login_logDao.findAll(search, page, sort);
+  
+  return login_log_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: LoginLogInput,
-) {
-  const data = await login_logDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await login_logDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await login_logDao.findOne(search, sort);
-  return model;
+  const login_log_model = await login_logDao.findOne(search, sort);
+  
+  return login_log_model;
 }
 
 /**
  * 根据 id 查找登录日志
  */
 export async function findById(
-  id?: LoginLogId | null,
+  login_log_id?: LoginLogId | null,
 ): Promise<LoginLogModel | undefined> {
-  const model = await login_logDao.findById(id);
-  return model;
+  
+  const login_log_model = await login_logDao.findById(login_log_id);
+  
+  return login_log_model;
+}
+
+/**
+ * 根据 ids 查找登录日志
+ */
+export async function findByIds(
+  login_log_ids: LoginLogId[],
+): Promise<LoginLogModel[]> {
+  
+  const login_log_models = await login_logDao.findByIds(login_log_ids);
+  
+  return login_log_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await login_logDao.exist(search);
-  return data;
+  const login_log_exist = await login_logDao.exist(search);
+  
+  return login_log_exist;
 }
 
 /**
  * 根据 id 查找登录日志是否存在
  */
 export async function existById(
-  id?: LoginLogId | null,
+  login_log_id?: LoginLogId | null,
 ): Promise<boolean> {
-  const data = await login_logDao.existById(id);
-  return data;
+  
+  const login_log_exist = await login_logDao.existById(login_log_id);
+  
+  return login_log_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: LoginLogInput,
 ): Promise<void> {
-  const data = await login_logDao.validate(input);
-  return data;
+  await login_logDao.validate(input);
 }
 
 /**
@@ -124,65 +142,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<LoginLogId[]> {
-  const ids = await login_logDao.creates(inputs, options);
-  return ids;
+  const login_log_ids = await login_logDao.creates(inputs, options);
+  
+  return login_log_ids;
 }
 
 /**
  * 根据 id 修改登录日志
  */
 export async function updateById(
-  id: LoginLogId,
+  login_log_id: LoginLogId,
   input: LoginLogInput,
 ): Promise<LoginLogId> {
   
-  const id2 = await login_logDao.updateById(id, input);
-  return id2;
+  const login_log_id2 = await login_logDao.updateById(login_log_id, input);
+  
+  return login_log_id2;
 }
 
 /** 校验登录日志是否存在 */
 export async function validateOption(
   model0?: LoginLogModel,
 ): Promise<LoginLogModel> {
-  const model = await login_logDao.validateOption(model0);
-  return model;
+  const login_log_model = await login_logDao.validateOption(model0);
+  return login_log_model;
 }
 
 /**
  * 根据 ids 删除登录日志
  */
 export async function deleteByIds(
-  ids: LoginLogId[],
+  login_log_ids: LoginLogId[],
 ): Promise<number> {
   
-  const data = await login_logDao.deleteByIds(ids);
-  return data;
+  const login_log_num = await login_logDao.deleteByIds(login_log_ids);
+  return login_log_num;
 }
 
 /**
  * 根据 ids 还原登录日志
  */
 export async function revertByIds(
-  ids: LoginLogId[],
+  login_log_ids: LoginLogId[],
 ): Promise<number> {
-  const data = await login_logDao.revertByIds(ids);
-  return data;
+  
+  const login_log_num = await login_logDao.revertByIds(login_log_ids);
+  
+  return login_log_num;
 }
 
 /**
  * 根据 ids 彻底删除登录日志
  */
 export async function forceDeleteByIds(
-  ids: LoginLogId[],
+  login_log_ids: LoginLogId[],
 ): Promise<number> {
-  const data = await login_logDao.forceDeleteByIds(ids);
-  return data;
+  
+  const login_log_num = await login_logDao.forceDeleteByIds(login_log_ids);
+  
+  return login_log_num;
 }
 
 /**
  * 获取登录日志字段注释
  */
 export async function getFieldComments(): Promise<LoginLogFieldComment> {
-  const data = await login_logDao.getFieldComments();
-  return data;
+  const login_log_fields = await login_logDao.getFieldComments();
+  return login_log_fields;
 }
