@@ -134,6 +134,8 @@ type Query {
   findOneOrg(search: OrgSearch, sort: [SortInput!]): OrgModel
   "根据 id 查找组织"
   findByIdOrg(id: OrgId!): OrgModel
+  "根据 ids 查找组织"
+  findByIdsOrg(ids: [OrgId!]!): [OrgModel]!
   "查找组织 order_by 字段的最大值"
   findLastOrderByOrg: Int!
 }

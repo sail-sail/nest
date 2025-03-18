@@ -107,6 +107,25 @@ export async function findByIdOrg(
 }
 
 /**
+ * 根据 ids 查找组织
+ */
+export async function findByIdsOrg(
+  ids: OrgId[],
+): Promise<OrgModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./org.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建组织
  */
 export async function createsOrg(
