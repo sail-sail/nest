@@ -4303,7 +4303,7 @@ async function openAuditListDialog(
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowEnter", e);
     return;
   }<#
@@ -4341,7 +4341,7 @@ async function onRowDblclick(
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowDblclick", row);
     return;
   }
@@ -4455,33 +4455,31 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
-  if (num) {<#
-    if (opts?.isRealData) {
-    #>
-    publish({
-      topic: JSON.stringify({
-        pagePath,
-        action: "delete",
-      }),
-      payload: selectedIds,
-    });<#
-    }
-    #>
-    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
-    selectedIds = [ ];
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);<#
-    if (isUseI18n) {
-    #>
-    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));<#
-    } else {
-    #>
-    ElMessage.success(`删除 ${ num } <#=table_comment#> 成功`);<#
-    }
-    #>
-    emit("remove", num);
+  const num = await deleteByIds(selectedIds);<#
+  if (opts?.isRealData) {
+  #>
+  publish({
+    topic: JSON.stringify({
+      pagePath,
+      action: "delete",
+    }),
+    payload: selectedIds,
+  });<#
   }
+  #>
+  tableData = tableData.filter((item) => !selectedIds.includes(item.id));
+  selectedIds = [ ];
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);<#
+  if (isUseI18n) {
+  #>
+  ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));<#
+  } else {
+  #>
+  ElMessage.success(`删除 ${ num } <#=table_comment#> 成功`);<#
+  }
+  #>
+  emit("remove", num);
 }<#
 }
 #><#

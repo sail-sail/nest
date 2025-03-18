@@ -272,21 +272,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsMenu: MenuModel[];
-  } = await query({
-    query: `
-      query($ids: [MenuId!]!) {
-        findByIdsMenu(ids: $ids) {
-          ${ menuQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: MenuModel[] = [ ];
+  try {
+    const data: {
+      findByIdsMenu: MenuModel[];
+    } = await query({
+      query: `
+        query($ids: [MenuId!]!) {
+          findByIdsMenu(ids: $ids) {
+            ${ menuQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsMenu;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsMenu;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);

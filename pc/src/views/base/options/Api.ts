@@ -244,21 +244,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsOptions: OptionsModel[];
-  } = await query({
-    query: `
-      query($ids: [OptionsId!]!) {
-        findByIdsOptions(ids: $ids) {
-          ${ optionsQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: OptionsModel[] = [ ];
+  try {
+    const data: {
+      findByIdsOptions: OptionsModel[];
+    } = await query({
+      query: `
+        query($ids: [OptionsId!]!) {
+          findByIdsOptions(ids: $ids) {
+            ${ optionsQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsOptions;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsOptions;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
