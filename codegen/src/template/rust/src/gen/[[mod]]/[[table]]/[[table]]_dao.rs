@@ -2645,8 +2645,26 @@ pub async fn find_by_ids(
     options,
   ).await?;
   
-  if models.len() != len {
-    return Err(eyre!("find_by_ids: models.length !== ids.length"));
+  if models.len() != len {<#
+    if (isUseI18n) {
+    #>
+    let table_comment = i18n_dao::ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      "此 {0} 已被删除".to_owned(),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "此 <#=table_comment#> 已被删除";<#
+    }
+    #>
+    return Err(eyre!(err_msg));
   }
   
   let models = ids
@@ -2657,8 +2675,26 @@ pub async fn find_by_ids(
         .find(|item| item.id == id);
       if let Some(model) = model {
         return Ok(model.clone());
+      }<#
+      if (isUseI18n) {
+      #>
+      let table_comment = i18n_dao::ns(
+        "<#=table_comment#>".to_owned(),
+        None,
+      ).await?;
+      let map = HashMap::from([
+        ("0".to_owned(), table_comment),
+      ]);
+      let err_msg = i18n_dao::ns(
+        "此 {0} 已经被删除".to_owned(),
+        map.into(),
+      ).await?;<#
+      } else {
+      #>
+      let err_msg = "此 <#=table_comment#> 已经被删除";<#
       }
-      Err(eyre!("find_by_ids: id: {id} not found"))
+      #>
+      Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<<#=Table_Up#>Model>>>()?;
   
