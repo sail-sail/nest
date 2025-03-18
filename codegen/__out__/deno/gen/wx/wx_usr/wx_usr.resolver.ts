@@ -107,6 +107,25 @@ export async function findByIdWxUsr(
 }
 
 /**
+ * 根据 ids 查找小程序用户
+ */
+export async function findByIdsWxUsr(
+  ids: WxUsrId[],
+): Promise<WxUsrModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./wx_usr.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建小程序用户
  */
 export async function createsWxUsr(

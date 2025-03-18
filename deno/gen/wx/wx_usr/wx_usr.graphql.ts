@@ -188,6 +188,8 @@ type Query {
   findOneWxUsr(search: WxUsrSearch, sort: [SortInput!]): WxUsrModel
   "根据 id 查找小程序用户"
   findByIdWxUsr(id: WxUsrId!): WxUsrModel
+  "根据 ids 查找小程序用户"
+  findByIdsWxUsr(ids: [WxUsrId!]!): [WxUsrModel]!
 }
 type Mutation {
   "批量创建小程序用户"

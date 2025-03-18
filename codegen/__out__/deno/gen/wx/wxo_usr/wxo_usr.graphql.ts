@@ -170,6 +170,8 @@ type Query {
   findOneWxoUsr(search: WxoUsrSearch, sort: [SortInput!]): WxoUsrModel
   "根据 id 查找公众号用户"
   findByIdWxoUsr(id: WxoUsrId!): WxoUsrModel
+  "根据 ids 查找公众号用户"
+  findByIdsWxoUsr(ids: [WxoUsrId!]!): [WxoUsrModel]!
 }
 type Mutation {
   "批量创建公众号用户"

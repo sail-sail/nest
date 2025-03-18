@@ -242,6 +242,8 @@ type Query {
   findOnePayTransactionsJsapi(search: PayTransactionsJsapiSearch, sort: [SortInput!]): PayTransactionsJsapiModel
   "根据 id 查找微信JSAPI下单"
   findByIdPayTransactionsJsapi(id: PayTransactionsJsapiId!): PayTransactionsJsapiModel
+  "根据 ids 查找微信JSAPI下单"
+  findByIdsPayTransactionsJsapi(ids: [PayTransactionsJsapiId!]!): [PayTransactionsJsapiModel]!
 }
 
 `);

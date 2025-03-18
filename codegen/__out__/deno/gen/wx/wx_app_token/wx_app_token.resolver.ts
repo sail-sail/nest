@@ -107,6 +107,25 @@ export async function findByIdWxAppToken(
 }
 
 /**
+ * 根据 ids 查找小程序接口凭据
+ */
+export async function findByIdsWxAppToken(
+  ids: WxAppTokenId[],
+): Promise<WxAppTokenModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./wx_app_token.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建小程序接口凭据
  */
 export async function createsWxAppToken(

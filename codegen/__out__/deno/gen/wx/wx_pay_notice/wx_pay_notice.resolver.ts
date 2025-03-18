@@ -103,3 +103,22 @@ export async function findByIdWxPayNotice(
   
   return model;
 }
+
+/**
+ * 根据 ids 查找微信支付通知
+ */
+export async function findByIdsWxPayNotice(
+  ids: WxPayNoticeId[],
+): Promise<WxPayNoticeModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./wx_pay_notice.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}

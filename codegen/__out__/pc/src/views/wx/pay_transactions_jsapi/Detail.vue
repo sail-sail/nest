@@ -375,6 +375,7 @@ import {
   findOne,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -404,6 +405,8 @@ let dialogNotice = $ref("");
 
 let dialogModel: PayTransactionsJsapiInput = $ref({
 } as PayTransactionsJsapiInput);
+
+let pay_transactions_jsapi_model = $ref<PayTransactionsJsapiModel>();
 
 let ids = $ref<PayTransactionsJsapiId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -643,10 +646,11 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
   }
+  pay_transactions_jsapi_model = data;
 }
 
 /** 键盘按 PageUp */
