@@ -32,6 +32,7 @@ export default defineConfig({
         require: true,
         width: 260,
         align: "left",
+        noList: true,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -374,6 +375,7 @@ export default defineConfig({
         COLUMN_NAME: "v3_key",
         align: "left",
         width: 180,
+        noList: true,
       },
       {
         COLUMN_NAME: "payer_client_ip",
