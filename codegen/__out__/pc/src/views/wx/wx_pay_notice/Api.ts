@@ -201,21 +201,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsWxPayNotice: WxPayNoticeModel[];
-  } = await query({
-    query: `
-      query($ids: [WxPayNoticeId!]!) {
-        findByIdsWxPayNotice(ids: $ids) {
-          ${ wxPayNoticeQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: WxPayNoticeModel[] = [ ];
+  try {
+    const data: {
+      findByIdsWxPayNotice: WxPayNoticeModel[];
+    } = await query({
+      query: `
+        query($ids: [WxPayNoticeId!]!) {
+          findByIdsWxPayNotice(ids: $ids) {
+            ${ wxPayNoticeQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsWxPayNotice;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsWxPayNotice;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);

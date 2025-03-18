@@ -196,21 +196,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsPayTransactionsJsapi: PayTransactionsJsapiModel[];
-  } = await query({
-    query: `
-      query($ids: [PayTransactionsJsapiId!]!) {
-        findByIdsPayTransactionsJsapi(ids: $ids) {
-          ${ payTransactionsJsapiQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: PayTransactionsJsapiModel[] = [ ];
+  try {
+    const data: {
+      findByIdsPayTransactionsJsapi: PayTransactionsJsapiModel[];
+    } = await query({
+      query: `
+        query($ids: [PayTransactionsJsapiId!]!) {
+          findByIdsPayTransactionsJsapi(ids: $ids) {
+            ${ payTransactionsJsapiQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsPayTransactionsJsapi;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsPayTransactionsJsapi;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
