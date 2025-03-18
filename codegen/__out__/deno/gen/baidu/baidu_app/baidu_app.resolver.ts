@@ -107,6 +107,25 @@ export async function findByIdBaiduApp(
 }
 
 /**
+ * 根据 ids 查找百度应用
+ */
+export async function findByIdsBaiduApp(
+  ids: BaiduAppId[],
+): Promise<BaiduAppModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./baidu_app.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建百度应用
  */
 export async function createsBaiduApp(

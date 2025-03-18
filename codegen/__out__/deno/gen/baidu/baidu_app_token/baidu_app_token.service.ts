@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await baidu_app_tokenDao.findCount(search);
-  return data;
+  const baidu_app_token_num = await baidu_app_tokenDao.findCount(search);
+  
+  return baidu_app_token_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: BaiduAppTokenModel[] = await baidu_app_tokenDao.findAll(search, page, sort);
-  return models;
+  const baidu_app_token_models = await baidu_app_tokenDao.findAll(search, page, sort);
+  
+  return baidu_app_token_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: BaiduAppTokenInput,
-) {
-  const data = await baidu_app_tokenDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await baidu_app_tokenDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await baidu_app_tokenDao.findOne(search, sort);
-  return model;
+  const baidu_app_token_model = await baidu_app_tokenDao.findOne(search, sort);
+  
+  return baidu_app_token_model;
 }
 
 /**
  * 根据 id 查找百度接口凭据
  */
 export async function findById(
-  id?: BaiduAppTokenId | null,
+  baidu_app_token_id?: BaiduAppTokenId | null,
 ): Promise<BaiduAppTokenModel | undefined> {
-  const model = await baidu_app_tokenDao.findById(id);
-  return model;
+  
+  const baidu_app_token_model = await baidu_app_tokenDao.findById(baidu_app_token_id);
+  
+  return baidu_app_token_model;
+}
+
+/**
+ * 根据 ids 查找百度接口凭据
+ */
+export async function findByIds(
+  baidu_app_token_ids: BaiduAppTokenId[],
+): Promise<BaiduAppTokenModel[]> {
+  
+  const baidu_app_token_models = await baidu_app_tokenDao.findByIds(baidu_app_token_ids);
+  
+  return baidu_app_token_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await baidu_app_tokenDao.exist(search);
-  return data;
+  const baidu_app_token_exist = await baidu_app_tokenDao.exist(search);
+  
+  return baidu_app_token_exist;
 }
 
 /**
  * 根据 id 查找百度接口凭据是否存在
  */
 export async function existById(
-  id?: BaiduAppTokenId | null,
+  baidu_app_token_id?: BaiduAppTokenId | null,
 ): Promise<boolean> {
-  const data = await baidu_app_tokenDao.existById(id);
-  return data;
+  
+  const baidu_app_token_exist = await baidu_app_tokenDao.existById(baidu_app_token_id);
+  
+  return baidu_app_token_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: BaiduAppTokenInput,
 ): Promise<void> {
-  const data = await baidu_app_tokenDao.validate(input);
-  return data;
+  await baidu_app_tokenDao.validate(input);
 }
 
 /**
@@ -124,57 +142,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<BaiduAppTokenId[]> {
-  const ids = await baidu_app_tokenDao.creates(inputs, options);
-  return ids;
+  const baidu_app_token_ids = await baidu_app_tokenDao.creates(inputs, options);
+  
+  return baidu_app_token_ids;
 }
 
 /**
  * 根据 id 修改百度接口凭据
  */
 export async function updateById(
-  id: BaiduAppTokenId,
+  baidu_app_token_id: BaiduAppTokenId,
   input: BaiduAppTokenInput,
 ): Promise<BaiduAppTokenId> {
   
-  const id2 = await baidu_app_tokenDao.updateById(id, input);
-  return id2;
+  const baidu_app_token_id2 = await baidu_app_tokenDao.updateById(baidu_app_token_id, input);
+  
+  return baidu_app_token_id2;
+}
+
+/** 校验百度接口凭据是否存在 */
+export async function validateOption(
+  model0?: BaiduAppTokenModel,
+): Promise<BaiduAppTokenModel> {
+  const baidu_app_token_model = await baidu_app_tokenDao.validateOption(model0);
+  return baidu_app_token_model;
 }
 
 /**
  * 根据 ids 删除百度接口凭据
  */
 export async function deleteByIds(
-  ids: BaiduAppTokenId[],
+  baidu_app_token_ids: BaiduAppTokenId[],
 ): Promise<number> {
   
-  const data = await baidu_app_tokenDao.deleteByIds(ids);
-  return data;
+  const baidu_app_token_num = await baidu_app_tokenDao.deleteByIds(baidu_app_token_ids);
+  return baidu_app_token_num;
 }
 
 /**
  * 根据 ids 还原百度接口凭据
  */
 export async function revertByIds(
-  ids: BaiduAppTokenId[],
+  baidu_app_token_ids: BaiduAppTokenId[],
 ): Promise<number> {
-  const data = await baidu_app_tokenDao.revertByIds(ids);
-  return data;
+  
+  const baidu_app_token_num = await baidu_app_tokenDao.revertByIds(baidu_app_token_ids);
+  
+  return baidu_app_token_num;
 }
 
 /**
  * 根据 ids 彻底删除百度接口凭据
  */
 export async function forceDeleteByIds(
-  ids: BaiduAppTokenId[],
+  baidu_app_token_ids: BaiduAppTokenId[],
 ): Promise<number> {
-  const data = await baidu_app_tokenDao.forceDeleteByIds(ids);
-  return data;
+  
+  const baidu_app_token_num = await baidu_app_tokenDao.forceDeleteByIds(baidu_app_token_ids);
+  
+  return baidu_app_token_num;
 }
 
 /**
  * 获取百度接口凭据字段注释
  */
 export async function getFieldComments(): Promise<BaiduAppTokenFieldComment> {
-  const data = await baidu_app_tokenDao.getFieldComments();
-  return data;
+  const baidu_app_token_fields = await baidu_app_tokenDao.getFieldComments();
+  return baidu_app_token_fields;
 }

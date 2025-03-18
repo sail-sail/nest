@@ -212,9 +212,12 @@ export async function updateById(
  * 根据 id 查找百度应用
  */
 export async function findById(
-  id: BaiduAppId,
+  id?: BaiduAppId,
   opt?: GqlOpt,
-) {
+): Promise<BaiduAppModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdBaiduApp?: BaiduAppModel;
   } = await query({
@@ -235,12 +238,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找百度应用
+ */
+export async function findByIds(
+  ids: BaiduAppId[],
+  opt?: GqlOpt,
+): Promise<BaiduAppModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: BaiduAppModel[] = [ ];
+  try {
+    const data: {
+      findByIdsBaiduApp: BaiduAppModel[];
+    } = await query({
+      query: `
+        query($ids: [BaiduAppId!]!) {
+          findByIdsBaiduApp(ids: $ids) {
+            ${ baiduAppQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsBaiduApp;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除百度应用
  */
 export async function deleteByIds(
   ids: BaiduAppId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsBaiduApp: Mutation["deleteByIdsBaiduApp"];
   } = await mutation({
@@ -264,7 +307,10 @@ export async function enableByIds(
   ids: BaiduAppId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsBaiduApp: Mutation["enableByIdsBaiduApp"];
   } = await mutation({
@@ -289,7 +335,10 @@ export async function lockByIds(
   ids: BaiduAppId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsBaiduApp: Mutation["lockByIdsBaiduApp"];
   } = await mutation({
@@ -313,7 +362,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: BaiduAppId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsBaiduApp: Mutation["revertByIdsBaiduApp"];
   } = await mutation({
@@ -336,7 +388,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: BaiduAppId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsBaiduApp: Mutation["forceDeleteByIdsBaiduApp"];
   } = await mutation({

@@ -158,6 +158,8 @@ type Query {
   findOneBaiduApp(search: BaiduAppSearch, sort: [SortInput!]): BaiduAppModel
   "根据 id 查找百度应用"
   findByIdBaiduApp(id: BaiduAppId!): BaiduAppModel
+  "根据 ids 查找百度应用"
+  findByIdsBaiduApp(ids: [BaiduAppId!]!): [BaiduAppModel]!
   "查找百度应用 order_by 字段的最大值"
   findLastOrderByBaiduApp: Int!
 }

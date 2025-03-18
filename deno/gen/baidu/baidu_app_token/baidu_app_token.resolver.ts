@@ -107,6 +107,25 @@ export async function findByIdBaiduAppToken(
 }
 
 /**
+ * 根据 ids 查找百度接口凭据
+ */
+export async function findByIdsBaiduAppToken(
+  ids: BaiduAppTokenId[],
+): Promise<BaiduAppTokenModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./baidu_app_token.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建百度接口凭据
  */
 export async function createsBaiduAppToken(
