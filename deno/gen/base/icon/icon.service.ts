@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await iconDao.findCount(search);
-  return data;
+  const icon_num = await iconDao.findCount(search);
+  
+  return icon_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: IconModel[] = await iconDao.findAll(search, page, sort);
-  return models;
+  const icon_models = await iconDao.findAll(search, page, sort);
+  
+  return icon_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: IconInput,
-) {
-  const data = await iconDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await iconDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await iconDao.findOne(search, sort);
-  return model;
+  const icon_model = await iconDao.findOne(search, sort);
+  
+  return icon_model;
 }
 
 /**
  * 根据 id 查找图标库
  */
 export async function findById(
-  id?: IconId | null,
+  icon_id?: IconId | null,
 ): Promise<IconModel | undefined> {
-  const model = await iconDao.findById(id);
-  return model;
+  
+  const icon_model = await iconDao.findById(icon_id);
+  
+  return icon_model;
+}
+
+/**
+ * 根据 ids 查找图标库
+ */
+export async function findByIds(
+  icon_ids: IconId[],
+): Promise<IconModel[]> {
+  
+  const icon_models = await iconDao.findByIds(icon_ids);
+  
+  return icon_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await iconDao.exist(search);
-  return data;
+  const icon_exist = await iconDao.exist(search);
+  
+  return icon_exist;
 }
 
 /**
  * 根据 id 查找图标库是否存在
  */
 export async function existById(
-  id?: IconId | null,
+  icon_id?: IconId | null,
 ): Promise<boolean> {
-  const data = await iconDao.existById(id);
-  return data;
+  
+  const icon_exist = await iconDao.existById(icon_id);
+  
+  return icon_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: IconInput,
 ): Promise<void> {
-  const data = await iconDao.validate(input);
-  return data;
+  await iconDao.validate(input);
 }
 
 /**
@@ -124,31 +142,41 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<IconId[]> {
-  const ids = await iconDao.creates(inputs, options);
-  return ids;
+  const icon_ids = await iconDao.creates(inputs, options);
+  
+  return icon_ids;
 }
 
 /**
  * 根据 id 修改图标库
  */
 export async function updateById(
-  id: IconId,
+  icon_id: IconId,
   input: IconInput,
 ): Promise<IconId> {
   
-  const id2 = await iconDao.updateById(id, input);
-  return id2;
+  const icon_id2 = await iconDao.updateById(icon_id, input);
+  
+  return icon_id2;
+}
+
+/** 校验图标库是否存在 */
+export async function validateOption(
+  model0?: IconModel,
+): Promise<IconModel> {
+  const icon_model = await iconDao.validateOption(model0);
+  return icon_model;
 }
 
 /**
  * 根据 ids 删除图标库
  */
 export async function deleteByIds(
-  ids: IconId[],
+  icon_ids: IconId[],
 ): Promise<number> {
   
-  const data = await iconDao.deleteByIds(ids);
-  return data;
+  const icon_num = await iconDao.deleteByIds(icon_ids);
+  return icon_num;
 }
 
 /**
@@ -158,36 +186,40 @@ export async function enableByIds(
   ids: IconId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await iconDao.enableByIds(ids, is_enabled);
-  return data;
+  const icon_num = await iconDao.enableByIds(ids, is_enabled);
+  return icon_num;
 }
 
 /**
  * 根据 ids 还原图标库
  */
 export async function revertByIds(
-  ids: IconId[],
+  icon_ids: IconId[],
 ): Promise<number> {
-  const data = await iconDao.revertByIds(ids);
-  return data;
+  
+  const icon_num = await iconDao.revertByIds(icon_ids);
+  
+  return icon_num;
 }
 
 /**
  * 根据 ids 彻底删除图标库
  */
 export async function forceDeleteByIds(
-  ids: IconId[],
+  icon_ids: IconId[],
 ): Promise<number> {
-  const data = await iconDao.forceDeleteByIds(ids);
-  return data;
+  
+  const icon_num = await iconDao.forceDeleteByIds(icon_ids);
+  
+  return icon_num;
 }
 
 /**
  * 获取图标库字段注释
  */
 export async function getFieldComments(): Promise<IconFieldComment> {
-  const data = await iconDao.getFieldComments();
-  return data;
+  const icon_fields = await iconDao.getFieldComments();
+  return icon_fields;
 }
 
 /**
@@ -195,6 +227,6 @@ export async function getFieldComments(): Promise<IconFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await iconDao.findLastOrderBy();
-  return data;
+  const icon_sort = await iconDao.findLastOrderBy();
+  return icon_sort;
 }

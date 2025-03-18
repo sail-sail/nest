@@ -22,18 +22,20 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 #><template>
 <div
   v-if="!props.readonly"
+  ref="wrapperRef"
   class="select_input_wrapper"
+  tabindex="0"
   :class="{
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
   }"
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
+  @keydown.enter.stop="onEnter"
 >
   <CustomInput
     v-bind="$attrs"
-    ref="inputRef"
-    v-model="inputValue"
+    :model-value="inputValue || props.modelLabel"
     :readonly="props.labelReadonly"
     :clearable="false"
     class="select_input"
@@ -41,7 +43,6 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     :readonly-placeholder="props.placeholder"
     @click="onInput('input')"
     @clear="onClear"
-    @keydown.enter="onEnter"
   >
     <template
       v-for="key in $slots"
@@ -112,7 +113,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     class="custom_select_readonly select_input_readonly"
     v-bind="$attrs"
   >
-    {{ inputValue ?? "" }}
+    {{ inputValue || props.modelLabel }}
   </div>
 </template>
 </template>
@@ -125,7 +126,7 @@ import {
 import SelectList from "./SelectList.vue";
 
 import {
-  findAll,
+  findByIds,
   getPagePath,
 } from "./Api";
 
@@ -156,33 +157,30 @@ const {
 const props = withDefaults(
   defineProps<{
     modelValue?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null;
+    modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;
     disabled?: boolean;
     readonly?: boolean;
     labelReadonly?: boolean;
+    selectListReadonly?: boolean;
     validateEvent?: boolean;
   }>(),
   {
     modelValue: undefined,
+    modelLabel: "",
     multiple: false,
     placeholder: undefined,
     disabled: false,
     readonly: false,
     labelReadonly: true,
+    selectListReadonly: true,
     validateEvent: undefined,
   },
 );
 
 let inputValue = $ref("");
 let oldInputValue = $ref("");
-
-watch(
-  () => inputValue,
-  (value) => {
-    emit("update:modelLabel", value);
-  },
-);
 
 let modelValue = $ref(props.modelValue);
 let selectedValue: <#=modelName#> | (<#=modelName#> | undefined)[] | null | undefined = undefined;
@@ -240,9 +238,10 @@ async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
   if (ids.length === 0) {
     return [ ];
   }
-  const res = await findAll(
+  const res = await findByIds(
+    ids,
     {
-      ids,
+      notLoading: true,
     },
   );
   return res;
@@ -274,7 +273,7 @@ async function refreshInputValue() {
   } else {
     models = await getModelsByIds(modelValueArr);
   }
-  inputValue = models.map((item) => item?.<#=opts?.lbl_field || "lbl"#> || "").join(", ");
+  inputValue = models.map((item) => item?.<#=opts?.lbl_field || "lbl"#> || "").join(",");
   oldInputValue = inputValue;
 }
 
@@ -284,6 +283,7 @@ async function onClear(e?: PointerEvent) {
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  emit("update:modelLabel", inputValue);
   emit("change");
   emit("clear");
   await validateField();
@@ -309,6 +309,7 @@ async function onInput(
   const {
     type,
     selectedIds,
+    selectedModels,
   } = await selectListRef.showDialog({<#
     if (isUseI18n) {
     #>
@@ -320,14 +321,14 @@ async function onInput(
     #>
     action: "select",
     multiple: props.multiple,
-    isReadonly: () => props.readonly,
+    isReadonly: () => props.selectListReadonly,
     model: {
       ids: modelValueArr,
     },
   });
   formItem?.clearValidate();
   focus();
-  if (type === "cancel") {
+  if (type === "cancel" || !selectedIds || !selectedModels) {
     return;
   }
   if (props.multiple) {
@@ -335,33 +336,32 @@ async function onInput(
   } else {
     modelValue = selectedIds[0];
   }
+  inputValue = selectedModels.map((item) => item.lbl || "").join(",");
+  oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  emit("update:modelLabel", inputValue);
 }
 
-const inputRef = $(useTemplateRef<InstanceType<typeof CustomInput>>("inputRef"));
+const wrapperRef = $(useTemplateRef<InstanceType<typeof HTMLDivElement>>("wrapperRef"));
 
 function focus() {
-  if (!inputRef) {
+  if (!wrapperRef) {
     return;
   }
-  inputRef.focus();
+  wrapperRef.focus();
 }
 
 function blur() {
-  if (!inputRef) {
+  if (!wrapperRef) {
     return;
   }
-  inputRef.blur();
+  wrapperRef.focus();
 }
 
 async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined)[] | null) {
   selectedValue = value;
-  await nextTick();
   if (props.multiple) {
     emit("change", value);
-    await nextTick();
-    await nextTick();
-    await validateField();
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
@@ -369,18 +369,12 @@ async function onSelectList(value?: <#=modelName#> | (<#=modelName#> | undefined
   }
   if (!Array.isArray(value)) {
     emit("change", value);
-    await nextTick();
-    await nextTick();
-    await validateField();
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
     return;
   }
   emit("change", value[0]);
-  await nextTick();
-  await nextTick();
-  await validateField();
   if (oldInputValue !== inputValue) {
     await refreshInputValue();
   }

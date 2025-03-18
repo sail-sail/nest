@@ -28,7 +28,6 @@ const props = withDefaults(
     code: string;
   }>(),
   {
-    code: "",
   },
 );
 

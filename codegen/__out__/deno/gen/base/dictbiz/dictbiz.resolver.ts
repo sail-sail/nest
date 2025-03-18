@@ -107,6 +107,25 @@ export async function findByIdDictbiz(
 }
 
 /**
+ * 根据 ids 查找业务字典
+ */
+export async function findByIdsDictbiz(
+  ids: DictbizId[],
+): Promise<DictbizModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./dictbiz.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建业务字典
  */
 export async function createsDictbiz(

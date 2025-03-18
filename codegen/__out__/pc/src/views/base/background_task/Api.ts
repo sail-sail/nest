@@ -144,9 +144,12 @@ export async function findCount(
  * 根据 id 查找后台任务
  */
 export async function findById(
-  id: BackgroundTaskId,
+  id?: BackgroundTaskId,
   opt?: GqlOpt,
-) {
+): Promise<BackgroundTaskModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdBackgroundTask?: BackgroundTaskModel;
   } = await query({
@@ -167,12 +170,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找后台任务
+ */
+export async function findByIds(
+  ids: BackgroundTaskId[],
+  opt?: GqlOpt,
+): Promise<BackgroundTaskModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: BackgroundTaskModel[] = [ ];
+  try {
+    const data: {
+      findByIdsBackgroundTask: BackgroundTaskModel[];
+    } = await query({
+      query: `
+        query($ids: [BackgroundTaskId!]!) {
+          findByIdsBackgroundTask(ids: $ids) {
+            ${ backgroundTaskQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsBackgroundTask;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除后台任务
  */
 export async function deleteByIds(
   ids: BackgroundTaskId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsBackgroundTask: Mutation["deleteByIdsBackgroundTask"];
   } = await mutation({
@@ -195,7 +238,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: BackgroundTaskId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsBackgroundTask: Mutation["revertByIdsBackgroundTask"];
   } = await mutation({
@@ -218,7 +264,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: BackgroundTaskId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsBackgroundTask: Mutation["forceDeleteByIdsBackgroundTask"];
   } = await mutation({
