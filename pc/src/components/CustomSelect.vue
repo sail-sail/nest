@@ -10,7 +10,7 @@
 >
   <ElSelectV2
     ref="selectRef"
-    :options="options4SelectV2"
+    :options="options4SelectV2Compt"
     filterable
     collapse-tags
     collapse-tags-tooltip
@@ -267,10 +267,15 @@ type OptionsMap = (item: any) => OptionType;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let data = $ref<any[]>([ ]);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let modelValueData = $ref<any[]>([ ]);
+
 const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     method: () => Promise<any[]>; // 用于获取数据的方法
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    findByValues?: (value: any[]) => Promise<any[]>; // 通过value获取数据的方法
     optionsMap?: OptionsMap;
     height?: number;
     modelValue?: string | string[] | null;
@@ -290,6 +295,7 @@ const props = withDefaults(
     readonlyMaxCollapseTags?: number;
   }>(),
   {
+    findByValues: undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     optionsMap: function(item: any) {
       const item2 = item as { lbl: string; id: string; };
@@ -327,6 +333,60 @@ async function copyModelLabel() {
 }
 
 let modelValue = $ref(props.modelValue);
+
+watch(
+  () => [
+    modelValue,
+    props.findByValues,
+    inited,
+  ],
+  async () => {
+    // 通过 modelValue 获取 modelValueData
+    if (!inited) {
+      return;
+    }
+    if (!props.findByValues || !modelValue || modelValue.length === 0) {
+      modelValueData = [ ];
+      return;
+    }
+    let modelValueArr: string[] = [ ];
+    if (props.multiple) {
+      modelValueArr = modelValue as string[];
+    } else {
+      modelValueArr = [ modelValue as string ];
+    }
+    // 如果已经存在了, 则不用查询了
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const modelValueData2: any[] = [ ];
+    const modelValueArr2: string[] = [ ];
+    if (options4SelectV2.length > 0) {
+      for (const item of modelValueArr) {
+        let isExist = false;
+        for (const item2 of data) {
+          if (props.optionsMap(item2).value === item) {
+            modelValueData2.push(item2);
+            isExist = true;
+            break;
+          }
+        }
+        if (!isExist) {
+          modelValueArr2.push(item);
+        }
+      }
+    }
+    if (modelValueArr2.length > 0) {
+      const data = await props.findByValues(modelValueArr2);
+      modelValueData2.push(...data);
+    }
+    modelValueData = [ ];
+    for (const item of modelValueArr) {
+      modelValueData.push(modelValueData2.find((item2) => props.optionsMap(item2).value === item));
+    }
+  },
+  {
+    deep: true,
+  },
+);
 
 watch(
   () => props.modelValue,
@@ -585,6 +645,22 @@ let options4SelectV2 = $shallowRef<OptionType[]>(props.options4SelectV2);
 //   },
 // );
 
+const options4SelectV2Compt = $computed(() => {
+  if (modelValueData.length === 0) {
+    return options4SelectV2;
+  }
+  const modelValueDataFilter = modelValueData.filter((item) => {
+    return !options4SelectV2.find((item2) => item2.value === props.optionsMap(item).value);
+  });
+  if (modelValueDataFilter.length === 0) {
+    return options4SelectV2;
+  }
+  return [
+    ...modelValueDataFilter.map(props.optionsMap),
+    ...options4SelectV2,
+  ];
+});
+
 async function refreshDropdownWidth() {
   if (!props.autoWidth) {
     return;
@@ -645,7 +721,7 @@ function handleVisibleChange(visible: boolean) {
   }
 }
 
-async function refreshEfc() {
+async function onRefresh() {
   const method = props.method;
   if (!method) {
     if (!options4SelectV2 || options4SelectV2.length === 0) {
@@ -727,7 +803,7 @@ watch(
 );
 
 if (props.init) {
-  refreshEfc();
+  onRefresh();
 }
 
 async function initFrame() {
@@ -752,7 +828,7 @@ function blur() {
 }
 
 defineExpose({
-  refresh: refreshEfc,
+  refresh: onRefresh,
   refreshModelLabel,
   focus,
   blur,
