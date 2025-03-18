@@ -13,7 +13,6 @@
   >
     <el-form
       ref="searchFormRef"
-      v-search-form-item-width-auto="inited"
       
       size="default"
       :model="search"
@@ -178,7 +177,7 @@
     <template v-if="search.is_deleted !== 1">
       
       <el-button
-        v-if="permit('add') && !isLocked"
+        v-if="permit('add', '新增') && !isLocked"
         plain
         type="primary"
         @click="openAdd"
@@ -190,7 +189,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('add') && !isLocked"
+        v-if="permit('add', '复制') && !isLocked"
         plain
         type="primary"
         @click="openCopy"
@@ -202,7 +201,7 @@
       </el-button>
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('edit', '编辑') && !isLocked"
         plain
         type="primary"
         @click="openEdit"
@@ -297,7 +296,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('add') && !isLocked"
+              v-if="permit('add', '导入') && !isLocked"
               un-justify-center
               @click="onImportExcel"
             >
@@ -305,7 +304,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onEnableByIds(1)"
             >
@@ -313,7 +312,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onEnableByIds(0)"
             >
@@ -321,7 +320,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onLockByIds(1)"
             >
@@ -329,7 +328,7 @@
             </el-dropdown-item>
             
             <el-dropdown-item
-              v-if="permit('edit') && !isLocked"
+              v-if="permit('edit', '编辑') && !isLocked"
               un-justify-center
               @click="onLockByIds(0)"
             >
@@ -537,7 +536,7 @@
             >
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit') && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit', '编辑') && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_locked"
                   @change="onIs_locked(row.id, row.is_locked)"
                 ></CustomSwitch>
@@ -553,7 +552,7 @@
             >
               <template #default="{ row }">
                 <CustomSwitch
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.is_enabled"
                   @change="onIs_enabled(row.id, row.is_enabled)"
                 ></CustomSwitch>
@@ -569,7 +568,7 @@
             >
               <template #default="{ row }">
                 <CustomInputNumber
-                  v-if="permit('edit') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
+                  v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
                   @change="updateById(
@@ -813,13 +812,9 @@ function initSearch() {
   const search = {
     is_deleted: 0,
   } as CompanySearch;
-  if (props.propsNotReset && props.propsNotReset.length > 0) {
-    for (let i = 0; i < props.propsNotReset.length; i++) {
-      const key = props.propsNotReset[i];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (search as any)[key] = (builtInSearch as any)[key];
-    }
-  }
+  props.propsNotReset?.forEach((key) => {
+    search[key] = builtInSearch[key];
+  });
   return search;
 }
 
@@ -1102,20 +1097,25 @@ const {
 
 const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
 
+/** 当前表格数据对应的搜索条件 */
+let currentSearch = $ref<CompanySearch>({ });
+
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
   clearDirty();
+  const search = getDataSearch();
+  currentSearch = search;
   if (isCount) {
     await Promise.all([
-      useFindAll(opt),
-      useFindCount(opt),
+      useFindAll(search, opt),
+      useFindCount(search, opt),
     ]);
   } else {
     await Promise.all([
-      useFindAll(opt),
+      useFindAll(search, opt),
     ]);
   }
 }
@@ -1137,14 +1137,14 @@ function getDataSearch() {
 }
 
 async function useFindAll(
+  search: CompanySearch,
   opt?: GqlOpt,
 ) {
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    const search2 = getDataSearch();
     tableData = await findAll(
-      search2,
+      search,
       {
         pgSize,
         pgOffset,
@@ -1155,9 +1155,8 @@ async function useFindAll(
       opt,
     );
   } else {
-    const search2 = getDataSearch();
     tableData = await findAll(
-      search2,
+      search,
       undefined,
       [
         sort,
@@ -1168,6 +1167,7 @@ async function useFindAll(
 }
 
 async function useFindCount(
+  search: CompanySearch,
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
@@ -1491,7 +1491,7 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowEnter", e);
     return;
   }
@@ -1515,7 +1515,7 @@ async function onRowDblclick(
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowDblclick", row);
     return;
   }
@@ -1581,14 +1581,12 @@ async function onDeleteByIds() {
     return;
   }
   const num = await deleteByIds(selectedIds);
-  if (num) {
-    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
-    selectedIds = [ ];
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-    ElMessage.success(`删除 ${ num } 单位 成功`);
-    emit("remove", num);
-  }
+  tableData = tableData.filter((item) => !selectedIds.includes(item.id));
+  selectedIds = [ ];
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
+  ElMessage.success(`删除 ${ num } 单位 成功`);
+  emit("remove", num);
 }
 
 /** 点击彻底删除 */
@@ -1758,12 +1756,15 @@ watch(
     if (isSearchReset) {
       return;
     }
-    search.is_deleted = builtInSearch.is_deleted;
-    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
-      return;
+    if (builtInSearch.is_deleted != null) {
+      search.is_deleted = builtInSearch.is_deleted;
     }
     if (showBuildIn) {
       Object.assign(search, builtInSearch);
+    }
+    const search2 = getDataSearch();
+    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
+      return;
     }
     await dataGrid(true);
   },

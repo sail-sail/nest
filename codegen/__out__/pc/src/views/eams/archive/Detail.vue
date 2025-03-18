@@ -108,6 +108,7 @@
             <CustomSelect
               v-model="dialogModel.company_id"
               :method="getCompanyList"
+              :find-by-values="findByIdsCompany"
               :options-map="((item: CompanyModel) => {
                 return {
                   label: item.lbl,
@@ -171,7 +172,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -183,7 +184,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -252,11 +253,16 @@ import {
   updateById,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
   getCompanyList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsCompany,
+} from "@/views/eams/company/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -285,6 +291,8 @@ let dialogNotice = $ref("");
 
 let dialogModel: ArchiveInput = $ref({
 } as ArchiveInput);
+
+let archive_model = $ref<ArchiveModel>();
 
 let ids = $ref<ArchiveId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -563,11 +571,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  archive_model = data;
 }
 
 /** 键盘按 PageUp */

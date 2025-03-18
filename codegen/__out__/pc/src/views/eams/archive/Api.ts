@@ -203,9 +203,12 @@ export async function updateById(
  * 根据 id 查找全宗设置
  */
 export async function findById(
-  id: ArchiveId,
+  id?: ArchiveId,
   opt?: GqlOpt,
-) {
+): Promise<ArchiveModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdArchive?: ArchiveModel;
   } = await query({
@@ -226,12 +229,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找全宗设置
+ */
+export async function findByIds(
+  ids: ArchiveId[],
+  opt?: GqlOpt,
+): Promise<ArchiveModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: ArchiveModel[] = [ ];
+  try {
+    const data: {
+      findByIdsArchive: ArchiveModel[];
+    } = await query({
+      query: `
+        query($ids: [ArchiveId!]!) {
+          findByIdsArchive(ids: $ids) {
+            ${ archiveQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsArchive;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除全宗设置
  */
 export async function deleteByIds(
   ids: ArchiveId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsArchive: Mutation["deleteByIdsArchive"];
   } = await mutation({
@@ -254,7 +297,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: ArchiveId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsArchive: Mutation["revertByIdsArchive"];
   } = await mutation({
@@ -277,7 +323,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: ArchiveId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsArchive: Mutation["forceDeleteByIdsArchive"];
   } = await mutation({

@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await companyDao.findCount(search);
-  return data;
+  const company_num = await companyDao.findCount(search);
+  
+  return company_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: CompanyModel[] = await companyDao.findAll(search, page, sort);
-  return models;
+  const company_models = await companyDao.findAll(search, page, sort);
+  
+  return company_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: CompanyInput,
-) {
-  const data = await companyDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await companyDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await companyDao.findOne(search, sort);
-  return model;
+  const company_model = await companyDao.findOne(search, sort);
+  
+  return company_model;
 }
 
 /**
  * 根据 id 查找单位
  */
 export async function findById(
-  id?: CompanyId | null,
+  company_id?: CompanyId | null,
 ): Promise<CompanyModel | undefined> {
-  const model = await companyDao.findById(id);
-  return model;
+  
+  const company_model = await companyDao.findById(company_id);
+  
+  return company_model;
+}
+
+/**
+ * 根据 ids 查找单位
+ */
+export async function findByIds(
+  company_ids: CompanyId[],
+): Promise<CompanyModel[]> {
+  
+  const company_models = await companyDao.findByIds(company_ids);
+  
+  return company_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await companyDao.exist(search);
-  return data;
+  const company_exist = await companyDao.exist(search);
+  
+  return company_exist;
 }
 
 /**
  * 根据 id 查找单位是否存在
  */
 export async function existById(
-  id?: CompanyId | null,
+  company_id?: CompanyId | null,
 ): Promise<boolean> {
-  const data = await companyDao.existById(id);
-  return data;
+  
+  const company_exist = await companyDao.existById(company_id);
+  
+  return company_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: CompanyInput,
 ): Promise<void> {
-  const data = await companyDao.validate(input);
-  return data;
+  await companyDao.validate(input);
 }
 
 /**
@@ -124,47 +142,54 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<CompanyId[]> {
-  const ids = await companyDao.creates(inputs, options);
-  return ids;
+  const company_ids = await companyDao.creates(inputs, options);
+  
+  return company_ids;
 }
 
 /**
  * 根据 id 修改单位
  */
 export async function updateById(
-  id: CompanyId,
+  company_id: CompanyId,
   input: CompanyInput,
 ): Promise<CompanyId> {
   
-  const is_locked = await companyDao.getIsLockedById(id);
+  const is_locked = await companyDao.getIsLockedById(company_id);
   if (is_locked) {
     throw "不能修改已经锁定的 单位";
   }
   
-  const id2 = await companyDao.updateById(id, input);
-  return id2;
+  const company_id2 = await companyDao.updateById(company_id, input);
+  
+  return company_id2;
+}
+
+/** 校验单位是否存在 */
+export async function validateOption(
+  model0?: CompanyModel,
+): Promise<CompanyModel> {
+  const company_model = await companyDao.validateOption(model0);
+  return company_model;
 }
 
 /**
  * 根据 ids 删除单位
  */
 export async function deleteByIds(
-  ids: CompanyId[],
+  company_ids: CompanyId[],
 ): Promise<number> {
   
-  {
-    const models = await companyDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 单位";
-      }
+  const old_models = await companyDao.findByIds(company_ids);
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 单位";
     }
   }
   
-  const data = await companyDao.deleteByIds(ids);
-  return data;
+  const company_num = await companyDao.deleteByIds(company_ids);
+  return company_num;
 }
 
 /**
@@ -174,47 +199,51 @@ export async function enableByIds(
   ids: CompanyId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await companyDao.enableByIds(ids, is_enabled);
-  return data;
+  const company_num = await companyDao.enableByIds(ids, is_enabled);
+  return company_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁单位
  */
 export async function lockByIds(
-  ids: CompanyId[],
+  company_ids: CompanyId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await companyDao.lockByIds(ids, is_locked);
-  return data;
+  const company_num = await companyDao.lockByIds(company_ids, is_locked);
+  return company_num;
 }
 
 /**
  * 根据 ids 还原单位
  */
 export async function revertByIds(
-  ids: CompanyId[],
+  company_ids: CompanyId[],
 ): Promise<number> {
-  const data = await companyDao.revertByIds(ids);
-  return data;
+  
+  const company_num = await companyDao.revertByIds(company_ids);
+  
+  return company_num;
 }
 
 /**
  * 根据 ids 彻底删除单位
  */
 export async function forceDeleteByIds(
-  ids: CompanyId[],
+  company_ids: CompanyId[],
 ): Promise<number> {
-  const data = await companyDao.forceDeleteByIds(ids);
-  return data;
+  
+  const company_num = await companyDao.forceDeleteByIds(company_ids);
+  
+  return company_num;
 }
 
 /**
  * 获取单位字段注释
  */
 export async function getFieldComments(): Promise<CompanyFieldComment> {
-  const data = await companyDao.getFieldComments();
-  return data;
+  const company_fields = await companyDao.getFieldComments();
+  return company_fields;
 }
 
 /**
@@ -222,6 +251,6 @@ export async function getFieldComments(): Promise<CompanyFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await companyDao.findLastOrderBy();
-  return data;
+  const company_sort = await companyDao.findLastOrderBy();
+  return company_sort;
 }
