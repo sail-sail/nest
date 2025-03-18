@@ -12,7 +12,7 @@
   <CustomInput
     v-bind="$attrs"
     ref="inputRef"
-    v-model="inputValue"
+    :model-value="inputValue || props.modelLabel"
     :readonly="props.labelReadonly"
     :clearable="false"
     class="select_input"
@@ -91,7 +91,7 @@
     class="custom_select_readonly select_input_readonly"
     v-bind="$attrs"
   >
-    {{ inputValue ?? "" }}
+    {{ inputValue || props.modelLabel }}
   </div>
 </template>
 </template>
@@ -104,7 +104,7 @@ import {
 import SelectList from "./SelectList.vue";
 
 import {
-  findAll,
+  findByIds,
   getPagePath,
 } from "./Api";
 
@@ -124,6 +124,7 @@ const pagePath = getPagePath();
 const props = withDefaults(
   defineProps<{
     modelValue?: UsrId | UsrId[] | null;
+    modelLabel?: string | null;
     multiple?: boolean;
     placeholder?: string;
     disabled?: boolean;
@@ -133,6 +134,7 @@ const props = withDefaults(
   }>(),
   {
     modelValue: undefined,
+    modelLabel: "",
     multiple: false,
     placeholder: undefined,
     disabled: false,
@@ -144,13 +146,6 @@ const props = withDefaults(
 
 let inputValue = $ref("");
 let oldInputValue = $ref("");
-
-watch(
-  () => inputValue,
-  (value) => {
-    emit("update:modelLabel", value);
-  },
-);
 
 let modelValue = $ref(props.modelValue);
 let selectedValue: UsrModel | (UsrModel | undefined)[] | null | undefined = undefined;
@@ -208,9 +203,10 @@ async function getModelsByIds(ids: UsrId[]) {
   if (ids.length === 0) {
     return [ ];
   }
-  const res = await findAll(
+  const res = await findByIds(
+    ids,
     {
-      ids,
+      notLoading: true,
     },
   );
   return res;
@@ -252,6 +248,7 @@ async function onClear(e?: PointerEvent) {
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  emit("update:modelLabel", inputValue);
   emit("change");
   emit("clear");
   await validateField();
@@ -297,6 +294,7 @@ async function onInput(
     modelValue = selectedIds[0];
   }
   emit("update:modelValue", modelValue);
+  emit("update:modelLabel", inputValue);
 }
 
 const inputRef = $(useTemplateRef<InstanceType<typeof CustomInput>>("inputRef"));

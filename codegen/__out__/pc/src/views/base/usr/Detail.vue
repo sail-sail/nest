@@ -139,6 +139,7 @@
               v-model="dialogModel.role_ids"
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
               :method="getRoleList"
+              :find-by-values="findByIdsRole"
               :options-map="((item: RoleModel) => {
                 return {
                   label: item.lbl,
@@ -177,6 +178,7 @@
               v-model="dialogModel.org_ids"
               :set="dialogModel.org_ids = dialogModel.org_ids ?? [ ]"
               :method="getOrgList"
+              :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
                   label: item.lbl,
@@ -200,6 +202,7 @@
               v-model="dialogModel.default_org_id"
               :init="false"
               :method="getOrgListApi"
+              :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
                   label: item.lbl,
@@ -279,7 +282,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -291,7 +294,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -360,12 +363,21 @@ import {
   updateById,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
   getRoleList,
   getOrgList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsRole,
+} from "@/views/base/role/Api.ts";
+
+import {
+  findByIds as findByIdsOrg,
+} from "@/views/base/org/Api.ts";
 
 import {
   getDeptTree,
@@ -401,6 +413,8 @@ let dialogModel: UsrInput = $ref({
   dept_ids: [ ],
   org_ids: [ ],
 } as UsrInput);
+
+let usr_model = $ref<UsrModel>();
 
 let ids = $ref<UsrId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -706,12 +720,13 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     old_default_org_id = dialogModel.default_org_id;
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  usr_model = data;
 }
 
 /** 键盘按 PageUp */

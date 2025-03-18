@@ -206,9 +206,12 @@ export async function updateById(
  * 根据 id 查找业务字典明细
  */
 export async function findById(
-  id: DictbizDetailId,
+  id?: DictbizDetailId,
   opt?: GqlOpt,
-) {
+): Promise<DictbizDetailModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdDictbizDetail?: DictbizDetailModel;
   } = await query({
@@ -229,12 +232,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找业务字典明细
+ */
+export async function findByIds(
+  ids: DictbizDetailId[],
+  opt?: GqlOpt,
+): Promise<DictbizDetailModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: DictbizDetailModel[] = [ ];
+  try {
+    const data: {
+      findByIdsDictbizDetail: DictbizDetailModel[];
+    } = await query({
+      query: `
+        query($ids: [DictbizDetailId!]!) {
+          findByIdsDictbizDetail(ids: $ids) {
+            ${ dictbizDetailQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsDictbizDetail;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除业务字典明细
  */
 export async function deleteByIds(
   ids: DictbizDetailId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsDictbizDetail: Mutation["deleteByIdsDictbizDetail"];
   } = await mutation({
@@ -258,7 +301,10 @@ export async function enableByIds(
   ids: DictbizDetailId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsDictbizDetail: Mutation["enableByIdsDictbizDetail"];
   } = await mutation({
@@ -282,7 +328,10 @@ export async function enableByIds(
 export async function revertByIds(
   ids: DictbizDetailId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsDictbizDetail: Mutation["revertByIdsDictbizDetail"];
   } = await mutation({
@@ -305,7 +354,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: DictbizDetailId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsDictbizDetail: Mutation["forceDeleteByIdsDictbizDetail"];
   } = await mutation({

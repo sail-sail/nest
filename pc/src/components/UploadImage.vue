@@ -7,7 +7,6 @@
   un-max="h-59"
   un-items="center"
   un-gap="2"
-  un-m="l-1px"
   :style="{
     'min-height': `${ (props.itemHeight + 4) }px`,
   }"
@@ -27,7 +26,7 @@
     <div
       un-cursor-pointer
       un-rounded
-      un-b="1 solid transparent hover:gray-700 hover:dark:gray-300"
+      un-b="1 solid transparent hover:gray-400"
       un-transition="border-color"
       un-p="0.25"
       un-box-border
@@ -128,7 +127,7 @@
     @keydown.enter="onUpload"
   >
     <div
-      un-b="1 dotted gray-300 hover:[var(--el-color-primary)]"
+      un-b="1 dotted gray-300 dark:gray-600 hover:[var(--el-color-primary)]"
       un-flex="~"
       un-justify-center
       un-items-center
@@ -142,7 +141,7 @@
     >
       <el-icon
         color="gray"
-        :size="28"
+        :size="23"
       >
         <ElIconPlus />
       </el-icon>
@@ -190,7 +189,7 @@
       un-justify-center
       un-items-center
       un-b="1 dotted gray-300 dark:gray-600"
-      un-rounded="md"
+      un-rounded
     ></div>
   </div>
 </div>

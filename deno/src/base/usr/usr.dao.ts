@@ -12,7 +12,7 @@ import {
 
 // usr
 import {
-  findById as findUsrById,
+  findById as findByIdUsr,
   validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
@@ -24,7 +24,7 @@ export async function getTokenByUsrId(
   org_id?: OrgId | null,
 ) {
   const usr_model = await validateOptionUsr(
-    await findUsrById(usr_id),
+    await findByIdUsr(usr_id),
   );
   const username = usr_model.username;
   
@@ -169,4 +169,24 @@ export async function getTenant_id(
     tenant_id = await getTenant_idByWx_usr();
   }
   return tenant_id;
+}
+
+/** 返回用户是否为超级管理员 */
+export async function isAdmin(
+  usr_id: UsrId,
+): Promise<boolean> {
+  
+  const usr_model = await findByIdUsr(usr_id);
+  
+  if (!usr_model) {
+    return false;
+  }
+  
+  if (!usr_model.is_enabled) {
+    return false;
+  }
+  
+  const username = usr_model.username;
+  
+  return username === "admin";
 }
