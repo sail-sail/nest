@@ -65,7 +65,11 @@ export default defineStore("tabs", function() {
     }
     tab1.query = tab1.query || { };
     tab2.query = tab2.query || { };
-    const keys1 = [ "path", "query" ];
+    const keys1 = Object.keys(tab1.query);
+    const keys2 = Object.keys(tab2.query);
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
     for (let i = 0; i < keys1.length; i++) {
       const key1 = keys1[i];
       const val1 = tab1.query[key1];

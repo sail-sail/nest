@@ -133,9 +133,12 @@ export async function findCount(
  * 根据 id 查找操作记录
  */
 export async function findById(
-  id: OperationRecordId,
+  id?: OperationRecordId,
   opt?: GqlOpt,
-) {
+): Promise<OperationRecordModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdOperationRecord?: OperationRecordModel;
   } = await query({
@@ -156,12 +159,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找操作记录
+ */
+export async function findByIds(
+  ids: OperationRecordId[],
+  opt?: GqlOpt,
+): Promise<OperationRecordModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: OperationRecordModel[] = [ ];
+  try {
+    const data: {
+      findByIdsOperationRecord: OperationRecordModel[];
+    } = await query({
+      query: `
+        query($ids: [OperationRecordId!]!) {
+          findByIdsOperationRecord(ids: $ids) {
+            ${ operationRecordQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsOperationRecord;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除操作记录
  */
 export async function deleteByIds(
   ids: OperationRecordId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsOperationRecord: Mutation["deleteByIdsOperationRecord"];
   } = await mutation({
@@ -184,7 +227,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: OperationRecordId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsOperationRecord: Mutation["revertByIdsOperationRecord"];
   } = await mutation({
@@ -207,7 +253,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: OperationRecordId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsOperationRecord: Mutation["forceDeleteByIdsOperationRecord"];
   } = await mutation({

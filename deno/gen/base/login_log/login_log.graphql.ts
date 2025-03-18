@@ -101,6 +101,8 @@ type Query {
   findOneLoginLog(search: LoginLogSearch, sort: [SortInput!]): LoginLogModel
   "根据 id 查找登录日志"
   findByIdLoginLog(id: LoginLogId!): LoginLogModel
+  "根据 ids 查找登录日志"
+  findByIdsLoginLog(ids: [LoginLogId!]!): [LoginLogModel]!
 }
 type Mutation {
   "根据 ids 删除登录日志"

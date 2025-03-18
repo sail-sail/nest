@@ -116,6 +116,25 @@ export async function findByIdMenu(
 }
 
 /**
+ * 根据 ids 查找菜单
+ */
+export async function findByIdsMenu(
+  ids: MenuId[],
+): Promise<MenuModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./menu.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建菜单
  */
 export async function createsMenu(

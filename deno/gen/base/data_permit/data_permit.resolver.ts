@@ -107,6 +107,25 @@ export async function findByIdDataPermit(
 }
 
 /**
+ * 根据 ids 查找数据权限
+ */
+export async function findByIdsDataPermit(
+  ids: DataPermitId[],
+): Promise<DataPermitModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./data_permit.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建数据权限
  */
 export async function createsDataPermit(
