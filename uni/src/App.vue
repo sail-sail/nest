@@ -3,6 +3,11 @@
 onLaunch((async(options?: App.LaunchShowOption) => {
   const indexStore = useIndexStore();
   indexStore.setLaunchOptions(options);
+  
+  // #ifdef H5
+  await initWxoCfg();
+  // #endif
+  
 }));
 
 </script>

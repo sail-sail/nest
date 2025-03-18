@@ -17,7 +17,8 @@ export const AUTHORIZATION = "authorization";
 
 export interface AuthModel extends JWTPayload {
   id: UsrId;
-  wx_usr_id?: string;
+  wx_usr_id?: WxUsrId;
+  wxo_usr_id?: WxoUsrId;
   tenant_id: TenantId;
   org_id?: OrgId;
   lang: string;

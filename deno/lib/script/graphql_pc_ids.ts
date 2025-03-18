@@ -134,6 +134,60 @@ export function getScalars() {
       "output": "UsrId",
     },
     
+    // 微信JSAPI下单
+    "PayTransactionsJsapiId": {
+      "input": "PayTransactionsJsapiId",
+      "output": "PayTransactionsJsapiId",
+    },
+    
+    // 小程序设置
+    "WxAppId": {
+      "input": "WxAppId",
+      "output": "WxAppId",
+    },
+    
+    // 小程序接口凭据
+    "WxAppTokenId": {
+      "input": "WxAppTokenId",
+      "output": "WxAppTokenId",
+    },
+    
+    // 微信支付设置
+    "WxPayId": {
+      "input": "WxPayId",
+      "output": "WxPayId",
+    },
+    
+    // 微信支付通知
+    "WxPayNoticeId": {
+      "input": "WxPayNoticeId",
+      "output": "WxPayNoticeId",
+    },
+    
+    // 小程序用户
+    "WxUsrId": {
+      "input": "WxUsrId",
+      "output": "WxUsrId",
+    },
+    
+    // 公众号设置
+    "WxoAppId": {
+      "input": "WxoAppId",
+      "output": "WxoAppId",
+    },
+    
+    // 小程序接口凭据
+    "WxoAppTokenId": {
+      "input": "WxoAppTokenId",
+      "output": "WxoAppTokenId",
+    },
+    
+    // 公众号用户
+    "WxoUsrId": {
+      "input": "WxoUsrId",
+      "output": "WxoUsrId",
+    },
+    
   };
   return scalars;
 }

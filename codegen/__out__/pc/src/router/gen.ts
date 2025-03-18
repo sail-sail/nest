@@ -266,4 +266,88 @@ export const routesGen: Array<RouteRecordRaw> = [
       },
     ],
   },
+  {
+    path: "/wx/pay_transactions_jsapi",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "微信JSAPI下单",
+        component: () => import("@/views/wx/pay_transactions_jsapi/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wx/wx_app",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "小程序设置",
+        component: () => import("@/views/wx/wx_app/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wx/wx_pay",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "微信支付设置",
+        component: () => import("@/views/wx/wx_pay/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wx/wx_pay_notice",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "微信支付通知",
+        component: () => import("@/views/wx/wx_pay_notice/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wx/wx_usr",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "小程序用户",
+        component: () => import("@/views/wx/wx_usr/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wx/wxo_app",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "公众号设置",
+        component: () => import("@/views/wx/wxo_app/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
+  {
+    path: "/wx/wxo_usr",
+    component: Layout1,
+    children: [
+      {
+        path: "",
+        name: "公众号用户",
+        component: () => import("@/views/wx/wxo_usr/List.vue"),
+        props: (route) => route.query,
+      },
+    ],
+  },
 ];
