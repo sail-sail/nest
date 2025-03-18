@@ -13,7 +13,6 @@
   >
     <el-form
       ref="searchFormRef"
-      v-search-form-item-width-auto="inited"
       
       size="default"
       :model="search"
@@ -173,7 +172,7 @@
     <template v-if="true">
       
       <el-button
-        v-if="permit('edit') && !isLocked"
+        v-if="permit('edit', '编辑') && !isLocked"
         plain
         type="primary"
         @click="openEdit"
@@ -499,13 +498,9 @@ const tableRef = $(useTemplateRef<InstanceType<typeof ElTable>>("tableRef"));
 function initSearch() {
   const search = {
   } as PermitSearch;
-  if (props.propsNotReset && props.propsNotReset.length > 0) {
-    for (let i = 0; i < props.propsNotReset.length; i++) {
-      const key = props.propsNotReset[i];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (search as any)[key] = (builtInSearch as any)[key];
-    }
-  }
+  props.propsNotReset?.forEach((key) => {
+    search[key] = builtInSearch[key];
+  });
   return search;
 }
 
@@ -739,20 +734,25 @@ const {
 
 const detailRef = $(useTemplateRef<InstanceType<typeof Detail>>("detailRef"));
 
+/** 当前表格数据对应的搜索条件 */
+let currentSearch = $ref<PermitSearch>({ });
+
 /** 刷新表格 */
 async function dataGrid(
   isCount = false,
   opt?: GqlOpt,
 ) {
   clearDirty();
+  const search = getDataSearch();
+  currentSearch = search;
   if (isCount) {
     await Promise.all([
-      useFindAll(opt),
-      useFindCount(opt),
+      useFindAll(search, opt),
+      useFindCount(search, opt),
     ]);
   } else {
     await Promise.all([
-      useFindAll(opt),
+      useFindAll(search, opt),
     ]);
   }
 }
@@ -772,14 +772,14 @@ function getDataSearch() {
 }
 
 async function useFindAll(
+  search: PermitSearch,
   opt?: GqlOpt,
 ) {
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    const search2 = getDataSearch();
     tableData = await findAll(
-      search2,
+      search,
       {
         pgSize,
         pgOffset,
@@ -790,9 +790,8 @@ async function useFindAll(
       opt,
     );
   } else {
-    const search2 = getDataSearch();
     tableData = await findAll(
-      search2,
+      search,
       undefined,
       [
         sort,
@@ -803,6 +802,7 @@ async function useFindAll(
 }
 
 async function useFindCount(
+  search: PermitSearch,
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
@@ -898,7 +898,7 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowEnter", e);
     return;
   }
@@ -920,7 +920,7 @@ async function onRowDblclick(
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowDblclick", row);
     return;
   }
@@ -994,11 +994,12 @@ watch(
     if (isSearchReset) {
       return;
     }
-    if (deepCompare(builtInSearch, search, undefined, [ "selectedIds" ])) {
-      return;
-    }
     if (showBuildIn) {
       Object.assign(search, builtInSearch);
+    }
+    const search2 = getDataSearch();
+    if (deepCompare(currentSearch, search2, undefined, [ "selectedIds" ])) {
+      return;
     }
     await dataGrid(true);
   },

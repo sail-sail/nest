@@ -107,6 +107,25 @@ export async function findByIdOptbiz(
 }
 
 /**
+ * 根据 ids 查找业务选项
+ */
+export async function findByIdsOptbiz(
+  ids: OptbizId[],
+): Promise<OptbizModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./optbiz.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建业务选项
  */
 export async function createsOptbiz(

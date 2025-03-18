@@ -111,6 +111,7 @@
               v-model="dialogModel.domain_ids"
               :set="dialogModel.domain_ids = dialogModel.domain_ids ?? [ ]"
               :method="getDomainList"
+              :find-by-values="findByIdsDomain"
               :options-map="((item: DomainModel) => {
                 return {
                   label: item.lbl,
@@ -176,6 +177,7 @@
               v-model="dialogModel.lang_id"
               v-model:model-label="dialogModel.lang_id_lbl"
               :method="getLangList"
+              :find-by-values="findByIdsLang"
               :options-map="((item: LangModel) => {
                 return {
                   label: item.lbl,
@@ -239,7 +241,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -251,7 +253,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -325,12 +327,21 @@ import {
   updateById,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
   getDomainList,
   getLangList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsDomain,
+} from "@/views/base/domain/Api.ts";
+
+import {
+  findByIds as findByIdsLang,
+} from "@/views/base/lang/Api.ts";
 
 // 域名
 import DomainDetailDialog from "@/views/base/domain/Detail.vue";
@@ -369,6 +380,8 @@ let dialogModel: TenantInput = $ref({
   domain_ids: [ ],
   menu_ids: [ ],
 } as TenantInput);
+
+let tenant_model = $ref<TenantModel>();
 
 let ids = $ref<TenantId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -703,11 +716,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  tenant_model = data;
 }
 
 /** 键盘按 PageUp */
