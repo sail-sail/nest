@@ -119,6 +119,18 @@ import {
 } from "/src/base/options/options.dao.ts";<#
 }
 #><#
+if (
+  (hasAudit && auditTable_Up) ||
+  opts.filterDataByCreateUsr ||
+  hasOrgId
+) {
+#>
+
+import {
+  isAdmin,
+} from "/src/base/usr/usr.dao.ts";<#
+}
+#><#
 if (hasAudit && auditTable_Up) {
 #>
 
@@ -182,20 +194,19 @@ async function setSearchQuery(<#
     org_ids.push("" as OrgId);
   }<#
     }
-  #>
-  const username = usr_model.username;<#
+  #><#
   }
   #><#
   if (opts.filterDataByCreateUsr) {
   #>
   
-  if (username !== "admin") {
+  if (!await isAdmin(usr_id)) {
     search.create_usr_id = [ usr_id ];
   }<#
   } else if (hasOrgId) {
   #>
   
-  if (username !== "admin") {
+  if (!await isAdmin(usr_id)) {
     search.org_id = org_ids;
   }<#
   }
@@ -509,7 +520,10 @@ export async function updateById(
   if (hasAudit) {
   #>
   
-  if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited &&
+  const usr_id = await get_usr_id(true);
+  if (
+    !isAdmin(usr_id) &&
+    old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited &&
     old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected
   ) {<#
     if (isUseI18n) {
@@ -964,18 +978,21 @@ export async function deleteByIds(
   if (hasAudit) {
   #>
   
-  for (const old_model of old_models) {
-    if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited &&
-      old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected
-    ) {<#
-      if (isUseI18n) {
-      #>
-      throw await ns("只有未提交的 {0} 才能删除", await ns("<#=table_comment#>"));<#
-      } else {
-      #>
-      throw "只有未提交的 <#=table_comment#> 才能删除";<#
+  const usr_id = await get_usr_id(true);
+  if (!await isAdmin(usr_id)) {
+    for (const old_model of old_models) {
+      if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited &&
+        old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected
+      ) {<#
+        if (isUseI18n) {
+        #>
+        throw await ns("只有未提交的 {0} 才能删除", await ns("<#=table_comment#>"));<#
+        } else {
+        #>
+        throw "只有未提交的 <#=table_comment#> 才能删除";<#
+        }
+        #>
       }
-      #>
     }
   }<#
   }

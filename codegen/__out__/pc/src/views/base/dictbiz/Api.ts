@@ -253,21 +253,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsDictbiz: DictbizModel[];
-  } = await query({
-    query: `
-      query($ids: [DictbizId!]!) {
-        findByIdsDictbiz(ids: $ids) {
-          ${ dictbizQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: DictbizModel[] = [ ];
+  try {
+    const data: {
+      findByIdsDictbiz: DictbizModel[];
+    } = await query({
+      query: `
+        query($ids: [DictbizId!]!) {
+          findByIdsDictbiz(ids: $ids) {
+            ${ dictbizQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsDictbiz;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsDictbiz;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
