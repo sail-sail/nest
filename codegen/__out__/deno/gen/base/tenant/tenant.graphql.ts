@@ -217,6 +217,8 @@ type Query {
   findOneTenant(search: TenantSearch, sort: [SortInput!]): TenantModel
   "根据 id 查找租户"
   findByIdTenant(id: TenantId!): TenantModel
+  "根据 ids 查找租户"
+  findByIdsTenant(ids: [TenantId!]!): [TenantModel]!
   "查找租户 order_by 字段的最大值"
   findLastOrderByTenant: Int!
 }
