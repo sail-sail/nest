@@ -168,21 +168,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsOperationRecord: OperationRecordModel[];
-  } = await query({
-    query: `
-      query($ids: [OperationRecordId!]!) {
-        findByIdsOperationRecord(ids: $ids) {
-          ${ operationRecordQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: OperationRecordModel[] = [ ];
+  try {
+    const data: {
+      findByIdsOperationRecord: OperationRecordModel[];
+    } = await query({
+      query: `
+        query($ids: [OperationRecordId!]!) {
+          findByIdsOperationRecord(ids: $ids) {
+            ${ operationRecordQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsOperationRecord;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsOperationRecord;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);

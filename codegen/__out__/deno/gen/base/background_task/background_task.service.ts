@@ -13,6 +13,10 @@ import {
   validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  isAdmin,
+} from "/src/base/usr/usr.dao.ts";
+
 import * as background_taskDao from "./background_task.dao.ts";
 
 async function setSearchQuery(
@@ -24,9 +28,8 @@ async function setSearchQuery(
   if (!usr_id || !usr_model) {
     throw new Error("usr_id can not be null");
   }
-  const username = usr_model.username;
   
-  if (username !== "admin") {
+  if (!await isAdmin(usr_id)) {
     search.create_usr_id = [ usr_id ];
   }
   

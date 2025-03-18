@@ -777,13 +777,15 @@ export async function findByIds(
   );
   
   if (models.length !== ids.length) {
-    throw new Error("findByIds: models.length !== ids.length");
+    const err_msg = "此 图标库 已被删除";
+    throw err_msg;
   }
   
   const models2 = ids.map((id) => {
     const model = models.find((item) => item.id === id);
     if (!model) {
-      throw new Error(`findByIds: id: ${ id } not found`);
+      const err_msg = "此 图标库 已被删除";
+      throw err_msg;
     }
     return model;
   });

@@ -238,21 +238,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsLang: LangModel[];
-  } = await query({
-    query: `
-      query($ids: [LangId!]!) {
-        findByIdsLang(ids: $ids) {
-          ${ langQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: LangModel[] = [ ];
+  try {
+    const data: {
+      findByIdsLang: LangModel[];
+    } = await query({
+      query: `
+        query($ids: [LangId!]!) {
+          findByIdsLang(ids: $ids) {
+            ${ langQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsLang;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsLang;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);

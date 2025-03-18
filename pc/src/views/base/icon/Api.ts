@@ -248,21 +248,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsIcon: IconModel[];
-  } = await query({
-    query: `
-      query($ids: [IconId!]!) {
-        findByIdsIcon(ids: $ids) {
-          ${ iconQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: IconModel[] = [ ];
+  try {
+    const data: {
+      findByIdsIcon: IconModel[];
+    } = await query({
+      query: `
+        query($ids: [IconId!]!) {
+          findByIdsIcon(ids: $ids) {
+            ${ iconQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsIcon;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsIcon;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
