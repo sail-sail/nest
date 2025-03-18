@@ -161,6 +161,8 @@ type Query {
   findOneSeo(search: SeoSearch, sort: [SortInput!]): SeoModel
   "根据 id 查找SEO优化"
   findByIdSeo(id: SeoId!): SeoModel
+  "根据 ids 查找SEO优化"
+  findByIdsSeo(ids: [SeoId!]!): [SeoModel]!
   "查找SEO优化 order_by 字段的最大值"
   findLastOrderBySeo: Int!
 }

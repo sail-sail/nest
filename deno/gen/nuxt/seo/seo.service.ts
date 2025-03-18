@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await seoDao.findCount(search);
-  return data;
+  const seo_num = await seoDao.findCount(search);
+  
+  return seo_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: SeoModel[] = await seoDao.findAll(search, page, sort);
-  return models;
+  const seo_models = await seoDao.findAll(search, page, sort);
+  
+  return seo_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: SeoInput,
-) {
-  const data = await seoDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await seoDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await seoDao.findOne(search, sort);
-  return model;
+  const seo_model = await seoDao.findOne(search, sort);
+  
+  return seo_model;
 }
 
 /**
  * 根据 id 查找SEO优化
  */
 export async function findById(
-  id?: SeoId | null,
+  seo_id?: SeoId | null,
 ): Promise<SeoModel | undefined> {
-  const model = await seoDao.findById(id);
-  return model;
+  
+  const seo_model = await seoDao.findById(seo_id);
+  
+  return seo_model;
+}
+
+/**
+ * 根据 ids 查找SEO优化
+ */
+export async function findByIds(
+  seo_ids: SeoId[],
+): Promise<SeoModel[]> {
+  
+  const seo_models = await seoDao.findByIds(seo_ids);
+  
+  return seo_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await seoDao.exist(search);
-  return data;
+  const seo_exist = await seoDao.exist(search);
+  
+  return seo_exist;
 }
 
 /**
  * 根据 id 查找SEO优化是否存在
  */
 export async function existById(
-  id?: SeoId | null,
+  seo_id?: SeoId | null,
 ): Promise<boolean> {
-  const data = await seoDao.existById(id);
-  return data;
+  
+  const seo_exist = await seoDao.existById(seo_id);
+  
+  return seo_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: SeoInput,
 ): Promise<void> {
-  const data = await seoDao.validate(input);
-  return data;
+  await seoDao.validate(input);
 }
 
 /**
@@ -124,47 +142,54 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<SeoId[]> {
-  const ids = await seoDao.creates(inputs, options);
-  return ids;
+  const seo_ids = await seoDao.creates(inputs, options);
+  
+  return seo_ids;
 }
 
 /**
  * 根据 id 修改SEO优化
  */
 export async function updateById(
-  id: SeoId,
+  seo_id: SeoId,
   input: SeoInput,
 ): Promise<SeoId> {
   
-  const is_locked = await seoDao.getIsLockedById(id);
+  const is_locked = await seoDao.getIsLockedById(seo_id);
   if (is_locked) {
     throw "不能修改已经锁定的 SEO优化";
   }
   
-  const id2 = await seoDao.updateById(id, input);
-  return id2;
+  const seo_id2 = await seoDao.updateById(seo_id, input);
+  
+  return seo_id2;
+}
+
+/** 校验SEO优化是否存在 */
+export async function validateOption(
+  model0?: SeoModel,
+): Promise<SeoModel> {
+  const seo_model = await seoDao.validateOption(model0);
+  return seo_model;
 }
 
 /**
  * 根据 ids 删除SEO优化
  */
 export async function deleteByIds(
-  ids: SeoId[],
+  seo_ids: SeoId[],
 ): Promise<number> {
   
-  {
-    const models = await seoDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 SEO优化";
-      }
+  const old_models = await seoDao.findByIds(seo_ids);
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 SEO优化";
     }
   }
   
-  const data = await seoDao.deleteByIds(ids);
-  return data;
+  const seo_num = await seoDao.deleteByIds(seo_ids);
+  return seo_num;
 }
 
 /**
@@ -173,47 +198,51 @@ export async function deleteByIds(
 export async function defaultById(
   id: SeoId,
 ): Promise<number> {
-  const data = await seoDao.defaultById(id);
-  return data;
+  const seo_num = await seoDao.defaultById(id);
+  return seo_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁SEO优化
  */
 export async function lockByIds(
-  ids: SeoId[],
+  seo_ids: SeoId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await seoDao.lockByIds(ids, is_locked);
-  return data;
+  const seo_num = await seoDao.lockByIds(seo_ids, is_locked);
+  return seo_num;
 }
 
 /**
  * 根据 ids 还原SEO优化
  */
 export async function revertByIds(
-  ids: SeoId[],
+  seo_ids: SeoId[],
 ): Promise<number> {
-  const data = await seoDao.revertByIds(ids);
-  return data;
+  
+  const seo_num = await seoDao.revertByIds(seo_ids);
+  
+  return seo_num;
 }
 
 /**
  * 根据 ids 彻底删除SEO优化
  */
 export async function forceDeleteByIds(
-  ids: SeoId[],
+  seo_ids: SeoId[],
 ): Promise<number> {
-  const data = await seoDao.forceDeleteByIds(ids);
-  return data;
+  
+  const seo_num = await seoDao.forceDeleteByIds(seo_ids);
+  
+  return seo_num;
 }
 
 /**
  * 获取SEO优化字段注释
  */
 export async function getFieldComments(): Promise<SeoFieldComment> {
-  const data = await seoDao.getFieldComments();
-  return data;
+  const seo_fields = await seoDao.getFieldComments();
+  return seo_fields;
 }
 
 /**
@@ -221,6 +250,6 @@ export async function getFieldComments(): Promise<SeoFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await seoDao.findLastOrderBy();
-  return data;
+  const seo_sort = await seoDao.findLastOrderBy();
+  return seo_sort;
 }
