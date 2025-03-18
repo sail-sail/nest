@@ -226,6 +226,8 @@ type Query {
   findOneCard(search: CardSearch, sort: [SortInput!]): CardModel
   "根据 id 查找会员卡"
   findByIdCard(id: CardId!): CardModel
+  "根据 ids 查找会员卡"
+  findByIdsCard(ids: [CardId!]!): [CardModel]!
 }
 type Mutation {
   "批量创建会员卡"

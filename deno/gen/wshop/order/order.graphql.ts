@@ -270,6 +270,8 @@ type Query {
   findOneOrder(search: OrderSearch, sort: [SortInput!]): OrderModel
   "根据 id 查找订单"
   findByIdOrder(id: OrderId!): OrderModel
+  "根据 ids 查找订单"
+  findByIdsOrder(ids: [OrderId!]!): [OrderModel]!
 }
 type Mutation {
   "批量创建订单"

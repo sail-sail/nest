@@ -14,6 +14,10 @@ import {
   validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  isAdmin,
+} from "/src/base/usr/usr.dao.ts";
+
 import * as cardDao from "./card.dao.ts";
 
 async function setSearchQuery(
@@ -33,9 +37,8 @@ async function setSearchQuery(
     org_ids.push(...usr_model.org_ids);
     org_ids.push("" as OrgId);
   }
-  const username = usr_model.username;
   
-  if (username !== "admin") {
+  if (!await isAdmin(usr_id)) {
     search.org_id = org_ids;
   }
   
@@ -52,8 +55,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await cardDao.findCount(search);
-  return data;
+  const card_num = await cardDao.findCount(search);
+  
+  return card_num;
 }
 
 /**
@@ -69,8 +73,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: CardModel[] = await cardDao.findAll(search, page, sort);
-  return models;
+  const card_models = await cardDao.findAll(search, page, sort);
+  
+  return card_models;
 }
 
 /**
@@ -78,9 +83,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: CardInput,
-) {
-  const data = await cardDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await cardDao.setIdByLbl(input);
 }
 
 /**
@@ -95,18 +99,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await cardDao.findOne(search, sort);
-  return model;
+  const card_model = await cardDao.findOne(search, sort);
+  
+  return card_model;
 }
 
 /**
  * 根据 id 查找会员卡
  */
 export async function findById(
-  id?: CardId | null,
+  card_id?: CardId | null,
 ): Promise<CardModel | undefined> {
-  const model = await cardDao.findById(id);
-  return model;
+  
+  const card_model = await cardDao.findById(card_id);
+  
+  return card_model;
+}
+
+/**
+ * 根据 ids 查找会员卡
+ */
+export async function findByIds(
+  card_ids: CardId[],
+): Promise<CardModel[]> {
+  
+  const card_models = await cardDao.findByIds(card_ids);
+  
+  return card_models;
 }
 
 /**
@@ -120,18 +139,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await cardDao.exist(search);
-  return data;
+  const card_exist = await cardDao.exist(search);
+  
+  return card_exist;
 }
 
 /**
  * 根据 id 查找会员卡是否存在
  */
 export async function existById(
-  id?: CardId | null,
+  card_id?: CardId | null,
 ): Promise<boolean> {
-  const data = await cardDao.existById(id);
-  return data;
+  
+  const card_exist = await cardDao.existById(card_id);
+  
+  return card_exist;
 }
 
 /**
@@ -140,8 +162,7 @@ export async function existById(
 export async function validate(
   input: CardInput,
 ): Promise<void> {
-  const data = await cardDao.validate(input);
-  return data;
+  await cardDao.validate(input);
 }
 
 /**
@@ -165,47 +186,54 @@ export async function creates(
     input.lbl_seq = model.lbl_seq;
   }
   
-  const ids = await cardDao.creates(inputs, options);
-  return ids;
+  const card_ids = await cardDao.creates(inputs, options);
+  
+  return card_ids;
 }
 
 /**
  * 根据 id 修改会员卡
  */
 export async function updateById(
-  id: CardId,
+  card_id: CardId,
   input: CardInput,
 ): Promise<CardId> {
   
-  const is_locked = await cardDao.getIsLockedById(id);
+  const is_locked = await cardDao.getIsLockedById(card_id);
   if (is_locked) {
     throw "不能修改已经锁定的 会员卡";
   }
   
-  const id2 = await cardDao.updateById(id, input);
-  return id2;
+  const card_id2 = await cardDao.updateById(card_id, input);
+  
+  return card_id2;
+}
+
+/** 校验会员卡是否存在 */
+export async function validateOption(
+  model0?: CardModel,
+): Promise<CardModel> {
+  const card_model = await cardDao.validateOption(model0);
+  return card_model;
 }
 
 /**
  * 根据 ids 删除会员卡
  */
 export async function deleteByIds(
-  ids: CardId[],
+  card_ids: CardId[],
 ): Promise<number> {
   
-  {
-    const models = await cardDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 会员卡";
-      }
+  const old_models = await cardDao.findByIds(card_ids);
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 会员卡";
     }
   }
   
-  const data = await cardDao.deleteByIds(ids);
-  return data;
+  const card_num = await cardDao.deleteByIds(card_ids);
+  return card_num;
 }
 
 /**
@@ -215,45 +243,49 @@ export async function enableByIds(
   ids: CardId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await cardDao.enableByIds(ids, is_enabled);
-  return data;
+  const card_num = await cardDao.enableByIds(ids, is_enabled);
+  return card_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁会员卡
  */
 export async function lockByIds(
-  ids: CardId[],
+  card_ids: CardId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await cardDao.lockByIds(ids, is_locked);
-  return data;
+  const card_num = await cardDao.lockByIds(card_ids, is_locked);
+  return card_num;
 }
 
 /**
  * 根据 ids 还原会员卡
  */
 export async function revertByIds(
-  ids: CardId[],
+  card_ids: CardId[],
 ): Promise<number> {
-  const data = await cardDao.revertByIds(ids);
-  return data;
+  
+  const card_num = await cardDao.revertByIds(card_ids);
+  
+  return card_num;
 }
 
 /**
  * 根据 ids 彻底删除会员卡
  */
 export async function forceDeleteByIds(
-  ids: CardId[],
+  card_ids: CardId[],
 ): Promise<number> {
-  const data = await cardDao.forceDeleteByIds(ids);
-  return data;
+  
+  const card_num = await cardDao.forceDeleteByIds(card_ids);
+  
+  return card_num;
 }
 
 /**
  * 获取会员卡字段注释
  */
 export async function getFieldComments(): Promise<CardFieldComment> {
-  const data = await cardDao.getFieldComments();
-  return data;
+  const card_fields = await cardDao.getFieldComments();
+  return card_fields;
 }

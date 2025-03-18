@@ -220,9 +220,12 @@ export async function updateById(
  * 根据 id 查找产品类别
  */
 export async function findById(
-  id: PtTypeId,
+  id?: PtTypeId,
   opt?: GqlOpt,
-) {
+): Promise<PtTypeModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdPtType?: PtTypeModel;
   } = await query({
@@ -243,12 +246,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找产品类别
+ */
+export async function findByIds(
+  ids: PtTypeId[],
+  opt?: GqlOpt,
+): Promise<PtTypeModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: PtTypeModel[] = [ ];
+  try {
+    const data: {
+      findByIdsPtType: PtTypeModel[];
+    } = await query({
+      query: `
+        query($ids: [PtTypeId!]!) {
+          findByIdsPtType(ids: $ids) {
+            ${ ptTypeQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsPtType;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除产品类别
  */
 export async function deleteByIds(
   ids: PtTypeId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsPtType: Mutation["deleteByIdsPtType"];
   } = await mutation({
@@ -272,7 +315,10 @@ export async function enableByIds(
   ids: PtTypeId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsPtType: Mutation["enableByIdsPtType"];
   } = await mutation({
@@ -297,7 +343,10 @@ export async function lockByIds(
   ids: PtTypeId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsPtType: Mutation["lockByIdsPtType"];
   } = await mutation({
@@ -321,7 +370,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: PtTypeId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsPtType: Mutation["revertByIdsPtType"];
   } = await mutation({
@@ -344,7 +396,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: PtTypeId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsPtType: Mutation["forceDeleteByIdsPtType"];
   } = await mutation({

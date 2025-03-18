@@ -109,6 +109,25 @@ export async function findByIdOrder(
 }
 
 /**
+ * 根据 ids 查找订单
+ */
+export async function findByIdsOrder(
+  ids: OrderId[],
+): Promise<OrderModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./order.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建订单
  */
 export async function createsOrder(

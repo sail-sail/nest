@@ -140,6 +140,8 @@ type Query {
   findOneRechargeRule(search: RechargeRuleSearch, sort: [SortInput!]): RechargeRuleModel
   "根据 id 查找充值赠送规则"
   findByIdRechargeRule(id: RechargeRuleId!): RechargeRuleModel
+  "根据 ids 查找充值赠送规则"
+  findByIdsRechargeRule(ids: [RechargeRuleId!]!): [RechargeRuleModel]!
 }
 type Mutation {
   "批量创建充值赠送规则"

@@ -78,6 +78,7 @@
             <CustomSelect
               v-model="dialogModel.card_id"
               :method="getCardList"
+              :find-by-values="findByIdsCard"
               :options-map="((item: CardModel) => {
                 return {
                   label: item.lbl,
@@ -98,6 +99,7 @@
             <CustomSelect
               v-model="dialogModel.usr_id"
               :method="getUsrList"
+              :find-by-values="findByIdsUsr"
               :options-map="((item: UsrModel) => {
                 return {
                   label: item.lbl,
@@ -275,12 +277,21 @@ import {
   findOne,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
   getCardList,
   getUsrList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsCard,
+} from "@/views/wshop/card/Api.ts";
+
+import {
+  findByIds as findByIdsUsr,
+} from "@/views/base/usr/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -309,6 +320,8 @@ let dialogNotice = $ref("");
 
 let dialogModel: CardRechargeInput = $ref({
 } as CardRechargeInput);
+
+let card_recharge_model = $ref<CardRechargeModel>();
 
 let ids = $ref<CardRechargeId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -541,10 +554,11 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
   }
+  card_recharge_model = data;
 }
 
 /** 键盘按 PageUp */

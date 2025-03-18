@@ -107,6 +107,25 @@ export async function findByIdCardConsume(
 }
 
 /**
+ * 根据 ids 查找会员卡消费记录
+ */
+export async function findByIdsCardConsume(
+  ids: CardConsumeId[],
+): Promise<CardConsumeModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./card_consume.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 根据 ids 删除会员卡消费记录
  */
 export async function deleteByIdsCardConsume(

@@ -214,9 +214,12 @@ export async function updateById(
  * 根据 id 查找小程序配置
  */
 export async function findById(
-  id: WxappConfigId,
+  id?: WxappConfigId,
   opt?: GqlOpt,
-) {
+): Promise<WxappConfigModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdWxappConfig?: WxappConfigModel;
   } = await query({
@@ -237,12 +240,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找小程序配置
+ */
+export async function findByIds(
+  ids: WxappConfigId[],
+  opt?: GqlOpt,
+): Promise<WxappConfigModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: WxappConfigModel[] = [ ];
+  try {
+    const data: {
+      findByIdsWxappConfig: WxappConfigModel[];
+    } = await query({
+      query: `
+        query($ids: [WxappConfigId!]!) {
+          findByIdsWxappConfig(ids: $ids) {
+            ${ wxappConfigQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsWxappConfig;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除小程序配置
  */
 export async function deleteByIds(
   ids: WxappConfigId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsWxappConfig: Mutation["deleteByIdsWxappConfig"];
   } = await mutation({
@@ -266,7 +309,10 @@ export async function enableByIds(
   ids: WxappConfigId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsWxappConfig: Mutation["enableByIdsWxappConfig"];
   } = await mutation({
@@ -291,7 +337,10 @@ export async function lockByIds(
   ids: WxappConfigId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsWxappConfig: Mutation["lockByIdsWxappConfig"];
   } = await mutation({
@@ -315,7 +364,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: WxappConfigId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsWxappConfig: Mutation["revertByIdsWxappConfig"];
   } = await mutation({
@@ -338,7 +390,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: WxappConfigId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsWxappConfig: Mutation["forceDeleteByIdsWxappConfig"];
   } = await mutation({

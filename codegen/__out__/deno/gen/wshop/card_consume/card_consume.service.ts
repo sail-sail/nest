@@ -14,6 +14,10 @@ import {
   validateOption as validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
+import {
+  isAdmin,
+} from "/src/base/usr/usr.dao.ts";
+
 import * as card_consumeDao from "./card_consume.dao.ts";
 
 async function setSearchQuery(
@@ -33,9 +37,8 @@ async function setSearchQuery(
     org_ids.push(...usr_model.org_ids);
     org_ids.push("" as OrgId);
   }
-  const username = usr_model.username;
   
-  if (username !== "admin") {
+  if (!await isAdmin(usr_id)) {
     search.org_id = org_ids;
   }
   
@@ -52,8 +55,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await card_consumeDao.findCount(search);
-  return data;
+  const card_consume_num = await card_consumeDao.findCount(search);
+  
+  return card_consume_num;
 }
 
 /**
@@ -69,8 +73,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: CardConsumeModel[] = await card_consumeDao.findAll(search, page, sort);
-  return models;
+  const card_consume_models = await card_consumeDao.findAll(search, page, sort);
+  
+  return card_consume_models;
 }
 
 /**
@@ -78,9 +83,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: CardConsumeInput,
-) {
-  const data = await card_consumeDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await card_consumeDao.setIdByLbl(input);
 }
 
 /**
@@ -95,18 +99,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await card_consumeDao.findOne(search, sort);
-  return model;
+  const card_consume_model = await card_consumeDao.findOne(search, sort);
+  
+  return card_consume_model;
 }
 
 /**
  * 根据 id 查找会员卡消费记录
  */
 export async function findById(
-  id?: CardConsumeId | null,
+  card_consume_id?: CardConsumeId | null,
 ): Promise<CardConsumeModel | undefined> {
-  const model = await card_consumeDao.findById(id);
-  return model;
+  
+  const card_consume_model = await card_consumeDao.findById(card_consume_id);
+  
+  return card_consume_model;
+}
+
+/**
+ * 根据 ids 查找会员卡消费记录
+ */
+export async function findByIds(
+  card_consume_ids: CardConsumeId[],
+): Promise<CardConsumeModel[]> {
+  
+  const card_consume_models = await card_consumeDao.findByIds(card_consume_ids);
+  
+  return card_consume_models;
 }
 
 /**
@@ -120,18 +139,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await card_consumeDao.exist(search);
-  return data;
+  const card_consume_exist = await card_consumeDao.exist(search);
+  
+  return card_consume_exist;
 }
 
 /**
  * 根据 id 查找会员卡消费记录是否存在
  */
 export async function existById(
-  id?: CardConsumeId | null,
+  card_consume_id?: CardConsumeId | null,
 ): Promise<boolean> {
-  const data = await card_consumeDao.existById(id);
-  return data;
+  
+  const card_consume_exist = await card_consumeDao.existById(card_consume_id);
+  
+  return card_consume_exist;
 }
 
 /**
@@ -140,8 +162,7 @@ export async function existById(
 export async function validate(
   input: CardConsumeInput,
 ): Promise<void> {
-  const data = await card_consumeDao.validate(input);
-  return data;
+  await card_consumeDao.validate(input);
 }
 
 /**
@@ -153,57 +174,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<CardConsumeId[]> {
-  const ids = await card_consumeDao.creates(inputs, options);
-  return ids;
+  const card_consume_ids = await card_consumeDao.creates(inputs, options);
+  
+  return card_consume_ids;
 }
 
 /**
  * 根据 id 修改会员卡消费记录
  */
 export async function updateById(
-  id: CardConsumeId,
+  card_consume_id: CardConsumeId,
   input: CardConsumeInput,
 ): Promise<CardConsumeId> {
   
-  const id2 = await card_consumeDao.updateById(id, input);
-  return id2;
+  const card_consume_id2 = await card_consumeDao.updateById(card_consume_id, input);
+  
+  return card_consume_id2;
+}
+
+/** 校验会员卡消费记录是否存在 */
+export async function validateOption(
+  model0?: CardConsumeModel,
+): Promise<CardConsumeModel> {
+  const card_consume_model = await card_consumeDao.validateOption(model0);
+  return card_consume_model;
 }
 
 /**
  * 根据 ids 删除会员卡消费记录
  */
 export async function deleteByIds(
-  ids: CardConsumeId[],
+  card_consume_ids: CardConsumeId[],
 ): Promise<number> {
   
-  const data = await card_consumeDao.deleteByIds(ids);
-  return data;
+  const card_consume_num = await card_consumeDao.deleteByIds(card_consume_ids);
+  return card_consume_num;
 }
 
 /**
  * 根据 ids 还原会员卡消费记录
  */
 export async function revertByIds(
-  ids: CardConsumeId[],
+  card_consume_ids: CardConsumeId[],
 ): Promise<number> {
-  const data = await card_consumeDao.revertByIds(ids);
-  return data;
+  
+  const card_consume_num = await card_consumeDao.revertByIds(card_consume_ids);
+  
+  return card_consume_num;
 }
 
 /**
  * 根据 ids 彻底删除会员卡消费记录
  */
 export async function forceDeleteByIds(
-  ids: CardConsumeId[],
+  card_consume_ids: CardConsumeId[],
 ): Promise<number> {
-  const data = await card_consumeDao.forceDeleteByIds(ids);
-  return data;
+  
+  const card_consume_num = await card_consumeDao.forceDeleteByIds(card_consume_ids);
+  
+  return card_consume_num;
 }
 
 /**
  * 获取会员卡消费记录字段注释
  */
 export async function getFieldComments(): Promise<CardConsumeFieldComment> {
-  const data = await card_consumeDao.getFieldComments();
-  return data;
+  const card_consume_fields = await card_consumeDao.getFieldComments();
+  return card_consume_fields;
 }

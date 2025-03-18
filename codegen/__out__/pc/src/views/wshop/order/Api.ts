@@ -300,9 +300,12 @@ export async function updateById(
  * 根据 id 查找订单
  */
 export async function findById(
-  id: OrderId,
+  id?: OrderId,
   opt?: GqlOpt,
-) {
+): Promise<OrderModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdOrder?: OrderModel;
   } = await query({
@@ -323,12 +326,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找订单
+ */
+export async function findByIds(
+  ids: OrderId[],
+  opt?: GqlOpt,
+): Promise<OrderModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: OrderModel[] = [ ];
+  try {
+    const data: {
+      findByIdsOrder: OrderModel[];
+    } = await query({
+      query: `
+        query($ids: [OrderId!]!) {
+          findByIdsOrder(ids: $ids) {
+            ${ orderQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsOrder;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除订单
  */
 export async function deleteByIds(
   ids: OrderId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsOrder: Mutation["deleteByIdsOrder"];
   } = await mutation({
@@ -352,7 +395,10 @@ export async function enableByIds(
   ids: OrderId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsOrder: Mutation["enableByIdsOrder"];
   } = await mutation({
@@ -377,7 +423,10 @@ export async function lockByIds(
   ids: OrderId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsOrder: Mutation["lockByIdsOrder"];
   } = await mutation({
@@ -401,7 +450,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: OrderId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsOrder: Mutation["revertByIdsOrder"];
   } = await mutation({
@@ -424,7 +476,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: OrderId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsOrder: Mutation["forceDeleteByIdsOrder"];
   } = await mutation({

@@ -109,6 +109,25 @@ export async function findByIdPt(
 }
 
 /**
+ * 根据 ids 查找产品
+ */
+export async function findByIdsPt(
+  ids: PtId[],
+): Promise<PtModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./pt.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建产品
  */
 export async function createsPt(

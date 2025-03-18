@@ -232,9 +232,12 @@ export async function updateById(
  * 根据 id 查找充值赠送规则
  */
 export async function findById(
-  id: RechargeRuleId,
+  id?: RechargeRuleId,
   opt?: GqlOpt,
-) {
+): Promise<RechargeRuleModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdRechargeRule?: RechargeRuleModel;
   } = await query({
@@ -255,12 +258,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找充值赠送规则
+ */
+export async function findByIds(
+  ids: RechargeRuleId[],
+  opt?: GqlOpt,
+): Promise<RechargeRuleModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: RechargeRuleModel[] = [ ];
+  try {
+    const data: {
+      findByIdsRechargeRule: RechargeRuleModel[];
+    } = await query({
+      query: `
+        query($ids: [RechargeRuleId!]!) {
+          findByIdsRechargeRule(ids: $ids) {
+            ${ rechargeRuleQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsRechargeRule;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除充值赠送规则
  */
 export async function deleteByIds(
   ids: RechargeRuleId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsRechargeRule: Mutation["deleteByIdsRechargeRule"];
   } = await mutation({
@@ -284,7 +327,10 @@ export async function enableByIds(
   ids: RechargeRuleId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsRechargeRule: Mutation["enableByIdsRechargeRule"];
   } = await mutation({
@@ -309,7 +355,10 @@ export async function lockByIds(
   ids: RechargeRuleId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsRechargeRule: Mutation["lockByIdsRechargeRule"];
   } = await mutation({
@@ -333,7 +382,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: RechargeRuleId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsRechargeRule: Mutation["revertByIdsRechargeRule"];
   } = await mutation({
@@ -356,7 +408,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: RechargeRuleId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsRechargeRule: Mutation["forceDeleteByIdsRechargeRule"];
   } = await mutation({

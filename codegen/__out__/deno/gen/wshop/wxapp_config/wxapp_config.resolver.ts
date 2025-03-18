@@ -107,6 +107,25 @@ export async function findByIdWxappConfig(
 }
 
 /**
+ * 根据 ids 查找小程序配置
+ */
+export async function findByIdsWxappConfig(
+  ids: WxappConfigId[],
+): Promise<WxappConfigModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./wxapp_config.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建小程序配置
  */
 export async function createsWxappConfig(

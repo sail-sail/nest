@@ -163,6 +163,8 @@ type Query {
   findOneCardRecharge(search: CardRechargeSearch, sort: [SortInput!]): CardRechargeModel
   "根据 id 查找会员卡充值记录"
   findByIdCardRecharge(id: CardRechargeId!): CardRechargeModel
+  "根据 ids 查找会员卡充值记录"
+  findByIdsCardRecharge(ids: [CardRechargeId!]!): [CardRechargeModel]!
 }
 type Mutation {
   "根据 ids 删除会员卡充值记录"
