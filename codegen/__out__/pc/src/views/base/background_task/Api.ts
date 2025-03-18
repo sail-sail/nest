@@ -179,21 +179,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsBackgroundTask: BackgroundTaskModel[];
-  } = await query({
-    query: `
-      query($ids: [BackgroundTaskId!]!) {
-        findByIdsBackgroundTask(ids: $ids) {
-          ${ backgroundTaskQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: BackgroundTaskModel[] = [ ];
+  try {
+    const data: {
+      findByIdsBackgroundTask: BackgroundTaskModel[];
+    } = await query({
+      query: `
+        query($ids: [BackgroundTaskId!]!) {
+          findByIdsBackgroundTask(ids: $ids) {
+            ${ backgroundTaskQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsBackgroundTask;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsBackgroundTask;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);

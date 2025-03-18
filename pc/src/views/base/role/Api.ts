@@ -265,21 +265,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsRole: RoleModel[];
-  } = await query({
-    query: `
-      query($ids: [RoleId!]!) {
-        findByIdsRole(ids: $ids) {
-          ${ roleQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: RoleModel[] = [ ];
+  try {
+    const data: {
+      findByIdsRole: RoleModel[];
+    } = await query({
+      query: `
+        query($ids: [RoleId!]!) {
+          findByIdsRole(ids: $ids) {
+            ${ roleQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsRole;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsRole;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);

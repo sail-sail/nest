@@ -1117,33 +1117,38 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIds<#=Table_Up2#>: <#=modelName#>[];
-  } = await query({
-    query: `
-      query($ids: [<#=Table_Up#>Id!]!) {
-        findByIds<#=Table_Up2#>(ids: $ids) {
-          ${ <#=table_Up#>QueryField }<#
-          if (hasAudit && auditTable_Up) {
-          #>
-          <#=auditColumn#>_recent_model {
-            id
-            audit
-            audit_usr_id
-            audit_usr_id_lbl
-            audit_time
-            rem
-          }<#
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: <#=modelName#>[] = [ ];
+  try {
+    const data: {
+      findByIds<#=Table_Up2#>: <#=modelName#>[];
+    } = await query({
+      query: `
+        query($ids: [<#=Table_Up#>Id!]!) {
+          findByIds<#=Table_Up2#>(ids: $ids) {
+            ${ <#=table_Up#>QueryField }<#
+            if (hasAudit && auditTable_Up) {
+            #>
+            <#=auditColumn#>_recent_model {
+              id
+              audit
+              audit_usr_id
+              audit_usr_id_lbl
+              audit_time
+              rem
+            }<#
+            }
+            #>
           }
-          #>
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIds<#=Table_Up2#>;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIds<#=Table_Up2#>;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);

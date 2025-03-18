@@ -139,7 +139,6 @@ for (let i = 0; i < columns.length; i++) {
   >
     <el-form
       ref="searchFormRef"
-      v-search-form-item-width-auto="inited"
       
       size="default"
       :model="search"
@@ -2874,13 +2873,9 @@ function initSearch() {
     }
     #>
   } as <#=searchName#>;
-  if (props.propsNotReset && props.propsNotReset.length > 0) {
-    for (let i = 0; i < props.propsNotReset.length; i++) {
-      const key = props.propsNotReset[i];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (search as any)[key] = (builtInSearch as any)[key];
-    }
-  }
+  props.propsNotReset?.forEach((key) => {
+    search[key] = builtInSearch[key];
+  });
   return search;
 }
 
@@ -4308,7 +4303,7 @@ async function openAuditListDialog(
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowEnter", e);
     return;
   }<#
@@ -4346,7 +4341,7 @@ async function onRowDblclick(
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowDblclick", row);
     return;
   }
@@ -4460,33 +4455,31 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
-  if (num) {<#
-    if (opts?.isRealData) {
-    #>
-    publish({
-      topic: JSON.stringify({
-        pagePath,
-        action: "delete",
-      }),
-      payload: selectedIds,
-    });<#
-    }
-    #>
-    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
-    selectedIds = [ ];
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);<#
-    if (isUseI18n) {
-    #>
-    ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));<#
-    } else {
-    #>
-    ElMessage.success(`删除 ${ num } <#=table_comment#> 成功`);<#
-    }
-    #>
-    emit("remove", num);
+  const num = await deleteByIds(selectedIds);<#
+  if (opts?.isRealData) {
+  #>
+  publish({
+    topic: JSON.stringify({
+      pagePath,
+      action: "delete",
+    }),
+    payload: selectedIds,
+  });<#
   }
+  #>
+  tableData = tableData.filter((item) => !selectedIds.includes(item.id));
+  selectedIds = [ ];
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);<#
+  if (isUseI18n) {
+  #>
+  ElMessage.success(await nsAsync("删除 {0} {1} 成功", num, await nsAsync("<#=table_comment#>")));<#
+  } else {
+  #>
+  ElMessage.success(`删除 ${ num } <#=table_comment#> 成功`);<#
+  }
+  #>
+  emit("remove", num);
 }<#
 }
 #><#
