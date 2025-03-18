@@ -1425,7 +1425,7 @@ async function openEdit() {
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowEnter", e);
     return;
   }
@@ -1449,7 +1449,7 @@ async function onRowDblclick(
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowDblclick", row);
     return;
   }
@@ -1515,14 +1515,12 @@ async function onDeleteByIds() {
     return;
   }
   const num = await deleteByIds(selectedIds);
-  if (num) {
-    tableData = tableData.filter((item) => !selectedIds.includes(item.id));
-    selectedIds = [ ];
-    dirtyStore.fireDirty(pageName);
-    await dataGrid(true);
-    ElMessage.success(`删除 ${ num } 语言 成功`);
-    emit("remove", num);
-  }
+  tableData = tableData.filter((item) => !selectedIds.includes(item.id));
+  selectedIds = [ ];
+  dirtyStore.fireDirty(pageName);
+  await dataGrid(true);
+  ElMessage.success(`删除 ${ num } 语言 成功`);
+  emit("remove", num);
 }
 
 /** 点击彻底删除 */

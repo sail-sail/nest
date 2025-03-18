@@ -244,21 +244,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsDomain: DomainModel[];
-  } = await query({
-    query: `
-      query($ids: [DomainId!]!) {
-        findByIdsDomain(ids: $ids) {
-          ${ domainQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: DomainModel[] = [ ];
+  try {
+    const data: {
+      findByIdsDomain: DomainModel[];
+    } = await query({
+      query: `
+        query($ids: [DomainId!]!) {
+          findByIdsDomain(ids: $ids) {
+            ${ domainQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsDomain;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsDomain;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
