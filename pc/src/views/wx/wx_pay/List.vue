@@ -571,15 +571,6 @@
             </el-table-column>
           </template>
           
-          <!-- APIv3密钥 -->
-          <template v-else-if="'v3_key' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 支付终端IP -->
           <template v-else-if="'payer_client_ip' === col.prop">
             <el-table-column
@@ -1095,14 +1086,6 @@ function getTableColumns(): ColumnType[] {
       headerAlign: "center",
     },
     {
-      label: "APIv3密钥",
-      prop: "v3_key",
-      width: 180,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "支付终端IP",
       prop: "payer_client_ip",
       width: 180,
@@ -1468,7 +1451,6 @@ async function onImportExcel() {
     [ "商户号" ]: "mchid",
     [ "公钥" ]: "public_key",
     [ "私钥" ]: "private_key",
-    [ "APIv3密钥" ]: "v3_key",
     [ "支付终端IP" ]: "payer_client_ip",
     [ "通知地址" ]: "notify_url",
     [ "锁定" ]: "is_locked_lbl",
@@ -1501,7 +1483,6 @@ async function onImportExcel() {
           "mchid": "string",
           "public_key": "string",
           "private_key": "string",
-          "v3_key": "string",
           "payer_client_ip": "string",
           "notify_url": "string",
           "is_locked_lbl": "string",

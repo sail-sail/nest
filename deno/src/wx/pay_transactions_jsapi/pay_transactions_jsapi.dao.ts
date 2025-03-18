@@ -121,10 +121,6 @@ interface Ipay {
 
 /**
  * 统一下单
- * @param appid 
- * @param params0 
- * @param attachInfo 
- * @returns 
  */
 export async function transactions_jsapi(
   appid: string,
@@ -204,18 +200,18 @@ export async function getJsapiObj(
   appid: string,
 ) {
   
-  const wx_payModel = await validateOptionWxPay(
+  const wx_pay_model = await validateOptionWxPay(
     await findOneWxPay({
       appid,
     }),
   );
-  await getWxPayModel(wx_payModel);
-  let notify_url = wx_payModel.notify_url;
-  const mchid = wx_payModel.mchid;
-  const public_key = wx_payModel.public_key;
-  const private_key = wx_payModel.private_key;
-  const v3_key = wx_payModel.v3_key;
-  const payer_client_ip = wx_payModel.payer_client_ip;
+  await getWxPayModel(wx_pay_model);
+  let notify_url = wx_pay_model.notify_url;
+  const mchid = wx_pay_model.mchid;
+  const public_key = wx_pay_model.public_key;
+  const private_key = wx_pay_model.private_key;
+  const v3_key = wx_pay_model.v3_key;
+  const payer_client_ip = wx_pay_model.payer_client_ip;
   
   const authModel = await getAuthModel();
   const wx_usr_id = authModel?.wx_usr_id;

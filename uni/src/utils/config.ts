@@ -9,7 +9,7 @@ let port: string | undefined = undefined;
 let protocol = "http:";
 let domain = "";
 let wsProt = "ws:";
-const appid = "wx28e52faff22e8837";
+const appid = "wxd4b24c53a1813485";
 const agentid = "";
 
 const homePage = `/${pages.pages[0]?.path}`;
