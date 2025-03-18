@@ -156,21 +156,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsCronJobLogDetail: CronJobLogDetailModel[];
-  } = await query({
-    query: `
-      query($ids: [CronJobLogDetailId!]!) {
-        findByIdsCronJobLogDetail(ids: $ids) {
-          ${ cronJobLogDetailQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: CronJobLogDetailModel[] = [ ];
+  try {
+    const data: {
+      findByIdsCronJobLogDetail: CronJobLogDetailModel[];
+    } = await query({
+      query: `
+        query($ids: [CronJobLogDetailId!]!) {
+          findByIdsCronJobLogDetail(ids: $ids) {
+            ${ cronJobLogDetailQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsCronJobLogDetail;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsCronJobLogDetail;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);

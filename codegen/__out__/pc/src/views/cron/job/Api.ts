@@ -241,21 +241,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsJob: JobModel[];
-  } = await query({
-    query: `
-      query($ids: [JobId!]!) {
-        findByIdsJob(ids: $ids) {
-          ${ jobQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: JobModel[] = [ ];
+  try {
+    const data: {
+      findByIdsJob: JobModel[];
+    } = await query({
+      query: `
+        query($ids: [JobId!]!) {
+          findByIdsJob(ids: $ids) {
+            ${ jobQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsJob;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsJob;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);
