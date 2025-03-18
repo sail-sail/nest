@@ -107,6 +107,25 @@ export async function findByIdSeo(
 }
 
 /**
+ * 根据 ids 查找SEO优化
+ */
+export async function findByIdsSeo(
+  ids: SeoId[],
+): Promise<SeoModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./seo.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建SEO优化
  */
 export async function createsSeo(
