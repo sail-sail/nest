@@ -60,6 +60,8 @@ type Query {
   findOneWxwUsr(search: WxwUsrSearch, sort: [SortInput!]): WxwUsrModel
   "根据 id 查找企微用户"
   findByIdWxwUsr(id: WxwUsrId!): WxwUsrModel
+  "根据 ids 查找企微用户"
+  findByIdsWxwUsr(ids: [WxwUsrId!]!): [WxwUsrModel]!
 }
 type Mutation {
   "批量创建企微用户"

@@ -113,6 +113,8 @@ type Query {
   findOneWxwMsg(search: WxwMsgSearch, sort: [SortInput!]): WxwMsgModel
   "根据 id 查找企微消息"
   findByIdWxwMsg(id: WxwMsgId!): WxwMsgModel
+  "根据 ids 查找企微消息"
+  findByIdsWxwMsg(ids: [WxwMsgId!]!): [WxwMsgModel]!
 }
 type Mutation {
   "根据 ids 删除企微消息"
