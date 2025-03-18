@@ -247,21 +247,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsDataPermit: DataPermitModel[];
-  } = await query({
-    query: `
-      query($ids: [DataPermitId!]!) {
-        findByIdsDataPermit(ids: $ids) {
-          ${ dataPermitQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: DataPermitModel[] = [ ];
+  try {
+    const data: {
+      findByIdsDataPermit: DataPermitModel[];
+    } = await query({
+      query: `
+        query($ids: [DataPermitId!]!) {
+          findByIdsDataPermit(ids: $ids) {
+            ${ dataPermitQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsDataPermit;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsDataPermit;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);

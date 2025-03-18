@@ -276,21 +276,26 @@ export async function findByIds(
   if (ids.length === 0) {
     return [ ];
   }
-  const data: {
-    findByIdsUsr: UsrModel[];
-  } = await query({
-    query: `
-      query($ids: [UsrId!]!) {
-        findByIdsUsr(ids: $ids) {
-          ${ usrQueryField }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: UsrModel[] = [ ];
+  try {
+    const data: {
+      findByIdsUsr: UsrModel[];
+    } = await query({
+      query: `
+        query($ids: [UsrId!]!) {
+          findByIdsUsr(ids: $ids) {
+            ${ usrQueryField }
+          }
         }
-      }
-    `,
-    variables: {
-      ids,
-    },
-  }, opt);
-  const models = data.findByIdsUsr;
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsUsr;
+  } catch (_err) { /* empty */ }
   for (let i = 0; i < models.length; i++) {
     const model = models[i];
     await setLblById(model);

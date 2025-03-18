@@ -1077,7 +1077,7 @@ async function onSortChange(
 
 /** 键盘回车按键 */
 async function onRowEnter(e: KeyboardEvent) {
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowEnter", e);
     return;
   }
@@ -1095,7 +1095,7 @@ async function onRowDblclick(
   if (column.type === "selection") {
     return;
   }
-  if (props.selectedIds != null && !isLocked) {
+  if (props.selectedIds != null) {
     emit("rowDblclick", row);
     return;
   }

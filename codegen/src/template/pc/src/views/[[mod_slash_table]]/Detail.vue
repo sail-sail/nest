@@ -601,6 +601,11 @@ for (let i = 0; i < columns.length; i++) {
               }
               #><#
               }
+              #><#
+              if (foreignKey.selectListReadonly === false) {
+              #>
+              :select-list-readonly="false"<#
+              }
               #>
             ></SelectInput<#=Foreign_Table_Up#>><#
             } else if (foreignSchema && foreignSchema.opts?.list_tree
@@ -1383,6 +1388,11 @@ for (let i = 0; i < columns.length; i++) {
                       :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
+                      }
+                      #><#
+                      if (foreignKey.selectListReadonly === false) {
+                      #>
+                      :select-list-readonly="false"<#
                       }
                       #>
                     >
@@ -2181,6 +2191,11 @@ for (let i = 0; i < columns.length; i++) {
                     }
                     #><#
                     }
+                    #><#
+                    if (foreignKey.selectListReadonly === false) {
+                    #>
+                    :select-list-readonly="false"<#
+                    }
                     #>
                   ></SelectInput<#=Foreign_Table_Up#>><#
                   } else if (foreignSchema && foreignSchema.opts?.list_tree
@@ -2853,6 +2868,11 @@ for (let i = 0; i < columns.length; i++) {
                       :readonly-placeholder="inited ? '<#=readonlyPlaceholder#>' : ''"<#
                       }
                       #><#
+                      }
+                      #><#
+                      if (foreignKey.selectListReadonly === false) {
+                      #>
+                      :select-list-readonly="false"<#
                       }
                       #>
                     >
