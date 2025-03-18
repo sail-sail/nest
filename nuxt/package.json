@@ -24,21 +24,21 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "1.2.0",
-    "@nuxt/icon": "1.10.3",
+    "@nuxt/icon": "1.11.0",
     "@types/file-saver": "2.0.7",
     "@types/node": "22.13.10",
-    "@unocss/nuxt": "66.1.0-beta.3",
-    "@unocss/preset-rem-to-px": "66.1.0-beta.3",
-    "@unocss/transformer-directives": "66.1.0-beta.3",
-    "@vue-macros/nuxt": "3.0.0-beta.4",
-    "@vue-macros/reactivity-transform": "3.0.0-beta.4",
+    "@unocss/nuxt": "66.1.0-beta.5",
+    "@unocss/preset-rem-to-px": "66.1.0-beta.5",
+    "@unocss/transformer-directives": "66.1.0-beta.5",
+    "@vue-macros/nuxt": "3.0.0-beta.5",
+    "@vue-macros/reactivity-transform": "3.0.0-beta.5",
     "husky": "9.1.7",
-    "lint-staged": "15.4.3",
+    "lint-staged": "15.5.0",
     "nuxt": "3.16.0",
-    "sass": "1.85.1",
+    "sass": "1.86.0",
     "typescript": "5.8.2",
-    "unocss": "66.1.0-beta.3",
-    "vue-tsc": "2.2.8"
+    "unocss": "66.1.0-beta.5",
+    "vue-tsc": "3.0.0-alpha.2"
   },
   "lint-staged": {
     "*.{ts,vue}": [
