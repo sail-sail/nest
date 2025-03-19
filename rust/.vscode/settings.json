@@ -1,6 +1,5 @@
 {
   "files.exclude": {
-    "src/main.rs": true,
     "src/schema.rs": true,
     "build.rs": true,
     "tsconfig.json": true,
@@ -16,7 +15,6 @@
     ".gitignore": true
   },
   "search.exclude": {
-    "src/main.rs": true,
     "src/schema.rs": true,
     "build.rs": true,
     "tsconfig.json": true,
