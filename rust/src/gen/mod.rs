@@ -5,6 +5,7 @@ use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
 pub struct GenQuery(
+  crate::common::oss::oss_graphql::OssQuery,
   crate::r#gen::base::background_task::background_task_graphql::BackgroundTaskGenQuery,
   crate::r#gen::base::data_permit::data_permit_graphql::DataPermitGenQuery,
   crate::r#gen::base::dept::dept_graphql::DeptGenQuery,
