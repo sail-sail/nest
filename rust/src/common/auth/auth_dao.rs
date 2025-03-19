@@ -28,8 +28,7 @@ pub fn get_token_by_auth_model(
     return Err(eyre!("token过期时间不能为空"));
   }
   let key: hmac::Hmac<sha2::Sha256> = hmac::Hmac::new_from_slice(SECRET_KEY.as_bytes())?;
-  let token = String::from("Bearer ") + SignWithKey::sign_with_key(auth_model, &key)?.as_str();
-  Ok(token)
+  Ok(SignWithKey::sign_with_key(auth_model, &key))
 }
 
 pub fn get_password(str: String) -> Result<String> {
