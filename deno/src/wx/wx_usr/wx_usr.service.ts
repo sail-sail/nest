@@ -19,6 +19,7 @@ import {
 import {
   findOne as findOneWxApp,
   validateOption as validateOptionWxApp,
+  validateIsEnabled as validateIsEnabledWxApp,
 } from "/gen/wx/wx_app/wx_app.dao.ts";
 
 import {
@@ -76,7 +77,7 @@ export async function code2Session(
   input: {
     appid: string;
     code: string;
-    lang: string;
+    lang?: string;
   },
 ): Promise<LoginModel> {
   
@@ -87,6 +88,8 @@ export async function code2Session(
       },
     ),
   );
+  await validateIsEnabledWxApp(wx_app_model);
+  
   const appid = wx_app_model.appid;
   const appsecret = wx_app_model.appsecret;
   const js_code = input.code;
