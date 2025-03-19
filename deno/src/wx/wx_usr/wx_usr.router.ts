@@ -20,15 +20,17 @@ router.post("/wx_usr/code2Session", async function(ctx) {
   const input: {
     appid: string;
     code: string;
-    lang: string;
+    lang?: string;
   } = await body.json();
   const context = useContext();
   context.notVerifyToken = true;
-  context.lang = input.lang;
+  if (input.lang) {
+    context.lang = input.lang;
+  }
   try {
-    const loginModel = await wx_usrService.code2Session(input);
-    response.headers.set("authorization", loginModel.authorization);
-    response.body = resSuc(loginModel);
+    const login_model = await wx_usrService.code2Session(input);
+    response.headers.set("authorization", login_model.authorization);
+    response.body = resSuc(login_model);
   } catch (err) {
     response.headers.set("authorization", "");
     response.status = 401;
