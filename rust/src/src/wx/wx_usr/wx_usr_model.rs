@@ -10,7 +10,9 @@ pub struct Code2sessionInput {
 #[derive(Deserialize, Debug)]
 #[allow(dead_code)]
 pub struct Code2sessionModel {
+  #[serde(default)]
   pub openid: String,
+  #[serde(default)]
   pub session_key: String,
   pub unionid: Option<String>,
   pub errcode: Option<i32>,
