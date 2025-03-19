@@ -556,7 +556,10 @@ pub async fn find_all(
     if stat.is_some() {
       let img_lbl_svg: Option<Vec<u8>> = crate::common::oss::oss_dao::get_object(
         &model.img,
-      ).await?;
+      ).await?
+        .map(|v|
+          v.into()
+        );
       
       if let Some(img_lbl_svg) = img_lbl_svg {
         let img_lbl_svg: String = String::from_utf8(img_lbl_svg)
