@@ -18,57 +18,66 @@ import {
 import {
   findOne as findOneWxApp,
   validateOption as validateOptionWxApp,
+  validateIsEnabled as validateIsEnabledWxApp,
 } from "/gen/wx/wx_app/wx_app.dao.ts";
  
 export async function getAccessToken(
   appid: string,
   force = false,
 ) {
-  const wx_appModel = await validateOptionWxApp(
+  const wx_app_model = await validateOptionWxApp(
     await findOneWxApp({
       appid,
     }),
   );
-  const wx_app_id: WxAppId = wx_appModel.id;
-  const appsecret = wx_appModel.appsecret;
+  await validateIsEnabledWxApp(wx_app_model);
+  
+  const wx_app_id: WxAppId = wx_app_model.id;
+  const appsecret = wx_app_model.appsecret;
   
   const dateNow = dayjs();
-  const wx_app_tokenModel = await findOneWxAppToken(
+  const wx_app_token_model = await findOneWxAppToken(
     {
       wx_app_id: [ wx_app_id ],
     },
   );
-  if (!wx_app_tokenModel) {
-    const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${ appid }&secret=${ appsecret }`;
+  if (!wx_app_token_model) {
+    const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${
+      encodeURIComponent(appid)
+    }&secret=${
+      encodeURIComponent(appsecret)
+    }`;
+    
     const res = await fetch(url);
     const data: {
       access_token: string,
       expires_in: number,
-      errcode: number,
-      errmsg: string,
+      errcode?: number,
+      errmsg?: string,
     } = await res.json();
+    
+    const errcode = data.errcode;
     const access_token = data.access_token;
-    if (!access_token) {
+    const expires_in = data.expires_in;
+    
+    if ((errcode && errcode != 0) || !access_token) {
       error(data);
-      throw data;
-    }
-    if (isEmpty(access_token)) {
-      throw `微信小程序 获取 access_token 失败: ${ url }`;
+      throw data.errmsg;
     }
     await createWxAppToken(
       {
         wx_app_id,
         access_token,
-        expires_in: data.expires_in,
+        expires_in,
         token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),
       },
     );
     return access_token;
   }
-  const wx_app_token_id: WxAppTokenId = wx_app_tokenModel.id;
-  let access_token = wx_app_tokenModel.access_token;
-  const expires_in = wx_app_tokenModel.expires_in ?? 0;
-  const token_time = dayjs(wx_app_tokenModel.token_time);
+  const wx_app_token_id: WxAppTokenId = wx_app_token_model.id;
+  const access_token = wx_app_token_model.access_token;
+  const expires_in = wx_app_token_model.expires_in ?? 0;
+  const token_time = dayjs(wx_app_token_model.token_time);
   if (
     force
     || !(expires_in > 0)
@@ -76,7 +85,7 @@ export async function getAccessToken(
     || !token_time.isValid()
     || token_time.add(expires_in, "s").add(5, "m").isBefore(dateNow)
   ) {
-    log(`微信小程序 access_token 过期, 重新获取: ${ JSON.stringify(wx_app_tokenModel) }`);
+    log(`微信小程序 access_token 过期, 重新获取: ${ JSON.stringify(wx_app_token_model) }`);
     const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${
       encodeURIComponent(appid)
     }&secret=${
@@ -84,14 +93,15 @@ export async function getAccessToken(
     }`;
     const res = await fetch(url);
     const data: {
-      errcode: number,
-      errmsg: string,
+      errcode?: number,
+      errmsg?: string,
       access_token: string,
       expires_in: number,
     } = await res.json();
-    access_token = data.access_token;
+    const errcode = data.errcode;
+    const access_token = data.access_token;
     const expires_in = data.expires_in;
-    if (!access_token) {
+    if (!access_token || (errcode && errcode != 0)) {
       error(data);
       throw data.errmsg;
     }
@@ -103,6 +113,7 @@ export async function getAccessToken(
         token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),
       },
     );
+    return access_token;
   }
   return access_token;
 }
