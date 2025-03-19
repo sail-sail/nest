@@ -7,10 +7,6 @@ export async function getStatsOss(
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
     let lbl = "";
-    if (!id) {
-      statInfos.push({ id, lbl });
-      continue;
-    }
     let stats = undefined;
     try {
       stats = await ossService.statObject(id);
@@ -30,8 +26,8 @@ export async function getStatsOss(
     statInfos.push({
       id,
       lbl,
-      contentType: stats?.contentType,
-      size: stats?.contentLength,
+      contentType: stats?.contentType || "",
+      size: stats?.contentLength || 0,
     });
   }
   return statInfos;
