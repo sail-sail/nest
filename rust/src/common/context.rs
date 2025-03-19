@@ -345,6 +345,12 @@ impl Ctx {
     }
   }
   
+  #[cfg(test)]
+  pub fn test_builder() -> CtxBuilder<'static> {
+    dotenv::dotenv().ok();
+    CtxBuilder::new(None)
+  }
+  
   pub fn set_auth_model(
     &mut self,
     auth_model: AuthModel,
@@ -1192,6 +1198,23 @@ impl Ctx {
         return Err(eyre!("must use resful_scope()"));
       }
       // info!("{} {}", ctx.req_id, serde_json::to_string(&res).unwrap_or_default());
+      ctx.ok(res).await
+    }).await
+  }
+  
+  #[allow(dead_code)]
+  pub async fn scope_fn<F, T>(self, f: F) -> Result<T>
+    where
+      F: AsyncFnOnce() -> Result<T>,
+      T: Send + Debug,
+  {
+    let ctx = Arc::new(self);
+    CTX.scope(ctx, async move {
+      let res = f().await;
+      let ctx = CTX.with(|ctx| ctx.clone());
+      if ctx.is_resful {
+        return Err(eyre!("must use resful_scope()"));
+      }
       ctx.ok(res).await
     }).await
   }
