@@ -1,4 +1,5 @@
 pub mod base;
+pub mod wx;
 
 use async_graphql::MergedObject;
 
