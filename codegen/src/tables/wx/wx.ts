@@ -74,6 +74,12 @@ export default defineConfig({
         COLUMN_NAME: "wx_app_id",
       },
       {
+        COLUMN_NAME: "appid",
+      },
+      {
+        COLUMN_NAME: "appsecret",
+      },
+      {
         COLUMN_NAME: "access_token",
       },
       {
@@ -103,6 +109,12 @@ export default defineConfig({
         COLUMN_NAME: "usr_id",
         width: 240,
         modelLabel: "usr_id_lbl",
+      },
+      {
+        COLUMN_NAME: "appid",
+        require: true,
+        search: true,
+        width: 160,
       },
       {
         COLUMN_NAME: "nick_name",
@@ -258,6 +270,12 @@ export default defineConfig({
         COLUMN_NAME: "wxo_app_id",
       },
       {
+        COLUMN_NAME: "appid",
+      },
+      {
+        COLUMN_NAME: "appsecret",
+      },
+      {
         COLUMN_NAME: "access_token",
       },
       {
@@ -290,6 +308,12 @@ export default defineConfig({
         COLUMN_NAME: "usr_id",
         width: 240,
         modelLabel: "usr_id_lbl",
+      },
+      {
+        COLUMN_NAME: "appid",
+        require: true,
+        search: true,
+        width: 160,
       },
       {
         COLUMN_NAME: "openid",

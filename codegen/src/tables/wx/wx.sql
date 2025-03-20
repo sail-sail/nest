@@ -32,6 +32,8 @@ drop table if exists `wx_wx_app_token`;
 CREATE TABLE `wx_wx_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `wx_app_id` varchar(22) NOT NULL DEFAULT '' COMMENT '小程序设置',
+  `appid` varchar(22) NOT NULL DEFAULT '' COMMENT '开发者ID',
+  `appsecret` varchar(200) NOT NULL DEFAULT '' COMMENT '开发者密码',
   `access_token` varchar(600) NOT NULL DEFAULT '' COMMENT '令牌',
   `token_time` datetime DEFAULT NULL COMMENT '令牌创建时间',
   `expires_in` int unsigned NOT NULL DEFAULT 0 COMMENT '令牌超时时间',
@@ -56,6 +58,7 @@ CREATE TABLE if not exists `wx_wx_usr` (
   `lbl` varchar(100) NOT NULL DEFAULT '' COMMENT '名称',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '用户',
   `usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '用户',
+  `appid` varchar(22) NOT NULL DEFAULT '' COMMENT '开发者ID',
   `nick_name` varchar(100) NOT NULL DEFAULT '' COMMENT '昵称',
   `avatar_img` varchar(22) NOT NULL DEFAULT '' COMMENT '头像',
   `mobile` varchar(30) NOT NULL DEFAULT '' COMMENT '手机',
@@ -124,6 +127,7 @@ CREATE TABLE if not exists `wx_wxo_usr` (
   `head_img` varchar(22) NOT NULL DEFAULT '' COMMENT '头像',
   `usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '绑定用户',
   `usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '绑定用户',
+  `appid` varchar(22) NOT NULL DEFAULT '' COMMENT '开发者ID',
   `openid` varchar(100) NOT NULL DEFAULT '' COMMENT '公众号用户唯一标识',
   `unionid` varchar(100) NOT NULL DEFAULT '' COMMENT '用户统一标识',
   `sex` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '性别,dict:wx_usr_gender',
@@ -153,6 +157,8 @@ drop table if exists `wx_wxo_app_token`;
 CREATE TABLE `wx_wxo_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `wxo_app_id` varchar(22) NOT NULL DEFAULT '' COMMENT '小程序设置',
+  `appid` varchar(22) NOT NULL DEFAULT '' COMMENT '开发者ID',
+  `appsecret` varchar(200) NOT NULL DEFAULT '' COMMENT '开发者密码',
   `access_token` varchar(600) NOT NULL DEFAULT '' COMMENT '令牌',
   `token_time` datetime DEFAULT NULL COMMENT '令牌创建时间',
   `expires_in` int unsigned NOT NULL DEFAULT 0 COMMENT '令牌超时时间',

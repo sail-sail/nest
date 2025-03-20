@@ -41,6 +41,8 @@ export function intoInput(
     // 用户
     usr_id: model?.usr_id,
     usr_id_lbl: model?.usr_id_lbl,
+    // 开发者ID
+    appid: model?.appid,
     // 昵称
     nick_name: model?.nick_name,
     // 头像
@@ -430,6 +432,7 @@ export function useDownloadImportTemplate() {
           getFieldCommentsWxUsr {
             lbl
             usr_id_lbl
+            appid
             nick_name
             avatar_img
             mobile

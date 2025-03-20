@@ -410,7 +410,11 @@ export async function uniLogin() {
           lang: appLanguage,
         });
       } catch(err) {
-        console.error(err);
+        await uni.showModal({
+          title: "登录失败",
+          content: (err as Error).toString(),
+        });
+        throw err;
       }
       if (login_model) {
         usrStore.setAuthorization(login_model.authorization);
@@ -420,6 +424,7 @@ export async function uniLogin() {
         usrStore.setLang(login_model.lang ?? "");
         return true;
       }
+      return false;
     }
     await redirectToLogin();
     return false;

@@ -21,6 +21,12 @@ declare global {
   
   /** 小程序接口凭据 */
   interface WxoAppTokenSearch extends WxoAppTokenSearchType {
+    /** 开发者ID */
+    appid?: string;
+    appid_like?: string;
+    /** 开发者密码 */
+    appsecret?: string;
+    appsecret_like?: string;
     /** 令牌 */
     access_token?: string;
     access_token_like?: string;

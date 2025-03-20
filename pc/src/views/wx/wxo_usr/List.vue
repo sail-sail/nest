@@ -41,6 +41,19 @@
         </el-form-item>
       </template>
       
+      <template v-if="(builtInSearch?.appid == null && (showBuildIn || builtInSearch?.appid_like == null))">
+        <el-form-item
+          label="开发者ID"
+          prop="appid_like"
+        >
+          <CustomInput
+            v-model="search.appid_like"
+            placeholder="请输入 开发者ID"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <div
         class="search-ids-checked"
       >
@@ -483,6 +496,15 @@
             </el-table-column>
           </template>
           
+          <!-- 开发者ID -->
+          <template v-else-if="'appid' === col.prop && (showBuildIn || builtInSearch?.appid == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 公众号用户唯一标识 -->
           <template v-else-if="'openid' === col.prop">
             <el-table-column
@@ -695,6 +717,8 @@ const props = defineProps<{
   lbl_like?: string; // 昵称
   usr_id?: string|string[]; // 绑定用户
   usr_id_lbl?: string; // 绑定用户
+  appid?: string; // 开发者ID
+  appid_like?: string; // 开发者ID
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -939,6 +963,14 @@ function getTableColumns(): ColumnType[] {
       prop: "usr_id_lbl",
       sortBy: "usr_id_lbl",
       width: 240,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
+    {
+      label: "开发者ID",
+      prop: "appid",
+      width: 160,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1309,6 +1341,7 @@ async function onImportExcel() {
     [ "昵称" ]: "lbl",
     [ "头像" ]: "head_img",
     [ "绑定用户" ]: "usr_id_lbl",
+    [ "开发者ID" ]: "appid",
     [ "公众号用户唯一标识" ]: "openid",
     [ "用户统一标识" ]: "unionid",
     [ "性别" ]: "sex_lbl",
@@ -1340,6 +1373,7 @@ async function onImportExcel() {
           "lbl": "string",
           "head_img": "string",
           "usr_id_lbl": "string",
+          "appid": "string",
           "openid": "string",
           "unionid": "string",
           "sex_lbl": "string",

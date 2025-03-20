@@ -126,6 +126,12 @@ async function getWhereQuery(
   if (isNotEmpty(search?.usr_id_lbl_like)) {
     whereQuery += ` and t.usr_id_lbl like ${ args.push("%" + sqlLike(search.usr_id_lbl_like) + "%") }`;
   }
+  if (search?.appid != null) {
+    whereQuery += ` and t.appid=${ args.push(search.appid) }`;
+  }
+  if (isNotEmpty(search?.appid_like)) {
+    whereQuery += ` and t.appid like ${ args.push("%" + sqlLike(search?.appid_like) + "%") }`;
+  }
   if (search?.nick_name != null) {
     whereQuery += ` and t.nick_name=${ args.push(search.nick_name) }`;
   }
@@ -590,6 +596,7 @@ export async function getFieldComments(): Promise<WxUsrFieldComment> {
     lbl: "名称",
     usr_id: "用户",
     usr_id_lbl: "用户",
+    appid: "开发者ID",
     nick_name: "昵称",
     avatar_img: "头像",
     mobile: "手机",
@@ -1001,6 +1008,13 @@ export async function validate(
     fieldComments.usr_id,
   );
   
+  // 开发者ID
+  await validators.chars_max_length(
+    input.appid,
+    22,
+    fieldComments.appid,
+  );
+  
   // 昵称
   await validators.chars_max_length(
     input.nick_name,
@@ -1315,7 +1329,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,usr_id_lbl,usr_id,nick_name,avatar_img,mobile,openid,unionid,gender,city,province,country,language,rem)values";
+  let sql = "insert into wx_wx_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,usr_id_lbl,usr_id,appid,nick_name,avatar_img,mobile,openid,unionid,gender,city,province,country,language,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1425,6 +1439,11 @@ async function _creates(
       }
       if (input.usr_id != null) {
         sql += `,${ args.push(input.usr_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.appid != null) {
+        sql += `,${ args.push(input.appid) }`;
       } else {
         sql += ",default";
       }
@@ -1642,6 +1661,12 @@ export async function updateById(
   if (input.usr_id != null) {
     if (input.usr_id != oldModel.usr_id) {
       sql += `usr_id=${ args.push(input.usr_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.appid != null) {
+    if (input.appid != oldModel.appid) {
+      sql += `appid=${ args.push(input.appid) },`;
       updateFldNum++;
     }
   }
