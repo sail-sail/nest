@@ -385,6 +385,30 @@ watchEffect(async () => {
         message: "开发者ID 长度不能超过 22",
       },
     ],
+    // 支付终端IP
+    payer_client_ip: [
+      {
+        required: true,
+        message: "请输入 支付终端IP",
+      },
+      {
+        type: "string",
+        max: 45,
+        message: "支付终端IP 长度不能超过 45",
+      },
+    ],
+    // 通知地址
+    notify_url: [
+      {
+        required: true,
+        message: "请输入 通知地址",
+      },
+      {
+        type: "string",
+        max: 256,
+        message: "通知地址 长度不能超过 256",
+      },
+    ],
     // 排序
     order_by: [
       {

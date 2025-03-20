@@ -550,26 +550,8 @@
             </el-table-column>
           </template>
           
-          <!-- 开发者密码 -->
-          <template v-else-if="'appsecret' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 令牌 -->
           <template v-else-if="'token' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 消息加解密密钥 -->
-          <template v-else-if="'encoding_aes_key' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -1094,24 +1076,8 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "开发者密码",
-      prop: "appsecret",
-      width: 260,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "令牌",
       prop: "token",
-      width: 140,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "消息加解密密钥",
-      prop: "encoding_aes_key",
       width: 140,
       align: "left",
       headerAlign: "center",
@@ -1488,9 +1454,7 @@ async function onImportExcel() {
     [ "原始ID" ]: "code",
     [ "名称" ]: "lbl",
     [ "开发者ID" ]: "appid",
-    [ "开发者密码" ]: "appsecret",
     [ "令牌" ]: "token",
-    [ "消息加解密密钥" ]: "encoding_aes_key",
     [ "消息加解密方式" ]: "encoding_type_lbl",
     [ "授权作用域" ]: "scope_lbl",
     [ "网页授权域名" ]: "domain_id_lbl",
@@ -1522,9 +1486,7 @@ async function onImportExcel() {
           "code": "string",
           "lbl": "string",
           "appid": "string",
-          "appsecret": "string",
           "token": "string",
-          "encoding_aes_key": "string",
           "encoding_type_lbl": "string",
           "scope_lbl": "string",
           "domain_id_lbl": "string",

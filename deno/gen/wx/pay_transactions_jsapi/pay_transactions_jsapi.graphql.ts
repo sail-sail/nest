@@ -61,10 +61,10 @@ type PayTransactionsJsapiModel {
   attach2: String!
   "通知地址"
   notify_url: String!
-  "是否支持发票"
-  support_fapiao: Int!
-  "是否支持发票"
-  support_fapiao_lbl: String!
+  "开发票"
+  receipt: String!
+  "分账"
+  profit_sharing: String!
   "订单金额(分)"
   total_fee: Int!
   "货币类型"
@@ -125,10 +125,10 @@ type PayTransactionsJsapiFieldComment {
   attach2: String!
   "通知地址"
   notify_url: String!
-  "是否支持发票"
-  support_fapiao: String!
-  "是否支持发票"
-  support_fapiao_lbl: String!
+  "开发票"
+  receipt: String!
+  "分账"
+  profit_sharing: String!
   "订单金额(分)"
   total_fee: String!
   "货币类型"
@@ -189,10 +189,10 @@ input PayTransactionsJsapiInput {
   attach2: String
   "通知地址"
   notify_url: String
-  "是否支持发票"
-  support_fapiao: Int
-  "是否支持发票"
-  support_fapiao_lbl: String
+  "开发票"
+  receipt: String
+  "分账"
+  profit_sharing: String
   "订单金额(分)"
   total_fee: Int
   "货币类型"
