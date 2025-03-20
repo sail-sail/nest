@@ -63,7 +63,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 24 * 2);
+  let mut where_query = String::with_capacity(80 * 25 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -351,28 +351,42 @@ async fn get_where_query(
       args.push(format!("%{}%", sql_like(&notify_url_like)).into());
     }
   }
-  // 是否支持发票
+  // 开发票
   {
-    let support_fapiao: Option<Vec<u8>> = match search {
-      Some(item) => item.support_fapiao.clone(),
+    let receipt = match search {
+      Some(item) => item.receipt.clone(),
       None => None,
     };
-    if let Some(support_fapiao) = support_fapiao {
-      let arg = {
-        if support_fapiao.is_empty() {
-          "null".to_string()
-        } else {
-          let mut items = Vec::with_capacity(support_fapiao.len());
-          for item in support_fapiao {
-            args.push(item.into());
-            items.push("?");
-          }
-          items.join(",")
-        }
-      };
-      where_query.push_str(" and t.support_fapiao in (");
-      where_query.push_str(&arg);
-      where_query.push(')');
+    if let Some(receipt) = receipt {
+      where_query.push_str(" and t.receipt=?");
+      args.push(receipt.into());
+    }
+    let receipt_like = match search {
+      Some(item) => item.receipt_like.clone(),
+      None => None,
+    };
+    if let Some(receipt_like) = receipt_like {
+      where_query.push_str(" and t.receipt like ?");
+      args.push(format!("%{}%", sql_like(&receipt_like)).into());
+    }
+  }
+  // 分账
+  {
+    let profit_sharing = match search {
+      Some(item) => item.profit_sharing.clone(),
+      None => None,
+    };
+    if let Some(profit_sharing) = profit_sharing {
+      where_query.push_str(" and t.profit_sharing=?");
+      args.push(profit_sharing.into());
+    }
+    let profit_sharing_like = match search {
+      Some(item) => item.profit_sharing_like.clone(),
+      None => None,
+    };
+    if let Some(profit_sharing_like) = profit_sharing_like {
+      where_query.push_str(" and t.profit_sharing like ?");
+      args.push(format!("%{}%", sql_like(&profit_sharing_like)).into());
     }
   }
   // 订单金额(分)
@@ -693,22 +707,6 @@ pub async fn find_all(
       }
     }
   }
-  // 是否支持发票
-  if let Some(search) = &search {
-    if search.support_fapiao.is_some() {
-      let len = search.support_fapiao.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(vec![]);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.support_fapiao.length > {ids_limit}"));
-      }
-    }
-  }
   // 货币类型
   if let Some(search) = &search {
     if search.currency.is_some() {
@@ -800,14 +798,12 @@ pub async fn find_all(
   
   let dict_vec = get_dict(&[
     "wx_pay_notice_trade_state",
-    "is_enabled",
     "wx_pay_notice_currency",
   ]).await?;
   let [
     trade_state_dict,
-    support_fapiao_dict,
     currency_dict,
-  ]: [Vec<_>; 3] = dict_vec
+  ]: [Vec<_>; 2] = dict_vec
     .try_into()
     .map_err(|err| eyre!("{:#?}", err))?;
   
@@ -821,15 +817,6 @@ pub async fn find_all(
         .find(|item| item.val == model.trade_state.as_str())
         .map(|item| item.lbl.clone())
         .unwrap_or_else(|| model.trade_state.to_string())
-    };
-    
-    // 是否支持发票
-    model.support_fapiao_lbl = {
-      support_fapiao_dict
-        .iter()
-        .find(|item| item.val == model.support_fapiao.to_string())
-        .map(|item| item.lbl.clone())
-        .unwrap_or_else(|| model.support_fapiao.to_string())
     };
     
     // 货币类型
@@ -893,22 +880,6 @@ pub async fn find_count(
         .unwrap_or(FIND_ALL_IDS_LIMIT);
       if len > ids_limit {
         return Err(eyre!("search.trade_state.length > {ids_limit}"));
-      }
-    }
-  }
-  // 是否支持发票
-  if let Some(search) = &search {
-    if search.support_fapiao.is_some() {
-      let len = search.support_fapiao.as_ref().unwrap().len();
-      if len == 0 {
-        return Ok(0);
-      }
-      let ids_limit = options
-        .as_ref()
-        .and_then(|x| x.get_ids_limit())
-        .unwrap_or(FIND_ALL_IDS_LIMIT);
-      if len > ids_limit {
-        return Err(eyre!("search.support_fapiao.length > {ids_limit}"));
       }
     }
   }
@@ -1013,8 +984,8 @@ pub async fn get_field_comments(
     attach: "附加数据".into(),
     attach2: "附加数据2".into(),
     notify_url: "通知地址".into(),
-    support_fapiao: "是否支持发票".into(),
-    support_fapiao_lbl: "是否支持发票".into(),
+    receipt: "开发票".into(),
+    profit_sharing: "分账".into(),
     total_fee: "订单金额(分)".into(),
     currency: "货币类型".into(),
     currency_lbl: "货币类型".into(),
@@ -1438,7 +1409,6 @@ pub async fn set_id_by_lbl(
   
   let dict_vec = get_dict(&[
     "wx_pay_notice_trade_state",
-    "is_enabled",
     "wx_pay_notice_currency",
   ]).await?;
   
@@ -1457,24 +1427,9 @@ pub async fn set_id_by_lbl(
     }
   }
   
-  // 是否支持发票
-  if input.support_fapiao.is_none() {
-    let support_fapiao_dict = &dict_vec[1];
-    if let Some(support_fapiao_lbl) = input.support_fapiao_lbl.clone() {
-      input.support_fapiao = support_fapiao_dict
-        .iter()
-        .find(|item| {
-          item.lbl == support_fapiao_lbl
-        })
-        .map(|item| {
-          item.val.parse().unwrap_or_default()
-        });
-    }
-  }
-  
   // 货币类型
   if input.currency.is_none() {
-    let currency_dict = &dict_vec[2];
+    let currency_dict = &dict_vec[1];
     if let Some(currency_lbl) = input.currency_lbl.clone() {
       input.currency = currency_dict
         .iter()
@@ -1512,37 +1467,12 @@ pub async fn set_id_by_lbl(
     input.trade_state_lbl = lbl;
   }
   
-  // 是否支持发票
-  if
-    input.support_fapiao_lbl.is_some() && !input.support_fapiao_lbl.as_ref().unwrap().is_empty()
-    && input.support_fapiao.is_none()
-  {
-    let support_fapiao_dict = &dict_vec[1];
-    let dict_model = support_fapiao_dict.iter().find(|item| {
-      item.lbl == input.support_fapiao_lbl.clone().unwrap_or_default()
-    });
-    let val = dict_model.map(|item| item.val.to_string());
-    if let Some(val) = val {
-      input.support_fapiao = val.parse::<u8>()?.into();
-    }
-  } else if
-    (input.support_fapiao_lbl.is_none() || input.support_fapiao_lbl.as_ref().unwrap().is_empty())
-    && input.support_fapiao.is_some()
-  {
-    let support_fapiao_dict = &dict_vec[1];
-    let dict_model = support_fapiao_dict.iter().find(|item| {
-      item.val == input.support_fapiao.unwrap_or_default().to_string()
-    });
-    let lbl = dict_model.map(|item| item.lbl.to_string());
-    input.support_fapiao_lbl = lbl;
-  }
-  
   // 货币类型
   if
     input.currency_lbl.is_some() && !input.currency_lbl.as_ref().unwrap().is_empty()
     && input.currency.is_none()
   {
-    let currency_dict = &dict_vec[2];
+    let currency_dict = &dict_vec[1];
     let dict_model = currency_dict.iter().find(|item| {
       item.lbl == input.currency_lbl.clone().unwrap_or_default()
     });
@@ -1554,7 +1484,7 @@ pub async fn set_id_by_lbl(
     (input.currency_lbl.is_none() || input.currency_lbl.as_ref().unwrap().is_empty())
     && input.currency.is_some()
   {
-    let currency_dict = &dict_vec[2];
+    let currency_dict = &dict_vec[1];
     let dict_model = currency_dict.iter().find(|item| {
       item.val == input.currency.unwrap_or_default().to_string()
     });
@@ -1700,7 +1630,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 24 + 20);
+  let mut sql_fields = String::with_capacity(80 * 25 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1734,8 +1664,10 @@ async fn _creates(
   sql_fields += ",attach2";
   // 通知地址
   sql_fields += ",notify_url";
-  // 是否支持发票
-  sql_fields += ",support_fapiao";
+  // 开发票
+  sql_fields += ",receipt";
+  // 分账
+  sql_fields += ",profit_sharing";
   // 订单金额(分)
   sql_fields += ",total_fee";
   // 货币类型
@@ -1746,7 +1678,7 @@ async fn _creates(
   sql_fields += ",prepay_id";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 24 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 25 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1958,10 +1890,17 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 是否支持发票
-    if let Some(support_fapiao) = input.support_fapiao {
+    // 开发票
+    if let Some(receipt) = input.receipt {
       sql_values += ",?";
-      args.push(support_fapiao.into());
+      args.push(receipt.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 分账
+    if let Some(profit_sharing) = input.profit_sharing {
+      sql_values += ",?";
+      args.push(profit_sharing.into());
     } else {
       sql_values += ",default";
     }
@@ -2221,7 +2160,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 24 + 20);
+  let mut sql_fields = String::with_capacity(80 * 25 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2305,11 +2244,17 @@ pub async fn update_by_id(
     sql_fields += "notify_url=?,";
     args.push(notify_url.into());
   }
-  // 是否支持发票
-  if let Some(support_fapiao) = input.support_fapiao {
+  // 开发票
+  if let Some(receipt) = input.receipt {
     field_num += 1;
-    sql_fields += "support_fapiao=?,";
-    args.push(support_fapiao.into());
+    sql_fields += "receipt=?,";
+    args.push(receipt.into());
+  }
+  // 分账
+  if let Some(profit_sharing) = input.profit_sharing {
+    field_num += 1;
+    sql_fields += "profit_sharing=?,";
+    args.push(profit_sharing.into());
   }
   // 订单金额(分)
   if let Some(total_fee) = input.total_fee {
