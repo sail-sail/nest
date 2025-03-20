@@ -346,6 +346,7 @@ impl Ctx {
   }
   
   #[cfg(test)]
+  #[allow(dead_code)]
   pub fn test_builder() -> CtxBuilder<'static> {
     dotenv::dotenv().ok();
     CtxBuilder::new(None)
@@ -1883,9 +1884,9 @@ impl <'a> CtxBuilder<'a> {
   }
   
   /// 开启事务
-  pub fn with_tran(mut self) -> Result<CtxBuilder<'a>> {
+  pub fn with_tran(mut self) -> CtxBuilder<'a> {
     self.is_tran = Some(true);
-    Ok(self)
+    self
   }
   
   /// 获取token, graphql跟restful的获取方式不一样

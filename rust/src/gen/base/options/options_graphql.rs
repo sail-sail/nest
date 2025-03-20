@@ -201,7 +201,7 @@ impl OptionsGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -221,7 +221,7 @@ impl OptionsGenMutation {
   ) -> Result<OptionsId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::update_by_id(
@@ -240,7 +240,7 @@ impl OptionsGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::delete_by_ids(
@@ -259,7 +259,7 @@ impl OptionsGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::enable_by_ids(
@@ -279,7 +279,7 @@ impl OptionsGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::lock_by_ids(
@@ -298,7 +298,7 @@ impl OptionsGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::revert_by_ids(
@@ -316,7 +316,7 @@ impl OptionsGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::force_delete_by_ids(
