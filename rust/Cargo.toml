@@ -69,6 +69,7 @@ derive_builder = "0.20"
 strum = { version = "0.27", features = ["derive"] }
 itertools = "0.14.0"
 color-eyre = "0.6.3"
+wx_pay = "0.2.3"
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"
