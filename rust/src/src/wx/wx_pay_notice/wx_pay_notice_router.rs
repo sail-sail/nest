@@ -21,7 +21,7 @@ pub async fn wx_pay_notify(
   Json(wx_pay_notify): Json<WxPayNotify>,
 ) -> Response {
   let res: Result<Response> = Ctx::resful_builder(Some(req))
-    .with_tran().unwrap()
+    .with_tran()
     .build()
     .resful_scope({
       wx_pay_notice_resful::wx_pay_notify(wx_pay_notify)
