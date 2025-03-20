@@ -57,7 +57,7 @@
     un-w="full"
     un-min="h-7.5"
     un-line-height="normal"
-    un-break-words
+    un-break-all
     class="custom_tree_select_readonly"
     v-bind="$attrs"
   >
@@ -79,7 +79,7 @@
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
-    un-break-words
+    un-break-all
     class="custom_select_readonly"
     v-bind="$attrs"
   >
