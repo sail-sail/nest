@@ -562,9 +562,7 @@ pub async fn find_all(
         );
       
       if let Some(img_lbl_svg) = img_lbl_svg {
-        let img_lbl_svg: String = String::from_utf8(img_lbl_svg)
-          .map_err(|err| eyre!("{:#?}", err))?;
-        
+        let img_lbl_svg: String = String::from_utf8(img_lbl_svg)?;
         model.img_lbl_svg = img_lbl_svg;
       }
     }
