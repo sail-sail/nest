@@ -111,6 +111,27 @@ pub async fn find_by_id(
   Ok(model)
 }
 
+/// 根据 ids 查找任务
+#[function_name::named]
+pub async fn find_by_ids(
+  ids: Vec<JobId>,
+  options: Option<Options>,
+) -> Result<Vec<JobModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = job_service::find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
 /// 创建任务
 #[allow(dead_code)]
 #[function_name::named]
