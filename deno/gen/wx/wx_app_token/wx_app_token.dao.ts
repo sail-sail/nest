@@ -99,6 +99,18 @@ async function getWhereQuery(
   if (isNotEmpty(search?.wx_app_id_lbl_like)) {
     whereQuery += ` and wx_app_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.wx_app_id_lbl_like) + "%") }`;
   }
+  if (search?.appid != null) {
+    whereQuery += ` and t.appid=${ args.push(search.appid) }`;
+  }
+  if (isNotEmpty(search?.appid_like)) {
+    whereQuery += ` and t.appid like ${ args.push("%" + sqlLike(search?.appid_like) + "%") }`;
+  }
+  if (search?.appsecret != null) {
+    whereQuery += ` and t.appsecret=${ args.push(search.appsecret) }`;
+  }
+  if (isNotEmpty(search?.appsecret_like)) {
+    whereQuery += ` and t.appsecret like ${ args.push("%" + sqlLike(search?.appsecret_like) + "%") }`;
+  }
   if (search?.access_token != null) {
     whereQuery += ` and t.access_token=${ args.push(search.access_token) }`;
   }
@@ -508,6 +520,8 @@ export async function getFieldComments(): Promise<WxAppTokenFieldComment> {
     id: "ID",
     wx_app_id: "小程序设置",
     wx_app_id_lbl: "小程序设置",
+    appid: "开发者ID",
+    appsecret: "开发者密码",
     access_token: "令牌",
     token_time: "令牌创建时间",
     token_time_lbl: "令牌创建时间",
@@ -901,6 +915,20 @@ export async function validate(
     fieldComments.wx_app_id,
   );
   
+  // 开发者ID
+  await validators.chars_max_length(
+    input.appid,
+    22,
+    fieldComments.appid,
+  );
+  
+  // 开发者密码
+  await validators.chars_max_length(
+    input.appsecret,
+    200,
+    fieldComments.appsecret,
+  );
+  
   // 令牌
   await validators.chars_max_length(
     input.access_token,
@@ -1138,7 +1166,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_app_token(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,wx_app_id,access_token,token_time,expires_in)values";
+  let sql = "insert into wx_wx_app_token(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,wx_app_id,appid,appsecret,access_token,token_time,expires_in)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1225,6 +1253,16 @@ async function _creates(
       }
       if (input.wx_app_id != null) {
         sql += `,${ args.push(input.wx_app_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.appid != null) {
+        sql += `,${ args.push(input.appid) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.appsecret != null) {
+        sql += `,${ args.push(input.appsecret) }`;
       } else {
         sql += ",default";
       }
@@ -1341,6 +1379,18 @@ export async function updateById(
   if (input.wx_app_id != null) {
     if (input.wx_app_id != oldModel.wx_app_id) {
       sql += `wx_app_id=${ args.push(input.wx_app_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.appid != null) {
+    if (input.appid != oldModel.appid) {
+      sql += `appid=${ args.push(input.appid) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.appsecret != null) {
+    if (input.appsecret != oldModel.appsecret) {
+      sql += `appsecret=${ args.push(input.appsecret) },`;
       updateFldNum++;
     }
   }

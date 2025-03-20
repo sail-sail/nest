@@ -67,6 +67,9 @@ pub struct WxoUsrModel {
   /// 绑定用户
   #[graphql(name = "usr_id_lbl")]
   pub usr_id_lbl: String,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: String,
   /// 公众号用户唯一标识
   #[graphql(name = "openid")]
   pub openid: String,
@@ -128,6 +131,8 @@ impl FromRow<'_, MySqlRow> for WxoUsrModel {
     let usr_id: UsrId = row.try_get("usr_id")?;
     let usr_id_lbl: Option<String> = row.try_get("usr_id_lbl")?;
     let usr_id_lbl = usr_id_lbl.unwrap_or_default();
+    // 开发者ID
+    let appid: String = row.try_get("appid")?;
     // 公众号用户唯一标识
     let openid: String = row.try_get("openid")?;
     // 用户统一标识
@@ -176,6 +181,7 @@ impl FromRow<'_, MySqlRow> for WxoUsrModel {
       head_img,
       usr_id,
       usr_id_lbl,
+      appid,
       openid,
       unionid,
       sex,
@@ -218,6 +224,9 @@ pub struct WxoUsrFieldComment {
   /// 绑定用户
   #[graphql(name = "usr_id_lbl")]
   pub usr_id_lbl: String,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: String,
   /// 公众号用户唯一标识
   #[graphql(name = "openid")]
   pub openid: String,
@@ -303,6 +312,12 @@ pub struct WxoUsrSearch {
   /// 绑定用户
   #[graphql(name = "usr_id_lbl_like")]
   pub usr_id_lbl_like: Option<String>,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: Option<String>,
+  /// 开发者ID
+  #[graphql(name = "appid_like")]
+  pub appid_like: Option<String>,
   /// 公众号用户唯一标识
   #[graphql(skip)]
   pub openid: Option<String>,
@@ -418,6 +433,13 @@ impl std::fmt::Debug for WxoUsrSearch {
     if let Some(ref usr_id_is_null) = self.usr_id_is_null {
       item = item.field("usr_id_is_null", usr_id_is_null);
     }
+    // 开发者ID
+    if let Some(ref appid) = self.appid {
+      item = item.field("appid", appid);
+    }
+    if let Some(ref appid_like) = self.appid_like {
+      item = item.field("appid_like", appid_like);
+    }
     // 公众号用户唯一标识
     if let Some(ref openid) = self.openid {
       item = item.field("openid", openid);
@@ -521,6 +543,9 @@ pub struct WxoUsrInput {
   /// 绑定用户
   #[graphql(name = "usr_id_lbl")]
   pub usr_id_lbl: Option<String>,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: Option<String>,
   /// 公众号用户唯一标识
   #[graphql(name = "openid")]
   pub openid: Option<String>,
@@ -593,6 +618,8 @@ impl From<WxoUsrModel> for WxoUsrInput {
       // 绑定用户
       usr_id: model.usr_id.into(),
       usr_id_lbl: model.usr_id_lbl.into(),
+      // 开发者ID
+      appid: model.appid.into(),
       // 公众号用户唯一标识
       openid: model.openid.into(),
       // 用户统一标识
@@ -644,6 +671,8 @@ impl From<WxoUsrInput> for WxoUsrSearch {
       usr_id: input.usr_id.map(|x| vec![x]),
       // 绑定用户
       usr_id_lbl: input.usr_id_lbl.map(|x| vec![x]),
+      // 开发者ID
+      appid: input.appid,
       // 公众号用户唯一标识
       openid: input.openid,
       // 用户统一标识

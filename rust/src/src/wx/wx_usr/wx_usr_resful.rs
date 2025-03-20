@@ -1,6 +1,9 @@
+use tracing::error;
 use serde_json::json;
 
 use poem::{http::StatusCode, Response};
+
+use crate::common::context::get_req_id;
 
 use super::wx_usr_model::Code2sessionInput;
 use super::wx_usr_service::code2session as code2session_service;
@@ -15,6 +18,10 @@ pub async fn code2session(
   ).await;
   
   if let Err(err) = login_model {
+    error!(
+      "{req_id} {err:?}",
+      req_id = get_req_id(),
+    );
     return Response::builder()
       .header("authorization", "")
       .status(StatusCode::UNAUTHORIZED)

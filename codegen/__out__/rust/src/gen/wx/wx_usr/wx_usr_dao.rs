@@ -63,7 +63,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 20 * 2);
+  let mut where_query = String::with_capacity(80 * 21 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -203,6 +203,25 @@ async fn get_where_query(
         where_query.push_str(" and usr_id_lbl.lbl like ?");
         args.push(format!("%{}%", sql_like(&usr_id_lbl_like)).into());
       }
+    }
+  }
+  // 开发者ID
+  {
+    let appid = match search {
+      Some(item) => item.appid.clone(),
+      None => None,
+    };
+    if let Some(appid) = appid {
+      where_query.push_str(" and t.appid=?");
+      args.push(appid.into());
+    }
+    let appid_like = match search {
+      Some(item) => item.appid_like.clone(),
+      None => None,
+    };
+    if let Some(appid_like) = appid_like {
+      where_query.push_str(" and t.appid like ?");
+      args.push(format!("%{}%", sql_like(&appid_like)).into());
     }
   }
   // 昵称
@@ -921,6 +940,7 @@ pub async fn get_field_comments(
     lbl: "名称".into(),
     usr_id: "用户".into(),
     usr_id_lbl: "用户".into(),
+    appid: "开发者ID".into(),
     nick_name: "昵称".into(),
     avatar_img: "头像".into(),
     mobile: "手机".into(),
@@ -1577,7 +1597,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1593,6 +1613,8 @@ async fn _creates(
   sql_fields += ",usr_id_lbl";
   // 用户
   sql_fields += ",usr_id";
+  // 开发者ID
+  sql_fields += ",appid";
   // 昵称
   sql_fields += ",nick_name";
   // 头像
@@ -1617,7 +1639,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 21 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1765,6 +1787,13 @@ async fn _creates(
     if let Some(usr_id) = input.usr_id {
       sql_values += ",?";
       args.push(usr_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 开发者ID
+    if let Some(appid) = input.appid {
+      sql_values += ",?";
+      args.push(appid.into());
     } else {
       sql_values += ",default";
     }
@@ -2075,7 +2104,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 20 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2103,6 +2132,12 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "usr_id=?,";
     args.push(usr_id.into());
+  }
+  // 开发者ID
+  if let Some(appid) = input.appid {
+    field_num += 1;
+    sql_fields += "appid=?,";
+    args.push(appid.into());
   }
   // 昵称
   if let Some(nick_name) = input.nick_name {

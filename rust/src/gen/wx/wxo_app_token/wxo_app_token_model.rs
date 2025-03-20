@@ -57,6 +57,12 @@ pub struct WxoAppTokenModel {
   /// 小程序设置
   #[graphql(name = "wxo_app_id_lbl")]
   pub wxo_app_id_lbl: String,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: String,
+  /// 开发者密码
+  #[graphql(name = "appsecret")]
+  pub appsecret: String,
   /// 令牌
   #[graphql(name = "access_token")]
   pub access_token: String,
@@ -105,6 +111,10 @@ impl FromRow<'_, MySqlRow> for WxoAppTokenModel {
     let wxo_app_id: WxoAppId = row.try_get("wxo_app_id")?;
     let wxo_app_id_lbl: Option<String> = row.try_get("wxo_app_id_lbl")?;
     let wxo_app_id_lbl = wxo_app_id_lbl.unwrap_or_default();
+    // 开发者ID
+    let appid: String = row.try_get("appid")?;
+    // 开发者密码
+    let appsecret: String = row.try_get("appsecret")?;
     // 令牌
     let access_token: String = row.try_get("access_token")?;
     // 令牌创建时间
@@ -143,6 +153,8 @@ impl FromRow<'_, MySqlRow> for WxoAppTokenModel {
       id,
       wxo_app_id,
       wxo_app_id_lbl,
+      appid,
+      appsecret,
       access_token,
       token_time,
       token_time_lbl,
@@ -174,6 +186,12 @@ pub struct WxoAppTokenFieldComment {
   /// 小程序设置
   #[graphql(name = "wxo_app_id_lbl")]
   pub wxo_app_id_lbl: String,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: String,
+  /// 开发者密码
+  #[graphql(name = "appsecret")]
+  pub appsecret: String,
   /// 令牌
   #[graphql(name = "access_token")]
   pub access_token: String,
@@ -209,6 +227,18 @@ pub struct WxoAppTokenSearch {
   /// 小程序设置
   #[graphql(name = "wxo_app_id_lbl_like")]
   pub wxo_app_id_lbl_like: Option<String>,
+  /// 开发者ID
+  #[graphql(skip)]
+  pub appid: Option<String>,
+  /// 开发者ID
+  #[graphql(skip)]
+  pub appid_like: Option<String>,
+  /// 开发者密码
+  #[graphql(skip)]
+  pub appsecret: Option<String>,
+  /// 开发者密码
+  #[graphql(skip)]
+  pub appsecret_like: Option<String>,
   /// 令牌
   #[graphql(skip)]
   pub access_token: Option<String>,
@@ -274,6 +304,20 @@ impl std::fmt::Debug for WxoAppTokenSearch {
     if let Some(ref wxo_app_id_is_null) = self.wxo_app_id_is_null {
       item = item.field("wxo_app_id_is_null", wxo_app_id_is_null);
     }
+    // 开发者ID
+    if let Some(ref appid) = self.appid {
+      item = item.field("appid", appid);
+    }
+    if let Some(ref appid_like) = self.appid_like {
+      item = item.field("appid_like", appid_like);
+    }
+    // 开发者密码
+    if let Some(ref appsecret) = self.appsecret {
+      item = item.field("appsecret", appsecret);
+    }
+    if let Some(ref appsecret_like) = self.appsecret_like {
+      item = item.field("appsecret_like", appsecret_like);
+    }
     // 令牌
     if let Some(ref access_token) = self.access_token {
       item = item.field("access_token", access_token);
@@ -330,6 +374,12 @@ pub struct WxoAppTokenInput {
   /// 小程序设置
   #[graphql(name = "wxo_app_id_lbl")]
   pub wxo_app_id_lbl: Option<String>,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: Option<String>,
+  /// 开发者密码
+  #[graphql(name = "appsecret")]
+  pub appsecret: Option<String>,
   /// 令牌
   #[graphql(name = "access_token")]
   pub access_token: Option<String>,
@@ -385,6 +435,10 @@ impl From<WxoAppTokenModel> for WxoAppTokenInput {
       // 小程序设置
       wxo_app_id: model.wxo_app_id.into(),
       wxo_app_id_lbl: model.wxo_app_id_lbl.into(),
+      // 开发者ID
+      appid: model.appid.into(),
+      // 开发者密码
+      appsecret: model.appsecret.into(),
       // 令牌
       access_token: model.access_token.into(),
       // 令牌创建时间
@@ -419,6 +473,10 @@ impl From<WxoAppTokenInput> for WxoAppTokenSearch {
       is_deleted: None,
       // 小程序设置
       wxo_app_id: input.wxo_app_id.map(|x| vec![x]),
+      // 开发者ID
+      appid: input.appid,
+      // 开发者密码
+      appsecret: input.appsecret,
       // 令牌
       access_token: input.access_token,
       // 令牌创建时间
