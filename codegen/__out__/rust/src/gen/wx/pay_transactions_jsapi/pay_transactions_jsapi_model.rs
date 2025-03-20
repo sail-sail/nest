@@ -97,12 +97,12 @@ pub struct PayTransactionsJsapiModel {
   /// 通知地址
   #[graphql(name = "notify_url")]
   pub notify_url: String,
-  /// 是否支持发票
-  #[graphql(name = "support_fapiao")]
-  pub support_fapiao: u8,
-  /// 是否支持发票
-  #[graphql(name = "support_fapiao_lbl")]
-  pub support_fapiao_lbl: String,
+  /// 开发票
+  #[graphql(name = "receipt")]
+  pub receipt: String,
+  /// 分账
+  #[graphql(name = "profit_sharing")]
+  pub profit_sharing: String,
   /// 订单金额(分)
   #[graphql(name = "total_fee")]
   pub total_fee: i32,
@@ -173,9 +173,10 @@ impl FromRow<'_, MySqlRow> for PayTransactionsJsapiModel {
     let attach2: String = row.try_get("attach2")?;
     // 通知地址
     let notify_url: String = row.try_get("notify_url")?;
-    // 是否支持发票
-    let support_fapiao: u8 = row.try_get("support_fapiao")?;
-    let support_fapiao_lbl: String = support_fapiao.to_string();
+    // 开发票
+    let receipt: String = row.try_get("receipt")?;
+    // 分账
+    let profit_sharing: String = row.try_get("profit_sharing")?;
     // 订单金额(分)
     let total_fee: i32 = row.try_get("total_fee")?;
     // 货币类型
@@ -226,8 +227,8 @@ impl FromRow<'_, MySqlRow> for PayTransactionsJsapiModel {
       attach,
       attach2,
       notify_url,
-      support_fapiao,
-      support_fapiao_lbl,
+      receipt,
+      profit_sharing,
       total_fee,
       currency,
       currency_lbl,
@@ -296,12 +297,12 @@ pub struct PayTransactionsJsapiFieldComment {
   /// 通知地址
   #[graphql(name = "notify_url")]
   pub notify_url: String,
-  /// 是否支持发票
-  #[graphql(name = "support_fapiao")]
-  pub support_fapiao: String,
-  /// 是否支持发票
-  #[graphql(name = "support_fapiao_lbl")]
-  pub support_fapiao_lbl: String,
+  /// 开发票
+  #[graphql(name = "receipt")]
+  pub receipt: String,
+  /// 分账
+  #[graphql(name = "profit_sharing")]
+  pub profit_sharing: String,
   /// 订单金额(分)
   #[graphql(name = "total_fee")]
   pub total_fee: String,
@@ -420,9 +421,18 @@ pub struct PayTransactionsJsapiSearch {
   /// 通知地址
   #[graphql(skip)]
   pub notify_url_like: Option<String>,
-  /// 是否支持发票
+  /// 开发票
   #[graphql(skip)]
-  pub support_fapiao: Option<Vec<u8>>,
+  pub receipt: Option<String>,
+  /// 开发票
+  #[graphql(skip)]
+  pub receipt_like: Option<String>,
+  /// 分账
+  #[graphql(skip)]
+  pub profit_sharing: Option<String>,
+  /// 分账
+  #[graphql(skip)]
+  pub profit_sharing_like: Option<String>,
   /// 订单金额(分)
   #[graphql(skip)]
   pub total_fee: Option<[Option<i32>; 2]>,
@@ -568,9 +578,19 @@ impl std::fmt::Debug for PayTransactionsJsapiSearch {
     if let Some(ref notify_url_like) = self.notify_url_like {
       item = item.field("notify_url_like", notify_url_like);
     }
-    // 是否支持发票
-    if let Some(ref support_fapiao) = self.support_fapiao {
-      item = item.field("support_fapiao", support_fapiao);
+    // 开发票
+    if let Some(ref receipt) = self.receipt {
+      item = item.field("receipt", receipt);
+    }
+    if let Some(ref receipt_like) = self.receipt_like {
+      item = item.field("receipt_like", receipt_like);
+    }
+    // 分账
+    if let Some(ref profit_sharing) = self.profit_sharing {
+      item = item.field("profit_sharing", profit_sharing);
+    }
+    if let Some(ref profit_sharing_like) = self.profit_sharing_like {
+      item = item.field("profit_sharing_like", profit_sharing_like);
     }
     // 订单金额(分)
     if let Some(ref total_fee) = self.total_fee {
@@ -677,12 +697,12 @@ pub struct PayTransactionsJsapiInput {
   /// 通知地址
   #[graphql(name = "notify_url")]
   pub notify_url: Option<String>,
-  /// 是否支持发票
-  #[graphql(name = "support_fapiao")]
-  pub support_fapiao: Option<u8>,
-  /// 是否支持发票
-  #[graphql(name = "support_fapiao_lbl")]
-  pub support_fapiao_lbl: Option<String>,
+  /// 开发票
+  #[graphql(name = "receipt")]
+  pub receipt: Option<String>,
+  /// 分账
+  #[graphql(name = "profit_sharing")]
+  pub profit_sharing: Option<String>,
   /// 订单金额(分)
   #[graphql(name = "total_fee")]
   pub total_fee: Option<i32>,
@@ -763,9 +783,10 @@ impl From<PayTransactionsJsapiModel> for PayTransactionsJsapiInput {
       attach2: model.attach2.into(),
       // 通知地址
       notify_url: model.notify_url.into(),
-      // 是否支持发票
-      support_fapiao: model.support_fapiao.into(),
-      support_fapiao_lbl: model.support_fapiao_lbl.into(),
+      // 开发票
+      receipt: model.receipt.into(),
+      // 分账
+      profit_sharing: model.profit_sharing.into(),
       // 订单金额(分)
       total_fee: model.total_fee.into(),
       // 货币类型
@@ -825,8 +846,10 @@ impl From<PayTransactionsJsapiInput> for PayTransactionsJsapiSearch {
       attach2: input.attach2,
       // 通知地址
       notify_url: input.notify_url,
-      // 是否支持发票
-      support_fapiao: input.support_fapiao.map(|x| vec![x]),
+      // 开发票
+      receipt: input.receipt,
+      // 分账
+      profit_sharing: input.profit_sharing,
       // 订单金额(分)
       total_fee: input.total_fee.map(|x| [Some(x), Some(x)]),
       // 货币类型
