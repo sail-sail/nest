@@ -10,4 +10,5 @@ pub mod util;
 pub mod app;
 pub mod websocket;
 pub mod health;
+pub mod wx_pay;
 // pub mod macros;

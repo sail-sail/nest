@@ -3,7 +3,7 @@ use serde_json::json;
 use poem::Response;
 use http::status::StatusCode;
 
-use wx_pay::decode::WxPayNotify;
+use crate::common::wx_pay::decode::WxPayNotify;
 
 use super::wx_pay_notice_service;
 

@@ -52,3 +52,10 @@ pub struct TransactionsJsapiInput {
   pub profit_sharing: Option<bool>,
   
 }
+
+#[derive(Default, Copy, Clone, Eq, PartialEq, Debug, Serialize, Deserialize)]
+pub enum TransactionsJsapiActionEnum {
+  #[serde(rename = "test")]
+  #[default]
+  Test,
+}

@@ -11,7 +11,7 @@ use crate::common::context::Ctx;
 
 use super::wx_pay_notice_resful;
 
-use wx_pay::decode::WxPayNotify;
+use crate::common::wx_pay::decode::WxPayNotify;
 
 /// https://pay.weixin.qq.com/doc/v3/merchant/4012791861
 /// 支付成功回调通知

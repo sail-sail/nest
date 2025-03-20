@@ -1,6 +1,6 @@
 use color_eyre::eyre::{Result, eyre};
 
-use wx_pay::decode::{decode_wx_pay, WxPayNotify, WxPayResource};
+use crate::common::wx_pay::decode::{decode_wx_pay, WxPayNotify, WxPayResource};
 
 pub async fn wx_pay_notify(
   wx_pay_notify: WxPayNotify,

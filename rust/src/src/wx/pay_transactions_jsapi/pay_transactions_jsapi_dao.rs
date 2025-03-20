@@ -5,8 +5,7 @@ use crate::common::context::{
   get_short_uuid,
   get_auth_id_err,
 };
-
-use wx_pay::{Amount, Jsapi, Payer, WxPayData, WxPay, SceneInfo};
+use crate::common::wx_pay::{Amount, Jsapi, Payer, WxPayData, WxPay, SceneInfo};
 
 use super::pay_transactions_jsapi_model::RequestPaymentOptions;
 
@@ -36,7 +35,7 @@ use super::pay_transactions_jsapi_model::TransactionsJsapiInput;
 use crate::common::oss::oss_dao::get_object;
 
 /// 生成商户订单号 out_trade_no
-pub fn get_out_trade_no() -> String {
+fn get_out_trade_no() -> String {
   get_short_uuid()
     .replace("+", "-")
     .replace("/", "_")
@@ -157,8 +156,7 @@ pub async fn transactions_jsapi(
     ..Default::default()
   };
   
-  let wx_pay_data: WxPayData = wxpay.jsapi(&jsapi).await
-    .map_err(|err| eyre!("{:#?}", err))?;
+  let wx_pay_data: WxPayData = wxpay.jsapi(&jsapi).await?;
   
   let request_payment_options = RequestPaymentOptions {
     time_stamp: wx_pay_data.time_stamp.to_string(),
