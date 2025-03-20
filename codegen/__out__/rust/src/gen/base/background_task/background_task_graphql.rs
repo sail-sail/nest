@@ -157,7 +157,7 @@ impl BackgroundTaskGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         background_task_resolver::update_tenant_by_id(
@@ -176,7 +176,7 @@ impl BackgroundTaskGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         background_task_resolver::delete_by_ids(
@@ -194,7 +194,7 @@ impl BackgroundTaskGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         background_task_resolver::revert_by_ids(
@@ -212,7 +212,7 @@ impl BackgroundTaskGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         background_task_resolver::force_delete_by_ids(

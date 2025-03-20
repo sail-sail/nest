@@ -182,7 +182,7 @@ impl DictDetailGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -202,7 +202,7 @@ impl DictDetailGenMutation {
   ) -> Result<DictDetailId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_detail_resolver::update_by_id(
@@ -221,7 +221,7 @@ impl DictDetailGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_detail_resolver::delete_by_ids(
@@ -240,7 +240,7 @@ impl DictDetailGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_detail_resolver::enable_by_ids(
@@ -259,7 +259,7 @@ impl DictDetailGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_detail_resolver::revert_by_ids(
@@ -277,7 +277,7 @@ impl DictDetailGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_detail_resolver::force_delete_by_ids(

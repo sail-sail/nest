@@ -160,7 +160,7 @@ impl PermitGenMutation {
   ) -> Result<PermitId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         permit_resolver::update_by_id(
