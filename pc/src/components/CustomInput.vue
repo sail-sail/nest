@@ -45,6 +45,7 @@
     un-flex="~"
     un-justify="start"
     un-items="center"
+    un-box-border
     class="custom_input_readonly"
     :class="{
       'custom_input_readonly_border': props.isReadonlyBorder,
@@ -58,7 +59,7 @@
       un-box-border
       un-w="full"
       un-min="h-7.5"
-      un-break-words
+      un-break-all
       un-whitespace-pre-wrap
       class="custom_input_readonly_content"
       :class="{
@@ -82,6 +83,7 @@
       </template>
     </div>
     <div
+      v-if="$slots.suffix"
       un-flex="~"
       un-overflow-hidden
       un-p="x-2.5 y-0.875"

@@ -95,7 +95,7 @@
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
-    un-break-words
+    un-break-all
     class="dict_select_readonly"
     :class="{
       'custom_select_placeholder': shouldShowPlaceholder,
@@ -195,7 +195,7 @@
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
-    un-break-words
+    un-break-all
     class="dict_select_readonly"
     :class="{
       'dict_select_placeholder': shouldShowPlaceholder,
