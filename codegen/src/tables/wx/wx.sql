@@ -220,7 +220,7 @@ CREATE TABLE if not exists `wx_pay_transactions_jsapi` (
   `notify_url` varchar(256) NOT NULL DEFAULT '' COMMENT '通知地址',
   `receipt` varchar(8) NOT NULL DEFAULT 'N' COMMENT '开发票',
   `profit_sharing` varchar(16) NOT NULL DEFAULT 'N' COMMENT '分账',
-  `total_fee` int(11) NOT NULL DEFAULT 0 COMMENT '订单金额(分)',
+  `total_fee` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '订单金额(分)',
   `currency` ENUM('CNY') NOT NULL DEFAULT 'CNY' COMMENT '货币类型,dict:wx_pay_notice_currency',
   `openid` varchar(128) NOT NULL DEFAULT '' COMMENT '用户标识',
   `prepay_id` varchar(64) NOT NULL DEFAULT '' COMMENT '预支付交易会话标识',
