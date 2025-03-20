@@ -15,6 +15,8 @@ type WxUsrModel {
   usr_id: UsrId!
   "用户"
   usr_id_lbl: String!
+  "开发者ID"
+  appid: String!
   "昵称"
   nick_name: String!
   "头像"
@@ -67,6 +69,8 @@ type WxUsrFieldComment {
   usr_id: String!
   "用户"
   usr_id_lbl: String!
+  "开发者ID"
+  appid: String!
   "昵称"
   nick_name: String!
   "头像"
@@ -117,6 +121,8 @@ input WxUsrInput {
   usr_id: UsrId
   "用户"
   usr_id_lbl: String
+  "开发者ID"
+  appid: String
   "昵称"
   nick_name: String
   "头像"
@@ -160,6 +166,9 @@ input WxUsrSearch {
   usr_id_lbl: [String!]
   "用户"
   usr_id_lbl_like: String
+  "开发者ID"
+  appid: String
+  appid_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"

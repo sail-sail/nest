@@ -1,5 +1,5 @@
-use tracing::{info, error};
-use color_eyre::eyre::Result;
+use tracing::info;
+use color_eyre::eyre::{Result, eyre};
 
 use crate::common::context::{
   Options,
@@ -54,6 +54,7 @@ use crate::common::auth::auth_model::AuthModel;
 use crate::common::gql::model::UniqueType;
 
 use crate::common::util::http::client as reqwest_client;
+use crate::common::exceptions::service_exception::ServiceException;
 
 pub async fn code2session(
   code2session_input: Code2sessionInput,
@@ -96,20 +97,31 @@ pub async fn code2session(
   );
   
   let res = reqwest_client().get(&url).send().await?;
-  let code2session_model = res.json::<Code2sessionModel>().await?;
+  let code2session_str = res.text().await?;
+  info!(
+    "{req_id} WxUsrService.code2Session: {code2session_str}",
+    req_id = get_req_id(),
+  );
+  let code2session_model: Code2sessionModel = serde_json::from_str(&code2session_str)?;
   
   let errcode = code2session_model.errcode;
-  
-  if errcode.is_some() && errcode.unwrap() != 0 {
-    error!(
-      "{req_id} WxUsrService.code2Session: {code2session_model:#?}",
-      req_id = get_req_id(),
-    );
-  }
-  
+  let errmsg = code2session_model.errmsg;
   let openid = code2session_model.openid;
   let unionid = code2session_model.unionid
     .unwrap_or_default();
+  
+  if (errcode.is_some() && errcode.unwrap() != 0) ||
+    openid.is_empty()
+  {
+    return Err(eyre!(
+      ServiceException {
+        code: errcode.unwrap_or_default().to_string(),
+        message: errmsg.unwrap_or_default(),
+        trace: true,
+        ..Default::default()
+      }
+    ));
+  }
   
   let mut wx_usr_model = find_one_wx_usr(
     Some(WxUsrSearch {

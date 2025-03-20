@@ -64,6 +64,9 @@ pub struct WxUsrModel {
   /// 用户
   #[graphql(name = "usr_id_lbl")]
   pub usr_id_lbl: String,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: String,
   /// 昵称
   #[graphql(name = "nick_name")]
   pub nick_name: String,
@@ -132,6 +135,8 @@ impl FromRow<'_, MySqlRow> for WxUsrModel {
     let usr_id: UsrId = row.try_get("usr_id")?;
     let usr_id_lbl: Option<String> = row.try_get("usr_id_lbl")?;
     let usr_id_lbl = usr_id_lbl.unwrap_or_default();
+    // 开发者ID
+    let appid: String = row.try_get("appid")?;
     // 昵称
     let nick_name: String = row.try_get("nick_name")?;
     // 头像
@@ -185,6 +190,7 @@ impl FromRow<'_, MySqlRow> for WxUsrModel {
       lbl,
       usr_id,
       usr_id_lbl,
+      appid,
       nick_name,
       avatar_img,
       mobile,
@@ -227,6 +233,9 @@ pub struct WxUsrFieldComment {
   /// 用户
   #[graphql(name = "usr_id_lbl")]
   pub usr_id_lbl: String,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: String,
   /// 昵称
   #[graphql(name = "nick_name")]
   pub nick_name: String,
@@ -318,6 +327,12 @@ pub struct WxUsrSearch {
   /// 用户
   #[graphql(name = "usr_id_lbl_like")]
   pub usr_id_lbl_like: Option<String>,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: Option<String>,
+  /// 开发者ID
+  #[graphql(name = "appid_like")]
+  pub appid_like: Option<String>,
   /// 昵称
   #[graphql(skip)]
   pub nick_name: Option<String>,
@@ -444,6 +459,13 @@ impl std::fmt::Debug for WxUsrSearch {
     if let Some(ref usr_id_is_null) = self.usr_id_is_null {
       item = item.field("usr_id_is_null", usr_id_is_null);
     }
+    // 开发者ID
+    if let Some(ref appid) = self.appid {
+      item = item.field("appid", appid);
+    }
+    if let Some(ref appid_like) = self.appid_like {
+      item = item.field("appid_like", appid_like);
+    }
     // 昵称
     if let Some(ref nick_name) = self.nick_name {
       item = item.field("nick_name", nick_name);
@@ -565,6 +587,9 @@ pub struct WxUsrInput {
   /// 用户
   #[graphql(name = "usr_id_lbl")]
   pub usr_id_lbl: Option<String>,
+  /// 开发者ID
+  #[graphql(name = "appid")]
+  pub appid: Option<String>,
   /// 昵称
   #[graphql(name = "nick_name")]
   pub nick_name: Option<String>,
@@ -644,6 +669,8 @@ impl From<WxUsrModel> for WxUsrInput {
       // 用户
       usr_id: model.usr_id.into(),
       usr_id_lbl: model.usr_id_lbl.into(),
+      // 开发者ID
+      appid: model.appid.into(),
       // 昵称
       nick_name: model.nick_name.into(),
       // 头像
@@ -699,6 +726,8 @@ impl From<WxUsrInput> for WxUsrSearch {
       usr_id: input.usr_id.map(|x| vec![x]),
       // 用户
       usr_id_lbl: input.usr_id_lbl.map(|x| vec![x]),
+      // 开发者ID
+      appid: input.appid,
       // 昵称
       nick_name: input.nick_name,
       // 头像

@@ -60,7 +60,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 10 * 2);
+  let mut where_query = String::with_capacity(80 * 12 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -161,6 +161,44 @@ async fn get_where_query(
     if let Some(wxo_app_id_lbl_like) = wxo_app_id_lbl_like {
       where_query.push_str(" and wxo_app_id_lbl.lbl like ?");
       args.push(format!("%{}%", sql_like(&wxo_app_id_lbl_like)).into());
+    }
+  }
+  // 开发者ID
+  {
+    let appid = match search {
+      Some(item) => item.appid.clone(),
+      None => None,
+    };
+    if let Some(appid) = appid {
+      where_query.push_str(" and t.appid=?");
+      args.push(appid.into());
+    }
+    let appid_like = match search {
+      Some(item) => item.appid_like.clone(),
+      None => None,
+    };
+    if let Some(appid_like) = appid_like {
+      where_query.push_str(" and t.appid like ?");
+      args.push(format!("%{}%", sql_like(&appid_like)).into());
+    }
+  }
+  // 开发者密码
+  {
+    let appsecret = match search {
+      Some(item) => item.appsecret.clone(),
+      None => None,
+    };
+    if let Some(appsecret) = appsecret {
+      where_query.push_str(" and t.appsecret=?");
+      args.push(appsecret.into());
+    }
+    let appsecret_like = match search {
+      Some(item) => item.appsecret_like.clone(),
+      None => None,
+    };
+    if let Some(appsecret_like) = appsecret_like {
+      where_query.push_str(" and t.appsecret like ?");
+      args.push(format!("%{}%", sql_like(&appsecret_like)).into());
     }
   }
   // 令牌
@@ -669,6 +707,8 @@ pub async fn get_field_comments(
     id: "ID".into(),
     wxo_app_id: "小程序设置".into(),
     wxo_app_id_lbl: "小程序设置".into(),
+    appid: "开发者ID".into(),
+    appsecret: "开发者密码".into(),
     access_token: "令牌".into(),
     token_time: "令牌创建时间".into(),
     token_time_lbl: "令牌创建时间".into(),
@@ -1284,7 +1324,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 10 + 20);
+  let mut sql_fields = String::with_capacity(80 * 12 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1295,6 +1335,10 @@ async fn _creates(
   sql_fields += ",update_usr_id_lbl";
   // 小程序设置
   sql_fields += ",wxo_app_id";
+  // 开发者ID
+  sql_fields += ",appid";
+  // 开发者密码
+  sql_fields += ",appsecret";
   // 令牌
   sql_fields += ",access_token";
   // 令牌创建时间
@@ -1303,7 +1347,7 @@ async fn _creates(
   sql_fields += ",expires_in";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 10 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 12 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1423,6 +1467,20 @@ async fn _creates(
     if let Some(wxo_app_id) = input.wxo_app_id {
       sql_values += ",?";
       args.push(wxo_app_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 开发者ID
+    if let Some(appid) = input.appid {
+      sql_values += ",?";
+      args.push(appid.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 开发者密码
+    if let Some(appsecret) = input.appsecret {
+      sql_values += ",?";
+      args.push(appsecret.into());
     } else {
       sql_values += ",default";
     }
@@ -1633,7 +1691,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 10 + 20);
+  let mut sql_fields = String::with_capacity(80 * 12 + 20);
   
   let mut field_num: usize = 0;
   // 小程序设置
@@ -1641,6 +1699,18 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "wxo_app_id=?,";
     args.push(wxo_app_id.into());
+  }
+  // 开发者ID
+  if let Some(appid) = input.appid {
+    field_num += 1;
+    sql_fields += "appid=?,";
+    args.push(appid.into());
+  }
+  // 开发者密码
+  if let Some(appsecret) = input.appsecret {
+    field_num += 1;
+    sql_fields += "appsecret=?,";
+    args.push(appsecret.into());
   }
   // 令牌
   if let Some(access_token) = input.access_token {

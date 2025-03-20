@@ -80,6 +80,7 @@ pub async fn get_access_token(
   ).await?;
   
   let wx_app_id = wx_app_model.id;
+  let appid = wx_app_model.appid;
   let appsecret = wx_app_model.appsecret;
   
   let now = get_now();
@@ -105,6 +106,8 @@ pub async fn get_access_token(
     create_wx_app_token(
       WxAppTokenInput {
         wx_app_id: Some(wx_app_id.clone()),
+        appid: Some(appid.clone()),
+        appsecret: Some(appsecret.clone()),
         access_token: Some(access_token.clone()),
         expires_in: Some(expires_in),
         token_time: Some(now),
@@ -134,7 +137,9 @@ pub async fn get_access_token(
   if force ||
     expires_in == 0 ||
     token_time2.is_none() ||
-    token_time2.unwrap() < now
+    token_time2.unwrap() < now ||
+    appid != wx_app_token_model.appid ||
+    appsecret != wx_app_token_model.appsecret
   {
     info!(
       "{req_id} WxAppTokenService.getAccessToken-timeout: {token_time2:#?}",
@@ -152,6 +157,8 @@ pub async fn get_access_token(
     update_by_id_wx_app_token(
       wx_app_token_id,
       WxAppTokenInput {
+        appid: Some(appid),
+        appsecret: Some(appsecret),
         access_token: Some(access_token.clone()),
         expires_in: Some(expires_in),
         token_time: Some(now),
