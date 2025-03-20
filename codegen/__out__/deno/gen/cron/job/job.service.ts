@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await jobDao.findCount(search);
-  return data;
+  const job_num = await jobDao.findCount(search);
+  
+  return job_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: JobModel[] = await jobDao.findAll(search, page, sort);
-  return models;
+  const job_models = await jobDao.findAll(search, page, sort);
+  
+  return job_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: JobInput,
-) {
-  const data = await jobDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await jobDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await jobDao.findOne(search, sort);
-  return model;
+  const job_model = await jobDao.findOne(search, sort);
+  
+  return job_model;
 }
 
 /**
  * 根据 id 查找任务
  */
 export async function findById(
-  id?: JobId | null,
+  job_id?: JobId | null,
 ): Promise<JobModel | undefined> {
-  const model = await jobDao.findById(id);
-  return model;
+  
+  const job_model = await jobDao.findById(job_id);
+  
+  return job_model;
+}
+
+/**
+ * 根据 ids 查找任务
+ */
+export async function findByIds(
+  job_ids: JobId[],
+): Promise<JobModel[]> {
+  
+  const job_models = await jobDao.findByIds(job_ids);
+  
+  return job_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await jobDao.exist(search);
-  return data;
+  const job_exist = await jobDao.exist(search);
+  
+  return job_exist;
 }
 
 /**
  * 根据 id 查找任务是否存在
  */
 export async function existById(
-  id?: JobId | null,
+  job_id?: JobId | null,
 ): Promise<boolean> {
-  const data = await jobDao.existById(id);
-  return data;
+  
+  const job_exist = await jobDao.existById(job_id);
+  
+  return job_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: JobInput,
 ): Promise<void> {
-  const data = await jobDao.validate(input);
-  return data;
+  await jobDao.validate(input);
 }
 
 /**
@@ -124,23 +142,24 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<JobId[]> {
-  const ids = await jobDao.creates(inputs, options);
-  return ids;
+  const job_ids = await jobDao.creates(inputs, options);
+  
+  return job_ids;
 }
 
 /**
  * 根据 id 修改任务
  */
 export async function updateById(
-  id: JobId,
+  job_id: JobId,
   input: JobInput,
 ): Promise<JobId> {
   
   const old_model = await jobDao.validateOption(
-    await jobDao.findById(id),
+    await jobDao.findById(job_id),
   );
   
-  const is_locked = await jobDao.getIsLockedById(id);
+  const is_locked = await jobDao.getIsLockedById(job_id);
   if (is_locked) {
     throw "不能修改已经锁定的 任务";
   }
@@ -151,41 +170,42 @@ export async function updateById(
     input.code = undefined;
   }
   
-  const id2 = await jobDao.updateById(id, input);
-  return id2;
+  const job_id2 = await jobDao.updateById(job_id, input);
+  
+  return job_id2;
+}
+
+/** 校验任务是否存在 */
+export async function validateOption(
+  model0?: JobModel,
+): Promise<JobModel> {
+  const job_model = await jobDao.validateOption(model0);
+  return job_model;
 }
 
 /**
  * 根据 ids 删除任务
  */
 export async function deleteByIds(
-  ids: JobId[],
+  job_ids: JobId[],
 ): Promise<number> {
   
-  {
-    const models = await jobDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 任务";
-      }
+  const old_models = await jobDao.findByIds(job_ids);
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 任务";
     }
   }
   
-  {
-    const models = await jobDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_sys === 1) {
-        throw "不能删除系统记录";
-      }
+  for (const old_model of old_models) {
+    if (old_model.is_sys === 1) {
+      throw "不能删除系统记录";
     }
   }
   
-  const data = await jobDao.deleteByIds(ids);
-  return data;
+  const job_num = await jobDao.deleteByIds(job_ids);
+  return job_num;
 }
 
 /**
@@ -195,47 +215,51 @@ export async function enableByIds(
   ids: JobId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await jobDao.enableByIds(ids, is_enabled);
-  return data;
+  const job_num = await jobDao.enableByIds(ids, is_enabled);
+  return job_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁任务
  */
 export async function lockByIds(
-  ids: JobId[],
+  job_ids: JobId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await jobDao.lockByIds(ids, is_locked);
-  return data;
+  const job_num = await jobDao.lockByIds(job_ids, is_locked);
+  return job_num;
 }
 
 /**
  * 根据 ids 还原任务
  */
 export async function revertByIds(
-  ids: JobId[],
+  job_ids: JobId[],
 ): Promise<number> {
-  const data = await jobDao.revertByIds(ids);
-  return data;
+  
+  const job_num = await jobDao.revertByIds(job_ids);
+  
+  return job_num;
 }
 
 /**
  * 根据 ids 彻底删除任务
  */
 export async function forceDeleteByIds(
-  ids: JobId[],
+  job_ids: JobId[],
 ): Promise<number> {
-  const data = await jobDao.forceDeleteByIds(ids);
-  return data;
+  
+  const job_num = await jobDao.forceDeleteByIds(job_ids);
+  
+  return job_num;
 }
 
 /**
  * 获取任务字段注释
  */
 export async function getFieldComments(): Promise<JobFieldComment> {
-  const data = await jobDao.getFieldComments();
-  return data;
+  const job_fields = await jobDao.getFieldComments();
+  return job_fields;
 }
 
 /**
@@ -243,6 +267,6 @@ export async function getFieldComments(): Promise<JobFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await jobDao.findLastOrderBy();
-  return data;
+  const job_sort = await jobDao.findLastOrderBy();
+  return job_sort;
 }

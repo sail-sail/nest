@@ -70,6 +70,8 @@ type Query {
   findOneCronJobLogDetail(search: CronJobLogDetailSearch, sort: [SortInput!]): CronJobLogDetailModel
   "根据 id 查找定时任务日志明细"
   findByIdCronJobLogDetail(id: CronJobLogDetailId!): CronJobLogDetailModel
+  "根据 ids 查找定时任务日志明细"
+  findByIdsCronJobLogDetail(ids: [CronJobLogDetailId!]!): [CronJobLogDetailModel]!
 }
 type Mutation {
   "根据 ids 删除定时任务日志明细"

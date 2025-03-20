@@ -109,6 +109,25 @@ export async function findByIdCronJob(
 }
 
 /**
+ * 根据 ids 查找定时任务
+ */
+export async function findByIdsCronJob(
+  ids: CronJobId[],
+): Promise<CronJobModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./cron_job.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建定时任务
  */
 export async function createsCronJob(
