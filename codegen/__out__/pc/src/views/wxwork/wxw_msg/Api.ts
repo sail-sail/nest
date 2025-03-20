@@ -133,9 +133,12 @@ export async function findCount(
  * 根据 id 查找企微消息
  */
 export async function findById(
-  id: WxwMsgId,
+  id?: WxwMsgId,
   opt?: GqlOpt,
-) {
+): Promise<WxwMsgModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdWxwMsg?: WxwMsgModel;
   } = await query({
@@ -156,12 +159,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找企微消息
+ */
+export async function findByIds(
+  ids: WxwMsgId[],
+  opt?: GqlOpt,
+): Promise<WxwMsgModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: WxwMsgModel[] = [ ];
+  try {
+    const data: {
+      findByIdsWxwMsg: WxwMsgModel[];
+    } = await query({
+      query: `
+        query($ids: [WxwMsgId!]!) {
+          findByIdsWxwMsg(ids: $ids) {
+            ${ wxwMsgQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsWxwMsg;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除企微消息
  */
 export async function deleteByIds(
   ids: WxwMsgId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsWxwMsg: Mutation["deleteByIdsWxwMsg"];
   } = await mutation({
@@ -184,7 +227,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: WxwMsgId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsWxwMsg: Mutation["revertByIdsWxwMsg"];
   } = await mutation({
@@ -207,7 +253,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: WxwMsgId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsWxwMsg: Mutation["forceDeleteByIdsWxwMsg"];
   } = await mutation({

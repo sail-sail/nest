@@ -105,6 +105,25 @@ export async function findByIdWxwMsg(
 }
 
 /**
+ * 根据 ids 查找企微消息
+ */
+export async function findByIdsWxwMsg(
+  ids: WxwMsgId[],
+): Promise<WxwMsgModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./wxw_msg.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 根据 ids 删除企微消息
  */
 export async function deleteByIdsWxwMsg(

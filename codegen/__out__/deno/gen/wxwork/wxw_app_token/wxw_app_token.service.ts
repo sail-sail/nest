@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await wxw_app_tokenDao.findCount(search);
-  return data;
+  const wxw_app_token_num = await wxw_app_tokenDao.findCount(search);
+  
+  return wxw_app_token_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: WxwAppTokenModel[] = await wxw_app_tokenDao.findAll(search, page, sort);
-  return models;
+  const wxw_app_token_models = await wxw_app_tokenDao.findAll(search, page, sort);
+  
+  return wxw_app_token_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: WxwAppTokenInput,
-) {
-  const data = await wxw_app_tokenDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await wxw_app_tokenDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await wxw_app_tokenDao.findOne(search, sort);
-  return model;
+  const wxw_app_token_model = await wxw_app_tokenDao.findOne(search, sort);
+  
+  return wxw_app_token_model;
 }
 
 /**
  * 根据 id 查找企微应用接口凭据
  */
 export async function findById(
-  id?: WxwAppTokenId | null,
+  wxw_app_token_id?: WxwAppTokenId | null,
 ): Promise<WxwAppTokenModel | undefined> {
-  const model = await wxw_app_tokenDao.findById(id);
-  return model;
+  
+  const wxw_app_token_model = await wxw_app_tokenDao.findById(wxw_app_token_id);
+  
+  return wxw_app_token_model;
+}
+
+/**
+ * 根据 ids 查找企微应用接口凭据
+ */
+export async function findByIds(
+  wxw_app_token_ids: WxwAppTokenId[],
+): Promise<WxwAppTokenModel[]> {
+  
+  const wxw_app_token_models = await wxw_app_tokenDao.findByIds(wxw_app_token_ids);
+  
+  return wxw_app_token_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await wxw_app_tokenDao.exist(search);
-  return data;
+  const wxw_app_token_exist = await wxw_app_tokenDao.exist(search);
+  
+  return wxw_app_token_exist;
 }
 
 /**
  * 根据 id 查找企微应用接口凭据是否存在
  */
 export async function existById(
-  id?: WxwAppTokenId | null,
+  wxw_app_token_id?: WxwAppTokenId | null,
 ): Promise<boolean> {
-  const data = await wxw_app_tokenDao.existById(id);
-  return data;
+  
+  const wxw_app_token_exist = await wxw_app_tokenDao.existById(wxw_app_token_id);
+  
+  return wxw_app_token_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: WxwAppTokenInput,
 ): Promise<void> {
-  const data = await wxw_app_tokenDao.validate(input);
-  return data;
+  await wxw_app_tokenDao.validate(input);
 }
 
 /**
@@ -124,57 +142,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<WxwAppTokenId[]> {
-  const ids = await wxw_app_tokenDao.creates(inputs, options);
-  return ids;
+  const wxw_app_token_ids = await wxw_app_tokenDao.creates(inputs, options);
+  
+  return wxw_app_token_ids;
 }
 
 /**
  * 根据 id 修改企微应用接口凭据
  */
 export async function updateById(
-  id: WxwAppTokenId,
+  wxw_app_token_id: WxwAppTokenId,
   input: WxwAppTokenInput,
 ): Promise<WxwAppTokenId> {
   
-  const id2 = await wxw_app_tokenDao.updateById(id, input);
-  return id2;
+  const wxw_app_token_id2 = await wxw_app_tokenDao.updateById(wxw_app_token_id, input);
+  
+  return wxw_app_token_id2;
+}
+
+/** 校验企微应用接口凭据是否存在 */
+export async function validateOption(
+  model0?: WxwAppTokenModel,
+): Promise<WxwAppTokenModel> {
+  const wxw_app_token_model = await wxw_app_tokenDao.validateOption(model0);
+  return wxw_app_token_model;
 }
 
 /**
  * 根据 ids 删除企微应用接口凭据
  */
 export async function deleteByIds(
-  ids: WxwAppTokenId[],
+  wxw_app_token_ids: WxwAppTokenId[],
 ): Promise<number> {
   
-  const data = await wxw_app_tokenDao.deleteByIds(ids);
-  return data;
+  const wxw_app_token_num = await wxw_app_tokenDao.deleteByIds(wxw_app_token_ids);
+  return wxw_app_token_num;
 }
 
 /**
  * 根据 ids 还原企微应用接口凭据
  */
 export async function revertByIds(
-  ids: WxwAppTokenId[],
+  wxw_app_token_ids: WxwAppTokenId[],
 ): Promise<number> {
-  const data = await wxw_app_tokenDao.revertByIds(ids);
-  return data;
+  
+  const wxw_app_token_num = await wxw_app_tokenDao.revertByIds(wxw_app_token_ids);
+  
+  return wxw_app_token_num;
 }
 
 /**
  * 根据 ids 彻底删除企微应用接口凭据
  */
 export async function forceDeleteByIds(
-  ids: WxwAppTokenId[],
+  wxw_app_token_ids: WxwAppTokenId[],
 ): Promise<number> {
-  const data = await wxw_app_tokenDao.forceDeleteByIds(ids);
-  return data;
+  
+  const wxw_app_token_num = await wxw_app_tokenDao.forceDeleteByIds(wxw_app_token_ids);
+  
+  return wxw_app_token_num;
 }
 
 /**
  * 获取企微应用接口凭据字段注释
  */
 export async function getFieldComments(): Promise<WxwAppTokenFieldComment> {
-  const data = await wxw_app_tokenDao.getFieldComments();
-  return data;
+  const wxw_app_token_fields = await wxw_app_tokenDao.getFieldComments();
+  return wxw_app_token_fields;
 }
