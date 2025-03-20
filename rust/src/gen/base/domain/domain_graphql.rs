@@ -201,7 +201,7 @@ impl DomainGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -221,7 +221,7 @@ impl DomainGenMutation {
   ) -> Result<DomainId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::update_by_id(
@@ -240,7 +240,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::delete_by_ids(
@@ -258,7 +258,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::default_by_id(
@@ -277,7 +277,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::enable_by_ids(
@@ -297,7 +297,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::lock_by_ids(
@@ -316,7 +316,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::revert_by_ids(
@@ -334,7 +334,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::force_delete_by_ids(

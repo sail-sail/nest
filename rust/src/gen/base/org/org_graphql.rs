@@ -203,7 +203,7 @@ impl OrgGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -223,7 +223,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::update_tenant_by_id(
@@ -243,7 +243,7 @@ impl OrgGenMutation {
   ) -> Result<OrgId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::update_by_id(
@@ -262,7 +262,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::delete_by_ids(
@@ -281,7 +281,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::enable_by_ids(
@@ -301,7 +301,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::lock_by_ids(
@@ -320,7 +320,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::revert_by_ids(
@@ -338,7 +338,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::force_delete_by_ids(

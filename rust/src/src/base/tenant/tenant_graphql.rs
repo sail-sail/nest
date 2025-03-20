@@ -61,7 +61,7 @@ impl TenantMutation {
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         tenant_resolver::set_tenant_admin_pwd(
