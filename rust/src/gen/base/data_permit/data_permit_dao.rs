@@ -36,6 +36,7 @@ use crate::common::context::{
   get_is_silent_mode,
   get_is_creating,
 };
+use crate::common::exceptions::service_exception::ServiceException;
 
 use crate::common::gql::model::{
   PageInput,
@@ -672,6 +673,86 @@ pub async fn find_count(
       return Ok(0);
     }
   }
+  // 菜单
+  if let Some(search) = &search {
+    if search.menu_id.is_some() {
+      let len = search.menu_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.menu_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 范围
+  if let Some(search) = &search {
+    if search.scope.is_some() {
+      let len = search.scope.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.scope.length > {ids_limit}"));
+      }
+    }
+  }
+  // 类型
+  if let Some(search) = &search {
+    if search.r#type.is_some() {
+      let len = search.r#type.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.type.length > {ids_limit}"));
+      }
+    }
+  }
+  // 创建人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
@@ -891,7 +972,8 @@ pub async fn find_by_ids(
   ).await?;
   
   if models.len() != len {
-    return Err(eyre!("find_by_ids: models.length !== ids.length"));
+    let err_msg = "此 数据权限 已被删除";
+    return Err(eyre!(err_msg));
   }
   
   let models = ids
@@ -903,7 +985,8 @@ pub async fn find_by_ids(
       if let Some(model) = model {
         return Ok(model.clone());
       }
-      Err(eyre!("find_by_ids: id: {id} not found"))
+      let err_msg = "此 数据权限 已经被删除";
+      Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<DataPermitModel>>>()?;
   
@@ -2335,17 +2418,24 @@ pub async fn force_delete_by_ids(
 // MARK: validate_option
 /// 校验数据权限是否存在
 #[allow(dead_code)]
-pub async fn validate_option<T>(
-  model: Option<T>,
-) -> Result<T> {
+pub async fn validate_option(
+  model: Option<DataPermitModel>,
+) -> Result<DataPermitModel> {
   if model.is_none() {
     let err_msg = "数据权限不存在";
-    let backtrace = std::backtrace::Backtrace::capture();
     error!(
-      "{req_id} {err_msg}: {backtrace}",
+      "{req_id} {err_msg}",
       req_id = get_req_id(),
     );
-    return Err(eyre!(err_msg));
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        rollback: true,
+        trace: true,
+      },
+    ));
   }
-  Ok(model.unwrap())
+  let model = model.unwrap();
+  Ok(model)
 }

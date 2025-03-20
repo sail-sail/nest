@@ -150,6 +150,34 @@ pub async fn find_by_id(
   Ok(model)
 }
 
+/// 根据 ids 查找用户
+#[function_name::named]
+pub async fn find_by_ids(
+  ids: Vec<UsrId>,
+  options: Option<Options>,
+) -> Result<Vec<UsrModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = usr_service::find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  let mut models = models;
+  for model in models.iter_mut() {
+    // 密码
+    model.password = String::new();
+  }
+  let models = models;
+  
+  Ok(models)
+}
+
 /// 创建用户
 #[allow(dead_code)]
 #[function_name::named]

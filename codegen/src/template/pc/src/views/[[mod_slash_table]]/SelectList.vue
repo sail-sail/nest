@@ -122,7 +122,7 @@ import type {
 } from "vue";
 
 import {
-  findAll,
+  findByIds,
 } from "./Api";<#
 if (!list_tree) {
 #>
@@ -154,7 +154,8 @@ let dialogAction = $ref("select");
 
 export type OnCloseResolveType = {
   type: "ok" | "cancel";
-  selectedIds: <#=Table_Up#>Id[];
+  selectedIds?: <#=Table_Up#>Id[];
+  selectedModels?: <#=modelName#>[];
 };
 export type OnBeforeCloseFnType = (value: OnCloseResolveType) => Promise<boolean | undefined>;
 export type OnBeforeChangeFnType = (value: <#=modelName#>[]) => Promise<boolean | undefined>;
@@ -223,12 +224,10 @@ function selectedIdsChg(value: <#=Table_Up#>Id[]) {
 }
 
 async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
-  if (ids.length === 0) {
-    return [ ];
-  }
-  const res = await findAll(
+  const res = await findByIds(
+    ids,
     {
-      ids,
+      notLoading: true,
     },
   );
   return res;
@@ -258,27 +257,29 @@ async function onRefresh() {
 
 /** 确定 */
 async function onSave() {
+  const selectedModels = await getModelsByIds(selectedIds);
   if (onBeforeClose) {
     const isClose = await onBeforeClose({
       type: "ok",
       selectedIds,
+      selectedModels,
     });
     if (isClose === false) {
       return;
     }
   }
-  const models = await getModelsByIds(selectedIds);
+  onCloseResolve({
+    type: "ok",
+    selectedIds,
+    selectedModels,
+  });
   if (onBeforeChange) {
-    const isCloseChange = await onBeforeChange(models);
+    const isCloseChange = await onBeforeChange(selectedModels);
     if (isCloseChange === false) {
       return;
     }
   }
-  emit("change", models);
-  onCloseResolve({
-    type: "ok",
-    selectedIds,
-  });
+  emit("change", selectedModels);
 }
 
 /** 点击取消关闭按钮 */

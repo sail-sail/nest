@@ -267,6 +267,11 @@ export interface TableCloumn {
     selectType?: "select" | "selectInput" | "tree";
     
     /**
+     * Detail.vue 修改页面中选择数据时弹出的列表页面是否只读, 默认为: true
+     */
+    selectListReadonly?: boolean;
+    
+    /**
      * 当 selectType 为 select 或者 不设置时, 下拉框是否有增加按钮, 默认为: false
      */
     hasSelectAdd?: boolean;

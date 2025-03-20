@@ -99,6 +99,23 @@ impl LoginLogGenQuery {
       }).await
   }
   
+  /// 根据 id 查找登录日志
+  async fn find_by_ids_login_log(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<LoginLogId>,
+  ) -> Result<Vec<LoginLogModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        login_log_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取登录日志字段注释
   async fn get_field_comments_login_log(
     &self,
@@ -140,7 +157,7 @@ impl LoginLogGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         login_log_resolver::update_tenant_by_id(
@@ -159,7 +176,7 @@ impl LoginLogGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         login_log_resolver::delete_by_ids(
@@ -177,7 +194,7 @@ impl LoginLogGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         login_log_resolver::revert_by_ids(
@@ -195,7 +212,7 @@ impl LoginLogGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         login_log_resolver::force_delete_by_ids(

@@ -18,6 +18,7 @@ use super::domain_dao;
 #[allow(unused_variables)]
 async fn set_search_query(
   search: &mut DomainSearch,
+  options: Option<Options>,
 ) -> Result<()> {
   Ok(())
 }
@@ -32,16 +33,19 @@ pub async fn find_all(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let res = domain_dao::find_all(
+  let domain_models = domain_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(domain_models)
 }
 
 /// 根据条件查找域名总数
@@ -52,14 +56,17 @@ pub async fn find_count(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let res = domain_dao::find_count(
+  let domain_num = domain_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(domain_num)
 }
 
 /// 根据条件查找第一个域名
@@ -71,69 +78,86 @@ pub async fn find_one(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let model = domain_dao::find_one(
+  let domain_model = domain_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(domain_model)
 }
 
 /// 根据 id 查找域名
 pub async fn find_by_id(
-  id: DomainId,
+  domain_id: DomainId,
   options: Option<Options>,
 ) -> Result<Option<DomainModel>> {
   
-  let model = domain_dao::find_by_id(
-    id,
+  let domain_model = domain_dao::find_by_id(
+    domain_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(domain_model)
+}
+
+/// 根据 domain_ids 查找域名
+pub async fn find_by_ids(
+  domain_ids: Vec<DomainId>,
+  options: Option<Options>,
+) -> Result<Vec<DomainModel>> {
+  
+  let domain_models = domain_dao::find_by_ids(
+    domain_ids,
+    options,
+  ).await?;
+  
+  Ok(domain_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: DomainInput,
+  domain_input: DomainInput,
 ) -> Result<DomainInput> {
   
-  let input = domain_dao::set_id_by_lbl(
-    input,
+  let domain_input = domain_dao::set_id_by_lbl(
+    domain_input,
   ).await?;
   
-  Ok(input)
+  Ok(domain_input)
 }
 
 /// 创建域名
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<DomainInput>,
+  domain_inputs: Vec<DomainInput>,
   options: Option<Options>,
 ) -> Result<Vec<DomainId>> {
   
   let domain_ids = domain_dao::creates(
-    inputs,
+    domain_inputs,
     options,
   ).await?;
   
   Ok(domain_ids)
 }
 
-/// 根据 id 修改域名
+/// 根据 domain_id 修改域名
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: DomainId,
-  mut input: DomainInput,
+  domain_id: DomainId,
+  mut domain_input: DomainInput,
   options: Option<Options>,
 ) -> Result<DomainId> {
   
   let is_locked = domain_dao::get_is_locked_by_id(
-    id.clone(),
+    domain_id.clone(),
     None,
   ).await?;
   
@@ -143,86 +167,98 @@ pub async fn update_by_id(
   }
   
   let domain_id = domain_dao::update_by_id(
-    id,
-    input,
-    options,
+    domain_id,
+    domain_input,
+    options.clone(),
   ).await?;
   
   Ok(domain_id)
 }
 
-/// 根据 ids 删除域名
+/// 校验域名是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  domain_model: Option<DomainModel>,
+) -> Result<DomainModel> {
+  
+  let domain_model = domain_dao::validate_option(domain_model).await?;
+  
+  Ok(domain_model)
+}
+
+/// 根据 domain_ids 删除域名
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<DomainId>,
+  domain_ids: Vec<DomainId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let models = domain_dao::find_all(
+  let old_models = domain_dao::find_all(
     Some(DomainSearch {
-      ids: Some(ids.clone()),
+      ids: Some(domain_ids.clone()),
       ..Default::default()
     }),
     None,
     None,
     options.clone(),
   ).await?;
-  for model in models {
-    if model.is_locked == 1 {
+  
+  for old_model in &old_models {
+    if old_model.is_locked == 1 {
       let err_msg = "不能删除已经锁定的 域名";
       return Err(eyre!(err_msg));
     }
   }
   
   let num = domain_dao::delete_by_ids(
-    ids,
+    domain_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 id 设置默认域名
+/// 根据 domain_id 设置默认域名
 #[allow(dead_code)]
 pub async fn default_by_id(
-  id: DomainId,
+  domain_id: DomainId,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = domain_dao::default_by_id(
-    id,
+    domain_id,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 id 查找域名是否已启用
+/// 根据 domain_id 查找域名是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_enabled_by_id(
-  id: DomainId,
+  domain_id: DomainId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_enabled = domain_dao::get_is_enabled_by_id(
-    id,
+    domain_id,
     options,
   ).await?;
   
   Ok(is_enabled)
 }
 
-/// 根据 ids 启用或者禁用域名
+/// 根据 domain_ids 启用或者禁用域名
 #[allow(dead_code)]
 pub async fn enable_by_ids(
-  ids: Vec<DomainId>,
+  domain_ids: Vec<DomainId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = domain_dao::enable_by_ids(
-    ids,
+    domain_ids,
     is_enabled,
     options,
   ).await?;
@@ -230,33 +266,33 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-/// 根据 id 查找域名是否已锁定
+/// 根据 domain_id 查找域名是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 pub async fn get_is_locked_by_id(
-  id: DomainId,
+  domain_id: DomainId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let is_locked = domain_dao::get_is_locked_by_id(
-    id,
+    domain_id,
     options,
   ).await?;
   
   Ok(is_locked)
 }
 
-/// 根据 ids 锁定或者解锁域名
+/// 根据 domain_ids 锁定或者解锁域名
 #[allow(dead_code)]
 pub async fn lock_by_ids(
-  ids: Vec<DomainId>,
+  domain_ids: Vec<DomainId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = domain_dao::lock_by_ids(
-    ids,
+    domain_ids,
     is_locked,
     options,
   ).await?;
@@ -276,30 +312,30 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原域名
+/// 根据 domain_ids 还原域名
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<DomainId>,
+  domain_ids: Vec<DomainId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = domain_dao::revert_by_ids(
-    ids,
+    domain_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 ids 彻底删除域名
+/// 根据 domain_ids 彻底删除域名
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<DomainId>,
+  domain_ids: Vec<DomainId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = domain_dao::force_delete_by_ids(
-    ids,
+    domain_ids,
     options,
   ).await?;
   

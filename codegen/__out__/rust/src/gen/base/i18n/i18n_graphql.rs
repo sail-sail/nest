@@ -101,6 +101,24 @@ impl I18nGenQuery {
       }).await
   }
   
+  /// 根据 id 查找国际化
+  #[graphql(name = "findByIdsI18n")]
+  async fn find_by_ids_i18n(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<I18nId>,
+  ) -> Result<Vec<I18nModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        i18n_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取国际化字段注释
   #[graphql(name = "getFieldCommentsI18n")]
   async fn get_field_comments_i18n(
@@ -138,7 +156,7 @@ impl I18nGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -159,7 +177,7 @@ impl I18nGenMutation {
   ) -> Result<I18nId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         i18n_resolver::update_by_id(
@@ -179,7 +197,7 @@ impl I18nGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         i18n_resolver::delete_by_ids(
@@ -198,7 +216,7 @@ impl I18nGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         i18n_resolver::revert_by_ids(
@@ -217,7 +235,7 @@ impl I18nGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         i18n_resolver::force_delete_by_ids(

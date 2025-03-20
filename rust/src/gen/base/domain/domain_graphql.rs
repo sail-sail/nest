@@ -97,6 +97,23 @@ impl DomainGenQuery {
       }).await
   }
   
+  /// 根据 id 查找域名
+  async fn find_by_ids_domain(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DomainId>,
+  ) -> Result<Vec<DomainModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        domain_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找域名是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_domain(
@@ -184,7 +201,7 @@ impl DomainGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -204,7 +221,7 @@ impl DomainGenMutation {
   ) -> Result<DomainId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::update_by_id(
@@ -223,7 +240,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::delete_by_ids(
@@ -241,7 +258,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::default_by_id(
@@ -260,7 +277,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::enable_by_ids(
@@ -280,7 +297,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::lock_by_ids(
@@ -299,7 +316,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::revert_by_ids(
@@ -317,7 +334,7 @@ impl DomainGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         domain_resolver::force_delete_by_ids(

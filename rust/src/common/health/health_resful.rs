@@ -22,9 +22,7 @@ pub async fn health_check(
   
   let res = health_service::health_check().await;
   
-  if res.is_err() {
-    let err = res.err().unwrap();
-    error!("{}", err);
+  if let Err(err) = res {
     return Response::builder()
       .status(StatusCode::INTERNAL_SERVER_ERROR)
       .body(err.to_string());

@@ -8,6 +8,7 @@ use crate::r#gen::base::tenant::tenant_dao::{
 use crate::r#gen::base::tenant::tenant_model::TenantSearch;
 
 use super::tenant_model::GetLoginTenants;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 use crate::r#gen::base::domain::domain_dao::{
   find_all as find_all_domain,
@@ -150,6 +151,48 @@ pub async fn get_login_tenants(
       None,
     ).await?;
   }
+  
+  let mut res: Vec<GetLoginTenants> = vec![];
+  
+  for tenant_model in tenant_models {
+    
+    let lang_model = find_by_id_lang(
+      tenant_model.lang_id.clone(),
+      None,
+    ).await?;
+    
+    let lang = lang_model
+      .map(|x| x.code)
+      .unwrap_or_else(|| "zh-CN".to_owned());
+    
+    res.push(GetLoginTenants {
+      id: tenant_model.id,
+      lbl: tenant_model.lbl,
+      title: tenant_model.title,
+      info: tenant_model.info,
+      lang,
+    });
+    
+  }
+  
+  Ok(res)
+}
+
+/// 根据 tenant_ids 获取 租户信息
+pub async fn get_login_tenant_by_ids(
+  tenant_ids: Vec<TenantId>,
+) -> Result<Vec<GetLoginTenants>> {
+  
+  let tenant_models = find_all_tenant(
+    TenantSearch {
+      ids: tenant_ids.into(),
+      is_enabled: vec![1].into(),
+      ..Default::default()
+    }.into(),
+    None,
+    None,
+    None,
+  ).await?;
   
   let mut res: Vec<GetLoginTenants> = vec![];
   
