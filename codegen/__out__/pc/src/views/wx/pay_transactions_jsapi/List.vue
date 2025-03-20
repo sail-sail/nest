@@ -476,8 +476,17 @@
             </el-table-column>
           </template>
           
-          <!-- 是否支持发票 -->
-          <template v-else-if="'support_fapiao_lbl' === col.prop">
+          <!-- 开发票 -->
+          <template v-else-if="'receipt' === col.prop">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
+          <!-- 分账 -->
+          <template v-else-if="'profit_sharing' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -972,13 +981,20 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "是否支持发票",
-      prop: "support_fapiao_lbl",
-      sortBy: "support_fapiao",
+      label: "开发票",
+      prop: "receipt",
       width: 100,
       align: "center",
       headerAlign: "center",
-      showOverflowTooltip: false,
+      showOverflowTooltip: true,
+    },
+    {
+      label: "分账",
+      prop: "profit_sharing",
+      width: 100,
+      align: "center",
+      headerAlign: "center",
+      showOverflowTooltip: true,
     },
     {
       label: "订单金额(分)",
