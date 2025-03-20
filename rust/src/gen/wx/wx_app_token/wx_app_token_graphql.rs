@@ -149,7 +149,7 @@ impl WxAppTokenGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -169,7 +169,7 @@ impl WxAppTokenGenMutation {
   ) -> Result<WxAppTokenId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wx_app_token_resolver::update_by_id(
@@ -188,7 +188,7 @@ impl WxAppTokenGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wx_app_token_resolver::delete_by_ids(
@@ -206,7 +206,7 @@ impl WxAppTokenGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wx_app_token_resolver::revert_by_ids(
@@ -224,7 +224,7 @@ impl WxAppTokenGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wx_app_token_resolver::force_delete_by_ids(

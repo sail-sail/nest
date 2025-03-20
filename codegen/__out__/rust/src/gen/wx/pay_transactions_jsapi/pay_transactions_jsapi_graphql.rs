@@ -157,7 +157,7 @@ impl PayTransactionsJsapiGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         pay_transactions_jsapi_resolver::update_tenant_by_id(

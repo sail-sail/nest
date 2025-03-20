@@ -157,7 +157,7 @@ impl WxPayNoticeGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wx_pay_notice_resolver::update_tenant_by_id(

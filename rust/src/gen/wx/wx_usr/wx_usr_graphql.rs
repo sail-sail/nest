@@ -151,7 +151,7 @@ impl WxUsrGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -171,7 +171,7 @@ impl WxUsrGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wx_usr_resolver::update_tenant_by_id(
@@ -191,7 +191,7 @@ impl WxUsrGenMutation {
   ) -> Result<WxUsrId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wx_usr_resolver::update_by_id(
@@ -210,7 +210,7 @@ impl WxUsrGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wx_usr_resolver::delete_by_ids(
@@ -228,7 +228,7 @@ impl WxUsrGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wx_usr_resolver::revert_by_ids(
@@ -246,7 +246,7 @@ impl WxUsrGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wx_usr_resolver::force_delete_by_ids(
