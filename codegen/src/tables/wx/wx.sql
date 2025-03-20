@@ -177,6 +177,7 @@ CREATE TABLE `wx_wx_pay` (
   `lbl` varchar(22) NOT NULL DEFAULT '' COMMENT '名称',
   `appid` varchar(22) NOT NULL DEFAULT '' COMMENT '开发者ID',
   `mchid` varchar(32) NOT NULL DEFAULT '' COMMENT '商户号',
+  `serial_no` varchar(50) NOT NULL DEFAULT '' COMMENT '证书序列号',
   `public_key` varchar(22) NOT NULL DEFAULT '' COMMENT '公钥',
   `private_key` varchar(22) NOT NULL DEFAULT '' COMMENT '私钥',
   `v3_key` varchar(32) NOT NULL DEFAULT '' COMMENT 'APIv3密钥',
