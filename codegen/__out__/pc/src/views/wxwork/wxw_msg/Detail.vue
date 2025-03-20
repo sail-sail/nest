@@ -78,6 +78,7 @@
             <CustomSelect
               v-model="dialogModel.wxw_app_id"
               :method="getWxwAppList"
+              :find-by-values="findByIdsWxwApp"
               :options-map="((item: WxwAppModel) => {
                 return {
                   label: item.lbl,
@@ -245,11 +246,16 @@ import {
   findOne,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
   getWxwAppList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsWxwApp,
+} from "@/views/wxwork/wxw_app/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -278,6 +284,8 @@ let dialogNotice = $ref("");
 
 let dialogModel: WxwMsgInput = $ref({
 } as WxwMsgInput);
+
+let wxw_msg_model = $ref<WxwMsgModel>();
 
 let ids = $ref<WxwMsgId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -510,10 +518,11 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
   }
+  wxw_msg_model = data;
 }
 
 /** 键盘按 PageUp */

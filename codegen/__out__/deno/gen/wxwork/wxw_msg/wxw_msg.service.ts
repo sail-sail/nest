@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await wxw_msgDao.findCount(search);
-  return data;
+  const wxw_msg_num = await wxw_msgDao.findCount(search);
+  
+  return wxw_msg_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: WxwMsgModel[] = await wxw_msgDao.findAll(search, page, sort);
-  return models;
+  const wxw_msg_models = await wxw_msgDao.findAll(search, page, sort);
+  
+  return wxw_msg_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: WxwMsgInput,
-) {
-  const data = await wxw_msgDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await wxw_msgDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await wxw_msgDao.findOne(search, sort);
-  return model;
+  const wxw_msg_model = await wxw_msgDao.findOne(search, sort);
+  
+  return wxw_msg_model;
 }
 
 /**
  * 根据 id 查找企微消息
  */
 export async function findById(
-  id?: WxwMsgId | null,
+  wxw_msg_id?: WxwMsgId | null,
 ): Promise<WxwMsgModel | undefined> {
-  const model = await wxw_msgDao.findById(id);
-  return model;
+  
+  const wxw_msg_model = await wxw_msgDao.findById(wxw_msg_id);
+  
+  return wxw_msg_model;
+}
+
+/**
+ * 根据 ids 查找企微消息
+ */
+export async function findByIds(
+  wxw_msg_ids: WxwMsgId[],
+): Promise<WxwMsgModel[]> {
+  
+  const wxw_msg_models = await wxw_msgDao.findByIds(wxw_msg_ids);
+  
+  return wxw_msg_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await wxw_msgDao.exist(search);
-  return data;
+  const wxw_msg_exist = await wxw_msgDao.exist(search);
+  
+  return wxw_msg_exist;
 }
 
 /**
  * 根据 id 查找企微消息是否存在
  */
 export async function existById(
-  id?: WxwMsgId | null,
+  wxw_msg_id?: WxwMsgId | null,
 ): Promise<boolean> {
-  const data = await wxw_msgDao.existById(id);
-  return data;
+  
+  const wxw_msg_exist = await wxw_msgDao.existById(wxw_msg_id);
+  
+  return wxw_msg_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: WxwMsgInput,
 ): Promise<void> {
-  const data = await wxw_msgDao.validate(input);
-  return data;
+  await wxw_msgDao.validate(input);
 }
 
 /**
@@ -124,57 +142,71 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<WxwMsgId[]> {
-  const ids = await wxw_msgDao.creates(inputs, options);
-  return ids;
+  const wxw_msg_ids = await wxw_msgDao.creates(inputs, options);
+  
+  return wxw_msg_ids;
 }
 
 /**
  * 根据 id 修改企微消息
  */
 export async function updateById(
-  id: WxwMsgId,
+  wxw_msg_id: WxwMsgId,
   input: WxwMsgInput,
 ): Promise<WxwMsgId> {
   
-  const id2 = await wxw_msgDao.updateById(id, input);
-  return id2;
+  const wxw_msg_id2 = await wxw_msgDao.updateById(wxw_msg_id, input);
+  
+  return wxw_msg_id2;
+}
+
+/** 校验企微消息是否存在 */
+export async function validateOption(
+  model0?: WxwMsgModel,
+): Promise<WxwMsgModel> {
+  const wxw_msg_model = await wxw_msgDao.validateOption(model0);
+  return wxw_msg_model;
 }
 
 /**
  * 根据 ids 删除企微消息
  */
 export async function deleteByIds(
-  ids: WxwMsgId[],
+  wxw_msg_ids: WxwMsgId[],
 ): Promise<number> {
   
-  const data = await wxw_msgDao.deleteByIds(ids);
-  return data;
+  const wxw_msg_num = await wxw_msgDao.deleteByIds(wxw_msg_ids);
+  return wxw_msg_num;
 }
 
 /**
  * 根据 ids 还原企微消息
  */
 export async function revertByIds(
-  ids: WxwMsgId[],
+  wxw_msg_ids: WxwMsgId[],
 ): Promise<number> {
-  const data = await wxw_msgDao.revertByIds(ids);
-  return data;
+  
+  const wxw_msg_num = await wxw_msgDao.revertByIds(wxw_msg_ids);
+  
+  return wxw_msg_num;
 }
 
 /**
  * 根据 ids 彻底删除企微消息
  */
 export async function forceDeleteByIds(
-  ids: WxwMsgId[],
+  wxw_msg_ids: WxwMsgId[],
 ): Promise<number> {
-  const data = await wxw_msgDao.forceDeleteByIds(ids);
-  return data;
+  
+  const wxw_msg_num = await wxw_msgDao.forceDeleteByIds(wxw_msg_ids);
+  
+  return wxw_msg_num;
 }
 
 /**
  * 获取企微消息字段注释
  */
 export async function getFieldComments(): Promise<WxwMsgFieldComment> {
-  const data = await wxw_msgDao.getFieldComments();
-  return data;
+  const wxw_msg_fields = await wxw_msgDao.getFieldComments();
+  return wxw_msg_fields;
 }

@@ -107,6 +107,25 @@ export async function findByIdWxwApp(
 }
 
 /**
+ * 根据 ids 查找企微应用
+ */
+export async function findByIdsWxwApp(
+  ids: WxwAppId[],
+): Promise<WxwAppModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./wxw_app.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建企微应用
  */
 export async function createsWxwApp(
