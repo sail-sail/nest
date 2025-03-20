@@ -190,10 +190,9 @@ pub fn get_auth_model_err() -> Result<AuthModel> {
 /// 获取当前登录用户的id
 pub fn get_auth_id() -> Option<UsrId> {
   CTX.with(|ctx| {
-    match ctx.auth_model.clone() {
-      Some(item) => item.id.into(),
-      None => None,
-    }
+    ctx.auth_model
+      .as_ref()
+      .map(|item| item.id.clone())
   })
 }
 
@@ -215,20 +214,18 @@ pub fn get_auth_tenant_id() -> Option<TenantId> {
     if ctx.auth_model.is_none() && ctx.client_tenant_id.is_some() {
       return ctx.client_tenant_id.clone();
     }
-    match ctx.auth_model.clone() {
-      Some(item) => item.tenant_id.into(),
-      None => None,
-    }
+    ctx.auth_model
+      .as_ref()
+      .map(|item| item.tenant_id.clone())
   })
 }
 
 /// 获取当前登录用户的组织id
 pub fn get_auth_org_id() -> Option<OrgId> {
   CTX.with(|ctx| {
-    match ctx.auth_model.clone() {
-      Some(item) => item.org_id,
-      None => None,
-    }
+    ctx.auth_model
+      .as_ref()
+      .and_then(|item| item.org_id.clone())
   })
 }
 
@@ -248,10 +245,9 @@ pub fn get_auth_org_id_err() -> Result<OrgId> {
 /// 获取当前登录用户的语言
 pub fn get_auth_lang() -> Option<String> {
   CTX.with(|ctx| {
-    match ctx.auth_model.clone() {
-      Some(item) => item.lang.into(),
-      None => None,
-    }
+    ctx.auth_model
+      .as_ref()
+      .and_then(|item| item.lang.clone())
   })
 }
 
@@ -349,6 +345,13 @@ impl Ctx {
     }
   }
   
+  #[cfg(test)]
+  #[allow(dead_code)]
+  pub fn test_builder() -> CtxBuilder<'static> {
+    dotenv::dotenv().ok();
+    CtxBuilder::new(None)
+  }
+  
   pub fn set_auth_model(
     &mut self,
     auth_model: AuthModel,
@@ -402,16 +405,8 @@ impl Ctx {
         .try_get(0)?;
       if let Err(err) = res {
         let exception = err.downcast_ref::<ServiceException>();
-        if exception.is_some() {
-          info!(
-            "{} {}",
-            self.req_id,
-            err,
-          );
-        } else {
-          // 双引号开始并且双引号结束的用 info! 宏打印
-          let msg = format!("{:#?}", err);
-          if msg.starts_with('"') && msg.ends_with('"') {
+        if let Some(exception) = exception {
+          if !exception.trace {
             info!(
               "{} {}",
               self.req_id,
@@ -424,6 +419,18 @@ impl Ctx {
               err,
             );
           }
+        } else if err.is::<&str>() || err.is::<String>() {
+          info!(
+            "{} {}",
+            self.req_id,
+            err,
+          );
+        } else {
+          error!(
+            "{} {:?}",
+            self.req_id,
+            err,
+          );
         }
         let rollback = match exception {
           Some(err) => err.rollback,
@@ -453,16 +460,8 @@ impl Ctx {
     }
     if let Err(err) = res {
       let exception = err.downcast_ref::<ServiceException>();
-      if exception.is_some() {
-        info!(
-          "{} {}",
-          self.req_id,
-          err,
-        );
-      } else {
-        // 双引号开始并且双引号结束的用 info! 宏打印
-        let msg = format!("{:#?}", err);
-        if msg.starts_with('"') && msg.ends_with('"') {
+      if let Some(exception) = exception {
+        if !exception.trace {
           info!(
             "{} {}",
             self.req_id,
@@ -475,6 +474,18 @@ impl Ctx {
             err,
           );
         }
+      } else if err.is::<&str>() || err.is::<String>() {
+        info!(
+          "{} {}",
+          self.req_id,
+          err,
+        );
+      } else {
+        error!(
+          "{} {:?}",
+          self.req_id,
+          err,
+        );
       }
       return Err(err);
     }
@@ -1192,6 +1203,23 @@ impl Ctx {
     }).await
   }
   
+  #[allow(dead_code)]
+  pub async fn scope_fn<F, T>(self, f: F) -> Result<T>
+    where
+      F: AsyncFnOnce() -> Result<T>,
+      T: Send + Debug,
+  {
+    let ctx = Arc::new(self);
+    CTX.scope(ctx, async move {
+      let res = f().await;
+      let ctx = CTX.with(|ctx| ctx.clone());
+      if ctx.is_resful {
+        return Err(eyre!("must use resful_scope()"));
+      }
+      ctx.ok(res).await
+    }).await
+  }
+  
   pub async fn resful_scope<F, R>(self, f: F) -> Result<poem::Response>
     where
       F: core::future::Future<Output = R>,
@@ -1212,7 +1240,27 @@ impl Ctx {
       let status_code = res.status();
       let is_success = !status_code.is_server_error();
       let extensions = res.extensions();
-      let is_rollback = extensions.get::<bool>().copied().unwrap_or(true);
+      let mut is_rollback = extensions.get::<bool>().copied().unwrap_or(true);
+      let exception: Option<&ServiceException> = extensions.get::<ServiceException>();
+      if let Some(exception) = exception {
+        if !exception.rollback {
+          is_rollback = false;
+        }
+        if !exception.trace {
+          info!(
+            "{} {}",
+            ctx.req_id.as_str(),
+            exception,
+          );
+        } else {
+          error!(
+            "{} {:?}",
+            ctx.req_id.as_str(),
+            exception,
+          );
+        }
+      }
+      let is_rollback = is_rollback;
       {
         let mut tran = ctx.tran.lock().await;
         let tran = tran.take();
@@ -1836,9 +1884,9 @@ impl <'a> CtxBuilder<'a> {
   }
   
   /// 开启事务
-  pub fn with_tran(mut self) -> Result<CtxBuilder<'a>> {
+  pub fn with_tran(mut self) -> CtxBuilder<'a> {
     self.is_tran = Some(true);
-    Ok(self)
+    self
   }
   
   /// 获取token, graphql跟restful的获取方式不一样

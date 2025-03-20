@@ -107,6 +107,25 @@ export async function findByIdTenant(
 }
 
 /**
+ * 根据 ids 查找租户
+ */
+export async function findByIdsTenant(
+  ids: TenantId[],
+): Promise<TenantModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./tenant.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建租户
  */
 export async function createsTenant(

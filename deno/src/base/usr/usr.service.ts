@@ -41,10 +41,19 @@ import {
   findCount as findCountLoginLog,
 } from "/gen/base/login_log/login_log.dao.ts";
 
+// 角色
 import {
-  type MutationLoginArgs,
-  type ChangePasswordInput,
-  type LoginModel,
+  findByIds as findByIdsRole,
+} from "/gen/base/role/role.dao.ts";
+
+import type {
+  MutationLoginArgs,
+  ChangePasswordInput,
+  LoginModel,
+  GetLoginInfo,
+} from "/gen/types.ts";
+
+import {
   LoginLogType,
 } from "/gen/types.ts";
 
@@ -187,7 +196,7 @@ export async function login(
   };
 }
 
-export async function getLoginInfo() {
+export async function getLoginInfo(): Promise<GetLoginInfo> {
   const authModel = await getAuthModel();
   if (!authModel) {
     throw await ns("未登录");
@@ -204,6 +213,18 @@ export async function getLoginInfo() {
   if (!usr_model) {
     throw await ns("用户不存在");
   }
+  
+  // 用户拥有的角色编码
+  const role_ids = usr_model.role_ids || [ ];
+  const role_models = await findByIdsRole(
+    role_ids,
+    {
+      is_debug: false,
+    },
+  );
+  const role_codes = role_models
+    .map((item) => item.code);
+  
   const org_ids = usr_model.org_ids || [ ];
   const orgModels = await findAllOrg(
     undefined,
@@ -226,6 +247,7 @@ export async function getLoginInfo() {
   return {
     lbl: usr_model.lbl,
     username: usr_model.username,
+    role_codes,
     lang: authModel.lang,
     tenant_id,
     org_id,

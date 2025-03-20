@@ -1,7 +1,7 @@
 use color_eyre::eyre::Result;
 
 use super::oss_dao::{self, StatObject};
-use s3::request::ResponseData;
+use s3::request::{ResponseData, ResponseDataStream};
 
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 
@@ -35,8 +35,16 @@ pub async fn head_object(
 
 pub async fn get_object(
   path: &str,
-) -> Result<Option<Vec<u8>>> {
-  let res: Option<Vec<u8>> = oss_dao::get_object(path).await?;
+) -> Result<Option<ResponseData>> {
+  let res: Option<ResponseData> = oss_dao::get_object(path).await?;
+  Ok(res)
+}
+
+#[allow(dead_code)]
+pub async fn get_object_stream(
+  path: &str,
+) -> Result<Option<ResponseDataStream>> {
+  let res: Option<ResponseDataStream> = oss_dao::get_object_stream(path).await?;
   Ok(res)
 }
 

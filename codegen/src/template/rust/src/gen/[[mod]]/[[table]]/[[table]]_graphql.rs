@@ -190,6 +190,28 @@ impl <#=tableUP#>GenQuery {
           None,
         )
       }).await
+  }
+  
+  /// 根据 id 查找<#=table_comment#><#
+  if (table === "i18n") {
+  #>
+  #[graphql(name = "findByIdsI18n")]<#
+  }
+  #>
+  async fn find_by_ids_<#=table#>(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<<#=Table_Up#>Id>,
+  ) -> Result<Vec<<#=tableUP#>Model>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        <#=table#>_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
   }<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
@@ -353,7 +375,7 @@ impl <#=tableUP#>GenMutation {<#
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -382,7 +404,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::update_tenant_by_id(
@@ -411,7 +433,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<<#=Table_Up#>Id> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::update_by_id(
@@ -434,7 +456,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::audit_submit(
@@ -452,7 +474,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::audit_pass(
@@ -471,7 +493,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::audit_reject(
@@ -492,7 +514,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::audit_review(
@@ -521,7 +543,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::delete_by_ids(
@@ -548,7 +570,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::default_by_id(
@@ -576,7 +598,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::enable_by_ids(
@@ -605,7 +627,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::lock_by_ids(
@@ -635,7 +657,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::revert_by_ids(
@@ -662,7 +684,7 @@ impl <#=tableUP#>GenMutation {<#
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         <#=table#>_resolver::force_delete_by_ids(

@@ -25,7 +25,7 @@ impl UsrMutation {
     input: LoginInput,
   ) -> Result<LoginModel> {
     Ctx::builder(ctx)
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         let ip: String = ctx.data_opt::<crate::common::gql::model::Ip>()
@@ -61,7 +61,7 @@ impl UsrMutation {
   ) -> Result<bool> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         usr_resolver::change_password(

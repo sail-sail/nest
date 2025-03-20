@@ -196,6 +196,8 @@ type Query {
   findOneBackgroundTask(search: BackgroundTaskSearch, sort: [SortInput!]): BackgroundTaskModel
   "根据 id 查找后台任务"
   findByIdBackgroundTask(id: BackgroundTaskId!): BackgroundTaskModel
+  "根据 ids 查找后台任务"
+  findByIdsBackgroundTask(ids: [BackgroundTaskId!]!): [BackgroundTaskModel]!
 }
 type Mutation {
   "根据 ids 删除后台任务"

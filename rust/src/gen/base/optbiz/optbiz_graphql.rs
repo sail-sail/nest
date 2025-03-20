@@ -99,6 +99,23 @@ impl OptbizGenQuery {
       }).await
   }
   
+  /// 根据 id 查找业务选项
+  async fn find_by_ids_optbiz(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OptbizId>,
+  ) -> Result<Vec<OptbizModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        optbiz_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找业务选项是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_optbiz(
@@ -186,7 +203,7 @@ impl OptbizGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -206,7 +223,7 @@ impl OptbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         optbiz_resolver::update_tenant_by_id(
@@ -226,7 +243,7 @@ impl OptbizGenMutation {
   ) -> Result<OptbizId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         optbiz_resolver::update_by_id(
@@ -245,7 +262,7 @@ impl OptbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         optbiz_resolver::delete_by_ids(
@@ -264,7 +281,7 @@ impl OptbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         optbiz_resolver::enable_by_ids(
@@ -284,7 +301,7 @@ impl OptbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         optbiz_resolver::lock_by_ids(
@@ -303,7 +320,7 @@ impl OptbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         optbiz_resolver::revert_by_ids(
@@ -321,7 +338,7 @@ impl OptbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         optbiz_resolver::force_delete_by_ids(
