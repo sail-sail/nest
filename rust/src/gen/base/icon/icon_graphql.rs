@@ -97,6 +97,23 @@ impl IconGenQuery {
       }).await
   }
   
+  /// 根据 id 查找图标库
+  async fn find_by_ids_icon(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<IconId>,
+  ) -> Result<Vec<IconModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        icon_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找图标库是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_icon(
@@ -165,7 +182,7 @@ impl IconGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -185,7 +202,7 @@ impl IconGenMutation {
   ) -> Result<IconId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         icon_resolver::update_by_id(
@@ -204,7 +221,7 @@ impl IconGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         icon_resolver::delete_by_ids(
@@ -223,7 +240,7 @@ impl IconGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         icon_resolver::enable_by_ids(
@@ -242,7 +259,7 @@ impl IconGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         icon_resolver::revert_by_ids(
@@ -260,7 +277,7 @@ impl IconGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         icon_resolver::force_delete_by_ids(

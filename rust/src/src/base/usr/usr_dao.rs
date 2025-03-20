@@ -1,6 +1,7 @@
 use color_eyre::eyre::Result;
 
 use crate::common::context::{
+  Options,
   get_now,
   get_server_tokentimeout,
 };
@@ -61,7 +62,7 @@ pub async fn get_token_by_usr_id(
     id: usr_id.clone(),
     tenant_id: tenant_id.clone(),
     org_id: org_id.clone(),
-    lang: lang.clone(),
+    lang: Some(lang.clone()),
     exp,
     ..Default::default()
   })?;
@@ -74,4 +75,30 @@ pub async fn get_token_by_usr_id(
     org_id,
     lang,
   })
+}
+
+/// 返回用户是否为超级管理员
+#[allow(dead_code)]
+pub async fn is_admin(
+  usr_id: UsrId,
+  options: Option<Options>,
+) -> Result<bool> {
+  
+  let usr_model = find_by_id_usr(
+    usr_id.clone(),
+    options,
+  ).await?;
+  
+  if usr_model.is_none() {
+    return Ok(false);
+  }
+  let usr_model = usr_model.unwrap();
+  
+  if usr_model.is_enabled == 0 {
+    return Ok(false);
+  }
+  
+  let username = usr_model.username;
+  
+  Ok(username == "admin")
 }

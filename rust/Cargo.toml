@@ -13,7 +13,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
 tracing-attributes = "0.1.28"
-tokio = { version = "1.43", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
+tokio = { version = "1.44", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
 poem = { version = "3.1.7", features = ["rustls", "server", "multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"], default-features = false }
 async-graphql = { version = "7.0.15", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
 smol_str = { version = "0.3", features = ["serde"] }
@@ -33,7 +33,7 @@ hex-literal = "0.4"
 hex = "0.4"
 base64 = "0.22"
 utf8_slice = "1.0"
-reqwest = { version = "0.12.12", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
+reqwest = { version = "0.12.14", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
 encoding_rs = "0.8"
 urlencoding = "2.1"
 url = "2.5"
@@ -42,7 +42,7 @@ smallvec = { version = "1.14", features = ["union", "serde"] }
 # downcast-rs = "2.0"
 uuid = { version = "1.15", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12"
-deadpool-redis = "0.19"
+deadpool-redis = "0.20"
 redis = { version = "0.29", features = ["tokio-comp"], default-features = false }
 # pin-project = "1.1"
 bigdecimal = "0.4"
@@ -69,6 +69,7 @@ derive_builder = "0.20"
 strum = { version = "0.27", features = ["derive"] }
 itertools = "0.14.0"
 color-eyre = "0.6.3"
+wx_pay = "0.2.3"
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"

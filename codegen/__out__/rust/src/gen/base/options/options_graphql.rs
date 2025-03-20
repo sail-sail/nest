@@ -97,6 +97,23 @@ impl OptionsGenQuery {
       }).await
   }
   
+  /// 根据 id 查找系统选项
+  async fn find_by_ids_options(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OptionsId>,
+  ) -> Result<Vec<OptionsModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        options_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统选项是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_options(
@@ -184,7 +201,7 @@ impl OptionsGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -204,7 +221,7 @@ impl OptionsGenMutation {
   ) -> Result<OptionsId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::update_by_id(
@@ -223,7 +240,7 @@ impl OptionsGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::delete_by_ids(
@@ -242,7 +259,7 @@ impl OptionsGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::enable_by_ids(
@@ -262,7 +279,7 @@ impl OptionsGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::lock_by_ids(
@@ -281,7 +298,7 @@ impl OptionsGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::revert_by_ids(
@@ -299,7 +316,7 @@ impl OptionsGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         options_resolver::force_delete_by_ids(

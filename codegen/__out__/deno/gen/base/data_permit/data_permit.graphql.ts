@@ -163,6 +163,8 @@ type Query {
   findOneDataPermit(search: DataPermitSearch, sort: [SortInput!]): DataPermitModel
   "根据 id 查找数据权限"
   findByIdDataPermit(id: DataPermitId!): DataPermitModel
+  "根据 ids 查找数据权限"
+  findByIdsDataPermit(ids: [DataPermitId!]!): [DataPermitModel]!
 }
 type Mutation {
   "批量创建数据权限"

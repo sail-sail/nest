@@ -107,6 +107,25 @@ export async function findByIdDict(
 }
 
 /**
+ * 根据 ids 查找系统字典
+ */
+export async function findByIdsDict(
+  ids: DictId[],
+): Promise<DictModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./dict.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建系统字典
  */
 export async function createsDict(

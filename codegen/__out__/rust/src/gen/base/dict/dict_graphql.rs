@@ -97,6 +97,23 @@ impl DictGenQuery {
       }).await
   }
   
+  /// 根据 id 查找系统字典
+  async fn find_by_ids_dict(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DictId>,
+  ) -> Result<Vec<DictModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统字典是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_dict(
@@ -165,7 +182,7 @@ impl DictGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -185,7 +202,7 @@ impl DictGenMutation {
   ) -> Result<DictId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_resolver::update_by_id(
@@ -204,7 +221,7 @@ impl DictGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_resolver::delete_by_ids(
@@ -223,7 +240,7 @@ impl DictGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_resolver::enable_by_ids(
@@ -242,7 +259,7 @@ impl DictGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_resolver::revert_by_ids(
@@ -260,7 +277,7 @@ impl DictGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_resolver::force_delete_by_ids(

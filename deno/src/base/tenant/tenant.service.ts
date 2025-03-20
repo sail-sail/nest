@@ -14,6 +14,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  findByIds as findByIdsTenant,
   findById as findByIdTenant,
   validateOption as validateOptionTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
@@ -74,6 +75,27 @@ export async function getLoginTenants(
         lang,
       });
     }
+  }
+  return res;
+}
+
+/** 根据 租户ids 获取 租户信息 */
+export async function getLoginTenantByIds(
+  tenant_ids: TenantId[],
+): Promise<GetLoginTenants[]> {
+  const tenant_models = await findByIdsTenant(tenant_ids);
+  const res: GetLoginTenants[] = [ ];
+  for (const tenant_model of tenant_models) {
+    const lang_id = tenant_model.lang_id;
+    const lang_model = await findByIdLang(lang_id);
+    const lang = lang_model?.code || "zh-CN";
+    res.push({
+      id: tenant_model.id,
+      lbl: tenant_model.lbl,
+      title: tenant_model.title,
+      info: tenant_model.info,
+      lang,
+    });
   }
   return res;
 }

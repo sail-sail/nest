@@ -99,6 +99,23 @@ impl OrgGenQuery {
       }).await
   }
   
+  /// 根据 id 查找组织
+  async fn find_by_ids_org(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<OrgId>,
+  ) -> Result<Vec<OrgModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        org_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找组织是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_org(
@@ -186,7 +203,7 @@ impl OrgGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -206,7 +223,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::update_tenant_by_id(
@@ -226,7 +243,7 @@ impl OrgGenMutation {
   ) -> Result<OrgId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::update_by_id(
@@ -245,7 +262,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::delete_by_ids(
@@ -264,7 +281,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::enable_by_ids(
@@ -284,7 +301,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::lock_by_ids(
@@ -303,7 +320,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::revert_by_ids(
@@ -321,7 +338,7 @@ impl OrgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         org_resolver::force_delete_by_ids(

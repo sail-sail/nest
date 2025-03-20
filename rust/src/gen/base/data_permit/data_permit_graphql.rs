@@ -99,6 +99,23 @@ impl DataPermitGenQuery {
       }).await
   }
   
+  /// 根据 id 查找数据权限
+  async fn find_by_ids_data_permit(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DataPermitId>,
+  ) -> Result<Vec<DataPermitModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        data_permit_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取数据权限字段注释
   async fn get_field_comments_data_permit(
     &self,
@@ -134,7 +151,7 @@ impl DataPermitGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -154,7 +171,7 @@ impl DataPermitGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         data_permit_resolver::update_tenant_by_id(
@@ -174,7 +191,7 @@ impl DataPermitGenMutation {
   ) -> Result<DataPermitId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         data_permit_resolver::update_by_id(
@@ -193,7 +210,7 @@ impl DataPermitGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         data_permit_resolver::delete_by_ids(
@@ -211,7 +228,7 @@ impl DataPermitGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         data_permit_resolver::revert_by_ids(
@@ -229,7 +246,7 @@ impl DataPermitGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         data_permit_resolver::force_delete_by_ids(

@@ -97,6 +97,23 @@ impl DictDetailGenQuery {
       }).await
   }
   
+  /// 根据 id 查找系统字典明细
+  async fn find_by_ids_dict_detail(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<DictDetailId>,
+  ) -> Result<Vec<DictDetailModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        dict_detail_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找系统字典明细是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_dict_detail(
@@ -165,7 +182,7 @@ impl DictDetailGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -185,7 +202,7 @@ impl DictDetailGenMutation {
   ) -> Result<DictDetailId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_detail_resolver::update_by_id(
@@ -204,7 +221,7 @@ impl DictDetailGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_detail_resolver::delete_by_ids(
@@ -223,7 +240,7 @@ impl DictDetailGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_detail_resolver::enable_by_ids(
@@ -242,7 +259,7 @@ impl DictDetailGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_detail_resolver::revert_by_ids(
@@ -260,7 +277,7 @@ impl DictDetailGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dict_detail_resolver::force_delete_by_ids(
