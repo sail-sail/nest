@@ -34,6 +34,8 @@ export function intoInput(
     appid: model?.appid,
     // 商户号
     mchid: model?.mchid,
+    // 证书序列号
+    serial_no: model?.serial_no,
     // 公钥
     public_key: model?.public_key,
     // 私钥
@@ -431,6 +433,7 @@ export function useDownloadImportTemplate() {
             lbl
             appid
             mchid
+            serial_no
             v3_key
             payer_client_ip
             notify_url

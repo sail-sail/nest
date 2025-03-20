@@ -24,6 +24,9 @@ declare global {
     /** 商户号 */
     mchid?: string;
     mchid_like?: string;
+    /** 证书序列号 */
+    serial_no?: string;
+    serial_no_like?: string;
     /** 公钥 */
     public_key?: string;
     public_key_like?: string;
