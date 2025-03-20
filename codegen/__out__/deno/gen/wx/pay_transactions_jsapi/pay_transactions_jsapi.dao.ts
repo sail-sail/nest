@@ -175,8 +175,17 @@ async function getWhereQuery(
   if (isNotEmpty(search?.notify_url_like)) {
     whereQuery += ` and t.notify_url like ${ args.push("%" + sqlLike(search?.notify_url_like) + "%") }`;
   }
-  if (search?.support_fapiao != null) {
-    whereQuery += ` and t.support_fapiao in (${ args.push(search.support_fapiao) })`;
+  if (search?.receipt != null) {
+    whereQuery += ` and t.receipt=${ args.push(search.receipt) }`;
+  }
+  if (isNotEmpty(search?.receipt_like)) {
+    whereQuery += ` and t.receipt like ${ args.push("%" + sqlLike(search?.receipt_like) + "%") }`;
+  }
+  if (search?.profit_sharing != null) {
+    whereQuery += ` and t.profit_sharing=${ args.push(search.profit_sharing) }`;
+  }
+  if (isNotEmpty(search?.profit_sharing_like)) {
+    whereQuery += ` and t.profit_sharing like ${ args.push("%" + sqlLike(search?.profit_sharing_like) + "%") }`;
   }
   if (search?.total_fee != null) {
     if (search.total_fee[0] != null) {
@@ -300,17 +309,6 @@ export async function findCount(
       throw new Error(`search.trade_state.length > ${ ids_limit }`);
     }
   }
-  // 是否支持发票
-  if (search && search.support_fapiao != null) {
-    const len = search.support_fapiao.length;
-    if (len === 0) {
-      return 0;
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.support_fapiao.length > ${ ids_limit }`);
-    }
-  }
   // 货币类型
   if (search && search.currency != null) {
     const len = search.currency.length;
@@ -415,17 +413,6 @@ export async function findAll(
       throw new Error(`search.trade_state.length > ${ ids_limit }`);
     }
   }
-  // 是否支持发票
-  if (search && search.support_fapiao != null) {
-    const len = search.support_fapiao.length;
-    if (len === 0) {
-      return [ ];
-    }
-    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
-    if (len > ids_limit) {
-      throw new Error(`search.support_fapiao.length > ${ ids_limit }`);
-    }
-  }
   // 货币类型
   if (search && search.currency != null) {
     const len = search.currency.length;
@@ -506,11 +493,9 @@ export async function findAll(
   
   const [
     trade_stateDict, // 交易状态
-    support_fapiaoDict, // 是否支持发票
     currencyDict, // 货币类型
   ] = await getDict([
     "wx_pay_notice_trade_state",
-    "is_enabled",
     "wx_pay_notice_currency",
   ]);
   
@@ -539,16 +524,6 @@ export async function findAll(
     } else {
       model.success_time_lbl = "";
     }
-    
-    // 是否支持发票
-    let support_fapiao_lbl = model.support_fapiao?.toString() || "";
-    if (model.support_fapiao != null) {
-      const dictItem = support_fapiaoDict.find((dictItem) => dictItem.val === String(model.support_fapiao));
-      if (dictItem) {
-        support_fapiao_lbl = dictItem.lbl;
-      }
-    }
-    model.support_fapiao_lbl = support_fapiao_lbl || "";
     
     // 货币类型
     let currency_lbl = model.currency as string;
@@ -620,11 +595,9 @@ export async function setIdByLbl(
   
   const [
     trade_stateDict, // 交易状态
-    support_fapiaoDict, // 是否支持发票
     currencyDict, // 货币类型
   ] = await getDict([
     "wx_pay_notice_trade_state",
-    "is_enabled",
     "wx_pay_notice_currency",
   ]);
   
@@ -643,17 +616,6 @@ export async function setIdByLbl(
   if (isNotEmpty(input.success_time_lbl) && input.success_time == null) {
     input.success_time_lbl = String(input.success_time_lbl).trim();
     input.success_time = input.success_time_lbl;
-  }
-  
-  // 是否支持发票
-  if (isNotEmpty(input.support_fapiao_lbl) && input.support_fapiao == null) {
-    const val = support_fapiaoDict.find((itemTmp) => itemTmp.lbl === input.support_fapiao_lbl)?.val;
-    if (val != null) {
-      input.support_fapiao = Number(val);
-    }
-  } else if (isEmpty(input.support_fapiao_lbl) && input.support_fapiao != null) {
-    const lbl = support_fapiaoDict.find((itemTmp) => itemTmp.val === String(input.support_fapiao))?.lbl || "";
-    input.support_fapiao_lbl = lbl;
   }
   
   // 货币类型
@@ -687,8 +649,8 @@ export async function getFieldComments(): Promise<PayTransactionsJsapiFieldComme
     attach: "附加数据",
     attach2: "附加数据2",
     notify_url: "通知地址",
-    support_fapiao: "是否支持发票",
-    support_fapiao_lbl: "是否支持发票",
+    receipt: "开发票",
+    profit_sharing: "分账",
     total_fee: "订单金额(分)",
     currency: "货币类型",
     currency_lbl: "货币类型",
@@ -1120,6 +1082,20 @@ export async function validate(
     fieldComments.notify_url,
   );
   
+  // 开发票
+  await validators.chars_max_length(
+    input.receipt,
+    8,
+    fieldComments.receipt,
+  );
+  
+  // 分账
+  await validators.chars_max_length(
+    input.profit_sharing,
+    16,
+    fieldComments.profit_sharing,
+  );
+  
   // 用户标识
   await validators.chars_max_length(
     input.openid,
@@ -1376,7 +1352,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into wx_pay_transactions_jsapi(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,appid,mchid,description,out_trade_no,transaction_id,trade_state,trade_state_desc,success_time,time_expire,attach,attach2,notify_url,support_fapiao,total_fee,currency,openid,prepay_id)values";
+  let sql = "insert into wx_pay_transactions_jsapi(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,appid,mchid,description,out_trade_no,transaction_id,trade_state,trade_state_desc,success_time,time_expire,attach,attach2,notify_url,receipt,profit_sharing,total_fee,currency,openid,prepay_id)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1534,8 +1510,13 @@ async function _creates(
       } else {
         sql += ",default";
       }
-      if (input.support_fapiao != null) {
-        sql += `,${ args.push(input.support_fapiao) }`;
+      if (input.receipt != null) {
+        sql += `,${ args.push(input.receipt) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.profit_sharing != null) {
+        sql += `,${ args.push(input.profit_sharing) }`;
       } else {
         sql += ",default";
       }
@@ -1766,9 +1747,15 @@ export async function updateById(
       updateFldNum++;
     }
   }
-  if (input.support_fapiao != null) {
-    if (input.support_fapiao != oldModel.support_fapiao) {
-      sql += `support_fapiao=${ args.push(input.support_fapiao) },`;
+  if (input.receipt != null) {
+    if (input.receipt != oldModel.receipt) {
+      sql += `receipt=${ args.push(input.receipt) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.profit_sharing != null) {
+    if (input.profit_sharing != oldModel.profit_sharing) {
+      sql += `profit_sharing=${ args.push(input.profit_sharing) },`;
       updateFldNum++;
     }
   }
