@@ -364,6 +364,11 @@ export default defineConfig({
         width: 140,
       },
       {
+        COLUMN_NAME: "serial_no",
+        width: 140,
+        noList: true,
+      },
+      {
         COLUMN_NAME: "public_key",
         isAtt: true,
         width: 80,
@@ -383,7 +388,6 @@ export default defineConfig({
         COLUMN_NAME: "payer_client_ip",
         align: "left",
         width: 180,
-        require: true,
       },
       {
         COLUMN_NAME: "notify_url",
