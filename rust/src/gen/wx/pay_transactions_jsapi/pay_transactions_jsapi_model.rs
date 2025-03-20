@@ -105,7 +105,7 @@ pub struct PayTransactionsJsapiModel {
   pub profit_sharing: String,
   /// 订单金额(分)
   #[graphql(name = "total_fee")]
-  pub total_fee: i32,
+  pub total_fee: u32,
   /// 货币类型
   #[graphql(name = "currency")]
   pub currency: PayTransactionsJsapiCurrency,
@@ -178,7 +178,7 @@ impl FromRow<'_, MySqlRow> for PayTransactionsJsapiModel {
     // 分账
     let profit_sharing: String = row.try_get("profit_sharing")?;
     // 订单金额(分)
-    let total_fee: i32 = row.try_get("total_fee")?;
+    let total_fee: u32 = row.try_get("total_fee")?;
     // 货币类型
     let currency_lbl: String = row.try_get("currency")?;
     let currency: PayTransactionsJsapiCurrency = currency_lbl.clone().try_into()?;
@@ -435,7 +435,7 @@ pub struct PayTransactionsJsapiSearch {
   pub profit_sharing_like: Option<String>,
   /// 订单金额(分)
   #[graphql(skip)]
-  pub total_fee: Option<[Option<i32>; 2]>,
+  pub total_fee: Option<[Option<u32>; 2]>,
   /// 货币类型
   #[graphql(skip)]
   pub currency: Option<Vec<PayTransactionsJsapiCurrency>>,
@@ -705,7 +705,7 @@ pub struct PayTransactionsJsapiInput {
   pub profit_sharing: Option<String>,
   /// 订单金额(分)
   #[graphql(name = "total_fee")]
-  pub total_fee: Option<i32>,
+  pub total_fee: Option<u32>,
   /// 货币类型
   #[graphql(name = "currency")]
   pub currency: Option<PayTransactionsJsapiCurrency>,

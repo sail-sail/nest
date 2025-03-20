@@ -64,7 +64,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 19 * 2);
+  let mut where_query = String::with_capacity(80 * 20 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -176,6 +176,25 @@ async fn get_where_query(
     if let Some(mchid_like) = mchid_like {
       where_query.push_str(" and t.mchid like ?");
       args.push(format!("%{}%", sql_like(&mchid_like)).into());
+    }
+  }
+  // 证书序列号
+  {
+    let serial_no = match search {
+      Some(item) => item.serial_no.clone(),
+      None => None,
+    };
+    if let Some(serial_no) = serial_no {
+      where_query.push_str(" and t.serial_no=?");
+      args.push(serial_no.into());
+    }
+    let serial_no_like = match search {
+      Some(item) => item.serial_no_like.clone(),
+      None => None,
+    };
+    if let Some(serial_no_like) = serial_no_like {
+      where_query.push_str(" and t.serial_no like ?");
+      args.push(format!("%{}%", sql_like(&serial_no_like)).into());
     }
   }
   // 公钥
@@ -877,6 +896,7 @@ pub async fn get_field_comments(
     lbl: "名称".into(),
     appid: "开发者ID".into(),
     mchid: "商户号".into(),
+    serial_no: "证书序列号".into(),
     public_key: "公钥".into(),
     private_key: "私钥".into(),
     v3_key: "APIv3密钥".into(),
@@ -1564,7 +1584,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 19 + 20);
+  let mut sql_fields = String::with_capacity(80 * 20 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1580,6 +1600,8 @@ async fn _creates(
   sql_fields += ",appid";
   // 商户号
   sql_fields += ",mchid";
+  // 证书序列号
+  sql_fields += ",serial_no";
   // 公钥
   sql_fields += ",public_key";
   // 私钥
@@ -1600,7 +1622,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 19 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 20 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1744,6 +1766,13 @@ async fn _creates(
     if let Some(mchid) = input.mchid {
       sql_values += ",?";
       args.push(mchid.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 证书序列号
+    if let Some(serial_no) = input.serial_no {
+      sql_values += ",?";
+      args.push(serial_no.into());
     } else {
       sql_values += ",default";
     }
@@ -2040,7 +2069,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 19 + 20);
+  let mut sql_fields = String::with_capacity(80 * 20 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2066,6 +2095,12 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "mchid=?,";
     args.push(mchid.into());
+  }
+  // 证书序列号
+  if let Some(serial_no) = input.serial_no {
+    field_num += 1;
+    sql_fields += "serial_no=?,";
+    args.push(serial_no.into());
   }
   // 公钥
   if let Some(public_key) = input.public_key {

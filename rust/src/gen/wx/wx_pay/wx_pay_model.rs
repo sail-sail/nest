@@ -65,6 +65,9 @@ pub struct WxPayModel {
   /// 商户号
   #[graphql(name = "mchid")]
   pub mchid: String,
+  /// 证书序列号
+  #[graphql(name = "serial_no")]
+  pub serial_no: String,
   /// 公钥
   #[graphql(name = "public_key")]
   pub public_key: String,
@@ -130,6 +133,8 @@ impl FromRow<'_, MySqlRow> for WxPayModel {
     let appid: String = row.try_get("appid")?;
     // 商户号
     let mchid: String = row.try_get("mchid")?;
+    // 证书序列号
+    let serial_no: String = row.try_get("serial_no")?;
     // 公钥
     let public_key: String = row.try_get("public_key")?;
     // 私钥
@@ -180,6 +185,7 @@ impl FromRow<'_, MySqlRow> for WxPayModel {
       lbl,
       appid,
       mchid,
+      serial_no,
       public_key,
       private_key,
       v3_key,
@@ -221,6 +227,9 @@ pub struct WxPayFieldComment {
   /// 商户号
   #[graphql(name = "mchid")]
   pub mchid: String,
+  /// 证书序列号
+  #[graphql(name = "serial_no")]
+  pub serial_no: String,
   /// 公钥
   #[graphql(name = "public_key")]
   pub public_key: String,
@@ -309,6 +318,12 @@ pub struct WxPaySearch {
   /// 商户号
   #[graphql(skip)]
   pub mchid_like: Option<String>,
+  /// 证书序列号
+  #[graphql(skip)]
+  pub serial_no: Option<String>,
+  /// 证书序列号
+  #[graphql(skip)]
+  pub serial_no_like: Option<String>,
   /// 公钥
   #[graphql(skip)]
   pub public_key: Option<String>,
@@ -424,6 +439,13 @@ impl std::fmt::Debug for WxPaySearch {
     if let Some(ref mchid_like) = self.mchid_like {
       item = item.field("mchid_like", mchid_like);
     }
+    // 证书序列号
+    if let Some(ref serial_no) = self.serial_no {
+      item = item.field("serial_no", serial_no);
+    }
+    if let Some(ref serial_no_like) = self.serial_no_like {
+      item = item.field("serial_no_like", serial_no_like);
+    }
     // 公钥
     if let Some(ref public_key) = self.public_key {
       item = item.field("public_key", public_key);
@@ -525,6 +547,9 @@ pub struct WxPayInput {
   /// 商户号
   #[graphql(name = "mchid")]
   pub mchid: Option<String>,
+  /// 证书序列号
+  #[graphql(name = "serial_no")]
+  pub serial_no: Option<String>,
   /// 公钥
   #[graphql(name = "public_key")]
   pub public_key: Option<String>,
@@ -602,6 +627,8 @@ impl From<WxPayModel> for WxPayInput {
       appid: model.appid.into(),
       // 商户号
       mchid: model.mchid.into(),
+      // 证书序列号
+      serial_no: model.serial_no.into(),
       // 公钥
       public_key: model.public_key.into(),
       // 私钥
@@ -654,6 +681,8 @@ impl From<WxPayInput> for WxPaySearch {
       appid: input.appid,
       // 商户号
       mchid: input.mchid,
+      // 证书序列号
+      serial_no: input.serial_no,
       // 公钥
       public_key: input.public_key,
       // 私钥
