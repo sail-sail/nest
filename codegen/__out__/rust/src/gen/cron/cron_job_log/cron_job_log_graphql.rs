@@ -99,6 +99,23 @@ impl CronJobLogGenQuery {
       }).await
   }
   
+  /// 根据 id 查找定时任务日志
+  async fn find_by_ids_cron_job_log(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<CronJobLogId>,
+  ) -> Result<Vec<CronJobLogModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        cron_job_log_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取定时任务日志字段注释
   async fn get_field_comments_cron_job_log(
     &self,
@@ -140,7 +157,7 @@ impl CronJobLogGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         cron_job_log_resolver::update_tenant_by_id(
@@ -159,7 +176,7 @@ impl CronJobLogGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         cron_job_log_resolver::delete_by_ids(
@@ -177,7 +194,7 @@ impl CronJobLogGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         cron_job_log_resolver::revert_by_ids(
@@ -195,7 +212,7 @@ impl CronJobLogGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         cron_job_log_resolver::force_delete_by_ids(

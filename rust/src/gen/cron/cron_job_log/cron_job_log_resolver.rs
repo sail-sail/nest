@@ -111,6 +111,27 @@ pub async fn find_by_id(
   Ok(model)
 }
 
+/// 根据 ids 查找定时任务日志
+#[function_name::named]
+pub async fn find_by_ids(
+  ids: Vec<CronJobLogId>,
+  options: Option<Options>,
+) -> Result<Vec<CronJobLogModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = cron_job_log_service::find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
 /// 定时任务日志根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]

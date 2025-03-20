@@ -20,6 +20,7 @@ use super::cron_job_log_dao;
 #[allow(unused_variables)]
 async fn set_search_query(
   search: &mut CronJobLogSearch,
+  options: Option<Options>,
 ) -> Result<()> {
   Ok(())
 }
@@ -34,16 +35,19 @@ pub async fn find_all(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let res = cron_job_log_dao::find_all(
+  let cron_job_log_models = cron_job_log_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(cron_job_log_models)
 }
 
 /// 根据条件查找定时任务日志总数
@@ -54,14 +58,17 @@ pub async fn find_count(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let res = cron_job_log_dao::find_count(
+  let cron_job_log_num = cron_job_log_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(cron_job_log_num)
 }
 
 /// 根据条件查找第一个定时任务日志
@@ -73,69 +80,86 @@ pub async fn find_one(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let model = cron_job_log_dao::find_one(
+  let cron_job_log_model = cron_job_log_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(cron_job_log_model)
 }
 
 /// 根据 id 查找定时任务日志
 pub async fn find_by_id(
-  id: CronJobLogId,
+  cron_job_log_id: CronJobLogId,
   options: Option<Options>,
 ) -> Result<Option<CronJobLogModel>> {
   
-  let model = cron_job_log_dao::find_by_id(
-    id,
+  let cron_job_log_model = cron_job_log_dao::find_by_id(
+    cron_job_log_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(cron_job_log_model)
+}
+
+/// 根据 cron_job_log_ids 查找定时任务日志
+pub async fn find_by_ids(
+  cron_job_log_ids: Vec<CronJobLogId>,
+  options: Option<Options>,
+) -> Result<Vec<CronJobLogModel>> {
+  
+  let cron_job_log_models = cron_job_log_dao::find_by_ids(
+    cron_job_log_ids,
+    options,
+  ).await?;
+  
+  Ok(cron_job_log_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: CronJobLogInput,
+  cron_job_log_input: CronJobLogInput,
 ) -> Result<CronJobLogInput> {
   
-  let input = cron_job_log_dao::set_id_by_lbl(
-    input,
+  let cron_job_log_input = cron_job_log_dao::set_id_by_lbl(
+    cron_job_log_input,
   ).await?;
   
-  Ok(input)
+  Ok(cron_job_log_input)
 }
 
 /// 创建定时任务日志
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<CronJobLogInput>,
+  cron_job_log_inputs: Vec<CronJobLogInput>,
   options: Option<Options>,
 ) -> Result<Vec<CronJobLogId>> {
   
   let cron_job_log_ids = cron_job_log_dao::creates(
-    inputs,
+    cron_job_log_inputs,
     options,
   ).await?;
   
   Ok(cron_job_log_ids)
 }
 
-/// 定时任务日志根据id修改租户id
+/// 定时任务日志根据 cron_job_log_id 修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  id: CronJobLogId,
+  cron_job_log_id: CronJobLogId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = cron_job_log_dao::update_tenant_by_id(
-    id,
+    cron_job_log_id,
     tenant_id,
     options,
   ).await?;
@@ -143,32 +167,43 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-/// 根据 id 修改定时任务日志
+/// 根据 cron_job_log_id 修改定时任务日志
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: CronJobLogId,
-  mut input: CronJobLogInput,
+  cron_job_log_id: CronJobLogId,
+  mut cron_job_log_input: CronJobLogInput,
   options: Option<Options>,
 ) -> Result<CronJobLogId> {
   
   let cron_job_log_id = cron_job_log_dao::update_by_id(
-    id,
-    input,
-    options,
+    cron_job_log_id,
+    cron_job_log_input,
+    options.clone(),
   ).await?;
   
   Ok(cron_job_log_id)
 }
 
-/// 根据 ids 删除定时任务日志
+/// 校验定时任务日志是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  cron_job_log_model: Option<CronJobLogModel>,
+) -> Result<CronJobLogModel> {
+  
+  let cron_job_log_model = cron_job_log_dao::validate_option(cron_job_log_model).await?;
+  
+  Ok(cron_job_log_model)
+}
+
+/// 根据 cron_job_log_ids 删除定时任务日志
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<CronJobLogId>,
+  cron_job_log_ids: Vec<CronJobLogId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = cron_job_log_dao::delete_by_ids(
-    ids,
+    cron_job_log_ids,
     options,
   ).await?;
   
@@ -187,30 +222,30 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原定时任务日志
+/// 根据 cron_job_log_ids 还原定时任务日志
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<CronJobLogId>,
+  cron_job_log_ids: Vec<CronJobLogId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = cron_job_log_dao::revert_by_ids(
-    ids,
+    cron_job_log_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 ids 彻底删除定时任务日志
+/// 根据 cron_job_log_ids 彻底删除定时任务日志
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<CronJobLogId>,
+  cron_job_log_ids: Vec<CronJobLogId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = cron_job_log_dao::force_delete_by_ids(
-    ids,
+    cron_job_log_ids,
     options,
   ).await?;
   
