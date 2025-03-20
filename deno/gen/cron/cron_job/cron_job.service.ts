@@ -23,8 +23,9 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const data = await cron_jobDao.findCount(search);
-  return data;
+  const cron_job_num = await cron_jobDao.findCount(search);
+  
+  return cron_job_num;
 }
 
 /**
@@ -40,8 +41,9 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const models: CronJobModel[] = await cron_jobDao.findAll(search, page, sort);
-  return models;
+  const cron_job_models = await cron_jobDao.findAll(search, page, sort);
+  
+  return cron_job_models;
 }
 
 /**
@@ -49,9 +51,8 @@ export async function findAll(
  */
 export async function setIdByLbl(
   input: CronJobInput,
-) {
-  const data = await cron_jobDao.setIdByLbl(input);
-  return data;
+): Promise<void> {
+  await cron_jobDao.setIdByLbl(input);
 }
 
 /**
@@ -66,18 +67,33 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const model = await cron_jobDao.findOne(search, sort);
-  return model;
+  const cron_job_model = await cron_jobDao.findOne(search, sort);
+  
+  return cron_job_model;
 }
 
 /**
  * 根据 id 查找定时任务
  */
 export async function findById(
-  id?: CronJobId | null,
+  cron_job_id?: CronJobId | null,
 ): Promise<CronJobModel | undefined> {
-  const model = await cron_jobDao.findById(id);
-  return model;
+  
+  const cron_job_model = await cron_jobDao.findById(cron_job_id);
+  
+  return cron_job_model;
+}
+
+/**
+ * 根据 ids 查找定时任务
+ */
+export async function findByIds(
+  cron_job_ids: CronJobId[],
+): Promise<CronJobModel[]> {
+  
+  const cron_job_models = await cron_jobDao.findByIds(cron_job_ids);
+  
+  return cron_job_models;
 }
 
 /**
@@ -91,18 +107,21 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const data = await cron_jobDao.exist(search);
-  return data;
+  const cron_job_exist = await cron_jobDao.exist(search);
+  
+  return cron_job_exist;
 }
 
 /**
  * 根据 id 查找定时任务是否存在
  */
 export async function existById(
-  id?: CronJobId | null,
+  cron_job_id?: CronJobId | null,
 ): Promise<boolean> {
-  const data = await cron_jobDao.existById(id);
-  return data;
+  
+  const cron_job_exist = await cron_jobDao.existById(cron_job_id);
+  
+  return cron_job_exist;
 }
 
 /**
@@ -111,8 +130,7 @@ export async function existById(
 export async function validate(
   input: CronJobInput,
 ): Promise<void> {
-  const data = await cron_jobDao.validate(input);
-  return data;
+  await cron_jobDao.validate(input);
 }
 
 /**
@@ -124,47 +142,54 @@ export async function creates(
     uniqueType?: UniqueType;
   },
 ): Promise<CronJobId[]> {
-  const ids = await cron_jobDao.creates(inputs, options);
-  return ids;
+  const cron_job_ids = await cron_jobDao.creates(inputs, options);
+  
+  return cron_job_ids;
 }
 
 /**
  * 根据 id 修改定时任务
  */
 export async function updateById(
-  id: CronJobId,
+  cron_job_id: CronJobId,
   input: CronJobInput,
 ): Promise<CronJobId> {
   
-  const is_locked = await cron_jobDao.getIsLockedById(id);
+  const is_locked = await cron_jobDao.getIsLockedById(cron_job_id);
   if (is_locked) {
     throw "不能修改已经锁定的 定时任务";
   }
   
-  const id2 = await cron_jobDao.updateById(id, input);
-  return id2;
+  const cron_job_id2 = await cron_jobDao.updateById(cron_job_id, input);
+  
+  return cron_job_id2;
+}
+
+/** 校验定时任务是否存在 */
+export async function validateOption(
+  model0?: CronJobModel,
+): Promise<CronJobModel> {
+  const cron_job_model = await cron_jobDao.validateOption(model0);
+  return cron_job_model;
 }
 
 /**
  * 根据 ids 删除定时任务
  */
 export async function deleteByIds(
-  ids: CronJobId[],
+  cron_job_ids: CronJobId[],
 ): Promise<number> {
   
-  {
-    const models = await cron_jobDao.findAll({
-      ids,
-    });
-    for (const model of models) {
-      if (model.is_locked === 1) {
-        throw "不能删除已经锁定的 定时任务";
-      }
+  const old_models = await cron_jobDao.findByIds(cron_job_ids);
+  
+  for (const old_model of old_models) {
+    if (old_model.is_locked === 1) {
+      throw "不能删除已经锁定的 定时任务";
     }
   }
   
-  const data = await cron_jobDao.deleteByIds(ids);
-  return data;
+  const cron_job_num = await cron_jobDao.deleteByIds(cron_job_ids);
+  return cron_job_num;
 }
 
 /**
@@ -174,47 +199,51 @@ export async function enableByIds(
   ids: CronJobId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const data = await cron_jobDao.enableByIds(ids, is_enabled);
-  return data;
+  const cron_job_num = await cron_jobDao.enableByIds(ids, is_enabled);
+  return cron_job_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁定时任务
  */
 export async function lockByIds(
-  ids: CronJobId[],
+  cron_job_ids: CronJobId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const data = await cron_jobDao.lockByIds(ids, is_locked);
-  return data;
+  const cron_job_num = await cron_jobDao.lockByIds(cron_job_ids, is_locked);
+  return cron_job_num;
 }
 
 /**
  * 根据 ids 还原定时任务
  */
 export async function revertByIds(
-  ids: CronJobId[],
+  cron_job_ids: CronJobId[],
 ): Promise<number> {
-  const data = await cron_jobDao.revertByIds(ids);
-  return data;
+  
+  const cron_job_num = await cron_jobDao.revertByIds(cron_job_ids);
+  
+  return cron_job_num;
 }
 
 /**
  * 根据 ids 彻底删除定时任务
  */
 export async function forceDeleteByIds(
-  ids: CronJobId[],
+  cron_job_ids: CronJobId[],
 ): Promise<number> {
-  const data = await cron_jobDao.forceDeleteByIds(ids);
-  return data;
+  
+  const cron_job_num = await cron_jobDao.forceDeleteByIds(cron_job_ids);
+  
+  return cron_job_num;
 }
 
 /**
  * 获取定时任务字段注释
  */
 export async function getFieldComments(): Promise<CronJobFieldComment> {
-  const data = await cron_jobDao.getFieldComments();
-  return data;
+  const cron_job_fields = await cron_jobDao.getFieldComments();
+  return cron_job_fields;
 }
 
 /**
@@ -222,6 +251,6 @@ export async function getFieldComments(): Promise<CronJobFieldComment> {
  */
 export async function findLastOrderBy(
 ): Promise<number> {
-  const data = await cron_jobDao.findLastOrderBy();
-  return data;
+  const cron_job_sort = await cron_jobDao.findLastOrderBy();
+  return cron_job_sort;
 }

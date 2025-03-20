@@ -158,6 +158,7 @@ import {
   findOne,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -187,6 +188,8 @@ let dialogNotice = $ref("");
 
 let dialogModel: CronJobLogDetailInput = $ref({
 } as CronJobLogDetailInput);
+
+let cron_job_log_detail_model = $ref<CronJobLogDetailModel>();
 
 let ids = $ref<CronJobLogDetailId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -419,11 +422,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  cron_job_log_detail_model = data;
 }
 
 /** 键盘按 PageUp */

@@ -212,9 +212,12 @@ export async function updateById(
  * 根据 id 查找定时任务
  */
 export async function findById(
-  id: CronJobId,
+  id?: CronJobId,
   opt?: GqlOpt,
-) {
+): Promise<CronJobModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdCronJob?: CronJobModel;
   } = await query({
@@ -235,12 +238,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找定时任务
+ */
+export async function findByIds(
+  ids: CronJobId[],
+  opt?: GqlOpt,
+): Promise<CronJobModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: CronJobModel[] = [ ];
+  try {
+    const data: {
+      findByIdsCronJob: CronJobModel[];
+    } = await query({
+      query: `
+        query($ids: [CronJobId!]!) {
+          findByIdsCronJob(ids: $ids) {
+            ${ cronJobQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsCronJob;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除定时任务
  */
 export async function deleteByIds(
   ids: CronJobId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsCronJob: Mutation["deleteByIdsCronJob"];
   } = await mutation({
@@ -264,7 +307,10 @@ export async function enableByIds(
   ids: CronJobId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsCronJob: Mutation["enableByIdsCronJob"];
   } = await mutation({
@@ -289,7 +335,10 @@ export async function lockByIds(
   ids: CronJobId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsCronJob: Mutation["lockByIdsCronJob"];
   } = await mutation({
@@ -313,7 +362,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: CronJobId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsCronJob: Mutation["revertByIdsCronJob"];
   } = await mutation({
@@ -336,7 +388,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: CronJobId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsCronJob: Mutation["forceDeleteByIdsCronJob"];
   } = await mutation({

@@ -95,6 +95,7 @@
             <CustomSelect
               v-model="dialogModel.job_id"
               :method="getJobList"
+              :find-by-values="findByIdsJob"
               :options-map="((item: JobModel) => {
                 return {
                   label: item.lbl,
@@ -188,7 +189,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'add' || dialogAction === 'copy') && permit('add', '新增') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -200,7 +201,7 @@
       </el-button>
       
       <el-button
-        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit') && !isLocked && !isReadonly"
+        v-if="(dialogAction === 'edit' || dialogAction === 'view') && permit('edit', '编辑') && !isLocked && !isReadonly"
         plain
         type="primary"
         @click="onSave"
@@ -269,11 +270,16 @@ import {
   updateById,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 import {
   getJobList,
 } from "./Api";
+
+import {
+  findByIds as findByIdsJob,
+} from "@/views/cron/job/Api.ts";
 
 import cronstrue from "cronstrue/i18n";
 import { lang } from "@/locales/index";
@@ -305,6 +311,8 @@ let dialogNotice = $ref("");
 
 let dialogModel: CronJobInput = $ref({
 } as CronJobInput);
+
+let cron_job_model = $ref<CronJobModel>();
 
 let ids = $ref<CronJobId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -655,11 +663,12 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
   }
+  cron_job_model = data;
 }
 
 /** 键盘按 PageUp */

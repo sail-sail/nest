@@ -206,9 +206,12 @@ export async function updateById(
  * 根据 id 查找任务
  */
 export async function findById(
-  id: JobId,
+  id?: JobId,
   opt?: GqlOpt,
-) {
+): Promise<JobModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdJob?: JobModel;
   } = await query({
@@ -229,12 +232,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找任务
+ */
+export async function findByIds(
+  ids: JobId[],
+  opt?: GqlOpt,
+): Promise<JobModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: JobModel[] = [ ];
+  try {
+    const data: {
+      findByIdsJob: JobModel[];
+    } = await query({
+      query: `
+        query($ids: [JobId!]!) {
+          findByIdsJob(ids: $ids) {
+            ${ jobQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsJob;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除任务
  */
 export async function deleteByIds(
   ids: JobId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsJob: Mutation["deleteByIdsJob"];
   } = await mutation({
@@ -258,7 +301,10 @@ export async function enableByIds(
   ids: JobId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     enableByIdsJob: Mutation["enableByIdsJob"];
   } = await mutation({
@@ -283,7 +329,10 @@ export async function lockByIds(
   ids: JobId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     lockByIdsJob: Mutation["lockByIdsJob"];
   } = await mutation({
@@ -307,7 +356,10 @@ export async function lockByIds(
 export async function revertByIds(
   ids: JobId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsJob: Mutation["revertByIdsJob"];
   } = await mutation({
@@ -330,7 +382,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: JobId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsJob: Mutation["forceDeleteByIdsJob"];
   } = await mutation({

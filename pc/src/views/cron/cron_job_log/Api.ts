@@ -139,9 +139,12 @@ export async function findCount(
  * 根据 id 查找定时任务日志
  */
 export async function findById(
-  id: CronJobLogId,
+  id?: CronJobLogId,
   opt?: GqlOpt,
-) {
+): Promise<CronJobLogModel | undefined> {
+  if (!id) {
+    return;
+  }
   const data: {
     findByIdCronJobLog?: CronJobLogModel;
   } = await query({
@@ -162,12 +165,52 @@ export async function findById(
 }
 
 /**
+ * 根据 ids 查找定时任务日志
+ */
+export async function findByIds(
+  ids: CronJobLogId[],
+  opt?: GqlOpt,
+): Promise<CronJobLogModel[]> {
+  if (ids.length === 0) {
+    return [ ];
+  }
+  opt = opt || { };
+  opt.showErrMsg = false;
+  let models: CronJobLogModel[] = [ ];
+  try {
+    const data: {
+      findByIdsCronJobLog: CronJobLogModel[];
+    } = await query({
+      query: `
+        query($ids: [CronJobLogId!]!) {
+          findByIdsCronJobLog(ids: $ids) {
+            ${ cronJobLogQueryField }
+          }
+        }
+      `,
+      variables: {
+        ids,
+      },
+    }, opt);
+    models = data.findByIdsCronJobLog;
+  } catch (_err) { /* empty */ }
+  for (let i = 0; i < models.length; i++) {
+    const model = models[i];
+    await setLblById(model);
+  }
+  return models;
+}
+
+/**
  * 根据 ids 删除定时任务日志
  */
 export async function deleteByIds(
   ids: CronJobLogId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     deleteByIdsCronJobLog: Mutation["deleteByIdsCronJobLog"];
   } = await mutation({
@@ -190,7 +233,10 @@ export async function deleteByIds(
 export async function revertByIds(
   ids: CronJobLogId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     revertByIdsCronJobLog: Mutation["revertByIdsCronJobLog"];
   } = await mutation({
@@ -213,7 +259,10 @@ export async function revertByIds(
 export async function forceDeleteByIds(
   ids: CronJobLogId[],
   opt?: GqlOpt,
-) {
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
   const data: {
     forceDeleteByIdsCronJobLog: Mutation["forceDeleteByIdsCronJobLog"];
   } = await mutation({

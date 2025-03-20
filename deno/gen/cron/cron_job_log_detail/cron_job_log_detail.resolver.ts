@@ -105,6 +105,25 @@ export async function findByIdCronJobLogDetail(
 }
 
 /**
+ * 根据 ids 查找定时任务日志明细
+ */
+export async function findByIdsCronJobLogDetail(
+  ids: CronJobLogDetailId[],
+): Promise<CronJobLogDetailModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./cron_job_log_detail.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+  }
+  
+  return models;
+}
+
+/**
  * 根据 ids 删除定时任务日志明细
  */
 export async function deleteByIdsCronJobLogDetail(
