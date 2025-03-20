@@ -31,6 +31,7 @@
     un-flex="~"
     un-justify="start"
     un-items="center"
+    un-box-border
     class="custom_city_picker_readonly"
     :class="{
       'custom_city_picker_readonly_border': props.isReadonlyBorder,
@@ -44,7 +45,7 @@
       un-box-border
       un-w="full"
       un-min="h-7.5"
-      un-break-words
+      un-break-all
       un-whitespace-pre-wrap
       class="custom_city_picker_readonly_content"
       :class="{
