@@ -21,7 +21,7 @@ impl OrgMutation {
   ) -> Result<String> {
     
     let mut ctx = Ctx::builder(ctx)
-      .with_tran()?
+      .with_tran()
       .with_auth()?
       .build();
     

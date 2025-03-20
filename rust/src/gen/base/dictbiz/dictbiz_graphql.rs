@@ -184,7 +184,7 @@ impl DictbizGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -204,7 +204,7 @@ impl DictbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dictbiz_resolver::update_tenant_by_id(
@@ -224,7 +224,7 @@ impl DictbizGenMutation {
   ) -> Result<DictbizId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dictbiz_resolver::update_by_id(
@@ -243,7 +243,7 @@ impl DictbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dictbiz_resolver::delete_by_ids(
@@ -262,7 +262,7 @@ impl DictbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dictbiz_resolver::enable_by_ids(
@@ -281,7 +281,7 @@ impl DictbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dictbiz_resolver::revert_by_ids(
@@ -299,7 +299,7 @@ impl DictbizGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         dictbiz_resolver::force_delete_by_ids(

@@ -160,7 +160,7 @@ impl FieldPermitGenMutation {
   ) -> Result<FieldPermitId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         field_permit_resolver::update_by_id(

@@ -182,7 +182,7 @@ impl IconGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -202,7 +202,7 @@ impl IconGenMutation {
   ) -> Result<IconId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         icon_resolver::update_by_id(
@@ -221,7 +221,7 @@ impl IconGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         icon_resolver::delete_by_ids(
@@ -240,7 +240,7 @@ impl IconGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         icon_resolver::enable_by_ids(
@@ -259,7 +259,7 @@ impl IconGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         icon_resolver::revert_by_ids(
@@ -277,7 +277,7 @@ impl IconGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         icon_resolver::force_delete_by_ids(
