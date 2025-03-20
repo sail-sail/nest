@@ -201,6 +201,7 @@ import {
   findOne,
   getDefaultInput,
   getPagePath,
+  intoInput,
 } from "./Api";
 
 const emit = defineEmits<{
@@ -230,6 +231,8 @@ let dialogNotice = $ref("");
 
 let dialogModel: LoginLogInput = $ref({
 } as LoginLogInput);
+
+let login_log_model = $ref<LoginLogModel>();
 
 let ids = $ref<LoginLogId[]>([ ]);
 let is_deleted = $ref<0 | 1>(0);
@@ -474,10 +477,11 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = {
+    dialogModel = intoInput({
       ...data,
-    };
+    });
   }
+  login_log_model = data;
 }
 
 /** 键盘按 PageUp */

@@ -155,6 +155,8 @@ type Query {
   findOneOptions(search: OptionsSearch, sort: [SortInput!]): OptionsModel
   "根据 id 查找系统选项"
   findByIdOptions(id: OptionsId!): OptionsModel
+  "根据 ids 查找系统选项"
+  findByIdsOptions(ids: [OptionsId!]!): [OptionsModel]!
   "查找系统选项 order_by 字段的最大值"
   findLastOrderByOptions: Int!
 }

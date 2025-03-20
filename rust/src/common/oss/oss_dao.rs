@@ -2,7 +2,7 @@ use std::env;
 use color_eyre::eyre::{Result,eyre};
 use s3::{Region, Bucket, BucketConfiguration, creds::Credentials, command::Command};
 use s3::request::tokio_backend::HyperRequest;
-use s3::request::{Request, ResponseData};
+use s3::request::{Request, ResponseData, ResponseDataStream};
 
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 
@@ -152,13 +152,24 @@ pub async fn head_object(
 
 pub async fn get_object(
   path: &str,
-) -> Result<Option<Vec<u8>>> {
+) -> Result<Option<ResponseData>> {
   let bucket = new_bucket()?;
-  let res = bucket.get_object(path).await?;
+  let res: ResponseData = bucket.get_object(path).await?;
   if res.status_code() == 404 {
     return Ok(None);
   }
-  let res: Vec<u8> = res.into();
+  Ok(Some(res))
+}
+
+#[allow(dead_code)]
+pub async fn get_object_stream(
+  path: &str,
+) -> Result<Option<ResponseDataStream>> {
+  let bucket = new_bucket()?;
+  let res: ResponseDataStream = bucket.get_object_stream(path).await?;
+  if res.status_code == 404 {
+    return Ok(None);
+  }
   Ok(Some(res))
 }
 

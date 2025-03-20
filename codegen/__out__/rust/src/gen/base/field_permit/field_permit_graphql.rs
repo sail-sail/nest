@@ -97,6 +97,23 @@ impl FieldPermitGenQuery {
       }).await
   }
   
+  /// 根据 id 查找字段权限
+  async fn find_by_ids_field_permit(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<FieldPermitId>,
+  ) -> Result<Vec<FieldPermitModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        field_permit_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取字段权限字段注释
   async fn get_field_comments_field_permit(
     &self,
@@ -143,7 +160,7 @@ impl FieldPermitGenMutation {
   ) -> Result<FieldPermitId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         field_permit_resolver::update_by_id(

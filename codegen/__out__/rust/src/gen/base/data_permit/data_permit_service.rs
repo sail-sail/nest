@@ -20,6 +20,7 @@ use super::data_permit_dao;
 #[allow(unused_variables)]
 async fn set_search_query(
   search: &mut DataPermitSearch,
+  options: Option<Options>,
 ) -> Result<()> {
   Ok(())
 }
@@ -34,16 +35,19 @@ pub async fn find_all(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let res = data_permit_dao::find_all(
+  let data_permit_models = data_permit_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(data_permit_models)
 }
 
 /// 根据条件查找数据权限总数
@@ -54,14 +58,17 @@ pub async fn find_count(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let res = data_permit_dao::find_count(
+  let data_permit_num = data_permit_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(data_permit_num)
 }
 
 /// 根据条件查找第一个数据权限
@@ -73,69 +80,86 @@ pub async fn find_one(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let model = data_permit_dao::find_one(
+  let data_permit_model = data_permit_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(data_permit_model)
 }
 
 /// 根据 id 查找数据权限
 pub async fn find_by_id(
-  id: DataPermitId,
+  data_permit_id: DataPermitId,
   options: Option<Options>,
 ) -> Result<Option<DataPermitModel>> {
   
-  let model = data_permit_dao::find_by_id(
-    id,
+  let data_permit_model = data_permit_dao::find_by_id(
+    data_permit_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(data_permit_model)
+}
+
+/// 根据 data_permit_ids 查找数据权限
+pub async fn find_by_ids(
+  data_permit_ids: Vec<DataPermitId>,
+  options: Option<Options>,
+) -> Result<Vec<DataPermitModel>> {
+  
+  let data_permit_models = data_permit_dao::find_by_ids(
+    data_permit_ids,
+    options,
+  ).await?;
+  
+  Ok(data_permit_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: DataPermitInput,
+  data_permit_input: DataPermitInput,
 ) -> Result<DataPermitInput> {
   
-  let input = data_permit_dao::set_id_by_lbl(
-    input,
+  let data_permit_input = data_permit_dao::set_id_by_lbl(
+    data_permit_input,
   ).await?;
   
-  Ok(input)
+  Ok(data_permit_input)
 }
 
 /// 创建数据权限
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<DataPermitInput>,
+  data_permit_inputs: Vec<DataPermitInput>,
   options: Option<Options>,
 ) -> Result<Vec<DataPermitId>> {
   
   let data_permit_ids = data_permit_dao::creates(
-    inputs,
+    data_permit_inputs,
     options,
   ).await?;
   
   Ok(data_permit_ids)
 }
 
-/// 数据权限根据id修改租户id
+/// 数据权限根据 data_permit_id 修改租户id
 #[allow(dead_code)]
 pub async fn update_tenant_by_id(
-  id: DataPermitId,
+  data_permit_id: DataPermitId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = data_permit_dao::update_tenant_by_id(
-    id,
+    data_permit_id,
     tenant_id,
     options,
   ).await?;
@@ -143,17 +167,17 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-/// 根据 id 修改数据权限
+/// 根据 data_permit_id 修改数据权限
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: DataPermitId,
-  mut input: DataPermitInput,
+  data_permit_id: DataPermitId,
+  mut data_permit_input: DataPermitInput,
   options: Option<Options>,
 ) -> Result<DataPermitId> {
   
-  let old_model = data_permit_dao::validate_option(
+  let old_model = validate_option(
     data_permit_dao::find_by_id(
-      id.clone(),
+      data_permit_id.clone(),
       options.clone(),
     ).await?,
   ).await?;
@@ -161,47 +185,59 @@ pub async fn update_by_id(
   // 不能修改系统记录的系统字段
   if old_model.is_sys == 1 {
     // 菜单
-    input.menu_id = None;
-    input.menu_id_lbl = None;
+    data_permit_input.menu_id = None;
+    data_permit_input.menu_id_lbl = None;
     // 范围
-    input.scope = None;
-    input.scope_lbl = None;
+    data_permit_input.scope = None;
+    data_permit_input.scope_lbl = None;
   }
   
   let data_permit_id = data_permit_dao::update_by_id(
-    id,
-    input,
-    options,
+    data_permit_id,
+    data_permit_input,
+    options.clone(),
   ).await?;
   
   Ok(data_permit_id)
 }
 
-/// 根据 ids 删除数据权限
+/// 校验数据权限是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  data_permit_model: Option<DataPermitModel>,
+) -> Result<DataPermitModel> {
+  
+  let data_permit_model = data_permit_dao::validate_option(data_permit_model).await?;
+  
+  Ok(data_permit_model)
+}
+
+/// 根据 data_permit_ids 删除数据权限
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<DataPermitId>,
+  data_permit_ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let models = data_permit_dao::find_all(
+  let old_models = data_permit_dao::find_all(
     Some(DataPermitSearch {
-      ids: Some(ids.clone()),
+      ids: Some(data_permit_ids.clone()),
       ..Default::default()
     }),
     None,
     None,
     options.clone(),
   ).await?;
-  for model in models {
-    if model.is_sys == 1 {
+  
+  for old_model in &old_models {
+    if old_model.is_sys == 1 {
       let err_msg = "不能删除系统记录";
       return Err(eyre!(err_msg));
     }
   }
   
   let num = data_permit_dao::delete_by_ids(
-    ids,
+    data_permit_ids,
     options,
   ).await?;
   
@@ -220,30 +256,30 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原数据权限
+/// 根据 data_permit_ids 还原数据权限
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<DataPermitId>,
+  data_permit_ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = data_permit_dao::revert_by_ids(
-    ids,
+    data_permit_ids,
     options,
   ).await?;
   
   Ok(num)
 }
 
-/// 根据 ids 彻底删除数据权限
+/// 根据 data_permit_ids 彻底删除数据权限
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<DataPermitId>,
+  data_permit_ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = data_permit_dao::force_delete_by_ids(
-    ids,
+    data_permit_ids,
     options,
   ).await?;
   

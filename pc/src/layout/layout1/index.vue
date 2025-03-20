@@ -239,7 +239,7 @@
                 </el-dropdown-item>
                 
                 <el-dropdown-item
-                  v-if="usrStore.username === 'admin'"
+                  v-if="usrStore.isAdmin()"
                   @click="onClearCache"
                 >
                   <ElIcon>
@@ -624,7 +624,7 @@ async function initFrame() {
       ]);
       loginInfo = loginInfoTmp;
       usrStore.loginInfo = loginInfo;
-      usrStore.lang = loginInfo.lang;
+      usrStore.lang = loginInfo.lang ?? "";
       usrStore.username = loginInfo.username;
     }
   }

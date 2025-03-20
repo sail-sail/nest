@@ -109,6 +109,27 @@ pub async fn find_by_id(
   Ok(model)
 }
 
+/// 根据 ids 查找系统字典
+#[function_name::named]
+pub async fn find_by_ids(
+  ids: Vec<DictId>,
+  options: Option<Options>,
+) -> Result<Vec<DictModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = dict_service::find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
 /// 创建系统字典
 #[allow(dead_code)]
 #[function_name::named]

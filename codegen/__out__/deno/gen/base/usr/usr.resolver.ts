@@ -131,6 +131,27 @@ export async function findByIdUsr(
 }
 
 /**
+ * 根据 ids 查找用户
+ */
+export async function findByIdsUsr(
+  ids: UsrId[],
+): Promise<UsrModel[]> {
+  
+  const {
+    findByIds,
+  } = await import("./usr.service.ts");
+  
+  const models = await findByIds(ids);
+  
+  for (const model of models) {
+    // 密码
+    model.password = "";
+  }
+  
+  return models;
+}
+
+/**
  * 批量创建用户
  */
 export async function createsUsr(

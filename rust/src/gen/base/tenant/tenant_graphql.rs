@@ -97,6 +97,23 @@ impl TenantGenQuery {
       }).await
   }
   
+  /// 根据 id 查找租户
+  async fn find_by_ids_tenant(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<TenantId>,
+  ) -> Result<Vec<TenantModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        tenant_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 根据 id 查找租户是否已启用
   /// 记录不存在则返回 false
   async fn get_is_enabled_by_id_tenant(
@@ -184,7 +201,7 @@ impl TenantGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -204,7 +221,7 @@ impl TenantGenMutation {
   ) -> Result<TenantId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         tenant_resolver::update_by_id(
@@ -223,7 +240,7 @@ impl TenantGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         tenant_resolver::delete_by_ids(
@@ -242,7 +259,7 @@ impl TenantGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         tenant_resolver::enable_by_ids(
@@ -262,7 +279,7 @@ impl TenantGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         tenant_resolver::lock_by_ids(
@@ -281,7 +298,7 @@ impl TenantGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         tenant_resolver::revert_by_ids(
@@ -299,7 +316,7 @@ impl TenantGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         tenant_resolver::force_delete_by_ids(

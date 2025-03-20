@@ -99,6 +99,23 @@ impl BackgroundTaskGenQuery {
       }).await
   }
   
+  /// 根据 id 查找后台任务
+  async fn find_by_ids_background_task(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<BackgroundTaskId>,
+  ) -> Result<Vec<BackgroundTaskModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        background_task_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取后台任务字段注释
   async fn get_field_comments_background_task(
     &self,
@@ -140,7 +157,7 @@ impl BackgroundTaskGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         background_task_resolver::update_tenant_by_id(
@@ -159,7 +176,7 @@ impl BackgroundTaskGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         background_task_resolver::delete_by_ids(
@@ -177,7 +194,7 @@ impl BackgroundTaskGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         background_task_resolver::revert_by_ids(
@@ -195,7 +212,7 @@ impl BackgroundTaskGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         background_task_resolver::force_delete_by_ids(

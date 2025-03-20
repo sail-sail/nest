@@ -678,7 +678,11 @@ export async function gitDiffOut() {
         console.log("");
       } else {
         const arr = applyErr.split("\n")
-          .filter((item) => item && !item.startsWith("Applied patch to "));
+          .filter((item) =>
+            item &&
+            !item.startsWith("Error: Command failed:") &&
+            !item.startsWith("Applied patch to ")
+          );
         if (arr.length > 0) {
           applyHasErr = true;
           applyErrMsg = arr.join("\n");

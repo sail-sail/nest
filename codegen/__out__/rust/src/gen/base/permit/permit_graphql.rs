@@ -97,6 +97,23 @@ impl PermitGenQuery {
       }).await
   }
   
+  /// 根据 id 查找按钮权限
+  async fn find_by_ids_permit(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<PermitId>,
+  ) -> Result<Vec<PermitModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        permit_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取按钮权限字段注释
   async fn get_field_comments_permit(
     &self,
@@ -143,7 +160,7 @@ impl PermitGenMutation {
   ) -> Result<PermitId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         permit_resolver::update_by_id(

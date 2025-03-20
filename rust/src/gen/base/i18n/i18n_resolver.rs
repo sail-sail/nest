@@ -109,6 +109,27 @@ pub async fn find_by_id(
   Ok(model)
 }
 
+/// 根据 ids 查找国际化
+#[function_name::named]
+pub async fn find_by_ids(
+  ids: Vec<I18nId>,
+  options: Option<Options>,
+) -> Result<Vec<I18nModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = i18n_service::find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
 /// 创建国际化
 #[allow(dead_code)]
 #[function_name::named]

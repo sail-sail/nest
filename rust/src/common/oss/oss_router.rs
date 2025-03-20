@@ -231,6 +231,8 @@ async fn _download(
   if let Some(content_length) = stat.content_length {
     if content_length <= 0 {
       return Response::builder().status(StatusCode::NOT_FOUND).finish();
+    } else {
+      response = response.header("Content-Length", content_length.to_string());
     }
   }
   if let Some(content_type) = &stat.content_type {
@@ -266,7 +268,21 @@ async fn _download(
       }
     }
   }
-  let content = oss_service::get_object(&id).await;
+  // let content = oss_service::get_object(&id).await;
+  // if let Err(err) = content {
+  //   return Response::builder()
+  //     .status(StatusCode::INTERNAL_SERVER_ERROR)
+  //     .body(err.to_string());
+  // }
+  // let content = content.unwrap();
+  // if content.is_none() {
+  //   return Response::builder().status(StatusCode::NOT_FOUND).finish();
+  // }
+  // let content = content.unwrap();
+  // let content: Vec<u8> = content.into();
+  // response = response.header("Content-Length", content.len().to_string());
+  // response.body(content)
+  let content = oss_service::get_object_stream(&id).await;
   if let Err(err) = content {
     return Response::builder()
       .status(StatusCode::INTERNAL_SERVER_ERROR)
@@ -277,8 +293,11 @@ async fn _download(
     return Response::builder().status(StatusCode::NOT_FOUND).finish();
   }
   let content = content.unwrap();
-  response = response.header("Content-Length", content.len().to_string());
-  response.body(content)
+  use futures::StreamExt;
+  let byte_stream = content.bytes.map(|result| {
+    result.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))
+  });
+  response.body(poem::Body::from_bytes_stream(byte_stream))
 }
 
 #[handler]
@@ -468,6 +487,7 @@ async fn _img(
       return Response::builder().status(StatusCode::NOT_FOUND).finish();
     }
     let content = content.unwrap();
+    let content: Vec<u8> = content.into();
     let len = content.len();
     response = response.header("Content-Length", len.to_string());
     if let Some(last_modified) = &stat.last_modified {
@@ -547,6 +567,7 @@ async fn _img(
     return Response::builder().status(StatusCode::NOT_FOUND).finish();
   }
   let content = content.unwrap();
+  let content: Vec<u8> = content.into();
   let len = content.len();
   let small_img = ImageReader::new(Cursor::new(&content)).with_guessed_format();
   if let Err(err) = small_img {

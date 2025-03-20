@@ -232,7 +232,8 @@ use crate::common::context::{
   get_is_debug,
   get_is_silent_mode,
   get_is_creating,
-};<#
+};
+use crate::common::exceptions::service_exception::ServiceException;<#
 if (hasIsIcon) {
 #>
 
@@ -2156,7 +2157,65 @@ pub async fn find_count(
     if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
       return Ok(0);
     }
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+    if (isPassword) {
+      continue;
+    }
+    if (column.isEncrypt) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #><#
+    if (
+      [
+        "is_hidden",
+        "is_sys",
+      ].includes(column_name)
+      || foreignKey
+      || column.dict || column.dictbiz
+    ) {
+  #>
+  // <#=column_comment#>
+  if let Some(search) = &search {
+    if search.<#=column_name_rust#>.is_some() {
+      let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
+      }
+    }
+  }<#
+    }
+  #><#
   }
+  #>
   
   let options = Options::from(options)
     .set_is_debug(Some(false));
@@ -2586,8 +2645,26 @@ pub async fn find_by_ids(
     options,
   ).await?;
   
-  if models.len() != len {
-    return Err(eyre!("find_by_ids: models.length !== ids.length"));
+  if models.len() != len {<#
+    if (isUseI18n) {
+    #>
+    let table_comment = i18n_dao::ns(
+      "<#=table_comment#>".to_owned(),
+      None,
+    ).await?;
+    let map = HashMap::from([
+      ("0".to_owned(), table_comment),
+    ]);
+    let err_msg = i18n_dao::ns(
+      "此 {0} 已被删除".to_owned(),
+      map.into(),
+    ).await?;<#
+    } else {
+    #>
+    let err_msg = "此 <#=table_comment#> 已被删除";<#
+    }
+    #>
+    return Err(eyre!(err_msg));
   }
   
   let models = ids
@@ -2598,8 +2675,26 @@ pub async fn find_by_ids(
         .find(|item| item.id == id);
       if let Some(model) = model {
         return Ok(model.clone());
+      }<#
+      if (isUseI18n) {
+      #>
+      let table_comment = i18n_dao::ns(
+        "<#=table_comment#>".to_owned(),
+        None,
+      ).await?;
+      let map = HashMap::from([
+        ("0".to_owned(), table_comment),
+      ]);
+      let err_msg = i18n_dao::ns(
+        "此 {0} 已经被删除".to_owned(),
+        map.into(),
+      ).await?;<#
+      } else {
+      #>
+      let err_msg = "此 <#=table_comment#> 已经被删除";<#
       }
-      Err(eyre!("find_by_ids: id: {id} not found"))
+      #>
+      Err(eyre!(err_msg))
     })
     .collect::<Result<Vec<<#=Table_Up#>Model>>>()?;
   
@@ -3215,12 +3310,16 @@ pub async fn set_id_by_lbl(
       input.<#=column_name_rust#> = val<#
         if (columnDictModels.length > 0 && ![ "int", "decimal", "tinyint" ].includes(data_type)) {
       #>.parse::<<#=enumColumnName#>>()?<#
-        } else if ([ "int" ].includes(data_type)) {
+        } else if ([ "int" ].includes(data_type) && column_type.endsWith("unsigned")) {
       #>.parse::<u32>()?<#
+        } else if ([ "int" ].includes(data_type) && !column_type.endsWith("unsigned")) {
+      #>.parse::<i32>()?<#
         } else if ([ "decimal" ].includes(data_type)) {
       #>.parse::<rust_decimal::Decimal>()?<#
-        } else if ([ "tinyint" ].includes(data_type)) {
+        } else if ([ "tinyint" ].includes(data_type) && column_type.endsWith("unsigned")) {
       #>.parse::<u8>()?<#
+        } else if ([ "tinyint" ].includes(data_type) && !column_type.endsWith("unsigned")) {
+      #>.parse::<i8>()?<#
         }
       #>.into();
     }
@@ -7821,9 +7920,9 @@ pub async fn validate_is_enabled(
 // MARK: validate_option
 /// 校验<#=table_comment#>是否存在
 #[allow(dead_code)]
-pub async fn validate_option<T>(
-  model: Option<T>,
-) -> Result<T> {
+pub async fn validate_option(
+  model: Option<<#=tableUP#>Model>,
+) -> Result<<#=tableUP#>Model> {
   if model.is_none() {<#
     if (isUseI18n) {
     #>
@@ -7841,14 +7940,21 @@ pub async fn validate_option<T>(
     let err_msg = "<#=table_comment#>不存在";<#
     }
     #>
-    let backtrace = std::backtrace::Backtrace::capture();
     error!(
-      "{req_id} {err_msg}: {backtrace}",
+      "{req_id} {err_msg}",
       req_id = get_req_id(),
     );
-    return Err(eyre!(err_msg));
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        rollback: true,
+        trace: true,
+      },
+    ));
   }
-  Ok(model.unwrap())
+  let model = model.unwrap();
+  Ok(model)
 }<#
 if (false) {
 #>

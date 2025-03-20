@@ -19,6 +19,7 @@ use super::i18n_dao;
 #[allow(unused_variables)]
 async fn set_search_query(
   search: &mut I18nSearch,
+  options: Option<Options>,
 ) -> Result<()> {
   Ok(())
 }
@@ -33,16 +34,19 @@ pub async fn find_all(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let res = i18n_dao::find_all(
+  let i18n_models = i18n_dao::find_all(
     Some(search),
     page,
     sort,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(i18n_models)
 }
 
 /// 根据条件查找国际化总数
@@ -53,14 +57,17 @@ pub async fn find_count(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let res = i18n_dao::find_count(
+  let i18n_num = i18n_dao::find_count(
     Some(search),
     options,
   ).await?;
   
-  Ok(res)
+  Ok(i18n_num)
 }
 
 /// 根据条件查找第一个国际化
@@ -72,53 +79,70 @@ pub async fn find_one(
   
   let mut search = search.unwrap_or_default();
   
-  set_search_query(&mut search).await?;
+  set_search_query(
+    &mut search,
+    options.clone(),
+  ).await?;
   
-  let model = i18n_dao::find_one(
+  let i18n_model = i18n_dao::find_one(
     Some(search),
     sort,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(i18n_model)
 }
 
 /// 根据 id 查找国际化
 pub async fn find_by_id(
-  id: I18nId,
+  i18n_id: I18nId,
   options: Option<Options>,
 ) -> Result<Option<I18nModel>> {
   
-  let model = i18n_dao::find_by_id(
-    id,
+  let i18n_model = i18n_dao::find_by_id(
+    i18n_id,
     options,
   ).await?;
   
-  Ok(model)
+  Ok(i18n_model)
+}
+
+/// 根据 i18n_ids 查找国际化
+pub async fn find_by_ids(
+  i18n_ids: Vec<I18nId>,
+  options: Option<Options>,
+) -> Result<Vec<I18nModel>> {
+  
+  let i18n_models = i18n_dao::find_by_ids(
+    i18n_ids,
+    options,
+  ).await?;
+  
+  Ok(i18n_models)
 }
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
 pub async fn set_id_by_lbl(
-  input: I18nInput,
+  i18n_input: I18nInput,
 ) -> Result<I18nInput> {
   
-  let input = i18n_dao::set_id_by_lbl(
-    input,
+  let i18n_input = i18n_dao::set_id_by_lbl(
+    i18n_input,
   ).await?;
   
-  Ok(input)
+  Ok(i18n_input)
 }
 
 /// 创建国际化
 #[allow(dead_code)]
 pub async fn creates(
-  inputs: Vec<I18nInput>,
+  i18n_inputs: Vec<I18nInput>,
   options: Option<Options>,
 ) -> Result<Vec<I18nId>> {
   
   let i18n_ids = i18n_dao::creates(
-    inputs,
+    i18n_inputs,
     options,
   ).await?;
   
@@ -127,18 +151,18 @@ pub async fn creates(
   Ok(i18n_ids)
 }
 
-/// 根据 id 修改国际化
+/// 根据 i18n_id 修改国际化
 #[allow(dead_code, unused_mut)]
 pub async fn update_by_id(
-  id: I18nId,
-  mut input: I18nInput,
+  i18n_id: I18nId,
+  mut i18n_input: I18nInput,
   options: Option<Options>,
 ) -> Result<I18nId> {
   
   let i18n_id = i18n_dao::update_by_id(
-    id,
-    input,
-    options,
+    i18n_id,
+    i18n_input,
+    options.clone(),
   ).await?;
   
   update_i18n_version().await?;
@@ -146,15 +170,26 @@ pub async fn update_by_id(
   Ok(i18n_id)
 }
 
-/// 根据 ids 删除国际化
+/// 校验国际化是否存在
+#[allow(dead_code)]
+pub async fn validate_option(
+  i18n_model: Option<I18nModel>,
+) -> Result<I18nModel> {
+  
+  let i18n_model = i18n_dao::validate_option(i18n_model).await?;
+  
+  Ok(i18n_model)
+}
+
+/// 根据 i18n_ids 删除国际化
 #[allow(dead_code)]
 pub async fn delete_by_ids(
-  ids: Vec<I18nId>,
+  i18n_ids: Vec<I18nId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = i18n_dao::delete_by_ids(
-    ids,
+    i18n_ids,
     options,
   ).await?;
   
@@ -175,15 +210,15 @@ pub async fn get_field_comments(
   Ok(comments)
 }
 
-/// 根据 ids 还原国际化
+/// 根据 i18n_ids 还原国际化
 #[allow(dead_code)]
 pub async fn revert_by_ids(
-  ids: Vec<I18nId>,
+  i18n_ids: Vec<I18nId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = i18n_dao::revert_by_ids(
-    ids,
+    i18n_ids,
     options,
   ).await?;
   
@@ -192,15 +227,15 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-/// 根据 ids 彻底删除国际化
+/// 根据 i18n_ids 彻底删除国际化
 #[allow(dead_code)]
 pub async fn force_delete_by_ids(
-  ids: Vec<I18nId>,
+  i18n_ids: Vec<I18nId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let num = i18n_dao::force_delete_by_ids(
-    ids,
+    i18n_ids,
     options,
   ).await?;
   
