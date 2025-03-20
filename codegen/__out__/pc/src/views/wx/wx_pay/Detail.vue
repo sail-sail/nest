@@ -113,6 +113,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.serial_no == null)">
+          <el-form-item
+            label="证书序列号"
+            prop="serial_no"
+          >
+            <CustomInput
+              v-model="dialogModel.serial_no"
+              placeholder="请输入 证书序列号"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.public_key == null)">
           <el-form-item
             label="公钥"
@@ -383,18 +396,6 @@ watchEffect(async () => {
         type: "string",
         max: 22,
         message: "开发者ID 长度不能超过 22",
-      },
-    ],
-    // 支付终端IP
-    payer_client_ip: [
-      {
-        required: true,
-        message: "请输入 支付终端IP",
-      },
-      {
-        type: "string",
-        max: 45,
-        message: "支付终端IP 长度不能超过 45",
       },
     ],
     // 通知地址
