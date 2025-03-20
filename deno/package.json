@@ -24,7 +24,7 @@
     "lru-cache": "11.0.2",
     "mime": "4.0.6",
     "mnemonist": "0.40.3",
-    "mysql2": "3.13.0",
+    "mysql2": "3.14.0",
     "path-to-regexp": "6.3.0",
     "wechatpay-node-v3": "2.2.1"
   },
