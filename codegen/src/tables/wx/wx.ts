@@ -483,8 +483,11 @@ export default defineConfig({
         width: 200,
       },
       {
-        COLUMN_NAME: "support_fapiao",
-        require: true,
+        COLUMN_NAME: "receipt",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "profit_sharing",
         width: 100,
       },
       {
