@@ -23,4 +23,6 @@ pub struct SrcMutation(
   crate::src::base::org::org_graphql::OrgMutation,
   crate::src::base::usr::usr_graphql::UsrMutation,
   crate::src::base::tenant::tenant_graphql::TenantMutation,
+  
+  crate::src::wx::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiMutation,
 );

@@ -9,8 +9,10 @@ pub async fn get_test_pay_opt(
   appid: String,
 ) -> Result<RequestPaymentOptions> {
   
-  let request_payment_options: RequestPaymentOptions = pay_transactions_jsapi_service::get_test_pay_opt(appid).await?;
+  let request_payment_options = pay_transactions_jsapi_service::get_test_pay_opt(
+    appid,
+    None,
+  ).await?;
   
   Ok(request_payment_options)
-  
 }
