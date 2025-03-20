@@ -99,6 +99,23 @@ impl WxwUsrGenQuery {
       }).await
   }
   
+  /// 根据 id 查找企微用户
+  async fn find_by_ids_wxw_usr(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxwUsrId>,
+  ) -> Result<Vec<WxwUsrModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_usr_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取企微用户字段注释
   async fn get_field_comments_wxw_usr(
     &self,
@@ -134,7 +151,7 @@ impl WxwUsrGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -154,7 +171,7 @@ impl WxwUsrGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_usr_resolver::update_tenant_by_id(
@@ -174,7 +191,7 @@ impl WxwUsrGenMutation {
   ) -> Result<WxwUsrId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_usr_resolver::update_by_id(
@@ -193,7 +210,7 @@ impl WxwUsrGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_usr_resolver::delete_by_ids(
@@ -211,7 +228,7 @@ impl WxwUsrGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_usr_resolver::revert_by_ids(
@@ -229,7 +246,7 @@ impl WxwUsrGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_usr_resolver::force_delete_by_ids(

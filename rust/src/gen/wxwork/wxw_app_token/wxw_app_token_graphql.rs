@@ -99,6 +99,23 @@ impl WxwAppTokenGenQuery {
       }).await
   }
   
+  /// 根据 id 查找企微应用接口凭据
+  async fn find_by_ids_wxw_app_token(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxwAppTokenId>,
+  ) -> Result<Vec<WxwAppTokenModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_app_token_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取企微应用接口凭据字段注释
   async fn get_field_comments_wxw_app_token(
     &self,
@@ -134,7 +151,7 @@ impl WxwAppTokenGenMutation {
     }
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .with_creating(Some(true))
       .build()
       .scope({
@@ -154,7 +171,7 @@ impl WxwAppTokenGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_app_token_resolver::update_tenant_by_id(
@@ -174,7 +191,7 @@ impl WxwAppTokenGenMutation {
   ) -> Result<WxwAppTokenId> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_app_token_resolver::update_by_id(
@@ -193,7 +210,7 @@ impl WxwAppTokenGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_app_token_resolver::delete_by_ids(
@@ -211,7 +228,7 @@ impl WxwAppTokenGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_app_token_resolver::revert_by_ids(
@@ -229,7 +246,7 @@ impl WxwAppTokenGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_app_token_resolver::force_delete_by_ids(

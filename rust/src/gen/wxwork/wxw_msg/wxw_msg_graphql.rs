@@ -99,6 +99,23 @@ impl WxwMsgGenQuery {
       }).await
   }
   
+  /// 根据 id 查找企微消息
+  async fn find_by_ids_wxw_msg(
+    &self,
+    ctx: &Context<'_>,
+    ids: Vec<WxwMsgId>,
+  ) -> Result<Vec<WxwMsgModel>> {
+    Ctx::builder(ctx)
+      .with_auth()?
+      .build()
+      .scope({
+        wxw_msg_resolver::find_by_ids(
+          ids,
+          None,
+        )
+      }).await
+  }
+  
   /// 获取企微消息字段注释
   async fn get_field_comments_wxw_msg(
     &self,
@@ -140,7 +157,7 @@ impl WxwMsgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_msg_resolver::update_tenant_by_id(
@@ -159,7 +176,7 @@ impl WxwMsgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_msg_resolver::delete_by_ids(
@@ -177,7 +194,7 @@ impl WxwMsgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_msg_resolver::revert_by_ids(
@@ -195,7 +212,7 @@ impl WxwMsgGenMutation {
   ) -> Result<u64> {
     Ctx::builder(ctx)
       .with_auth()?
-      .with_tran()?
+      .with_tran()
       .build()
       .scope({
         wxw_msg_resolver::force_delete_by_ids(

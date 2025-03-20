@@ -111,6 +111,27 @@ pub async fn find_by_id(
   Ok(model)
 }
 
+/// 根据 ids 查找企微应用
+#[function_name::named]
+pub async fn find_by_ids(
+  ids: Vec<WxwAppId>,
+  options: Option<Options>,
+) -> Result<Vec<WxwAppModel>> {
+  
+  info!(
+    "{req_id} {function_name}: ids: {ids:?}",
+    req_id = get_req_id(),
+    function_name = function_name!(),
+  );
+  
+  let models = wxw_app_service::find_by_ids(
+    ids,
+    options,
+  ).await?;
+  
+  Ok(models)
+}
+
 /// 创建企微应用
 #[allow(dead_code)]
 #[function_name::named]
