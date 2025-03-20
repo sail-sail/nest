@@ -122,6 +122,12 @@ async function getWhereQuery(
   if (isNotEmpty(search?.mchid_like)) {
     whereQuery += ` and t.mchid like ${ args.push("%" + sqlLike(search?.mchid_like) + "%") }`;
   }
+  if (search?.serial_no != null) {
+    whereQuery += ` and t.serial_no=${ args.push(search.serial_no) }`;
+  }
+  if (isNotEmpty(search?.serial_no_like)) {
+    whereQuery += ` and t.serial_no like ${ args.push("%" + sqlLike(search?.serial_no_like) + "%") }`;
+  }
   if (search?.public_key != null) {
     whereQuery += ` and t.public_key=${ args.push(search.public_key) }`;
   }
@@ -579,6 +585,7 @@ export async function getFieldComments(): Promise<WxPayFieldComment> {
     lbl: "名称",
     appid: "开发者ID",
     mchid: "商户号",
+    serial_no: "证书序列号",
     public_key: "公钥",
     private_key: "私钥",
     v3_key: "APIv3密钥",
@@ -1026,6 +1033,13 @@ export async function validate(
     fieldComments.mchid,
   );
   
+  // 证书序列号
+  await validators.chars_max_length(
+    input.serial_no,
+    50,
+    fieldComments.serial_no,
+  );
+  
   // 公钥
   await validators.chars_max_length(
     input.public_key,
@@ -1312,7 +1326,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_pay(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,appid,mchid,public_key,private_key,v3_key,payer_client_ip,notify_url,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into wx_wx_pay(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,appid,mchid,serial_no,public_key,private_key,v3_key,payer_client_ip,notify_url,is_locked,is_enabled,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1422,6 +1436,11 @@ async function _creates(
       }
       if (input.mchid != null) {
         sql += `,${ args.push(input.mchid) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.serial_no != null) {
+        sql += `,${ args.push(input.serial_no) }`;
       } else {
         sql += ",default";
       }
@@ -1630,6 +1649,12 @@ export async function updateById(
   if (input.mchid != null) {
     if (input.mchid != oldModel.mchid) {
       sql += `mchid=${ args.push(input.mchid) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.serial_no != null) {
+    if (input.serial_no != oldModel.serial_no) {
+      sql += `serial_no=${ args.push(input.serial_no) },`;
       updateFldNum++;
     }
   }
