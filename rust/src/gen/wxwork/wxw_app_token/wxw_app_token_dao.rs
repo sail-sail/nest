@@ -62,7 +62,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 18 * 2);
+  let mut where_query = String::with_capacity(80 * 21 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -202,6 +202,63 @@ async fn get_where_query(
     if let Some(type_like) = type_like {
       where_query.push_str(" and t.type like ?");
       args.push(format!("%{}%", sql_like(&type_like)).into());
+    }
+  }
+  // 企业ID
+  {
+    let corpid = match search {
+      Some(item) => item.corpid.clone(),
+      None => None,
+    };
+    if let Some(corpid) = corpid {
+      where_query.push_str(" and t.corpid=?");
+      args.push(corpid.into());
+    }
+    let corpid_like = match search {
+      Some(item) => item.corpid_like.clone(),
+      None => None,
+    };
+    if let Some(corpid_like) = corpid_like {
+      where_query.push_str(" and t.corpid like ?");
+      args.push(format!("%{}%", sql_like(&corpid_like)).into());
+    }
+  }
+  // 密钥
+  {
+    let corpsecret = match search {
+      Some(item) => item.corpsecret.clone(),
+      None => None,
+    };
+    if let Some(corpsecret) = corpsecret {
+      where_query.push_str(" and t.corpsecret=?");
+      args.push(corpsecret.into());
+    }
+    let corpsecret_like = match search {
+      Some(item) => item.corpsecret_like.clone(),
+      None => None,
+    };
+    if let Some(corpsecret_like) = corpsecret_like {
+      where_query.push_str(" and t.corpsecret like ?");
+      args.push(format!("%{}%", sql_like(&corpsecret_like)).into());
+    }
+  }
+  // 通讯录密钥
+  {
+    let contactsecret = match search {
+      Some(item) => item.contactsecret.clone(),
+      None => None,
+    };
+    if let Some(contactsecret) = contactsecret {
+      where_query.push_str(" and t.contactsecret=?");
+      args.push(contactsecret.into());
+    }
+    let contactsecret_like = match search {
+      Some(item) => item.contactsecret_like.clone(),
+      None => None,
+    };
+    if let Some(contactsecret_like) = contactsecret_like {
+      where_query.push_str(" and t.contactsecret like ?");
+      args.push(format!("%{}%", sql_like(&contactsecret_like)).into());
     }
   }
   // 令牌
@@ -817,6 +874,9 @@ pub async fn get_field_comments(
     wxw_app_id: "企微应用".into(),
     wxw_app_id_lbl: "企微应用".into(),
     r#type: "类型corp和contact".into(),
+    corpid: "企业ID".into(),
+    corpsecret: "密钥".into(),
+    contactsecret: "通讯录密钥".into(),
     access_token: "令牌".into(),
     token_time: "令牌创建时间".into(),
     token_time_lbl: "令牌创建时间".into(),
@@ -1508,7 +1568,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 18 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1522,6 +1582,12 @@ async fn _creates(
   sql_fields += ",wxw_app_id";
   // 类型corp和contact
   sql_fields += ",type";
+  // 企业ID
+  sql_fields += ",corpid";
+  // 密钥
+  sql_fields += ",corpsecret";
+  // 通讯录密钥
+  sql_fields += ",contactsecret";
   // 令牌
   sql_fields += ",access_token";
   // 令牌创建时间
@@ -1542,7 +1608,7 @@ async fn _creates(
   sql_fields += ",jsapi_ticket_agent_config_expires_in";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 18 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 21 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1679,6 +1745,27 @@ async fn _creates(
     if let Some(r#type) = input.r#type {
       sql_values += ",?";
       args.push(r#type.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 企业ID
+    if let Some(corpid) = input.corpid {
+      sql_values += ",?";
+      args.push(corpid.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 密钥
+    if let Some(corpsecret) = input.corpsecret {
+      sql_values += ",?";
+      args.push(corpsecret.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 通讯录密钥
+    if let Some(contactsecret) = input.contactsecret {
+      sql_values += ",?";
+      args.push(contactsecret.into());
     } else {
       sql_values += ",default";
     }
@@ -1981,7 +2068,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 18 + 20);
+  let mut sql_fields = String::with_capacity(80 * 21 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2001,6 +2088,24 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "type=?,";
     args.push(r#type.into());
+  }
+  // 企业ID
+  if let Some(corpid) = input.corpid {
+    field_num += 1;
+    sql_fields += "corpid=?,";
+    args.push(corpid.into());
+  }
+  // 密钥
+  if let Some(corpsecret) = input.corpsecret {
+    field_num += 1;
+    sql_fields += "corpsecret=?,";
+    args.push(corpsecret.into());
+  }
+  // 通讯录密钥
+  if let Some(contactsecret) = input.contactsecret {
+    field_num += 1;
+    sql_fields += "contactsecret=?,";
+    args.push(contactsecret.into());
   }
   // 令牌
   if let Some(access_token) = input.access_token {

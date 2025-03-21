@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use serde_json::json;
 use tracing::{info, error};
 
-use anyhow::{Result, anyhow};
+use color_eyre::eyre::{Result, eyre};
 use crate::common::context::get_req_id;
 
 use crate::src::wxwork::wxw_app_token::wxw_app_token_dao::get_access_token;
@@ -45,13 +45,13 @@ async fn fetch_send_card_msg(
     "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token={access_token}",
   );
   if input.touser.is_empty() {
-    return Err(anyhow!("touser 不能为空"));
+    return Err(eyre!("touser 不能为空"));
   }
   if input.title.is_empty() {
-    return Err(anyhow!("title 不能为空"));
+    return Err(eyre!("title 不能为空"));
   }
   if input.description.is_empty() {
-    return Err(anyhow!("description 不能为空"));
+    return Err(eyre!("description 不能为空"));
   }
   let wxw_app_model = find_by_id_wxw_app(
     wxw_app_id.clone(),

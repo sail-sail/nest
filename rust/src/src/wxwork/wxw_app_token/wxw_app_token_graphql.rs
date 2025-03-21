@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;
@@ -13,9 +13,9 @@ pub struct WxwAppTokenQuery;
 impl WxwAppTokenQuery {
   
   /// 通过 appid, agentid, url 生成企业签名
-  async fn wxw_get_config_signature<'a>(
+  async fn wxw_get_config_signature(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     appid: String,
     agentid: String,
     url: String,
