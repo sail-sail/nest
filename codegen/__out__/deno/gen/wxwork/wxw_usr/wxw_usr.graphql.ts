@@ -9,6 +9,10 @@ scalar WxwUsrId
 type WxwUsrModel {
   "ID"
   id: WxwUsrId!
+  "企微应用"
+  wxw_app_id: WxwAppId!
+  "企微应用"
+  wxw_app_id_lbl: String!
   "姓名"
   lbl: String!
   "用户ID"
@@ -21,6 +25,10 @@ type WxwUsrModel {
 type WxwUsrFieldComment {
   "ID"
   id: String!
+  "企微应用"
+  wxw_app_id: String!
+  "企微应用"
+  wxw_app_id_lbl: String!
   "姓名"
   lbl: String!
   "用户ID"
@@ -31,6 +39,10 @@ type WxwUsrFieldComment {
 input WxwUsrInput {
   "ID"
   id: WxwUsrId
+  "企微应用"
+  wxw_app_id: WxwAppId
+  "企微应用"
+  wxw_app_id_lbl: String
   "姓名"
   lbl: String
   "用户ID"
@@ -45,6 +57,14 @@ input WxwUsrSearch {
   ids: [WxwUsrId!]
   "ID"
   id: WxwUsrId
+  "企微应用"
+  wxw_app_id: [WxwAppId!]
+  "企微应用"
+  wxw_app_id_is_null: Boolean
+  "企微应用"
+  wxw_app_id_lbl: [String!]
+  "企微应用"
+  wxw_app_id_lbl_like: String
   "姓名"
   lbl: String
   lbl_like: String

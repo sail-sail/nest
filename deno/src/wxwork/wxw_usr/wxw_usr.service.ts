@@ -31,6 +31,7 @@ import {
 } from "/gen/wxwork/wxw_usr/wxw_usr.dao.ts"
 
 import {
+  findById as findByIdWxwApp,
   findOne as findOneWxwApp,
   validateOption as validateOptionWxwApp,
   validateIsEnabled as validateIsEnabledWxwApp,
@@ -286,10 +287,20 @@ async function _wxwSyncUsr(
   tenant_id: TenantId,
   userids: string[],
 ) {
-  const wxw_usrModels = await findAllWxwUsr();
+  
+  const wxw_app_model = await validateOptionWxwApp(
+    await findByIdWxwApp(wxw_app_id),
+  );
+  await validateIsEnabledWxwApp(wxw_app_model);
+  
+  const corpid = wxw_app_model.corpid;
+  const agentid = wxw_app_model.agentid;
+  
+  const wxw_usr_models = await findAllWxwUsr();
   const userids4add = userids.filter((userid) => {
-    return !wxw_usrModels.some((wxw_usrModel) => {
-      return wxw_usrModel.userid === userid as unknown as string;
+    return !wxw_usr_models.some((wxw_usrModel) => {
+      return (wxw_usrModel.userid === userid as unknown as string)
+        && wxw_usrModel.corpid === corpid;
     });
   });
   const wxw_usrModels4add: WxwUsrInput[] = [ ];
@@ -301,6 +312,9 @@ async function _wxwSyncUsr(
     }
     const name = wxwUser.name;
     wxw_usrModels4add.push({
+      wxw_app_id,
+      corpid,
+      agentid,
       userid,
       lbl: name,
       tenant_id,

@@ -68,6 +68,10 @@ import type {
 } from "/gen/types.ts";
 
 import {
+  findOne as findOneWxwApp,
+} from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
+
+import {
   findById as findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
@@ -99,6 +103,30 @@ async function getWhereQuery(
   }
   if (search?.ids != null) {
     whereQuery += ` and t.id in (${ args.push(search.ids) })`;
+  }
+  if (search?.wxw_app_id != null) {
+    whereQuery += ` and t.wxw_app_id in (${ args.push(search.wxw_app_id) })`;
+  }
+  if (search?.wxw_app_id_is_null) {
+    whereQuery += ` and t.wxw_app_id is null`;
+  }
+  if (search?.wxw_app_id_lbl != null) {
+    whereQuery += ` and wxw_app_id_lbl.lbl in (${ args.push(search.wxw_app_id_lbl) })`;
+  }
+  if (isNotEmpty(search?.wxw_app_id_lbl_like)) {
+    whereQuery += ` and wxw_app_id_lbl.lbl like ${ args.push("%" + sqlLike(search?.wxw_app_id_lbl_like) + "%") }`;
+  }
+  if (search?.corpid != null) {
+    whereQuery += ` and t.corpid=${ args.push(search.corpid) }`;
+  }
+  if (isNotEmpty(search?.corpid_like)) {
+    whereQuery += ` and t.corpid like ${ args.push("%" + sqlLike(search?.corpid_like) + "%") }`;
+  }
+  if (search?.agentid != null) {
+    whereQuery += ` and t.agentid=${ args.push(search.agentid) }`;
+  }
+  if (isNotEmpty(search?.agentid_like)) {
+    whereQuery += ` and t.agentid like ${ args.push("%" + sqlLike(search?.agentid_like) + "%") }`;
   }
   if (search?.lbl != null) {
     whereQuery += ` and t.lbl=${ args.push(search.lbl) }`;
@@ -222,7 +250,8 @@ async function getFromQuery(
   options?: {
   },
 ) {
-  let fromQuery = `wxwork_wxw_usr t`;
+  let fromQuery = `wxwork_wxw_usr t
+  left join wxwork_wxw_app wxw_app_id_lbl on wxw_app_id_lbl.id=t.wxw_app_id`;
   return fromQuery;
 }
 
@@ -259,6 +288,17 @@ export async function findCount(
   }
   if (search && search.ids && search.ids.length === 0) {
     return 0;
+  }
+  // 企微应用
+  if (search && search.wxw_app_id != null) {
+    const len = search.wxw_app_id.length;
+    if (len === 0) {
+      return 0;
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.wxw_app_id.length > ${ ids_limit }`);
+    }
   }
   // 创建人
   if (search && search.create_usr_id != null) {
@@ -345,6 +385,17 @@ export async function findAll(
   if (search && search.ids && search.ids.length === 0) {
     return [ ];
   }
+  // 企微应用
+  if (search && search.wxw_app_id != null) {
+    const len = search.wxw_app_id.length;
+    if (len === 0) {
+      return [ ];
+    }
+    const ids_limit = options?.ids_limit ?? FIND_ALL_IDS_LIMIT;
+    if (len > ids_limit) {
+      throw new Error(`search.wxw_app_id.length > ${ ids_limit }`);
+    }
+  }
   // 创建人
   if (search && search.create_usr_id != null) {
     const len = search.create_usr_id.length;
@@ -370,6 +421,7 @@ export async function findAll(
   
   const args = new QueryArgs();
   let sql = `select f.* from (select t.*
+      ,wxw_app_id_lbl.lbl wxw_app_id_lbl
     from
       ${ await getFromQuery(args, search, options) }
   `;
@@ -421,6 +473,9 @@ export async function findAll(
   for (let i = 0; i < result.length; i++) {
     const model = result[i];
     
+    // 企微应用
+    model.wxw_app_id_lbl = model.wxw_app_id_lbl || "";
+    
     // 创建时间
     if (model.create_time) {
       const create_time = dayjs(model.create_time);
@@ -460,6 +515,32 @@ export async function setIdByLbl(
   const options = {
     is_debug: false,
   };
+  
+  // 企微应用
+  if (isNotEmpty(input.wxw_app_id_lbl) && input.wxw_app_id == null) {
+    input.wxw_app_id_lbl = String(input.wxw_app_id_lbl).trim();
+    const wxw_appModel = await findOneWxwApp(
+      {
+        lbl: input.wxw_app_id_lbl,
+      },
+      undefined,
+      options,
+    );
+    if (wxw_appModel) {
+      input.wxw_app_id = wxw_appModel.id;
+    }
+  } else if (isEmpty(input.wxw_app_id_lbl) && input.wxw_app_id != null) {
+    const wxw_app_model = await findOneWxwApp(
+      {
+        id: input.wxw_app_id,
+      },
+      undefined,
+      options,
+    );
+    if (wxw_app_model) {
+      input.wxw_app_id_lbl = wxw_app_model.lbl;
+    }
+  }
 }
 
 // MARK: getFieldComments
@@ -467,6 +548,8 @@ export async function setIdByLbl(
 export async function getFieldComments(): Promise<WxwUsrFieldComment> {
   const fieldComments: WxwUsrFieldComment = {
     id: "ID",
+    wxw_app_id: "企微应用",
+    wxw_app_id_lbl: "企微应用",
     lbl: "姓名",
     userid: "用户ID",
     rem: "备注",
@@ -516,12 +599,17 @@ export async function findByUnique(
   }
   const models: WxwUsrModel[] = [ ];
   {
+    if (search0.corpid == null) {
+      return [ ];
+    }
+    const corpid = search0.corpid;
     if (search0.userid == null) {
       return [ ];
     }
     const userid = search0.userid;
     const modelTmps = await findAll(
       {
+        corpid,
         userid,
       },
       undefined,
@@ -531,12 +619,17 @@ export async function findByUnique(
     models.push(...modelTmps);
   }
   {
+    if (search0.corpid == null) {
+      return [ ];
+    }
+    const corpid = search0.corpid;
     if (search0.lbl == null) {
       return [ ];
     }
     const lbl = search0.lbl;
     const modelTmps = await findAll(
       {
+        corpid,
         lbl,
       },
       undefined,
@@ -559,11 +652,13 @@ export function equalsByUnique(
     return false;
   }
   if (
+    oldModel.corpid === input.corpid &&
     oldModel.userid === input.userid
   ) {
     return true;
   }
   if (
+    oldModel.corpid === input.corpid &&
     oldModel.lbl === input.lbl
   ) {
     return true;
@@ -867,6 +962,13 @@ export async function validate(
     fieldComments.id,
   );
   
+  // 企微应用
+  await validators.chars_max_length(
+    input.wxw_app_id,
+    22,
+    fieldComments.wxw_app_id,
+  );
+  
   // 姓名
   await validators.chars_max_length(
     input.lbl,
@@ -1118,7 +1220,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wxwork_wxw_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,userid,mobile,gender,email,biz_email,direct_leader,position,avatar,thumb_avatar,qr_code,rem)values";
+  let sql = "insert into wxwork_wxw_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,wxw_app_id,corpid,agentid,lbl,userid,mobile,gender,email,biz_email,direct_leader,position,avatar,thumb_avatar,qr_code,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1213,6 +1315,21 @@ async function _creates(
       }
       if (input.update_usr_id_lbl != null) {
         sql += `,${ args.push(input.update_usr_id_lbl) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.wxw_app_id != null) {
+        sql += `,${ args.push(input.wxw_app_id) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.corpid != null) {
+        sql += `,${ args.push(input.corpid) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.agentid != null) {
+        sql += `,${ args.push(input.agentid) }`;
       } else {
         sql += ",default";
       }
@@ -1421,6 +1538,24 @@ export async function updateById(
   const args = new QueryArgs();
   let sql = `update wxwork_wxw_usr set `;
   let updateFldNum = 0;
+  if (input.wxw_app_id != null) {
+    if (input.wxw_app_id != oldModel.wxw_app_id) {
+      sql += `wxw_app_id=${ args.push(input.wxw_app_id) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.corpid != null) {
+    if (input.corpid != oldModel.corpid) {
+      sql += `corpid=${ args.push(input.corpid) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.agentid != null) {
+    if (input.agentid != oldModel.agentid) {
+      sql += `agentid=${ args.push(input.agentid) },`;
+      updateFldNum++;
+    }
+  }
   if (input.lbl != null) {
     if (input.lbl != oldModel.lbl) {
       sql += `lbl=${ args.push(input.lbl) },`;

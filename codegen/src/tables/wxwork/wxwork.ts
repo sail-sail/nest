@@ -73,6 +73,15 @@ export default defineConfig({
         COLUMN_NAME: "type",
       },
       {
+        COLUMN_NAME: "corpid",
+      },
+      {
+        COLUMN_NAME: "corpsecret",
+      },
+      {
+        COLUMN_NAME: "contactsecret",
+      },
+      {
         COLUMN_NAME: "access_token",
       },
       {
@@ -106,11 +115,23 @@ export default defineConfig({
     opts: {
       cache: true,
       uniques: [
-        [ "userid" ],
-        [ "lbl" ],
+        [ "corpid", "userid" ],
+        [ "corpid", "lbl" ],
       ],
     },
     columns: [
+      {
+        COLUMN_NAME: "wxw_app_id",
+        fixed: "left",
+      },
+      {
+        COLUMN_NAME: "corpid",
+        onlyCodegenDeno: true,
+      },
+      {
+        COLUMN_NAME: "agentid",
+        onlyCodegenDeno: true,
+      },
       {
         COLUMN_NAME: "lbl",
         align: "center",
