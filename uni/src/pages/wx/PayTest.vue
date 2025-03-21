@@ -26,7 +26,26 @@ async function onRequestPayment() {
     signType: res.signType,
     paySign: res.paySign,
   });
-  console.log(payRes);
+  const errMsg = payRes.errMsg;
+  let isPaySuccess = false;
+  if (errMsg === "requestPayment:fail cancel") {
+    await uni.showModal({
+      content: "取消支付!",
+    });
+  } else if (errMsg.startsWith("requestPayment:fail")) {
+    await uni.showModal({
+      content: "支付失败!",
+    });
+  } else if (errMsg === "requestPayment:ok") {
+    isPaySuccess = true;
+    await uni.showModal({
+      content: "支付成功!",
+    });
+  }
+  if (!isPaySuccess) {
+    return;
+  }
+  console.log("支付成功!");
 }
 
 </script>

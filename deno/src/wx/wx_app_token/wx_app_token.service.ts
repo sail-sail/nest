@@ -32,7 +32,7 @@ export async function getAccessToken(
   );
   await validateIsEnabledWxApp(wx_app_model);
   
-  const wx_app_id: WxAppId = wx_app_model.id;
+  const wx_app_id = wx_app_model.id;
   const appsecret = wx_app_model.appsecret;
   
   const dateNow = dayjs();
@@ -67,6 +67,8 @@ export async function getAccessToken(
     await createWxAppToken(
       {
         wx_app_id,
+        appid,
+        appsecret,
         access_token,
         expires_in,
         token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),
@@ -84,6 +86,8 @@ export async function getAccessToken(
     || !access_token
     || !token_time.isValid()
     || token_time.add(expires_in, "s").add(5, "m").isBefore(dateNow)
+    || appid != wx_app_token_model.appid
+    || appsecret != wx_app_token_model.appsecret
   ) {
     log(`微信小程序 access_token 过期, 重新获取: ${ JSON.stringify(wx_app_token_model) }`);
     const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${
@@ -108,6 +112,8 @@ export async function getAccessToken(
     await updateWxAppTokenById(
       wx_app_token_id,
       {
+        appid,
+        appsecret,
         access_token,
         expires_in,
         token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),

@@ -203,6 +203,7 @@ export async function wxoLoginByCode(
   if (!wxo_usr_model) {
     const id = await createWxoUsr(
       {
+        appid,
         openid,
         lbl,
         head_img,
