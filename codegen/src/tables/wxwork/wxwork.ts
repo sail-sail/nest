@@ -122,6 +122,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "wxw_app_id",
+        fixed: "left",
       },
       {
         COLUMN_NAME: "corpid",
