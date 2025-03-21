@@ -126,6 +126,7 @@ export async function code2Session(
   if (!wx_usr_model) {
     const id: WxUsrId = await createWxUsr(
       {
+        appid,
         openid,
         lbl: openid,
         unionid,
