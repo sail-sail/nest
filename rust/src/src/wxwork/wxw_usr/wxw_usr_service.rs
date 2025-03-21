@@ -2,7 +2,7 @@ use std::sync::{Arc, OnceLock};
 
 use tokio::sync::Mutex;
 
-use anyhow::{Result, anyhow};
+use color_eyre::eyre::{Result, eyre};
 
 use crate::common::context::{
   get_now,
@@ -173,7 +173,7 @@ pub async fn wxw_login_by_code(
     userid.clone(),
   ).await?;
   if get_user_res.is_none() {
-    return Err(anyhow!("{userid} 不在应用 {wxw_app_lbl} 的可见范围内"));
+    return Err(eyre!("{userid} 不在应用 {wxw_app_lbl} 的可见范围内"));
   }
   let get_user_res = get_user_res.unwrap();
   
@@ -290,7 +290,7 @@ pub async fn wxw_login_by_code(
     id: usr_model.id,
     tenant_id: tenant_id.clone(),
     org_id: org_id.clone().into(),
-    lang: lang.clone(),
+    lang: Some(lang.clone()),
     exp,
     ..Default::default()
   })?;
@@ -319,7 +319,7 @@ pub async fn wxw_sync_usr(
 ) -> Result<i32> {
   let mut wxw_sync_usr_lock = get_wxw_sync_usr_lock().lock().await;
   if *wxw_sync_usr_lock {
-    return Err(anyhow!("企微用户正在同步中, 请稍后再试"));
+    return Err(eyre!("企微用户正在同步中, 请稍后再试"));
   }
   *wxw_sync_usr_lock = true;
   
@@ -370,6 +370,9 @@ async fn _wxw_sync_usr(
   ).await?;
   
   let wxw_app_id = wxw_app_model.id;
+  let corpid = wxw_app_model.corpid;
+  let agentid = wxw_app_model.agentid;
+  
   let userids: Vec<String> = getuseridlist(
     wxw_app_id.clone(),
   ).await?;
@@ -384,6 +387,7 @@ async fn _wxw_sync_usr(
       !wxw_usr_models.iter()
         .any(|wxw_usr_model|
           wxw_usr_model.userid == *userid
+            && wxw_usr_model.corpid.as_str() == corpid
         )
     })
     .collect::<Vec<String>>();
@@ -403,6 +407,9 @@ async fn _wxw_sync_usr(
       ..
     } = get_user_res;
     wxw_usr_models4add.push(WxwUsrInput {
+      wxw_app_id: Some(wxw_app_id.clone()),
+      corpid: Some(corpid.clone()),
+      agentid: Some(agentid.clone()),
       userid: userid.clone().into(),
       lbl: name.clone().into(),
       position: position.clone().into(),

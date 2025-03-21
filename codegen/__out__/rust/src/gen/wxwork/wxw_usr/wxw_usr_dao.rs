@@ -46,6 +46,7 @@ use crate::common::gql::model::{
 use super::wxw_usr_model::*;
 
 use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
 use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
@@ -61,7 +62,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 19 * 2);
+  let mut where_query = String::with_capacity(80 * 22 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -116,6 +117,110 @@ async fn get_where_query(
     if let Some(tenant_id) = tenant_id {
       where_query.push_str(" and t.tenant_id=?");
       args.push(tenant_id.into());
+    }
+  }
+  // 企微应用
+  {
+    let wxw_app_id: Option<Vec<WxwAppId>> = match search {
+      Some(item) => item.wxw_app_id.clone(),
+      None => None,
+    };
+    if let Some(wxw_app_id) = wxw_app_id {
+      let arg = {
+        if wxw_app_id.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(wxw_app_id.len());
+          for item in wxw_app_id {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and t.wxw_app_id in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let wxw_app_id_is_null: bool = match search {
+      Some(item) => item.wxw_app_id_is_null.unwrap_or(false),
+      None => false,
+    };
+    if wxw_app_id_is_null {
+      where_query.push_str(" and t.wxw_app_id is null");
+    }
+  }
+  {
+    let wxw_app_id_lbl: Option<Vec<String>> = match search {
+      Some(item) => item.wxw_app_id_lbl.clone(),
+      None => None,
+    };
+    if let Some(wxw_app_id_lbl) = wxw_app_id_lbl {
+      let arg = {
+        if wxw_app_id_lbl.is_empty() {
+          "null".to_string()
+        } else {
+          let mut items = Vec::with_capacity(wxw_app_id_lbl.len());
+          for item in wxw_app_id_lbl {
+            args.push(item.into());
+            items.push("?");
+          }
+          items.join(",")
+        }
+      };
+      where_query.push_str(" and wxw_app_id_lbl.lbl in (");
+      where_query.push_str(&arg);
+      where_query.push(')');
+    }
+  }
+  {
+    let wxw_app_id_lbl_like = match search {
+      Some(item) => item.wxw_app_id_lbl_like.clone(),
+      None => None,
+    };
+    if let Some(wxw_app_id_lbl_like) = wxw_app_id_lbl_like {
+      where_query.push_str(" and wxw_app_id_lbl.lbl like ?");
+      args.push(format!("%{}%", sql_like(&wxw_app_id_lbl_like)).into());
+    }
+  }
+  // 企业ID
+  {
+    let corpid = match search {
+      Some(item) => item.corpid.clone(),
+      None => None,
+    };
+    if let Some(corpid) = corpid {
+      where_query.push_str(" and t.corpid=?");
+      args.push(corpid.into());
+    }
+    let corpid_like = match search {
+      Some(item) => item.corpid_like.clone(),
+      None => None,
+    };
+    if let Some(corpid_like) = corpid_like {
+      where_query.push_str(" and t.corpid like ?");
+      args.push(format!("%{}%", sql_like(&corpid_like)).into());
+    }
+  }
+  // 应用ID
+  {
+    let agentid = match search {
+      Some(item) => item.agentid.clone(),
+      None => None,
+    };
+    if let Some(agentid) = agentid {
+      where_query.push_str(" and t.agentid=?");
+      args.push(agentid.into());
+    }
+    let agentid_like = match search {
+      Some(item) => item.agentid_like.clone(),
+      None => None,
+    };
+    if let Some(agentid_like) = agentid_like {
+      where_query.push_str(" and t.agentid like ?");
+      args.push(format!("%{}%", sql_like(&agentid_like)).into());
     }
   }
   // 姓名
@@ -522,7 +627,8 @@ async fn get_from_query(
   options: Option<&Options>,
 ) -> Result<String> {
   
-  let from_query = r#"wxwork_wxw_usr t"#.to_owned();
+  let from_query = r#"wxwork_wxw_usr t
+  left join wxwork_wxw_app wxw_app_id_lbl on wxw_app_id_lbl.id=t.wxw_app_id"#.to_owned();
   Ok(from_query)
 }
 
@@ -567,6 +673,22 @@ pub async fn find_all(
     }
     if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
       return Ok(vec![]);
+    }
+  }
+  // 企微应用
+  if let Some(search) = &search {
+    if search.wxw_app_id.is_some() {
+      let len = search.wxw_app_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(vec![]);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.wxw_app_id.length > {ids_limit}"));
+      }
     }
   }
   // 创建人
@@ -630,6 +752,7 @@ pub async fn find_all(
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
+  ,wxw_app_id_lbl.lbl wxw_app_id_lbl
   from {from_query} where {where_query} group by t.id{order_by_query}) f {page_query}"#);
   
   let args = args.into();
@@ -684,6 +807,22 @@ pub async fn find_count(
     }
     if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
       return Ok(0);
+    }
+  }
+  // 企微应用
+  if let Some(search) = &search {
+    if search.wxw_app_id.is_some() {
+      let len = search.wxw_app_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(0);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.wxw_app_id.length > {ids_limit}"));
+      }
     }
   }
   // 创建人
@@ -763,6 +902,8 @@ pub async fn get_field_comments(
   
   let field_comments = WxwUsrFieldComment {
     id: "ID".into(),
+    wxw_app_id: "企微应用".into(),
+    wxw_app_id_lbl: "企微应用".into(),
     lbl: "姓名".into(),
     userid: "用户ID".into(),
     rem: "备注".into(),
@@ -1072,12 +1213,14 @@ pub async fn find_by_unique(
   
   let mut models_tmp = {
     if
+      search.corpid.is_none() ||
       search.userid.is_none()
     {
       return Ok(vec![]);
     }
     
     let search = WxwUsrSearch {
+      corpid: search.corpid.clone(),
       userid: search.userid.clone(),
       ..Default::default()
     };
@@ -1093,12 +1236,14 @@ pub async fn find_by_unique(
   
   let mut models_tmp = {
     if
+      search.corpid.is_none() ||
       search.lbl.is_none()
     {
       return Ok(vec![]);
     }
     
     let search = WxwUsrSearch {
+      corpid: search.corpid.clone(),
       lbl: search.lbl.clone(),
       ..Default::default()
     };
@@ -1126,12 +1271,14 @@ pub fn equals_by_unique(
   }
   
   if
+    input.corpid.as_ref().is_some() && input.corpid.as_ref().unwrap() == &model.corpid &&
     input.userid.as_ref().is_some() && input.userid.as_ref().unwrap() == &model.userid
   {
     return true;
   }
   
   if
+    input.corpid.as_ref().is_some() && input.corpid.as_ref().unwrap() == &model.corpid &&
     input.lbl.as_ref().is_some() && input.lbl.as_ref().unwrap() == &model.lbl
   {
     return true;
@@ -1210,6 +1357,42 @@ pub async fn set_id_by_lbl(
   
   #[allow(unused_mut)]
   let mut input = input;
+  
+  // 企微应用
+  if input.wxw_app_id_lbl.is_some()
+    && !input.wxw_app_id_lbl.as_ref().unwrap().is_empty()
+    && input.wxw_app_id.is_none()
+  {
+    input.wxw_app_id_lbl = input.wxw_app_id_lbl.map(|item| 
+      item.trim().to_owned()
+    );
+    let model = crate::r#gen::wxwork::wxw_app::wxw_app_dao::find_one(
+      crate::r#gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch {
+        lbl: input.wxw_app_id_lbl.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(model) = model {
+      input.wxw_app_id = model.id.into();
+    }
+  } else if
+    (input.wxw_app_id_lbl.is_none() || input.wxw_app_id_lbl.as_ref().unwrap().is_empty())
+    && input.wxw_app_id.is_some()
+  {
+    let wxw_app_model = crate::r#gen::wxwork::wxw_app::wxw_app_dao::find_one(
+      crate::r#gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch {
+        id: input.wxw_app_id.clone(),
+        ..Default::default()
+      }.into(),
+      None,
+      Some(Options::new().set_is_debug(Some(false))),
+    ).await?;
+    if let Some(wxw_app_model) = wxw_app_model {
+      input.wxw_app_id_lbl = wxw_app_model.lbl.into();
+    }
+  }
   
   Ok(input)
 }
@@ -1349,7 +1532,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 19 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1359,6 +1542,12 @@ async fn _creates(
   sql_fields += ",update_usr_id";
   sql_fields += ",update_usr_id_lbl";
   sql_fields += ",tenant_id";
+  // 企微应用
+  sql_fields += ",wxw_app_id";
+  // 企业ID
+  sql_fields += ",corpid";
+  // 应用ID
+  sql_fields += ",agentid";
   // 姓名
   sql_fields += ",lbl";
   // 用户ID
@@ -1385,7 +1574,7 @@ async fn _creates(
   sql_fields += ",rem";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 19 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 22 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -1508,6 +1697,27 @@ async fn _creates(
     } else if let Some(tenant_id) = get_auth_tenant_id() {
       sql_values += ",?";
       args.push(tenant_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 企微应用
+    if let Some(wxw_app_id) = input.wxw_app_id {
+      sql_values += ",?";
+      args.push(wxw_app_id.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 企业ID
+    if let Some(corpid) = input.corpid {
+      sql_values += ",?";
+      args.push(corpid.into());
+    } else {
+      sql_values += ",default";
+    }
+    // 应用ID
+    if let Some(agentid) = input.agentid {
+      sql_values += ",?";
+      args.push(agentid.into());
     } else {
       sql_values += ",default";
     }
@@ -1825,7 +2035,7 @@ pub async fn update_by_id(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 19 + 20);
+  let mut sql_fields = String::with_capacity(80 * 22 + 20);
   
   let mut field_num: usize = 0;
   
@@ -1833,6 +2043,24 @@ pub async fn update_by_id(
     field_num += 1;
     sql_fields += "tenant_id=?,";
     args.push(tenant_id.into());
+  }
+  // 企微应用
+  if let Some(wxw_app_id) = input.wxw_app_id {
+    field_num += 1;
+    sql_fields += "wxw_app_id=?,";
+    args.push(wxw_app_id.into());
+  }
+  // 企业ID
+  if let Some(corpid) = input.corpid {
+    field_num += 1;
+    sql_fields += "corpid=?,";
+    args.push(corpid.into());
+  }
+  // 应用ID
+  if let Some(agentid) = input.agentid {
+    field_num += 1;
+    sql_fields += "agentid=?,";
+    args.push(agentid.into());
   }
   // 姓名
   if let Some(lbl) = input.lbl {

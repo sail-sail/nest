@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use super::wxw_app_token_model::WxwGetConfigSignature;
 

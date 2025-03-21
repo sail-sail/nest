@@ -65,6 +65,15 @@ pub struct WxwAppTokenModel {
   /// 类型corp和contact
   #[graphql(name = "type")]
   pub r#type: String,
+  /// 企业ID
+  #[graphql(name = "corpid")]
+  pub corpid: String,
+  /// 密钥
+  #[graphql(name = "corpsecret")]
+  pub corpsecret: String,
+  /// 通讯录密钥
+  #[graphql(name = "contactsecret")]
+  pub contactsecret: String,
   /// 令牌
   #[graphql(name = "access_token")]
   pub access_token: String,
@@ -141,6 +150,12 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
     let wxw_app_id_lbl = wxw_app_id_lbl.unwrap_or_default();
     // 类型corp和contact
     let r#type: String = row.try_get("type")?;
+    // 企业ID
+    let corpid: String = row.try_get("corpid")?;
+    // 密钥
+    let corpsecret: String = row.try_get("corpsecret")?;
+    // 通讯录密钥
+    let contactsecret: String = row.try_get("contactsecret")?;
     // 令牌
     let access_token: String = row.try_get("access_token")?;
     // 令牌创建时间
@@ -201,6 +216,9 @@ impl FromRow<'_, MySqlRow> for WxwAppTokenModel {
       wxw_app_id,
       wxw_app_id_lbl,
       r#type,
+      corpid,
+      corpsecret,
+      contactsecret,
       access_token,
       token_time,
       token_time_lbl,
@@ -243,6 +261,15 @@ pub struct WxwAppTokenFieldComment {
   /// 类型corp和contact
   #[graphql(name = "type")]
   pub r#type: String,
+  /// 企业ID
+  #[graphql(name = "corpid")]
+  pub corpid: String,
+  /// 密钥
+  #[graphql(name = "corpsecret")]
+  pub corpsecret: String,
+  /// 通讯录密钥
+  #[graphql(name = "contactsecret")]
+  pub contactsecret: String,
   /// 令牌
   #[graphql(name = "access_token")]
   pub access_token: String,
@@ -310,6 +337,24 @@ pub struct WxwAppTokenSearch {
   /// 类型corp和contact
   #[graphql(skip)]
   pub type_like: Option<String>,
+  /// 企业ID
+  #[graphql(skip)]
+  pub corpid: Option<String>,
+  /// 企业ID
+  #[graphql(skip)]
+  pub corpid_like: Option<String>,
+  /// 密钥
+  #[graphql(skip)]
+  pub corpsecret: Option<String>,
+  /// 密钥
+  #[graphql(skip)]
+  pub corpsecret_like: Option<String>,
+  /// 通讯录密钥
+  #[graphql(skip)]
+  pub contactsecret: Option<String>,
+  /// 通讯录密钥
+  #[graphql(skip)]
+  pub contactsecret_like: Option<String>,
   /// 令牌
   #[graphql(skip)]
   pub access_token: Option<String>,
@@ -409,6 +454,27 @@ impl std::fmt::Debug for WxwAppTokenSearch {
     if let Some(ref r#type_like) = self.r#type_like {
       item = item.field("r#type_like", r#type_like);
     }
+    // 企业ID
+    if let Some(ref corpid) = self.corpid {
+      item = item.field("corpid", corpid);
+    }
+    if let Some(ref corpid_like) = self.corpid_like {
+      item = item.field("corpid_like", corpid_like);
+    }
+    // 密钥
+    if let Some(ref corpsecret) = self.corpsecret {
+      item = item.field("corpsecret", corpsecret);
+    }
+    if let Some(ref corpsecret_like) = self.corpsecret_like {
+      item = item.field("corpsecret_like", corpsecret_like);
+    }
+    // 通讯录密钥
+    if let Some(ref contactsecret) = self.contactsecret {
+      item = item.field("contactsecret", contactsecret);
+    }
+    if let Some(ref contactsecret_like) = self.contactsecret_like {
+      item = item.field("contactsecret_like", contactsecret_like);
+    }
     // 令牌
     if let Some(ref access_token) = self.access_token {
       item = item.field("access_token", access_token);
@@ -501,6 +567,15 @@ pub struct WxwAppTokenInput {
   /// 类型corp和contact
   #[graphql(name = "type")]
   pub r#type: Option<String>,
+  /// 企业ID
+  #[graphql(name = "corpid")]
+  pub corpid: Option<String>,
+  /// 密钥
+  #[graphql(name = "corpsecret")]
+  pub corpsecret: Option<String>,
+  /// 通讯录密钥
+  #[graphql(name = "contactsecret")]
+  pub contactsecret: Option<String>,
   /// 令牌
   #[graphql(name = "access_token")]
   pub access_token: Option<String>,
@@ -589,6 +664,12 @@ impl From<WxwAppTokenModel> for WxwAppTokenInput {
       wxw_app_id_lbl: model.wxw_app_id_lbl.into(),
       // 类型corp和contact
       r#type: model.r#type.into(),
+      // 企业ID
+      corpid: model.corpid.into(),
+      // 密钥
+      corpsecret: model.corpsecret.into(),
+      // 通讯录密钥
+      contactsecret: model.contactsecret.into(),
       // 令牌
       access_token: model.access_token.into(),
       // 令牌创建时间
@@ -643,6 +724,12 @@ impl From<WxwAppTokenInput> for WxwAppTokenSearch {
       wxw_app_id: input.wxw_app_id.map(|x| vec![x]),
       // 类型corp和contact
       r#type: input.r#type,
+      // 企业ID
+      corpid: input.corpid,
+      // 密钥
+      corpsecret: input.corpsecret,
+      // 通讯录密钥
+      contactsecret: input.contactsecret,
       // 令牌
       access_token: input.access_token,
       // 令牌创建时间

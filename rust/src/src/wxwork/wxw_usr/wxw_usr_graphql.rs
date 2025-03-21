@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 use async_graphql::{Context, Object};
 
 use crate::common::context::Ctx;
@@ -18,9 +18,9 @@ pub struct WxwUsrQuery;
 impl WxwUsrQuery {
   
   /// 通过host获取appid, agentid
-  async fn wxw_get_appid<'a>(
+  async fn wxw_get_appid(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     host: String,
   ) -> Result<WxwGetAppid> {
     Ctx::builder(ctx)
@@ -39,9 +39,9 @@ pub struct WxwUsrMutation;
 impl WxwUsrMutation {
   
   /// 微信企业号登录
-  async fn wxw_login_by_code<'a>(
+  async fn wxw_login_by_code(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     input: WxwLoginByCodeInput,
   ) -> Result<WxwLoginByCode> {
     Ctx::builder(ctx)
@@ -52,9 +52,9 @@ impl WxwUsrMutation {
   }
   
   /// 同步企业微信用户
-  async fn wxw_sync_usr<'a>(
+  async fn wxw_sync_usr(
     &self,
-    ctx: &Context<'a>,
+    ctx: &Context<'_>,
     host: String,
   ) -> Result<i32> {
     Ctx::builder(ctx)

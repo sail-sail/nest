@@ -34,6 +34,7 @@ use crate::common::context::ArgType;
 use crate::common::gql::model::SortInput;
 
 use crate::r#gen::base::tenant::tenant_model::TenantId;
+use crate::r#gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
 static CAN_SORT_IN_API_WXW_USR: OnceLock<[&'static str; 2]> = OnceLock::new();
@@ -55,6 +56,18 @@ pub struct WxwUsrModel {
   pub tenant_id: TenantId,
   /// ID
   pub id: WxwUsrId,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id")]
+  pub wxw_app_id: WxwAppId,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
+  pub wxw_app_id_lbl: String,
+  /// 企业ID
+  #[graphql(skip)]
+  pub corpid: String,
+  /// 应用ID
+  #[graphql(skip)]
+  pub agentid: String,
   /// 姓名
   #[graphql(name = "lbl")]
   pub lbl: String,
@@ -125,6 +138,14 @@ impl FromRow<'_, MySqlRow> for WxwUsrModel {
     let tenant_id = row.try_get("tenant_id")?;
     // ID
     let id: WxwUsrId = row.try_get("id")?;
+    // 企微应用
+    let wxw_app_id: WxwAppId = row.try_get("wxw_app_id")?;
+    let wxw_app_id_lbl: Option<String> = row.try_get("wxw_app_id_lbl")?;
+    let wxw_app_id_lbl = wxw_app_id_lbl.unwrap_or_default();
+    // 企业ID
+    let corpid: String = row.try_get("corpid")?;
+    // 应用ID
+    let agentid: String = row.try_get("agentid")?;
     // 姓名
     let lbl: String = row.try_get("lbl")?;
     // 用户ID
@@ -176,6 +197,10 @@ impl FromRow<'_, MySqlRow> for WxwUsrModel {
       tenant_id,
       is_deleted,
       id,
+      wxw_app_id,
+      wxw_app_id_lbl,
+      corpid,
+      agentid,
       lbl,
       userid,
       mobile,
@@ -209,6 +234,12 @@ pub struct WxwUsrFieldComment {
   /// ID
   #[graphql(name = "id")]
   pub id: String,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id")]
+  pub wxw_app_id: String,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
+  pub wxw_app_id_lbl: String,
   /// 姓名
   #[graphql(name = "lbl")]
   pub lbl: String,
@@ -231,6 +262,30 @@ pub struct WxwUsrSearch {
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
   pub is_deleted: Option<u8>,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id")]
+  pub wxw_app_id: Option<Vec<WxwAppId>>,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id_save_null")]
+  pub wxw_app_id_is_null: Option<bool>,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
+  pub wxw_app_id_lbl: Option<Vec<String>>,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl_like")]
+  pub wxw_app_id_lbl_like: Option<String>,
+  /// 企业ID
+  #[graphql(skip)]
+  pub corpid: Option<String>,
+  /// 企业ID
+  #[graphql(skip)]
+  pub corpid_like: Option<String>,
+  /// 应用ID
+  #[graphql(skip)]
+  pub agentid: Option<String>,
+  /// 应用ID
+  #[graphql(skip)]
+  pub agentid_like: Option<String>,
   /// 姓名
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -351,6 +406,27 @@ impl std::fmt::Debug for WxwUsrSearch {
       if *is_deleted == 1 {
         item = item.field("is_deleted", is_deleted);
       }
+    }
+    // 企微应用
+    if let Some(ref wxw_app_id) = self.wxw_app_id {
+      item = item.field("wxw_app_id", wxw_app_id);
+    }
+    if let Some(ref wxw_app_id_is_null) = self.wxw_app_id_is_null {
+      item = item.field("wxw_app_id_is_null", wxw_app_id_is_null);
+    }
+    // 企业ID
+    if let Some(ref corpid) = self.corpid {
+      item = item.field("corpid", corpid);
+    }
+    if let Some(ref corpid_like) = self.corpid_like {
+      item = item.field("corpid_like", corpid_like);
+    }
+    // 应用ID
+    if let Some(ref agentid) = self.agentid {
+      item = item.field("agentid", agentid);
+    }
+    if let Some(ref agentid_like) = self.agentid_like {
+      item = item.field("agentid_like", agentid_like);
     }
     // 姓名
     if let Some(ref lbl) = self.lbl {
@@ -474,6 +550,18 @@ pub struct WxwUsrInput {
   /// 租户ID
   #[graphql(skip)]
   pub tenant_id: Option<TenantId>,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id")]
+  pub wxw_app_id: Option<WxwAppId>,
+  /// 企微应用
+  #[graphql(name = "wxw_app_id_lbl")]
+  pub wxw_app_id_lbl: Option<String>,
+  /// 企业ID
+  #[graphql(skip)]
+  pub corpid: Option<String>,
+  /// 应用ID
+  #[graphql(skip)]
+  pub agentid: Option<String>,
   /// 姓名
   #[graphql(name = "lbl")]
   pub lbl: Option<String>,
@@ -548,6 +636,13 @@ impl From<WxwUsrModel> for WxwUsrInput {
       id: model.id.into(),
       is_deleted: model.is_deleted.into(),
       tenant_id: model.tenant_id.into(),
+      // 企微应用
+      wxw_app_id: model.wxw_app_id.into(),
+      wxw_app_id_lbl: model.wxw_app_id_lbl.into(),
+      // 企业ID
+      corpid: model.corpid.into(),
+      // 应用ID
+      agentid: model.agentid.into(),
       // 姓名
       lbl: model.lbl.into(),
       // 用户ID
@@ -598,6 +693,12 @@ impl From<WxwUsrInput> for WxwUsrSearch {
       // 租户ID
       tenant_id: input.tenant_id,
       is_deleted: None,
+      // 企微应用
+      wxw_app_id: input.wxw_app_id.map(|x| vec![x]),
+      // 企业ID
+      corpid: input.corpid,
+      // 应用ID
+      agentid: input.agentid,
       // 姓名
       lbl: input.lbl,
       // 用户ID
