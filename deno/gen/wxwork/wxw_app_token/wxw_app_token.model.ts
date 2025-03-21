@@ -24,6 +24,15 @@ declare global {
     /** 类型corp和contact */
     type?: string;
     type_like?: string;
+    /** 企业ID */
+    corpid?: string;
+    corpid_like?: string;
+    /** 密钥 */
+    corpsecret?: string;
+    corpsecret_like?: string;
+    /** 通讯录密钥 */
+    contactsecret?: string;
+    contactsecret_like?: string;
     /** 令牌 */
     access_token?: string;
     access_token_like?: string;
