@@ -9999,7 +9999,9 @@ interface Uni {
      *
      * 文档: [http://uniapp.dcloud.io/api/plugins/payment?id=requestpayment](http://uniapp.dcloud.io/api/plugins/payment?id=requestpayment)
      */
-    requestPayment(options: UniNamespace.RequestPaymentOptions): Promise<any>;
+    requestPayment(options: UniNamespace.RequestPaymentOptions): Promise<{
+        errMsg: string;
+    }>;
     /**
      * 提前向用户发起授权请求
      *
