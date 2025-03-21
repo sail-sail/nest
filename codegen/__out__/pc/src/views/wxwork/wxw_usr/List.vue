@@ -450,8 +450,17 @@
           :key="col.prop"
         >
           
+          <!-- 企微应用 -->
+          <template v-if="'wxw_app_id_lbl' === col.prop && (showBuildIn || builtInSearch?.wxw_app_id == null)">
+            <el-table-column
+              v-if="col.hide !== true"
+              v-bind="col"
+            >
+            </el-table-column>
+          </template>
+          
           <!-- 姓名 -->
-          <template v-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
+          <template v-else-if="'lbl' === col.prop && (showBuildIn || builtInSearch?.lbl == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -586,6 +595,8 @@ const props = defineProps<{
   selectedIds?: WxwUsrId[]; //已选择行的id列表
   isMultiple?: string; //是否多选
   id?: WxwUsrId; // ID
+  wxw_app_id?: string|string[]; // 企微应用
+  wxw_app_id_lbl?: string; // 企微应用
   lbl?: string; // 姓名
   lbl_like?: string; // 姓名
 }>();
@@ -599,6 +610,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
+  wxw_app_id: "string[]",
+  wxw_app_id_lbl: "string[]",
 };
 
 const propsNotInSearch: string[] = [
@@ -805,6 +818,15 @@ let tableData = $ref<WxwUsrModel[]>([ ]);
 
 function getTableColumns(): ColumnType[] {
   return [
+    {
+      label: "企微应用",
+      prop: "wxw_app_id_lbl",
+      sortBy: "wxw_app_id_lbl",
+      width: 300,
+      align: "left",
+      headerAlign: "center",
+      showOverflowTooltip: true,
+    },
     {
       label: "姓名",
       prop: "lbl",
@@ -1098,6 +1120,7 @@ async function onImportExcel() {
     return;
   }
   const header: { [key: string]: string } = {
+    [ "企微应用" ]: "wxw_app_id_lbl",
     [ "姓名" ]: "lbl",
     [ "用户ID" ]: "userid",
     [ "备注" ]: "rem",
@@ -1122,6 +1145,7 @@ async function onImportExcel() {
       header,
       {
         key_types: {
+          "wxw_app_id_lbl": "string",
           "lbl": "string",
           "userid": "string",
           "rem": "string",

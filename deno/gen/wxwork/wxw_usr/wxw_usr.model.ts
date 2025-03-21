@@ -21,6 +21,12 @@ declare global {
   
   /** 企微用户 */
   interface WxwUsrSearch extends WxwUsrSearchType {
+    /** 企业ID */
+    corpid?: string;
+    corpid_like?: string;
+    /** 应用ID */
+    agentid?: string;
+    agentid_like?: string;
     /** 用户ID */
     userid?: string;
     userid_like?: string;
@@ -78,6 +84,10 @@ declare global {
   }
 
   interface WxwUsrModel extends WxwUsrModelType {
+    /** 企业ID */
+    corpid: string;
+    /** 应用ID */
+    agentid: string;
     /** 手机号 */
     mobile: string;
     /** 性别 */
@@ -108,6 +118,10 @@ declare global {
   }
 
   interface WxwUsrInput extends WxwUsrInputType {
+    /** 企业ID */
+    corpid?: string | null;
+    /** 应用ID */
+    agentid?: string | null;
     /** 手机号 */
     mobile?: string | null;
     /** 性别 */

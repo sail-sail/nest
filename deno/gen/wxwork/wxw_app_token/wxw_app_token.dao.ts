@@ -122,6 +122,24 @@ async function getWhereQuery(
   if (isNotEmpty(search?.type_like)) {
     whereQuery += ` and t.type like ${ args.push("%" + sqlLike(search?.type_like) + "%") }`;
   }
+  if (search?.corpid != null) {
+    whereQuery += ` and t.corpid=${ args.push(search.corpid) }`;
+  }
+  if (isNotEmpty(search?.corpid_like)) {
+    whereQuery += ` and t.corpid like ${ args.push("%" + sqlLike(search?.corpid_like) + "%") }`;
+  }
+  if (search?.corpsecret != null) {
+    whereQuery += ` and t.corpsecret=${ args.push(search.corpsecret) }`;
+  }
+  if (isNotEmpty(search?.corpsecret_like)) {
+    whereQuery += ` and t.corpsecret like ${ args.push("%" + sqlLike(search?.corpsecret_like) + "%") }`;
+  }
+  if (search?.contactsecret != null) {
+    whereQuery += ` and t.contactsecret=${ args.push(search.contactsecret) }`;
+  }
+  if (isNotEmpty(search?.contactsecret_like)) {
+    whereQuery += ` and t.contactsecret like ${ args.push("%" + sqlLike(search?.contactsecret_like) + "%") }`;
+  }
   if (search?.access_token != null) {
     whereQuery += ` and t.access_token=${ args.push(search.access_token) }`;
   }
@@ -650,6 +668,9 @@ export async function getFieldComments(): Promise<WxwAppTokenFieldComment> {
     wxw_app_id: "企微应用",
     wxw_app_id_lbl: "企微应用",
     type: "类型corp和contact",
+    corpid: "企业ID",
+    corpsecret: "密钥",
+    contactsecret: "通讯录密钥",
     access_token: "令牌",
     token_time: "令牌创建时间",
     token_time_lbl: "令牌创建时间",
@@ -1084,6 +1105,27 @@ export async function validate(
     fieldComments.type,
   );
   
+  // 企业ID
+  await validators.chars_max_length(
+    input.corpid,
+    18,
+    fieldComments.corpid,
+  );
+  
+  // 密钥
+  await validators.chars_max_length(
+    input.corpsecret,
+    120,
+    fieldComments.corpsecret,
+  );
+  
+  // 通讯录密钥
+  await validators.chars_max_length(
+    input.contactsecret,
+    120,
+    fieldComments.contactsecret,
+  );
+  
   // 令牌
   await validators.chars_max_length(
     input.access_token,
@@ -1335,7 +1377,7 @@ async function _creates(
   await delCache();
   
   const args = new QueryArgs();
-  let sql = "insert into wxwork_wxw_app_token(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,wxw_app_id,type,access_token,token_time,expires_in,jsapi_ticket,jsapi_ticket_time,jsapi_ticket_expires_in,jsapi_ticket_agent_config,jsapi_ticket_agent_config_time,jsapi_ticket_agent_config_expires_in)values";
+  let sql = "insert into wxwork_wxw_app_token(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,wxw_app_id,type,corpid,corpsecret,contactsecret,access_token,token_time,expires_in,jsapi_ticket,jsapi_ticket_time,jsapi_ticket_expires_in,jsapi_ticket_agent_config,jsapi_ticket_agent_config_time,jsapi_ticket_agent_config_expires_in)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1440,6 +1482,21 @@ async function _creates(
       }
       if (input.type != null) {
         sql += `,${ args.push(input.type) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.corpid != null) {
+        sql += `,${ args.push(input.corpid) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.corpsecret != null) {
+        sql += `,${ args.push(input.corpsecret) }`;
+      } else {
+        sql += ",default";
+      }
+      if (input.contactsecret != null) {
+        sql += `,${ args.push(input.contactsecret) }`;
       } else {
         sql += ",default";
       }
@@ -1642,6 +1699,24 @@ export async function updateById(
   if (input.type != null) {
     if (input.type != oldModel.type) {
       sql += `type=${ args.push(input.type) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.corpid != null) {
+    if (input.corpid != oldModel.corpid) {
+      sql += `corpid=${ args.push(input.corpid) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.corpsecret != null) {
+    if (input.corpsecret != oldModel.corpsecret) {
+      sql += `corpsecret=${ args.push(input.corpsecret) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.contactsecret != null) {
+    if (input.contactsecret != oldModel.contactsecret) {
+      sql += `contactsecret=${ args.push(input.contactsecret) },`;
       updateFldNum++;
     }
   }
