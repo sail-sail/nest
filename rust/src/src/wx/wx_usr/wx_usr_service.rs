@@ -135,6 +135,7 @@ pub async fn code2session(
   if wx_usr_model.is_none() {
     let wx_usr_id = create_wx_usr(
       WxUsrInput {
+        appid: Some(appid.clone()),
         openid: Some(openid.clone()),
         lbl: Some(openid.clone()),
         unionid: Some(unionid.clone()),
