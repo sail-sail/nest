@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
 use crate::r#gen::cron::cron_job::cron_job_model::CronJobId;
 

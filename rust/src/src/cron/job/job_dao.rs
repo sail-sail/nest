@@ -1,4 +1,4 @@
-use anyhow::Result;
+use color_eyre::eyre::{Result, eyre};
 use tracing::info;
 
 use crate::r#gen::base::tenant::tenant_model::TenantId;
@@ -58,7 +58,7 @@ pub async fn run_job(
   
   let code = job_model.code;
   
-  let exec_result: Option<Result<String, anyhow::Error>> = if code == "test" {
+  let exec_result: Option<Result<String>> = if code == "test" {
     test(
       id.clone(),
       tenant_id,
@@ -85,7 +85,7 @@ pub async fn run_job(
       None,
     ).await?;
     
-    return Err(anyhow::anyhow!(exec_result));
+    return Err(eyre!(exec_result));
   }
   
   let exec_result: String = {
