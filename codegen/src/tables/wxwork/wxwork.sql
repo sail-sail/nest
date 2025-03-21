@@ -35,6 +35,9 @@ CREATE TABLE `wxwork_wxw_app_token` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
   `wxw_app_id` varchar(22) NOT NULL DEFAULT '' COMMENT '企微应用',
   `type` varchar(10) NOT NULL DEFAULT 'corp' COMMENT '类型corp和contact',
+  `corpid` varchar(18) NOT NULL DEFAULT '' COMMENT '企业ID',
+  `corpsecret` varchar (120) NOT NULL DEFAULT '' COMMENT '密钥',
+  `contactsecret` varchar (120) NOT NULL DEFAULT '' COMMENT '通讯录密钥',
   `access_token` varchar(600) NOT NULL DEFAULT '' COMMENT '令牌',
   `token_time` datetime DEFAULT NULL COMMENT '令牌创建时间',
   `expires_in` int unsigned NOT NULL DEFAULT 7200 COMMENT '令牌超时时间',
@@ -64,6 +67,9 @@ CREATE TABLE `wxwork_wxw_app_token` (
 drop table if exists `wxwork_wxw_usr`;
 CREATE TABLE `wxwork_wxw_usr` (
   `id` varchar(22) NOT NULL COMMENT 'ID',
+  `wxw_app_id` varchar(22) NOT NULL DEFAULT '' COMMENT '企微应用',
+  `corpid` varchar(18) NOT NULL DEFAULT '' COMMENT '企业ID',
+  `agentid` varchar(7) NOT NULL DEFAULT '' COMMENT '应用ID',
   `lbl` varchar(44) NOT NULL DEFAULT '' COMMENT '姓名',
   `userid` varchar(64) NOT NULL DEFAULT '' COMMENT '用户ID',
   `mobile` varchar(11) NOT NULL DEFAULT '' COMMENT '手机号',

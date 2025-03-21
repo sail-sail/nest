@@ -74,6 +74,27 @@
         @submit.prevent
       >
         
+        <template v-if="(showBuildIn || builtInModel?.wxw_app_id == null)">
+          <el-form-item
+            label="企微应用"
+            prop="wxw_app_id"
+          >
+            <CustomSelect
+              v-model="dialogModel.wxw_app_id"
+              :method="getWxwAppList"
+              :find-by-values="findByIdsWxwApp"
+              :options-map="((item: WxwAppModel) => {
+                return {
+                  label: item.lbl,
+                  value: item.id,
+                };
+              })"
+              placeholder="请选择 企微应用"
+              :readonly="isLocked || isReadonly"
+            ></CustomSelect>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.lbl == null)">
           <el-form-item
             label="姓名"
@@ -220,6 +241,14 @@ import {
   intoInput,
 } from "./Api";
 
+import {
+  getWxwAppList,
+} from "./Api";
+
+import {
+  findByIds as findByIdsWxwApp,
+} from "@/views/wxwork/wxw_app/Api.ts";
+
 const emit = defineEmits<{
   nextId: [
     {
@@ -266,6 +295,13 @@ watchEffect(async () => {
   }
   await nextTick();
   form_rules = {
+    // 企微应用
+    wxw_app_id: [
+      {
+        required: true,
+        message: "请选择 企微应用",
+      },
+    ],
     // 姓名
     lbl: [
       {
@@ -581,6 +617,20 @@ async function nextId() {
   );
   return true;
 }
+
+watch(
+  () => [
+    dialogModel.wxw_app_id,
+  ],
+  () => {
+    if (!inited) {
+      return;
+    }
+    if (!dialogModel.wxw_app_id) {
+      dialogModel.wxw_app_id_lbl = "";
+    }
+  },
+);
 
 /** 快捷键ctrl+回车 */
 async function onSaveKeydown(e: KeyboardEvent) {

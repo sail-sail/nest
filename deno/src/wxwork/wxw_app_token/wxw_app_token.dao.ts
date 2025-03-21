@@ -194,6 +194,8 @@ export async function getContactAccessToken(
     || !access_token
     || !wx_app_token_model.token_time
     || token_time.add(expires_in, "s").add(2, "m").isBefore(dateNow)
+    || corpid !== wx_app_token_model.corpid
+    || contactsecret !== wx_app_token_model.contactsecret
   ) {
     log(`企业微信应用 通讯录密钥 过期, 重新获取: ${ JSON.stringify(wx_app_token_model) }`);
     const url = `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${
@@ -219,6 +221,8 @@ export async function getContactAccessToken(
     await updateByIdWxwAppToken(
       wx_app_token_model.id,
       {
+        corpid,
+        contactsecret,
         access_token: data.access_token,
         expires_in: data.expires_in,
         token_time: dateNow.format("YYYY-MM-DD HH:mm:ss"),
@@ -322,6 +326,11 @@ async function getJsapiTicketAgentConfig(
   wxw_app_id: WxwAppId,
   force = false,
 ) {
+  const wxw_app_model = await validateOptionWxwApp(
+    await findByIdWxwApp(wxw_app_id),
+  );
+  await validateIsEnabledWxwApp(wxw_app_model);
+  
   const access_token = await getAccessToken(
     wxw_app_id,
   );
@@ -334,6 +343,11 @@ async function getJsapiTicketAgentConfig(
       },
     ),
   );
+  const corpid = wxw_app_model.corpid;
+  const corpsecret = wxw_app_model.corpsecret;
+  if (isEmpty(corpid) || isEmpty(corpsecret)) {
+    throw `未设置 企微应用 密钥 ${ wxw_app_model.lbl }`;
+  }
   const jsapi_ticket_agent_config = wx_app_token_model.jsapi_ticket_agent_config;
   const jsapi_ticket_agent_config_expires_in = wx_app_token_model.jsapi_ticket_agent_config_expires_in ?? 0;
   const jsapi_ticket_agent_config_time = dayjs(wx_app_token_model.jsapi_ticket_agent_config_time);
@@ -344,6 +358,8 @@ async function getJsapiTicketAgentConfig(
     || !jsapi_ticket_agent_config
     || !wx_app_token_model.jsapi_ticket_agent_config_time
     || jsapi_ticket_agent_config_time.add(jsapi_ticket_agent_config_expires_in, "s").add(2, "m").isBefore(dateNow)
+    || corpid !== wx_app_token_model.corpid
+    || corpsecret !== wx_app_token_model.corpsecret
   ) {
     const url = `https://qyapi.weixin.qq.com/cgi-bin/ticket/get?access_token=${
       encodeURIComponent(access_token)

@@ -28,6 +28,9 @@ export function intoInput(
   const input: WxwUsrInput = {
     // ID
     id: model?.id,
+    // 企微应用
+    wxw_app_id: model?.wxw_app_id,
+    wxw_app_id_lbl: model?.wxw_app_id_lbl,
     // 姓名
     lbl: model?.lbl,
     // 用户ID
@@ -338,6 +341,52 @@ export async function forceDeleteByIds(
   return res;
 }
 
+export async function findAllWxwApp(
+  search?: WxwAppSearch,
+  page?: PageInput,
+  sort?: Sort[],
+  opt?: GqlOpt,
+) {
+  const data: {
+    findAllWxwApp: WxwAppModel[];
+  } = await query({
+    query: /* GraphQL */ `
+      query($search: WxwAppSearch, $page: PageInput, $sort: [SortInput!]) {
+        findAllWxwApp(search: $search, page: $page, sort: $sort) {
+          id
+          lbl
+        }
+      }
+    `,
+    variables: {
+      search,
+      page,
+      sort,
+    },
+  }, opt);
+  const res = data.findAllWxwApp;
+  return res;
+}
+
+export async function getWxwAppList() {
+  const data = await findAllWxwApp(
+    {
+      is_enabled: [ 1 ],
+    },
+    undefined,
+    [
+      {
+        prop: "order_by",
+        order: "ascending",
+      },
+    ],
+    {
+      notLoading: true,
+    },
+  );
+  return data;
+}
+
 /**
  * 下载企微用户导入模板
  */
@@ -352,9 +401,14 @@ export function useDownloadImportTemplate() {
       query: /* GraphQL */ `
         query {
           getFieldCommentsWxwUsr {
+            wxw_app_id_lbl
             lbl
             userid
             rem
+          }
+          findAllWxwApp {
+            id
+            lbl
           }
         }
       `,
@@ -411,6 +465,9 @@ export function useExportExcel() {
           query($search: WxwUsrSearch, $sort: [SortInput!]) {
             findAllWxwUsr(search: $search, page: null, sort: $sort) {
               ${ wxwUsrQueryField }
+            }
+            findAllWxwApp {
+              lbl
             }
           }
         `,

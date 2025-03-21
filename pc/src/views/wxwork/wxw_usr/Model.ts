@@ -30,6 +30,9 @@ declare global {
 export const wxwUsrFields = [
   // ID
   "id",
+  // 企微应用
+  "wxw_app_id",
+  "wxw_app_id_lbl",
   // 姓名
   "lbl",
   // 用户ID
