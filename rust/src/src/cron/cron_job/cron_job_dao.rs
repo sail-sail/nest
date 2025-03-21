@@ -1,5 +1,6 @@
-use anyhow::Result;
+use color_eyre::eyre::Result;
 
+use std::sync::OnceLock;
 use delay_timer::prelude::*;
 
 use crate::common::context::CtxBuilder;
@@ -18,8 +19,11 @@ use crate::r#gen::cron::cron_job::cron_job_dao::{
 use crate::src::cron::job::job_dao::run_job;
 use tracing::info;
 
-lazy_static! {
-  static ref DELAY_TIMER: DelayTimer = init_delay_timer();
+static DELAY_TIMER: OnceLock<DelayTimer> = OnceLock::new();
+
+fn delay_timer() -> DelayTimer {
+  DELAY_TIMER.get_or_init(init_delay_timer)
+    .clone()
 }
 
 fn init_delay_timer() -> DelayTimer {
@@ -70,7 +74,7 @@ pub async fn remove_task(
   
   let task_id = cron_job_model.seq as u64;
   
-  let delay_timer = DELAY_TIMER.clone();
+  let delay_timer = delay_timer();
   delay_timer.remove_task(task_id)?;
   
   Ok(())
@@ -116,7 +120,7 @@ async fn new_task(
           }).await
       }
     })?;
-  let delay_timer = DELAY_TIMER.clone();
+  let delay_timer = delay_timer();
   delay_timer.insert_task(task)?;
   
   Ok(())

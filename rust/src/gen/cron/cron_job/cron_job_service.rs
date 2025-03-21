@@ -187,13 +187,13 @@ pub async fn update_by_id(
   
   let cron_job_old_model = cron_job_dao::validate_option(
     cron_job_dao::find_by_id(
-      id.clone(),
-      None,
+      cron_job_id.clone(),
+      options.clone(),
     ).await?
   ).await?;
   
-  let cron = input.cron.clone();
-  let is_enabled = input.is_enabled;
+  let cron = cron_job_input.cron.clone();
+  let is_enabled = cron_job_input.is_enabled;
   
   let cron_job_id = cron_job_dao::update_by_id(
     cron_job_id,
@@ -252,11 +252,9 @@ pub async fn delete_by_ids(
     }
   }
   
-  let cron_job_ids = ids.clone();
-  
   let num = cron_job_dao::delete_by_ids(
-    cron_job_ids,
-    options,
+    cron_job_ids.clone(),
+    options.clone(),
   ).await?;
   
   // 删除定时任务
@@ -295,7 +293,7 @@ pub async fn enable_by_ids(
   
   let models = cron_job_dao::find_all(
     Some(CronJobSearch {
-      ids: Some(ids.clone()),
+      ids: Some(cron_job_ids.clone()),
       ..Default::default()
     }),
     None,
@@ -377,10 +375,8 @@ pub async fn revert_by_ids(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let cron_job_ids = ids.clone();
-  
   let num = cron_job_dao::revert_by_ids(
-    cron_job_ids,
+    cron_job_ids.clone(),
     options,
   ).await?;
   
