@@ -11,6 +11,12 @@ import {
   validateOption as validateOptionWxUsr,
 } from "/gen/wx/wx_usr/wx_usr.dao.ts";
 
+// wx_wxo_usr
+import {
+  findById as findByIdWxoUsr,
+  validateOption as validateOptionWxoUsr,
+} from "/gen/wx/wxo_usr/wxo_usr.dao.ts";
+
 import {
   findById as findByIdTenant,
   validateOption as validateOptionTenant,
@@ -144,7 +150,7 @@ export async function transactions_jsapi(
   });
   const res = await wxPay.transactions_jsapi(params);
   log(`transactions_jsapi.result: ${ JSON.stringify(res) }`);
-  const result = res as unknown as RequestPaymentOptions;
+  const result = res.data as unknown as RequestPaymentOptions;
   /*
   {
     "status": 200,
@@ -174,6 +180,10 @@ export async function transactions_jsapi(
   );
   const tenant_id: TenantId = wx_usrModel.tenant_id;
   
+  if (!params.notify_url) {
+    throw "notify_url 未设置";
+  }
+  
   await createPayTransactionsJsapi({
     appid: obj.appid,
     mchid: obj.mchid,
@@ -186,7 +196,8 @@ export async function transactions_jsapi(
     attach: params.attach,
     attach2: attachInfo?.attach2,
     notify_url: params.notify_url,
-    support_fapiao: params.detail?.invoice_id ? 1 : 0,
+    // receipt: ,
+    // profit_sharing,
     total_fee: params.amount.total,
     currency: params.amount.currency as unknown as PayTransactionsJsapiCurrency,
     openid: params.payer.openid,
@@ -213,14 +224,32 @@ export async function getJsapiObj(
   const v3_key = wx_pay_model.v3_key;
   const payer_client_ip = wx_pay_model.payer_client_ip;
   
-  const authModel = await getAuthModel();
-  const wx_usr_id = authModel?.wx_usr_id;
+  const auth_model = await getAuthModel();
+  const wx_usr_id = auth_model?.wx_usr_id;
+  const wxo_usr_id = auth_model?.wxo_usr_id;
   
-  const wx_usrModel = await validateOptionWxUsr(
-    await findByIdWxUsr(wx_usr_id),
-  );
-  const openid = wx_usrModel.openid;
-  const tenant_id: TenantId = wx_usrModel.tenant_id;
+  let openid: string | undefined = undefined;
+  let tenant_id: TenantId | undefined = undefined;
+  
+  if (wx_usr_id) {
+    const wx_usr_model = await validateOptionWxUsr(
+      await findByIdWxUsr(wx_usr_id),
+    );
+    openid = wx_usr_model.openid;
+    tenant_id = wx_usr_model.tenant_id;
+  } else if (wxo_usr_id) {
+    const wxo_usr_model = await validateOptionWxoUsr(
+      await findByIdWxoUsr(wxo_usr_id),
+    );
+    openid = wxo_usr_model.openid;
+    tenant_id = wxo_usr_model.tenant_id;
+  }
+  if (!openid) {
+    throw "openid 未设置";
+  }
+  if (!tenant_id) {
+    throw "tenant_id 未设置";
+  }
   
   const tenantModel = await validateOptionTenant(
     await findByIdTenant(tenant_id),
