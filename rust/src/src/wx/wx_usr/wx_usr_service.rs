@@ -234,6 +234,7 @@ pub async fn code2session(
   let authorization = get_token_by_auth_model(&AuthModel {
     id: wx_usr_model.usr_id.clone(),
     wx_usr_id: Some(wx_usr_model.id.clone().into()),
+    wxo_usr_id: None,
     tenant_id: wx_app_model.tenant_id.clone(),
     org_id: org_id.clone(),
     lang: lang.clone(),

@@ -1002,9 +1002,15 @@ pub enum WxPayNoticeTradeType {
   /// app支付
   #[graphql(name="APP")]
   App,
+  /// 扫码支付
+  #[graphql(name="MICROPAY")]
+  Micropay,
   /// H5支付
   #[graphql(name="MWEB")]
   Mweb,
+  /// 刷脸支付
+  #[graphql(name="FACEPAY")]
+  Facepay,
 }
 
 impl fmt::Display for WxPayNoticeTradeType {
@@ -1013,7 +1019,9 @@ impl fmt::Display for WxPayNoticeTradeType {
       Self::Jsapi => write!(f, "JSAPI"),
       Self::Native => write!(f, "NATIVE"),
       Self::App => write!(f, "APP"),
+      Self::Micropay => write!(f, "MICROPAY"),
       Self::Mweb => write!(f, "MWEB"),
+      Self::Facepay => write!(f, "FACEPAY"),
     }
   }
 }
@@ -1024,7 +1032,9 @@ impl From<WxPayNoticeTradeType> for SmolStr {
       WxPayNoticeTradeType::Jsapi => "JSAPI".into(),
       WxPayNoticeTradeType::Native => "NATIVE".into(),
       WxPayNoticeTradeType::App => "APP".into(),
+      WxPayNoticeTradeType::Micropay => "MICROPAY".into(),
       WxPayNoticeTradeType::Mweb => "MWEB".into(),
+      WxPayNoticeTradeType::Facepay => "FACEPAY".into(),
     }
   }
 }
@@ -1035,7 +1045,9 @@ impl From<WxPayNoticeTradeType> for String {
       WxPayNoticeTradeType::Jsapi => "JSAPI".into(),
       WxPayNoticeTradeType::Native => "NATIVE".into(),
       WxPayNoticeTradeType::App => "APP".into(),
+      WxPayNoticeTradeType::Micropay => "MICROPAY".into(),
       WxPayNoticeTradeType::Mweb => "MWEB".into(),
+      WxPayNoticeTradeType::Facepay => "FACEPAY".into(),
     }
   }
 }
@@ -1054,7 +1066,9 @@ impl FromStr for WxPayNoticeTradeType {
       "JSAPI" => Ok(Self::Jsapi),
       "NATIVE" => Ok(Self::Native),
       "APP" => Ok(Self::App),
+      "MICROPAY" => Ok(Self::Micropay),
       "MWEB" => Ok(Self::Mweb),
+      "FACEPAY" => Ok(Self::Facepay),
       _ => Err(eyre!("WxPayNoticeTradeType can't convert from {s}")),
     }
   }
@@ -1066,7 +1080,9 @@ impl WxPayNoticeTradeType {
       Self::Jsapi => "JSAPI",
       Self::Native => "NATIVE",
       Self::App => "APP",
+      Self::Micropay => "MICROPAY",
       Self::Mweb => "MWEB",
+      Self::Facepay => "FACEPAY",
     }
   }
 }
@@ -1079,7 +1095,9 @@ impl TryFrom<String> for WxPayNoticeTradeType {
       "JSAPI" => Ok(Self::Jsapi),
       "NATIVE" => Ok(Self::Native),
       "APP" => Ok(Self::App),
+      "MICROPAY" => Ok(Self::Micropay),
       "MWEB" => Ok(Self::Mweb),
+      "FACEPAY" => Ok(Self::Facepay),
       _ => Err(sqlx::Error::Decode(
         Box::new(sqlx::Error::ColumnDecode {
           index: "trade_type".to_owned(),

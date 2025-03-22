@@ -1,9 +1,11 @@
 use serde::{Deserialize, Serialize};
-use smol_str::SmolStr;
 
 use crate::r#gen::base::usr::usr_model::UsrId;
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::org::org_model::OrgId;
+
+use crate::r#gen::wx::wx_usr::wx_usr_model::WxUsrId;
+use crate::r#gen::wx::wxo_usr::wxo_usr_model::WxoUsrId;
 
 pub const SECRET_KEY: &str = "38e52379-9e94-467c-8e63-17ad318fc845";
 pub const AUTHORIZATION: &str = "authorization";
@@ -18,7 +20,10 @@ pub struct AuthModel {
   pub id: UsrId,
   
   #[serde(skip_serializing_if = "Option::is_none", default)]
-  pub wx_usr_id: Option<SmolStr>,
+  pub wx_usr_id: Option<WxUsrId>,
+  
+  #[serde(skip_serializing_if = "Option::is_none", default)]
+  pub wxo_usr_id: Option<WxoUsrId>,
   
   #[serde(skip_serializing_if = "Option::is_none", default)]
   pub org_id: Option<OrgId>,
