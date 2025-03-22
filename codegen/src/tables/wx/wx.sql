@@ -255,7 +255,7 @@ CREATE TABLE if not exists `wx_wx_pay_notice` (
   `openid` varchar(128) NOT NULL DEFAULT '' COMMENT '用户标识',
   `out_trade_no` varchar(32) NOT NULL DEFAULT '' COMMENT '商户订单号',
   `transaction_id` varchar(32) NOT NULL DEFAULT '' COMMENT '微信支付订单号',
-  `trade_type` ENUM('JSAPI', 'NATIVE', 'APP', 'MWEB') NOT NULL DEFAULT 'JSAPI' COMMENT '交易类型,dict:wx_unified_order_trade_type',
+  `trade_type` ENUM('JSAPI', 'NATIVE', 'APP', 'MICROPAY', 'MWEB', 'FACEPAY') NOT NULL DEFAULT 'JSAPI' COMMENT '交易类型,dict:wx_unified_order_trade_type',
   `trade_state` ENUM('SUCCESS', 'REFUND', 'NOTPAY', 'CLOSED', 'REVOKED', 'USERPAYING', 'PAYERROR') NOT NULL DEFAULT 'NOTPAY' COMMENT '交易状态,dict:wx_pay_notice_trade_state',
   `trade_state_desc` varchar(256) NOT NULL DEFAULT '未支付' COMMENT '交易状态描述',
   `bank_type` varchar(32) NOT NULL DEFAULT '' COMMENT '付款银行',

@@ -13,7 +13,7 @@ import {
 
 import {
   create as createWxPayNotice,
-  updateById as updateByIdWxPayNotice,
+  updateTenantById as updateTenantByIdWxPayNotice,
 } from "/gen/wx/wx_pay_notice/wx_pay_notice.dao.ts";
 
 import {
@@ -170,19 +170,19 @@ export async function pay_notice(
   }
   */
   log(`pay_notice_body: ${ JSON.stringify(params.body) }`);
-  const wx_payModel0 = await findOneWxPay({
+  const wx_pay_model0 = await findOneWxPay({
     notify_url,
   });
-  if (!wx_payModel0 || !wx_payModel0.appid) {
+  if (!wx_pay_model0 || !wx_pay_model0.appid) {
     error(`回调地址: ${ notify_url } 未配置微信支付`);
     return;
   }
-  const wx_payModel = await getWxPayModel(wx_payModel0);
-  const appid = wx_payModel.appid;
-  const mchid = wx_payModel.mchid;
-  const public_key = wx_payModel.public_key;
-  const private_key = wx_payModel.private_key;
-  const v3_key = wx_payModel.v3_key;
+  const wx_pay_model = await getWxPayModel(wx_pay_model0);
+  const appid = wx_pay_model.appid;
+  const mchid = wx_pay_model.mchid;
+  const public_key = wx_pay_model.public_key;
+  const private_key = wx_pay_model.private_key;
+  const v3_key = wx_pay_model.v3_key;
   
   const result = await fetchPay_notice(
     {
@@ -223,7 +223,7 @@ export async function pay_notice(
   }
   */
   // 记录订单
-  const wx_pay_noticeId: WxPayNoticeId = await createWxPayNotice({
+  const wx_pay_notice_id: WxPayNoticeId = await createWxPayNotice({
     appid: result.appid,
     mchid: result.mchid,
     openid: result.payer.openid,
@@ -249,36 +249,34 @@ export async function pay_notice(
   const trade_state_desc = result.trade_state_desc;
   const total = result.amount.total;
   
-  const pay_transactions_jsapiModel = await validateOptionTransactionsJsapi(
+  const pay_transactions_jsapi_model = await validateOptionTransactionsJsapi(
     await findOnePayTransactionsJsapi({
       out_trade_no,
     }),
   );
-  const pay_transactions_jsapi_id: PayTransactionsJsapiId = pay_transactions_jsapiModel.id;
-  const tenant_id: TenantId = pay_transactions_jsapiModel.tenant_id;
-  const attach2 = pay_transactions_jsapiModel.attach2;
+  const pay_transactions_jsapi_id: PayTransactionsJsapiId = pay_transactions_jsapi_model.id;
+  const tenant_id: TenantId = pay_transactions_jsapi_model.tenant_id;
+  const attach2 = pay_transactions_jsapi_model.attach2;
   
-  if (trade_state === "SUCCESS" && trade_type === "JSAPI") {
-    await updateByIdWxPayNotice(
-      wx_pay_noticeId,
-      {
-        tenant_id,
-      },
-    );
-    
-    await updateByIdTransactionsJsapi(
-      pay_transactions_jsapi_id,
-      {
-        transaction_id,
-        trade_state,
-        trade_state_desc,
-        success_time,
-      },
-    );
-  } else {
-    error(`支付回调失败: ${ JSON.stringify(result) }`);
+  await updateTenantByIdWxPayNotice(
+    wx_pay_notice_id,
+    tenant_id,
+  );
+  
+  await updateByIdTransactionsJsapi(
+    pay_transactions_jsapi_id,
+    {
+      transaction_id,
+      trade_state,
+      trade_state_desc,
+      success_time,
+    },
+  );
+  
+  if (trade_state !== "SUCCESS") {
     return;
   }
+  
   if (isEmpty(attach2)) {
     error(`pay_notice_attach2: attach2 为空!`);
     return;
