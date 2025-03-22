@@ -8,13 +8,13 @@ import {
 
 import * as wx_pay_noticeService from "./wx_pay_notice.service.ts";
 
-const routerPrefix = "/api/wx_pay_notice/";
+const routerPrefix = "/api/wx_pay/";
 
 const router = new Router({
   prefix: routerPrefix,
 });
 
-router.post("pay_notice", async function(ctx) {
+router.post("wx_pay_notify", async function(ctx) {
   const request = ctx.request;
   const response = ctx.response;
   const headers = request.headers;
