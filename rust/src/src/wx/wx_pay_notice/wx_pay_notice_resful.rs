@@ -11,7 +11,10 @@ pub async fn wx_pay_notify(
   wx_pay_notify: WxPayNotify,
 ) -> Response {
   
-  let data = wx_pay_notice_service::wx_pay_notify(wx_pay_notify).await;
+  let data = wx_pay_notice_service::wx_pay_notify(
+    wx_pay_notify,
+    None,
+  ).await;
   
   if let Err(err) = &data  {
     return Response::builder()

@@ -3,7 +3,7 @@ use color_eyre::eyre::{Result, eyre};
 use crate::common::context::{
   Options,
   get_short_uuid,
-  get_auth_id_err,
+  get_auth_model_err,
 };
 use crate::common::wx_pay::{Amount, Jsapi, Payer, WxPayData, WxPay, SceneInfo};
 
@@ -19,10 +19,15 @@ use crate::r#gen::wx::wx_pay::wx_pay_model::WxPaySearch;
 
 // wx_usr
 use crate::r#gen::wx::wx_usr::wx_usr_dao::{
-  find_one as find_one_wx_usr,
+  find_by_id as find_by_id_wx_usr,
   validate_option as validate_option_wx_usr,
 };
-use crate::r#gen::wx::wx_usr::wx_usr_model::WxUsrSearch;
+
+// wxo_usr
+use crate::r#gen::wx::wxo_usr::wxo_usr_dao::{
+  find_by_id as find_by_id_wxo_usr,
+  validate_option as validate_option_wxo_usr,
+};
 
 use crate::r#gen::wx::pay_transactions_jsapi::pay_transactions_jsapi_model::{
   PayTransactionsJsapiTradeState,
@@ -33,6 +38,7 @@ use crate::r#gen::wx::pay_transactions_jsapi::pay_transactions_jsapi_dao::create
 use super::pay_transactions_jsapi_model::TransactionsJsapiInput;
 
 use crate::common::oss::oss_dao::get_object;
+use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 生成商户订单号 out_trade_no
 fn get_out_trade_no() -> String {
@@ -69,22 +75,44 @@ pub async fn transactions_jsapi(
     &wx_pay_model,
   ).await?;
   
-  // 当前用户
-  let auth_id = get_auth_id_err()?;
+  // 当前登录用户有可能尚未绑定微信
+  let auth_model = get_auth_model_err()?;
   
-  let wx_usr_model = validate_option_wx_usr(
-    find_one_wx_usr(
-      Some(WxUsrSearch {
-        usr_id: Some(vec![auth_id]),
-        ..Default::default()
-      }),
-      None,
-      options.clone(),
-    ).await?
-  ).await?;
+  let wx_usr_id = auth_model.wx_usr_id;
+  let wxo_usr_id = auth_model.wxo_usr_id;
   
-  let openid = wx_usr_model.openid;
-  let tenant_id = wx_usr_model.tenant_id;
+  let mut openid: Option<String> = None;
+  let mut tenant_id: Option<TenantId> = None;
+  
+  if let Some(wx_usr_id) = wx_usr_id {
+    let wx_usr_model = validate_option_wx_usr(
+      find_by_id_wx_usr(
+        wx_usr_id,
+        options.clone(),
+      ).await?
+    ).await?;
+    openid = Some(wx_usr_model.openid);
+    tenant_id = Some(wx_usr_model.tenant_id);
+  } else if let Some(wxo_usr_id) = wxo_usr_id {
+    let wx_usr_model = validate_option_wxo_usr(
+      find_by_id_wxo_usr(
+        wxo_usr_id,
+        options.clone(),
+      ).await?
+    ).await?;
+    openid = Some(wx_usr_model.openid);
+    tenant_id = Some(wx_usr_model.tenant_id);
+  }
+  
+  if openid.is_none() || openid.as_ref().unwrap().is_empty() {
+    return Err(eyre!("openid 不能为空"));
+  }
+  let openid = openid.unwrap();
+  
+  if tenant_id.is_none() || tenant_id.as_ref().unwrap().is_empty() {
+    return Err(eyre!("tenant_id 不能为空"));
+  }
+  let tenant_id = tenant_id.unwrap();
   
   let private_key_str: Option<String> = {
     if wx_pay_model.private_key.is_empty() {
