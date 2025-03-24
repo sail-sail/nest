@@ -477,7 +477,9 @@ pub async fn update_by_id(
   let usr_id = get_auth_id_err()?;
   if !is_admin(usr_id, options.clone()).await? &&
     old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
-    old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected {<#
+    old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected &&
+    old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unaudited
+  {<#
     if (isUseI18n) {
     #>
     let table_comment = ns(
@@ -488,12 +490,12 @@ pub async fn update_by_id(
       ("0".to_owned(), table_comment),
     ]);
     let err_msg = ns(
-      "只有未提交的 {0} 才能编辑".to_owned(),
+      "只有待提交或待审核的 {0} 才能编辑".to_owned(),
       map.into(),
     ).await?;<#
     } else {
     #>
-    let err_msg = "只有未提交的 <#=table_comment#> 才能编辑";<#
+    let err_msg = "只有待提交或待审核的 <#=table_comment#> 才能编辑";<#
     }
     #>
     return Err(eyre!(err_msg));
@@ -629,12 +631,12 @@ pub async fn audit_submit(
       ("0".to_owned(), table_comment),
     ]);
     let err_msg = ns(
-      "只有未提交或者审核拒绝的 {0} 才能 审核提交".to_owned(),
+      "只有待提交或者审核拒绝的 {0} 才能 审核提交".to_owned(),
       map.into(),
     ).await?;<#
     } else {
     #>
-    let err_msg = "只有未提交或者审核拒绝的 <#=table_comment#> 才能 审核提交";<#
+    let err_msg = "只有待提交或者审核拒绝的 <#=table_comment#> 才能 审核提交";<#
     }
     #>
     return Err(eyre!(err_msg));
@@ -1092,7 +1094,9 @@ pub async fn delete_by_ids(
   if !is_admin(usr_id, options.clone()).await? {
     for old_model in &old_models {
       if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
-        old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected {<#
+        old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected &&
+        old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unaudited
+      {<#
         if (isUseI18n) {
         #>
         let table_comment = ns(
@@ -1103,12 +1107,12 @@ pub async fn delete_by_ids(
           ("0".to_owned(), table_comment),
         ]);
         let err_msg = ns(
-          "只有未提交的 {0} 才能删除".to_owned(),
+          "只有待提交或待审核的 {0} 才能删除".to_owned(),
           map.into(),
         ).await?;<#
         } else {
         #>
-        let err_msg = "只有未提交的 <#=table_comment#> 才能删除";<#
+        let err_msg = "只有待提交或待审核的 <#=table_comment#> 才能删除";<#
         }
         #>
         return Err(eyre!(err_msg));
