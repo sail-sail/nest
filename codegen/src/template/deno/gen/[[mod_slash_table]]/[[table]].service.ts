@@ -524,14 +524,15 @@ export async function updateById(
   if (
     !isAdmin(usr_id) &&
     old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited &&
-    old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected
+    old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected &&
+    old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unaudited
   ) {<#
     if (isUseI18n) {
     #>
-    throw await ns("只有未提交的 {0} 才能编辑", await ns("<#=table_comment#>"));<#
+    throw await ns("只有待提交或待审核的 {0} 才能编辑", await ns("<#=table_comment#>"));<#
     } else {
     #>
-    throw "只有未提交的 <#=table_comment#> 才能编辑";<#
+    throw "只有待提交或待审核的 <#=table_comment#> 才能编辑";<#
     }
     #>
   }<#
@@ -643,10 +644,10 @@ export async function auditSubmit(
     if (isUseI18n) {
     #>
     const table_comment = await ns("<#=table_comment#>");
-    throw await ns("只有未提交或者审核拒绝的 {0} 才能 审核提交", table_comment);<#
+    throw await ns("只有待提交或者审核拒绝的 {0} 才能 审核提交", table_comment);<#
     } else {
     #>
-    throw "只有未提交或者审核拒绝的 <#=table_comment#> 才能 审核提交";<#
+    throw "只有待提交或者审核拒绝的 <#=table_comment#> 才能 审核提交";<#
     }
     #>
   }<#
@@ -982,14 +983,15 @@ export async function deleteByIds(
   if (!await isAdmin(usr_id)) {
     for (const old_model of old_models) {
       if (old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unsubmited &&
-        old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected
+        old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Rejected &&
+        old_model.<#=auditColumn#> !== <#=Table_Up#><#=auditColumnUp#>.Unaudited
       ) {<#
         if (isUseI18n) {
         #>
-        throw await ns("只有未提交的 {0} 才能删除", await ns("<#=table_comment#>"));<#
+        throw await ns("只有待提交或待审核的 {0} 才能删除", await ns("<#=table_comment#>"));<#
         } else {
         #>
-        throw "只有未提交的 <#=table_comment#> 才能删除";<#
+        throw "只有待提交或待审核的 <#=table_comment#> 才能删除";<#
         }
         #>
       }
