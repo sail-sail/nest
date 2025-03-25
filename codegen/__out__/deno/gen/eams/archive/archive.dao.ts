@@ -54,7 +54,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -68,11 +68,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneCompany,
+  findOneCompany,
 } from "/gen/eams/company/company.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -197,9 +197,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountArchive
 /** 根据条件查找全宗设置总数 */
-export async function findCount(
+export async function findCountArchive(
   search?: Readonly<ArchiveSearch>,
   options?: {
     is_debug?: boolean;
@@ -208,12 +208,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "eams_archive";
-  const method = "findCount";
+  const method = "findCountArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -285,9 +285,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllArchive
 /** 根据搜索条件和分页查找全宗设置列表 */
-export async function findAll(
+export async function findAllArchive(
   search?: Readonly<ArchiveSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -298,7 +298,7 @@ export async function findAll(
 ): Promise<ArchiveModel[]> {
   
   const table = "eams_archive";
-  const method = "findAll";
+  const method = "findAllArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -455,9 +455,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblArchive
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblArchive(
   input: ArchiveInput,
 ) {
   
@@ -492,9 +492,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsArchive
 /** 获取全宗设置字段注释 */
-export async function getFieldComments(): Promise<ArchiveFieldComment> {
+export async function getFieldCommentsArchive(): Promise<ArchiveFieldComment> {
   const fieldComments: ArchiveFieldComment = {
     id: "ID",
     code: "编号",
@@ -515,9 +515,9 @@ export async function getFieldComments(): Promise<ArchiveFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueArchive
 /** 通过唯一约束获得全宗设置列表 */
-export async function findByUnique(
+export async function findByUniqueArchive(
   search0: Readonly<ArchiveInput>,
   options?: {
     is_debug?: boolean;
@@ -525,7 +525,7 @@ export async function findByUnique(
 ): Promise<ArchiveModel[]> {
   
   const table = "eams_archive";
-  const method = "findByUnique";
+  const method = "findByUniqueArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -543,7 +543,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneArchive(
       {
         id: search0.id,
       },
@@ -561,7 +561,7 @@ export async function findByUnique(
       return [ ];
     }
     const code = search0.code;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllArchive(
       {
         code,
       },
@@ -576,7 +576,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllArchive(
       {
         lbl,
       },
@@ -591,7 +591,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueArchive(
   oldModel: Readonly<ArchiveModel>,
   input: Readonly<ArchiveInput>,
 ): boolean {
@@ -612,9 +612,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueArchive
 /** 通过唯一约束检查 全宗设置 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueArchive(
   input: Readonly<ArchiveInput>,
   oldModel: Readonly<ArchiveModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -626,14 +626,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueArchive(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 全宗设置 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: ArchiveId = await updateById(
+      const id: ArchiveId = await updateByIdArchive(
         oldModel.id,
         {
           ...input,
@@ -650,9 +650,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneArchive
 /** 根据条件查找第一全宗设置 */
-export async function findOne(
+export async function findOneArchive(
   search?: Readonly<ArchiveSearch>,
   sort?: SortInput[],
   options?: {
@@ -661,7 +661,7 @@ export async function findOne(
 ): Promise<ArchiveModel | undefined> {
   
   const table = "eams_archive";
-  const method = "findOne";
+  const method = "findOneArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -688,7 +688,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllArchive(
     search,
     page,
     sort,
@@ -698,9 +698,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdArchive
 /** 根据 id 查找全宗设置 */
-export async function findById(
+export async function findByIdArchive(
   id?: ArchiveId | null,
   options?: {
     is_debug?: boolean;
@@ -708,7 +708,7 @@ export async function findById(
 ): Promise<ArchiveModel | undefined> {
   
   const table = "eams_archive";
-  const method = "findById";
+  const method = "findByIdArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -729,7 +729,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneArchive(
     {
       id,
     },
@@ -740,9 +740,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsArchive
 /** 根据 ids 查找全宗设置 */
-export async function findByIds(
+export async function findByIdsArchive(
   ids: ArchiveId[],
   options?: {
     is_debug?: boolean;
@@ -750,7 +750,7 @@ export async function findByIds(
 ): Promise<ArchiveModel[]> {
   
   const table = "eams_archive";
-  const method = "findByIds";
+  const method = "findByIdsArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -771,7 +771,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllArchive(
     {
       ids,
     },
@@ -797,9 +797,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existArchive
 /** 根据搜索条件判断全宗设置是否存在 */
-export async function exist(
+export async function existArchive(
   search?: Readonly<ArchiveSearch>,
   options?: {
     is_debug?: boolean;
@@ -807,7 +807,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "eams_archive";
-  const method = "exist";
+  const method = "existArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -823,15 +823,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneArchive(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdArchive
 /** 根据id判断全宗设置是否存在 */
-export async function existById(
+export async function existByIdArchive(
   id?: Readonly<ArchiveId | null>,
   options?: {
     is_debug?: boolean;
@@ -839,7 +839,7 @@ export async function existById(
 ) {
   
   const table = "eams_archive";
-  const method = "existById";
+  const method = "existByIdArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -881,9 +881,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionArchive
 /** 校验全宗设置是否存在 */
-export async function validateOption(
+export async function validateOptionArchive(
   model?: ArchiveModel,
 ) {
   if (!model) {
@@ -894,12 +894,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateArchive
 /** 全宗设置增加和修改时校验输入 */
-export async function validate(
+export async function validateArchive(
   input: Readonly<ArchiveInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsArchive();
   
   // ID
   await validators.chars_max_length(
@@ -952,9 +952,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnArchive
 /** 创建 全宗设置 并返回 */
-export async function createReturn(
+export async function createReturnArchive(
   input: Readonly<ArchiveInput>,
   options?: {
     is_debug?: boolean;
@@ -965,7 +965,7 @@ export async function createReturn(
 ): Promise<ArchiveModel> {
   
   const table = "eams_archive";
-  const method = "createReturn";
+  const method = "createReturnArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -990,8 +990,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionArchive(
+    await findOneArchive(
       {
         id,
       },
@@ -1003,9 +1003,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createArchive
 /** 创建 全宗设置 */
-export async function create(
+export async function createArchive(
   input: Readonly<ArchiveInput>,
   options?: {
     is_debug?: boolean;
@@ -1016,7 +1016,7 @@ export async function create(
 ): Promise<ArchiveId> {
   
   const table = "eams_archive";
-  const method = "create";
+  const method = "createArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1044,9 +1044,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnArchive
 /** 批量创建 全宗设置 并返回 */
-export async function createsReturn(
+export async function createsReturnArchive(
   inputs: ArchiveInput[],
   options?: {
     is_debug?: boolean;
@@ -1057,7 +1057,7 @@ export async function createsReturn(
 ): Promise<ArchiveModel[]> {
   
   const table = "eams_archive";
-  const method = "createsReturn";
+  const method = "createsReturnArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1076,14 +1076,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsArchive(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsArchive
 /** 批量创建 全宗设置 */
-export async function creates(
+export async function createsArchive(
   inputs: ArchiveInput[],
   options?: {
     is_debug?: boolean;
@@ -1094,7 +1094,7 @@ export async function creates(
 ): Promise<ArchiveId[]> {
   
   const table = "eams_archive";
-  const method = "creates";
+  const method = "createsArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1143,11 +1143,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueArchive(input, options);
     if (oldModels.length > 0) {
       let id: ArchiveId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueArchive(
           input,
           oldModel,
           options?.uniqueType,
@@ -1177,7 +1177,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheArchive();
   
   const args = new QueryArgs();
   let sql = "insert into eams_archive(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,company_id,order_by,rem)values";
@@ -1319,20 +1319,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheArchive();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheArchive
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheArchive() {
   await delCacheCtx(`dao.sql.eams_archive`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdArchive
 /** 全宗设置 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdArchive(
   id: ArchiveId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1341,7 +1341,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "eams_archive";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1371,13 +1371,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheArchive();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdArchive
 /** 根据 id 修改 全宗设置 */
-export async function updateById(
+export async function updateByIdArchive(
   id: ArchiveId,
   input: ArchiveInput,
   options?: {
@@ -1389,7 +1389,7 @@ export async function updateById(
 ): Promise<ArchiveId> {
   
   const table = "eams_archive";
-  const method = "updateById";
+  const method = "updateByIdArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1412,15 +1412,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdArchive: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdArchive: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdArchive(id, input.tenant_id, options);
   }
   
   {
@@ -1428,7 +1428,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueArchive(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1439,7 +1439,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdArchive(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 全宗设置 已被删除";
@@ -1554,7 +1554,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheArchive();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1562,7 +1562,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheArchive();
   }
   
   if (!is_silent_mode) {
@@ -1572,9 +1572,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsArchive
 /** 根据 ids 删除 全宗设置 */
-export async function deleteByIds(
+export async function deleteByIdsArchive(
   ids: ArchiveId[],
   options?: {
     is_debug?: boolean;
@@ -1584,7 +1584,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "eams_archive";
-  const method = "deleteByIds";
+  const method = "deleteByIdsArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1607,12 +1607,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheArchive();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdArchive(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1645,14 +1645,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheArchive();
   
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsArchive
 /** 根据 ids 还原 全宗设置 */
-export async function revertByIds(
+export async function revertByIdsArchive(
   ids: ArchiveId[],
   options?: {
     is_debug?: boolean;
@@ -1660,7 +1660,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "eams_archive";
-  const method = "revertByIds";
+  const method = "revertByIdsArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1681,12 +1681,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheArchive();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneArchive(
       {
         id,
         is_deleted: 1,
@@ -1695,7 +1695,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdArchive(
         id,
         options,
       );
@@ -1708,7 +1708,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as ArchiveInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueArchive(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1722,14 +1722,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheArchive();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsArchive
 /** 根据 ids 彻底删除 全宗设置 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsArchive(
   ids: ArchiveId[],
   options?: {
     is_debug?: boolean;
@@ -1738,7 +1738,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "eams_archive";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsArchive";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1760,12 +1760,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheArchive();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneArchive(
       {
         id,
         is_deleted: 1,
@@ -1782,21 +1782,21 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheArchive();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByArchive
 /** 查找 全宗设置 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByArchive(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "eams_archive";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByArchive";
   
   const is_debug = get_is_debug(options?.is_debug);
   

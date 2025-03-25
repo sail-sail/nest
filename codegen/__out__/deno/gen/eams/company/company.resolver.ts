@@ -29,10 +29,10 @@ export async function findCountCompany(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountCompany,
   } = await import("./company.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountCompany(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllCompany(
 ): Promise<CompanyModel[]> {
   
   const {
-    findAll,
+    findAllCompany,
   } = await import("./company.service.ts");
   
   checkSortCompany(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllCompany(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllCompany(
 export async function getFieldCommentsCompany(): Promise<CompanyFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsCompany,
   } = await import("./company.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsCompany();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneCompany(
 ): Promise<CompanyModel | undefined> {
   
   const {
-    findOne,
+    findOneCompany,
   } = await import("./company.service.ts");
   
   checkSortCompany(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneCompany(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdCompany(
 ): Promise<CompanyModel | undefined> {
   
   const {
-    findById,
+    findByIdCompany,
   } = await import("./company.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdCompany(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsCompany(
 ): Promise<CompanyModel[]> {
   
   const {
-    findByIds,
+    findByIdsCompany,
   } = await import("./company.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsCompany(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsCompany(
 ): Promise<CompanyId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateCompany,
+    setIdByLblCompany,
+    createsCompany,
   } = await import("./company.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsCompany(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblCompany(input);
     
-    await validate(input);
+    await validateCompany(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsCompany(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdCompany(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblCompany,
+    updateByIdCompany,
   } = await import("./company.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblCompany(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: CompanyId = await updateById(id, input);
+  const id2: CompanyId = await updateByIdCompany(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsCompany(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsCompany,
   } = await import("./company.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsCompany(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsCompany(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsCompany(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsCompany,
   } = await import("./company.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsCompany(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsCompany(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsCompany(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsCompany,
   } = await import("./company.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsCompany(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsCompany(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsCompany(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsCompany,
   } = await import("./company.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsCompany(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsCompany(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsCompany(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsCompany,
   } = await import("./company.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsCompany(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsCompany(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsCompany(
 export async function findLastOrderByCompany(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByCompany,
   } = await import("./company.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByCompany();
   
   return res;
 }

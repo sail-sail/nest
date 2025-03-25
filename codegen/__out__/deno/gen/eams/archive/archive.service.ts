@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找全宗设置总数
  */
-export async function findCount(
+export async function findCountArchive(
   search?: ArchiveSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const archive_num = await archiveDao.findCount(search);
+  const archive_num = await archiveDao.findCountArchive(search);
   
   return archive_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找全宗设置列表
  */
-export async function findAll(
+export async function findAllArchive(
   search?: ArchiveSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const archive_models = await archiveDao.findAll(search, page, sort);
+  const archive_models = await archiveDao.findAllArchive(search, page, sort);
   
   return archive_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblArchive(
   input: ArchiveInput,
 ): Promise<void> {
-  await archiveDao.setIdByLbl(input);
+  await archiveDao.setIdByLblArchive(input);
 }
 
 /**
  * 根据条件查找第一个全宗设置
  */
-export async function findOne(
+export async function findOneArchive(
   search?: ArchiveSearch,
   sort?: SortInput[],
 ): Promise<ArchiveModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const archive_model = await archiveDao.findOne(search, sort);
+  const archive_model = await archiveDao.findOneArchive(search, sort);
   
   return archive_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找全宗设置
  */
-export async function findById(
+export async function findByIdArchive(
   archive_id?: ArchiveId | null,
 ): Promise<ArchiveModel | undefined> {
   
-  const archive_model = await archiveDao.findById(archive_id);
+  const archive_model = await archiveDao.findByIdArchive(archive_id);
   
   return archive_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找全宗设置
  */
-export async function findByIds(
+export async function findByIdsArchive(
   archive_ids: ArchiveId[],
 ): Promise<ArchiveModel[]> {
   
-  const archive_models = await archiveDao.findByIds(archive_ids);
+  const archive_models = await archiveDao.findByIdsArchive(archive_ids);
   
   return archive_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找全宗设置是否存在
  */
-export async function exist(
+export async function existArchive(
   search?: ArchiveSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const archive_exist = await archiveDao.exist(search);
+  const archive_exist = await archiveDao.existArchive(search);
   
   return archive_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找全宗设置是否存在
  */
-export async function existById(
+export async function existByIdArchive(
   archive_id?: ArchiveId | null,
 ): Promise<boolean> {
   
-  const archive_exist = await archiveDao.existById(archive_id);
+  const archive_exist = await archiveDao.existByIdArchive(archive_id);
   
   return archive_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验全宗设置
  */
-export async function validate(
+export async function validateArchive(
   input: ArchiveInput,
 ): Promise<void> {
-  await archiveDao.validate(input);
+  await archiveDao.validateArchive(input);
 }
 
 /**
  * 批量创建全宗设置
  */
-export async function creates(
+export async function createsArchive(
   inputs: ArchiveInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<ArchiveId[]> {
-  const archive_ids = await archiveDao.creates(inputs, options);
+  const archive_ids = await archiveDao.createsArchive(inputs, options);
   
   return archive_ids;
 }
@@ -150,43 +150,43 @@ export async function creates(
 /**
  * 根据 id 修改全宗设置
  */
-export async function updateById(
+export async function updateByIdArchive(
   archive_id: ArchiveId,
   input: ArchiveInput,
 ): Promise<ArchiveId> {
   
-  const archive_id2 = await archiveDao.updateById(archive_id, input);
+  const archive_id2 = await archiveDao.updateByIdArchive(archive_id, input);
   
   return archive_id2;
 }
 
 /** 校验全宗设置是否存在 */
-export async function validateOption(
+export async function validateOptionArchive(
   model0?: ArchiveModel,
 ): Promise<ArchiveModel> {
-  const archive_model = await archiveDao.validateOption(model0);
+  const archive_model = await archiveDao.validateOptionArchive(model0);
   return archive_model;
 }
 
 /**
  * 根据 ids 删除全宗设置
  */
-export async function deleteByIds(
+export async function deleteByIdsArchive(
   archive_ids: ArchiveId[],
 ): Promise<number> {
   
-  const archive_num = await archiveDao.deleteByIds(archive_ids);
+  const archive_num = await archiveDao.deleteByIdsArchive(archive_ids);
   return archive_num;
 }
 
 /**
  * 根据 ids 还原全宗设置
  */
-export async function revertByIds(
+export async function revertByIdsArchive(
   archive_ids: ArchiveId[],
 ): Promise<number> {
   
-  const archive_num = await archiveDao.revertByIds(archive_ids);
+  const archive_num = await archiveDao.revertByIdsArchive(archive_ids);
   
   return archive_num;
 }
@@ -194,11 +194,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除全宗设置
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsArchive(
   archive_ids: ArchiveId[],
 ): Promise<number> {
   
-  const archive_num = await archiveDao.forceDeleteByIds(archive_ids);
+  const archive_num = await archiveDao.forceDeleteByIdsArchive(archive_ids);
   
   return archive_num;
 }
@@ -206,16 +206,16 @@ export async function forceDeleteByIds(
 /**
  * 获取全宗设置字段注释
  */
-export async function getFieldComments(): Promise<ArchiveFieldComment> {
-  const archive_fields = await archiveDao.getFieldComments();
+export async function getFieldCommentsArchive(): Promise<ArchiveFieldComment> {
+  const archive_fields = await archiveDao.getFieldCommentsArchive();
   return archive_fields;
 }
 
 /**
  * 查找 全宗设置 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByArchive(
 ): Promise<number> {
-  const archive_sort = await archiveDao.findLastOrderBy();
+  const archive_sort = await archiveDao.findLastOrderByArchive();
   return archive_sort;
 }

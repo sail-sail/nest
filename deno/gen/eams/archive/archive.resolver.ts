@@ -29,10 +29,10 @@ export async function findCountArchive(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountArchive,
   } = await import("./archive.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountArchive(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllArchive(
 ): Promise<ArchiveModel[]> {
   
   const {
-    findAll,
+    findAllArchive,
   } = await import("./archive.service.ts");
   
   checkSortArchive(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllArchive(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllArchive(
 export async function getFieldCommentsArchive(): Promise<ArchiveFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsArchive,
   } = await import("./archive.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsArchive();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneArchive(
 ): Promise<ArchiveModel | undefined> {
   
   const {
-    findOne,
+    findOneArchive,
   } = await import("./archive.service.ts");
   
   checkSortArchive(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneArchive(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdArchive(
 ): Promise<ArchiveModel | undefined> {
   
   const {
-    findById,
+    findByIdArchive,
   } = await import("./archive.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdArchive(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsArchive(
 ): Promise<ArchiveModel[]> {
   
   const {
-    findByIds,
+    findByIdsArchive,
   } = await import("./archive.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsArchive(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsArchive(
 ): Promise<ArchiveId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateArchive,
+    setIdByLblArchive,
+    createsArchive,
   } = await import("./archive.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsArchive(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblArchive(input);
     
-    await validate(input);
+    await validateArchive(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsArchive(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdArchive(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblArchive,
+    updateByIdArchive,
   } = await import("./archive.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblArchive(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: ArchiveId = await updateById(id, input);
+  const id2: ArchiveId = await updateByIdArchive(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsArchive(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsArchive,
   } = await import("./archive.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsArchive(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsArchive(ids);
   
   return num;
 }
@@ -219,7 +219,7 @@ export async function revertByIdsArchive(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsArchive,
   } = await import("./archive.service.ts");
   
   set_is_tran(true);
@@ -229,7 +229,7 @@ export async function revertByIdsArchive(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsArchive(ids);
   
   return res;
 }
@@ -242,7 +242,7 @@ export async function forceDeleteByIdsArchive(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsArchive,
   } = await import("./archive.service.ts");
   
   set_is_tran(true);
@@ -252,7 +252,7 @@ export async function forceDeleteByIdsArchive(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsArchive(ids);
   
   return res;
 }
@@ -263,10 +263,10 @@ export async function forceDeleteByIdsArchive(
 export async function findLastOrderByArchive(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByArchive,
   } = await import("./archive.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByArchive();
   
   return res;
 }
