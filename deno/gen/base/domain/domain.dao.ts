@@ -64,7 +64,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -176,9 +176,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountDomain
 /** 根据条件查找域名总数 */
-export async function findCount(
+export async function findCountDomain(
   search?: Readonly<DomainSearch>,
   options?: {
     is_debug?: boolean;
@@ -187,12 +187,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_domain";
-  const method = "findCount";
+  const method = "findCountDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -286,9 +286,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllDomain
 /** 根据搜索条件和分页查找域名列表 */
-export async function findAll(
+export async function findAllDomain(
   search?: Readonly<DomainSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -299,7 +299,7 @@ export async function findAll(
 ): Promise<DomainModel[]> {
   
   const table = "base_domain";
-  const method = "findAll";
+  const method = "findAllDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -514,9 +514,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblDomain
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblDomain(
   input: DomainInput,
 ) {
   
@@ -568,9 +568,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsDomain
 /** 获取域名字段注释 */
-export async function getFieldComments(): Promise<DomainFieldComment> {
+export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
   const fieldComments: DomainFieldComment = {
     id: "ID",
     protocol: "协议",
@@ -595,9 +595,9 @@ export async function getFieldComments(): Promise<DomainFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueDomain
 /** 通过唯一约束获得域名列表 */
-export async function findByUnique(
+export async function findByUniqueDomain(
   search0: Readonly<DomainInput>,
   options?: {
     is_debug?: boolean;
@@ -605,7 +605,7 @@ export async function findByUnique(
 ): Promise<DomainModel[]> {
   
   const table = "base_domain";
-  const method = "findByUnique";
+  const method = "findByUniqueDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -623,7 +623,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneDomain(
       {
         id: search0.id,
       },
@@ -641,7 +641,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllDomain(
       {
         lbl,
       },
@@ -656,7 +656,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueDomain(
   oldModel: Readonly<DomainModel>,
   input: Readonly<DomainInput>,
 ): boolean {
@@ -672,9 +672,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueDomain
 /** 通过唯一约束检查 域名 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueDomain(
   input: Readonly<DomainInput>,
   oldModel: Readonly<DomainModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -686,14 +686,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueDomain(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 域名 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: DomainId = await updateById(
+      const id: DomainId = await updateByIdDomain(
         oldModel.id,
         {
           ...input,
@@ -710,9 +710,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneDomain
 /** 根据条件查找第一域名 */
-export async function findOne(
+export async function findOneDomain(
   search?: Readonly<DomainSearch>,
   sort?: SortInput[],
   options?: {
@@ -721,7 +721,7 @@ export async function findOne(
 ): Promise<DomainModel | undefined> {
   
   const table = "base_domain";
-  const method = "findOne";
+  const method = "findOneDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -748,7 +748,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllDomain(
     search,
     page,
     sort,
@@ -758,9 +758,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdDomain
 /** 根据 id 查找域名 */
-export async function findById(
+export async function findByIdDomain(
   id?: DomainId | null,
   options?: {
     is_debug?: boolean;
@@ -768,7 +768,7 @@ export async function findById(
 ): Promise<DomainModel | undefined> {
   
   const table = "base_domain";
-  const method = "findById";
+  const method = "findByIdDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -789,7 +789,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneDomain(
     {
       id,
     },
@@ -800,9 +800,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsDomain
 /** 根据 ids 查找域名 */
-export async function findByIds(
+export async function findByIdsDomain(
   ids: DomainId[],
   options?: {
     is_debug?: boolean;
@@ -810,7 +810,7 @@ export async function findByIds(
 ): Promise<DomainModel[]> {
   
   const table = "base_domain";
-  const method = "findByIds";
+  const method = "findByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -831,7 +831,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllDomain(
     {
       ids,
     },
@@ -857,9 +857,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existDomain
 /** 根据搜索条件判断域名是否存在 */
-export async function exist(
+export async function existDomain(
   search?: Readonly<DomainSearch>,
   options?: {
     is_debug?: boolean;
@@ -867,7 +867,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_domain";
-  const method = "exist";
+  const method = "existDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -883,15 +883,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneDomain(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdDomain
 /** 根据id判断域名是否存在 */
-export async function existById(
+export async function existByIdDomain(
   id?: Readonly<DomainId | null>,
   options?: {
     is_debug?: boolean;
@@ -899,7 +899,7 @@ export async function existById(
 ) {
   
   const table = "base_domain";
-  const method = "existById";
+  const method = "existByIdDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -941,9 +941,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledDomain
 /** 校验域名是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledDomain(
   model: Readonly<DomainModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -951,9 +951,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionDomain
 /** 校验域名是否存在 */
-export async function validateOption(
+export async function validateOptionDomain(
   model?: DomainModel,
 ) {
   if (!model) {
@@ -964,12 +964,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateDomain
 /** 域名增加和修改时校验输入 */
-export async function validate(
+export async function validateDomain(
   input: Readonly<DomainInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsDomain();
   
   // ID
   await validators.chars_max_length(
@@ -1015,9 +1015,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnDomain
 /** 创建 域名 并返回 */
-export async function createReturn(
+export async function createReturnDomain(
   input: Readonly<DomainInput>,
   options?: {
     is_debug?: boolean;
@@ -1028,7 +1028,7 @@ export async function createReturn(
 ): Promise<DomainModel> {
   
   const table = "base_domain";
-  const method = "createReturn";
+  const method = "createReturnDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1053,8 +1053,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionDomain(
+    await findOneDomain(
       {
         id,
       },
@@ -1066,9 +1066,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createDomain
 /** 创建 域名 */
-export async function create(
+export async function createDomain(
   input: Readonly<DomainInput>,
   options?: {
     is_debug?: boolean;
@@ -1079,7 +1079,7 @@ export async function create(
 ): Promise<DomainId> {
   
   const table = "base_domain";
-  const method = "create";
+  const method = "createDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1107,9 +1107,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnDomain
 /** 批量创建 域名 并返回 */
-export async function createsReturn(
+export async function createsReturnDomain(
   inputs: DomainInput[],
   options?: {
     is_debug?: boolean;
@@ -1120,7 +1120,7 @@ export async function createsReturn(
 ): Promise<DomainModel[]> {
   
   const table = "base_domain";
-  const method = "createsReturn";
+  const method = "createsReturnDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1139,14 +1139,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsDomain(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsDomain
 /** 批量创建 域名 */
-export async function creates(
+export async function createsDomain(
   inputs: DomainInput[],
   options?: {
     is_debug?: boolean;
@@ -1157,7 +1157,7 @@ export async function creates(
 ): Promise<DomainId[]> {
   
   const table = "base_domain";
-  const method = "creates";
+  const method = "createsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1206,11 +1206,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueDomain(input, options);
     if (oldModels.length > 0) {
       let id: DomainId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueDomain(
           input,
           oldModel,
           options?.uniqueType,
@@ -1240,7 +1240,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheDomain();
   
   const args = new QueryArgs();
   let sql = "insert into base_domain(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,protocol,lbl,is_locked,is_default,is_enabled,order_by,rem)values";
@@ -1379,20 +1379,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheDomain();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheDomain
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheDomain() {
   await delCacheCtx(`dao.sql.base_domain`);
 }
 
-// MARK: updateById
+// MARK: updateByIdDomain
 /** 根据 id 修改 域名 */
-export async function updateById(
+export async function updateByIdDomain(
   id: DomainId,
   input: DomainInput,
   options?: {
@@ -1404,7 +1404,7 @@ export async function updateById(
 ): Promise<DomainId> {
   
   const table = "base_domain";
-  const method = "updateById";
+  const method = "updateByIdDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1427,10 +1427,10 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdDomain: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdDomain: input cannot be null");
   }
   
   {
@@ -1438,7 +1438,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueDomain(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1449,7 +1449,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdDomain(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 域名 已被删除";
@@ -1576,7 +1576,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheDomain();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1584,7 +1584,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheDomain();
   }
   
   if (!is_silent_mode) {
@@ -1594,9 +1594,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsDomain
 /** 根据 ids 删除 域名 */
-export async function deleteByIds(
+export async function deleteByIdsDomain(
   ids: DomainId[],
   options?: {
     is_debug?: boolean;
@@ -1606,7 +1606,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_domain";
-  const method = "deleteByIds";
+  const method = "deleteByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1629,12 +1629,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDomain();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdDomain(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1672,27 +1672,27 @@ export async function deleteByIds(
     }
   }
   
-  await delCache();
+  await delCacheDomain();
   
   return affectedRows;
 }
 
-// MARK: defaultById
+// MARK: defaultByIdDomain
 /** 根据 id 设置默认域名 */
-export async function defaultById(
+export async function defaultByIdDomain(
   id: DomainId,
   options?: {
   },
 ): Promise<number> {
   
   const table = "base_domain";
-  const method = "defaultById";
+  const method = "defaultByIdDomain";
   
   if (!id) {
-    throw new Error("defaultById: id cannot be empty");
+    throw new Error("defaultByIdDomain: id cannot be empty");
   }
   
-  await delCache();
+  await delCacheDomain();
   
   {
     const args = new QueryArgs();
@@ -1705,14 +1705,14 @@ export async function defaultById(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheDomain();
   
   return num;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdDomain
 /** 根据 id 查找 域名 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdDomain(
   id: DomainId,
   options?: {
     is_debug?: boolean;
@@ -1722,7 +1722,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdDomain(
     id,
     options,
   );
@@ -1731,9 +1731,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsDomain
 /** 根据 ids 启用或者禁用 域名 */
-export async function enableByIds(
+export async function enableByIdsDomain(
   ids: DomainId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1742,7 +1742,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "base_domain";
-  const method = "enableByIds";
+  const method = "enableByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1767,7 +1767,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheDomain();
   }
   
   const args = new QueryArgs();
@@ -1775,14 +1775,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheDomain();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdDomain
 /** 根据 id 查找 域名 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdDomain(
   id: DomainId,
   options?: {
     is_debug?: boolean;
@@ -1792,18 +1792,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const domain_model = await findByIdDomain(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = domain_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsDomain
 /** 根据 ids 锁定或者解锁 域名 */
-export async function lockByIds(
+export async function lockByIdsDomain(
   ids: DomainId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -1812,7 +1812,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "base_domain";
-  const method = "lockByIds";
+  const method = "lockByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1836,21 +1836,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDomain();
   
   const args = new QueryArgs();
   let sql = `update base_domain set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheDomain();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsDomain
 /** 根据 ids 还原 域名 */
-export async function revertByIds(
+export async function revertByIdsDomain(
   ids: DomainId[],
   options?: {
     is_debug?: boolean;
@@ -1858,7 +1858,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_domain";
-  const method = "revertByIds";
+  const method = "revertByIdsDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1879,12 +1879,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDomain();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneDomain(
       {
         id,
         is_deleted: 1,
@@ -1893,7 +1893,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdDomain(
         id,
         options,
       );
@@ -1906,7 +1906,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as DomainInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueDomain(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1920,14 +1920,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheDomain();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsDomain
 /** 根据 ids 彻底删除 域名 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDomain(
   ids: DomainId[],
   options?: {
     is_debug?: boolean;
@@ -1936,7 +1936,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_domain";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsDomain";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1958,12 +1958,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDomain();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneDomain(
       {
         id,
         is_deleted: 1,
@@ -1985,21 +1985,21 @@ export async function forceDeleteByIds(
     }
   }
   
-  await delCache();
+  await delCacheDomain();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByDomain
 /** 查找 域名 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByDomain(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_domain";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByDomain";
   
   const is_debug = get_is_debug(options?.is_debug);
   

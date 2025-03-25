@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -76,11 +76,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneOrg,
+  findOneOrg,
 } from "/gen/base/org/org.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -240,9 +240,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountDept
 /** 根据条件查找部门总数 */
-export async function findCount(
+export async function findCountDept(
   search?: Readonly<DeptSearch>,
   options?: {
     is_debug?: boolean;
@@ -251,12 +251,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_dept";
-  const method = "findCount";
+  const method = "findCountDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -372,9 +372,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllDept
 /** 根据搜索条件和分页查找部门列表 */
-export async function findAll(
+export async function findAllDept(
   search?: Readonly<DeptSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -385,7 +385,7 @@ export async function findAll(
 ): Promise<DeptModel[]> {
   
   const table = "base_dept";
-  const method = "findAll";
+  const method = "findAllDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -642,9 +642,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblDept
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblDept(
   input: DeptInput,
 ) {
   
@@ -663,7 +663,7 @@ export async function setIdByLbl(
   // 父部门
   if (isNotEmpty(input.parent_id_lbl) && input.parent_id == null) {
     input.parent_id_lbl = String(input.parent_id_lbl).trim();
-    const deptModel = await findOne(
+    const deptModel = await findOneDept(
       {
         lbl: input.parent_id_lbl,
       },
@@ -674,7 +674,7 @@ export async function setIdByLbl(
       input.parent_id = deptModel.id;
     }
   } else if (isEmpty(input.parent_id_lbl) && input.parent_id != null) {
-    const dept_model = await findOne(
+    const dept_model = await findOneDept(
       {
         id: input.parent_id,
       },
@@ -757,9 +757,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsDept
 /** 获取部门字段注释 */
-export async function getFieldComments(): Promise<DeptFieldComment> {
+export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
   const fieldComments: DeptFieldComment = {
     id: "ID",
     parent_id: "父部门",
@@ -787,9 +787,9 @@ export async function getFieldComments(): Promise<DeptFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueDept
 /** 通过唯一约束获得部门列表 */
-export async function findByUnique(
+export async function findByUniqueDept(
   search0: Readonly<DeptInput>,
   options?: {
     is_debug?: boolean;
@@ -797,7 +797,7 @@ export async function findByUnique(
 ): Promise<DeptModel[]> {
   
   const table = "base_dept";
-  const method = "findByUnique";
+  const method = "findByUniqueDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -815,7 +815,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneDept(
       {
         id: search0.id,
       },
@@ -842,7 +842,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllDept(
       {
         parent_id,
         lbl,
@@ -858,7 +858,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueDept(
   oldModel: Readonly<DeptModel>,
   input: Readonly<DeptInput>,
 ): boolean {
@@ -875,9 +875,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueDept
 /** 通过唯一约束检查 部门 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueDept(
   input: Readonly<DeptInput>,
   oldModel: Readonly<DeptModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -889,14 +889,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueDept(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 部门 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: DeptId = await updateById(
+      const id: DeptId = await updateByIdDept(
         oldModel.id,
         {
           ...input,
@@ -913,9 +913,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneDept
 /** 根据条件查找第一部门 */
-export async function findOne(
+export async function findOneDept(
   search?: Readonly<DeptSearch>,
   sort?: SortInput[],
   options?: {
@@ -924,7 +924,7 @@ export async function findOne(
 ): Promise<DeptModel | undefined> {
   
   const table = "base_dept";
-  const method = "findOne";
+  const method = "findOneDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -951,7 +951,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllDept(
     search,
     page,
     sort,
@@ -961,9 +961,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdDept
 /** 根据 id 查找部门 */
-export async function findById(
+export async function findByIdDept(
   id?: DeptId | null,
   options?: {
     is_debug?: boolean;
@@ -971,7 +971,7 @@ export async function findById(
 ): Promise<DeptModel | undefined> {
   
   const table = "base_dept";
-  const method = "findById";
+  const method = "findByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -992,7 +992,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneDept(
     {
       id,
     },
@@ -1003,9 +1003,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsDept
 /** 根据 ids 查找部门 */
-export async function findByIds(
+export async function findByIdsDept(
   ids: DeptId[],
   options?: {
     is_debug?: boolean;
@@ -1013,7 +1013,7 @@ export async function findByIds(
 ): Promise<DeptModel[]> {
   
   const table = "base_dept";
-  const method = "findByIds";
+  const method = "findByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1034,7 +1034,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllDept(
     {
       ids,
     },
@@ -1060,9 +1060,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existDept
 /** 根据搜索条件判断部门是否存在 */
-export async function exist(
+export async function existDept(
   search?: Readonly<DeptSearch>,
   options?: {
     is_debug?: boolean;
@@ -1070,7 +1070,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_dept";
-  const method = "exist";
+  const method = "existDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1086,15 +1086,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneDept(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdDept
 /** 根据id判断部门是否存在 */
-export async function existById(
+export async function existByIdDept(
   id?: Readonly<DeptId | null>,
   options?: {
     is_debug?: boolean;
@@ -1102,7 +1102,7 @@ export async function existById(
 ) {
   
   const table = "base_dept";
-  const method = "existById";
+  const method = "existByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1144,9 +1144,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledDept
 /** 校验部门是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledDept(
   model: Readonly<DeptModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -1154,9 +1154,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionDept
 /** 校验部门是否存在 */
-export async function validateOption(
+export async function validateOptionDept(
   model?: DeptModel,
 ) {
   if (!model) {
@@ -1167,12 +1167,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateDept
 /** 部门增加和修改时校验输入 */
-export async function validate(
+export async function validateDept(
   input: Readonly<DeptInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsDept();
   
   // ID
   await validators.chars_max_length(
@@ -1225,9 +1225,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnDept
 /** 创建 部门 并返回 */
-export async function createReturn(
+export async function createReturnDept(
   input: Readonly<DeptInput>,
   options?: {
     is_debug?: boolean;
@@ -1238,7 +1238,7 @@ export async function createReturn(
 ): Promise<DeptModel> {
   
   const table = "base_dept";
-  const method = "createReturn";
+  const method = "createReturnDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1263,8 +1263,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionDept(
+    await findOneDept(
       {
         id,
       },
@@ -1276,9 +1276,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createDept
 /** 创建 部门 */
-export async function create(
+export async function createDept(
   input: Readonly<DeptInput>,
   options?: {
     is_debug?: boolean;
@@ -1289,7 +1289,7 @@ export async function create(
 ): Promise<DeptId> {
   
   const table = "base_dept";
-  const method = "create";
+  const method = "createDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1317,9 +1317,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnDept
 /** 批量创建 部门 并返回 */
-export async function createsReturn(
+export async function createsReturnDept(
   inputs: DeptInput[],
   options?: {
     is_debug?: boolean;
@@ -1330,7 +1330,7 @@ export async function createsReturn(
 ): Promise<DeptModel[]> {
   
   const table = "base_dept";
-  const method = "createsReturn";
+  const method = "createsReturnDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1349,14 +1349,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsDept(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsDept
 /** 批量创建 部门 */
-export async function creates(
+export async function createsDept(
   inputs: DeptInput[],
   options?: {
     is_debug?: boolean;
@@ -1367,7 +1367,7 @@ export async function creates(
 ): Promise<DeptId[]> {
   
   const table = "base_dept";
-  const method = "creates";
+  const method = "createsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1416,11 +1416,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueDept(input, options);
     if (oldModels.length > 0) {
       let id: DeptId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueDept(
           input,
           oldModel,
           options?.uniqueType,
@@ -1450,7 +1450,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheDept();
   
   const args = new QueryArgs();
   let sql = "insert into base_dept(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,parent_id,lbl,is_locked,is_enabled,order_by,org_id_lbl,org_id,rem)values";
@@ -1623,20 +1623,20 @@ async function _creates(
     );
   }
   
-  await delCache();
+  await delCacheDept();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheDept
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheDept() {
   await delCacheCtx(`dao.sql.base_dept`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdDept
 /** 部门 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdDept(
   id: DeptId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1645,7 +1645,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "base_dept";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1675,13 +1675,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheDept();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdDept
 /** 根据 id 修改 部门 */
-export async function updateById(
+export async function updateByIdDept(
   id: DeptId,
   input: DeptInput,
   options?: {
@@ -1693,7 +1693,7 @@ export async function updateById(
 ): Promise<DeptId> {
   
   const table = "base_dept";
-  const method = "updateById";
+  const method = "updateByIdDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1716,15 +1716,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdDept: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdDept: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdDept(id, input.tenant_id, options);
   }
   
   {
@@ -1732,7 +1732,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueDept(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1743,7 +1743,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdDept(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 部门 已被删除";
@@ -1892,7 +1892,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheDept();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1900,7 +1900,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheDept();
   }
   
   if (!is_silent_mode) {
@@ -1910,9 +1910,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsDept
 /** 根据 ids 删除 部门 */
-export async function deleteByIds(
+export async function deleteByIdsDept(
   ids: DeptId[],
   options?: {
     is_debug?: boolean;
@@ -1922,7 +1922,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_dept";
-  const method = "deleteByIds";
+  const method = "deleteByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1945,12 +1945,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDept();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdDept(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1996,14 +1996,14 @@ export async function deleteByIds(
     }
   }
   
-  await delCache();
+  await delCacheDept();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdDept
 /** 根据 id 查找 部门 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdDept(
   id: DeptId,
   options?: {
     is_debug?: boolean;
@@ -2013,7 +2013,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdDept(
     id,
     options,
   );
@@ -2022,9 +2022,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsDept
 /** 根据 ids 启用或者禁用 部门 */
-export async function enableByIds(
+export async function enableByIdsDept(
   ids: DeptId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -2033,7 +2033,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "base_dept";
-  const method = "enableByIds";
+  const method = "enableByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2058,7 +2058,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheDept();
   }
   
   const args = new QueryArgs();
@@ -2066,14 +2066,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheDept();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdDept
 /** 根据 id 查找 部门 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdDept(
   id: DeptId,
   options?: {
     is_debug?: boolean;
@@ -2083,18 +2083,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const dept_model = await findByIdDept(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = dept_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsDept
 /** 根据 ids 锁定或者解锁 部门 */
-export async function lockByIds(
+export async function lockByIdsDept(
   ids: DeptId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -2103,7 +2103,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "base_dept";
-  const method = "lockByIds";
+  const method = "lockByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2127,21 +2127,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDept();
   
   const args = new QueryArgs();
   let sql = `update base_dept set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheDept();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsDept
 /** 根据 ids 还原 部门 */
-export async function revertByIds(
+export async function revertByIdsDept(
   ids: DeptId[],
   options?: {
     is_debug?: boolean;
@@ -2149,7 +2149,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_dept";
-  const method = "revertByIds";
+  const method = "revertByIdsDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2170,12 +2170,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDept();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneDept(
       {
         id,
         is_deleted: 1,
@@ -2184,7 +2184,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdDept(
         id,
         options,
       );
@@ -2197,7 +2197,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as DeptInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueDept(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -2219,14 +2219,14 @@ export async function revertByIds(
     }
   }
   
-  await delCache();
+  await delCacheDept();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsDept
 /** 根据 ids 彻底删除 部门 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDept(
   ids: DeptId[],
   options?: {
     is_debug?: boolean;
@@ -2235,7 +2235,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_dept";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsDept";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2257,12 +2257,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDept();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneDept(
       {
         id,
         is_deleted: 1,
@@ -2292,21 +2292,21 @@ export async function forceDeleteByIds(
     }
   }
   
-  await delCache();
+  await delCacheDept();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByDept
 /** 查找 部门 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByDept(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_dept";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByDept";
   
   const is_debug = get_is_debug(options?.is_debug);
   
