@@ -29,10 +29,10 @@ export async function findCountTenant(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountTenant,
   } = await import("./tenant.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountTenant(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllTenant(
 ): Promise<TenantModel[]> {
   
   const {
-    findAll,
+    findAllTenant,
   } = await import("./tenant.service.ts");
   
   checkSortTenant(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllTenant(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllTenant(
 export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsTenant,
   } = await import("./tenant.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsTenant();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneTenant(
 ): Promise<TenantModel | undefined> {
   
   const {
-    findOne,
+    findOneTenant,
   } = await import("./tenant.service.ts");
   
   checkSortTenant(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneTenant(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdTenant(
 ): Promise<TenantModel | undefined> {
   
   const {
-    findById,
+    findByIdTenant,
   } = await import("./tenant.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdTenant(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsTenant(
 ): Promise<TenantModel[]> {
   
   const {
-    findByIds,
+    findByIdsTenant,
   } = await import("./tenant.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsTenant(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsTenant(
 ): Promise<TenantId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateTenant,
+    setIdByLblTenant,
+    createsTenant,
   } = await import("./tenant.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsTenant(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblTenant(input);
     
-    await validate(input);
+    await validateTenant(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsTenant(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdTenant(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblTenant,
+    updateByIdTenant,
   } = await import("./tenant.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblTenant(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: TenantId = await updateById(id, input);
+  const id2: TenantId = await updateByIdTenant(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsTenant(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsTenant,
   } = await import("./tenant.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsTenant(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsTenant(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsTenant(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsTenant,
   } = await import("./tenant.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsTenant(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsTenant(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsTenant(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsTenant,
   } = await import("./tenant.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsTenant(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsTenant(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsTenant(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsTenant,
   } = await import("./tenant.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsTenant(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsTenant(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsTenant(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsTenant,
   } = await import("./tenant.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsTenant(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsTenant(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsTenant(
 export async function findLastOrderByTenant(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByTenant,
   } = await import("./tenant.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByTenant();
   
   return res;
 }

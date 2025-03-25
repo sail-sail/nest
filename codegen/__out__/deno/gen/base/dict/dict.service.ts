@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找系统字典总数
  */
-export async function findCount(
+export async function findCountDict(
   search?: DictSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const dict_num = await dictDao.findCount(search);
+  const dict_num = await dictDao.findCountDict(search);
   
   return dict_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找系统字典列表
  */
-export async function findAll(
+export async function findAllDict(
   search?: DictSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const dict_models = await dictDao.findAll(search, page, sort);
+  const dict_models = await dictDao.findAllDict(search, page, sort);
   
   return dict_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblDict(
   input: DictInput,
 ): Promise<void> {
-  await dictDao.setIdByLbl(input);
+  await dictDao.setIdByLblDict(input);
 }
 
 /**
  * 根据条件查找第一个系统字典
  */
-export async function findOne(
+export async function findOneDict(
   search?: DictSearch,
   sort?: SortInput[],
 ): Promise<DictModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const dict_model = await dictDao.findOne(search, sort);
+  const dict_model = await dictDao.findOneDict(search, sort);
   
   return dict_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找系统字典
  */
-export async function findById(
+export async function findByIdDict(
   dict_id?: DictId | null,
 ): Promise<DictModel | undefined> {
   
-  const dict_model = await dictDao.findById(dict_id);
+  const dict_model = await dictDao.findByIdDict(dict_id);
   
   return dict_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找系统字典
  */
-export async function findByIds(
+export async function findByIdsDict(
   dict_ids: DictId[],
 ): Promise<DictModel[]> {
   
-  const dict_models = await dictDao.findByIds(dict_ids);
+  const dict_models = await dictDao.findByIdsDict(dict_ids);
   
   return dict_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找系统字典是否存在
  */
-export async function exist(
+export async function existDict(
   search?: DictSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const dict_exist = await dictDao.exist(search);
+  const dict_exist = await dictDao.existDict(search);
   
   return dict_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找系统字典是否存在
  */
-export async function existById(
+export async function existByIdDict(
   dict_id?: DictId | null,
 ): Promise<boolean> {
   
-  const dict_exist = await dictDao.existById(dict_id);
+  const dict_exist = await dictDao.existByIdDict(dict_id);
   
   return dict_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验系统字典
  */
-export async function validate(
+export async function validateDict(
   input: DictInput,
 ): Promise<void> {
-  await dictDao.validate(input);
+  await dictDao.validateDict(input);
 }
 
 /**
  * 批量创建系统字典
  */
-export async function creates(
+export async function createsDict(
   inputs: DictInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<DictId[]> {
-  const dict_ids = await dictDao.creates(inputs, options);
+  const dict_ids = await dictDao.createsDict(inputs, options);
   
   return dict_ids;
 }
@@ -150,13 +150,13 @@ export async function creates(
 /**
  * 根据 id 修改系统字典
  */
-export async function updateById(
+export async function updateByIdDict(
   dict_id: DictId,
   input: DictInput,
 ): Promise<DictId> {
   
-  const old_model = await dictDao.validateOption(
-    await dictDao.findById(dict_id),
+  const old_model = await dictDao.validateOptionDict(
+    await dictDao.findByIdDict(dict_id),
   );
   
   // 不能修改系统记录的系统字段
@@ -171,27 +171,27 @@ export async function updateById(
     input.is_enabled_lbl = "";
   }
   
-  const dict_id2 = await dictDao.updateById(dict_id, input);
+  const dict_id2 = await dictDao.updateByIdDict(dict_id, input);
   
   return dict_id2;
 }
 
 /** 校验系统字典是否存在 */
-export async function validateOption(
+export async function validateOptionDict(
   model0?: DictModel,
 ): Promise<DictModel> {
-  const dict_model = await dictDao.validateOption(model0);
+  const dict_model = await dictDao.validateOptionDict(model0);
   return dict_model;
 }
 
 /**
  * 根据 ids 删除系统字典
  */
-export async function deleteByIds(
+export async function deleteByIdsDict(
   dict_ids: DictId[],
 ): Promise<number> {
   
-  const old_models = await dictDao.findByIds(dict_ids);
+  const old_models = await dictDao.findByIdsDict(dict_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -199,29 +199,29 @@ export async function deleteByIds(
     }
   }
   
-  const dict_num = await dictDao.deleteByIds(dict_ids);
+  const dict_num = await dictDao.deleteByIdsDict(dict_ids);
   return dict_num;
 }
 
 /**
  * 根据 ids 启用或者禁用系统字典
  */
-export async function enableByIds(
+export async function enableByIdsDict(
   ids: DictId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const dict_num = await dictDao.enableByIds(ids, is_enabled);
+  const dict_num = await dictDao.enableByIdsDict(ids, is_enabled);
   return dict_num;
 }
 
 /**
  * 根据 ids 还原系统字典
  */
-export async function revertByIds(
+export async function revertByIdsDict(
   dict_ids: DictId[],
 ): Promise<number> {
   
-  const dict_num = await dictDao.revertByIds(dict_ids);
+  const dict_num = await dictDao.revertByIdsDict(dict_ids);
   
   return dict_num;
 }
@@ -229,11 +229,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除系统字典
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDict(
   dict_ids: DictId[],
 ): Promise<number> {
   
-  const dict_num = await dictDao.forceDeleteByIds(dict_ids);
+  const dict_num = await dictDao.forceDeleteByIdsDict(dict_ids);
   
   return dict_num;
 }
@@ -241,16 +241,16 @@ export async function forceDeleteByIds(
 /**
  * 获取系统字典字段注释
  */
-export async function getFieldComments(): Promise<DictFieldComment> {
-  const dict_fields = await dictDao.getFieldComments();
+export async function getFieldCommentsDict(): Promise<DictFieldComment> {
+  const dict_fields = await dictDao.getFieldCommentsDict();
   return dict_fields;
 }
 
 /**
  * 查找 系统字典 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByDict(
 ): Promise<number> {
-  const dict_sort = await dictDao.findLastOrderBy();
+  const dict_sort = await dictDao.findLastOrderByDict();
   return dict_sort;
 }
