@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -72,7 +72,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -196,9 +196,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountOptbiz
 /** 根据条件查找业务选项总数 */
-export async function findCount(
+export async function findCountOptbiz(
   search?: Readonly<OptbizSearch>,
   options?: {
     is_debug?: boolean;
@@ -207,12 +207,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_optbiz";
-  const method = "findCount";
+  const method = "findCountOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -295,9 +295,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllOptbiz
 /** 根据搜索条件和分页查找业务选项列表 */
-export async function findAll(
+export async function findAllOptbiz(
   search?: Readonly<OptbizSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -308,7 +308,7 @@ export async function findAll(
 ): Promise<OptbizModel[]> {
   
   const table = "base_optbiz";
-  const method = "findAll";
+  const method = "findAllOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -500,9 +500,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblOptbiz
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblOptbiz(
   input: OptbizInput,
 ) {
   
@@ -541,9 +541,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsOptbiz
 /** 获取业务选项字段注释 */
-export async function getFieldComments(): Promise<OptbizFieldComment> {
+export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
   const fieldComments: OptbizFieldComment = {
     id: "ID",
     lbl: "名称",
@@ -567,9 +567,9 @@ export async function getFieldComments(): Promise<OptbizFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueOptbiz
 /** 通过唯一约束获得业务选项列表 */
-export async function findByUnique(
+export async function findByUniqueOptbiz(
   search0: Readonly<OptbizInput>,
   options?: {
     is_debug?: boolean;
@@ -577,7 +577,7 @@ export async function findByUnique(
 ): Promise<OptbizModel[]> {
   
   const table = "base_optbiz";
-  const method = "findByUnique";
+  const method = "findByUniqueOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -595,7 +595,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneOptbiz(
       {
         id: search0.id,
       },
@@ -617,7 +617,7 @@ export async function findByUnique(
       return [ ];
     }
     const ky = search0.ky;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllOptbiz(
       {
         lbl,
         ky,
@@ -633,7 +633,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueOptbiz(
   oldModel: Readonly<OptbizModel>,
   input: Readonly<OptbizInput>,
 ): boolean {
@@ -650,9 +650,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueOptbiz
 /** 通过唯一约束检查 业务选项 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueOptbiz(
   input: Readonly<OptbizInput>,
   oldModel: Readonly<OptbizModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -664,14 +664,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueOptbiz(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 业务选项 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: OptbizId = await updateById(
+      const id: OptbizId = await updateByIdOptbiz(
         oldModel.id,
         {
           ...input,
@@ -688,9 +688,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneOptbiz
 /** 根据条件查找第一业务选项 */
-export async function findOne(
+export async function findOneOptbiz(
   search?: Readonly<OptbizSearch>,
   sort?: SortInput[],
   options?: {
@@ -699,7 +699,7 @@ export async function findOne(
 ): Promise<OptbizModel | undefined> {
   
   const table = "base_optbiz";
-  const method = "findOne";
+  const method = "findOneOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -726,7 +726,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllOptbiz(
     search,
     page,
     sort,
@@ -736,9 +736,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdOptbiz
 /** 根据 id 查找业务选项 */
-export async function findById(
+export async function findByIdOptbiz(
   id?: OptbizId | null,
   options?: {
     is_debug?: boolean;
@@ -746,7 +746,7 @@ export async function findById(
 ): Promise<OptbizModel | undefined> {
   
   const table = "base_optbiz";
-  const method = "findById";
+  const method = "findByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -767,7 +767,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneOptbiz(
     {
       id,
     },
@@ -778,9 +778,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsOptbiz
 /** 根据 ids 查找业务选项 */
-export async function findByIds(
+export async function findByIdsOptbiz(
   ids: OptbizId[],
   options?: {
     is_debug?: boolean;
@@ -788,7 +788,7 @@ export async function findByIds(
 ): Promise<OptbizModel[]> {
   
   const table = "base_optbiz";
-  const method = "findByIds";
+  const method = "findByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -809,7 +809,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllOptbiz(
     {
       ids,
     },
@@ -835,9 +835,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existOptbiz
 /** 根据搜索条件判断业务选项是否存在 */
-export async function exist(
+export async function existOptbiz(
   search?: Readonly<OptbizSearch>,
   options?: {
     is_debug?: boolean;
@@ -845,7 +845,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_optbiz";
-  const method = "exist";
+  const method = "existOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -861,15 +861,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneOptbiz(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdOptbiz
 /** 根据id判断业务选项是否存在 */
-export async function existById(
+export async function existByIdOptbiz(
   id?: Readonly<OptbizId | null>,
   options?: {
     is_debug?: boolean;
@@ -877,7 +877,7 @@ export async function existById(
 ) {
   
   const table = "base_optbiz";
-  const method = "existById";
+  const method = "existByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -919,9 +919,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledOptbiz
 /** 校验业务选项是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledOptbiz(
   model: Readonly<OptbizModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -929,9 +929,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionOptbiz
 /** 校验业务选项是否存在 */
-export async function validateOption(
+export async function validateOptionOptbiz(
   model?: OptbizModel,
 ) {
   if (!model) {
@@ -942,12 +942,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateOptbiz
 /** 业务选项增加和修改时校验输入 */
-export async function validate(
+export async function validateOptbiz(
   input: Readonly<OptbizInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsOptbiz();
   
   // ID
   await validators.chars_max_length(
@@ -1000,9 +1000,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnOptbiz
 /** 创建 业务选项 并返回 */
-export async function createReturn(
+export async function createReturnOptbiz(
   input: Readonly<OptbizInput>,
   options?: {
     is_debug?: boolean;
@@ -1013,7 +1013,7 @@ export async function createReturn(
 ): Promise<OptbizModel> {
   
   const table = "base_optbiz";
-  const method = "createReturn";
+  const method = "createReturnOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1038,8 +1038,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionOptbiz(
+    await findOneOptbiz(
       {
         id,
       },
@@ -1051,9 +1051,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createOptbiz
 /** 创建 业务选项 */
-export async function create(
+export async function createOptbiz(
   input: Readonly<OptbizInput>,
   options?: {
     is_debug?: boolean;
@@ -1064,7 +1064,7 @@ export async function create(
 ): Promise<OptbizId> {
   
   const table = "base_optbiz";
-  const method = "create";
+  const method = "createOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1092,9 +1092,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnOptbiz
 /** 批量创建 业务选项 并返回 */
-export async function createsReturn(
+export async function createsReturnOptbiz(
   inputs: OptbizInput[],
   options?: {
     is_debug?: boolean;
@@ -1105,7 +1105,7 @@ export async function createsReturn(
 ): Promise<OptbizModel[]> {
   
   const table = "base_optbiz";
-  const method = "createsReturn";
+  const method = "createsReturnOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1124,14 +1124,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsOptbiz(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsOptbiz
 /** 批量创建 业务选项 */
-export async function creates(
+export async function createsOptbiz(
   inputs: OptbizInput[],
   options?: {
     is_debug?: boolean;
@@ -1142,7 +1142,7 @@ export async function creates(
 ): Promise<OptbizId[]> {
   
   const table = "base_optbiz";
-  const method = "creates";
+  const method = "createsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1191,11 +1191,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueOptbiz(input, options);
     if (oldModels.length > 0) {
       let id: OptbizId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueOptbiz(
           input,
           oldModel,
           options?.uniqueType,
@@ -1225,7 +1225,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheOptbiz();
   
   const args = new QueryArgs();
   let sql = "insert into base_optbiz(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,ky,val,is_locked,is_enabled,order_by,rem,is_sys)values";
@@ -1382,20 +1382,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheOptbiz();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheOptbiz
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheOptbiz() {
   await delCacheCtx(`dao.sql.base_optbiz`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdOptbiz
 /** 业务选项 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdOptbiz(
   id: OptbizId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1404,7 +1404,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "base_optbiz";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1434,17 +1434,17 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheOptbiz();
   return affectedRows;
 }
 
-// MARK: getVersionById
+// MARK: getVersionByIdOptbiz
 /** 根据 id 获取业务选项版本号 */
-export async function getVersionById(
+export async function getVersionByIdOptbiz(
   id: OptbizId,
 ): Promise<number> {
   
-  const model = await findById(
+  const model = await findByIdOptbiz(
     id,
     {
       is_debug: false,
@@ -1458,9 +1458,9 @@ export async function getVersionById(
   return version;
 }
 
-// MARK: updateById
+// MARK: updateByIdOptbiz
 /** 根据 id 修改 业务选项 */
-export async function updateById(
+export async function updateByIdOptbiz(
   id: OptbizId,
   input: OptbizInput,
   options?: {
@@ -1472,7 +1472,7 @@ export async function updateById(
 ): Promise<OptbizId> {
   
   const table = "base_optbiz";
-  const method = "updateById";
+  const method = "updateByIdOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1495,15 +1495,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdOptbiz: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdOptbiz: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdOptbiz(id, input.tenant_id, options);
   }
   
   {
@@ -1511,7 +1511,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueOptbiz(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1522,7 +1522,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdOptbiz(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 业务选项 已被删除";
@@ -1643,7 +1643,7 @@ export async function updateById(
     }
     if (!is_silent_mode) {
       if (input.version != null) {
-        const version = await getVersionById(id);
+        const version = await getVersionByIdOptbiz(id);
         if (version && version > input.version) {
           throw "此 业务选项 已被修改，请刷新后重试";
         }
@@ -1668,7 +1668,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheOptbiz();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1676,7 +1676,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheOptbiz();
   }
   
   if (!is_silent_mode) {
@@ -1686,9 +1686,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsOptbiz
 /** 根据 ids 删除 业务选项 */
-export async function deleteByIds(
+export async function deleteByIdsOptbiz(
   ids: OptbizId[],
   options?: {
     is_debug?: boolean;
@@ -1698,7 +1698,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_optbiz";
-  const method = "deleteByIds";
+  const method = "deleteByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1721,12 +1721,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheOptbiz();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdOptbiz(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1759,14 +1759,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheOptbiz();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdOptbiz
 /** 根据 id 查找 业务选项 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdOptbiz(
   id: OptbizId,
   options?: {
     is_debug?: boolean;
@@ -1776,7 +1776,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdOptbiz(
     id,
     options,
   );
@@ -1785,9 +1785,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsOptbiz
 /** 根据 ids 启用或者禁用 业务选项 */
-export async function enableByIds(
+export async function enableByIdsOptbiz(
   ids: OptbizId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1796,7 +1796,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "base_optbiz";
-  const method = "enableByIds";
+  const method = "enableByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1821,7 +1821,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheOptbiz();
   }
   
   const args = new QueryArgs();
@@ -1829,14 +1829,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheOptbiz();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdOptbiz
 /** 根据 id 查找 业务选项 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdOptbiz(
   id: OptbizId,
   options?: {
     is_debug?: boolean;
@@ -1846,18 +1846,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const optbiz_model = await findByIdOptbiz(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = optbiz_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsOptbiz
 /** 根据 ids 锁定或者解锁 业务选项 */
-export async function lockByIds(
+export async function lockByIdsOptbiz(
   ids: OptbizId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -1866,7 +1866,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "base_optbiz";
-  const method = "lockByIds";
+  const method = "lockByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1890,21 +1890,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheOptbiz();
   
   const args = new QueryArgs();
   let sql = `update base_optbiz set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheOptbiz();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsOptbiz
 /** 根据 ids 还原 业务选项 */
-export async function revertByIds(
+export async function revertByIdsOptbiz(
   ids: OptbizId[],
   options?: {
     is_debug?: boolean;
@@ -1912,7 +1912,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_optbiz";
-  const method = "revertByIds";
+  const method = "revertByIdsOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1933,12 +1933,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheOptbiz();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneOptbiz(
       {
         id,
         is_deleted: 1,
@@ -1947,7 +1947,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdOptbiz(
         id,
         options,
       );
@@ -1960,7 +1960,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as OptbizInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueOptbiz(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1974,14 +1974,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheOptbiz();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsOptbiz
 /** 根据 ids 彻底删除 业务选项 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsOptbiz(
   ids: OptbizId[],
   options?: {
     is_debug?: boolean;
@@ -1990,7 +1990,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_optbiz";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsOptbiz";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2012,12 +2012,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheOptbiz();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneOptbiz(
       {
         id,
         is_deleted: 1,
@@ -2034,21 +2034,21 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheOptbiz();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByOptbiz
 /** 查找 业务选项 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByOptbiz(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_optbiz";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByOptbiz";
   
   const is_debug = get_is_debug(options?.is_debug);
   

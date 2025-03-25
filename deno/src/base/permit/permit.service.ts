@@ -12,19 +12,19 @@ export async function getUsrPermits(): Promise<GetUsrPermits[]> {
   } = await import("/lib/auth/auth.dao.ts");
   
   const {
-    findAll: findAllPermit,
+    findAllPermit,
   } = await import("/gen/base/permit/permit.dao.ts");
   
   const {
-    findById: findByIdUsr,
+    findByIdUsr,
   } = await import("/gen/base/usr/usr.dao.ts");
   
   const {
-    findById: findByIdMenu,
+    findByIdMenu,
   } = await import("/gen/base/menu/menu.dao.ts");
   
   const {
-    findAll: findAllRole,
+    findAllRole,
   } = await import("/gen/base/role/role.dao.ts");
   
   const authModel = await getAuthModel(false);
@@ -133,19 +133,19 @@ export async function usePermit(
   } = await import("/lib/auth/auth.dao.ts");
   
   const {
-    findOne: findOnePermit,
+    findOnePermit,
   } = await import("/gen/base/permit/permit.dao.ts");
   
   const {
-    findById: findByIdUsr,
+    findByIdUsr,
   } = await import("/gen/base/usr/usr.dao.ts");
   
   const {
-    findAll: findAllRole,
+    findAllRole,
   } = await import("/gen/base/role/role.dao.ts");
   
   const {
-    findOne: findOneMenu,
+    findOneMenu,
   } = await import("/gen/base/menu/menu.dao.ts");
   
   const options = {

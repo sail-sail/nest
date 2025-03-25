@@ -29,10 +29,10 @@ export async function findCountLang(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountLang,
   } = await import("./lang.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountLang(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllLang(
 ): Promise<LangModel[]> {
   
   const {
-    findAll,
+    findAllLang,
   } = await import("./lang.service.ts");
   
   checkSortLang(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllLang(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllLang(
 export async function getFieldCommentsLang(): Promise<LangFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsLang,
   } = await import("./lang.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsLang();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneLang(
 ): Promise<LangModel | undefined> {
   
   const {
-    findOne,
+    findOneLang,
   } = await import("./lang.service.ts");
   
   checkSortLang(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneLang(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdLang(
 ): Promise<LangModel | undefined> {
   
   const {
-    findById,
+    findByIdLang,
   } = await import("./lang.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdLang(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsLang(
 ): Promise<LangModel[]> {
   
   const {
-    findByIds,
+    findByIdsLang,
   } = await import("./lang.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsLang(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsLang(
 ): Promise<LangId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateLang,
+    setIdByLblLang,
+    createsLang,
   } = await import("./lang.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsLang(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblLang(input);
     
-    await validate(input);
+    await validateLang(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsLang(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdLang(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblLang,
+    updateByIdLang,
   } = await import("./lang.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblLang(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: LangId = await updateById(id, input);
+  const id2: LangId = await updateByIdLang(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsLang(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsLang,
   } = await import("./lang.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsLang(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsLang(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsLang(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsLang,
   } = await import("./lang.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsLang(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsLang(ids, is_enabled);
   
   return res;
 }
@@ -246,7 +246,7 @@ export async function revertByIdsLang(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsLang,
   } = await import("./lang.service.ts");
   
   set_is_tran(true);
@@ -256,7 +256,7 @@ export async function revertByIdsLang(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsLang(ids);
   
   return res;
 }
@@ -269,7 +269,7 @@ export async function forceDeleteByIdsLang(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsLang,
   } = await import("./lang.service.ts");
   
   set_is_tran(true);
@@ -279,7 +279,7 @@ export async function forceDeleteByIdsLang(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsLang(ids);
   
   return res;
 }
@@ -290,10 +290,10 @@ export async function forceDeleteByIdsLang(
 export async function findLastOrderByLang(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByLang,
   } = await import("./lang.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByLang();
   
   return res;
 }

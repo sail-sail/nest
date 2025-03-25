@@ -149,7 +149,7 @@ export async function findCount<#=Table_Up2#>(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCount<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");<#
   if (hasIsHidden) {
   #>
@@ -159,7 +159,7 @@ export async function findCount<#=Table_Up2#>(
   }
   #>
   
-  const num = await findCount(search);
+  const num = await findCount<#=Table_Up2#>(search);
   
   return num;
 }
@@ -174,7 +174,7 @@ export async function findAll<#=Table_Up2#>(
 ): Promise<<#=modelName#>[]> {
   
   const {
-    findAll,
+    findAll<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");<#
   if (hasIsHidden) {
   #>
@@ -186,7 +186,7 @@ export async function findAll<#=Table_Up2#>(
   
   checkSort<#=Table_Up#>(sort);
   
-  const models = await findAll(search, page, sort);<#
+  const models = await findAll<#=Table_Up2#>(search, page, sort);<#
   if (hasPassword) {
   #>
   
@@ -226,10 +226,10 @@ export async function findAll<#=Table_Up2#>(
 export async function getFieldComments<#=Table_Up2#>(): Promise<<#=fieldCommentName#>> {
   
   const {
-    getFieldComments,
+    getFieldComments<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldComments<#=Table_Up2#>();
   
   return field_comment;
 }<#
@@ -244,10 +244,10 @@ export async function findSummary<#=Table_Up2#>(
 ): Promise<<#=Table_Up#>Summary> {
   
   const {
-    findSummary,
+    findSummary<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
-  const res = await findSummary(search);
+  const res = await findSummary<#=Table_Up2#>(search);
   
   return res;
 }<#
@@ -263,7 +263,7 @@ export async function findOne<#=Table_Up2#>(
 ): Promise<<#=modelName#> | undefined> {
   
   const {
-    findOne,
+    findOne<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");<#
   if (hasIsHidden) {
   #>
@@ -275,7 +275,7 @@ export async function findOne<#=Table_Up2#>(
   
   checkSort<#=Table_Up2#>(sort);
   
-  const model = await findOne(search, sort);<#
+  const model = await findOne<#=Table_Up2#>(search, sort);<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -313,10 +313,10 @@ export async function findById<#=Table_Up2#>(
 ): Promise<<#=modelName#> | undefined> {
   
   const {
-    findById,
+    findById<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
-  const model = await findById(id);<#
+  const model = await findById<#=Table_Up2#>(id);<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -354,10 +354,10 @@ export async function findByIds<#=Table_Up2#>(
 ): Promise<<#=modelName#>[]> {
   
   const {
-    findByIds,
+    findByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIds<#=Table_Up2#>(ids);
   
   for (const model of models) {<#
     for (let i = 0; i < columns.length; i++) {
@@ -398,9 +398,9 @@ export async function creates<#=Table_Up2#>(
 ): Promise<<#=Table_Up#>Id[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validate<#=Table_Up2#>,
+    setIdByLbl<#=Table_Up2#>,
+    creates<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   set_is_tran(true);
@@ -456,12 +456,12 @@ export async function creates<#=Table_Up2#>(
     }
     #>
     
-    await setIdByLbl(input);
+    await setIdByLbl<#=Table_Up2#>(input);
     
-    await validate(input);
+    await validate<#=Table_Up2#>(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });<#
+  const ids = await creates<#=Table_Up2#>(inputs, { uniqueType });<#
   if (log) {
   #>
   
@@ -473,9 +473,9 @@ export async function creates<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "creates",
-    method_lbl: "创建",
-    lbl: "创建",
+    method: "creates<#=Table_Up2#>",
+    method_lbl: "新增",
+    lbl: "新增",
     time: end_time.getTime() - begin_time.getTime(),
     new_data: JSON.stringify(new_data),
   });<#
@@ -525,13 +525,13 @@ export async function updateById<#=Table_Up2#>(
   #>
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLbl<#=Table_Up2#>,
+    updateById<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLbl<#=Table_Up2#>(input);
   
   await usePermit(
     route_path,
@@ -555,7 +555,7 @@ export async function updateById<#=Table_Up2#>(
   }
   #>
   
-  const id2: <#=Table_Up#>Id = await updateById(id, input);<#
+  const id2: <#=Table_Up#>Id = await updateById<#=Table_Up2#>(id, input);<#
   if (log) {
   #>
   
@@ -565,9 +565,9 @@ export async function updateById<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "updateById",
-    method_lbl: "修改",
-    lbl: "修改",
+    method: "updateById<#=Table_Up2#>",
+    method_lbl: "编辑",
+    lbl: "编辑",
     time: end_time.getTime() - begin_time.getTime(),
     old_data: JSON.stringify(old_data),
     new_data: JSON.stringify(new_data),
@@ -588,7 +588,7 @@ export async function auditSubmit<#=Table_Up2#>(
 ) {
   
   const {
-    auditSubmit,
+    auditSubmit<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   set_is_tran(true);
@@ -609,7 +609,7 @@ export async function auditSubmit<#=Table_Up2#>(
   }
   #>
   
-  const res = await auditSubmit(id);<#
+  const res = await auditSubmit<#=Table_Up2#>(id);<#
   if (log) {
   #>
   
@@ -617,7 +617,7 @@ export async function auditSubmit<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "auditSubmit",
+    method: "auditSubmit<#=Table_Up2#>",
     method_lbl: "审核提交",
     lbl: "审核提交",
     time: end_time.getTime() - begin_time.getTime(),
@@ -635,7 +635,7 @@ export async function auditPass<#=Table_Up2#>(
 ) {
   
   const {
-    auditPass,
+    auditPass<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   set_is_tran(true);
@@ -656,7 +656,7 @@ export async function auditPass<#=Table_Up2#>(
   }
   #>
   
-  const res = await auditPass(id);<#
+  const res = await auditPass<#=Table_Up2#>(id);<#
   if (log) {
   #>
   
@@ -664,7 +664,7 @@ export async function auditPass<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "auditPass",
+    method: "auditPass<#=Table_Up2#>",
     method_lbl: "审核通过",
     lbl: "审核通过",
     time: end_time.getTime() - begin_time.getTime(),
@@ -683,7 +683,7 @@ export async function auditReject<#=Table_Up2#>(
 ) {
   
   const {
-    auditReject,
+    auditReject<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   set_is_tran(true);
@@ -704,7 +704,7 @@ export async function auditReject<#=Table_Up2#>(
   }
   #>
   
-  const res = await auditReject(id, input);<#
+  const res = await auditReject<#=Table_Up2#>(id, input);<#
   if (log) {
   #>
   
@@ -712,7 +712,7 @@ export async function auditReject<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "auditReject",
+    method: "auditReject<#=Table_Up2#>",
     method_lbl: "审核拒绝",
     lbl: "审核拒绝",
     time: end_time.getTime() - begin_time.getTime(),
@@ -732,12 +732,12 @@ export async function auditReview<#=Table_Up2#>(
 ) {
   
   const {
-    auditReview,
+    auditReview<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   set_is_tran(true);
   
-  await usePermit(
+  await usePermit<#=Table_Up2#>(
     route_path,
     "audit_review",
   );<#
@@ -761,7 +761,7 @@ export async function auditReview<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "auditReview",
+    method: "auditReview<#=Table_Up2#>",
     method_lbl: "复核通过",
     lbl: "复核通过",
     time: end_time.getTime() - begin_time.getTime(),
@@ -787,7 +787,7 @@ export async function deleteByIds<#=Table_Up2#>(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   set_is_tran(true);
@@ -811,7 +811,7 @@ export async function deleteByIds<#=Table_Up2#>(
   }
   #>
   
-  const num = await deleteByIds(ids);<#
+  const num = await deleteByIds<#=Table_Up2#>(ids);<#
   if (log) {
   #>
   
@@ -820,7 +820,7 @@ export async function deleteByIds<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "deleteByIds",
+    method: "deleteByIds<#=Table_Up2#>",
     method_lbl: "删除",
     lbl: "删除",
     time: end_time.getTime() - begin_time.getTime(),
@@ -844,7 +844,7 @@ export async function defaultById<#=Table_Up2#>(
 ): Promise<number> {
   
   const {
-    defaultById,
+    defaultById<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   set_is_tran(true);
@@ -864,7 +864,7 @@ export async function defaultById<#=Table_Up2#>(
   }
   #>
   
-  const res = await defaultById(id);<#
+  const res = await defaultById<#=Table_Up2#>(id);<#
   if (log) {
   #>
   
@@ -873,7 +873,7 @@ export async function defaultById<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "defaultById",
+    method: "defaultById<#=Table_Up2#>",
     method_lbl: "默认",
     lbl: "默认",
     time: end_time.getTime() - begin_time.getTime(),
@@ -897,7 +897,7 @@ export async function enableByIds<#=Table_Up2#>(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -920,15 +920,15 @@ export async function enableByIds<#=Table_Up2#>(
   const begin_time = new Date();<#
   }
   #>
-  const res = await enableByIds(ids, is_enabled);<#
+  const res = await enableByIds<#=Table_Up2#>(ids, is_enabled);<#
   if (log) {
   #>
   
   let method = "";
   if (is_enabled) {
-    method = "enableByIds";
+    method = "enableByIds<#=Table_Up2#>";
   } else {
-    method = "disableByIds";
+    method = "disableByIds<#=Table_Up2#>";
   }
   
   const end_time = new Date();
@@ -961,11 +961,11 @@ export async function lockByIds<#=Table_Up2#>(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
-    throw new Error(`lockByIds<#=Table_Up#>.is_locked expect 0 or 1 but got ${ is_locked }`);
+    throw new Error(`lockByIds<#=Table_Up2#>.is_locked expect 0 or 1 but got ${ is_locked }`);
   }
   
   set_is_tran(true);
@@ -985,7 +985,7 @@ export async function lockByIds<#=Table_Up2#>(
   }
   #>
   
-  const res = await lockByIds(ids, is_locked);<#
+  const res = await lockByIds<#=Table_Up2#>(ids, is_locked);<#
   if (log) {
   #>
   
@@ -994,7 +994,7 @@ export async function lockByIds<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "lockByIds",
+    method: "lockByIds<#=Table_Up2#>",
     method_lbl: is_locked ? "锁定" : "解锁",
     lbl: is_locked ? "锁定" : "解锁",
     time: end_time.getTime() - begin_time.getTime(),
@@ -1018,7 +1018,7 @@ export async function revertByIds<#=Table_Up2#>(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   set_is_tran(true);
@@ -1038,7 +1038,7 @@ export async function revertByIds<#=Table_Up2#>(
   }
   #>
   
-  const res = await revertByIds(ids);<#
+  const res = await revertByIds<#=Table_Up2#>(ids);<#
   if (log) {
   #>
   
@@ -1047,7 +1047,7 @@ export async function revertByIds<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "revertByIds",
+    method: "revertByIds<#=Table_Up2#>",
     method_lbl: "还原",
     lbl: "还原",
     time: end_time.getTime() - begin_time.getTime(),
@@ -1071,7 +1071,7 @@ export async function forceDeleteByIds<#=Table_Up2#>(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
   set_is_tran(true);
@@ -1096,7 +1096,7 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   }
   #>
   
-  const res = await forceDeleteByIds(ids);<#
+  const res = await forceDeleteByIds<#=Table_Up2#>(ids);<#
   if (log) {
   #>
   
@@ -1105,7 +1105,7 @@ export async function forceDeleteByIds<#=Table_Up2#>(
   await log({
     module: "<#=mod#>_<#=table#>",
     module_lbl: "<#=table_comment#>",
-    method: "forceDeleteByIds",
+    method: "forceDeleteByIds<#=Table_Up2#>",
     method_lbl: "彻底删除",
     lbl: "彻底删除",
     time: end_time.getTime() - begin_time.getTime(),
@@ -1129,10 +1129,10 @@ export async function getEditableDataPermitsByIds<#=Table_Up2#>(
 ) {
   
   const {
-    getEditableDataPermitsByIds,
+    getEditableDataPermitsByIds<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
-  const data = await getEditableDataPermitsByIds(ids);
+  const data = await getEditableDataPermitsByIds<#=Table_Up2#>(ids);
   
   return data;
 }<#
@@ -1147,10 +1147,10 @@ if (hasOrderBy) {
 export async function findLastOrderBy<#=Table_Up2#>(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderBy<#=Table_Up2#>,
   } = await import("./<#=table#>.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderBy<#=Table_Up2#>();
   
   return res;
 }<#
