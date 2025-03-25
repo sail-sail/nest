@@ -19,7 +19,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找角色列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_role(
   search: Option<RoleSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +34,7 @@ pub async fn find_all(
   
   check_sort_role(sort.as_deref())?;
   
-  let models = role_service::find_all(
+  let models = role_service::find_all_role(
     search,
     page,
     sort,
@@ -46,7 +46,7 @@ pub async fn find_all(
 
 /// 根据条件查找角色总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_role(
   search: Option<RoleSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +57,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = role_service::find_count(
+  let num = role_service::find_count_role(
     search,
     options,
   ).await?;
@@ -67,7 +67,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个角色
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_role(
   search: Option<RoleSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +81,7 @@ pub async fn find_one(
   
   check_sort_role(sort.as_deref())?;
   
-  let model = role_service::find_one(
+  let model = role_service::find_one_role(
     search,
     sort,
     options,
@@ -92,7 +92,7 @@ pub async fn find_one(
 
 /// 根据 id 查找角色
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_role(
   id: RoleId,
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
@@ -103,7 +103,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = role_service::find_by_id(
+  let model = role_service::find_by_id_role(
     id,
     options,
   ).await?;
@@ -113,7 +113,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找角色
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_role(
   ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
@@ -124,7 +124,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = role_service::find_by_ids(
+  let models = role_service::find_by_ids_role(
     ids,
     options,
   ).await?;
@@ -135,7 +135,7 @@ pub async fn find_by_ids(
 /// 创建角色
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_role(
   inputs: Vec<RoleInput>,
   options: Option<Options>,
 ) -> Result<Vec<RoleId>> {
@@ -154,7 +154,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = role_service::set_id_by_lbl(
+    let input = role_service::set_id_by_lbl_role(
       input,
     ).await?;
     inputs2.push(input);
@@ -166,7 +166,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = role_service::creates(
+  let ids = role_service::creates_role(
     inputs,
     options,
   ).await?;
@@ -177,7 +177,7 @@ pub async fn creates(
 /// 角色根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_role(
   id: RoleId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -189,7 +189,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = role_service::update_tenant_by_id(
+  let num = role_service::update_tenant_by_id_role(
     id,
     tenant_id,
     options,
@@ -201,7 +201,7 @@ pub async fn update_tenant_by_id(
 /// 根据 id 修改角色
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_role(
   id: RoleId,
   input: RoleInput,
   options: Option<Options>,
@@ -217,7 +217,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = role_service::set_id_by_lbl(
+  let input = role_service::set_id_by_lbl_role(
     input,
   ).await?;
   
@@ -226,7 +226,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = role_service::update_by_id(
+  let res = role_service::update_by_id_role(
     id,
     input,
     options,
@@ -238,7 +238,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除角色
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_role(
   ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -254,7 +254,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = role_service::delete_by_ids(
+  let num = role_service::delete_by_ids_role(
     ids,
     options,
   ).await?;
@@ -266,7 +266,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_role(
   id: RoleId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -277,7 +277,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = role_service::get_is_enabled_by_id(
+  let is_enabled = role_service::get_is_enabled_by_id_role(
     id,
     options,
   ).await?;
@@ -288,7 +288,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用角色
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_role(
   ids: Vec<RoleId>,
   is_enabled: u8,
   options: Option<Options>,
@@ -305,7 +305,7 @@ pub async fn enable_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = role_service::enable_by_ids(
+  let num = role_service::enable_by_ids_role(
     ids,
     is_enabled,
     options,
@@ -319,7 +319,7 @@ pub async fn enable_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_role(
   id: RoleId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -330,7 +330,7 @@ pub async fn get_is_locked_by_id(
     function_name = function_name!(),
   );
   
-  let is_locked = role_service::get_is_locked_by_id(
+  let is_locked = role_service::get_is_locked_by_id_role(
     id,
     options,
   ).await?;
@@ -341,7 +341,7 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或者解锁角色
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_role(
   ids: Vec<RoleId>,
   is_locked: u8,
   options: Option<Options>,
@@ -358,7 +358,7 @@ pub async fn lock_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = role_service::lock_by_ids(
+  let num = role_service::lock_by_ids_role(
     ids,
     is_locked,
     options,
@@ -369,7 +369,7 @@ pub async fn lock_by_ids(
 
 /// 获取角色字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_role(
   options: Option<Options>,
 ) -> Result<RoleFieldComment> {
   
@@ -379,7 +379,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = role_service::get_field_comments(
+  let comments = role_service::get_field_comments_role(
     options,
   ).await?;
   
@@ -389,7 +389,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原角色
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_role(
   ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -405,7 +405,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = role_service::revert_by_ids(
+  let num = role_service::revert_by_ids_role(
     ids,
     options,
   ).await?;
@@ -416,7 +416,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除角色
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_role(
   ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -432,7 +432,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = role_service::force_delete_by_ids(
+  let num = role_service::force_delete_by_ids_role(
     ids,
     options,
   ).await?;
@@ -442,7 +442,7 @@ pub async fn force_delete_by_ids(
 
 /// 查找 角色 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_role(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -452,7 +452,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = role_service::find_last_order_by(
+  let res = role_service::find_last_order_by_role(
     options,
   ).await?;
   

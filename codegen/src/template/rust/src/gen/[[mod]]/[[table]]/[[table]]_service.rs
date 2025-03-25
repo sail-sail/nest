@@ -107,8 +107,8 @@ if (
 #>
 
 use crate::r#gen::base::usr::usr_dao::{
-  find_by_id as find_by_id_usr,
-  validate_option as validate_option_usr,
+  find_by_id_usr,
+  validate_option_usr,
 };<#
 }
 #><#
@@ -134,13 +134,13 @@ if (hasAudit && auditTable_Up) {
 #>
 
 use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_dao::{
-  find_all as find_all_<#=auditTable#>,
-  create as create_<#=auditTable#>,
-  delete_by_ids as delete_by_ids_<#=auditTable#>,<#
+  find_all_<#=auditTable#>,
+  create_<#=auditTable#>,
+  delete_by_ids_<#=auditTable#>,<#
   if (hasIsDeleted) {
   #>
-  revert_by_ids as revert_by_ids_<#=auditTable#>,
-  force_delete_by_ids as force_delete_by_ids_<#=auditTable#>,<#
+  revert_by_ids_<#=auditTable#>,
+  force_delete_by_ids_<#=auditTable#>,<#
   }
   #>
 };
@@ -201,7 +201,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找<#=table_comment#>列表
-pub async fn find_all(
+pub async fn find_all_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -223,7 +223,7 @@ pub async fn find_all(
   }
   #>
   
-  let <#=table#>_models = <#=table#>_dao::find_all(
+  let <#=table#>_models = <#=table#>_dao::find_all_<#=table#>(
     Some(search),
     page,
     sort,
@@ -234,7 +234,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找<#=table_comment#>总数
-pub async fn find_count(
+pub async fn find_count_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -254,7 +254,7 @@ pub async fn find_count(
   }
   #>
   
-  let <#=table#>_num = <#=table#>_dao::find_count(
+  let <#=table#>_num = <#=table#>_dao::find_count_<#=table#>(
     Some(search),
     options,
   ).await?;
@@ -263,7 +263,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个<#=table_comment#>
-pub async fn find_one(
+pub async fn find_one_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -284,7 +284,7 @@ pub async fn find_one(
   }
   #>
   
-  let <#=table#>_model = <#=table#>_dao::find_one(
+  let <#=table#>_model = <#=table#>_dao::find_one_<#=table#>(
     Some(search),
     sort,
     options,
@@ -294,7 +294,7 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找<#=table_comment#>
-pub async fn find_by_id(
+pub async fn find_by_id_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {<#
@@ -307,7 +307,7 @@ pub async fn find_by_id(
   }
   #>
   
-  let <#=table#>_model = <#=table#>_dao::find_by_id(
+  let <#=table#>_model = <#=table#>_dao::find_by_id_<#=table#>(
     <#=table#>_id,
     options,
   ).await?;
@@ -316,7 +316,7 @@ pub async fn find_by_id(
 }
 
 /// 根据 <#=table#>_ids 查找<#=table_comment#>
-pub async fn find_by_ids(
+pub async fn find_by_ids_<#=table#>(
   <#=table#>_ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<Vec<<#=tableUP#>Model>> {<#
@@ -329,7 +329,7 @@ pub async fn find_by_ids(
   }
   #>
   
-  let <#=table#>_models = <#=table#>_dao::find_by_ids(
+  let <#=table#>_models = <#=table#>_dao::find_by_ids_<#=table#>(
     <#=table#>_ids,
     options,
   ).await?;
@@ -340,12 +340,12 @@ if (hasDataPermit() && hasCreateUsrId) {
 #>
 
 /// 根据 ids 获取<#=table_comment#>是否可编辑数据权限
-pub async fn get_editable_data_permits_by_ids(
+pub async fn get_editable_data_permits_by_ids_<#=table#>(
   <#=table#>_ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<Vec<u8>> {
   
-  let is_editable = <#=table#>_dao::get_editable_data_permits_by_ids(
+  let is_editable = <#=table#>_dao::get_editable_data_permits_by_ids_<#=table#>(
     <#=table#>_ids,
     options,
   ).await?;
@@ -357,11 +357,11 @@ pub async fn get_editable_data_permits_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_<#=table#>(
   <#=table#>_input: <#=tableUP#>Input,
 ) -> Result<<#=tableUP#>Input> {
   
-  let <#=table#>_input = <#=table#>_dao::set_id_by_lbl(
+  let <#=table#>_input = <#=table#>_dao::set_id_by_lbl_<#=table#>(
     <#=table#>_input,
   ).await?;
   
@@ -370,7 +370,7 @@ pub async fn set_id_by_lbl(
 
 /// 创建<#=table_comment#>
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_<#=table#>(
   <#=table#>_inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
 ) -> Result<Vec<<#=Table_Up#>Id>> {<#
@@ -393,7 +393,7 @@ pub async fn creates(
   }
   #>
   
-  let <#=table#>_ids = <#=table#>_dao::creates(
+  let <#=table#>_ids = <#=table#>_dao::creates_<#=table#>(
     <#=table#>_inputs,
     options,
   ).await?;<#
@@ -411,7 +411,7 @@ if (hasTenant_id) {
 
 /// <#=table_comment#>根据 <#=table#>_id 修改租户id
 #[allow(dead_code)]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -425,7 +425,7 @@ pub async fn update_tenant_by_id(
   }
   #>
   
-  let num = <#=table#>_dao::update_tenant_by_id(
+  let num = <#=table#>_dao::update_tenant_by_id_<#=table#>(
     <#=table#>_id,
     tenant_id,
     options,
@@ -444,7 +444,7 @@ pub async fn update_tenant_by_id(
 
 /// 根据 <#=table#>_id 修改<#=table_comment#>
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   mut <#=table#>_input: <#=tableUP#>Input,
   options: Option<Options>,
@@ -463,8 +463,8 @@ pub async fn update_by_id(
   ) {
   #>
   
-  let old_model = validate_option(
-    <#=table#>_dao::find_by_id(
+  let old_model = validate_option_<#=table#>(
+    <#=table#>_dao::find_by_id_<#=table#>(
       <#=table#>_id.clone(),
       options.clone(),
     ).await?,
@@ -505,7 +505,7 @@ pub async fn update_by_id(
   if (hasLocked) {
   #>
   
-  let is_locked = <#=table#>_dao::get_is_locked_by_id(
+  let is_locked = <#=table#>_dao::get_is_locked_by_id_<#=table#>(
     <#=table#>_id.clone(),
     None,
   ).await?;
@@ -578,7 +578,7 @@ pub async fn update_by_id(
   }
   #>
   
-  let <#=table#>_id = <#=table#>_dao::update_by_id(
+  let <#=table#>_id = <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id,
     <#=table#>_input,
     options.clone(),
@@ -595,11 +595,11 @@ pub async fn update_by_id(
 
 /// 校验<#=table_comment#>是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_<#=table#>(
   <#=table#>_model: Option<<#=tableUP#>Model>,
 ) -> Result<<#=tableUP#>Model> {
   
-  let <#=table#>_model = <#=table#>_dao::validate_option(<#=table#>_model).await?;
+  let <#=table#>_model = <#=table#>_dao::validate_option_<#=table#>(<#=table#>_model).await?;
   
   Ok(<#=table#>_model)
 }<#
@@ -607,13 +607,13 @@ if (hasAudit) {
 #>
 
 /// <#=table_comment#> 审核提交
-pub async fn audit_submit(
+pub async fn audit_submit_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = validate_option(
-    <#=table#>_dao::find_by_id(
+  let old_model = validate_option_<#=table#>(
+    <#=table#>_dao::find_by_id_<#=table#>(
       <#=table#>_id.clone(),
       options.clone(),
     ).await?,
@@ -661,7 +661,7 @@ pub async fn audit_submit(
     ..Default::default()
   };
   
-  <#=table#>_dao::update_by_id(
+  <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id.clone(),
     <#=table#>_input,
     options.clone(),
@@ -706,13 +706,13 @@ pub async fn audit_submit(
 }
 
 /// <#=table_comment#> 审核通过
-pub async fn audit_pass(
+pub async fn audit_pass_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = validate_option(
-    <#=table#>_dao::find_by_id(
+  let old_model = validate_option_<#=table#>(
+    <#=table#>_dao::find_by_id_<#=table#>(
       <#=table#>_id.clone(),
       options.clone(),
     ).await?,
@@ -759,7 +759,7 @@ pub async fn audit_pass(
     ..Default::default()
   };
   
-  <#=table#>_dao::update_by_id(
+  <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id.clone(), 
     <#=table#>_input,
     options.clone(),
@@ -805,7 +805,7 @@ pub async fn audit_pass(
 
 /// <#=table_comment#> 审核拒绝
 #[allow(dead_code)]
-pub async fn audit_reject(
+pub async fn audit_reject_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   audit_input: <#=auditTable_Up#>Input,
   options: Option<Options>,
@@ -864,7 +864,7 @@ pub async fn audit_reject(
     ..Default::default()
   };
   
-  <#=table#>_dao::update_by_id(
+  <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id.clone(),
     <#=table#>_input,
     options.clone(),
@@ -912,13 +912,13 @@ if (hasReviewed) {
 #>
 
 /// <#=table_comment#> 复核通过
-pub async fn audit_review(
+pub async fn audit_review_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = validate_option(
-    <#=table#>_dao::find_by_id(
+  let old_model = validate_option_<#=table#>(
+    <#=table#>_dao::find_by_id_<#=table#>(
       <#=table#>_id.clone(),
       options.clone(),
     ).await?,
@@ -965,7 +965,7 @@ pub async fn audit_review(
     ..Default::default()
   };
   
-  <#=table#>_dao::update_by_id(
+  <#=table#>_dao::update_by_id_<#=table#>(
     <#=table#>_id.clone(), 
     <#=table#>_input,
     options.clone(),
@@ -1015,7 +1015,7 @@ pub async fn audit_review(
 
 /// 根据 <#=table#>_ids 删除<#=table_comment#>
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_<#=table#>(
   <#=table#>_ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {<#
@@ -1030,7 +1030,7 @@ pub async fn delete_by_ids(
   if (hasLocked || hasIsSys || hasAudit) {
   #>
   
-  let old_models = <#=table#>_dao::find_all(
+  let old_models = <#=table#>_dao::find_all_<#=table#>(
     Some(<#=Table_Up#>Search {
       ids: Some(<#=table#>_ids.clone()),
       ..Default::default()
@@ -1122,7 +1122,7 @@ pub async fn delete_by_ids(
   }
   #>
   
-  let num = <#=table#>_dao::delete_by_ids(
+  let num = <#=table#>_dao::delete_by_ids_<#=table#>(
     <#=table#>_ids<#
     if (hasAudit) {
     #>.clone()<#
@@ -1173,7 +1173,7 @@ if (hasDefault) {
 
 /// 根据 <#=table#>_id 设置默认<#=table_comment#>
 #[allow(dead_code)]
-pub async fn default_by_id(
+pub async fn default_by_id_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<u64> {<#
@@ -1186,7 +1186,7 @@ pub async fn default_by_id(
   }
   #>
   
-  let num = <#=table#>_dao::default_by_id(
+  let num = <#=table#>_dao::default_by_id_<#=table#>(
     <#=table#>_id,
     options,
   ).await?;
@@ -1201,7 +1201,7 @@ if (hasEnabled) {
 /// 根据 <#=table#>_id 查找<#=table_comment#>是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {<#
@@ -1214,7 +1214,7 @@ pub async fn get_is_enabled_by_id(
   }
   #>
   
-  let is_enabled = <#=table#>_dao::get_is_enabled_by_id(
+  let is_enabled = <#=table#>_dao::get_is_enabled_by_id_<#=table#>(
     <#=table#>_id,
     options,
   ).await?;
@@ -1224,7 +1224,7 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 <#=table#>_ids 启用或者禁用<#=table_comment#>
 #[allow(dead_code)]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_<#=table#>(
   <#=table#>_ids: Vec<<#=Table_Up#>Id>,
   is_enabled: u8,
   options: Option<Options>,
@@ -1238,7 +1238,7 @@ pub async fn enable_by_ids(
   }
   #>
   
-  let num = <#=table#>_dao::enable_by_ids(
+  let num = <#=table#>_dao::enable_by_ids_<#=table#>(
     <#=table#>_ids,
     is_enabled,
     options,
@@ -1261,7 +1261,7 @@ if (hasLocked) {
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_<#=table#>(
   <#=table#>_id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {<#
@@ -1274,7 +1274,7 @@ pub async fn get_is_locked_by_id(
   }
   #>
   
-  let is_locked = <#=table#>_dao::get_is_locked_by_id(
+  let is_locked = <#=table#>_dao::get_is_locked_by_id_<#=table#>(
     <#=table#>_id,
     options,
   ).await?;
@@ -1284,7 +1284,7 @@ pub async fn get_is_locked_by_id(
 
 /// 根据 <#=table#>_ids 锁定或者解锁<#=table_comment#>
 #[allow(dead_code)]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_<#=table#>(
   <#=table#>_ids: Vec<<#=Table_Up#>Id>,
   is_locked: u8,
   options: Option<Options>,
@@ -1298,7 +1298,7 @@ pub async fn lock_by_ids(
   }
   #>
   
-  let num = <#=table#>_dao::lock_by_ids(
+  let num = <#=table#>_dao::lock_by_ids_<#=table#>(
     <#=table#>_ids,
     is_locked,
     options,
@@ -1310,7 +1310,7 @@ pub async fn lock_by_ids(
 #>
 
 /// 获取<#=table_comment#>字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_<#=table#>(
   options: Option<Options>,
 ) -> Result<<#=tableUP#>FieldComment> {<#
   if (hasDataPermit() && hasCreateUsrId) {
@@ -1322,7 +1322,7 @@ pub async fn get_field_comments(
   }
   #>
   
-  let comments = <#=table#>_dao::get_field_comments(
+  let comments = <#=table#>_dao::get_field_comments_<#=table#>(
     options,
   ).await?;
   
@@ -1333,7 +1333,7 @@ if (hasIsDeleted) {
 
 /// 根据 <#=table#>_ids 还原<#=table_comment#>
 #[allow(dead_code)]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_<#=table#>(
   <#=table#>_ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {<#
@@ -1346,7 +1346,7 @@ pub async fn revert_by_ids(
   }
   #>
   
-  let num = <#=table#>_dao::revert_by_ids(
+  let num = <#=table#>_dao::revert_by_ids_<#=table#>(
     <#=table#>_ids<#
     if (hasAudit) {
     #>.clone()<#
@@ -1400,7 +1400,7 @@ if (hasIsDeleted) {
 
 /// 根据 <#=table#>_ids 彻底删除<#=table_comment#>
 #[allow(dead_code)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_<#=table#>(
   <#=table#>_ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {<#
@@ -1413,7 +1413,7 @@ pub async fn force_delete_by_ids(
   }
   #>
   
-  let num = <#=table#>_dao::force_delete_by_ids(
+  let num = <#=table#>_dao::force_delete_by_ids_<#=table#>(
     <#=table#>_ids<#
     if (hasAudit) {
     #>.clone()<#
@@ -1460,11 +1460,11 @@ if (hasOrderBy) {
 #>
 
 /// 查找 <#=table_comment#> order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_<#=table#>(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = <#=table#>_dao::find_last_order_by(
+  let res = <#=table#>_dao::find_last_order_by_<#=table#>(
     options,
   ).await?;
   

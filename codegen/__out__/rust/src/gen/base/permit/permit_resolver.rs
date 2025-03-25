@@ -17,7 +17,7 @@ use super::permit_service;
 
 /// 根据搜索条件和分页查找按钮权限列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_permit(
   search: Option<PermitSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -32,7 +32,7 @@ pub async fn find_all(
   
   check_sort_permit(sort.as_deref())?;
   
-  let models = permit_service::find_all(
+  let models = permit_service::find_all_permit(
     search,
     page,
     sort,
@@ -44,7 +44,7 @@ pub async fn find_all(
 
 /// 根据条件查找按钮权限总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_permit(
   search: Option<PermitSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -55,7 +55,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = permit_service::find_count(
+  let num = permit_service::find_count_permit(
     search,
     options,
   ).await?;
@@ -65,7 +65,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个按钮权限
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_permit(
   search: Option<PermitSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -79,7 +79,7 @@ pub async fn find_one(
   
   check_sort_permit(sort.as_deref())?;
   
-  let model = permit_service::find_one(
+  let model = permit_service::find_one_permit(
     search,
     sort,
     options,
@@ -90,7 +90,7 @@ pub async fn find_one(
 
 /// 根据 id 查找按钮权限
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_permit(
   id: PermitId,
   options: Option<Options>,
 ) -> Result<Option<PermitModel>> {
@@ -101,7 +101,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = permit_service::find_by_id(
+  let model = permit_service::find_by_id_permit(
     id,
     options,
   ).await?;
@@ -111,7 +111,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找按钮权限
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_permit(
   ids: Vec<PermitId>,
   options: Option<Options>,
 ) -> Result<Vec<PermitModel>> {
@@ -122,7 +122,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = permit_service::find_by_ids(
+  let models = permit_service::find_by_ids_permit(
     ids,
     options,
   ).await?;
@@ -133,7 +133,7 @@ pub async fn find_by_ids(
 /// 根据 id 修改按钮权限
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_permit(
   id: PermitId,
   input: PermitInput,
   options: Option<Options>,
@@ -149,7 +149,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = permit_service::set_id_by_lbl(
+  let input = permit_service::set_id_by_lbl_permit(
     input,
   ).await?;
   
@@ -158,7 +158,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = permit_service::update_by_id(
+  let res = permit_service::update_by_id_permit(
     id,
     input,
     options,
@@ -169,7 +169,7 @@ pub async fn update_by_id(
 
 /// 获取按钮权限字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_permit(
   options: Option<Options>,
 ) -> Result<PermitFieldComment> {
   
@@ -179,7 +179,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = permit_service::get_field_comments(
+  let comments = permit_service::get_field_comments_permit(
     options,
   ).await?;
   
@@ -188,7 +188,7 @@ pub async fn get_field_comments(
 
 /// 查找 按钮权限 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_permit(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -198,7 +198,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = permit_service::find_last_order_by(
+  let res = permit_service::find_last_order_by_permit(
     options,
   ).await?;
   

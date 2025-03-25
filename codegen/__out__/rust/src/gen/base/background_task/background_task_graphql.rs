@@ -37,7 +37,7 @@ impl BackgroundTaskGenQuery {
       .with_auth()?
       .build()
       .scope({
-        background_task_resolver::find_all(
+        background_task_resolver::find_all_background_task(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl BackgroundTaskGenQuery {
       .with_auth()?
       .build()
       .scope({
-        background_task_resolver::find_count(
+        background_task_resolver::find_count_background_task(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl BackgroundTaskGenQuery {
       .with_auth()?
       .build()
       .scope({
-        background_task_resolver::find_one(
+        background_task_resolver::find_one_background_task(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl BackgroundTaskGenQuery {
       .with_auth()?
       .build()
       .scope({
-        background_task_resolver::find_by_id(
+        background_task_resolver::find_by_id_background_task(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl BackgroundTaskGenQuery {
       .with_auth()?
       .build()
       .scope({
-        background_task_resolver::find_by_ids(
+        background_task_resolver::find_by_ids_background_task(
           ids,
           None,
         )
@@ -124,7 +124,7 @@ impl BackgroundTaskGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        background_task_resolver::get_field_comments(
+        background_task_resolver::get_field_comments_background_task(
           None,
         )
       }).await
@@ -160,7 +160,7 @@ impl BackgroundTaskGenMutation {
       .with_tran()
       .build()
       .scope({
-        background_task_resolver::update_tenant_by_id(
+        background_task_resolver::update_tenant_by_id_background_task(
           id,
           tenant_id,
           None,
@@ -179,7 +179,7 @@ impl BackgroundTaskGenMutation {
       .with_tran()
       .build()
       .scope({
-        background_task_resolver::delete_by_ids(
+        background_task_resolver::delete_by_ids_background_task(
           ids,
           None,
         )
@@ -197,7 +197,7 @@ impl BackgroundTaskGenMutation {
       .with_tran()
       .build()
       .scope({
-        background_task_resolver::revert_by_ids(
+        background_task_resolver::revert_by_ids_background_task(
           ids,
           None,
         )
@@ -215,7 +215,7 @@ impl BackgroundTaskGenMutation {
       .with_tran()
       .build()
       .scope({
-        background_task_resolver::force_delete_by_ids(
+        background_task_resolver::force_delete_by_ids_background_task(
           ids,
           None,
         )

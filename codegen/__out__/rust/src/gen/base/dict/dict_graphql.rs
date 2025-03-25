@@ -35,7 +35,7 @@ impl DictGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_resolver::find_all(
+        dict_resolver::find_all_dict(
           search,
           page,
           sort,
@@ -54,7 +54,7 @@ impl DictGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_resolver::find_count(
+        dict_resolver::find_count_dict(
           search,
           None,
         )
@@ -72,7 +72,7 @@ impl DictGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_resolver::find_one(
+        dict_resolver::find_one_dict(
           search,
           sort,
           None,
@@ -90,7 +90,7 @@ impl DictGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_resolver::find_by_id(
+        dict_resolver::find_by_id_dict(
           id,
           None,
         )
@@ -107,7 +107,7 @@ impl DictGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_resolver::find_by_ids(
+        dict_resolver::find_by_ids_dict(
           ids,
           None,
         )
@@ -125,7 +125,7 @@ impl DictGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_resolver::get_is_enabled_by_id(
+        dict_resolver::get_is_enabled_by_id_dict(
           id,
           None,
         )
@@ -140,7 +140,7 @@ impl DictGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        dict_resolver::get_field_comments(
+        dict_resolver::get_field_comments_dict(
           None,
         )
       }).await
@@ -155,7 +155,7 @@ impl DictGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_resolver::find_last_order_by(
+        dict_resolver::find_last_order_by_dict(
           None,
         )
       }).await
@@ -186,7 +186,7 @@ impl DictGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        dict_resolver::creates(
+        dict_resolver::creates_dict(
           inputs,
           options.into(),
         )
@@ -205,7 +205,7 @@ impl DictGenMutation {
       .with_tran()
       .build()
       .scope({
-        dict_resolver::update_by_id(
+        dict_resolver::update_by_id_dict(
           id,
           input,
           None,
@@ -224,7 +224,7 @@ impl DictGenMutation {
       .with_tran()
       .build()
       .scope({
-        dict_resolver::delete_by_ids(
+        dict_resolver::delete_by_ids_dict(
           ids,
           None,
         )
@@ -243,7 +243,7 @@ impl DictGenMutation {
       .with_tran()
       .build()
       .scope({
-        dict_resolver::enable_by_ids(
+        dict_resolver::enable_by_ids_dict(
           ids,
           is_enabled,
           None,
@@ -262,7 +262,7 @@ impl DictGenMutation {
       .with_tran()
       .build()
       .scope({
-        dict_resolver::revert_by_ids(
+        dict_resolver::revert_by_ids_dict(
           ids,
           None,
         )
@@ -280,7 +280,7 @@ impl DictGenMutation {
       .with_tran()
       .build()
       .scope({
-        dict_resolver::force_delete_by_ids(
+        dict_resolver::force_delete_by_ids_dict(
           ids,
           None,
         )

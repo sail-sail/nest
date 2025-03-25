@@ -35,7 +35,7 @@ impl TenantGenQuery {
       .with_auth()?
       .build()
       .scope({
-        tenant_resolver::find_all(
+        tenant_resolver::find_all_tenant(
           search,
           page,
           sort,
@@ -54,7 +54,7 @@ impl TenantGenQuery {
       .with_auth()?
       .build()
       .scope({
-        tenant_resolver::find_count(
+        tenant_resolver::find_count_tenant(
           search,
           None,
         )
@@ -72,7 +72,7 @@ impl TenantGenQuery {
       .with_auth()?
       .build()
       .scope({
-        tenant_resolver::find_one(
+        tenant_resolver::find_one_tenant(
           search,
           sort,
           None,
@@ -90,7 +90,7 @@ impl TenantGenQuery {
       .with_auth()?
       .build()
       .scope({
-        tenant_resolver::find_by_id(
+        tenant_resolver::find_by_id_tenant(
           id,
           None,
         )
@@ -107,7 +107,7 @@ impl TenantGenQuery {
       .with_auth()?
       .build()
       .scope({
-        tenant_resolver::find_by_ids(
+        tenant_resolver::find_by_ids_tenant(
           ids,
           None,
         )
@@ -125,7 +125,7 @@ impl TenantGenQuery {
       .with_auth()?
       .build()
       .scope({
-        tenant_resolver::get_is_enabled_by_id(
+        tenant_resolver::get_is_enabled_by_id_tenant(
           id,
           None,
         )
@@ -144,7 +144,7 @@ impl TenantGenQuery {
       .with_auth()?
       .build()
       .scope({
-        tenant_resolver::get_is_locked_by_id(
+        tenant_resolver::get_is_locked_by_id_tenant(
           id,
           None,
         )
@@ -159,7 +159,7 @@ impl TenantGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        tenant_resolver::get_field_comments(
+        tenant_resolver::get_field_comments_tenant(
           None,
         )
       }).await
@@ -174,7 +174,7 @@ impl TenantGenQuery {
       .with_auth()?
       .build()
       .scope({
-        tenant_resolver::find_last_order_by(
+        tenant_resolver::find_last_order_by_tenant(
           None,
         )
       }).await
@@ -205,7 +205,7 @@ impl TenantGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        tenant_resolver::creates(
+        tenant_resolver::creates_tenant(
           inputs,
           options.into(),
         )
@@ -224,7 +224,7 @@ impl TenantGenMutation {
       .with_tran()
       .build()
       .scope({
-        tenant_resolver::update_by_id(
+        tenant_resolver::update_by_id_tenant(
           id,
           input,
           None,
@@ -243,7 +243,7 @@ impl TenantGenMutation {
       .with_tran()
       .build()
       .scope({
-        tenant_resolver::delete_by_ids(
+        tenant_resolver::delete_by_ids_tenant(
           ids,
           None,
         )
@@ -262,7 +262,7 @@ impl TenantGenMutation {
       .with_tran()
       .build()
       .scope({
-        tenant_resolver::enable_by_ids(
+        tenant_resolver::enable_by_ids_tenant(
           ids,
           is_enabled,
           None,
@@ -282,7 +282,7 @@ impl TenantGenMutation {
       .with_tran()
       .build()
       .scope({
-        tenant_resolver::lock_by_ids(
+        tenant_resolver::lock_by_ids_tenant(
           ids,
           is_locked,
           None,
@@ -301,7 +301,7 @@ impl TenantGenMutation {
       .with_tran()
       .build()
       .scope({
-        tenant_resolver::revert_by_ids(
+        tenant_resolver::revert_by_ids_tenant(
           ids,
           None,
         )
@@ -319,7 +319,7 @@ impl TenantGenMutation {
       .with_tran()
       .build()
       .scope({
-        tenant_resolver::force_delete_by_ids(
+        tenant_resolver::force_delete_by_ids_tenant(
           ids,
           None,
         )
