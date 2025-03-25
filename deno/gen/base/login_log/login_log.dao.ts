@@ -56,7 +56,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -71,7 +71,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -175,9 +175,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountLoginLog
 /** 根据条件查找登录日志总数 */
-export async function findCount(
+export async function findCountLoginLog(
   search?: Readonly<LoginLogSearch>,
   options?: {
     is_debug?: boolean;
@@ -186,12 +186,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_login_log";
-  const method = "findCount";
+  const method = "findCountLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -271,9 +271,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllLoginLog
 /** 根据搜索条件和分页查找登录日志列表 */
-export async function findAll(
+export async function findAllLoginLog(
   search?: Readonly<LoginLogSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -284,7 +284,7 @@ export async function findAll(
 ): Promise<LoginLogModel[]> {
   
   const table = "base_login_log";
-  const method = "findAll";
+  const method = "findAllLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -463,9 +463,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblLoginLog
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblLoginLog(
   input: LoginLogInput,
 ) {
   
@@ -504,9 +504,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsLoginLog
 /** 获取登录日志字段注释 */
-export async function getFieldComments(): Promise<LoginLogFieldComment> {
+export async function getFieldCommentsLoginLog(): Promise<LoginLogFieldComment> {
   const fieldComments: LoginLogFieldComment = {
     id: "ID",
     type: "类型",
@@ -521,9 +521,9 @@ export async function getFieldComments(): Promise<LoginLogFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueLoginLog
 /** 通过唯一约束获得登录日志列表 */
-export async function findByUnique(
+export async function findByUniqueLoginLog(
   search0: Readonly<LoginLogInput>,
   options?: {
     is_debug?: boolean;
@@ -531,7 +531,7 @@ export async function findByUnique(
 ): Promise<LoginLogModel[]> {
   
   const table = "base_login_log";
-  const method = "findByUnique";
+  const method = "findByUniqueLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -549,7 +549,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneLoginLog(
       {
         id: search0.id,
       },
@@ -567,7 +567,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueLoginLog(
   oldModel: Readonly<LoginLogModel>,
   input: Readonly<LoginLogInput>,
 ): boolean {
@@ -578,9 +578,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueLoginLog
 /** 通过唯一约束检查 登录日志 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueLoginLog(
   input: Readonly<LoginLogInput>,
   oldModel: Readonly<LoginLogModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -592,14 +592,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueLoginLog(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 登录日志 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: LoginLogId = await updateById(
+      const id: LoginLogId = await updateByIdLoginLog(
         oldModel.id,
         {
           ...input,
@@ -616,9 +616,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneLoginLog
 /** 根据条件查找第一登录日志 */
-export async function findOne(
+export async function findOneLoginLog(
   search?: Readonly<LoginLogSearch>,
   sort?: SortInput[],
   options?: {
@@ -627,7 +627,7 @@ export async function findOne(
 ): Promise<LoginLogModel | undefined> {
   
   const table = "base_login_log";
-  const method = "findOne";
+  const method = "findOneLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -654,7 +654,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllLoginLog(
     search,
     page,
     sort,
@@ -664,9 +664,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdLoginLog
 /** 根据 id 查找登录日志 */
-export async function findById(
+export async function findByIdLoginLog(
   id?: LoginLogId | null,
   options?: {
     is_debug?: boolean;
@@ -674,7 +674,7 @@ export async function findById(
 ): Promise<LoginLogModel | undefined> {
   
   const table = "base_login_log";
-  const method = "findById";
+  const method = "findByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -695,7 +695,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneLoginLog(
     {
       id,
     },
@@ -706,9 +706,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsLoginLog
 /** 根据 ids 查找登录日志 */
-export async function findByIds(
+export async function findByIdsLoginLog(
   ids: LoginLogId[],
   options?: {
     is_debug?: boolean;
@@ -716,7 +716,7 @@ export async function findByIds(
 ): Promise<LoginLogModel[]> {
   
   const table = "base_login_log";
-  const method = "findByIds";
+  const method = "findByIdsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -737,7 +737,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllLoginLog(
     {
       ids,
     },
@@ -763,9 +763,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existLoginLog
 /** 根据搜索条件判断登录日志是否存在 */
-export async function exist(
+export async function existLoginLog(
   search?: Readonly<LoginLogSearch>,
   options?: {
     is_debug?: boolean;
@@ -773,7 +773,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_login_log";
-  const method = "exist";
+  const method = "existLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -789,15 +789,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneLoginLog(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdLoginLog
 /** 根据id判断登录日志是否存在 */
-export async function existById(
+export async function existByIdLoginLog(
   id?: Readonly<LoginLogId | null>,
   options?: {
     is_debug?: boolean;
@@ -805,7 +805,7 @@ export async function existById(
 ) {
   
   const table = "base_login_log";
-  const method = "existById";
+  const method = "existByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -838,9 +838,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionLoginLog
 /** 校验登录日志是否存在 */
-export async function validateOption(
+export async function validateOptionLoginLog(
   model?: LoginLogModel,
 ) {
   if (!model) {
@@ -851,12 +851,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateLoginLog
 /** 登录日志增加和修改时校验输入 */
-export async function validate(
+export async function validateLoginLog(
   input: Readonly<LoginLogInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsLoginLog();
   
   // ID
   await validators.chars_max_length(
@@ -881,9 +881,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnLoginLog
 /** 创建 登录日志 并返回 */
-export async function createReturn(
+export async function createReturnLoginLog(
   input: Readonly<LoginLogInput>,
   options?: {
     is_debug?: boolean;
@@ -894,7 +894,7 @@ export async function createReturn(
 ): Promise<LoginLogModel> {
   
   const table = "base_login_log";
-  const method = "createReturn";
+  const method = "createReturnLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -919,8 +919,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionLoginLog(
+    await findOneLoginLog(
       {
         id,
       },
@@ -932,9 +932,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createLoginLog
 /** 创建 登录日志 */
-export async function create(
+export async function createLoginLog(
   input: Readonly<LoginLogInput>,
   options?: {
     is_debug?: boolean;
@@ -945,7 +945,7 @@ export async function create(
 ): Promise<LoginLogId> {
   
   const table = "base_login_log";
-  const method = "create";
+  const method = "createLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -973,9 +973,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnLoginLog
 /** 批量创建 登录日志 并返回 */
-export async function createsReturn(
+export async function createsReturnLoginLog(
   inputs: LoginLogInput[],
   options?: {
     is_debug?: boolean;
@@ -986,7 +986,7 @@ export async function createsReturn(
 ): Promise<LoginLogModel[]> {
   
   const table = "base_login_log";
-  const method = "createsReturn";
+  const method = "createsReturnLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1005,14 +1005,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsLoginLog(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsLoginLog
 /** 批量创建 登录日志 */
-export async function creates(
+export async function createsLoginLog(
   inputs: LoginLogInput[],
   options?: {
     is_debug?: boolean;
@@ -1023,7 +1023,7 @@ export async function creates(
 ): Promise<LoginLogId[]> {
   
   const table = "base_login_log";
-  const method = "creates";
+  const method = "createsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1072,11 +1072,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueLoginLog(input, options);
     if (oldModels.length > 0) {
       let id: LoginLogId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueLoginLog(
           input,
           oldModel,
           options?.uniqueType,
@@ -1244,9 +1244,9 @@ async function _creates(
   return ids2;
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdLoginLog
 /** 登录日志 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdLoginLog(
   id: LoginLogId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1255,7 +1255,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "base_login_log";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1287,9 +1287,9 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdLoginLog
 /** 根据 id 修改 登录日志 */
-export async function updateById(
+export async function updateByIdLoginLog(
   id: LoginLogId,
   input: LoginLogInput,
   options?: {
@@ -1301,7 +1301,7 @@ export async function updateById(
 ): Promise<LoginLogId> {
   
   const table = "base_login_log";
-  const method = "updateById";
+  const method = "updateByIdLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1324,15 +1324,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdLoginLog: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdLoginLog: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdLoginLog(id, input.tenant_id, options);
   }
   
   {
@@ -1340,7 +1340,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueLoginLog(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1351,7 +1351,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdLoginLog(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 登录日志 已被删除";
@@ -1472,9 +1472,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsLoginLog
 /** 根据 ids 删除 登录日志 */
-export async function deleteByIds(
+export async function deleteByIdsLoginLog(
   ids: LoginLogId[],
   options?: {
     is_debug?: boolean;
@@ -1484,7 +1484,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_login_log";
-  const method = "deleteByIds";
+  const method = "deleteByIdsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1510,7 +1510,7 @@ export async function deleteByIds(
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdLoginLog(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1546,9 +1546,9 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsLoginLog
 /** 根据 ids 还原 登录日志 */
-export async function revertByIds(
+export async function revertByIdsLoginLog(
   ids: LoginLogId[],
   options?: {
     is_debug?: boolean;
@@ -1556,7 +1556,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_login_log";
-  const method = "revertByIds";
+  const method = "revertByIdsLoginLog";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1580,7 +1580,7 @@ export async function revertByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneLoginLog(
       {
         id,
         is_deleted: 1,
@@ -1589,7 +1589,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdLoginLog(
         id,
         options,
       );
@@ -1602,7 +1602,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as LoginLogInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueLoginLog(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1619,9 +1619,9 @@ export async function revertByIds(
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsLoginLog
 /** 根据 ids 彻底删除 登录日志 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsLoginLog(
   ids: LoginLogId[],
   options?: {
     is_debug?: boolean;
@@ -1630,7 +1630,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_login_log";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsLoginLog";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1655,7 +1655,7 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneLoginLog(
       {
         id,
         is_deleted: 1,

@@ -27,10 +27,10 @@ export async function findCountBackgroundTask(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountBackgroundTask,
   } = await import("./background_task.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountBackgroundTask(search);
   
   return num;
 }
@@ -45,12 +45,12 @@ export async function findAllBackgroundTask(
 ): Promise<BackgroundTaskModel[]> {
   
   const {
-    findAll,
+    findAllBackgroundTask,
   } = await import("./background_task.service.ts");
   
   checkSortBackgroundTask(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllBackgroundTask(search, page, sort);
   
   return models;
 }
@@ -61,10 +61,10 @@ export async function findAllBackgroundTask(
 export async function getFieldCommentsBackgroundTask(): Promise<BackgroundTaskFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsBackgroundTask,
   } = await import("./background_task.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsBackgroundTask();
   
   return field_comment;
 }
@@ -78,12 +78,12 @@ export async function findOneBackgroundTask(
 ): Promise<BackgroundTaskModel | undefined> {
   
   const {
-    findOne,
+    findOneBackgroundTask,
   } = await import("./background_task.service.ts");
   
   checkSortBackgroundTask(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneBackgroundTask(search, sort);
   
   return model;
 }
@@ -96,10 +96,10 @@ export async function findByIdBackgroundTask(
 ): Promise<BackgroundTaskModel | undefined> {
   
   const {
-    findById,
+    findByIdBackgroundTask,
   } = await import("./background_task.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdBackgroundTask(id);
   
   return model;
 }
@@ -112,10 +112,10 @@ export async function findByIdsBackgroundTask(
 ): Promise<BackgroundTaskModel[]> {
   
   const {
-    findByIds,
+    findByIdsBackgroundTask,
   } = await import("./background_task.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsBackgroundTask(ids);
   
   for (const model of models) {
   }
@@ -131,7 +131,7 @@ export async function deleteByIdsBackgroundTask(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsBackgroundTask,
   } = await import("./background_task.service.ts");
   
   set_is_tran(true);
@@ -141,7 +141,7 @@ export async function deleteByIdsBackgroundTask(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsBackgroundTask(ids);
   
   return num;
 }
@@ -154,7 +154,7 @@ export async function revertByIdsBackgroundTask(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsBackgroundTask,
   } = await import("./background_task.service.ts");
   
   set_is_tran(true);
@@ -164,7 +164,7 @@ export async function revertByIdsBackgroundTask(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsBackgroundTask(ids);
   
   return res;
 }
@@ -177,7 +177,7 @@ export async function forceDeleteByIdsBackgroundTask(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsBackgroundTask,
   } = await import("./background_task.service.ts");
   
   set_is_tran(true);
@@ -187,7 +187,7 @@ export async function forceDeleteByIdsBackgroundTask(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsBackgroundTask(ids);
   
   return res;
 }

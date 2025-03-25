@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找按钮权限总数
  */
-export async function findCount(
+export async function findCountPermit(
   search?: PermitSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const permit_num = await permitDao.findCount(search);
+  const permit_num = await permitDao.findCountPermit(search);
   
   return permit_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找按钮权限列表
  */
-export async function findAll(
+export async function findAllPermit(
   search?: PermitSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const permit_models = await permitDao.findAll(search, page, sort);
+  const permit_models = await permitDao.findAllPermit(search, page, sort);
   
   return permit_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblPermit(
   input: PermitInput,
 ): Promise<void> {
-  await permitDao.setIdByLbl(input);
+  await permitDao.setIdByLblPermit(input);
 }
 
 /**
  * 根据条件查找第一个按钮权限
  */
-export async function findOne(
+export async function findOnePermit(
   search?: PermitSearch,
   sort?: SortInput[],
 ): Promise<PermitModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const permit_model = await permitDao.findOne(search, sort);
+  const permit_model = await permitDao.findOnePermit(search, sort);
   
   return permit_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找按钮权限
  */
-export async function findById(
+export async function findByIdPermit(
   permit_id?: PermitId | null,
 ): Promise<PermitModel | undefined> {
   
-  const permit_model = await permitDao.findById(permit_id);
+  const permit_model = await permitDao.findByIdPermit(permit_id);
   
   return permit_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找按钮权限
  */
-export async function findByIds(
+export async function findByIdsPermit(
   permit_ids: PermitId[],
 ): Promise<PermitModel[]> {
   
-  const permit_models = await permitDao.findByIds(permit_ids);
+  const permit_models = await permitDao.findByIdsPermit(permit_ids);
   
   return permit_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找按钮权限是否存在
  */
-export async function exist(
+export async function existPermit(
   search?: PermitSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const permit_exist = await permitDao.exist(search);
+  const permit_exist = await permitDao.existPermit(search);
   
   return permit_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找按钮权限是否存在
  */
-export async function existById(
+export async function existByIdPermit(
   permit_id?: PermitId | null,
 ): Promise<boolean> {
   
-  const permit_exist = await permitDao.existById(permit_id);
+  const permit_exist = await permitDao.existByIdPermit(permit_id);
   
   return permit_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验按钮权限
  */
-export async function validate(
+export async function validatePermit(
   input: PermitInput,
 ): Promise<void> {
-  await permitDao.validate(input);
+  await permitDao.validatePermit(input);
 }
 
 /**
  * 批量创建按钮权限
  */
-export async function creates(
+export async function createsPermit(
   inputs: PermitInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<PermitId[]> {
-  const permit_ids = await permitDao.creates(inputs, options);
+  const permit_ids = await permitDao.createsPermit(inputs, options);
   
   return permit_ids;
 }
@@ -150,13 +150,13 @@ export async function creates(
 /**
  * 根据 id 修改按钮权限
  */
-export async function updateById(
+export async function updateByIdPermit(
   permit_id: PermitId,
   input: PermitInput,
 ): Promise<PermitId> {
   
-  const old_model = await permitDao.validateOption(
-    await permitDao.findById(permit_id),
+  const old_model = await permitDao.validateOptionPermit(
+    await permitDao.findByIdPermit(permit_id),
   );
   
   // 不能修改系统记录的系统字段
@@ -168,27 +168,27 @@ export async function updateById(
     input.code = undefined;
   }
   
-  const permit_id2 = await permitDao.updateById(permit_id, input);
+  const permit_id2 = await permitDao.updateByIdPermit(permit_id, input);
   
   return permit_id2;
 }
 
 /** 校验按钮权限是否存在 */
-export async function validateOption(
+export async function validateOptionPermit(
   model0?: PermitModel,
 ): Promise<PermitModel> {
-  const permit_model = await permitDao.validateOption(model0);
+  const permit_model = await permitDao.validateOptionPermit(model0);
   return permit_model;
 }
 
 /**
  * 根据 ids 删除按钮权限
  */
-export async function deleteByIds(
+export async function deleteByIdsPermit(
   permit_ids: PermitId[],
 ): Promise<number> {
   
-  const old_models = await permitDao.findByIds(permit_ids);
+  const old_models = await permitDao.findByIdsPermit(permit_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -196,23 +196,23 @@ export async function deleteByIds(
     }
   }
   
-  const permit_num = await permitDao.deleteByIds(permit_ids);
+  const permit_num = await permitDao.deleteByIdsPermit(permit_ids);
   return permit_num;
 }
 
 /**
  * 获取按钮权限字段注释
  */
-export async function getFieldComments(): Promise<PermitFieldComment> {
-  const permit_fields = await permitDao.getFieldComments();
+export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
+  const permit_fields = await permitDao.getFieldCommentsPermit();
   return permit_fields;
 }
 
 /**
  * 查找 按钮权限 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByPermit(
 ): Promise<number> {
-  const permit_sort = await permitDao.findLastOrderBy();
+  const permit_sort = await permitDao.findLastOrderByPermit();
   return permit_sort;
 }
