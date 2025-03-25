@@ -27,10 +27,10 @@ export async function findCountPermit(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountPermit,
   } = await import("./permit.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountPermit(search);
   
   return num;
 }
@@ -45,12 +45,12 @@ export async function findAllPermit(
 ): Promise<PermitModel[]> {
   
   const {
-    findAll,
+    findAllPermit,
   } = await import("./permit.service.ts");
   
   checkSortPermit(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllPermit(search, page, sort);
   
   return models;
 }
@@ -61,10 +61,10 @@ export async function findAllPermit(
 export async function getFieldCommentsPermit(): Promise<PermitFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsPermit,
   } = await import("./permit.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsPermit();
   
   return field_comment;
 }
@@ -78,12 +78,12 @@ export async function findOnePermit(
 ): Promise<PermitModel | undefined> {
   
   const {
-    findOne,
+    findOnePermit,
   } = await import("./permit.service.ts");
   
   checkSortPermit(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOnePermit(search, sort);
   
   return model;
 }
@@ -96,10 +96,10 @@ export async function findByIdPermit(
 ): Promise<PermitModel | undefined> {
   
   const {
-    findById,
+    findByIdPermit,
   } = await import("./permit.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdPermit(id);
   
   return model;
 }
@@ -112,10 +112,10 @@ export async function findByIdsPermit(
 ): Promise<PermitModel[]> {
   
   const {
-    findByIds,
+    findByIdsPermit,
   } = await import("./permit.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsPermit(ids);
   
   for (const model of models) {
   }
@@ -134,20 +134,20 @@ export async function updateByIdPermit(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblPermit,
+    updateByIdPermit,
   } = await import("./permit.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblPermit(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: PermitId = await updateById(id, input);
+  const id2: PermitId = await updateByIdPermit(id, input);
   
   return id2;
 }
@@ -158,10 +158,10 @@ export async function updateByIdPermit(
 export async function findLastOrderByPermit(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByPermit,
   } = await import("./permit.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByPermit();
   
   return res;
 }

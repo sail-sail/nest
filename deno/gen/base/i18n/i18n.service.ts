@@ -19,7 +19,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找国际化总数
  */
-export async function findCount(
+export async function findCountI18n(
   search?: I18nSearch,
 ): Promise<number> {
   
@@ -27,7 +27,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const i18n_num = await i18nDao.findCount(search);
+  const i18n_num = await i18nDao.findCountI18n(search);
   
   return i18n_num;
 }
@@ -35,7 +35,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找国际化列表
  */
-export async function findAll(
+export async function findAllI18n(
   search?: I18nSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -45,7 +45,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const i18n_models = await i18nDao.findAll(search, page, sort);
+  const i18n_models = await i18nDao.findAllI18n(search, page, sort);
   
   return i18n_models;
 }
@@ -53,16 +53,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblI18n(
   input: I18nInput,
 ): Promise<void> {
-  await i18nDao.setIdByLbl(input);
+  await i18nDao.setIdByLblI18n(input);
 }
 
 /**
  * 根据条件查找第一个国际化
  */
-export async function findOne(
+export async function findOneI18n(
   search?: I18nSearch,
   sort?: SortInput[],
 ): Promise<I18nModel | undefined> {
@@ -71,7 +71,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const i18n_model = await i18nDao.findOne(search, sort);
+  const i18n_model = await i18nDao.findOneI18n(search, sort);
   
   return i18n_model;
 }
@@ -79,11 +79,11 @@ export async function findOne(
 /**
  * 根据 id 查找国际化
  */
-export async function findById(
+export async function findByIdI18n(
   i18n_id?: I18nId | null,
 ): Promise<I18nModel | undefined> {
   
-  const i18n_model = await i18nDao.findById(i18n_id);
+  const i18n_model = await i18nDao.findByIdI18n(i18n_id);
   
   return i18n_model;
 }
@@ -91,11 +91,11 @@ export async function findById(
 /**
  * 根据 ids 查找国际化
  */
-export async function findByIds(
+export async function findByIdsI18n(
   i18n_ids: I18nId[],
 ): Promise<I18nModel[]> {
   
-  const i18n_models = await i18nDao.findByIds(i18n_ids);
+  const i18n_models = await i18nDao.findByIdsI18n(i18n_ids);
   
   return i18n_models;
 }
@@ -103,7 +103,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找国际化是否存在
  */
-export async function exist(
+export async function existI18n(
   search?: I18nSearch,
 ): Promise<boolean> {
   
@@ -111,7 +111,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const i18n_exist = await i18nDao.exist(search);
+  const i18n_exist = await i18nDao.existI18n(search);
   
   return i18n_exist;
 }
@@ -119,11 +119,11 @@ export async function exist(
 /**
  * 根据 id 查找国际化是否存在
  */
-export async function existById(
+export async function existByIdI18n(
   i18n_id?: I18nId | null,
 ): Promise<boolean> {
   
-  const i18n_exist = await i18nDao.existById(i18n_id);
+  const i18n_exist = await i18nDao.existByIdI18n(i18n_id);
   
   return i18n_exist;
 }
@@ -131,22 +131,22 @@ export async function existById(
 /**
  * 增加和修改时校验国际化
  */
-export async function validate(
+export async function validateI18n(
   input: I18nInput,
 ): Promise<void> {
-  await i18nDao.validate(input);
+  await i18nDao.validateI18n(input);
 }
 
 /**
  * 批量创建国际化
  */
-export async function creates(
+export async function createsI18n(
   inputs: I18nInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<I18nId[]> {
-  const i18n_ids = await i18nDao.creates(inputs, options);
+  const i18n_ids = await i18nDao.createsI18n(inputs, options);
   
   await update_i18n_version();
   
@@ -156,12 +156,12 @@ export async function creates(
 /**
  * 根据 id 修改国际化
  */
-export async function updateById(
+export async function updateByIdI18n(
   i18n_id: I18nId,
   input: I18nInput,
 ): Promise<I18nId> {
   
-  const i18n_id2 = await i18nDao.updateById(i18n_id, input);
+  const i18n_id2 = await i18nDao.updateByIdI18n(i18n_id, input);
   
   await update_i18n_version();
   
@@ -169,21 +169,21 @@ export async function updateById(
 }
 
 /** 校验国际化是否存在 */
-export async function validateOption(
+export async function validateOptionI18n(
   model0?: I18nModel,
 ): Promise<I18nModel> {
-  const i18n_model = await i18nDao.validateOption(model0);
+  const i18n_model = await i18nDao.validateOptionI18n(model0);
   return i18n_model;
 }
 
 /**
  * 根据 ids 删除国际化
  */
-export async function deleteByIds(
+export async function deleteByIdsI18n(
   i18n_ids: I18nId[],
 ): Promise<number> {
   
-  const i18n_num = await i18nDao.deleteByIds(i18n_ids);
+  const i18n_num = await i18nDao.deleteByIdsI18n(i18n_ids);
   
   await update_i18n_version();
   return i18n_num;
@@ -192,11 +192,11 @@ export async function deleteByIds(
 /**
  * 根据 ids 还原国际化
  */
-export async function revertByIds(
+export async function revertByIdsI18n(
   i18n_ids: I18nId[],
 ): Promise<number> {
   
-  const i18n_num = await i18nDao.revertByIds(i18n_ids);
+  const i18n_num = await i18nDao.revertByIdsI18n(i18n_ids);
   
   return i18n_num;
 }
@@ -204,11 +204,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除国际化
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsI18n(
   i18n_ids: I18nId[],
 ): Promise<number> {
   
-  const i18n_num = await i18nDao.forceDeleteByIds(i18n_ids);
+  const i18n_num = await i18nDao.forceDeleteByIdsI18n(i18n_ids);
   
   return i18n_num;
 }
@@ -216,7 +216,7 @@ export async function forceDeleteByIds(
 /**
  * 获取国际化字段注释
  */
-export async function getFieldComments(): Promise<I18nFieldComment> {
-  const i18n_fields = await i18nDao.getFieldComments();
+export async function getFieldCommentsI18n(): Promise<I18nFieldComment> {
+  const i18n_fields = await i18nDao.getFieldCommentsI18n();
   return i18n_fields;
 }

@@ -1,6 +1,6 @@
 import {
-  updateById as updateByIdBackgroundTask,
-  create as createBackgroundTask,
+  updateByIdBackgroundTask,
+  createBackgroundTask,
 } from "/gen/base/background_task/background_task.dao.ts";
 
 import dayjs from "dayjs";
@@ -71,7 +71,8 @@ export function backgroundTaskWrap(
         try {
           const data = await Promise.resolve(result);
           await handelResult(data, id);
-        } catch (err) {
+        } catch (err0) {
+          const err = err0 as Error;
           await handelErr(err, id);
         }
       })();

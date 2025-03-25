@@ -1,11 +1,11 @@
 import {
-  findAll as findAllTenant,
-  delCache as delCacheTenant,
+  findAllTenant,
+  delCacheTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  findAll as findAllDomain,
-  delCache as delCacheDomain,
+  findAllDomain,
+  delCacheDomain,
 } from "/gen/base/domain/domain.dao.ts";
 
 import type {
@@ -14,19 +14,19 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findByIds as findByIdsTenant,
-  findById as findByIdTenant,
-  validateOption as validateOptionTenant,
+  findByIdsTenant,
+  findByIdTenant,
+  validateOptionTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  findById as findByIdLang,
+  findByIdLang,
 } from "/gen/base/lang/lang.dao.ts";
 
 import {
-  findOne as findOneUsr,
-  create as createUsr,
-  updateById as updateByIdUsr,
+  findOneUsr,
+  createUsr,
+  updateByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 export async function getLoginTenants(
