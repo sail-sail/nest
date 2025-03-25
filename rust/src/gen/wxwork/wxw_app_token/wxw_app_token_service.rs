@@ -26,7 +26,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找企微应用接口凭据列表
-pub async fn find_all(
+pub async fn find_all_wxw_app_token(
   search: Option<WxwAppTokenSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -40,7 +40,7 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let wxw_app_token_models = wxw_app_token_dao::find_all(
+  let wxw_app_token_models = wxw_app_token_dao::find_all_wxw_app_token(
     Some(search),
     page,
     sort,
@@ -51,7 +51,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找企微应用接口凭据总数
-pub async fn find_count(
+pub async fn find_count_wxw_app_token(
   search: Option<WxwAppTokenSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -63,7 +63,7 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let wxw_app_token_num = wxw_app_token_dao::find_count(
+  let wxw_app_token_num = wxw_app_token_dao::find_count_wxw_app_token(
     Some(search),
     options,
   ).await?;
@@ -72,7 +72,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个企微应用接口凭据
-pub async fn find_one(
+pub async fn find_one_wxw_app_token(
   search: Option<WxwAppTokenSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -85,7 +85,7 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let wxw_app_token_model = wxw_app_token_dao::find_one(
+  let wxw_app_token_model = wxw_app_token_dao::find_one_wxw_app_token(
     Some(search),
     sort,
     options,
@@ -95,12 +95,12 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找企微应用接口凭据
-pub async fn find_by_id(
+pub async fn find_by_id_wxw_app_token(
   wxw_app_token_id: WxwAppTokenId,
   options: Option<Options>,
 ) -> Result<Option<WxwAppTokenModel>> {
   
-  let wxw_app_token_model = wxw_app_token_dao::find_by_id(
+  let wxw_app_token_model = wxw_app_token_dao::find_by_id_wxw_app_token(
     wxw_app_token_id,
     options,
   ).await?;
@@ -109,12 +109,12 @@ pub async fn find_by_id(
 }
 
 /// 根据 wxw_app_token_ids 查找企微应用接口凭据
-pub async fn find_by_ids(
+pub async fn find_by_ids_wxw_app_token(
   wxw_app_token_ids: Vec<WxwAppTokenId>,
   options: Option<Options>,
 ) -> Result<Vec<WxwAppTokenModel>> {
   
-  let wxw_app_token_models = wxw_app_token_dao::find_by_ids(
+  let wxw_app_token_models = wxw_app_token_dao::find_by_ids_wxw_app_token(
     wxw_app_token_ids,
     options,
   ).await?;
@@ -124,11 +124,11 @@ pub async fn find_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_wxw_app_token(
   wxw_app_token_input: WxwAppTokenInput,
 ) -> Result<WxwAppTokenInput> {
   
-  let wxw_app_token_input = wxw_app_token_dao::set_id_by_lbl(
+  let wxw_app_token_input = wxw_app_token_dao::set_id_by_lbl_wxw_app_token(
     wxw_app_token_input,
   ).await?;
   
@@ -137,12 +137,12 @@ pub async fn set_id_by_lbl(
 
 /// 创建企微应用接口凭据
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_wxw_app_token(
   wxw_app_token_inputs: Vec<WxwAppTokenInput>,
   options: Option<Options>,
 ) -> Result<Vec<WxwAppTokenId>> {
   
-  let wxw_app_token_ids = wxw_app_token_dao::creates(
+  let wxw_app_token_ids = wxw_app_token_dao::creates_wxw_app_token(
     wxw_app_token_inputs,
     options,
   ).await?;
@@ -152,13 +152,13 @@ pub async fn creates(
 
 /// 企微应用接口凭据根据 wxw_app_token_id 修改租户id
 #[allow(dead_code)]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_wxw_app_token(
   wxw_app_token_id: WxwAppTokenId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = wxw_app_token_dao::update_tenant_by_id(
+  let num = wxw_app_token_dao::update_tenant_by_id_wxw_app_token(
     wxw_app_token_id,
     tenant_id,
     options,
@@ -169,13 +169,13 @@ pub async fn update_tenant_by_id(
 
 /// 根据 wxw_app_token_id 修改企微应用接口凭据
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_wxw_app_token(
   wxw_app_token_id: WxwAppTokenId,
   mut wxw_app_token_input: WxwAppTokenInput,
   options: Option<Options>,
 ) -> Result<WxwAppTokenId> {
   
-  let wxw_app_token_id = wxw_app_token_dao::update_by_id(
+  let wxw_app_token_id = wxw_app_token_dao::update_by_id_wxw_app_token(
     wxw_app_token_id,
     wxw_app_token_input,
     options.clone(),
@@ -186,23 +186,23 @@ pub async fn update_by_id(
 
 /// 校验企微应用接口凭据是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_wxw_app_token(
   wxw_app_token_model: Option<WxwAppTokenModel>,
 ) -> Result<WxwAppTokenModel> {
   
-  let wxw_app_token_model = wxw_app_token_dao::validate_option(wxw_app_token_model).await?;
+  let wxw_app_token_model = wxw_app_token_dao::validate_option_wxw_app_token(wxw_app_token_model).await?;
   
   Ok(wxw_app_token_model)
 }
 
 /// 根据 wxw_app_token_ids 删除企微应用接口凭据
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_wxw_app_token(
   wxw_app_token_ids: Vec<WxwAppTokenId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = wxw_app_token_dao::delete_by_ids(
+  let num = wxw_app_token_dao::delete_by_ids_wxw_app_token(
     wxw_app_token_ids,
     options,
   ).await?;
@@ -211,11 +211,11 @@ pub async fn delete_by_ids(
 }
 
 /// 获取企微应用接口凭据字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_wxw_app_token(
   options: Option<Options>,
 ) -> Result<WxwAppTokenFieldComment> {
   
-  let comments = wxw_app_token_dao::get_field_comments(
+  let comments = wxw_app_token_dao::get_field_comments_wxw_app_token(
     options,
   ).await?;
   
@@ -224,12 +224,12 @@ pub async fn get_field_comments(
 
 /// 根据 wxw_app_token_ids 还原企微应用接口凭据
 #[allow(dead_code)]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_wxw_app_token(
   wxw_app_token_ids: Vec<WxwAppTokenId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = wxw_app_token_dao::revert_by_ids(
+  let num = wxw_app_token_dao::revert_by_ids_wxw_app_token(
     wxw_app_token_ids,
     options,
   ).await?;
@@ -239,12 +239,12 @@ pub async fn revert_by_ids(
 
 /// 根据 wxw_app_token_ids 彻底删除企微应用接口凭据
 #[allow(dead_code)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_wxw_app_token(
   wxw_app_token_ids: Vec<WxwAppTokenId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = wxw_app_token_dao::force_delete_by_ids(
+  let num = wxw_app_token_dao::force_delete_by_ids_wxw_app_token(
     wxw_app_token_ids,
     options,
   ).await?;

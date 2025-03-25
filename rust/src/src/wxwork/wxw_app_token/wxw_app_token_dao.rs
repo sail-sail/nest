@@ -12,10 +12,10 @@ use crate::common::context::{
 
 use crate::r#gen::wxwork::wxw_app::wxw_app_model::WxwAppId;
 use crate::r#gen::wxwork::wxw_app_token::wxw_app_token_dao::{
-  find_one as find_one_wxw_app_token,
-  create as create_wxw_app_token,
-  update_by_id as update_by_id_wxw_app_token,
-  validate_option as validate_option_wxw_app_token,
+  find_one_wxw_app_token,
+  create_wxw_app_token,
+  update_by_id_wxw_app_token,
+  validate_option_wxw_app_token,
 };
 use crate::r#gen::wxwork::wxw_app_token::wxw_app_token_model::{
   WxwAppTokenInput,
@@ -23,9 +23,9 @@ use crate::r#gen::wxwork::wxw_app_token::wxw_app_token_model::{
 };
 
 use crate::r#gen::wxwork::wxw_app::wxw_app_dao::{
-  find_by_id as find_by_id_wxw_app,
-  validate_option as validate_option_wxw_app,
-  validate_is_enabled as validate_is_enabled_wxw_app,
+  find_by_id_wxw_app,
+  validate_option_wxw_app,
+  validate_is_enabled_wxw_app,
 };
 
 use super::wxw_app_token_model::{

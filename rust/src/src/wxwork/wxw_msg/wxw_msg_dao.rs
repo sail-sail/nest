@@ -8,12 +8,12 @@ use crate::common::context::get_req_id;
 use crate::src::wxwork::wxw_app_token::wxw_app_token_dao::get_access_token;
 
 use crate::r#gen::wxwork::wxw_app::wxw_app_dao::{
-  find_by_id as find_by_id_wxw_app,
-  validate_option as validate_option_wxw_app,
-  validate_is_enabled as validate_is_enabled_wxw_app,
+  find_by_id_wxw_app,
+  validate_option_wxw_app,
+  validate_is_enabled_wxw_app,
 };
 
-use crate::r#gen::wxwork::wxw_msg::wxw_msg_dao::create as create_wxw_msg;
+use crate::r#gen::wxwork::wxw_msg::wxw_msg_dao::create_wxw_msg;
 use crate::r#gen::wxwork::wxw_msg::wxw_msg_model::WxwMsgInput;
 
 use super::wxw_msg_model::SendCardMsgInput;

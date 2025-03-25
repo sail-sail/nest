@@ -19,7 +19,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找企微消息列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_wxw_msg(
   search: Option<WxwMsgSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +34,7 @@ pub async fn find_all(
   
   check_sort_wxw_msg(sort.as_deref())?;
   
-  let models = wxw_msg_service::find_all(
+  let models = wxw_msg_service::find_all_wxw_msg(
     search,
     page,
     sort,
@@ -46,7 +46,7 @@ pub async fn find_all(
 
 /// 根据条件查找企微消息总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_wxw_msg(
   search: Option<WxwMsgSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +57,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = wxw_msg_service::find_count(
+  let num = wxw_msg_service::find_count_wxw_msg(
     search,
     options,
   ).await?;
@@ -67,7 +67,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个企微消息
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_wxw_msg(
   search: Option<WxwMsgSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +81,7 @@ pub async fn find_one(
   
   check_sort_wxw_msg(sort.as_deref())?;
   
-  let model = wxw_msg_service::find_one(
+  let model = wxw_msg_service::find_one_wxw_msg(
     search,
     sort,
     options,
@@ -92,7 +92,7 @@ pub async fn find_one(
 
 /// 根据 id 查找企微消息
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_wxw_msg(
   id: WxwMsgId,
   options: Option<Options>,
 ) -> Result<Option<WxwMsgModel>> {
@@ -103,7 +103,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = wxw_msg_service::find_by_id(
+  let model = wxw_msg_service::find_by_id_wxw_msg(
     id,
     options,
   ).await?;
@@ -113,7 +113,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找企微消息
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_wxw_msg(
   ids: Vec<WxwMsgId>,
   options: Option<Options>,
 ) -> Result<Vec<WxwMsgModel>> {
@@ -124,7 +124,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = wxw_msg_service::find_by_ids(
+  let models = wxw_msg_service::find_by_ids_wxw_msg(
     ids,
     options,
   ).await?;
@@ -135,7 +135,7 @@ pub async fn find_by_ids(
 /// 企微消息根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_wxw_msg(
   id: WxwMsgId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -147,7 +147,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = wxw_msg_service::update_tenant_by_id(
+  let num = wxw_msg_service::update_tenant_by_id_wxw_msg(
     id,
     tenant_id,
     options,
@@ -159,7 +159,7 @@ pub async fn update_tenant_by_id(
 /// 根据 ids 删除企微消息
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_wxw_msg(
   ids: Vec<WxwMsgId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -175,7 +175,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = wxw_msg_service::delete_by_ids(
+  let num = wxw_msg_service::delete_by_ids_wxw_msg(
     ids,
     options,
   ).await?;
@@ -185,7 +185,7 @@ pub async fn delete_by_ids(
 
 /// 获取企微消息字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_wxw_msg(
   options: Option<Options>,
 ) -> Result<WxwMsgFieldComment> {
   
@@ -195,7 +195,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = wxw_msg_service::get_field_comments(
+  let comments = wxw_msg_service::get_field_comments_wxw_msg(
     options,
   ).await?;
   
@@ -205,7 +205,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原企微消息
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_wxw_msg(
   ids: Vec<WxwMsgId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -221,7 +221,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = wxw_msg_service::revert_by_ids(
+  let num = wxw_msg_service::revert_by_ids_wxw_msg(
     ids,
     options,
   ).await?;
@@ -232,7 +232,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除企微消息
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_wxw_msg(
   ids: Vec<WxwMsgId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -248,7 +248,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = wxw_msg_service::force_delete_by_ids(
+  let num = wxw_msg_service::force_delete_by_ids_wxw_msg(
     ids,
     options,
   ).await?;

@@ -5,9 +5,9 @@ use super::wxw_app_token_model::WxwGetConfigSignature;
 use super::wxw_app_token_dao;
 
 use crate::r#gen::wxwork::wxw_app::wxw_app_dao::{
-  find_one as find_one_wxw_app,
-  validate_option as validate_option_wxw_app,
-  validate_is_enabled as validate_is_enabled_wxw_app,
+  find_one_wxw_app,
+  validate_option_wxw_app,
+  validate_is_enabled_wxw_app,
 };
 use crate::r#gen::wxwork::wxw_app::wxw_app_model::WxwAppSearch;
 

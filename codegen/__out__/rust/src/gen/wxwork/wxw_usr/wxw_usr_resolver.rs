@@ -19,7 +19,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找企微用户列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_wxw_usr(
   search: Option<WxwUsrSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +34,7 @@ pub async fn find_all(
   
   check_sort_wxw_usr(sort.as_deref())?;
   
-  let models = wxw_usr_service::find_all(
+  let models = wxw_usr_service::find_all_wxw_usr(
     search,
     page,
     sort,
@@ -46,7 +46,7 @@ pub async fn find_all(
 
 /// 根据条件查找企微用户总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_wxw_usr(
   search: Option<WxwUsrSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +57,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = wxw_usr_service::find_count(
+  let num = wxw_usr_service::find_count_wxw_usr(
     search,
     options,
   ).await?;
@@ -67,7 +67,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个企微用户
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_wxw_usr(
   search: Option<WxwUsrSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +81,7 @@ pub async fn find_one(
   
   check_sort_wxw_usr(sort.as_deref())?;
   
-  let model = wxw_usr_service::find_one(
+  let model = wxw_usr_service::find_one_wxw_usr(
     search,
     sort,
     options,
@@ -92,7 +92,7 @@ pub async fn find_one(
 
 /// 根据 id 查找企微用户
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_wxw_usr(
   id: WxwUsrId,
   options: Option<Options>,
 ) -> Result<Option<WxwUsrModel>> {
@@ -103,7 +103,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = wxw_usr_service::find_by_id(
+  let model = wxw_usr_service::find_by_id_wxw_usr(
     id,
     options,
   ).await?;
@@ -113,7 +113,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找企微用户
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_wxw_usr(
   ids: Vec<WxwUsrId>,
   options: Option<Options>,
 ) -> Result<Vec<WxwUsrModel>> {
@@ -124,7 +124,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = wxw_usr_service::find_by_ids(
+  let models = wxw_usr_service::find_by_ids_wxw_usr(
     ids,
     options,
   ).await?;
@@ -135,7 +135,7 @@ pub async fn find_by_ids(
 /// 创建企微用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_wxw_usr(
   inputs: Vec<WxwUsrInput>,
   options: Option<Options>,
 ) -> Result<Vec<WxwUsrId>> {
@@ -154,7 +154,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = wxw_usr_service::set_id_by_lbl(
+    let input = wxw_usr_service::set_id_by_lbl_wxw_usr(
       input,
     ).await?;
     inputs2.push(input);
@@ -166,7 +166,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = wxw_usr_service::creates(
+  let ids = wxw_usr_service::creates_wxw_usr(
     inputs,
     options,
   ).await?;
@@ -177,7 +177,7 @@ pub async fn creates(
 /// 企微用户根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_wxw_usr(
   id: WxwUsrId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -189,7 +189,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = wxw_usr_service::update_tenant_by_id(
+  let num = wxw_usr_service::update_tenant_by_id_wxw_usr(
     id,
     tenant_id,
     options,
@@ -201,7 +201,7 @@ pub async fn update_tenant_by_id(
 /// 根据 id 修改企微用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_wxw_usr(
   id: WxwUsrId,
   input: WxwUsrInput,
   options: Option<Options>,
@@ -217,7 +217,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = wxw_usr_service::set_id_by_lbl(
+  let input = wxw_usr_service::set_id_by_lbl_wxw_usr(
     input,
   ).await?;
   
@@ -226,7 +226,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = wxw_usr_service::update_by_id(
+  let res = wxw_usr_service::update_by_id_wxw_usr(
     id,
     input,
     options,
@@ -238,7 +238,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除企微用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_wxw_usr(
   ids: Vec<WxwUsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -254,7 +254,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = wxw_usr_service::delete_by_ids(
+  let num = wxw_usr_service::delete_by_ids_wxw_usr(
     ids,
     options,
   ).await?;
@@ -264,7 +264,7 @@ pub async fn delete_by_ids(
 
 /// 获取企微用户字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_wxw_usr(
   options: Option<Options>,
 ) -> Result<WxwUsrFieldComment> {
   
@@ -274,7 +274,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = wxw_usr_service::get_field_comments(
+  let comments = wxw_usr_service::get_field_comments_wxw_usr(
     options,
   ).await?;
   
@@ -284,7 +284,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原企微用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_wxw_usr(
   ids: Vec<WxwUsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -300,7 +300,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = wxw_usr_service::revert_by_ids(
+  let num = wxw_usr_service::revert_by_ids_wxw_usr(
     ids,
     options,
   ).await?;
@@ -311,7 +311,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除企微用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_wxw_usr(
   ids: Vec<WxwUsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -327,7 +327,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = wxw_usr_service::force_delete_by_ids(
+  let num = wxw_usr_service::force_delete_by_ids_wxw_usr(
     ids,
     options,
   ).await?;
