@@ -3,22 +3,18 @@ import {
   error,
 } from "/lib/context.ts";
  
-import {
-  isEmpty,
-} from "/lib/util/string_util.ts";
- 
 import dayjs from "dayjs";
  
 import {
-  findOne as findOneWxAppToken,
-  create as createWxAppToken,
-  updateById as updateWxAppTokenById,
+  findOneWxAppToken,
+  createWxAppToken,
+  updateByIdWxAppToken,
 } from "/gen/wx/wx_app_token/wx_app_token.dao.ts";
 
 import {
-  findOne as findOneWxApp,
-  validateOption as validateOptionWxApp,
-  validateIsEnabled as validateIsEnabledWxApp,
+  findOneWxApp,
+  validateOptionWxApp,
+  validateIsEnabledWxApp,
 } from "/gen/wx/wx_app/wx_app.dao.ts";
  
 export async function getAccessToken(
@@ -109,7 +105,7 @@ export async function getAccessToken(
       error(data);
       throw data.errmsg;
     }
-    await updateWxAppTokenById(
+    await updateByIdWxAppToken(
       wx_app_token_id,
       {
         appid,

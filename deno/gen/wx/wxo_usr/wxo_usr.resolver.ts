@@ -29,10 +29,10 @@ export async function findCountWxoUsr(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountWxoUsr(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllWxoUsr(
 ): Promise<WxoUsrModel[]> {
   
   const {
-    findAll,
+    findAllWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
   checkSortWxoUsr(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllWxoUsr(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllWxoUsr(
 export async function getFieldCommentsWxoUsr(): Promise<WxoUsrFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsWxoUsr();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneWxoUsr(
 ): Promise<WxoUsrModel | undefined> {
   
   const {
-    findOne,
+    findOneWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
   checkSortWxoUsr(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneWxoUsr(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdWxoUsr(
 ): Promise<WxoUsrModel | undefined> {
   
   const {
-    findById,
+    findByIdWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdWxoUsr(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsWxoUsr(
 ): Promise<WxoUsrModel[]> {
   
   const {
-    findByIds,
+    findByIdsWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsWxoUsr(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsWxoUsr(
 ): Promise<WxoUsrId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateWxoUsr,
+    setIdByLblWxoUsr,
+    createsWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsWxoUsr(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblWxoUsr(input);
     
-    await validate(input);
+    await validateWxoUsr(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsWxoUsr(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdWxoUsr(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblWxoUsr,
+    updateByIdWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblWxoUsr(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: WxoUsrId = await updateById(id, input);
+  const id2: WxoUsrId = await updateByIdWxoUsr(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsWxoUsr(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsWxoUsr(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsWxoUsr(ids);
   
   return num;
 }
@@ -219,7 +219,7 @@ export async function revertByIdsWxoUsr(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
   set_is_tran(true);
@@ -229,7 +229,7 @@ export async function revertByIdsWxoUsr(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsWxoUsr(ids);
   
   return res;
 }
@@ -242,7 +242,7 @@ export async function forceDeleteByIdsWxoUsr(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsWxoUsr,
   } = await import("./wxo_usr.service.ts");
   
   set_is_tran(true);
@@ -252,7 +252,7 @@ export async function forceDeleteByIdsWxoUsr(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsWxoUsr(ids);
   
   return res;
 }

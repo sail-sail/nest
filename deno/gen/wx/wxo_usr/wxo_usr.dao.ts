@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -72,11 +72,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneUsr,
+  findOneUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -237,9 +237,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountWxoUsr
 /** 根据条件查找公众号用户总数 */
-export async function findCount(
+export async function findCountWxoUsr(
   search?: Readonly<WxoUsrSearch>,
   options?: {
     is_debug?: boolean;
@@ -248,12 +248,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "wx_wxo_usr";
-  const method = "findCount";
+  const method = "findCountWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -336,9 +336,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllWxoUsr
 /** 根据搜索条件和分页查找公众号用户列表 */
-export async function findAll(
+export async function findAllWxoUsr(
   search?: Readonly<WxoUsrSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -349,7 +349,7 @@ export async function findAll(
 ): Promise<WxoUsrModel[]> {
   
   const table = "wx_wxo_usr";
-  const method = "findAll";
+  const method = "findAllWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -522,9 +522,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblWxoUsr
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblWxoUsr(
   input: WxoUsrInput,
 ) {
   
@@ -576,9 +576,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsWxoUsr
 /** 获取公众号用户字段注释 */
-export async function getFieldComments(): Promise<WxoUsrFieldComment> {
+export async function getFieldCommentsWxoUsr(): Promise<WxoUsrFieldComment> {
   const fieldComments: WxoUsrFieldComment = {
     id: "ID",
     lbl: "昵称",
@@ -606,9 +606,9 @@ export async function getFieldComments(): Promise<WxoUsrFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueWxoUsr
 /** 通过唯一约束获得公众号用户列表 */
-export async function findByUnique(
+export async function findByUniqueWxoUsr(
   search0: Readonly<WxoUsrInput>,
   options?: {
     is_debug?: boolean;
@@ -616,7 +616,7 @@ export async function findByUnique(
 ): Promise<WxoUsrModel[]> {
   
   const table = "wx_wxo_usr";
-  const method = "findByUnique";
+  const method = "findByUniqueWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -634,7 +634,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneWxoUsr(
       {
         id: search0.id,
       },
@@ -652,7 +652,7 @@ export async function findByUnique(
       return [ ];
     }
     const openid = search0.openid;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllWxoUsr(
       {
         openid,
       },
@@ -667,7 +667,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueWxoUsr(
   oldModel: Readonly<WxoUsrModel>,
   input: Readonly<WxoUsrInput>,
 ): boolean {
@@ -683,9 +683,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueWxoUsr
 /** 通过唯一约束检查 公众号用户 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueWxoUsr(
   input: Readonly<WxoUsrInput>,
   oldModel: Readonly<WxoUsrModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -697,14 +697,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueWxoUsr(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 公众号用户 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: WxoUsrId = await updateById(
+      const id: WxoUsrId = await updateByIdWxoUsr(
         oldModel.id,
         {
           ...input,
@@ -721,9 +721,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneWxoUsr
 /** 根据条件查找第一公众号用户 */
-export async function findOne(
+export async function findOneWxoUsr(
   search?: Readonly<WxoUsrSearch>,
   sort?: SortInput[],
   options?: {
@@ -732,7 +732,7 @@ export async function findOne(
 ): Promise<WxoUsrModel | undefined> {
   
   const table = "wx_wxo_usr";
-  const method = "findOne";
+  const method = "findOneWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -759,7 +759,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllWxoUsr(
     search,
     page,
     sort,
@@ -769,9 +769,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdWxoUsr
 /** 根据 id 查找公众号用户 */
-export async function findById(
+export async function findByIdWxoUsr(
   id?: WxoUsrId | null,
   options?: {
     is_debug?: boolean;
@@ -779,7 +779,7 @@ export async function findById(
 ): Promise<WxoUsrModel | undefined> {
   
   const table = "wx_wxo_usr";
-  const method = "findById";
+  const method = "findByIdWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -800,7 +800,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneWxoUsr(
     {
       id,
     },
@@ -811,9 +811,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsWxoUsr
 /** 根据 ids 查找公众号用户 */
-export async function findByIds(
+export async function findByIdsWxoUsr(
   ids: WxoUsrId[],
   options?: {
     is_debug?: boolean;
@@ -821,7 +821,7 @@ export async function findByIds(
 ): Promise<WxoUsrModel[]> {
   
   const table = "wx_wxo_usr";
-  const method = "findByIds";
+  const method = "findByIdsWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -842,7 +842,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllWxoUsr(
     {
       ids,
     },
@@ -868,9 +868,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existWxoUsr
 /** 根据搜索条件判断公众号用户是否存在 */
-export async function exist(
+export async function existWxoUsr(
   search?: Readonly<WxoUsrSearch>,
   options?: {
     is_debug?: boolean;
@@ -878,7 +878,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "wx_wxo_usr";
-  const method = "exist";
+  const method = "existWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -894,15 +894,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneWxoUsr(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdWxoUsr
 /** 根据id判断公众号用户是否存在 */
-export async function existById(
+export async function existByIdWxoUsr(
   id?: Readonly<WxoUsrId | null>,
   options?: {
     is_debug?: boolean;
@@ -910,7 +910,7 @@ export async function existById(
 ) {
   
   const table = "wx_wxo_usr";
-  const method = "existById";
+  const method = "existByIdWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -952,9 +952,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionWxoUsr
 /** 校验公众号用户是否存在 */
-export async function validateOption(
+export async function validateOptionWxoUsr(
   model?: WxoUsrModel,
 ) {
   if (!model) {
@@ -965,12 +965,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateWxoUsr
 /** 公众号用户增加和修改时校验输入 */
-export async function validate(
+export async function validateWxoUsr(
   input: Readonly<WxoUsrInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsWxoUsr();
   
   // ID
   await validators.chars_max_length(
@@ -1065,9 +1065,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnWxoUsr
 /** 创建 公众号用户 并返回 */
-export async function createReturn(
+export async function createReturnWxoUsr(
   input: Readonly<WxoUsrInput>,
   options?: {
     is_debug?: boolean;
@@ -1078,7 +1078,7 @@ export async function createReturn(
 ): Promise<WxoUsrModel> {
   
   const table = "wx_wxo_usr";
-  const method = "createReturn";
+  const method = "createReturnWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1103,8 +1103,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionWxoUsr(
+    await findOneWxoUsr(
       {
         id,
       },
@@ -1116,9 +1116,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createWxoUsr
 /** 创建 公众号用户 */
-export async function create(
+export async function createWxoUsr(
   input: Readonly<WxoUsrInput>,
   options?: {
     is_debug?: boolean;
@@ -1129,7 +1129,7 @@ export async function create(
 ): Promise<WxoUsrId> {
   
   const table = "wx_wxo_usr";
-  const method = "create";
+  const method = "createWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1157,9 +1157,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnWxoUsr
 /** 批量创建 公众号用户 并返回 */
-export async function createsReturn(
+export async function createsReturnWxoUsr(
   inputs: WxoUsrInput[],
   options?: {
     is_debug?: boolean;
@@ -1170,7 +1170,7 @@ export async function createsReturn(
 ): Promise<WxoUsrModel[]> {
   
   const table = "wx_wxo_usr";
-  const method = "createsReturn";
+  const method = "createsReturnWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1189,14 +1189,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsWxoUsr(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsWxoUsr
 /** 批量创建 公众号用户 */
-export async function creates(
+export async function createsWxoUsr(
   inputs: WxoUsrInput[],
   options?: {
     is_debug?: boolean;
@@ -1207,7 +1207,7 @@ export async function creates(
 ): Promise<WxoUsrId[]> {
   
   const table = "wx_wxo_usr";
-  const method = "creates";
+  const method = "createsWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1256,11 +1256,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueWxoUsr(input, options);
     if (oldModels.length > 0) {
       let id: WxoUsrId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueWxoUsr(
           input,
           oldModel,
           options?.uniqueType,
@@ -1290,7 +1290,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheWxoUsr();
   
   const args = new QueryArgs();
   let sql = "insert into wx_wxo_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,head_img,usr_id_lbl,usr_id,appid,openid,unionid,sex,province,city,country,privilege,rem)values";
@@ -1472,20 +1472,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheWxoUsr();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheWxoUsr
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheWxoUsr() {
   await delCacheCtx(`dao.sql.wx_wxo_usr`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdWxoUsr
 /** 公众号用户 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdWxoUsr(
   id: WxoUsrId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1494,7 +1494,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "wx_wxo_usr";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1524,13 +1524,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheWxoUsr();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdWxoUsr
 /** 根据 id 修改 公众号用户 */
-export async function updateById(
+export async function updateByIdWxoUsr(
   id: WxoUsrId,
   input: WxoUsrInput,
   options?: {
@@ -1542,7 +1542,7 @@ export async function updateById(
 ): Promise<WxoUsrId> {
   
   const table = "wx_wxo_usr";
-  const method = "updateById";
+  const method = "updateByIdWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1565,15 +1565,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdWxoUsr: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdWxoUsr: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdWxoUsr(id, input.tenant_id, options);
   }
   
   {
@@ -1581,7 +1581,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueWxoUsr(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1592,7 +1592,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdWxoUsr(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 公众号用户 已被删除";
@@ -1754,7 +1754,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheWxoUsr();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1762,7 +1762,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheWxoUsr();
   }
   
   if (!is_silent_mode) {
@@ -1772,9 +1772,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsWxoUsr
 /** 根据 ids 删除 公众号用户 */
-export async function deleteByIds(
+export async function deleteByIdsWxoUsr(
   ids: WxoUsrId[],
   options?: {
     is_debug?: boolean;
@@ -1784,7 +1784,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "wx_wxo_usr";
-  const method = "deleteByIds";
+  const method = "deleteByIdsWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1807,12 +1807,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxoUsr();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdWxoUsr(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1845,14 +1845,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxoUsr();
   
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsWxoUsr
 /** 根据 ids 还原 公众号用户 */
-export async function revertByIds(
+export async function revertByIdsWxoUsr(
   ids: WxoUsrId[],
   options?: {
     is_debug?: boolean;
@@ -1860,7 +1860,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "wx_wxo_usr";
-  const method = "revertByIds";
+  const method = "revertByIdsWxoUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1881,12 +1881,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxoUsr();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneWxoUsr(
       {
         id,
         is_deleted: 1,
@@ -1895,7 +1895,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdWxoUsr(
         id,
         options,
       );
@@ -1908,7 +1908,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as WxoUsrInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueWxoUsr(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1922,14 +1922,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxoUsr();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsWxoUsr
 /** 根据 ids 彻底删除 公众号用户 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxoUsr(
   ids: WxoUsrId[],
   options?: {
     is_debug?: boolean;
@@ -1938,7 +1938,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "wx_wxo_usr";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsWxoUsr";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1960,12 +1960,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxoUsr();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneWxoUsr(
       {
         id,
         is_deleted: 1,
@@ -1982,7 +1982,7 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxoUsr();
   
   return num;
 }
