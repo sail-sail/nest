@@ -31,10 +31,10 @@ export async function findCountCard(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountCard,
   } = await import("./card.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountCard(search);
   
   return num;
 }
@@ -49,12 +49,12 @@ export async function findAllCard(
 ): Promise<CardModel[]> {
   
   const {
-    findAll,
+    findAllCard,
   } = await import("./card.service.ts");
   
   checkSortCard(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllCard(search, page, sort);
   
   return models;
 }
@@ -65,10 +65,10 @@ export async function findAllCard(
 export async function getFieldCommentsCard(): Promise<CardFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsCard,
   } = await import("./card.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsCard();
   
   return field_comment;
 }
@@ -82,12 +82,12 @@ export async function findOneCard(
 ): Promise<CardModel | undefined> {
   
   const {
-    findOne,
+    findOneCard,
   } = await import("./card.service.ts");
   
   checkSortCard(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneCard(search, sort);
   
   return model;
 }
@@ -100,10 +100,10 @@ export async function findByIdCard(
 ): Promise<CardModel | undefined> {
   
   const {
-    findById,
+    findByIdCard,
   } = await import("./card.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdCard(id);
   
   return model;
 }
@@ -116,10 +116,10 @@ export async function findByIdsCard(
 ): Promise<CardModel[]> {
   
   const {
-    findByIds,
+    findByIdsCard,
   } = await import("./card.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsCard(ids);
   
   for (const model of models) {
   }
@@ -136,9 +136,9 @@ export async function createsCard(
 ): Promise<CardId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateCard,
+    setIdByLblCard,
+    createsCard,
   } = await import("./card.service.ts");
   
   set_is_tran(true);
@@ -167,12 +167,12 @@ export async function createsCard(
       input.growth_amt = new Decimal(input.growth_amt);
     }
     
-    await setIdByLbl(input);
+    await setIdByLblCard(input);
     
-    await validate(input);
+    await validateCard(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsCard(inputs, { uniqueType });
   return ids;
 }
 
@@ -202,20 +202,20 @@ export async function updateByIdCard(
   }
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblCard,
+    updateByIdCard,
   } = await import("./card.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblCard(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: CardId = await updateById(id, input);
+  const id2: CardId = await updateByIdCard(id, input);
   
   return id2;
 }
@@ -228,7 +228,7 @@ export async function deleteByIdsCard(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsCard,
   } = await import("./card.service.ts");
   
   set_is_tran(true);
@@ -238,7 +238,7 @@ export async function deleteByIdsCard(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsCard(ids);
   
   return num;
 }
@@ -252,7 +252,7 @@ export async function enableByIdsCard(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsCard,
   } = await import("./card.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -265,7 +265,7 @@ export async function enableByIdsCard(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsCard(ids, is_enabled);
   
   return res;
 }
@@ -279,7 +279,7 @@ export async function lockByIdsCard(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsCard,
   } = await import("./card.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -293,7 +293,7 @@ export async function lockByIdsCard(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsCard(ids, is_locked);
   
   return res;
 }
@@ -306,7 +306,7 @@ export async function revertByIdsCard(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsCard,
   } = await import("./card.service.ts");
   
   set_is_tran(true);
@@ -316,7 +316,7 @@ export async function revertByIdsCard(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsCard(ids);
   
   return res;
 }
@@ -329,7 +329,7 @@ export async function forceDeleteByIdsCard(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsCard,
   } = await import("./card.service.ts");
   
   set_is_tran(true);
@@ -339,7 +339,7 @@ export async function forceDeleteByIdsCard(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsCard(ids);
   
   return res;
 }

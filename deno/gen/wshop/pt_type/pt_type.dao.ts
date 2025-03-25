@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -72,7 +72,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneOrg,
+  findOneOrg,
 } from "/gen/base/org/org.dao.ts";
 
 import {
@@ -211,9 +211,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountPtType
 /** 根据条件查找产品类别总数 */
-export async function findCount(
+export async function findCountPtType(
   search?: Readonly<PtTypeSearch>,
   options?: {
     is_debug?: boolean;
@@ -222,12 +222,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "wshop_pt_type";
-  const method = "findCount";
+  const method = "findCountPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -343,9 +343,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllPtType
 /** 根据搜索条件和分页查找产品类别列表 */
-export async function findAll(
+export async function findAllPtType(
   search?: Readonly<PtTypeSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -356,7 +356,7 @@ export async function findAll(
 ): Promise<PtTypeModel[]> {
   
   const table = "wshop_pt_type";
-  const method = "findAll";
+  const method = "findAllPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -617,9 +617,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblPtType
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblPtType(
   input: PtTypeInput,
 ) {
   
@@ -710,9 +710,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsPtType
 /** 获取产品类别字段注释 */
-export async function getFieldComments(): Promise<PtTypeFieldComment> {
+export async function getFieldCommentsPtType(): Promise<PtTypeFieldComment> {
   const fieldComments: PtTypeFieldComment = {
     id: "ID",
     img: "图标",
@@ -739,9 +739,9 @@ export async function getFieldComments(): Promise<PtTypeFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniquePtType
 /** 通过唯一约束获得产品类别列表 */
-export async function findByUnique(
+export async function findByUniquePtType(
   search0: Readonly<PtTypeInput>,
   options?: {
     is_debug?: boolean;
@@ -749,7 +749,7 @@ export async function findByUnique(
 ): Promise<PtTypeModel[]> {
   
   const table = "wshop_pt_type";
-  const method = "findByUnique";
+  const method = "findByUniquePtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -767,7 +767,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOnePtType(
       {
         id: search0.id,
       },
@@ -785,7 +785,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllPtType(
       {
         lbl,
       },
@@ -800,7 +800,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniquePtType(
   oldModel: Readonly<PtTypeModel>,
   input: Readonly<PtTypeInput>,
 ): boolean {
@@ -816,9 +816,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniquePtType
 /** 通过唯一约束检查 产品类别 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniquePtType(
   input: Readonly<PtTypeInput>,
   oldModel: Readonly<PtTypeModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -830,14 +830,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniquePtType(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 产品类别 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: PtTypeId = await updateById(
+      const id: PtTypeId = await updateByIdPtType(
         oldModel.id,
         {
           ...input,
@@ -854,9 +854,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOnePtType
 /** 根据条件查找第一产品类别 */
-export async function findOne(
+export async function findOnePtType(
   search?: Readonly<PtTypeSearch>,
   sort?: SortInput[],
   options?: {
@@ -865,7 +865,7 @@ export async function findOne(
 ): Promise<PtTypeModel | undefined> {
   
   const table = "wshop_pt_type";
-  const method = "findOne";
+  const method = "findOnePtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -892,7 +892,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllPtType(
     search,
     page,
     sort,
@@ -902,9 +902,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdPtType
 /** 根据 id 查找产品类别 */
-export async function findById(
+export async function findByIdPtType(
   id?: PtTypeId | null,
   options?: {
     is_debug?: boolean;
@@ -912,7 +912,7 @@ export async function findById(
 ): Promise<PtTypeModel | undefined> {
   
   const table = "wshop_pt_type";
-  const method = "findById";
+  const method = "findByIdPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -933,7 +933,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOnePtType(
     {
       id,
     },
@@ -944,9 +944,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsPtType
 /** 根据 ids 查找产品类别 */
-export async function findByIds(
+export async function findByIdsPtType(
   ids: PtTypeId[],
   options?: {
     is_debug?: boolean;
@@ -954,7 +954,7 @@ export async function findByIds(
 ): Promise<PtTypeModel[]> {
   
   const table = "wshop_pt_type";
-  const method = "findByIds";
+  const method = "findByIdsPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -975,7 +975,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllPtType(
     {
       ids,
     },
@@ -1001,9 +1001,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existPtType
 /** 根据搜索条件判断产品类别是否存在 */
-export async function exist(
+export async function existPtType(
   search?: Readonly<PtTypeSearch>,
   options?: {
     is_debug?: boolean;
@@ -1011,7 +1011,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "wshop_pt_type";
-  const method = "exist";
+  const method = "existPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1027,15 +1027,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOnePtType(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdPtType
 /** 根据id判断产品类别是否存在 */
-export async function existById(
+export async function existByIdPtType(
   id?: Readonly<PtTypeId | null>,
   options?: {
     is_debug?: boolean;
@@ -1043,7 +1043,7 @@ export async function existById(
 ) {
   
   const table = "wshop_pt_type";
-  const method = "existById";
+  const method = "existByIdPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1085,9 +1085,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledPtType
 /** 校验产品类别是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledPtType(
   model: Readonly<PtTypeModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -1095,9 +1095,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionPtType
 /** 校验产品类别是否存在 */
-export async function validateOption(
+export async function validateOptionPtType(
   model?: PtTypeModel,
 ) {
   if (!model) {
@@ -1108,12 +1108,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validatePtType
 /** 产品类别增加和修改时校验输入 */
-export async function validate(
+export async function validatePtType(
   input: Readonly<PtTypeInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsPtType();
   
   // ID
   await validators.chars_max_length(
@@ -1159,9 +1159,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnPtType
 /** 创建 产品类别 并返回 */
-export async function createReturn(
+export async function createReturnPtType(
   input: Readonly<PtTypeInput>,
   options?: {
     is_debug?: boolean;
@@ -1172,7 +1172,7 @@ export async function createReturn(
 ): Promise<PtTypeModel> {
   
   const table = "wshop_pt_type";
-  const method = "createReturn";
+  const method = "createReturnPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1197,8 +1197,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionPtType(
+    await findOnePtType(
       {
         id,
       },
@@ -1210,9 +1210,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createPtType
 /** 创建 产品类别 */
-export async function create(
+export async function createPtType(
   input: Readonly<PtTypeInput>,
   options?: {
     is_debug?: boolean;
@@ -1223,7 +1223,7 @@ export async function create(
 ): Promise<PtTypeId> {
   
   const table = "wshop_pt_type";
-  const method = "create";
+  const method = "createPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1251,9 +1251,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnPtType
 /** 批量创建 产品类别 并返回 */
-export async function createsReturn(
+export async function createsReturnPtType(
   inputs: PtTypeInput[],
   options?: {
     is_debug?: boolean;
@@ -1264,7 +1264,7 @@ export async function createsReturn(
 ): Promise<PtTypeModel[]> {
   
   const table = "wshop_pt_type";
-  const method = "createsReturn";
+  const method = "createsReturnPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1283,14 +1283,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsPtType(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsPtType
 /** 批量创建 产品类别 */
-export async function creates(
+export async function createsPtType(
   inputs: PtTypeInput[],
   options?: {
     is_debug?: boolean;
@@ -1301,7 +1301,7 @@ export async function creates(
 ): Promise<PtTypeId[]> {
   
   const table = "wshop_pt_type";
-  const method = "creates";
+  const method = "createsPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1350,11 +1350,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniquePtType(input, options);
     if (oldModels.length > 0) {
       let id: PtTypeId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniquePtType(
           input,
           oldModel,
           options?.uniqueType,
@@ -1384,7 +1384,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCachePtType();
   
   const args = new QueryArgs();
   let sql = "insert into wshop_pt_type(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,img,lbl,is_home,is_recommend,is_locked,is_enabled,order_by,rem,org_id)values";
@@ -1511,20 +1511,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCachePtType();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCachePtType
 /** 删除缓存 */
-export async function delCache() {
+export async function delCachePtType() {
   await delCacheCtx(`dao.sql.wshop_pt_type`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdPtType
 /** 产品类别 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdPtType(
   id: PtTypeId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1533,7 +1533,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "wshop_pt_type";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1563,13 +1563,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCachePtType();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdPtType
 /** 根据 id 修改 产品类别 */
-export async function updateById(
+export async function updateByIdPtType(
   id: PtTypeId,
   input: PtTypeInput,
   options?: {
@@ -1581,7 +1581,7 @@ export async function updateById(
 ): Promise<PtTypeId> {
   
   const table = "wshop_pt_type";
-  const method = "updateById";
+  const method = "updateByIdPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1604,15 +1604,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdPtType: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdPtType: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdPtType(id, input.tenant_id, options);
   }
   
   {
@@ -1620,7 +1620,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniquePtType(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1631,7 +1631,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdPtType(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 产品类别 已被删除";
@@ -1735,7 +1735,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCachePtType();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1743,7 +1743,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCachePtType();
   }
   
   if (!is_silent_mode) {
@@ -1753,9 +1753,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsPtType
 /** 根据 ids 删除 产品类别 */
-export async function deleteByIds(
+export async function deleteByIdsPtType(
   ids: PtTypeId[],
   options?: {
     is_debug?: boolean;
@@ -1765,7 +1765,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "wshop_pt_type";
-  const method = "deleteByIds";
+  const method = "deleteByIdsPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1788,12 +1788,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCachePtType();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdPtType(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1815,14 +1815,14 @@ export async function deleteByIds(
     }
   }
   
-  await delCache();
+  await delCachePtType();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdPtType
 /** 根据 id 查找 产品类别 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdPtType(
   id: PtTypeId,
   options?: {
     is_debug?: boolean;
@@ -1832,7 +1832,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdPtType(
     id,
     options,
   );
@@ -1841,9 +1841,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsPtType
 /** 根据 ids 启用或者禁用 产品类别 */
-export async function enableByIds(
+export async function enableByIdsPtType(
   ids: PtTypeId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1852,7 +1852,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "wshop_pt_type";
-  const method = "enableByIds";
+  const method = "enableByIdsPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1877,7 +1877,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCachePtType();
   }
   
   const args = new QueryArgs();
@@ -1885,14 +1885,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCachePtType();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdPtType
 /** 根据 id 查找 产品类别 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdPtType(
   id: PtTypeId,
   options?: {
     is_debug?: boolean;
@@ -1902,18 +1902,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const pt_type_model = await findByIdPtType(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = pt_type_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsPtType
 /** 根据 ids 锁定或者解锁 产品类别 */
-export async function lockByIds(
+export async function lockByIdsPtType(
   ids: PtTypeId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -1922,7 +1922,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "wshop_pt_type";
-  const method = "lockByIds";
+  const method = "lockByIdsPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1946,21 +1946,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCachePtType();
   
   const args = new QueryArgs();
   let sql = `update wshop_pt_type set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCachePtType();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsPtType
 /** 根据 ids 还原 产品类别 */
-export async function revertByIds(
+export async function revertByIdsPtType(
   ids: PtTypeId[],
   options?: {
     is_debug?: boolean;
@@ -1968,7 +1968,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "wshop_pt_type";
-  const method = "revertByIds";
+  const method = "revertByIdsPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1989,12 +1989,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCachePtType();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOnePtType(
       {
         id,
         is_deleted: 1,
@@ -2003,7 +2003,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdPtType(
         id,
         options,
       );
@@ -2016,7 +2016,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as PtTypeInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniquePtType(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -2030,14 +2030,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCachePtType();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsPtType
 /** 根据 ids 彻底删除 产品类别 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsPtType(
   ids: PtTypeId[],
   options?: {
     is_debug?: boolean;
@@ -2046,7 +2046,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "wshop_pt_type";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsPtType";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2068,12 +2068,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCachePtType();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOnePtType(
       {
         id,
         is_deleted: 1,
@@ -2095,21 +2095,21 @@ export async function forceDeleteByIds(
     }
   }
   
-  await delCache();
+  await delCachePtType();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByPtType
 /** 查找 产品类别 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByPtType(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "wshop_pt_type";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByPtType";
   
   const is_debug = get_is_debug(options?.is_debug);
   

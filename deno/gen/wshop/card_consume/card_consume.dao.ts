@@ -54,7 +54,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -68,15 +68,15 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneCard,
+  findOneCard,
 } from "/gen/wshop/card/card.dao.ts";
 
 import {
-  findOne as findOneUsr,
+  findOneUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  findOne as findOneOrg,
+  findOneOrg,
 } from "/gen/base/org/org.dao.ts";
 
 import {
@@ -255,9 +255,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountCardConsume
 /** 根据条件查找会员卡消费记录总数 */
-export async function findCount(
+export async function findCountCardConsume(
   search?: Readonly<CardConsumeSearch>,
   options?: {
     is_debug?: boolean;
@@ -266,12 +266,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "wshop_card_consume";
-  const method = "findCount";
+  const method = "findCountCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -362,9 +362,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllCardConsume
 /** 根据搜索条件和分页查找会员卡消费记录列表 */
-export async function findAll(
+export async function findAllCardConsume(
   search?: Readonly<CardConsumeSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -375,7 +375,7 @@ export async function findAll(
 ): Promise<CardConsumeModel[]> {
   
   const table = "wshop_card_consume";
-  const method = "findAll";
+  const method = "findAllCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -569,9 +569,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblCardConsume
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblCardConsume(
   input: CardConsumeInput,
 ) {
   
@@ -658,9 +658,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsCardConsume
 /** 获取会员卡消费记录字段注释 */
-export async function getFieldComments(): Promise<CardConsumeFieldComment> {
+export async function getFieldCommentsCardConsume(): Promise<CardConsumeFieldComment> {
   const fieldComments: CardConsumeFieldComment = {
     id: "ID",
     card_id: "卡号",
@@ -685,9 +685,9 @@ export async function getFieldComments(): Promise<CardConsumeFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueCardConsume
 /** 通过唯一约束获得会员卡消费记录列表 */
-export async function findByUnique(
+export async function findByUniqueCardConsume(
   search0: Readonly<CardConsumeInput>,
   options?: {
     is_debug?: boolean;
@@ -695,7 +695,7 @@ export async function findByUnique(
 ): Promise<CardConsumeModel[]> {
   
   const table = "wshop_card_consume";
-  const method = "findByUnique";
+  const method = "findByUniqueCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -713,7 +713,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneCardConsume(
       {
         id: search0.id,
       },
@@ -731,7 +731,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueCardConsume(
   oldModel: Readonly<CardConsumeModel>,
   input: Readonly<CardConsumeInput>,
 ): boolean {
@@ -742,9 +742,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueCardConsume
 /** 通过唯一约束检查 会员卡消费记录 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueCardConsume(
   input: Readonly<CardConsumeInput>,
   oldModel: Readonly<CardConsumeModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -756,14 +756,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueCardConsume(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 会员卡消费记录 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: CardConsumeId = await updateById(
+      const id: CardConsumeId = await updateByIdCardConsume(
         oldModel.id,
         {
           ...input,
@@ -780,9 +780,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneCardConsume
 /** 根据条件查找第一会员卡消费记录 */
-export async function findOne(
+export async function findOneCardConsume(
   search?: Readonly<CardConsumeSearch>,
   sort?: SortInput[],
   options?: {
@@ -791,7 +791,7 @@ export async function findOne(
 ): Promise<CardConsumeModel | undefined> {
   
   const table = "wshop_card_consume";
-  const method = "findOne";
+  const method = "findOneCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -818,7 +818,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllCardConsume(
     search,
     page,
     sort,
@@ -828,9 +828,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdCardConsume
 /** 根据 id 查找会员卡消费记录 */
-export async function findById(
+export async function findByIdCardConsume(
   id?: CardConsumeId | null,
   options?: {
     is_debug?: boolean;
@@ -838,7 +838,7 @@ export async function findById(
 ): Promise<CardConsumeModel | undefined> {
   
   const table = "wshop_card_consume";
-  const method = "findById";
+  const method = "findByIdCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -859,7 +859,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneCardConsume(
     {
       id,
     },
@@ -870,9 +870,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsCardConsume
 /** 根据 ids 查找会员卡消费记录 */
-export async function findByIds(
+export async function findByIdsCardConsume(
   ids: CardConsumeId[],
   options?: {
     is_debug?: boolean;
@@ -880,7 +880,7 @@ export async function findByIds(
 ): Promise<CardConsumeModel[]> {
   
   const table = "wshop_card_consume";
-  const method = "findByIds";
+  const method = "findByIdsCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -901,7 +901,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllCardConsume(
     {
       ids,
     },
@@ -927,9 +927,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existCardConsume
 /** 根据搜索条件判断会员卡消费记录是否存在 */
-export async function exist(
+export async function existCardConsume(
   search?: Readonly<CardConsumeSearch>,
   options?: {
     is_debug?: boolean;
@@ -937,7 +937,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "wshop_card_consume";
-  const method = "exist";
+  const method = "existCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -953,15 +953,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneCardConsume(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdCardConsume
 /** 根据id判断会员卡消费记录是否存在 */
-export async function existById(
+export async function existByIdCardConsume(
   id?: Readonly<CardConsumeId | null>,
   options?: {
     is_debug?: boolean;
@@ -969,7 +969,7 @@ export async function existById(
 ) {
   
   const table = "wshop_card_consume";
-  const method = "existById";
+  const method = "existByIdCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1002,9 +1002,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionCardConsume
 /** 校验会员卡消费记录是否存在 */
-export async function validateOption(
+export async function validateOptionCardConsume(
   model?: CardConsumeModel,
 ) {
   if (!model) {
@@ -1015,12 +1015,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateCardConsume
 /** 会员卡消费记录增加和修改时校验输入 */
-export async function validate(
+export async function validateCardConsume(
   input: Readonly<CardConsumeInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsCardConsume();
   
   // ID
   await validators.chars_max_length(
@@ -1066,9 +1066,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnCardConsume
 /** 创建 会员卡消费记录 并返回 */
-export async function createReturn(
+export async function createReturnCardConsume(
   input: Readonly<CardConsumeInput>,
   options?: {
     is_debug?: boolean;
@@ -1079,7 +1079,7 @@ export async function createReturn(
 ): Promise<CardConsumeModel> {
   
   const table = "wshop_card_consume";
-  const method = "createReturn";
+  const method = "createReturnCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1104,8 +1104,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionCardConsume(
+    await findOneCardConsume(
       {
         id,
       },
@@ -1117,9 +1117,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createCardConsume
 /** 创建 会员卡消费记录 */
-export async function create(
+export async function createCardConsume(
   input: Readonly<CardConsumeInput>,
   options?: {
     is_debug?: boolean;
@@ -1130,7 +1130,7 @@ export async function create(
 ): Promise<CardConsumeId> {
   
   const table = "wshop_card_consume";
-  const method = "create";
+  const method = "createCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1158,9 +1158,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnCardConsume
 /** 批量创建 会员卡消费记录 并返回 */
-export async function createsReturn(
+export async function createsReturnCardConsume(
   inputs: CardConsumeInput[],
   options?: {
     is_debug?: boolean;
@@ -1171,7 +1171,7 @@ export async function createsReturn(
 ): Promise<CardConsumeModel[]> {
   
   const table = "wshop_card_consume";
-  const method = "createsReturn";
+  const method = "createsReturnCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1190,14 +1190,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsCardConsume(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsCardConsume
 /** 批量创建 会员卡消费记录 */
-export async function creates(
+export async function createsCardConsume(
   inputs: CardConsumeInput[],
   options?: {
     is_debug?: boolean;
@@ -1208,7 +1208,7 @@ export async function creates(
 ): Promise<CardConsumeId[]> {
   
   const table = "wshop_card_consume";
-  const method = "creates";
+  const method = "createsCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1257,11 +1257,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueCardConsume(input, options);
     if (oldModels.length > 0) {
       let id: CardConsumeId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueCardConsume(
           input,
           oldModel,
           options?.uniqueType,
@@ -1424,9 +1424,9 @@ async function _creates(
   return ids2;
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdCardConsume
 /** 会员卡消费记录 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdCardConsume(
   id: CardConsumeId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1435,7 +1435,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "wshop_card_consume";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1467,9 +1467,9 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdCardConsume
 /** 根据 id 修改 会员卡消费记录 */
-export async function updateById(
+export async function updateByIdCardConsume(
   id: CardConsumeId,
   input: CardConsumeInput,
   options?: {
@@ -1481,7 +1481,7 @@ export async function updateById(
 ): Promise<CardConsumeId> {
   
   const table = "wshop_card_consume";
-  const method = "updateById";
+  const method = "updateByIdCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1504,15 +1504,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdCardConsume: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdCardConsume: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdCardConsume(id, input.tenant_id, options);
   }
   
   {
@@ -1520,7 +1520,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueCardConsume(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1531,7 +1531,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdCardConsume(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 会员卡消费记录 已被删除";
@@ -1653,9 +1653,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsCardConsume
 /** 根据 ids 删除 会员卡消费记录 */
-export async function deleteByIds(
+export async function deleteByIdsCardConsume(
   ids: CardConsumeId[],
   options?: {
     is_debug?: boolean;
@@ -1665,7 +1665,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "wshop_card_consume";
-  const method = "deleteByIds";
+  const method = "deleteByIdsCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1691,7 +1691,7 @@ export async function deleteByIds(
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdCardConsume(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1711,9 +1711,9 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsCardConsume
 /** 根据 ids 还原 会员卡消费记录 */
-export async function revertByIds(
+export async function revertByIdsCardConsume(
   ids: CardConsumeId[],
   options?: {
     is_debug?: boolean;
@@ -1721,7 +1721,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "wshop_card_consume";
-  const method = "revertByIds";
+  const method = "revertByIdsCardConsume";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1745,7 +1745,7 @@ export async function revertByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneCardConsume(
       {
         id,
         is_deleted: 1,
@@ -1754,7 +1754,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdCardConsume(
         id,
         options,
       );
@@ -1767,7 +1767,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as CardConsumeInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueCardConsume(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1784,9 +1784,9 @@ export async function revertByIds(
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsCardConsume
 /** 根据 ids 彻底删除 会员卡消费记录 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsCardConsume(
   ids: CardConsumeId[],
   options?: {
     is_debug?: boolean;
@@ -1795,7 +1795,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "wshop_card_consume";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsCardConsume";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1820,7 +1820,7 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneCardConsume(
       {
         id,
         is_deleted: 1,

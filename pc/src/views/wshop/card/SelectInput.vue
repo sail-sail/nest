@@ -10,7 +10,7 @@
   }"
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
-  @keydown.enter.stop="onEnter"
+  @keydown.enter="onEnter"
 >
   <CustomInput
     v-bind="$attrs"
@@ -184,9 +184,10 @@ function onMouseLeave() {
 }
 
 async function onEnter(e: KeyboardEvent) {
-  if (e.ctrlKey) {
+  if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
     return;
   }
+  e.stopImmediatePropagation();
   await onInput("icon");
 }
 

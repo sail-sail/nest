@@ -62,7 +62,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -78,15 +78,15 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneUsr,
+  findOneUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  findOne as findOneCard,
+  findOneCard,
 } from "/gen/wshop/card/card.dao.ts";
 
 import {
-  findOne as findOneOrg,
+  findOneOrg,
 } from "/gen/base/org/org.dao.ts";
 
 import {
@@ -313,9 +313,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountOrder
 /** 根据条件查找订单总数 */
-export async function findCount(
+export async function findCountOrder(
   search?: Readonly<OrderSearch>,
   options?: {
     is_debug?: boolean;
@@ -324,12 +324,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "wshop_order";
-  const method = "findCount";
+  const method = "findCountOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -464,9 +464,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllOrder
 /** 根据搜索条件和分页查找订单列表 */
-export async function findAll(
+export async function findAllOrder(
   search?: Readonly<OrderSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -477,7 +477,7 @@ export async function findAll(
 ): Promise<OrderModel[]> {
   
   const table = "wshop_order";
-  const method = "findAll";
+  const method = "findAllOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -787,9 +787,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblOrder
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblOrder(
   input: OrderInput,
 ) {
   
@@ -942,9 +942,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsOrder
 /** 获取订单字段注释 */
-export async function getFieldComments(): Promise<OrderFieldComment> {
+export async function getFieldCommentsOrder(): Promise<OrderFieldComment> {
   const fieldComments: OrderFieldComment = {
     id: "ID",
     lbl: "订单号",
@@ -981,9 +981,9 @@ export async function getFieldComments(): Promise<OrderFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueOrder
 /** 通过唯一约束获得订单列表 */
-export async function findByUnique(
+export async function findByUniqueOrder(
   search0: Readonly<OrderInput>,
   options?: {
     is_debug?: boolean;
@@ -991,7 +991,7 @@ export async function findByUnique(
 ): Promise<OrderModel[]> {
   
   const table = "wshop_order";
-  const method = "findByUnique";
+  const method = "findByUniqueOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1009,7 +1009,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneOrder(
       {
         id: search0.id,
       },
@@ -1027,7 +1027,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllOrder(
       {
         lbl,
       },
@@ -1042,7 +1042,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueOrder(
   oldModel: Readonly<OrderModel>,
   input: Readonly<OrderInput>,
 ): boolean {
@@ -1058,9 +1058,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueOrder
 /** 通过唯一约束检查 订单 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueOrder(
   input: Readonly<OrderInput>,
   oldModel: Readonly<OrderModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -1072,14 +1072,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueOrder(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 订单 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: OrderId = await updateById(
+      const id: OrderId = await updateByIdOrder(
         oldModel.id,
         {
           ...input,
@@ -1096,9 +1096,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneOrder
 /** 根据条件查找第一订单 */
-export async function findOne(
+export async function findOneOrder(
   search?: Readonly<OrderSearch>,
   sort?: SortInput[],
   options?: {
@@ -1107,7 +1107,7 @@ export async function findOne(
 ): Promise<OrderModel | undefined> {
   
   const table = "wshop_order";
-  const method = "findOne";
+  const method = "findOneOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1134,7 +1134,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllOrder(
     search,
     page,
     sort,
@@ -1144,9 +1144,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdOrder
 /** 根据 id 查找订单 */
-export async function findById(
+export async function findByIdOrder(
   id?: OrderId | null,
   options?: {
     is_debug?: boolean;
@@ -1154,7 +1154,7 @@ export async function findById(
 ): Promise<OrderModel | undefined> {
   
   const table = "wshop_order";
-  const method = "findById";
+  const method = "findByIdOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1175,7 +1175,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneOrder(
     {
       id,
     },
@@ -1186,9 +1186,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsOrder
 /** 根据 ids 查找订单 */
-export async function findByIds(
+export async function findByIdsOrder(
   ids: OrderId[],
   options?: {
     is_debug?: boolean;
@@ -1196,7 +1196,7 @@ export async function findByIds(
 ): Promise<OrderModel[]> {
   
   const table = "wshop_order";
-  const method = "findByIds";
+  const method = "findByIdsOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1217,7 +1217,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllOrder(
     {
       ids,
     },
@@ -1243,9 +1243,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existOrder
 /** 根据搜索条件判断订单是否存在 */
-export async function exist(
+export async function existOrder(
   search?: Readonly<OrderSearch>,
   options?: {
     is_debug?: boolean;
@@ -1253,7 +1253,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "wshop_order";
-  const method = "exist";
+  const method = "existOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1269,15 +1269,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneOrder(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdOrder
 /** 根据id判断订单是否存在 */
-export async function existById(
+export async function existByIdOrder(
   id?: Readonly<OrderId | null>,
   options?: {
     is_debug?: boolean;
@@ -1285,7 +1285,7 @@ export async function existById(
 ) {
   
   const table = "wshop_order";
-  const method = "existById";
+  const method = "existByIdOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1318,9 +1318,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledOrder
 /** 校验订单是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledOrder(
   model: Readonly<OrderModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -1328,9 +1328,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionOrder
 /** 校验订单是否存在 */
-export async function validateOption(
+export async function validateOptionOrder(
   model?: OrderModel,
 ) {
   if (!model) {
@@ -1341,12 +1341,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateOrder
 /** 订单增加和修改时校验输入 */
-export async function validate(
+export async function validateOrder(
   input: Readonly<OrderInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsOrder();
   
   // ID
   await validators.chars_max_length(
@@ -1413,9 +1413,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnOrder
 /** 创建 订单 并返回 */
-export async function createReturn(
+export async function createReturnOrder(
   input: Readonly<OrderInput>,
   options?: {
     is_debug?: boolean;
@@ -1426,7 +1426,7 @@ export async function createReturn(
 ): Promise<OrderModel> {
   
   const table = "wshop_order";
-  const method = "createReturn";
+  const method = "createReturnOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1451,8 +1451,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionOrder(
+    await findOneOrder(
       {
         id,
       },
@@ -1464,9 +1464,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createOrder
 /** 创建 订单 */
-export async function create(
+export async function createOrder(
   input: Readonly<OrderInput>,
   options?: {
     is_debug?: boolean;
@@ -1477,7 +1477,7 @@ export async function create(
 ): Promise<OrderId> {
   
   const table = "wshop_order";
-  const method = "create";
+  const method = "createOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1505,9 +1505,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnOrder
 /** 批量创建 订单 并返回 */
-export async function createsReturn(
+export async function createsReturnOrder(
   inputs: OrderInput[],
   options?: {
     is_debug?: boolean;
@@ -1518,7 +1518,7 @@ export async function createsReturn(
 ): Promise<OrderModel[]> {
   
   const table = "wshop_order";
-  const method = "createsReturn";
+  const method = "createsReturnOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1537,14 +1537,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsOrder(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsOrder
 /** 批量创建 订单 */
-export async function creates(
+export async function createsOrder(
   inputs: OrderInput[],
   options?: {
     is_debug?: boolean;
@@ -1555,7 +1555,7 @@ export async function creates(
 ): Promise<OrderId[]> {
   
   const table = "wshop_order";
-  const method = "creates";
+  const method = "createsOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1604,11 +1604,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueOrder(input, options);
     if (oldModels.length > 0) {
       let id: OrderId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueOrder(
           input,
           oldModel,
           options?.uniqueType,
@@ -1816,9 +1816,9 @@ async function _creates(
   return ids2;
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdOrder
 /** 订单 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdOrder(
   id: OrderId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1827,7 +1827,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "wshop_order";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1859,9 +1859,9 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdOrder
 /** 根据 id 修改 订单 */
-export async function updateById(
+export async function updateByIdOrder(
   id: OrderId,
   input: OrderInput,
   options?: {
@@ -1873,7 +1873,7 @@ export async function updateById(
 ): Promise<OrderId> {
   
   const table = "wshop_order";
-  const method = "updateById";
+  const method = "updateByIdOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1896,15 +1896,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdOrder: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdOrder: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdOrder(id, input.tenant_id, options);
   }
   
   {
@@ -1912,7 +1912,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueOrder(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1923,7 +1923,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdOrder(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 订单 已被删除";
@@ -2099,9 +2099,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsOrder
 /** 根据 ids 删除 订单 */
-export async function deleteByIds(
+export async function deleteByIdsOrder(
   ids: OrderId[],
   options?: {
     is_debug?: boolean;
@@ -2111,7 +2111,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "wshop_order";
-  const method = "deleteByIds";
+  const method = "deleteByIdsOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2137,7 +2137,7 @@ export async function deleteByIds(
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdOrder(id, options);
     if (!oldModel) {
       continue;
     }
@@ -2157,9 +2157,9 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdOrder
 /** 根据 id 查找 订单 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdOrder(
   id: OrderId,
   options?: {
     is_debug?: boolean;
@@ -2169,7 +2169,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdOrder(
     id,
     options,
   );
@@ -2178,9 +2178,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsOrder
 /** 根据 ids 启用或者禁用 订单 */
-export async function enableByIds(
+export async function enableByIdsOrder(
   ids: OrderId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -2189,7 +2189,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "wshop_order";
-  const method = "enableByIds";
+  const method = "enableByIdsOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2221,9 +2221,9 @@ export async function enableByIds(
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdOrder
 /** 根据 id 查找 订单 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdOrder(
   id: OrderId,
   options?: {
     is_debug?: boolean;
@@ -2233,18 +2233,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const order_model = await findByIdOrder(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = order_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsOrder
 /** 根据 ids 锁定或者解锁 订单 */
-export async function lockByIds(
+export async function lockByIdsOrder(
   ids: OrderId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -2253,7 +2253,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "wshop_order";
-  const method = "lockByIds";
+  const method = "lockByIdsOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2285,9 +2285,9 @@ export async function lockByIds(
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsOrder
 /** 根据 ids 还原 订单 */
-export async function revertByIds(
+export async function revertByIdsOrder(
   ids: OrderId[],
   options?: {
     is_debug?: boolean;
@@ -2295,7 +2295,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "wshop_order";
-  const method = "revertByIds";
+  const method = "revertByIdsOrder";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2319,7 +2319,7 @@ export async function revertByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneOrder(
       {
         id,
         is_deleted: 1,
@@ -2328,7 +2328,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdOrder(
         id,
         options,
       );
@@ -2341,7 +2341,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as OrderInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueOrder(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -2358,9 +2358,9 @@ export async function revertByIds(
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsOrder
 /** 根据 ids 彻底删除 订单 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsOrder(
   ids: OrderId[],
   options?: {
     is_debug?: boolean;
@@ -2369,7 +2369,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "wshop_order";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsOrder";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2394,7 +2394,7 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneOrder(
       {
         id,
         is_deleted: 1,

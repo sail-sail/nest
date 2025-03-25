@@ -31,10 +31,10 @@ export async function findCountPt(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountPt,
   } = await import("./pt.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountPt(search);
   
   return num;
 }
@@ -49,12 +49,12 @@ export async function findAllPt(
 ): Promise<PtModel[]> {
   
   const {
-    findAll,
+    findAllPt,
   } = await import("./pt.service.ts");
   
   checkSortPt(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllPt(search, page, sort);
   
   return models;
 }
@@ -65,10 +65,10 @@ export async function findAllPt(
 export async function getFieldCommentsPt(): Promise<PtFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsPt,
   } = await import("./pt.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsPt();
   
   return field_comment;
 }
@@ -82,12 +82,12 @@ export async function findOnePt(
 ): Promise<PtModel | undefined> {
   
   const {
-    findOne,
+    findOnePt,
   } = await import("./pt.service.ts");
   
   checkSortPt(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOnePt(search, sort);
   
   return model;
 }
@@ -100,10 +100,10 @@ export async function findByIdPt(
 ): Promise<PtModel | undefined> {
   
   const {
-    findById,
+    findByIdPt,
   } = await import("./pt.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdPt(id);
   
   return model;
 }
@@ -116,10 +116,10 @@ export async function findByIdsPt(
 ): Promise<PtModel[]> {
   
   const {
-    findByIds,
+    findByIdsPt,
   } = await import("./pt.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsPt(ids);
   
   for (const model of models) {
   }
@@ -136,9 +136,9 @@ export async function createsPt(
 ): Promise<PtId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validatePt,
+    setIdByLblPt,
+    createsPt,
   } = await import("./pt.service.ts");
   
   set_is_tran(true);
@@ -162,12 +162,12 @@ export async function createsPt(
       input.original_price = new Decimal(input.original_price);
     }
     
-    await setIdByLbl(input);
+    await setIdByLblPt(input);
     
-    await validate(input);
+    await validatePt(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsPt(inputs, { uniqueType });
   return ids;
 }
 
@@ -192,20 +192,20 @@ export async function updateByIdPt(
   }
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblPt,
+    updateByIdPt,
   } = await import("./pt.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblPt(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: PtId = await updateById(id, input);
+  const id2: PtId = await updateByIdPt(id, input);
   
   return id2;
 }
@@ -218,7 +218,7 @@ export async function deleteByIdsPt(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsPt,
   } = await import("./pt.service.ts");
   
   set_is_tran(true);
@@ -228,7 +228,7 @@ export async function deleteByIdsPt(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsPt(ids);
   
   return num;
 }
@@ -242,7 +242,7 @@ export async function enableByIdsPt(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsPt,
   } = await import("./pt.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -255,7 +255,7 @@ export async function enableByIdsPt(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsPt(ids, is_enabled);
   
   return res;
 }
@@ -269,7 +269,7 @@ export async function lockByIdsPt(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsPt,
   } = await import("./pt.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -283,7 +283,7 @@ export async function lockByIdsPt(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsPt(ids, is_locked);
   
   return res;
 }
@@ -296,7 +296,7 @@ export async function revertByIdsPt(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsPt,
   } = await import("./pt.service.ts");
   
   set_is_tran(true);
@@ -306,7 +306,7 @@ export async function revertByIdsPt(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsPt(ids);
   
   return res;
 }
@@ -319,7 +319,7 @@ export async function forceDeleteByIdsPt(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsPt,
   } = await import("./pt.service.ts");
   
   set_is_tran(true);
@@ -329,7 +329,7 @@ export async function forceDeleteByIdsPt(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsPt(ids);
   
   return res;
 }
@@ -340,10 +340,10 @@ export async function forceDeleteByIdsPt(
 export async function findLastOrderByPt(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByPt,
   } = await import("./pt.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByPt();
   
   return res;
 }

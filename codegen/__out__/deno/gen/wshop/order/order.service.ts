@@ -10,8 +10,8 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findById as findByIdUsr,
-  validateOption as validateOptionUsr,
+  findByIdUsr,
+  validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -24,12 +24,11 @@ async function setSearchQuery(
   search: OrderSearch,
 ) {
   
-  const usr_id = await get_usr_id();
+  const usr_id = await get_usr_id(false);
   const org_id = await get_org_id();
-  const usr_model = await findByIdUsr(usr_id);
-  if (!usr_id || !usr_model) {
-    throw new Error("usr_id can not be null");
-  }
+  const usr_model = await validateOptionUsr(
+    await findByIdUsr(usr_id),
+  );
   const org_ids: OrgId[] = [ ];
   if (org_id) {
     org_ids.push(org_id);
@@ -47,7 +46,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找订单总数
  */
-export async function findCount(
+export async function findCountOrder(
   search?: OrderSearch,
 ): Promise<number> {
   
@@ -55,7 +54,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const order_num = await orderDao.findCount(search);
+  const order_num = await orderDao.findCountOrder(search);
   
   return order_num;
 }
@@ -63,7 +62,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找订单列表
  */
-export async function findAll(
+export async function findAllOrder(
   search?: OrderSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -73,7 +72,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const order_models = await orderDao.findAll(search, page, sort);
+  const order_models = await orderDao.findAllOrder(search, page, sort);
   
   return order_models;
 }
@@ -81,16 +80,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblOrder(
   input: OrderInput,
 ): Promise<void> {
-  await orderDao.setIdByLbl(input);
+  await orderDao.setIdByLblOrder(input);
 }
 
 /**
  * 根据条件查找第一个订单
  */
-export async function findOne(
+export async function findOneOrder(
   search?: OrderSearch,
   sort?: SortInput[],
 ): Promise<OrderModel | undefined> {
@@ -99,7 +98,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const order_model = await orderDao.findOne(search, sort);
+  const order_model = await orderDao.findOneOrder(search, sort);
   
   return order_model;
 }
@@ -107,11 +106,11 @@ export async function findOne(
 /**
  * 根据 id 查找订单
  */
-export async function findById(
+export async function findByIdOrder(
   order_id?: OrderId | null,
 ): Promise<OrderModel | undefined> {
   
-  const order_model = await orderDao.findById(order_id);
+  const order_model = await orderDao.findByIdOrder(order_id);
   
   return order_model;
 }
@@ -119,11 +118,11 @@ export async function findById(
 /**
  * 根据 ids 查找订单
  */
-export async function findByIds(
+export async function findByIdsOrder(
   order_ids: OrderId[],
 ): Promise<OrderModel[]> {
   
-  const order_models = await orderDao.findByIds(order_ids);
+  const order_models = await orderDao.findByIdsOrder(order_ids);
   
   return order_models;
 }
@@ -131,7 +130,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找订单是否存在
  */
-export async function exist(
+export async function existOrder(
   search?: OrderSearch,
 ): Promise<boolean> {
   
@@ -139,7 +138,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const order_exist = await orderDao.exist(search);
+  const order_exist = await orderDao.existOrder(search);
   
   return order_exist;
 }
@@ -147,11 +146,11 @@ export async function exist(
 /**
  * 根据 id 查找订单是否存在
  */
-export async function existById(
+export async function existByIdOrder(
   order_id?: OrderId | null,
 ): Promise<boolean> {
   
-  const order_exist = await orderDao.existById(order_id);
+  const order_exist = await orderDao.existByIdOrder(order_id);
   
   return order_exist;
 }
@@ -159,22 +158,22 @@ export async function existById(
 /**
  * 增加和修改时校验订单
  */
-export async function validate(
+export async function validateOrder(
   input: OrderInput,
 ): Promise<void> {
-  await orderDao.validate(input);
+  await orderDao.validateOrder(input);
 }
 
 /**
  * 批量创建订单
  */
-export async function creates(
+export async function createsOrder(
   inputs: OrderInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<OrderId[]> {
-  const order_ids = await orderDao.creates(inputs, options);
+  const order_ids = await orderDao.createsOrder(inputs, options);
   
   return order_ids;
 }
@@ -182,37 +181,37 @@ export async function creates(
 /**
  * 根据 id 修改订单
  */
-export async function updateById(
+export async function updateByIdOrder(
   order_id: OrderId,
   input: OrderInput,
 ): Promise<OrderId> {
   
-  const is_locked = await orderDao.getIsLockedById(order_id);
+  const is_locked = await orderDao.getIsLockedByIdOrder(order_id);
   if (is_locked) {
     throw "不能修改已经锁定的 订单";
   }
   
-  const order_id2 = await orderDao.updateById(order_id, input);
+  const order_id2 = await orderDao.updateByIdOrder(order_id, input);
   
   return order_id2;
 }
 
 /** 校验订单是否存在 */
-export async function validateOption(
+export async function validateOptionOrder(
   model0?: OrderModel,
 ): Promise<OrderModel> {
-  const order_model = await orderDao.validateOption(model0);
+  const order_model = await orderDao.validateOptionOrder(model0);
   return order_model;
 }
 
 /**
  * 根据 ids 删除订单
  */
-export async function deleteByIds(
+export async function deleteByIdsOrder(
   order_ids: OrderId[],
 ): Promise<number> {
   
-  const old_models = await orderDao.findByIds(order_ids);
+  const old_models = await orderDao.findByIdsOrder(order_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -220,40 +219,40 @@ export async function deleteByIds(
     }
   }
   
-  const order_num = await orderDao.deleteByIds(order_ids);
+  const order_num = await orderDao.deleteByIdsOrder(order_ids);
   return order_num;
 }
 
 /**
  * 根据 ids 启用或者禁用订单
  */
-export async function enableByIds(
+export async function enableByIdsOrder(
   ids: OrderId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const order_num = await orderDao.enableByIds(ids, is_enabled);
+  const order_num = await orderDao.enableByIdsOrder(ids, is_enabled);
   return order_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁订单
  */
-export async function lockByIds(
+export async function lockByIdsOrder(
   order_ids: OrderId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const order_num = await orderDao.lockByIds(order_ids, is_locked);
+  const order_num = await orderDao.lockByIdsOrder(order_ids, is_locked);
   return order_num;
 }
 
 /**
  * 根据 ids 还原订单
  */
-export async function revertByIds(
+export async function revertByIdsOrder(
   order_ids: OrderId[],
 ): Promise<number> {
   
-  const order_num = await orderDao.revertByIds(order_ids);
+  const order_num = await orderDao.revertByIdsOrder(order_ids);
   
   return order_num;
 }
@@ -261,11 +260,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除订单
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsOrder(
   order_ids: OrderId[],
 ): Promise<number> {
   
-  const order_num = await orderDao.forceDeleteByIds(order_ids);
+  const order_num = await orderDao.forceDeleteByIdsOrder(order_ids);
   
   return order_num;
 }
@@ -273,7 +272,7 @@ export async function forceDeleteByIds(
 /**
  * 获取订单字段注释
  */
-export async function getFieldComments(): Promise<OrderFieldComment> {
-  const order_fields = await orderDao.getFieldComments();
+export async function getFieldCommentsOrder(): Promise<OrderFieldComment> {
+  const order_fields = await orderDao.getFieldCommentsOrder();
   return order_fields;
 }
