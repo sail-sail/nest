@@ -27,10 +27,10 @@ export async function findCountLoginLog(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountLoginLog,
   } = await import("./login_log.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountLoginLog(search);
   
   return num;
 }
@@ -45,12 +45,12 @@ export async function findAllLoginLog(
 ): Promise<LoginLogModel[]> {
   
   const {
-    findAll,
+    findAllLoginLog,
   } = await import("./login_log.service.ts");
   
   checkSortLoginLog(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllLoginLog(search, page, sort);
   
   return models;
 }
@@ -61,10 +61,10 @@ export async function findAllLoginLog(
 export async function getFieldCommentsLoginLog(): Promise<LoginLogFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsLoginLog,
   } = await import("./login_log.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsLoginLog();
   
   return field_comment;
 }
@@ -78,12 +78,12 @@ export async function findOneLoginLog(
 ): Promise<LoginLogModel | undefined> {
   
   const {
-    findOne,
+    findOneLoginLog,
   } = await import("./login_log.service.ts");
   
   checkSortLoginLog(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneLoginLog(search, sort);
   
   return model;
 }
@@ -96,10 +96,10 @@ export async function findByIdLoginLog(
 ): Promise<LoginLogModel | undefined> {
   
   const {
-    findById,
+    findByIdLoginLog,
   } = await import("./login_log.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdLoginLog(id);
   
   return model;
 }
@@ -112,10 +112,10 @@ export async function findByIdsLoginLog(
 ): Promise<LoginLogModel[]> {
   
   const {
-    findByIds,
+    findByIdsLoginLog,
   } = await import("./login_log.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsLoginLog(ids);
   
   for (const model of models) {
   }
@@ -131,7 +131,7 @@ export async function deleteByIdsLoginLog(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsLoginLog,
   } = await import("./login_log.service.ts");
   
   set_is_tran(true);
@@ -141,7 +141,7 @@ export async function deleteByIdsLoginLog(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsLoginLog(ids);
   
   return num;
 }
@@ -154,7 +154,7 @@ export async function revertByIdsLoginLog(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsLoginLog,
   } = await import("./login_log.service.ts");
   
   set_is_tran(true);
@@ -164,7 +164,7 @@ export async function revertByIdsLoginLog(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsLoginLog(ids);
   
   return res;
 }
@@ -177,7 +177,7 @@ export async function forceDeleteByIdsLoginLog(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsLoginLog,
   } = await import("./login_log.service.ts");
   
   set_is_tran(true);
@@ -187,7 +187,7 @@ export async function forceDeleteByIdsLoginLog(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsLoginLog(ids);
   
   return res;
 }
