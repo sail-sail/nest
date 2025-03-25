@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -74,11 +74,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneMenu,
+  findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -189,9 +189,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountDataPermit
 /** 根据条件查找数据权限总数 */
-export async function findCount(
+export async function findCountDataPermit(
   search?: Readonly<DataPermitSearch>,
   options?: {
     is_debug?: boolean;
@@ -200,12 +200,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_data_permit";
-  const method = "findCount";
+  const method = "findCountDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -299,9 +299,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllDataPermit
 /** 根据搜索条件和分页查找数据权限列表 */
-export async function findAll(
+export async function findAllDataPermit(
   search?: Readonly<DataPermitSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -312,7 +312,7 @@ export async function findAll(
 ): Promise<DataPermitModel[]> {
   
   const table = "base_data_permit";
-  const method = "findAll";
+  const method = "findAllDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -512,9 +512,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblDataPermit
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblDataPermit(
   input: DataPermitInput,
 ) {
   
@@ -579,9 +579,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsDataPermit
 /** 获取数据权限字段注释 */
-export async function getFieldComments(): Promise<DataPermitFieldComment> {
+export async function getFieldCommentsDataPermit(): Promise<DataPermitFieldComment> {
   const fieldComments: DataPermitFieldComment = {
     id: "ID",
     menu_id: "菜单",
@@ -603,9 +603,9 @@ export async function getFieldComments(): Promise<DataPermitFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueDataPermit
 /** 通过唯一约束获得数据权限列表 */
-export async function findByUnique(
+export async function findByUniqueDataPermit(
   search0: Readonly<DataPermitInput>,
   options?: {
     is_debug?: boolean;
@@ -613,7 +613,7 @@ export async function findByUnique(
 ): Promise<DataPermitModel[]> {
   
   const table = "base_data_permit";
-  const method = "findByUnique";
+  const method = "findByUniqueDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -631,7 +631,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneDataPermit(
       {
         id: search0.id,
       },
@@ -663,7 +663,7 @@ export async function findByUnique(
     } else {
       scope = search0.scope || [ ];
     }
-    const modelTmps = await findAll(
+    const modelTmps = await findAllDataPermit(
       {
         menu_id,
         scope,
@@ -679,7 +679,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueDataPermit(
   oldModel: Readonly<DataPermitModel>,
   input: Readonly<DataPermitInput>,
 ): boolean {
@@ -696,9 +696,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueDataPermit
 /** 通过唯一约束检查 数据权限 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueDataPermit(
   input: Readonly<DataPermitInput>,
   oldModel: Readonly<DataPermitModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -710,14 +710,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueDataPermit(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 数据权限 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: DataPermitId = await updateById(
+      const id: DataPermitId = await updateByIdDataPermit(
         oldModel.id,
         {
           ...input,
@@ -734,9 +734,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneDataPermit
 /** 根据条件查找第一数据权限 */
-export async function findOne(
+export async function findOneDataPermit(
   search?: Readonly<DataPermitSearch>,
   sort?: SortInput[],
   options?: {
@@ -745,7 +745,7 @@ export async function findOne(
 ): Promise<DataPermitModel | undefined> {
   
   const table = "base_data_permit";
-  const method = "findOne";
+  const method = "findOneDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -772,7 +772,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllDataPermit(
     search,
     page,
     sort,
@@ -782,9 +782,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdDataPermit
 /** 根据 id 查找数据权限 */
-export async function findById(
+export async function findByIdDataPermit(
   id?: DataPermitId | null,
   options?: {
     is_debug?: boolean;
@@ -792,7 +792,7 @@ export async function findById(
 ): Promise<DataPermitModel | undefined> {
   
   const table = "base_data_permit";
-  const method = "findById";
+  const method = "findByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -813,7 +813,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneDataPermit(
     {
       id,
     },
@@ -824,9 +824,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsDataPermit
 /** 根据 ids 查找数据权限 */
-export async function findByIds(
+export async function findByIdsDataPermit(
   ids: DataPermitId[],
   options?: {
     is_debug?: boolean;
@@ -834,7 +834,7 @@ export async function findByIds(
 ): Promise<DataPermitModel[]> {
   
   const table = "base_data_permit";
-  const method = "findByIds";
+  const method = "findByIdsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -855,7 +855,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllDataPermit(
     {
       ids,
     },
@@ -881,9 +881,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existDataPermit
 /** 根据搜索条件判断数据权限是否存在 */
-export async function exist(
+export async function existDataPermit(
   search?: Readonly<DataPermitSearch>,
   options?: {
     is_debug?: boolean;
@@ -891,7 +891,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_data_permit";
-  const method = "exist";
+  const method = "existDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -907,15 +907,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneDataPermit(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdDataPermit
 /** 根据id判断数据权限是否存在 */
-export async function existById(
+export async function existByIdDataPermit(
   id?: Readonly<DataPermitId | null>,
   options?: {
     is_debug?: boolean;
@@ -923,7 +923,7 @@ export async function existById(
 ) {
   
   const table = "base_data_permit";
-  const method = "existById";
+  const method = "existByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -965,9 +965,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionDataPermit
 /** 校验数据权限是否存在 */
-export async function validateOption(
+export async function validateOptionDataPermit(
   model?: DataPermitModel,
 ) {
   if (!model) {
@@ -978,12 +978,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateDataPermit
 /** 数据权限增加和修改时校验输入 */
-export async function validate(
+export async function validateDataPermit(
   input: Readonly<DataPermitInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsDataPermit();
   
   // ID
   await validators.chars_max_length(
@@ -1022,9 +1022,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnDataPermit
 /** 创建 数据权限 并返回 */
-export async function createReturn(
+export async function createReturnDataPermit(
   input: Readonly<DataPermitInput>,
   options?: {
     is_debug?: boolean;
@@ -1035,7 +1035,7 @@ export async function createReturn(
 ): Promise<DataPermitModel> {
   
   const table = "base_data_permit";
-  const method = "createReturn";
+  const method = "createReturnDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1060,8 +1060,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionDataPermit(
+    await findOneDataPermit(
       {
         id,
       },
@@ -1073,9 +1073,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createDataPermit
 /** 创建 数据权限 */
-export async function create(
+export async function createDataPermit(
   input: Readonly<DataPermitInput>,
   options?: {
     is_debug?: boolean;
@@ -1086,7 +1086,7 @@ export async function create(
 ): Promise<DataPermitId> {
   
   const table = "base_data_permit";
-  const method = "create";
+  const method = "createDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1114,9 +1114,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnDataPermit
 /** 批量创建 数据权限 并返回 */
-export async function createsReturn(
+export async function createsReturnDataPermit(
   inputs: DataPermitInput[],
   options?: {
     is_debug?: boolean;
@@ -1127,7 +1127,7 @@ export async function createsReturn(
 ): Promise<DataPermitModel[]> {
   
   const table = "base_data_permit";
-  const method = "createsReturn";
+  const method = "createsReturnDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1146,14 +1146,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsDataPermit(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsDataPermit
 /** 批量创建 数据权限 */
-export async function creates(
+export async function createsDataPermit(
   inputs: DataPermitInput[],
   options?: {
     is_debug?: boolean;
@@ -1164,7 +1164,7 @@ export async function creates(
 ): Promise<DataPermitId[]> {
   
   const table = "base_data_permit";
-  const method = "creates";
+  const method = "createsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1213,11 +1213,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueDataPermit(input, options);
     if (oldModels.length > 0) {
       let id: DataPermitId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueDataPermit(
           input,
           oldModel,
           options?.uniqueType,
@@ -1247,7 +1247,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheDataPermit();
   
   const args = new QueryArgs();
   let sql = "insert into base_data_permit(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,menu_id,scope,type,rem,is_sys)values";
@@ -1389,20 +1389,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheDataPermit();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheDataPermit
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheDataPermit() {
   await delCacheCtx(`dao.sql.base_data_permit`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdDataPermit
 /** 数据权限 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdDataPermit(
   id: DataPermitId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1411,7 +1411,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "base_data_permit";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1441,13 +1441,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheDataPermit();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdDataPermit
 /** 根据 id 修改 数据权限 */
-export async function updateById(
+export async function updateByIdDataPermit(
   id: DataPermitId,
   input: DataPermitInput,
   options?: {
@@ -1459,7 +1459,7 @@ export async function updateById(
 ): Promise<DataPermitId> {
   
   const table = "base_data_permit";
-  const method = "updateById";
+  const method = "updateByIdDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1482,15 +1482,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdDataPermit: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdDataPermit: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdDataPermit(id, input.tenant_id, options);
   }
   
   {
@@ -1498,7 +1498,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueDataPermit(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1509,7 +1509,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdDataPermit(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 数据权限 已被删除";
@@ -1624,7 +1624,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheDataPermit();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1632,7 +1632,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheDataPermit();
   }
   
   if (!is_silent_mode) {
@@ -1642,9 +1642,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsDataPermit
 /** 根据 ids 删除 数据权限 */
-export async function deleteByIds(
+export async function deleteByIdsDataPermit(
   ids: DataPermitId[],
   options?: {
     is_debug?: boolean;
@@ -1654,7 +1654,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_data_permit";
-  const method = "deleteByIds";
+  const method = "deleteByIdsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1677,12 +1677,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDataPermit();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdDataPermit(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1720,14 +1720,14 @@ export async function deleteByIds(
     }
   }
   
-  await delCache();
+  await delCacheDataPermit();
   
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsDataPermit
 /** 根据 ids 还原 数据权限 */
-export async function revertByIds(
+export async function revertByIdsDataPermit(
   ids: DataPermitId[],
   options?: {
     is_debug?: boolean;
@@ -1735,7 +1735,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_data_permit";
-  const method = "revertByIds";
+  const method = "revertByIdsDataPermit";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1756,12 +1756,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDataPermit();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneDataPermit(
       {
         id,
         is_deleted: 1,
@@ -1770,7 +1770,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdDataPermit(
         id,
         options,
       );
@@ -1783,7 +1783,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as DataPermitInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueDataPermit(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1797,14 +1797,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheDataPermit();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsDataPermit
 /** 根据 ids 彻底删除 数据权限 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDataPermit(
   ids: DataPermitId[],
   options?: {
     is_debug?: boolean;
@@ -1813,7 +1813,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_data_permit";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsDataPermit";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1835,12 +1835,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDataPermit();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneDataPermit(
       {
         id,
         is_deleted: 1,
@@ -1862,7 +1862,7 @@ export async function forceDeleteByIds(
     }
   }
   
-  await delCache();
+  await delCacheDataPermit();
   
   return num;
 }
