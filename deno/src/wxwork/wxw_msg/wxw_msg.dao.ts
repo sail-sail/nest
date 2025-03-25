@@ -8,9 +8,9 @@ import {
 } from "/src/wxwork/wxw_app_token/wxw_app_token.dao.ts";
 
 import {
-  findById as findByIdWxwApp,
-  validateOption as validateOptionWxwApp,
-  validateIsEnabled as validateIsEnabledWxwApp,
+  findByIdWxwApp,
+  validateOptionWxwApp,
+  validateIsEnabledWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
 import {

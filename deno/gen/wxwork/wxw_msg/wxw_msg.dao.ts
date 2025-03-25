@@ -56,7 +56,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -70,11 +70,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneWxwApp,
+  findOneWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -218,9 +218,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountWxwMsg
 /** 根据条件查找企微消息总数 */
-export async function findCount(
+export async function findCountWxwMsg(
   search?: Readonly<WxwMsgSearch>,
   options?: {
     is_debug?: boolean;
@@ -229,12 +229,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "wxwork_wxw_msg";
-  const method = "findCount";
+  const method = "findCountWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -314,9 +314,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllWxwMsg
 /** 根据搜索条件和分页查找企微消息列表 */
-export async function findAll(
+export async function findAllWxwMsg(
   search?: Readonly<WxwMsgSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -327,7 +327,7 @@ export async function findAll(
 ): Promise<WxwMsgModel[]> {
   
   const table = "wxwork_wxw_msg";
-  const method = "findAll";
+  const method = "findAllWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -498,9 +498,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblWxwMsg
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblWxwMsg(
   input: WxwMsgInput,
 ) {
   
@@ -552,9 +552,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsWxwMsg
 /** 获取企微消息字段注释 */
-export async function getFieldComments(): Promise<WxwMsgFieldComment> {
+export async function getFieldCommentsWxwMsg(): Promise<WxwMsgFieldComment> {
   const fieldComments: WxwMsgFieldComment = {
     id: "ID",
     wxw_app_id: "企微应用",
@@ -572,9 +572,9 @@ export async function getFieldComments(): Promise<WxwMsgFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueWxwMsg
 /** 通过唯一约束获得企微消息列表 */
-export async function findByUnique(
+export async function findByUniqueWxwMsg(
   search0: Readonly<WxwMsgInput>,
   options?: {
     is_debug?: boolean;
@@ -582,7 +582,7 @@ export async function findByUnique(
 ): Promise<WxwMsgModel[]> {
   
   const table = "wxwork_wxw_msg";
-  const method = "findByUnique";
+  const method = "findByUniqueWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -600,7 +600,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneWxwMsg(
       {
         id: search0.id,
       },
@@ -618,7 +618,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueWxwMsg(
   oldModel: Readonly<WxwMsgModel>,
   input: Readonly<WxwMsgInput>,
 ): boolean {
@@ -629,9 +629,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueWxwMsg
 /** 通过唯一约束检查 企微消息 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueWxwMsg(
   input: Readonly<WxwMsgInput>,
   oldModel: Readonly<WxwMsgModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -643,14 +643,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueWxwMsg(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 企微消息 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: WxwMsgId = await updateById(
+      const id: WxwMsgId = await updateByIdWxwMsg(
         oldModel.id,
         {
           ...input,
@@ -667,9 +667,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneWxwMsg
 /** 根据条件查找第一企微消息 */
-export async function findOne(
+export async function findOneWxwMsg(
   search?: Readonly<WxwMsgSearch>,
   sort?: SortInput[],
   options?: {
@@ -678,7 +678,7 @@ export async function findOne(
 ): Promise<WxwMsgModel | undefined> {
   
   const table = "wxwork_wxw_msg";
-  const method = "findOne";
+  const method = "findOneWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -705,7 +705,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllWxwMsg(
     search,
     page,
     sort,
@@ -715,9 +715,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdWxwMsg
 /** 根据 id 查找企微消息 */
-export async function findById(
+export async function findByIdWxwMsg(
   id?: WxwMsgId | null,
   options?: {
     is_debug?: boolean;
@@ -725,7 +725,7 @@ export async function findById(
 ): Promise<WxwMsgModel | undefined> {
   
   const table = "wxwork_wxw_msg";
-  const method = "findById";
+  const method = "findByIdWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -746,7 +746,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneWxwMsg(
     {
       id,
     },
@@ -757,9 +757,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsWxwMsg
 /** 根据 ids 查找企微消息 */
-export async function findByIds(
+export async function findByIdsWxwMsg(
   ids: WxwMsgId[],
   options?: {
     is_debug?: boolean;
@@ -767,7 +767,7 @@ export async function findByIds(
 ): Promise<WxwMsgModel[]> {
   
   const table = "wxwork_wxw_msg";
-  const method = "findByIds";
+  const method = "findByIdsWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -788,7 +788,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllWxwMsg(
     {
       ids,
     },
@@ -814,9 +814,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existWxwMsg
 /** 根据搜索条件判断企微消息是否存在 */
-export async function exist(
+export async function existWxwMsg(
   search?: Readonly<WxwMsgSearch>,
   options?: {
     is_debug?: boolean;
@@ -824,7 +824,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "wxwork_wxw_msg";
-  const method = "exist";
+  const method = "existWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -840,15 +840,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneWxwMsg(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdWxwMsg
 /** 根据id判断企微消息是否存在 */
-export async function existById(
+export async function existByIdWxwMsg(
   id?: Readonly<WxwMsgId | null>,
   options?: {
     is_debug?: boolean;
@@ -856,7 +856,7 @@ export async function existById(
 ) {
   
   const table = "wxwork_wxw_msg";
-  const method = "existById";
+  const method = "existByIdWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -889,9 +889,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionWxwMsg
 /** 校验企微消息是否存在 */
-export async function validateOption(
+export async function validateOptionWxwMsg(
   model?: WxwMsgModel,
 ) {
   if (!model) {
@@ -902,12 +902,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateWxwMsg
 /** 企微消息增加和修改时校验输入 */
-export async function validate(
+export async function validateWxwMsg(
   input: Readonly<WxwMsgInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsWxwMsg();
   
   // ID
   await validators.chars_max_length(
@@ -967,9 +967,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnWxwMsg
 /** 创建 企微消息 并返回 */
-export async function createReturn(
+export async function createReturnWxwMsg(
   input: Readonly<WxwMsgInput>,
   options?: {
     is_debug?: boolean;
@@ -980,7 +980,7 @@ export async function createReturn(
 ): Promise<WxwMsgModel> {
   
   const table = "wxwork_wxw_msg";
-  const method = "createReturn";
+  const method = "createReturnWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1005,8 +1005,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionWxwMsg(
+    await findOneWxwMsg(
       {
         id,
       },
@@ -1018,9 +1018,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createWxwMsg
 /** 创建 企微消息 */
-export async function create(
+export async function createWxwMsg(
   input: Readonly<WxwMsgInput>,
   options?: {
     is_debug?: boolean;
@@ -1031,7 +1031,7 @@ export async function create(
 ): Promise<WxwMsgId> {
   
   const table = "wxwork_wxw_msg";
-  const method = "create";
+  const method = "createWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1059,9 +1059,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnWxwMsg
 /** 批量创建 企微消息 并返回 */
-export async function createsReturn(
+export async function createsReturnWxwMsg(
   inputs: WxwMsgInput[],
   options?: {
     is_debug?: boolean;
@@ -1072,7 +1072,7 @@ export async function createsReturn(
 ): Promise<WxwMsgModel[]> {
   
   const table = "wxwork_wxw_msg";
-  const method = "createsReturn";
+  const method = "createsReturnWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1091,14 +1091,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsWxwMsg(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsWxwMsg
 /** 批量创建 企微消息 */
-export async function creates(
+export async function createsWxwMsg(
   inputs: WxwMsgInput[],
   options?: {
     is_debug?: boolean;
@@ -1109,7 +1109,7 @@ export async function creates(
 ): Promise<WxwMsgId[]> {
   
   const table = "wxwork_wxw_msg";
-  const method = "creates";
+  const method = "createsWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1158,11 +1158,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueWxwMsg(input, options);
     if (oldModels.length > 0) {
       let id: WxwMsgId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueWxwMsg(
           input,
           oldModel,
           options?.uniqueType,
@@ -1355,9 +1355,9 @@ async function _creates(
   return ids2;
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdWxwMsg
 /** 企微消息 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdWxwMsg(
   id: WxwMsgId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1366,7 +1366,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "wxwork_wxw_msg";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1398,9 +1398,9 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdWxwMsg
 /** 根据 id 修改 企微消息 */
-export async function updateById(
+export async function updateByIdWxwMsg(
   id: WxwMsgId,
   input: WxwMsgInput,
   options?: {
@@ -1412,7 +1412,7 @@ export async function updateById(
 ): Promise<WxwMsgId> {
   
   const table = "wxwork_wxw_msg";
-  const method = "updateById";
+  const method = "updateByIdWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1435,15 +1435,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdWxwMsg: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdWxwMsg: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdWxwMsg(id, input.tenant_id, options);
   }
   
   {
@@ -1451,7 +1451,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueWxwMsg(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1462,7 +1462,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdWxwMsg(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 企微消息 已被删除";
@@ -1613,9 +1613,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsWxwMsg
 /** 根据 ids 删除 企微消息 */
-export async function deleteByIds(
+export async function deleteByIdsWxwMsg(
   ids: WxwMsgId[],
   options?: {
     is_debug?: boolean;
@@ -1625,7 +1625,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "wxwork_wxw_msg";
-  const method = "deleteByIds";
+  const method = "deleteByIdsWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1651,7 +1651,7 @@ export async function deleteByIds(
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdWxwMsg(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1687,9 +1687,9 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsWxwMsg
 /** 根据 ids 还原 企微消息 */
-export async function revertByIds(
+export async function revertByIdsWxwMsg(
   ids: WxwMsgId[],
   options?: {
     is_debug?: boolean;
@@ -1697,7 +1697,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "wxwork_wxw_msg";
-  const method = "revertByIds";
+  const method = "revertByIdsWxwMsg";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1721,7 +1721,7 @@ export async function revertByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneWxwMsg(
       {
         id,
         is_deleted: 1,
@@ -1730,7 +1730,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdWxwMsg(
         id,
         options,
       );
@@ -1743,7 +1743,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as WxwMsgInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueWxwMsg(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1760,9 +1760,9 @@ export async function revertByIds(
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsWxwMsg
 /** 根据 ids 彻底删除 企微消息 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxwMsg(
   ids: WxwMsgId[],
   options?: {
     is_debug?: boolean;
@@ -1771,7 +1771,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "wxwork_wxw_msg";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsWxwMsg";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1796,7 +1796,7 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneWxwMsg(
       {
         id,
         is_deleted: 1,
