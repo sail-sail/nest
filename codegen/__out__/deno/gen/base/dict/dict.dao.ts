@@ -65,16 +65,16 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findAll as findAllDictDetail,
-  create as createDictDetail,
-  deleteByIds as deleteByIdsDictDetail,
-  revertByIds as revertByIdsDictDetail,
-  updateById as updateByIdDictDetail,
-  forceDeleteByIds as forceDeleteByIdsDictDetail,
+  findAllDictDetail,
+  createDictDetail,
+  deleteByIdsDictDetail,
+  revertByIdsDictDetail,
+  updateByIdDictDetail,
+  forceDeleteByIdsDictDetail,
 } from "/gen/base/dict_detail/dict_detail.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -186,9 +186,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountDict
 /** 根据条件查找系统字典总数 */
-export async function findCount(
+export async function findCountDict(
   search?: Readonly<DictSearch>,
   options?: {
     is_debug?: boolean;
@@ -197,12 +197,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_dict";
-  const method = "findCount";
+  const method = "findCountDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -285,9 +285,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllDict
 /** 根据搜索条件和分页查找系统字典列表 */
-export async function findAll(
+export async function findAllDict(
   search?: Readonly<DictSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -298,7 +298,7 @@ export async function findAll(
 ): Promise<DictModel[]> {
   
   const table = "base_dict";
-  const method = "findAll";
+  const method = "findAllDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -505,9 +505,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblDict
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblDict(
   input: DictInput,
 ) {
   
@@ -546,9 +546,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsDict
 /** 获取系统字典字段注释 */
-export async function getFieldComments(): Promise<DictFieldComment> {
+export async function getFieldCommentsDict(): Promise<DictFieldComment> {
   const fieldComments: DictFieldComment = {
     id: "ID",
     code: "编码",
@@ -572,9 +572,9 @@ export async function getFieldComments(): Promise<DictFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueDict
 /** 通过唯一约束获得系统字典列表 */
-export async function findByUnique(
+export async function findByUniqueDict(
   search0: Readonly<DictInput>,
   options?: {
     is_debug?: boolean;
@@ -582,7 +582,7 @@ export async function findByUnique(
 ): Promise<DictModel[]> {
   
   const table = "base_dict";
-  const method = "findByUnique";
+  const method = "findByUniqueDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -600,7 +600,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneDict(
       {
         id: search0.id,
       },
@@ -618,7 +618,7 @@ export async function findByUnique(
       return [ ];
     }
     const code = search0.code;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllDict(
       {
         code,
       },
@@ -633,7 +633,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllDict(
       {
         lbl,
       },
@@ -648,7 +648,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueDict(
   oldModel: Readonly<DictModel>,
   input: Readonly<DictInput>,
 ): boolean {
@@ -669,9 +669,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueDict
 /** 通过唯一约束检查 系统字典 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueDict(
   input: Readonly<DictInput>,
   oldModel: Readonly<DictModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -683,14 +683,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueDict(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 系统字典 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: DictId = await updateById(
+      const id: DictId = await updateByIdDict(
         oldModel.id,
         {
           ...input,
@@ -707,9 +707,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneDict
 /** 根据条件查找第一系统字典 */
-export async function findOne(
+export async function findOneDict(
   search?: Readonly<DictSearch>,
   sort?: SortInput[],
   options?: {
@@ -718,7 +718,7 @@ export async function findOne(
 ): Promise<DictModel | undefined> {
   
   const table = "base_dict";
-  const method = "findOne";
+  const method = "findOneDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -745,7 +745,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllDict(
     search,
     page,
     sort,
@@ -755,9 +755,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdDict
 /** 根据 id 查找系统字典 */
-export async function findById(
+export async function findByIdDict(
   id?: DictId | null,
   options?: {
     is_debug?: boolean;
@@ -765,7 +765,7 @@ export async function findById(
 ): Promise<DictModel | undefined> {
   
   const table = "base_dict";
-  const method = "findById";
+  const method = "findByIdDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -786,7 +786,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneDict(
     {
       id,
     },
@@ -797,9 +797,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsDict
 /** 根据 ids 查找系统字典 */
-export async function findByIds(
+export async function findByIdsDict(
   ids: DictId[],
   options?: {
     is_debug?: boolean;
@@ -807,7 +807,7 @@ export async function findByIds(
 ): Promise<DictModel[]> {
   
   const table = "base_dict";
-  const method = "findByIds";
+  const method = "findByIdsDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -828,7 +828,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllDict(
     {
       ids,
     },
@@ -854,9 +854,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existDict
 /** 根据搜索条件判断系统字典是否存在 */
-export async function exist(
+export async function existDict(
   search?: Readonly<DictSearch>,
   options?: {
     is_debug?: boolean;
@@ -864,7 +864,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_dict";
-  const method = "exist";
+  const method = "existDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -880,15 +880,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneDict(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdDict
 /** 根据id判断系统字典是否存在 */
-export async function existById(
+export async function existByIdDict(
   id?: Readonly<DictId | null>,
   options?: {
     is_debug?: boolean;
@@ -896,7 +896,7 @@ export async function existById(
 ) {
   
   const table = "base_dict";
-  const method = "existById";
+  const method = "existByIdDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -938,9 +938,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledDict
 /** 校验系统字典是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledDict(
   model: Readonly<DictModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -948,9 +948,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionDict
 /** 校验系统字典是否存在 */
-export async function validateOption(
+export async function validateOptionDict(
   model?: DictModel,
 ) {
   if (!model) {
@@ -961,12 +961,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateDict
 /** 系统字典增加和修改时校验输入 */
-export async function validate(
+export async function validateDict(
   input: Readonly<DictInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsDict();
   
   // ID
   await validators.chars_max_length(
@@ -1012,9 +1012,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnDict
 /** 创建 系统字典 并返回 */
-export async function createReturn(
+export async function createReturnDict(
   input: Readonly<DictInput>,
   options?: {
     is_debug?: boolean;
@@ -1025,7 +1025,7 @@ export async function createReturn(
 ): Promise<DictModel> {
   
   const table = "base_dict";
-  const method = "createReturn";
+  const method = "createReturnDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1050,8 +1050,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionDict(
+    await findOneDict(
       {
         id,
       },
@@ -1063,9 +1063,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createDict
 /** 创建 系统字典 */
-export async function create(
+export async function createDict(
   input: Readonly<DictInput>,
   options?: {
     is_debug?: boolean;
@@ -1076,7 +1076,7 @@ export async function create(
 ): Promise<DictId> {
   
   const table = "base_dict";
-  const method = "create";
+  const method = "createDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1104,9 +1104,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnDict
 /** 批量创建 系统字典 并返回 */
-export async function createsReturn(
+export async function createsReturnDict(
   inputs: DictInput[],
   options?: {
     is_debug?: boolean;
@@ -1117,7 +1117,7 @@ export async function createsReturn(
 ): Promise<DictModel[]> {
   
   const table = "base_dict";
-  const method = "createsReturn";
+  const method = "createsReturnDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1136,14 +1136,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsDict(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsDict
 /** 批量创建 系统字典 */
-export async function creates(
+export async function createsDict(
   inputs: DictInput[],
   options?: {
     is_debug?: boolean;
@@ -1154,7 +1154,7 @@ export async function creates(
 ): Promise<DictId[]> {
   
   const table = "base_dict";
-  const method = "creates";
+  const method = "createsDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1203,11 +1203,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueDict(input, options);
     if (oldModels.length > 0) {
       let id: DictId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueDict(
           input,
           oldModel,
           options?.uniqueType,
@@ -1237,7 +1237,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheDict();
   
   const args = new QueryArgs();
   let sql = "insert into base_dict(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,type,is_add,is_enabled,order_by,rem,is_sys)values";
@@ -1395,20 +1395,20 @@ async function _creates(
     }
   }
   
-  await delCache();
+  await delCacheDict();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheDict
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheDict() {
   await delCacheCtx(`dao.sql.base_dict`);
 }
 
-// MARK: updateById
+// MARK: updateByIdDict
 /** 根据 id 修改 系统字典 */
-export async function updateById(
+export async function updateByIdDict(
   id: DictId,
   input: DictInput,
   options?: {
@@ -1420,7 +1420,7 @@ export async function updateById(
 ): Promise<DictId> {
   
   const table = "base_dict";
-  const method = "updateById";
+  const method = "updateByIdDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1443,10 +1443,10 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdDict: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdDict: input cannot be null");
   }
   
   {
@@ -1454,7 +1454,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueDict(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1465,7 +1465,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdDict(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 系统字典 已被删除";
@@ -1649,7 +1649,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheDict();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1657,7 +1657,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheDict();
   }
   
   if (!is_silent_mode) {
@@ -1667,9 +1667,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsDict
 /** 根据 ids 删除 系统字典 */
-export async function deleteByIds(
+export async function deleteByIdsDict(
   ids: DictId[],
   options?: {
     is_debug?: boolean;
@@ -1679,7 +1679,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_dict";
-  const method = "deleteByIds";
+  const method = "deleteByIdsDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1702,12 +1702,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDict();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdDict(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1754,14 +1754,14 @@ export async function deleteByIds(
     options,
   );
   
-  await delCache();
+  await delCacheDict();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdDict
 /** 根据 id 查找 系统字典 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdDict(
   id: DictId,
   options?: {
     is_debug?: boolean;
@@ -1771,7 +1771,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdDict(
     id,
     options,
   );
@@ -1780,9 +1780,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsDict
 /** 根据 ids 启用或者禁用 系统字典 */
-export async function enableByIds(
+export async function enableByIdsDict(
   ids: DictId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1791,7 +1791,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "base_dict";
-  const method = "enableByIds";
+  const method = "enableByIdsDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1816,7 +1816,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheDict();
   }
   
   const args = new QueryArgs();
@@ -1824,14 +1824,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheDict();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsDict
 /** 根据 ids 还原 系统字典 */
-export async function revertByIds(
+export async function revertByIdsDict(
   ids: DictId[],
   options?: {
     is_debug?: boolean;
@@ -1839,7 +1839,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_dict";
-  const method = "revertByIds";
+  const method = "revertByIdsDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1860,12 +1860,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDict();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneDict(
       {
         id,
         is_deleted: 1,
@@ -1874,7 +1874,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdDict(
         id,
         options,
       );
@@ -1887,7 +1887,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as DictInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueDict(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1916,14 +1916,14 @@ export async function revertByIds(
     options,
   );
   
-  await delCache();
+  await delCacheDict();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsDict
 /** 根据 ids 彻底删除 系统字典 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDict(
   ids: DictId[],
   options?: {
     is_debug?: boolean;
@@ -1932,7 +1932,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_dict";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsDict";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1954,12 +1954,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheDict();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneDict(
       {
         id,
         is_deleted: 1,
@@ -1991,21 +1991,21 @@ export async function forceDeleteByIds(
     options,
   );
   
-  await delCache();
+  await delCacheDict();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByDict
 /** 查找 系统字典 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByDict(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_dict";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByDict";
   
   const is_debug = get_is_debug(options?.is_debug);
   

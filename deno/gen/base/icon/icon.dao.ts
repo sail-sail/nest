@@ -64,7 +64,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -176,9 +176,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountIcon
 /** 根据条件查找图标库总数 */
-export async function findCount(
+export async function findCountIcon(
   search?: Readonly<IconSearch>,
   options?: {
     is_debug?: boolean;
@@ -187,12 +187,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_icon";
-  const method = "findCount";
+  const method = "findCountIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -264,9 +264,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllIcon
 /** 根据搜索条件和分页查找图标库列表 */
-export async function findAll(
+export async function findAllIcon(
   search?: Readonly<IconSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -277,7 +277,7 @@ export async function findAll(
 ): Promise<IconModel[]> {
   
   const table = "base_icon";
-  const method = "findAll";
+  const method = "findAllIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -459,9 +459,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblIcon
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblIcon(
   input: IconInput,
 ) {
   
@@ -487,9 +487,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsIcon
 /** 获取图标库字段注释 */
-export async function getFieldComments(): Promise<IconFieldComment> {
+export async function getFieldCommentsIcon(): Promise<IconFieldComment> {
   const fieldComments: IconFieldComment = {
     id: "ID",
     img: "图标",
@@ -511,9 +511,9 @@ export async function getFieldComments(): Promise<IconFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueIcon
 /** 通过唯一约束获得图标库列表 */
-export async function findByUnique(
+export async function findByUniqueIcon(
   search0: Readonly<IconInput>,
   options?: {
     is_debug?: boolean;
@@ -521,7 +521,7 @@ export async function findByUnique(
 ): Promise<IconModel[]> {
   
   const table = "base_icon";
-  const method = "findByUnique";
+  const method = "findByUniqueIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -539,7 +539,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneIcon(
       {
         id: search0.id,
       },
@@ -557,7 +557,7 @@ export async function findByUnique(
       return [ ];
     }
     const code = search0.code;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllIcon(
       {
         code,
       },
@@ -572,7 +572,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllIcon(
       {
         lbl,
       },
@@ -587,7 +587,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueIcon(
   oldModel: Readonly<IconModel>,
   input: Readonly<IconInput>,
 ): boolean {
@@ -608,9 +608,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueIcon
 /** 通过唯一约束检查 图标库 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueIcon(
   input: Readonly<IconInput>,
   oldModel: Readonly<IconModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -622,14 +622,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueIcon(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 图标库 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: IconId = await updateById(
+      const id: IconId = await updateByIdIcon(
         oldModel.id,
         {
           ...input,
@@ -646,9 +646,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneIcon
 /** 根据条件查找第一图标库 */
-export async function findOne(
+export async function findOneIcon(
   search?: Readonly<IconSearch>,
   sort?: SortInput[],
   options?: {
@@ -657,7 +657,7 @@ export async function findOne(
 ): Promise<IconModel | undefined> {
   
   const table = "base_icon";
-  const method = "findOne";
+  const method = "findOneIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -684,7 +684,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllIcon(
     search,
     page,
     sort,
@@ -694,9 +694,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdIcon
 /** 根据 id 查找图标库 */
-export async function findById(
+export async function findByIdIcon(
   id?: IconId | null,
   options?: {
     is_debug?: boolean;
@@ -704,7 +704,7 @@ export async function findById(
 ): Promise<IconModel | undefined> {
   
   const table = "base_icon";
-  const method = "findById";
+  const method = "findByIdIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -725,7 +725,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneIcon(
     {
       id,
     },
@@ -736,9 +736,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsIcon
 /** 根据 ids 查找图标库 */
-export async function findByIds(
+export async function findByIdsIcon(
   ids: IconId[],
   options?: {
     is_debug?: boolean;
@@ -746,7 +746,7 @@ export async function findByIds(
 ): Promise<IconModel[]> {
   
   const table = "base_icon";
-  const method = "findByIds";
+  const method = "findByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -767,7 +767,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllIcon(
     {
       ids,
     },
@@ -793,9 +793,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existIcon
 /** 根据搜索条件判断图标库是否存在 */
-export async function exist(
+export async function existIcon(
   search?: Readonly<IconSearch>,
   options?: {
     is_debug?: boolean;
@@ -803,7 +803,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_icon";
-  const method = "exist";
+  const method = "existIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -819,15 +819,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneIcon(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdIcon
 /** 根据id判断图标库是否存在 */
-export async function existById(
+export async function existByIdIcon(
   id?: Readonly<IconId | null>,
   options?: {
     is_debug?: boolean;
@@ -835,7 +835,7 @@ export async function existById(
 ) {
   
   const table = "base_icon";
-  const method = "existById";
+  const method = "existByIdIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -877,9 +877,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledIcon
 /** 校验图标库是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledIcon(
   model: Readonly<IconModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -887,9 +887,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionIcon
 /** 校验图标库是否存在 */
-export async function validateOption(
+export async function validateOptionIcon(
   model?: IconModel,
 ) {
   if (!model) {
@@ -900,12 +900,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateIcon
 /** 图标库增加和修改时校验输入 */
-export async function validate(
+export async function validateIcon(
   input: Readonly<IconInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsIcon();
   
   // ID
   await validators.chars_max_length(
@@ -958,9 +958,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnIcon
 /** 创建 图标库 并返回 */
-export async function createReturn(
+export async function createReturnIcon(
   input: Readonly<IconInput>,
   options?: {
     is_debug?: boolean;
@@ -971,7 +971,7 @@ export async function createReturn(
 ): Promise<IconModel> {
   
   const table = "base_icon";
-  const method = "createReturn";
+  const method = "createReturnIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -996,8 +996,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionIcon(
+    await findOneIcon(
       {
         id,
       },
@@ -1009,9 +1009,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createIcon
 /** 创建 图标库 */
-export async function create(
+export async function createIcon(
   input: Readonly<IconInput>,
   options?: {
     is_debug?: boolean;
@@ -1022,7 +1022,7 @@ export async function create(
 ): Promise<IconId> {
   
   const table = "base_icon";
-  const method = "create";
+  const method = "createIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1050,9 +1050,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnIcon
 /** 批量创建 图标库 并返回 */
-export async function createsReturn(
+export async function createsReturnIcon(
   inputs: IconInput[],
   options?: {
     is_debug?: boolean;
@@ -1063,7 +1063,7 @@ export async function createsReturn(
 ): Promise<IconModel[]> {
   
   const table = "base_icon";
-  const method = "createsReturn";
+  const method = "createsReturnIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1082,14 +1082,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsIcon(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsIcon
 /** 批量创建 图标库 */
-export async function creates(
+export async function createsIcon(
   inputs: IconInput[],
   options?: {
     is_debug?: boolean;
@@ -1100,7 +1100,7 @@ export async function creates(
 ): Promise<IconId[]> {
   
   const table = "base_icon";
-  const method = "creates";
+  const method = "createsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1149,11 +1149,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueIcon(input, options);
     if (oldModels.length > 0) {
       let id: IconId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueIcon(
           input,
           oldModel,
           options?.uniqueType,
@@ -1183,7 +1183,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheIcon();
   
   const args = new QueryArgs();
   let sql = "insert into base_icon(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,img,code,lbl,is_enabled,order_by,rem)values";
@@ -1317,20 +1317,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheIcon();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheIcon
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheIcon() {
   await delCacheCtx(`dao.sql.base_icon`);
 }
 
-// MARK: updateById
+// MARK: updateByIdIcon
 /** 根据 id 修改 图标库 */
-export async function updateById(
+export async function updateByIdIcon(
   id: IconId,
   input: IconInput,
   options?: {
@@ -1342,7 +1342,7 @@ export async function updateById(
 ): Promise<IconId> {
   
   const table = "base_icon";
-  const method = "updateById";
+  const method = "updateByIdIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1365,10 +1365,10 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdIcon: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdIcon: input cannot be null");
   }
   
   {
@@ -1376,7 +1376,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueIcon(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1387,7 +1387,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdIcon(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 图标库 已被删除";
@@ -1508,7 +1508,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheIcon();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1516,7 +1516,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheIcon();
   }
   
   if (!is_silent_mode) {
@@ -1526,9 +1526,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsIcon
 /** 根据 ids 删除 图标库 */
-export async function deleteByIds(
+export async function deleteByIdsIcon(
   ids: IconId[],
   options?: {
     is_debug?: boolean;
@@ -1538,7 +1538,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_icon";
-  const method = "deleteByIds";
+  const method = "deleteByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1561,12 +1561,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheIcon();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdIcon(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1599,14 +1599,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheIcon();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdIcon
 /** 根据 id 查找 图标库 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdIcon(
   id: IconId,
   options?: {
     is_debug?: boolean;
@@ -1616,7 +1616,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdIcon(
     id,
     options,
   );
@@ -1625,9 +1625,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsIcon
 /** 根据 ids 启用或者禁用 图标库 */
-export async function enableByIds(
+export async function enableByIdsIcon(
   ids: IconId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1636,7 +1636,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "base_icon";
-  const method = "enableByIds";
+  const method = "enableByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1661,7 +1661,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheIcon();
   }
   
   const args = new QueryArgs();
@@ -1669,14 +1669,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheIcon();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsIcon
 /** 根据 ids 还原 图标库 */
-export async function revertByIds(
+export async function revertByIdsIcon(
   ids: IconId[],
   options?: {
     is_debug?: boolean;
@@ -1684,7 +1684,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_icon";
-  const method = "revertByIds";
+  const method = "revertByIdsIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1705,12 +1705,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheIcon();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneIcon(
       {
         id,
         is_deleted: 1,
@@ -1719,7 +1719,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdIcon(
         id,
         options,
       );
@@ -1732,7 +1732,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as IconInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueIcon(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1746,14 +1746,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheIcon();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsIcon
 /** 根据 ids 彻底删除 图标库 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsIcon(
   ids: IconId[],
   options?: {
     is_debug?: boolean;
@@ -1762,7 +1762,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_icon";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsIcon";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1784,12 +1784,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheIcon();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneIcon(
       {
         id,
         is_deleted: 1,
@@ -1806,21 +1806,21 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheIcon();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByIcon
 /** 查找 图标库 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByIcon(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_icon";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByIcon";
   
   const is_debug = get_is_debug(options?.is_debug);
   

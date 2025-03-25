@@ -29,13 +29,13 @@ export async function findCountMenu(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountMenu,
   } = await import("./menu.service.ts");
   
   search = search || { };
   search.is_hidden = [ 0 ];
   
-  const num = await findCount(search);
+  const num = await findCountMenu(search);
   
   return num;
 }
@@ -50,7 +50,7 @@ export async function findAllMenu(
 ): Promise<MenuModel[]> {
   
   const {
-    findAll,
+    findAllMenu,
   } = await import("./menu.service.ts");
   
   search = search || { };
@@ -58,7 +58,7 @@ export async function findAllMenu(
   
   checkSortMenu(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllMenu(search, page, sort);
   
   return models;
 }
@@ -69,10 +69,10 @@ export async function findAllMenu(
 export async function getFieldCommentsMenu(): Promise<MenuFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsMenu,
   } = await import("./menu.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsMenu();
   
   return field_comment;
 }
@@ -86,7 +86,7 @@ export async function findOneMenu(
 ): Promise<MenuModel | undefined> {
   
   const {
-    findOne,
+    findOneMenu,
   } = await import("./menu.service.ts");
   
   search = search || { };
@@ -94,7 +94,7 @@ export async function findOneMenu(
   
   checkSortMenu(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneMenu(search, sort);
   
   return model;
 }
@@ -107,10 +107,10 @@ export async function findByIdMenu(
 ): Promise<MenuModel | undefined> {
   
   const {
-    findById,
+    findByIdMenu,
   } = await import("./menu.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdMenu(id);
   
   return model;
 }
@@ -123,10 +123,10 @@ export async function findByIdsMenu(
 ): Promise<MenuModel[]> {
   
   const {
-    findByIds,
+    findByIdsMenu,
   } = await import("./menu.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsMenu(ids);
   
   for (const model of models) {
   }
@@ -143,9 +143,9 @@ export async function createsMenu(
 ): Promise<MenuId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateMenu,
+    setIdByLblMenu,
+    createsMenu,
   } = await import("./menu.service.ts");
   
   set_is_tran(true);
@@ -159,12 +159,12 @@ export async function createsMenu(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblMenu(input);
     
-    await validate(input);
+    await validateMenu(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsMenu(inputs, { uniqueType });
   return ids;
 }
 
@@ -179,20 +179,20 @@ export async function updateByIdMenu(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblMenu,
+    updateByIdMenu,
   } = await import("./menu.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblMenu(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: MenuId = await updateById(id, input);
+  const id2: MenuId = await updateByIdMenu(id, input);
   
   return id2;
 }
@@ -205,7 +205,7 @@ export async function deleteByIdsMenu(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsMenu,
   } = await import("./menu.service.ts");
   
   set_is_tran(true);
@@ -215,7 +215,7 @@ export async function deleteByIdsMenu(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsMenu(ids);
   
   return num;
 }
@@ -229,7 +229,7 @@ export async function enableByIdsMenu(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsMenu,
   } = await import("./menu.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -242,7 +242,7 @@ export async function enableByIdsMenu(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsMenu(ids, is_enabled);
   
   return res;
 }
@@ -256,7 +256,7 @@ export async function lockByIdsMenu(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsMenu,
   } = await import("./menu.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -270,7 +270,7 @@ export async function lockByIdsMenu(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsMenu(ids, is_locked);
   
   return res;
 }
@@ -283,7 +283,7 @@ export async function revertByIdsMenu(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsMenu,
   } = await import("./menu.service.ts");
   
   set_is_tran(true);
@@ -293,7 +293,7 @@ export async function revertByIdsMenu(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsMenu(ids);
   
   return res;
 }
@@ -306,7 +306,7 @@ export async function forceDeleteByIdsMenu(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsMenu,
   } = await import("./menu.service.ts");
   
   set_is_tran(true);
@@ -316,7 +316,7 @@ export async function forceDeleteByIdsMenu(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsMenu(ids);
   
   return res;
 }
@@ -327,10 +327,10 @@ export async function forceDeleteByIdsMenu(
 export async function findLastOrderByMenu(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByMenu,
   } = await import("./menu.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByMenu();
   
   return res;
 }
