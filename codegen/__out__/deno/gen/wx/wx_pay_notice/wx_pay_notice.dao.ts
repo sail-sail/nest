@@ -56,7 +56,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -74,7 +74,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -262,9 +262,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountWxPayNotice
 /** 根据条件查找微信支付通知总数 */
-export async function findCount(
+export async function findCountWxPayNotice(
   search?: Readonly<WxPayNoticeSearch>,
   options?: {
     is_debug?: boolean;
@@ -273,12 +273,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "wx_wx_pay_notice";
-  const method = "findCount";
+  const method = "findCountWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -380,9 +380,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllWxPayNotice
 /** 根据搜索条件和分页查找微信支付通知列表 */
-export async function findAll(
+export async function findAllWxPayNotice(
   search?: Readonly<WxPayNoticeSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -393,7 +393,7 @@ export async function findAll(
 ): Promise<WxPayNoticeModel[]> {
   
   const table = "wx_wx_pay_notice";
-  const method = "findAll";
+  const method = "findAllWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -638,9 +638,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblWxPayNotice
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblWxPayNotice(
   input: WxPayNoticeInput,
 ) {
   
@@ -653,14 +653,14 @@ export async function setIdByLbl(
     if (success_time_lbl.isValid()) {
       input.success_time = success_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsWxPayNotice();
       throw `${ fieldComments.success_time } 日期格式错误`;
     }
   }
   if (input.success_time) {
     const success_time = dayjs(input.success_time);
     if (!success_time.isValid()) {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsWxPayNotice();
       throw `${ fieldComments.success_time } 日期格式错误`;
     }
     input.success_time = dayjs(input.success_time).format("YYYY-MM-DD HH:mm:ss");
@@ -729,9 +729,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsWxPayNotice
 /** 获取微信支付通知字段注释 */
-export async function getFieldComments(): Promise<WxPayNoticeFieldComment> {
+export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldComment> {
   const fieldComments: WxPayNoticeFieldComment = {
     id: "ID",
     appid: "开发者ID",
@@ -769,9 +769,9 @@ export async function getFieldComments(): Promise<WxPayNoticeFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueWxPayNotice
 /** 通过唯一约束获得微信支付通知列表 */
-export async function findByUnique(
+export async function findByUniqueWxPayNotice(
   search0: Readonly<WxPayNoticeInput>,
   options?: {
     is_debug?: boolean;
@@ -779,7 +779,7 @@ export async function findByUnique(
 ): Promise<WxPayNoticeModel[]> {
   
   const table = "wx_wx_pay_notice";
-  const method = "findByUnique";
+  const method = "findByUniqueWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -797,7 +797,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneWxPayNotice(
       {
         id: search0.id,
       },
@@ -815,7 +815,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueWxPayNotice(
   oldModel: Readonly<WxPayNoticeModel>,
   input: Readonly<WxPayNoticeInput>,
 ): boolean {
@@ -826,9 +826,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueWxPayNotice
 /** 通过唯一约束检查 微信支付通知 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueWxPayNotice(
   input: Readonly<WxPayNoticeInput>,
   oldModel: Readonly<WxPayNoticeModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -840,14 +840,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueWxPayNotice(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 微信支付通知 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: WxPayNoticeId = await updateById(
+      const id: WxPayNoticeId = await updateByIdWxPayNotice(
         oldModel.id,
         {
           ...input,
@@ -864,9 +864,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneWxPayNotice
 /** 根据条件查找第一微信支付通知 */
-export async function findOne(
+export async function findOneWxPayNotice(
   search?: Readonly<WxPayNoticeSearch>,
   sort?: SortInput[],
   options?: {
@@ -875,7 +875,7 @@ export async function findOne(
 ): Promise<WxPayNoticeModel | undefined> {
   
   const table = "wx_wx_pay_notice";
-  const method = "findOne";
+  const method = "findOneWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -902,7 +902,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllWxPayNotice(
     search,
     page,
     sort,
@@ -912,9 +912,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdWxPayNotice
 /** 根据 id 查找微信支付通知 */
-export async function findById(
+export async function findByIdWxPayNotice(
   id?: WxPayNoticeId | null,
   options?: {
     is_debug?: boolean;
@@ -922,7 +922,7 @@ export async function findById(
 ): Promise<WxPayNoticeModel | undefined> {
   
   const table = "wx_wx_pay_notice";
-  const method = "findById";
+  const method = "findByIdWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -943,7 +943,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneWxPayNotice(
     {
       id,
     },
@@ -954,9 +954,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsWxPayNotice
 /** 根据 ids 查找微信支付通知 */
-export async function findByIds(
+export async function findByIdsWxPayNotice(
   ids: WxPayNoticeId[],
   options?: {
     is_debug?: boolean;
@@ -964,7 +964,7 @@ export async function findByIds(
 ): Promise<WxPayNoticeModel[]> {
   
   const table = "wx_wx_pay_notice";
-  const method = "findByIds";
+  const method = "findByIdsWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -985,7 +985,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllWxPayNotice(
     {
       ids,
     },
@@ -1011,9 +1011,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existWxPayNotice
 /** 根据搜索条件判断微信支付通知是否存在 */
-export async function exist(
+export async function existWxPayNotice(
   search?: Readonly<WxPayNoticeSearch>,
   options?: {
     is_debug?: boolean;
@@ -1021,7 +1021,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "wx_wx_pay_notice";
-  const method = "exist";
+  const method = "existWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1037,15 +1037,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneWxPayNotice(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdWxPayNotice
 /** 根据id判断微信支付通知是否存在 */
-export async function existById(
+export async function existByIdWxPayNotice(
   id?: Readonly<WxPayNoticeId | null>,
   options?: {
     is_debug?: boolean;
@@ -1053,7 +1053,7 @@ export async function existById(
 ) {
   
   const table = "wx_wx_pay_notice";
-  const method = "existById";
+  const method = "existByIdWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1086,9 +1086,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionWxPayNotice
 /** 校验微信支付通知是否存在 */
-export async function validateOption(
+export async function validateOptionWxPayNotice(
   model?: WxPayNoticeModel,
 ) {
   if (!model) {
@@ -1099,12 +1099,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateWxPayNotice
 /** 微信支付通知增加和修改时校验输入 */
-export async function validate(
+export async function validateWxPayNotice(
   input: Readonly<WxPayNoticeInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsWxPayNotice();
   
   // ID
   await validators.chars_max_length(
@@ -1199,9 +1199,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnWxPayNotice
 /** 创建 微信支付通知 并返回 */
-export async function createReturn(
+export async function createReturnWxPayNotice(
   input: Readonly<WxPayNoticeInput>,
   options?: {
     is_debug?: boolean;
@@ -1212,7 +1212,7 @@ export async function createReturn(
 ): Promise<WxPayNoticeModel> {
   
   const table = "wx_wx_pay_notice";
-  const method = "createReturn";
+  const method = "createReturnWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1237,8 +1237,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionWxPayNotice(
+    await findOneWxPayNotice(
       {
         id,
       },
@@ -1250,9 +1250,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createWxPayNotice
 /** 创建 微信支付通知 */
-export async function create(
+export async function createWxPayNotice(
   input: Readonly<WxPayNoticeInput>,
   options?: {
     is_debug?: boolean;
@@ -1263,7 +1263,7 @@ export async function create(
 ): Promise<WxPayNoticeId> {
   
   const table = "wx_wx_pay_notice";
-  const method = "create";
+  const method = "createWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1291,9 +1291,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnWxPayNotice
 /** 批量创建 微信支付通知 并返回 */
-export async function createsReturn(
+export async function createsReturnWxPayNotice(
   inputs: WxPayNoticeInput[],
   options?: {
     is_debug?: boolean;
@@ -1304,7 +1304,7 @@ export async function createsReturn(
 ): Promise<WxPayNoticeModel[]> {
   
   const table = "wx_wx_pay_notice";
-  const method = "createsReturn";
+  const method = "createsReturnWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1323,14 +1323,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsWxPayNotice(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsWxPayNotice
 /** 批量创建 微信支付通知 */
-export async function creates(
+export async function createsWxPayNotice(
   inputs: WxPayNoticeInput[],
   options?: {
     is_debug?: boolean;
@@ -1341,7 +1341,7 @@ export async function creates(
 ): Promise<WxPayNoticeId[]> {
   
   const table = "wx_wx_pay_notice";
-  const method = "creates";
+  const method = "createsWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1390,11 +1390,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueWxPayNotice(input, options);
     if (oldModels.length > 0) {
       let id: WxPayNoticeId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueWxPayNotice(
           input,
           oldModel,
           options?.uniqueType,
@@ -1632,9 +1632,9 @@ async function _creates(
   return ids2;
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdWxPayNotice
 /** 微信支付通知 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdWxPayNotice(
   id: WxPayNoticeId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1643,7 +1643,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "wx_wx_pay_notice";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1675,9 +1675,9 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdWxPayNotice
 /** 根据 id 修改 微信支付通知 */
-export async function updateById(
+export async function updateByIdWxPayNotice(
   id: WxPayNoticeId,
   input: WxPayNoticeInput,
   options?: {
@@ -1689,7 +1689,7 @@ export async function updateById(
 ): Promise<WxPayNoticeId> {
   
   const table = "wx_wx_pay_notice";
-  const method = "updateById";
+  const method = "updateByIdWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1712,15 +1712,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdWxPayNotice: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdWxPayNotice: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdWxPayNotice(id, input.tenant_id, options);
   }
   
   {
@@ -1728,7 +1728,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueWxPayNotice(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1739,7 +1739,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdWxPayNotice(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 微信支付通知 已被删除";
@@ -1944,9 +1944,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsWxPayNotice
 /** 根据 ids 删除 微信支付通知 */
-export async function deleteByIds(
+export async function deleteByIdsWxPayNotice(
   ids: WxPayNoticeId[],
   options?: {
     is_debug?: boolean;
@@ -1956,7 +1956,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "wx_wx_pay_notice";
-  const method = "deleteByIds";
+  const method = "deleteByIdsWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1982,7 +1982,7 @@ export async function deleteByIds(
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdWxPayNotice(id, options);
     if (!oldModel) {
       continue;
     }
@@ -2018,9 +2018,9 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsWxPayNotice
 /** 根据 ids 还原 微信支付通知 */
-export async function revertByIds(
+export async function revertByIdsWxPayNotice(
   ids: WxPayNoticeId[],
   options?: {
     is_debug?: boolean;
@@ -2028,7 +2028,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "wx_wx_pay_notice";
-  const method = "revertByIds";
+  const method = "revertByIdsWxPayNotice";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2052,7 +2052,7 @@ export async function revertByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneWxPayNotice(
       {
         id,
         is_deleted: 1,
@@ -2061,7 +2061,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdWxPayNotice(
         id,
         options,
       );
@@ -2074,7 +2074,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as WxPayNoticeInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueWxPayNotice(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -2091,9 +2091,9 @@ export async function revertByIds(
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsWxPayNotice
 /** 根据 ids 彻底删除 微信支付通知 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxPayNotice(
   ids: WxPayNoticeId[],
   options?: {
     is_debug?: boolean;
@@ -2102,7 +2102,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "wx_wx_pay_notice";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsWxPayNotice";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2127,7 +2127,7 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneWxPayNotice(
       {
         id,
         is_deleted: 1,

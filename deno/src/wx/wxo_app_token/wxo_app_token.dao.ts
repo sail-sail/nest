@@ -8,14 +8,14 @@ import {
 } from "/lib/util/string_util.ts";
 
 import {
-  findOne as findOneWxoApp,
-  validateOption as vlidateOptionWxoApp,
+  findOneWxoApp,
+  validateOptionWxoApp,
 } from "/gen/wx/wxo_app/wxo_app.dao.ts";
 
 import {
-  findOne as findOneWxoAppToken,
-  create as createWxoAppToken,
-  updateById as updateWxoAppTokenById,
+  findOneWxoAppToken,
+  createWxoAppToken,
+  updateByIdWxoAppToken,
 } from "/gen/wx/wxo_app_token/wxo_app_token.dao.ts";
 
 import dayjs from "dayjs";
@@ -23,7 +23,7 @@ import dayjs from "dayjs";
 async function fetchAccessToken(
   appid: string,
 ) {
-  const wxo_appModel = await vlidateOptionWxoApp(
+  const wxo_appModel = await validateOptionWxoApp(
     await findOneWxoApp({
       appid,
     }),
@@ -57,7 +57,7 @@ export async function getAccessToken(
   appid: string,
   force = false,
 ) {
-  const wxo_appModel = await vlidateOptionWxoApp(
+  const wxo_appModel = await validateOptionWxoApp(
     await findOneWxoApp({
       appid,
     }),
@@ -106,7 +106,7 @@ export async function getAccessToken(
       expires_in,
     } = await fetchAccessToken(appid);
     
-    await updateWxoAppTokenById(
+    await updateByIdWxoAppToken(
       wxo_app_token_id,
       {
         access_token,

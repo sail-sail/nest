@@ -8,18 +8,18 @@ import {
 } from "/src/wx/wx_pay/wx_pay.dao.ts";
 
 import {
-  findOne as findOneWxPay,
+  findOneWxPay,
 } from "/gen/wx/wx_pay/wx_pay.dao.ts";
 
 import {
-  create as createWxPayNotice,
-  updateTenantById as updateTenantByIdWxPayNotice,
+  createWxPayNotice,
+  updateTenantByIdWxPayNotice,
 } from "/gen/wx/wx_pay_notice/wx_pay_notice.dao.ts";
 
 import {
-  findOne as findOnePayTransactionsJsapi,
-  validateOption as validateOptionTransactionsJsapi,
-  updateById as updateByIdTransactionsJsapi,
+  findOnePayTransactionsJsapi,
+  validateOptionPayTransactionsJsapi,
+  updateByIdPayTransactionsJsapi,
 } from "/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.dao.ts";
 
 import dayjs from "dayjs";
@@ -249,7 +249,7 @@ export async function pay_notice(
   const trade_state_desc = result.trade_state_desc;
   const total = result.amount.total;
   
-  const pay_transactions_jsapi_model = await validateOptionTransactionsJsapi(
+  const pay_transactions_jsapi_model = await validateOptionPayTransactionsJsapi(
     await findOnePayTransactionsJsapi({
       out_trade_no,
     }),
@@ -263,7 +263,7 @@ export async function pay_notice(
     tenant_id,
   );
   
-  await updateByIdTransactionsJsapi(
+  await updateByIdPayTransactionsJsapi(
     pay_transactions_jsapi_id,
     {
       transaction_id,

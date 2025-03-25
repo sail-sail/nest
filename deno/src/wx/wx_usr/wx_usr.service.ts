@@ -8,18 +8,18 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findOne as findOneWxUsr,
-  create as createWxUsr,
-  updateTenantById as updateTenantByIdWxUsr,
-  findById as findByIdWxUsr,
-  updateById as updateByIdWxUsr,
-  validateOption as validateOptionWxUsr,
+  findOneWxUsr,
+  createWxUsr,
+  updateTenantByIdWxUsr,
+  findByIdWxUsr,
+  updateByIdWxUsr,
+  validateOptionWxUsr,
 } from "/gen/wx/wx_usr/wx_usr.dao.ts";
 
 import {
-  findOne as findOneWxApp,
-  validateOption as validateOptionWxApp,
-  validateIsEnabled as validateIsEnabledWxApp,
+  findOneWxApp,
+  validateOptionWxApp,
+  validateIsEnabledWxApp,
 } from "/gen/wx/wx_app/wx_app.dao.ts";
 
 import {
@@ -27,19 +27,19 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  create as createUsr,
-  updateById as updateByIdUsr,
-  updateTenantById as updateTenantByIdUsr,
+  createUsr,
+  updateByIdUsr,
+  updateTenantByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  findById as findByIdTenant,
-  validateOption as validateOptionTenant,
-  validateIsEnabled as validateIsEnabledTenant,
+  findByIdTenant,
+  validateOptionTenant,
+  validateIsEnabledTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  findById as findByIdLang,
+  findByIdLang,
 } from "/gen/base/lang/lang.dao.ts";
 
 import {
@@ -60,8 +60,8 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
-  validateOption as validateOptionUsr,
+  findByIdUsr,
+  validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {

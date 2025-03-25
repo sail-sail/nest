@@ -6,42 +6,42 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneDomain,
-  validateOption as validateOptionDomain,
-  validateIsEnabled as validateIsEnabledDomain,
+  findOneDomain,
+  validateOptionDomain,
+  validateIsEnabledDomain,
 } from "/gen/base/domain/domain.dao.ts";
 
 import {
-  findOne as findOneWxoApp,
-  validateOption as validateOptionWxoApp,
-  validateIsEnabled as validateIsEnabledWxoApp,
+  findOneWxoApp,
+  validateOptionWxoApp,
+  validateIsEnabledWxoApp,
 } from "/gen/wx/wxo_app/wxo_app.dao.ts";
 
 import {
-  findById as findByIdWxoUsr,
-  findOne as findOneWxoUsr,
-  create as createWxoUsr,
-  updateById as updateByIdWxoUsr,
-  updateTenantById as updateTenantByIdWxoUsr,
-  validateOption as validateOptionWxoUsr,
+  findByIdWxoUsr,
+  findOneWxoUsr,
+  createWxoUsr,
+  updateByIdWxoUsr,
+  updateTenantByIdWxoUsr,
+  validateOptionWxoUsr,
 } from "/gen/wx/wxo_usr/wxo_usr.dao.ts";
 
 import {
-  findById as findByIdUsr,
-  create as createUsr,
-  updateTenantById as updateTenantByIdUsr,
-  validateOption as validateOptionUsr,
-  updateById as updateByIdUsr,
+  findByIdUsr,
+  createUsr,
+  updateTenantByIdUsr,
+  validateOptionUsr,
+  updateByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  findById as findByIdTenant,
-  validateOption as validateOptionTenant,
-  validateIsEnabled as validateIsEnabledTenant,
+  findByIdTenant,
+  validateOptionTenant,
+  validateIsEnabledTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  findById as findByIdLang,
+  findByIdLang,
 } from "/gen/base/lang/lang.dao.ts";
 
 import {

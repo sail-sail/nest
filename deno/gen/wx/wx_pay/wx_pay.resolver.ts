@@ -29,10 +29,10 @@ export async function findCountWxPay(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountWxPay,
   } = await import("./wx_pay.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountWxPay(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllWxPay(
 ): Promise<WxPayModel[]> {
   
   const {
-    findAll,
+    findAllWxPay,
   } = await import("./wx_pay.service.ts");
   
   checkSortWxPay(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllWxPay(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllWxPay(
 export async function getFieldCommentsWxPay(): Promise<WxPayFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsWxPay,
   } = await import("./wx_pay.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsWxPay();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneWxPay(
 ): Promise<WxPayModel | undefined> {
   
   const {
-    findOne,
+    findOneWxPay,
   } = await import("./wx_pay.service.ts");
   
   checkSortWxPay(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneWxPay(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdWxPay(
 ): Promise<WxPayModel | undefined> {
   
   const {
-    findById,
+    findByIdWxPay,
   } = await import("./wx_pay.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdWxPay(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsWxPay(
 ): Promise<WxPayModel[]> {
   
   const {
-    findByIds,
+    findByIdsWxPay,
   } = await import("./wx_pay.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsWxPay(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsWxPay(
 ): Promise<WxPayId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateWxPay,
+    setIdByLblWxPay,
+    createsWxPay,
   } = await import("./wx_pay.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsWxPay(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblWxPay(input);
     
-    await validate(input);
+    await validateWxPay(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsWxPay(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdWxPay(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblWxPay,
+    updateByIdWxPay,
   } = await import("./wx_pay.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblWxPay(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: WxPayId = await updateById(id, input);
+  const id2: WxPayId = await updateByIdWxPay(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsWxPay(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsWxPay,
   } = await import("./wx_pay.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsWxPay(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsWxPay(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsWxPay(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsWxPay,
   } = await import("./wx_pay.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsWxPay(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsWxPay(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsWxPay(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsWxPay,
   } = await import("./wx_pay.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsWxPay(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsWxPay(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsWxPay(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsWxPay,
   } = await import("./wx_pay.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsWxPay(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsWxPay(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsWxPay(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsWxPay,
   } = await import("./wx_pay.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsWxPay(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsWxPay(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsWxPay(
 export async function findLastOrderByWxPay(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByWxPay,
   } = await import("./wx_pay.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByWxPay();
   
   return res;
 }
