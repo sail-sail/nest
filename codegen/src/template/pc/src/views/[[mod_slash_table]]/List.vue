@@ -1964,7 +1964,11 @@ for (let i = 0; i < columns.length; i++) {
               if (column.isCountyLbl) {
               #>
               <template #default="{ row }">
-                <#=prefix#>{{ row.<#=province_lbl_column.COLUMN_NAME#> }} / {{ row.<#=city_lbl_column.COLUMN_NAME#> }} / {{ row.<#=county_lbl_column.COLUMN_NAME#> }}
+                <div
+                  v-if="row.<#=province_lbl_column.COLUMN_NAME#> && row.<#=city_lbl_column.COLUMN_NAME#> && row.<#=county_lbl_column.COLUMN_NAME#>"
+                >
+                  <#=prefix#>{{ row.<#=province_lbl_column.COLUMN_NAME#> }} / {{ row.<#=city_lbl_column.COLUMN_NAME#> }} / {{ row.<#=county_lbl_column.COLUMN_NAME#> }}
+                </div>
               </template><#
               } else if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
               #>
