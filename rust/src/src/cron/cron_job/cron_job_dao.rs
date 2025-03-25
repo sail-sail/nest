@@ -3,7 +3,10 @@ use color_eyre::eyre::Result;
 use std::sync::OnceLock;
 use delay_timer::prelude::*;
 
-use crate::common::context::CtxBuilder;
+use crate::common::context::{
+  Options,
+  CtxBuilder,
+};
 
 use crate::r#gen::cron::cron_job::cron_job_model::CronJobModel;
 use crate::r#gen::cron::cron_job::cron_job_model::{
@@ -12,8 +15,8 @@ use crate::r#gen::cron::cron_job::cron_job_model::{
 };
 
 use crate::r#gen::cron::cron_job::cron_job_dao::{
-  find_by_id as find_by_id_cron_job,
-  find_all as find_all_cron_job,
+  find_by_id_cron_job,
+  find_all_cron_job,
 };
 
 use crate::src::cron::job::job_dao::run_job;
@@ -36,11 +39,12 @@ fn init_delay_timer() -> DelayTimer {
 /// 增加定时任务
 pub async fn add_task(
   cron_job_id: CronJobId,
+  options: Option<Options>,
 ) -> Result<()> {
   
   let cron_job_model = find_by_id_cron_job(
     cron_job_id,
-    None,
+    options,
   ).await?;
   
   if cron_job_model.is_none() {
@@ -60,11 +64,12 @@ pub async fn add_task(
 /// 删除定时任务
 pub async fn remove_task(
   cron_job_id: CronJobId,
+  options: Option<Options>,
 ) -> Result<()> {
   
   let cron_job_model = find_by_id_cron_job(
     cron_job_id,
-    None,
+    options,
   ).await?;
   
   if cron_job_model.is_none() {
@@ -116,6 +121,7 @@ async fn new_task(
               cron_job_id,
               cron,
               tenant_id,
+              None,
             )
           }).await
       }

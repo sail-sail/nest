@@ -37,7 +37,7 @@ impl JobGenQuery {
       .with_auth()?
       .build()
       .scope({
-        job_resolver::find_all(
+        job_resolver::find_all_job(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl JobGenQuery {
       .with_auth()?
       .build()
       .scope({
-        job_resolver::find_count(
+        job_resolver::find_count_job(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl JobGenQuery {
       .with_auth()?
       .build()
       .scope({
-        job_resolver::find_one(
+        job_resolver::find_one_job(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl JobGenQuery {
       .with_auth()?
       .build()
       .scope({
-        job_resolver::find_by_id(
+        job_resolver::find_by_id_job(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl JobGenQuery {
       .with_auth()?
       .build()
       .scope({
-        job_resolver::find_by_ids(
+        job_resolver::find_by_ids_job(
           ids,
           None,
         )
@@ -127,7 +127,7 @@ impl JobGenQuery {
       .with_auth()?
       .build()
       .scope({
-        job_resolver::get_is_enabled_by_id(
+        job_resolver::get_is_enabled_by_id_job(
           id,
           None,
         )
@@ -146,7 +146,7 @@ impl JobGenQuery {
       .with_auth()?
       .build()
       .scope({
-        job_resolver::get_is_locked_by_id(
+        job_resolver::get_is_locked_by_id_job(
           id,
           None,
         )
@@ -161,7 +161,7 @@ impl JobGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        job_resolver::get_field_comments(
+        job_resolver::get_field_comments_job(
           None,
         )
       }).await
@@ -176,7 +176,7 @@ impl JobGenQuery {
       .with_auth()?
       .build()
       .scope({
-        job_resolver::find_last_order_by(
+        job_resolver::find_last_order_by_job(
           None,
         )
       }).await
@@ -207,7 +207,7 @@ impl JobGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        job_resolver::creates(
+        job_resolver::creates_job(
           inputs,
           options.into(),
         )
@@ -226,7 +226,7 @@ impl JobGenMutation {
       .with_tran()
       .build()
       .scope({
-        job_resolver::update_tenant_by_id(
+        job_resolver::update_tenant_by_id_job(
           id,
           tenant_id,
           None,
@@ -246,7 +246,7 @@ impl JobGenMutation {
       .with_tran()
       .build()
       .scope({
-        job_resolver::update_by_id(
+        job_resolver::update_by_id_job(
           id,
           input,
           None,
@@ -265,7 +265,7 @@ impl JobGenMutation {
       .with_tran()
       .build()
       .scope({
-        job_resolver::delete_by_ids(
+        job_resolver::delete_by_ids_job(
           ids,
           None,
         )
@@ -284,7 +284,7 @@ impl JobGenMutation {
       .with_tran()
       .build()
       .scope({
-        job_resolver::enable_by_ids(
+        job_resolver::enable_by_ids_job(
           ids,
           is_enabled,
           None,
@@ -304,7 +304,7 @@ impl JobGenMutation {
       .with_tran()
       .build()
       .scope({
-        job_resolver::lock_by_ids(
+        job_resolver::lock_by_ids_job(
           ids,
           is_locked,
           None,
@@ -323,7 +323,7 @@ impl JobGenMutation {
       .with_tran()
       .build()
       .scope({
-        job_resolver::revert_by_ids(
+        job_resolver::revert_by_ids_job(
           ids,
           None,
         )
@@ -341,7 +341,7 @@ impl JobGenMutation {
       .with_tran()
       .build()
       .scope({
-        job_resolver::force_delete_by_ids(
+        job_resolver::force_delete_by_ids_job(
           ids,
           None,
         )

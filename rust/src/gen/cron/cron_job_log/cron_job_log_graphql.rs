@@ -37,7 +37,7 @@ impl CronJobLogGenQuery {
       .with_auth()?
       .build()
       .scope({
-        cron_job_log_resolver::find_all(
+        cron_job_log_resolver::find_all_cron_job_log(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl CronJobLogGenQuery {
       .with_auth()?
       .build()
       .scope({
-        cron_job_log_resolver::find_count(
+        cron_job_log_resolver::find_count_cron_job_log(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl CronJobLogGenQuery {
       .with_auth()?
       .build()
       .scope({
-        cron_job_log_resolver::find_one(
+        cron_job_log_resolver::find_one_cron_job_log(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl CronJobLogGenQuery {
       .with_auth()?
       .build()
       .scope({
-        cron_job_log_resolver::find_by_id(
+        cron_job_log_resolver::find_by_id_cron_job_log(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl CronJobLogGenQuery {
       .with_auth()?
       .build()
       .scope({
-        cron_job_log_resolver::find_by_ids(
+        cron_job_log_resolver::find_by_ids_cron_job_log(
           ids,
           None,
         )
@@ -124,7 +124,7 @@ impl CronJobLogGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        cron_job_log_resolver::get_field_comments(
+        cron_job_log_resolver::get_field_comments_cron_job_log(
           None,
         )
       }).await
@@ -160,7 +160,7 @@ impl CronJobLogGenMutation {
       .with_tran()
       .build()
       .scope({
-        cron_job_log_resolver::update_tenant_by_id(
+        cron_job_log_resolver::update_tenant_by_id_cron_job_log(
           id,
           tenant_id,
           None,
@@ -179,7 +179,7 @@ impl CronJobLogGenMutation {
       .with_tran()
       .build()
       .scope({
-        cron_job_log_resolver::delete_by_ids(
+        cron_job_log_resolver::delete_by_ids_cron_job_log(
           ids,
           None,
         )
@@ -197,7 +197,7 @@ impl CronJobLogGenMutation {
       .with_tran()
       .build()
       .scope({
-        cron_job_log_resolver::revert_by_ids(
+        cron_job_log_resolver::revert_by_ids_cron_job_log(
           ids,
           None,
         )
@@ -215,7 +215,7 @@ impl CronJobLogGenMutation {
       .with_tran()
       .build()
       .scope({
-        cron_job_log_resolver::force_delete_by_ids(
+        cron_job_log_resolver::force_delete_by_ids_cron_job_log(
           ids,
           None,
         )
