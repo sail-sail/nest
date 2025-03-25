@@ -27,10 +27,10 @@ export async function findCountWxwMsg(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountWxwMsg(search);
   
   return num;
 }
@@ -45,12 +45,12 @@ export async function findAllWxwMsg(
 ): Promise<WxwMsgModel[]> {
   
   const {
-    findAll,
+    findAllWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
   checkSortWxwMsg(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllWxwMsg(search, page, sort);
   
   return models;
 }
@@ -61,10 +61,10 @@ export async function findAllWxwMsg(
 export async function getFieldCommentsWxwMsg(): Promise<WxwMsgFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsWxwMsg();
   
   return field_comment;
 }
@@ -78,12 +78,12 @@ export async function findOneWxwMsg(
 ): Promise<WxwMsgModel | undefined> {
   
   const {
-    findOne,
+    findOneWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
   checkSortWxwMsg(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneWxwMsg(search, sort);
   
   return model;
 }
@@ -96,10 +96,10 @@ export async function findByIdWxwMsg(
 ): Promise<WxwMsgModel | undefined> {
   
   const {
-    findById,
+    findByIdWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdWxwMsg(id);
   
   return model;
 }
@@ -112,10 +112,10 @@ export async function findByIdsWxwMsg(
 ): Promise<WxwMsgModel[]> {
   
   const {
-    findByIds,
+    findByIdsWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsWxwMsg(ids);
   
   for (const model of models) {
   }
@@ -131,7 +131,7 @@ export async function deleteByIdsWxwMsg(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
   set_is_tran(true);
@@ -141,7 +141,7 @@ export async function deleteByIdsWxwMsg(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsWxwMsg(ids);
   
   return num;
 }
@@ -154,7 +154,7 @@ export async function revertByIdsWxwMsg(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
   set_is_tran(true);
@@ -164,7 +164,7 @@ export async function revertByIdsWxwMsg(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsWxwMsg(ids);
   
   return res;
 }
@@ -177,7 +177,7 @@ export async function forceDeleteByIdsWxwMsg(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsWxwMsg,
   } = await import("./wxw_msg.service.ts");
   
   set_is_tran(true);
@@ -187,7 +187,7 @@ export async function forceDeleteByIdsWxwMsg(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsWxwMsg(ids);
   
   return res;
 }

@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -77,11 +77,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneDomain,
+  findOneDomain,
 } from "/gen/base/domain/domain.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -218,9 +218,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountWxwApp
 /** 根据条件查找企微应用总数 */
-export async function findCount(
+export async function findCountWxwApp(
   search?: Readonly<WxwAppSearch>,
   options?: {
     is_debug?: boolean;
@@ -229,12 +229,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "wxwork_wxw_app";
-  const method = "findCount";
+  const method = "findCountWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -328,9 +328,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllWxwApp
 /** 根据搜索条件和分页查找企微应用列表 */
-export async function findAll(
+export async function findAllWxwApp(
   search?: Readonly<WxwAppSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -341,7 +341,7 @@ export async function findAll(
 ): Promise<WxwAppModel[]> {
   
   const table = "wxwork_wxw_app";
-  const method = "findAll";
+  const method = "findAllWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -552,9 +552,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblWxwApp
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblWxwApp(
   input: WxwAppInput,
 ) {
   
@@ -619,9 +619,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsWxwApp
 /** 获取企微应用字段注释 */
-export async function getFieldComments(): Promise<WxwAppFieldComment> {
+export async function getFieldCommentsWxwApp(): Promise<WxwAppFieldComment> {
   const fieldComments: WxwAppFieldComment = {
     id: "ID",
     lbl: "名称",
@@ -641,9 +641,9 @@ export async function getFieldComments(): Promise<WxwAppFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueWxwApp
 /** 通过唯一约束获得企微应用列表 */
-export async function findByUnique(
+export async function findByUniqueWxwApp(
   search0: Readonly<WxwAppInput>,
   options?: {
     is_debug?: boolean;
@@ -651,7 +651,7 @@ export async function findByUnique(
 ): Promise<WxwAppModel[]> {
   
   const table = "wxwork_wxw_app";
-  const method = "findByUnique";
+  const method = "findByUniqueWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -669,7 +669,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneWxwApp(
       {
         id: search0.id,
       },
@@ -687,7 +687,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllWxwApp(
       {
         lbl,
       },
@@ -706,7 +706,7 @@ export async function findByUnique(
       return [ ];
     }
     const agentid = search0.agentid;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllWxwApp(
       {
         corpid,
         agentid,
@@ -727,7 +727,7 @@ export async function findByUnique(
     } else {
       domain_id = search0.domain_id || [ ];
     }
-    const modelTmps = await findAll(
+    const modelTmps = await findAllWxwApp(
       {
         domain_id,
       },
@@ -742,7 +742,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueWxwApp(
   oldModel: Readonly<WxwAppModel>,
   input: Readonly<WxwAppInput>,
 ): boolean {
@@ -769,9 +769,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueWxwApp
 /** 通过唯一约束检查 企微应用 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueWxwApp(
   input: Readonly<WxwAppInput>,
   oldModel: Readonly<WxwAppModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -783,14 +783,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueWxwApp(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 企微应用 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: WxwAppId = await updateById(
+      const id: WxwAppId = await updateByIdWxwApp(
         oldModel.id,
         {
           ...input,
@@ -807,9 +807,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneWxwApp
 /** 根据条件查找第一企微应用 */
-export async function findOne(
+export async function findOneWxwApp(
   search?: Readonly<WxwAppSearch>,
   sort?: SortInput[],
   options?: {
@@ -818,7 +818,7 @@ export async function findOne(
 ): Promise<WxwAppModel | undefined> {
   
   const table = "wxwork_wxw_app";
-  const method = "findOne";
+  const method = "findOneWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -845,7 +845,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllWxwApp(
     search,
     page,
     sort,
@@ -855,9 +855,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdWxwApp
 /** 根据 id 查找企微应用 */
-export async function findById(
+export async function findByIdWxwApp(
   id?: WxwAppId | null,
   options?: {
     is_debug?: boolean;
@@ -865,7 +865,7 @@ export async function findById(
 ): Promise<WxwAppModel | undefined> {
   
   const table = "wxwork_wxw_app";
-  const method = "findById";
+  const method = "findByIdWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -886,7 +886,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneWxwApp(
     {
       id,
     },
@@ -897,9 +897,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsWxwApp
 /** 根据 ids 查找企微应用 */
-export async function findByIds(
+export async function findByIdsWxwApp(
   ids: WxwAppId[],
   options?: {
     is_debug?: boolean;
@@ -907,7 +907,7 @@ export async function findByIds(
 ): Promise<WxwAppModel[]> {
   
   const table = "wxwork_wxw_app";
-  const method = "findByIds";
+  const method = "findByIdsWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -928,7 +928,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllWxwApp(
     {
       ids,
     },
@@ -954,9 +954,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existWxwApp
 /** 根据搜索条件判断企微应用是否存在 */
-export async function exist(
+export async function existWxwApp(
   search?: Readonly<WxwAppSearch>,
   options?: {
     is_debug?: boolean;
@@ -964,7 +964,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "wxwork_wxw_app";
-  const method = "exist";
+  const method = "existWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -980,15 +980,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneWxwApp(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdWxwApp
 /** 根据id判断企微应用是否存在 */
-export async function existById(
+export async function existByIdWxwApp(
   id?: Readonly<WxwAppId | null>,
   options?: {
     is_debug?: boolean;
@@ -996,7 +996,7 @@ export async function existById(
 ) {
   
   const table = "wxwork_wxw_app";
-  const method = "existById";
+  const method = "existByIdWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1038,9 +1038,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledWxwApp
 /** 校验企微应用是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledWxwApp(
   model: Readonly<WxwAppModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -1048,9 +1048,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionWxwApp
 /** 校验企微应用是否存在 */
-export async function validateOption(
+export async function validateOptionWxwApp(
   model?: WxwAppModel,
 ) {
   if (!model) {
@@ -1061,12 +1061,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateWxwApp
 /** 企微应用增加和修改时校验输入 */
-export async function validate(
+export async function validateWxwApp(
   input: Readonly<WxwAppInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsWxwApp();
   
   // ID
   await validators.chars_max_length(
@@ -1126,9 +1126,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnWxwApp
 /** 创建 企微应用 并返回 */
-export async function createReturn(
+export async function createReturnWxwApp(
   input: Readonly<WxwAppInput>,
   options?: {
     is_debug?: boolean;
@@ -1139,7 +1139,7 @@ export async function createReturn(
 ): Promise<WxwAppModel> {
   
   const table = "wxwork_wxw_app";
-  const method = "createReturn";
+  const method = "createReturnWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1164,8 +1164,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionWxwApp(
+    await findOneWxwApp(
       {
         id,
       },
@@ -1177,9 +1177,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createWxwApp
 /** 创建 企微应用 */
-export async function create(
+export async function createWxwApp(
   input: Readonly<WxwAppInput>,
   options?: {
     is_debug?: boolean;
@@ -1190,7 +1190,7 @@ export async function create(
 ): Promise<WxwAppId> {
   
   const table = "wxwork_wxw_app";
-  const method = "create";
+  const method = "createWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1218,9 +1218,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnWxwApp
 /** 批量创建 企微应用 并返回 */
-export async function createsReturn(
+export async function createsReturnWxwApp(
   inputs: WxwAppInput[],
   options?: {
     is_debug?: boolean;
@@ -1231,7 +1231,7 @@ export async function createsReturn(
 ): Promise<WxwAppModel[]> {
   
   const table = "wxwork_wxw_app";
-  const method = "createsReturn";
+  const method = "createsReturnWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1250,14 +1250,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsWxwApp(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsWxwApp
 /** 批量创建 企微应用 */
-export async function creates(
+export async function createsWxwApp(
   inputs: WxwAppInput[],
   options?: {
     is_debug?: boolean;
@@ -1268,7 +1268,7 @@ export async function creates(
 ): Promise<WxwAppId[]> {
   
   const table = "wxwork_wxw_app";
-  const method = "creates";
+  const method = "createsWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1317,11 +1317,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueWxwApp(input, options);
     if (oldModels.length > 0) {
       let id: WxwAppId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueWxwApp(
           input,
           oldModel,
           options?.uniqueType,
@@ -1351,7 +1351,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheWxwApp();
   
   const args = new QueryArgs();
   let sql = "insert into wxwork_wxw_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,corpid,agentid,domain_id,corpsecret,contactsecret,is_locked,is_enabled,order_by,rem)values";
@@ -1518,20 +1518,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheWxwApp();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheWxwApp
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheWxwApp() {
   await delCacheCtx(`dao.sql.wxwork_wxw_app`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdWxwApp
 /** 企微应用 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdWxwApp(
   id: WxwAppId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1540,7 +1540,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "wxwork_wxw_app";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1570,13 +1570,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheWxwApp();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdWxwApp
 /** 根据 id 修改 企微应用 */
-export async function updateById(
+export async function updateByIdWxwApp(
   id: WxwAppId,
   input: WxwAppInput,
   options?: {
@@ -1588,7 +1588,7 @@ export async function updateById(
 ): Promise<WxwAppId> {
   
   const table = "wxwork_wxw_app";
-  const method = "updateById";
+  const method = "updateByIdWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1611,15 +1611,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdWxwApp: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdWxwApp: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdWxwApp(id, input.tenant_id, options);
   }
   
   {
@@ -1627,7 +1627,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueWxwApp(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1638,7 +1638,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdWxwApp(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 企微应用 已被删除";
@@ -1783,7 +1783,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheWxwApp();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1791,7 +1791,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheWxwApp();
   }
   
   if (!is_silent_mode) {
@@ -1801,9 +1801,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsWxwApp
 /** 根据 ids 删除 企微应用 */
-export async function deleteByIds(
+export async function deleteByIdsWxwApp(
   ids: WxwAppId[],
   options?: {
     is_debug?: boolean;
@@ -1813,7 +1813,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "wxwork_wxw_app";
-  const method = "deleteByIds";
+  const method = "deleteByIdsWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1836,12 +1836,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxwApp();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdWxwApp(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1874,14 +1874,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxwApp();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdWxwApp
 /** 根据 id 查找 企微应用 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdWxwApp(
   id: WxwAppId,
   options?: {
     is_debug?: boolean;
@@ -1891,7 +1891,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdWxwApp(
     id,
     options,
   );
@@ -1900,9 +1900,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsWxwApp
 /** 根据 ids 启用或者禁用 企微应用 */
-export async function enableByIds(
+export async function enableByIdsWxwApp(
   ids: WxwAppId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1911,7 +1911,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "wxwork_wxw_app";
-  const method = "enableByIds";
+  const method = "enableByIdsWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1936,7 +1936,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheWxwApp();
   }
   
   const args = new QueryArgs();
@@ -1944,14 +1944,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheWxwApp();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdWxwApp
 /** 根据 id 查找 企微应用 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdWxwApp(
   id: WxwAppId,
   options?: {
     is_debug?: boolean;
@@ -1961,18 +1961,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const wxw_app_model = await findByIdWxwApp(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = wxw_app_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsWxwApp
 /** 根据 ids 锁定或者解锁 企微应用 */
-export async function lockByIds(
+export async function lockByIdsWxwApp(
   ids: WxwAppId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -1981,7 +1981,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "wxwork_wxw_app";
-  const method = "lockByIds";
+  const method = "lockByIdsWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2005,21 +2005,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxwApp();
   
   const args = new QueryArgs();
   let sql = `update wxwork_wxw_app set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheWxwApp();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsWxwApp
 /** 根据 ids 还原 企微应用 */
-export async function revertByIds(
+export async function revertByIdsWxwApp(
   ids: WxwAppId[],
   options?: {
     is_debug?: boolean;
@@ -2027,7 +2027,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "wxwork_wxw_app";
-  const method = "revertByIds";
+  const method = "revertByIdsWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2048,12 +2048,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxwApp();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneWxwApp(
       {
         id,
         is_deleted: 1,
@@ -2062,7 +2062,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdWxwApp(
         id,
         options,
       );
@@ -2075,7 +2075,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as WxwAppInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueWxwApp(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -2089,14 +2089,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxwApp();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsWxwApp
 /** 根据 ids 彻底删除 企微应用 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxwApp(
   ids: WxwAppId[],
   options?: {
     is_debug?: boolean;
@@ -2105,7 +2105,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "wxwork_wxw_app";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsWxwApp";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2127,12 +2127,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxwApp();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneWxwApp(
       {
         id,
         is_deleted: 1,
@@ -2149,21 +2149,21 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxwApp();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByWxwApp
 /** 查找 企微应用 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByWxwApp(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "wxwork_wxw_app";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByWxwApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   

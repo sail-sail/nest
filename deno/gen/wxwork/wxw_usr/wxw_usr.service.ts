@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找企微用户总数
  */
-export async function findCount(
+export async function findCountWxwUsr(
   search?: WxwUsrSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const wxw_usr_num = await wxw_usrDao.findCount(search);
+  const wxw_usr_num = await wxw_usrDao.findCountWxwUsr(search);
   
   return wxw_usr_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找企微用户列表
  */
-export async function findAll(
+export async function findAllWxwUsr(
   search?: WxwUsrSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const wxw_usr_models = await wxw_usrDao.findAll(search, page, sort);
+  const wxw_usr_models = await wxw_usrDao.findAllWxwUsr(search, page, sort);
   
   return wxw_usr_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblWxwUsr(
   input: WxwUsrInput,
 ): Promise<void> {
-  await wxw_usrDao.setIdByLbl(input);
+  await wxw_usrDao.setIdByLblWxwUsr(input);
 }
 
 /**
  * 根据条件查找第一个企微用户
  */
-export async function findOne(
+export async function findOneWxwUsr(
   search?: WxwUsrSearch,
   sort?: SortInput[],
 ): Promise<WxwUsrModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const wxw_usr_model = await wxw_usrDao.findOne(search, sort);
+  const wxw_usr_model = await wxw_usrDao.findOneWxwUsr(search, sort);
   
   return wxw_usr_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找企微用户
  */
-export async function findById(
+export async function findByIdWxwUsr(
   wxw_usr_id?: WxwUsrId | null,
 ): Promise<WxwUsrModel | undefined> {
   
-  const wxw_usr_model = await wxw_usrDao.findById(wxw_usr_id);
+  const wxw_usr_model = await wxw_usrDao.findByIdWxwUsr(wxw_usr_id);
   
   return wxw_usr_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找企微用户
  */
-export async function findByIds(
+export async function findByIdsWxwUsr(
   wxw_usr_ids: WxwUsrId[],
 ): Promise<WxwUsrModel[]> {
   
-  const wxw_usr_models = await wxw_usrDao.findByIds(wxw_usr_ids);
+  const wxw_usr_models = await wxw_usrDao.findByIdsWxwUsr(wxw_usr_ids);
   
   return wxw_usr_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找企微用户是否存在
  */
-export async function exist(
+export async function existWxwUsr(
   search?: WxwUsrSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const wxw_usr_exist = await wxw_usrDao.exist(search);
+  const wxw_usr_exist = await wxw_usrDao.existWxwUsr(search);
   
   return wxw_usr_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找企微用户是否存在
  */
-export async function existById(
+export async function existByIdWxwUsr(
   wxw_usr_id?: WxwUsrId | null,
 ): Promise<boolean> {
   
-  const wxw_usr_exist = await wxw_usrDao.existById(wxw_usr_id);
+  const wxw_usr_exist = await wxw_usrDao.existByIdWxwUsr(wxw_usr_id);
   
   return wxw_usr_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验企微用户
  */
-export async function validate(
+export async function validateWxwUsr(
   input: WxwUsrInput,
 ): Promise<void> {
-  await wxw_usrDao.validate(input);
+  await wxw_usrDao.validateWxwUsr(input);
 }
 
 /**
  * 批量创建企微用户
  */
-export async function creates(
+export async function createsWxwUsr(
   inputs: WxwUsrInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<WxwUsrId[]> {
-  const wxw_usr_ids = await wxw_usrDao.creates(inputs, options);
+  const wxw_usr_ids = await wxw_usrDao.createsWxwUsr(inputs, options);
   
   return wxw_usr_ids;
 }
@@ -150,43 +150,43 @@ export async function creates(
 /**
  * 根据 id 修改企微用户
  */
-export async function updateById(
+export async function updateByIdWxwUsr(
   wxw_usr_id: WxwUsrId,
   input: WxwUsrInput,
 ): Promise<WxwUsrId> {
   
-  const wxw_usr_id2 = await wxw_usrDao.updateById(wxw_usr_id, input);
+  const wxw_usr_id2 = await wxw_usrDao.updateByIdWxwUsr(wxw_usr_id, input);
   
   return wxw_usr_id2;
 }
 
 /** 校验企微用户是否存在 */
-export async function validateOption(
+export async function validateOptionWxwUsr(
   model0?: WxwUsrModel,
 ): Promise<WxwUsrModel> {
-  const wxw_usr_model = await wxw_usrDao.validateOption(model0);
+  const wxw_usr_model = await wxw_usrDao.validateOptionWxwUsr(model0);
   return wxw_usr_model;
 }
 
 /**
  * 根据 ids 删除企微用户
  */
-export async function deleteByIds(
+export async function deleteByIdsWxwUsr(
   wxw_usr_ids: WxwUsrId[],
 ): Promise<number> {
   
-  const wxw_usr_num = await wxw_usrDao.deleteByIds(wxw_usr_ids);
+  const wxw_usr_num = await wxw_usrDao.deleteByIdsWxwUsr(wxw_usr_ids);
   return wxw_usr_num;
 }
 
 /**
  * 根据 ids 还原企微用户
  */
-export async function revertByIds(
+export async function revertByIdsWxwUsr(
   wxw_usr_ids: WxwUsrId[],
 ): Promise<number> {
   
-  const wxw_usr_num = await wxw_usrDao.revertByIds(wxw_usr_ids);
+  const wxw_usr_num = await wxw_usrDao.revertByIdsWxwUsr(wxw_usr_ids);
   
   return wxw_usr_num;
 }
@@ -194,11 +194,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除企微用户
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxwUsr(
   wxw_usr_ids: WxwUsrId[],
 ): Promise<number> {
   
-  const wxw_usr_num = await wxw_usrDao.forceDeleteByIds(wxw_usr_ids);
+  const wxw_usr_num = await wxw_usrDao.forceDeleteByIdsWxwUsr(wxw_usr_ids);
   
   return wxw_usr_num;
 }
@@ -206,7 +206,7 @@ export async function forceDeleteByIds(
 /**
  * 获取企微用户字段注释
  */
-export async function getFieldComments(): Promise<WxwUsrFieldComment> {
-  const wxw_usr_fields = await wxw_usrDao.getFieldComments();
+export async function getFieldCommentsWxwUsr(): Promise<WxwUsrFieldComment> {
+  const wxw_usr_fields = await wxw_usrDao.getFieldCommentsWxwUsr();
   return wxw_usr_fields;
 }

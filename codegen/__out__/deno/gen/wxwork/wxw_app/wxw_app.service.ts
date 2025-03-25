@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找企微应用总数
  */
-export async function findCount(
+export async function findCountWxwApp(
   search?: WxwAppSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const wxw_app_num = await wxw_appDao.findCount(search);
+  const wxw_app_num = await wxw_appDao.findCountWxwApp(search);
   
   return wxw_app_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找企微应用列表
  */
-export async function findAll(
+export async function findAllWxwApp(
   search?: WxwAppSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const wxw_app_models = await wxw_appDao.findAll(search, page, sort);
+  const wxw_app_models = await wxw_appDao.findAllWxwApp(search, page, sort);
   
   return wxw_app_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblWxwApp(
   input: WxwAppInput,
 ): Promise<void> {
-  await wxw_appDao.setIdByLbl(input);
+  await wxw_appDao.setIdByLblWxwApp(input);
 }
 
 /**
  * 根据条件查找第一个企微应用
  */
-export async function findOne(
+export async function findOneWxwApp(
   search?: WxwAppSearch,
   sort?: SortInput[],
 ): Promise<WxwAppModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const wxw_app_model = await wxw_appDao.findOne(search, sort);
+  const wxw_app_model = await wxw_appDao.findOneWxwApp(search, sort);
   
   return wxw_app_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找企微应用
  */
-export async function findById(
+export async function findByIdWxwApp(
   wxw_app_id?: WxwAppId | null,
 ): Promise<WxwAppModel | undefined> {
   
-  const wxw_app_model = await wxw_appDao.findById(wxw_app_id);
+  const wxw_app_model = await wxw_appDao.findByIdWxwApp(wxw_app_id);
   
   return wxw_app_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找企微应用
  */
-export async function findByIds(
+export async function findByIdsWxwApp(
   wxw_app_ids: WxwAppId[],
 ): Promise<WxwAppModel[]> {
   
-  const wxw_app_models = await wxw_appDao.findByIds(wxw_app_ids);
+  const wxw_app_models = await wxw_appDao.findByIdsWxwApp(wxw_app_ids);
   
   return wxw_app_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找企微应用是否存在
  */
-export async function exist(
+export async function existWxwApp(
   search?: WxwAppSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const wxw_app_exist = await wxw_appDao.exist(search);
+  const wxw_app_exist = await wxw_appDao.existWxwApp(search);
   
   return wxw_app_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找企微应用是否存在
  */
-export async function existById(
+export async function existByIdWxwApp(
   wxw_app_id?: WxwAppId | null,
 ): Promise<boolean> {
   
-  const wxw_app_exist = await wxw_appDao.existById(wxw_app_id);
+  const wxw_app_exist = await wxw_appDao.existByIdWxwApp(wxw_app_id);
   
   return wxw_app_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验企微应用
  */
-export async function validate(
+export async function validateWxwApp(
   input: WxwAppInput,
 ): Promise<void> {
-  await wxw_appDao.validate(input);
+  await wxw_appDao.validateWxwApp(input);
 }
 
 /**
  * 批量创建企微应用
  */
-export async function creates(
+export async function createsWxwApp(
   inputs: WxwAppInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<WxwAppId[]> {
-  const wxw_app_ids = await wxw_appDao.creates(inputs, options);
+  const wxw_app_ids = await wxw_appDao.createsWxwApp(inputs, options);
   
   return wxw_app_ids;
 }
@@ -150,37 +150,37 @@ export async function creates(
 /**
  * 根据 id 修改企微应用
  */
-export async function updateById(
+export async function updateByIdWxwApp(
   wxw_app_id: WxwAppId,
   input: WxwAppInput,
 ): Promise<WxwAppId> {
   
-  const is_locked = await wxw_appDao.getIsLockedById(wxw_app_id);
+  const is_locked = await wxw_appDao.getIsLockedByIdWxwApp(wxw_app_id);
   if (is_locked) {
     throw "不能修改已经锁定的 企微应用";
   }
   
-  const wxw_app_id2 = await wxw_appDao.updateById(wxw_app_id, input);
+  const wxw_app_id2 = await wxw_appDao.updateByIdWxwApp(wxw_app_id, input);
   
   return wxw_app_id2;
 }
 
 /** 校验企微应用是否存在 */
-export async function validateOption(
+export async function validateOptionWxwApp(
   model0?: WxwAppModel,
 ): Promise<WxwAppModel> {
-  const wxw_app_model = await wxw_appDao.validateOption(model0);
+  const wxw_app_model = await wxw_appDao.validateOptionWxwApp(model0);
   return wxw_app_model;
 }
 
 /**
  * 根据 ids 删除企微应用
  */
-export async function deleteByIds(
+export async function deleteByIdsWxwApp(
   wxw_app_ids: WxwAppId[],
 ): Promise<number> {
   
-  const old_models = await wxw_appDao.findByIds(wxw_app_ids);
+  const old_models = await wxw_appDao.findByIdsWxwApp(wxw_app_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -188,40 +188,40 @@ export async function deleteByIds(
     }
   }
   
-  const wxw_app_num = await wxw_appDao.deleteByIds(wxw_app_ids);
+  const wxw_app_num = await wxw_appDao.deleteByIdsWxwApp(wxw_app_ids);
   return wxw_app_num;
 }
 
 /**
  * 根据 ids 启用或者禁用企微应用
  */
-export async function enableByIds(
+export async function enableByIdsWxwApp(
   ids: WxwAppId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const wxw_app_num = await wxw_appDao.enableByIds(ids, is_enabled);
+  const wxw_app_num = await wxw_appDao.enableByIdsWxwApp(ids, is_enabled);
   return wxw_app_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁企微应用
  */
-export async function lockByIds(
+export async function lockByIdsWxwApp(
   wxw_app_ids: WxwAppId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const wxw_app_num = await wxw_appDao.lockByIds(wxw_app_ids, is_locked);
+  const wxw_app_num = await wxw_appDao.lockByIdsWxwApp(wxw_app_ids, is_locked);
   return wxw_app_num;
 }
 
 /**
  * 根据 ids 还原企微应用
  */
-export async function revertByIds(
+export async function revertByIdsWxwApp(
   wxw_app_ids: WxwAppId[],
 ): Promise<number> {
   
-  const wxw_app_num = await wxw_appDao.revertByIds(wxw_app_ids);
+  const wxw_app_num = await wxw_appDao.revertByIdsWxwApp(wxw_app_ids);
   
   return wxw_app_num;
 }
@@ -229,11 +229,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除企微应用
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxwApp(
   wxw_app_ids: WxwAppId[],
 ): Promise<number> {
   
-  const wxw_app_num = await wxw_appDao.forceDeleteByIds(wxw_app_ids);
+  const wxw_app_num = await wxw_appDao.forceDeleteByIdsWxwApp(wxw_app_ids);
   
   return wxw_app_num;
 }
@@ -241,16 +241,16 @@ export async function forceDeleteByIds(
 /**
  * 获取企微应用字段注释
  */
-export async function getFieldComments(): Promise<WxwAppFieldComment> {
-  const wxw_app_fields = await wxw_appDao.getFieldComments();
+export async function getFieldCommentsWxwApp(): Promise<WxwAppFieldComment> {
+  const wxw_app_fields = await wxw_appDao.getFieldCommentsWxwApp();
   return wxw_app_fields;
 }
 
 /**
  * 查找 企微应用 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByWxwApp(
 ): Promise<number> {
-  const wxw_app_sort = await wxw_appDao.findLastOrderBy();
+  const wxw_app_sort = await wxw_appDao.findLastOrderByWxwApp();
   return wxw_app_sort;
 }

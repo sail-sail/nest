@@ -29,10 +29,10 @@ export async function findCountWxwAppToken(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountWxwAppToken(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllWxwAppToken(
 ): Promise<WxwAppTokenModel[]> {
   
   const {
-    findAll,
+    findAllWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
   checkSortWxwAppToken(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllWxwAppToken(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllWxwAppToken(
 export async function getFieldCommentsWxwAppToken(): Promise<WxwAppTokenFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsWxwAppToken();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneWxwAppToken(
 ): Promise<WxwAppTokenModel | undefined> {
   
   const {
-    findOne,
+    findOneWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
   checkSortWxwAppToken(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneWxwAppToken(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdWxwAppToken(
 ): Promise<WxwAppTokenModel | undefined> {
   
   const {
-    findById,
+    findByIdWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdWxwAppToken(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsWxwAppToken(
 ): Promise<WxwAppTokenModel[]> {
   
   const {
-    findByIds,
+    findByIdsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsWxwAppToken(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsWxwAppToken(
 ): Promise<WxwAppTokenId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateWxwAppToken,
+    setIdByLblWxwAppToken,
+    createsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsWxwAppToken(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblWxwAppToken(input);
     
-    await validate(input);
+    await validateWxwAppToken(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsWxwAppToken(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdWxwAppToken(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblWxwAppToken,
+    updateByIdWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblWxwAppToken(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: WxwAppTokenId = await updateById(id, input);
+  const id2: WxwAppTokenId = await updateByIdWxwAppToken(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsWxwAppToken(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsWxwAppToken(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsWxwAppToken(ids);
   
   return num;
 }
@@ -219,7 +219,7 @@ export async function revertByIdsWxwAppToken(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
   set_is_tran(true);
@@ -229,7 +229,7 @@ export async function revertByIdsWxwAppToken(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsWxwAppToken(ids);
   
   return res;
 }
@@ -242,7 +242,7 @@ export async function forceDeleteByIdsWxwAppToken(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsWxwAppToken,
   } = await import("./wxw_app_token.service.ts");
   
   set_is_tran(true);
@@ -252,7 +252,7 @@ export async function forceDeleteByIdsWxwAppToken(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsWxwAppToken(ids);
   
   return res;
 }

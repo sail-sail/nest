@@ -8,9 +8,9 @@ import {
 } from "./wxw_app_token.dao.ts";
 
 import {
-  findOne as findOneWxwApp,
-  validateOption as validateOptionWxwApp,
-  validateIsEnabled as validateIsEnabledWxwApp,
+  findOneWxwApp,
+  validateOptionWxwApp,
+  validateIsEnabledWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
 /** 通过 appid, agentid, url 生成企业签名 */
