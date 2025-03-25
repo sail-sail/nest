@@ -81,13 +81,14 @@ export async function nLang(
   }
   
   const {
-    findOne: findOneLang,
+    findOneLang,
   } = await import("/gen/base/lang/lang.dao.ts");
   const {
-    findOne: findOneI18n,
+    findOneI18n,
   } = await import("/gen/base/i18n/i18n.dao.ts");
+  
   const {
-    findOne: findOneMenu,
+    findOneMenu,
   } = await import("/gen/base/menu/menu.dao.ts");
   
   let i18n_lbl = code;
