@@ -7,19 +7,19 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findById as findByIdWxUsr,
-  validateOption as validateOptionWxUsr,
+  findByIdWxUsr,
+  validateOptionWxUsr,
 } from "/gen/wx/wx_usr/wx_usr.dao.ts";
 
 // wx_wxo_usr
 import {
-  findById as findByIdWxoUsr,
-  validateOption as validateOptionWxoUsr,
+  findByIdWxoUsr,
+  validateOptionWxoUsr,
 } from "/gen/wx/wxo_usr/wxo_usr.dao.ts";
 
 import {
-  findById as findByIdTenant,
-  validateOption as validateOptionTenant,
+  findByIdTenant,
+  validateOptionTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -27,17 +27,17 @@ import {
 } from "/src/wx/wx_pay/wx_pay.dao.ts";
 
 import {
-  findOne as findOneWxPay,
-  validateOption as validateOptionWxPay,
+  findOneWxPay,
+  validateOptionWxPay,
 } from "/gen/wx/wx_pay/wx_pay.dao.ts";
 
 import {
-  create as createPayTransactionsJsapi,
+  createPayTransactionsJsapi,
 } from "/gen/wx/pay_transactions_jsapi/pay_transactions_jsapi.dao.ts";
 
 import {
-  findOne as findOneDomain,
-  validateOption as validateOptionDomain,
+  findOneDomain,
+  validateOptionDomain,
 } from "/gen/base/domain/domain.dao.ts";
 
 import type {
@@ -175,10 +175,14 @@ export async function transactions_jsapi(
   const authModel = await getAuthModel();
   const wx_usr_id = authModel?.wx_usr_id;
   
-  const wx_usrModel = await validateOptionWxUsr(
+  if (!wx_usr_id) {
+    throw new Error("transactions_jsapi.wx_usr_id is null");
+  }
+  
+  const wx_usr_model = await validateOptionWxUsr(
     await findByIdWxUsr(wx_usr_id),
   );
-  const tenant_id: TenantId = wx_usrModel.tenant_id;
+  const tenant_id = wx_usr_model.tenant_id;
   
   if (!params.notify_url) {
     throw "notify_url 未设置";

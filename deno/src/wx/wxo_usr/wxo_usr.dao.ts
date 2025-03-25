@@ -8,8 +8,8 @@ import {
 } from "/lib/util/string_util.ts";
 
 import {
-  findOne as findOneWxoApp,
-  validateOption as vlidateOptionWxoApp,
+  findOneWxoApp,
+  validateOptionWxoApp,
 } from "/gen/wx/wxo_app/wxo_app.dao.ts";
 
 import {
@@ -25,7 +25,7 @@ export async function fetchOpenid(
   code: string,
   appid: string,
 ) {
-  const wxo_app_model = await vlidateOptionWxoApp(
+  const wxo_app_model = await validateOptionWxoApp(
     await findOneWxoApp({
       appid,
     }),

@@ -27,10 +27,10 @@ export async function findCountWxPayNotice(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountWxPayNotice(search);
   
   return num;
 }
@@ -45,12 +45,12 @@ export async function findAllWxPayNotice(
 ): Promise<WxPayNoticeModel[]> {
   
   const {
-    findAll,
+    findAllWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
   checkSortWxPayNotice(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllWxPayNotice(search, page, sort);
   
   return models;
 }
@@ -61,10 +61,10 @@ export async function findAllWxPayNotice(
 export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsWxPayNotice();
   
   return field_comment;
 }
@@ -78,12 +78,12 @@ export async function findOneWxPayNotice(
 ): Promise<WxPayNoticeModel | undefined> {
   
   const {
-    findOne,
+    findOneWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
   checkSortWxPayNotice(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneWxPayNotice(search, sort);
   
   return model;
 }
@@ -96,10 +96,10 @@ export async function findByIdWxPayNotice(
 ): Promise<WxPayNoticeModel | undefined> {
   
   const {
-    findById,
+    findByIdWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdWxPayNotice(id);
   
   return model;
 }
@@ -112,10 +112,10 @@ export async function findByIdsWxPayNotice(
 ): Promise<WxPayNoticeModel[]> {
   
   const {
-    findByIds,
+    findByIdsWxPayNotice,
   } = await import("./wx_pay_notice.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsWxPayNotice(ids);
   
   for (const model of models) {
   }
