@@ -29,13 +29,13 @@ export async function findCountUsr(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountUsr,
   } = await import("./usr.service.ts");
   
   search = search || { };
   search.is_hidden = [ 0 ];
   
-  const num = await findCount(search);
+  const num = await findCountUsr(search);
   
   return num;
 }
@@ -50,7 +50,7 @@ export async function findAllUsr(
 ): Promise<UsrModel[]> {
   
   const {
-    findAll,
+    findAllUsr,
   } = await import("./usr.service.ts");
   
   search = search || { };
@@ -58,7 +58,7 @@ export async function findAllUsr(
   
   checkSortUsr(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllUsr(search, page, sort);
   
   for (const model of models) {
     // 密码
@@ -74,10 +74,10 @@ export async function findAllUsr(
 export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsUsr,
   } = await import("./usr.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsUsr();
   
   return field_comment;
 }
@@ -91,7 +91,7 @@ export async function findOneUsr(
 ): Promise<UsrModel | undefined> {
   
   const {
-    findOne,
+    findOneUsr,
   } = await import("./usr.service.ts");
   
   search = search || { };
@@ -99,7 +99,7 @@ export async function findOneUsr(
   
   checkSortUsr(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneUsr(search, sort);
   
   if (model) {
     // 密码
@@ -117,10 +117,10 @@ export async function findByIdUsr(
 ): Promise<UsrModel | undefined> {
   
   const {
-    findById,
+    findByIdUsr,
   } = await import("./usr.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdUsr(id);
   
   if (model) {
     // 密码
@@ -138,10 +138,10 @@ export async function findByIdsUsr(
 ): Promise<UsrModel[]> {
   
   const {
-    findByIds,
+    findByIdsUsr,
   } = await import("./usr.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsUsr(ids);
   
   for (const model of models) {
     // 密码
@@ -160,9 +160,9 @@ export async function createsUsr(
 ): Promise<UsrId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateUsr,
+    setIdByLblUsr,
+    createsUsr,
   } = await import("./usr.service.ts");
   
   set_is_tran(true);
@@ -176,12 +176,12 @@ export async function createsUsr(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblUsr(input);
     
-    await validate(input);
+    await validateUsr(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsUsr(inputs, { uniqueType });
   return ids;
 }
 
@@ -196,20 +196,20 @@ export async function updateByIdUsr(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblUsr,
+    updateByIdUsr,
   } = await import("./usr.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblUsr(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: UsrId = await updateById(id, input);
+  const id2: UsrId = await updateByIdUsr(id, input);
   
   return id2;
 }
@@ -222,7 +222,7 @@ export async function deleteByIdsUsr(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsUsr,
   } = await import("./usr.service.ts");
   
   set_is_tran(true);
@@ -232,7 +232,7 @@ export async function deleteByIdsUsr(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsUsr(ids);
   
   return num;
 }
@@ -246,7 +246,7 @@ export async function enableByIdsUsr(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsUsr,
   } = await import("./usr.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -259,7 +259,7 @@ export async function enableByIdsUsr(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsUsr(ids, is_enabled);
   
   return res;
 }
@@ -273,7 +273,7 @@ export async function lockByIdsUsr(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsUsr,
   } = await import("./usr.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -287,7 +287,7 @@ export async function lockByIdsUsr(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsUsr(ids, is_locked);
   
   return res;
 }
@@ -300,7 +300,7 @@ export async function revertByIdsUsr(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsUsr,
   } = await import("./usr.service.ts");
   
   set_is_tran(true);
@@ -310,7 +310,7 @@ export async function revertByIdsUsr(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsUsr(ids);
   
   return res;
 }
@@ -323,7 +323,7 @@ export async function forceDeleteByIdsUsr(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsUsr,
   } = await import("./usr.service.ts");
   
   set_is_tran(true);
@@ -333,7 +333,7 @@ export async function forceDeleteByIdsUsr(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsUsr(ids);
   
   return res;
 }
@@ -344,10 +344,10 @@ export async function forceDeleteByIdsUsr(
 export async function findLastOrderByUsr(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByUsr,
   } = await import("./usr.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByUsr();
   
   return res;
 }
