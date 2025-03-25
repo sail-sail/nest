@@ -3,7 +3,7 @@ import {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneCard,
+  findOneCard,
 } from "/gen/wshop/card/card.dao.ts";
 
 /** 自动生成会员卡卡号 */

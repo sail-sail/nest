@@ -3,7 +3,7 @@ import {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneOrder,
+  findOneOrder,
 } from "/gen/wshop/order/order.dao.ts";
 
 import dayjs from "dayjs";

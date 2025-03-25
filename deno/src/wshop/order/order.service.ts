@@ -3,23 +3,23 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  create as createOrder,
+  createOrder,
 } from "/gen/wshop/order/order.dao.ts";
 
 import {
-  findOne as findOneCard,
-  updateById as updateByIdCard,
-  validateIsEnabled as validateIsEnabledCard,
+  findOneCard,
+  updateByIdCard,
+  validateIsEnabledCard,
 } from "/gen/wshop/card/card.dao.ts";
 
 import {
-  create as createCardConsume,
+  createCardConsume,
 } from "/gen/wshop/card_consume/card_consume.dao.ts"
 
 import {
-  findById as findByIdPt,
-  validateOption as validateOptionPt,
-  validateIsEnabled as validateIsEnabledPt,
+  findByIdPt,
+  validateOptionPt,
+  validateIsEnabledPt,
 } from "/gen/wshop/pt/pt.dao.ts";
 
 import {
