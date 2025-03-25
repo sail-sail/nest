@@ -54,7 +54,7 @@
     <div
       un-flex="~ [1_0_0]"
       un-overflow-hidden
-      un-p="x-2.5"
+      un-p="x-2.5 y-0.875"
       un-box-border
       un-w="full"
       un-min="h-7.5"
