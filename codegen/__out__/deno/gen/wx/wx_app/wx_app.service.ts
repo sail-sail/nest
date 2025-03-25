@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找小程序设置总数
  */
-export async function findCount(
+export async function findCountWxApp(
   search?: WxAppSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const wx_app_num = await wx_appDao.findCount(search);
+  const wx_app_num = await wx_appDao.findCountWxApp(search);
   
   return wx_app_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找小程序设置列表
  */
-export async function findAll(
+export async function findAllWxApp(
   search?: WxAppSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const wx_app_models = await wx_appDao.findAll(search, page, sort);
+  const wx_app_models = await wx_appDao.findAllWxApp(search, page, sort);
   
   return wx_app_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblWxApp(
   input: WxAppInput,
 ): Promise<void> {
-  await wx_appDao.setIdByLbl(input);
+  await wx_appDao.setIdByLblWxApp(input);
 }
 
 /**
  * 根据条件查找第一个小程序设置
  */
-export async function findOne(
+export async function findOneWxApp(
   search?: WxAppSearch,
   sort?: SortInput[],
 ): Promise<WxAppModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const wx_app_model = await wx_appDao.findOne(search, sort);
+  const wx_app_model = await wx_appDao.findOneWxApp(search, sort);
   
   return wx_app_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找小程序设置
  */
-export async function findById(
+export async function findByIdWxApp(
   wx_app_id?: WxAppId | null,
 ): Promise<WxAppModel | undefined> {
   
-  const wx_app_model = await wx_appDao.findById(wx_app_id);
+  const wx_app_model = await wx_appDao.findByIdWxApp(wx_app_id);
   
   return wx_app_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找小程序设置
  */
-export async function findByIds(
+export async function findByIdsWxApp(
   wx_app_ids: WxAppId[],
 ): Promise<WxAppModel[]> {
   
-  const wx_app_models = await wx_appDao.findByIds(wx_app_ids);
+  const wx_app_models = await wx_appDao.findByIdsWxApp(wx_app_ids);
   
   return wx_app_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找小程序设置是否存在
  */
-export async function exist(
+export async function existWxApp(
   search?: WxAppSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const wx_app_exist = await wx_appDao.exist(search);
+  const wx_app_exist = await wx_appDao.existWxApp(search);
   
   return wx_app_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找小程序设置是否存在
  */
-export async function existById(
+export async function existByIdWxApp(
   wx_app_id?: WxAppId | null,
 ): Promise<boolean> {
   
-  const wx_app_exist = await wx_appDao.existById(wx_app_id);
+  const wx_app_exist = await wx_appDao.existByIdWxApp(wx_app_id);
   
   return wx_app_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验小程序设置
  */
-export async function validate(
+export async function validateWxApp(
   input: WxAppInput,
 ): Promise<void> {
-  await wx_appDao.validate(input);
+  await wx_appDao.validateWxApp(input);
 }
 
 /**
  * 批量创建小程序设置
  */
-export async function creates(
+export async function createsWxApp(
   inputs: WxAppInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<WxAppId[]> {
-  const wx_app_ids = await wx_appDao.creates(inputs, options);
+  const wx_app_ids = await wx_appDao.createsWxApp(inputs, options);
   
   return wx_app_ids;
 }
@@ -150,37 +150,37 @@ export async function creates(
 /**
  * 根据 id 修改小程序设置
  */
-export async function updateById(
+export async function updateByIdWxApp(
   wx_app_id: WxAppId,
   input: WxAppInput,
 ): Promise<WxAppId> {
   
-  const is_locked = await wx_appDao.getIsLockedById(wx_app_id);
+  const is_locked = await wx_appDao.getIsLockedByIdWxApp(wx_app_id);
   if (is_locked) {
     throw "不能修改已经锁定的 小程序设置";
   }
   
-  const wx_app_id2 = await wx_appDao.updateById(wx_app_id, input);
+  const wx_app_id2 = await wx_appDao.updateByIdWxApp(wx_app_id, input);
   
   return wx_app_id2;
 }
 
 /** 校验小程序设置是否存在 */
-export async function validateOption(
+export async function validateOptionWxApp(
   model0?: WxAppModel,
 ): Promise<WxAppModel> {
-  const wx_app_model = await wx_appDao.validateOption(model0);
+  const wx_app_model = await wx_appDao.validateOptionWxApp(model0);
   return wx_app_model;
 }
 
 /**
  * 根据 ids 删除小程序设置
  */
-export async function deleteByIds(
+export async function deleteByIdsWxApp(
   wx_app_ids: WxAppId[],
 ): Promise<number> {
   
-  const old_models = await wx_appDao.findByIds(wx_app_ids);
+  const old_models = await wx_appDao.findByIdsWxApp(wx_app_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -188,40 +188,40 @@ export async function deleteByIds(
     }
   }
   
-  const wx_app_num = await wx_appDao.deleteByIds(wx_app_ids);
+  const wx_app_num = await wx_appDao.deleteByIdsWxApp(wx_app_ids);
   return wx_app_num;
 }
 
 /**
  * 根据 ids 启用或者禁用小程序设置
  */
-export async function enableByIds(
+export async function enableByIdsWxApp(
   ids: WxAppId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const wx_app_num = await wx_appDao.enableByIds(ids, is_enabled);
+  const wx_app_num = await wx_appDao.enableByIdsWxApp(ids, is_enabled);
   return wx_app_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁小程序设置
  */
-export async function lockByIds(
+export async function lockByIdsWxApp(
   wx_app_ids: WxAppId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const wx_app_num = await wx_appDao.lockByIds(wx_app_ids, is_locked);
+  const wx_app_num = await wx_appDao.lockByIdsWxApp(wx_app_ids, is_locked);
   return wx_app_num;
 }
 
 /**
  * 根据 ids 还原小程序设置
  */
-export async function revertByIds(
+export async function revertByIdsWxApp(
   wx_app_ids: WxAppId[],
 ): Promise<number> {
   
-  const wx_app_num = await wx_appDao.revertByIds(wx_app_ids);
+  const wx_app_num = await wx_appDao.revertByIdsWxApp(wx_app_ids);
   
   return wx_app_num;
 }
@@ -229,11 +229,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除小程序设置
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxApp(
   wx_app_ids: WxAppId[],
 ): Promise<number> {
   
-  const wx_app_num = await wx_appDao.forceDeleteByIds(wx_app_ids);
+  const wx_app_num = await wx_appDao.forceDeleteByIdsWxApp(wx_app_ids);
   
   return wx_app_num;
 }
@@ -241,16 +241,16 @@ export async function forceDeleteByIds(
 /**
  * 获取小程序设置字段注释
  */
-export async function getFieldComments(): Promise<WxAppFieldComment> {
-  const wx_app_fields = await wx_appDao.getFieldComments();
+export async function getFieldCommentsWxApp(): Promise<WxAppFieldComment> {
+  const wx_app_fields = await wx_appDao.getFieldCommentsWxApp();
   return wx_app_fields;
 }
 
 /**
  * 查找 小程序设置 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByWxApp(
 ): Promise<number> {
-  const wx_app_sort = await wx_appDao.findLastOrderBy();
+  const wx_app_sort = await wx_appDao.findLastOrderByWxApp();
   return wx_app_sort;
 }

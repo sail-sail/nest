@@ -32,6 +32,7 @@ export default defineConfig({
         require: true,
         width: 260,
         align: "left",
+        noList: true,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -73,6 +74,12 @@ export default defineConfig({
         COLUMN_NAME: "wx_app_id",
       },
       {
+        COLUMN_NAME: "appid",
+      },
+      {
+        COLUMN_NAME: "appsecret",
+      },
+      {
         COLUMN_NAME: "access_token",
       },
       {
@@ -102,6 +109,12 @@ export default defineConfig({
         COLUMN_NAME: "usr_id",
         width: 240,
         modelLabel: "usr_id_lbl",
+      },
+      {
+        COLUMN_NAME: "appid",
+        require: true,
+        search: true,
+        width: 160,
       },
       {
         COLUMN_NAME: "nick_name",
@@ -191,6 +204,7 @@ export default defineConfig({
         require: true,
         width: 260,
         align: "left",
+        noList: true,
       },
       {
         COLUMN_NAME: "token",
@@ -201,6 +215,7 @@ export default defineConfig({
         COLUMN_NAME: "encoding_aes_key",
         width: 140,
         align: "left",
+        noList: true,
       },
       {
         COLUMN_NAME: "encoding_type",
@@ -255,6 +270,12 @@ export default defineConfig({
         COLUMN_NAME: "wxo_app_id",
       },
       {
+        COLUMN_NAME: "appid",
+      },
+      {
+        COLUMN_NAME: "appsecret",
+      },
+      {
         COLUMN_NAME: "access_token",
       },
       {
@@ -287,6 +308,12 @@ export default defineConfig({
         COLUMN_NAME: "usr_id",
         width: 240,
         modelLabel: "usr_id_lbl",
+      },
+      {
+        COLUMN_NAME: "appid",
+        require: true,
+        search: true,
+        width: 160,
       },
       {
         COLUMN_NAME: "openid",
@@ -361,6 +388,11 @@ export default defineConfig({
         width: 140,
       },
       {
+        COLUMN_NAME: "serial_no",
+        width: 140,
+        noList: true,
+      },
+      {
         COLUMN_NAME: "public_key",
         isAtt: true,
         width: 80,
@@ -374,6 +406,7 @@ export default defineConfig({
         COLUMN_NAME: "v3_key",
         align: "left",
         width: 180,
+        noList: true,
       },
       {
         COLUMN_NAME: "payer_client_ip",
@@ -384,6 +417,7 @@ export default defineConfig({
         COLUMN_NAME: "notify_url",
         align: "left",
         width: 200,
+        require: true,
       },
       {
         COLUMN_NAME: "is_locked",
@@ -481,8 +515,11 @@ export default defineConfig({
         width: 200,
       },
       {
-        COLUMN_NAME: "support_fapiao",
-        require: true,
+        COLUMN_NAME: "receipt",
+        width: 100,
+      },
+      {
+        COLUMN_NAME: "profit_sharing",
         width: 100,
       },
       {

@@ -6,32 +6,32 @@ import {
  * 获取微信支付公钥和私钥
  */
 export async function getWxPayModel(
-  wx_payModel: WxPayModel,
+  wx_pay_model: WxPayModel,
 ) {
-  const lbl = wx_payModel.lbl;
+  const lbl = wx_pay_model.lbl;
   // 公钥
   {
-    if (!wx_payModel.public_key) {
+    if (!wx_pay_model.public_key) {
       throw `${ lbl }, 未配置 微信支付 - 公钥`;
     }
-    const objInfo = await getObjectOss(wx_payModel.public_key);
+    const objInfo = await getObjectOss(wx_pay_model.public_key);
     if (!objInfo || !objInfo.body) {
       throw `${ lbl }, 未配置 微信支付 - 公钥`;
     }
     const res = new Response(objInfo.body);
-    wx_payModel.public_key = await res.text();
+    wx_pay_model.public_key = await res.text();
   }
   // 私钥
   {
-    if (!wx_payModel.private_key) {
+    if (!wx_pay_model.private_key) {
       throw `${ lbl }, 未配置 微信支付 - 私钥`;
     }
-    const objInfo = await getObjectOss(wx_payModel.private_key);
+    const objInfo = await getObjectOss(wx_pay_model.private_key);
     if (!objInfo || !objInfo.body) {
       throw `${ lbl }, 未配置 微信支付 - 私钥`;
     }
     const res = new Response(objInfo.body);
-    wx_payModel.private_key = await res.text();
+    wx_pay_model.private_key = await res.text();
   }
-  return wx_payModel;
+  return wx_pay_model;
 }

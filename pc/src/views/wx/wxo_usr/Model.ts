@@ -39,6 +39,8 @@ export const wxoUsrFields = [
   // 绑定用户
   "usr_id",
   "usr_id_lbl",
+  // 开发者ID
+  "appid",
   // 公众号用户唯一标识
   "openid",
   // 用户统一标识

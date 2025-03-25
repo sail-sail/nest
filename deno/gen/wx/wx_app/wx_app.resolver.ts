@@ -29,10 +29,10 @@ export async function findCountWxApp(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountWxApp,
   } = await import("./wx_app.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountWxApp(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllWxApp(
 ): Promise<WxAppModel[]> {
   
   const {
-    findAll,
+    findAllWxApp,
   } = await import("./wx_app.service.ts");
   
   checkSortWxApp(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllWxApp(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllWxApp(
 export async function getFieldCommentsWxApp(): Promise<WxAppFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsWxApp,
   } = await import("./wx_app.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsWxApp();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneWxApp(
 ): Promise<WxAppModel | undefined> {
   
   const {
-    findOne,
+    findOneWxApp,
   } = await import("./wx_app.service.ts");
   
   checkSortWxApp(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneWxApp(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdWxApp(
 ): Promise<WxAppModel | undefined> {
   
   const {
-    findById,
+    findByIdWxApp,
   } = await import("./wx_app.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdWxApp(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsWxApp(
 ): Promise<WxAppModel[]> {
   
   const {
-    findByIds,
+    findByIdsWxApp,
   } = await import("./wx_app.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsWxApp(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsWxApp(
 ): Promise<WxAppId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateWxApp,
+    setIdByLblWxApp,
+    createsWxApp,
   } = await import("./wx_app.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsWxApp(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblWxApp(input);
     
-    await validate(input);
+    await validateWxApp(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsWxApp(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdWxApp(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblWxApp,
+    updateByIdWxApp,
   } = await import("./wx_app.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblWxApp(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: WxAppId = await updateById(id, input);
+  const id2: WxAppId = await updateByIdWxApp(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsWxApp(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsWxApp,
   } = await import("./wx_app.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsWxApp(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsWxApp(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsWxApp(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsWxApp,
   } = await import("./wx_app.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsWxApp(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsWxApp(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsWxApp(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsWxApp,
   } = await import("./wx_app.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsWxApp(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsWxApp(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsWxApp(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsWxApp,
   } = await import("./wx_app.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsWxApp(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsWxApp(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsWxApp(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsWxApp,
   } = await import("./wx_app.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsWxApp(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsWxApp(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsWxApp(
 export async function findLastOrderByWxApp(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByWxApp,
   } = await import("./wx_app.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByWxApp();
   
   return res;
 }

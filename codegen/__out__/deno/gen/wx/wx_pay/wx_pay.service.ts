@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找微信支付设置总数
  */
-export async function findCount(
+export async function findCountWxPay(
   search?: WxPaySearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const wx_pay_num = await wx_payDao.findCount(search);
+  const wx_pay_num = await wx_payDao.findCountWxPay(search);
   
   return wx_pay_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找微信支付设置列表
  */
-export async function findAll(
+export async function findAllWxPay(
   search?: WxPaySearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const wx_pay_models = await wx_payDao.findAll(search, page, sort);
+  const wx_pay_models = await wx_payDao.findAllWxPay(search, page, sort);
   
   return wx_pay_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblWxPay(
   input: WxPayInput,
 ): Promise<void> {
-  await wx_payDao.setIdByLbl(input);
+  await wx_payDao.setIdByLblWxPay(input);
 }
 
 /**
  * 根据条件查找第一个微信支付设置
  */
-export async function findOne(
+export async function findOneWxPay(
   search?: WxPaySearch,
   sort?: SortInput[],
 ): Promise<WxPayModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const wx_pay_model = await wx_payDao.findOne(search, sort);
+  const wx_pay_model = await wx_payDao.findOneWxPay(search, sort);
   
   return wx_pay_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找微信支付设置
  */
-export async function findById(
+export async function findByIdWxPay(
   wx_pay_id?: WxPayId | null,
 ): Promise<WxPayModel | undefined> {
   
-  const wx_pay_model = await wx_payDao.findById(wx_pay_id);
+  const wx_pay_model = await wx_payDao.findByIdWxPay(wx_pay_id);
   
   return wx_pay_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找微信支付设置
  */
-export async function findByIds(
+export async function findByIdsWxPay(
   wx_pay_ids: WxPayId[],
 ): Promise<WxPayModel[]> {
   
-  const wx_pay_models = await wx_payDao.findByIds(wx_pay_ids);
+  const wx_pay_models = await wx_payDao.findByIdsWxPay(wx_pay_ids);
   
   return wx_pay_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找微信支付设置是否存在
  */
-export async function exist(
+export async function existWxPay(
   search?: WxPaySearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const wx_pay_exist = await wx_payDao.exist(search);
+  const wx_pay_exist = await wx_payDao.existWxPay(search);
   
   return wx_pay_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找微信支付设置是否存在
  */
-export async function existById(
+export async function existByIdWxPay(
   wx_pay_id?: WxPayId | null,
 ): Promise<boolean> {
   
-  const wx_pay_exist = await wx_payDao.existById(wx_pay_id);
+  const wx_pay_exist = await wx_payDao.existByIdWxPay(wx_pay_id);
   
   return wx_pay_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验微信支付设置
  */
-export async function validate(
+export async function validateWxPay(
   input: WxPayInput,
 ): Promise<void> {
-  await wx_payDao.validate(input);
+  await wx_payDao.validateWxPay(input);
 }
 
 /**
  * 批量创建微信支付设置
  */
-export async function creates(
+export async function createsWxPay(
   inputs: WxPayInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<WxPayId[]> {
-  const wx_pay_ids = await wx_payDao.creates(inputs, options);
+  const wx_pay_ids = await wx_payDao.createsWxPay(inputs, options);
   
   return wx_pay_ids;
 }
@@ -150,37 +150,37 @@ export async function creates(
 /**
  * 根据 id 修改微信支付设置
  */
-export async function updateById(
+export async function updateByIdWxPay(
   wx_pay_id: WxPayId,
   input: WxPayInput,
 ): Promise<WxPayId> {
   
-  const is_locked = await wx_payDao.getIsLockedById(wx_pay_id);
+  const is_locked = await wx_payDao.getIsLockedByIdWxPay(wx_pay_id);
   if (is_locked) {
     throw "不能修改已经锁定的 微信支付设置";
   }
   
-  const wx_pay_id2 = await wx_payDao.updateById(wx_pay_id, input);
+  const wx_pay_id2 = await wx_payDao.updateByIdWxPay(wx_pay_id, input);
   
   return wx_pay_id2;
 }
 
 /** 校验微信支付设置是否存在 */
-export async function validateOption(
+export async function validateOptionWxPay(
   model0?: WxPayModel,
 ): Promise<WxPayModel> {
-  const wx_pay_model = await wx_payDao.validateOption(model0);
+  const wx_pay_model = await wx_payDao.validateOptionWxPay(model0);
   return wx_pay_model;
 }
 
 /**
  * 根据 ids 删除微信支付设置
  */
-export async function deleteByIds(
+export async function deleteByIdsWxPay(
   wx_pay_ids: WxPayId[],
 ): Promise<number> {
   
-  const old_models = await wx_payDao.findByIds(wx_pay_ids);
+  const old_models = await wx_payDao.findByIdsWxPay(wx_pay_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -188,40 +188,40 @@ export async function deleteByIds(
     }
   }
   
-  const wx_pay_num = await wx_payDao.deleteByIds(wx_pay_ids);
+  const wx_pay_num = await wx_payDao.deleteByIdsWxPay(wx_pay_ids);
   return wx_pay_num;
 }
 
 /**
  * 根据 ids 启用或者禁用微信支付设置
  */
-export async function enableByIds(
+export async function enableByIdsWxPay(
   ids: WxPayId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const wx_pay_num = await wx_payDao.enableByIds(ids, is_enabled);
+  const wx_pay_num = await wx_payDao.enableByIdsWxPay(ids, is_enabled);
   return wx_pay_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁微信支付设置
  */
-export async function lockByIds(
+export async function lockByIdsWxPay(
   wx_pay_ids: WxPayId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const wx_pay_num = await wx_payDao.lockByIds(wx_pay_ids, is_locked);
+  const wx_pay_num = await wx_payDao.lockByIdsWxPay(wx_pay_ids, is_locked);
   return wx_pay_num;
 }
 
 /**
  * 根据 ids 还原微信支付设置
  */
-export async function revertByIds(
+export async function revertByIdsWxPay(
   wx_pay_ids: WxPayId[],
 ): Promise<number> {
   
-  const wx_pay_num = await wx_payDao.revertByIds(wx_pay_ids);
+  const wx_pay_num = await wx_payDao.revertByIdsWxPay(wx_pay_ids);
   
   return wx_pay_num;
 }
@@ -229,11 +229,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除微信支付设置
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxPay(
   wx_pay_ids: WxPayId[],
 ): Promise<number> {
   
-  const wx_pay_num = await wx_payDao.forceDeleteByIds(wx_pay_ids);
+  const wx_pay_num = await wx_payDao.forceDeleteByIdsWxPay(wx_pay_ids);
   
   return wx_pay_num;
 }
@@ -241,16 +241,16 @@ export async function forceDeleteByIds(
 /**
  * 获取微信支付设置字段注释
  */
-export async function getFieldComments(): Promise<WxPayFieldComment> {
-  const wx_pay_fields = await wx_payDao.getFieldComments();
+export async function getFieldCommentsWxPay(): Promise<WxPayFieldComment> {
+  const wx_pay_fields = await wx_payDao.getFieldCommentsWxPay();
   return wx_pay_fields;
 }
 
 /**
  * 查找 微信支付设置 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByWxPay(
 ): Promise<number> {
-  const wx_pay_sort = await wx_payDao.findLastOrderBy();
+  const wx_pay_sort = await wx_payDao.findLastOrderByWxPay();
   return wx_pay_sort;
 }

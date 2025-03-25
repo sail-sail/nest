@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找小程序接口凭据总数
  */
-export async function findCount(
+export async function findCountWxoAppToken(
   search?: WxoAppTokenSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const wxo_app_token_num = await wxo_app_tokenDao.findCount(search);
+  const wxo_app_token_num = await wxo_app_tokenDao.findCountWxoAppToken(search);
   
   return wxo_app_token_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找小程序接口凭据列表
  */
-export async function findAll(
+export async function findAllWxoAppToken(
   search?: WxoAppTokenSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const wxo_app_token_models = await wxo_app_tokenDao.findAll(search, page, sort);
+  const wxo_app_token_models = await wxo_app_tokenDao.findAllWxoAppToken(search, page, sort);
   
   return wxo_app_token_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblWxoAppToken(
   input: WxoAppTokenInput,
 ): Promise<void> {
-  await wxo_app_tokenDao.setIdByLbl(input);
+  await wxo_app_tokenDao.setIdByLblWxoAppToken(input);
 }
 
 /**
  * 根据条件查找第一个小程序接口凭据
  */
-export async function findOne(
+export async function findOneWxoAppToken(
   search?: WxoAppTokenSearch,
   sort?: SortInput[],
 ): Promise<WxoAppTokenModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const wxo_app_token_model = await wxo_app_tokenDao.findOne(search, sort);
+  const wxo_app_token_model = await wxo_app_tokenDao.findOneWxoAppToken(search, sort);
   
   return wxo_app_token_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找小程序接口凭据
  */
-export async function findById(
+export async function findByIdWxoAppToken(
   wxo_app_token_id?: WxoAppTokenId | null,
 ): Promise<WxoAppTokenModel | undefined> {
   
-  const wxo_app_token_model = await wxo_app_tokenDao.findById(wxo_app_token_id);
+  const wxo_app_token_model = await wxo_app_tokenDao.findByIdWxoAppToken(wxo_app_token_id);
   
   return wxo_app_token_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找小程序接口凭据
  */
-export async function findByIds(
+export async function findByIdsWxoAppToken(
   wxo_app_token_ids: WxoAppTokenId[],
 ): Promise<WxoAppTokenModel[]> {
   
-  const wxo_app_token_models = await wxo_app_tokenDao.findByIds(wxo_app_token_ids);
+  const wxo_app_token_models = await wxo_app_tokenDao.findByIdsWxoAppToken(wxo_app_token_ids);
   
   return wxo_app_token_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找小程序接口凭据是否存在
  */
-export async function exist(
+export async function existWxoAppToken(
   search?: WxoAppTokenSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const wxo_app_token_exist = await wxo_app_tokenDao.exist(search);
+  const wxo_app_token_exist = await wxo_app_tokenDao.existWxoAppToken(search);
   
   return wxo_app_token_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找小程序接口凭据是否存在
  */
-export async function existById(
+export async function existByIdWxoAppToken(
   wxo_app_token_id?: WxoAppTokenId | null,
 ): Promise<boolean> {
   
-  const wxo_app_token_exist = await wxo_app_tokenDao.existById(wxo_app_token_id);
+  const wxo_app_token_exist = await wxo_app_tokenDao.existByIdWxoAppToken(wxo_app_token_id);
   
   return wxo_app_token_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验小程序接口凭据
  */
-export async function validate(
+export async function validateWxoAppToken(
   input: WxoAppTokenInput,
 ): Promise<void> {
-  await wxo_app_tokenDao.validate(input);
+  await wxo_app_tokenDao.validateWxoAppToken(input);
 }
 
 /**
  * 批量创建小程序接口凭据
  */
-export async function creates(
+export async function createsWxoAppToken(
   inputs: WxoAppTokenInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<WxoAppTokenId[]> {
-  const wxo_app_token_ids = await wxo_app_tokenDao.creates(inputs, options);
+  const wxo_app_token_ids = await wxo_app_tokenDao.createsWxoAppToken(inputs, options);
   
   return wxo_app_token_ids;
 }
@@ -150,43 +150,43 @@ export async function creates(
 /**
  * 根据 id 修改小程序接口凭据
  */
-export async function updateById(
+export async function updateByIdWxoAppToken(
   wxo_app_token_id: WxoAppTokenId,
   input: WxoAppTokenInput,
 ): Promise<WxoAppTokenId> {
   
-  const wxo_app_token_id2 = await wxo_app_tokenDao.updateById(wxo_app_token_id, input);
+  const wxo_app_token_id2 = await wxo_app_tokenDao.updateByIdWxoAppToken(wxo_app_token_id, input);
   
   return wxo_app_token_id2;
 }
 
 /** 校验小程序接口凭据是否存在 */
-export async function validateOption(
+export async function validateOptionWxoAppToken(
   model0?: WxoAppTokenModel,
 ): Promise<WxoAppTokenModel> {
-  const wxo_app_token_model = await wxo_app_tokenDao.validateOption(model0);
+  const wxo_app_token_model = await wxo_app_tokenDao.validateOptionWxoAppToken(model0);
   return wxo_app_token_model;
 }
 
 /**
  * 根据 ids 删除小程序接口凭据
  */
-export async function deleteByIds(
+export async function deleteByIdsWxoAppToken(
   wxo_app_token_ids: WxoAppTokenId[],
 ): Promise<number> {
   
-  const wxo_app_token_num = await wxo_app_tokenDao.deleteByIds(wxo_app_token_ids);
+  const wxo_app_token_num = await wxo_app_tokenDao.deleteByIdsWxoAppToken(wxo_app_token_ids);
   return wxo_app_token_num;
 }
 
 /**
  * 根据 ids 还原小程序接口凭据
  */
-export async function revertByIds(
+export async function revertByIdsWxoAppToken(
   wxo_app_token_ids: WxoAppTokenId[],
 ): Promise<number> {
   
-  const wxo_app_token_num = await wxo_app_tokenDao.revertByIds(wxo_app_token_ids);
+  const wxo_app_token_num = await wxo_app_tokenDao.revertByIdsWxoAppToken(wxo_app_token_ids);
   
   return wxo_app_token_num;
 }
@@ -194,11 +194,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除小程序接口凭据
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxoAppToken(
   wxo_app_token_ids: WxoAppTokenId[],
 ): Promise<number> {
   
-  const wxo_app_token_num = await wxo_app_tokenDao.forceDeleteByIds(wxo_app_token_ids);
+  const wxo_app_token_num = await wxo_app_tokenDao.forceDeleteByIdsWxoAppToken(wxo_app_token_ids);
   
   return wxo_app_token_num;
 }
@@ -206,7 +206,7 @@ export async function forceDeleteByIds(
 /**
  * 获取小程序接口凭据字段注释
  */
-export async function getFieldComments(): Promise<WxoAppTokenFieldComment> {
-  const wxo_app_token_fields = await wxo_app_tokenDao.getFieldComments();
+export async function getFieldCommentsWxoAppToken(): Promise<WxoAppTokenFieldComment> {
+  const wxo_app_token_fields = await wxo_app_tokenDao.getFieldCommentsWxoAppToken();
   return wxo_app_token_fields;
 }

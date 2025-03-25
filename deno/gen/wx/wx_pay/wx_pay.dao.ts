@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -72,7 +72,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -121,6 +121,12 @@ async function getWhereQuery(
   }
   if (isNotEmpty(search?.mchid_like)) {
     whereQuery += ` and t.mchid like ${ args.push("%" + sqlLike(search?.mchid_like) + "%") }`;
+  }
+  if (search?.serial_no != null) {
+    whereQuery += ` and t.serial_no=${ args.push(search.serial_no) }`;
+  }
+  if (isNotEmpty(search?.serial_no_like)) {
+    whereQuery += ` and t.serial_no like ${ args.push("%" + sqlLike(search?.serial_no_like) + "%") }`;
   }
   if (search?.public_key != null) {
     whereQuery += ` and t.public_key=${ args.push(search.public_key) }`;
@@ -226,9 +232,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountWxPay
 /** 根据条件查找微信支付设置总数 */
-export async function findCount(
+export async function findCountWxPay(
   search?: Readonly<WxPaySearch>,
   options?: {
     is_debug?: boolean;
@@ -237,12 +243,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "wx_wx_pay";
-  const method = "findCount";
+  const method = "findCountWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -325,9 +331,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllWxPay
 /** 根据搜索条件和分页查找微信支付设置列表 */
-export async function findAll(
+export async function findAllWxPay(
   search?: Readonly<WxPaySearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -338,7 +344,7 @@ export async function findAll(
 ): Promise<WxPayModel[]> {
   
   const table = "wx_wx_pay";
-  const method = "findAll";
+  const method = "findAllWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -530,9 +536,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblWxPay
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblWxPay(
   input: WxPayInput,
 ) {
   
@@ -571,14 +577,15 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsWxPay
 /** 获取微信支付设置字段注释 */
-export async function getFieldComments(): Promise<WxPayFieldComment> {
+export async function getFieldCommentsWxPay(): Promise<WxPayFieldComment> {
   const fieldComments: WxPayFieldComment = {
     id: "ID",
     lbl: "名称",
     appid: "开发者ID",
     mchid: "商户号",
+    serial_no: "证书序列号",
     public_key: "公钥",
     private_key: "私钥",
     v3_key: "APIv3密钥",
@@ -602,9 +609,9 @@ export async function getFieldComments(): Promise<WxPayFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueWxPay
 /** 通过唯一约束获得微信支付设置列表 */
-export async function findByUnique(
+export async function findByUniqueWxPay(
   search0: Readonly<WxPayInput>,
   options?: {
     is_debug?: boolean;
@@ -612,7 +619,7 @@ export async function findByUnique(
 ): Promise<WxPayModel[]> {
   
   const table = "wx_wx_pay";
-  const method = "findByUnique";
+  const method = "findByUniqueWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -630,7 +637,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneWxPay(
       {
         id: search0.id,
       },
@@ -648,7 +655,7 @@ export async function findByUnique(
       return [ ];
     }
     const appid = search0.appid;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllWxPay(
       {
         appid,
       },
@@ -663,7 +670,7 @@ export async function findByUnique(
       return [ ];
     }
     const notify_url = search0.notify_url;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllWxPay(
       {
         notify_url,
       },
@@ -678,7 +685,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueWxPay(
   oldModel: Readonly<WxPayModel>,
   input: Readonly<WxPayInput>,
 ): boolean {
@@ -699,9 +706,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueWxPay
 /** 通过唯一约束检查 微信支付设置 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueWxPay(
   input: Readonly<WxPayInput>,
   oldModel: Readonly<WxPayModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -713,14 +720,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueWxPay(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 微信支付设置 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: WxPayId = await updateById(
+      const id: WxPayId = await updateByIdWxPay(
         oldModel.id,
         {
           ...input,
@@ -737,9 +744,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneWxPay
 /** 根据条件查找第一微信支付设置 */
-export async function findOne(
+export async function findOneWxPay(
   search?: Readonly<WxPaySearch>,
   sort?: SortInput[],
   options?: {
@@ -748,7 +755,7 @@ export async function findOne(
 ): Promise<WxPayModel | undefined> {
   
   const table = "wx_wx_pay";
-  const method = "findOne";
+  const method = "findOneWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -775,7 +782,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllWxPay(
     search,
     page,
     sort,
@@ -785,9 +792,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdWxPay
 /** 根据 id 查找微信支付设置 */
-export async function findById(
+export async function findByIdWxPay(
   id?: WxPayId | null,
   options?: {
     is_debug?: boolean;
@@ -795,7 +802,7 @@ export async function findById(
 ): Promise<WxPayModel | undefined> {
   
   const table = "wx_wx_pay";
-  const method = "findById";
+  const method = "findByIdWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -816,7 +823,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneWxPay(
     {
       id,
     },
@@ -827,9 +834,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsWxPay
 /** 根据 ids 查找微信支付设置 */
-export async function findByIds(
+export async function findByIdsWxPay(
   ids: WxPayId[],
   options?: {
     is_debug?: boolean;
@@ -837,7 +844,7 @@ export async function findByIds(
 ): Promise<WxPayModel[]> {
   
   const table = "wx_wx_pay";
-  const method = "findByIds";
+  const method = "findByIdsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -858,7 +865,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllWxPay(
     {
       ids,
     },
@@ -884,9 +891,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existWxPay
 /** 根据搜索条件判断微信支付设置是否存在 */
-export async function exist(
+export async function existWxPay(
   search?: Readonly<WxPaySearch>,
   options?: {
     is_debug?: boolean;
@@ -894,7 +901,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "wx_wx_pay";
-  const method = "exist";
+  const method = "existWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -910,15 +917,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneWxPay(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdWxPay
 /** 根据id判断微信支付设置是否存在 */
-export async function existById(
+export async function existByIdWxPay(
   id?: Readonly<WxPayId | null>,
   options?: {
     is_debug?: boolean;
@@ -926,7 +933,7 @@ export async function existById(
 ) {
   
   const table = "wx_wx_pay";
-  const method = "existById";
+  const method = "existByIdWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -968,9 +975,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledWxPay
 /** 校验微信支付设置是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledWxPay(
   model: Readonly<WxPayModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -978,9 +985,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionWxPay
 /** 校验微信支付设置是否存在 */
-export async function validateOption(
+export async function validateOptionWxPay(
   model?: WxPayModel,
 ) {
   if (!model) {
@@ -991,12 +998,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateWxPay
 /** 微信支付设置增加和修改时校验输入 */
-export async function validate(
+export async function validateWxPay(
   input: Readonly<WxPayInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsWxPay();
   
   // ID
   await validators.chars_max_length(
@@ -1024,6 +1031,13 @@ export async function validate(
     input.mchid,
     32,
     fieldComments.mchid,
+  );
+  
+  // 证书序列号
+  await validators.chars_max_length(
+    input.serial_no,
+    50,
+    fieldComments.serial_no,
   );
   
   // 公钥
@@ -1084,9 +1098,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnWxPay
 /** 创建 微信支付设置 并返回 */
-export async function createReturn(
+export async function createReturnWxPay(
   input: Readonly<WxPayInput>,
   options?: {
     is_debug?: boolean;
@@ -1097,7 +1111,7 @@ export async function createReturn(
 ): Promise<WxPayModel> {
   
   const table = "wx_wx_pay";
-  const method = "createReturn";
+  const method = "createReturnWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1122,8 +1136,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionWxPay(
+    await findOneWxPay(
       {
         id,
       },
@@ -1135,9 +1149,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createWxPay
 /** 创建 微信支付设置 */
-export async function create(
+export async function createWxPay(
   input: Readonly<WxPayInput>,
   options?: {
     is_debug?: boolean;
@@ -1148,7 +1162,7 @@ export async function create(
 ): Promise<WxPayId> {
   
   const table = "wx_wx_pay";
-  const method = "create";
+  const method = "createWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1176,9 +1190,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnWxPay
 /** 批量创建 微信支付设置 并返回 */
-export async function createsReturn(
+export async function createsReturnWxPay(
   inputs: WxPayInput[],
   options?: {
     is_debug?: boolean;
@@ -1189,7 +1203,7 @@ export async function createsReturn(
 ): Promise<WxPayModel[]> {
   
   const table = "wx_wx_pay";
-  const method = "createsReturn";
+  const method = "createsReturnWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1208,14 +1222,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsWxPay(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsWxPay
 /** 批量创建 微信支付设置 */
-export async function creates(
+export async function createsWxPay(
   inputs: WxPayInput[],
   options?: {
     is_debug?: boolean;
@@ -1226,7 +1240,7 @@ export async function creates(
 ): Promise<WxPayId[]> {
   
   const table = "wx_wx_pay";
-  const method = "creates";
+  const method = "createsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1275,11 +1289,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueWxPay(input, options);
     if (oldModels.length > 0) {
       let id: WxPayId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueWxPay(
           input,
           oldModel,
           options?.uniqueType,
@@ -1309,10 +1323,10 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheWxPay();
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_pay(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,appid,mchid,public_key,private_key,v3_key,payer_client_ip,notify_url,is_locked,is_enabled,order_by,rem)values";
+  let sql = "insert into wx_wx_pay(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,appid,mchid,serial_no,public_key,private_key,v3_key,payer_client_ip,notify_url,is_locked,is_enabled,order_by,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1425,6 +1439,11 @@ async function _creates(
       } else {
         sql += ",default";
       }
+      if (input.serial_no != null) {
+        sql += `,${ args.push(input.serial_no) }`;
+      } else {
+        sql += ",default";
+      }
       if (input.public_key != null) {
         sql += `,${ args.push(input.public_key) }`;
       } else {
@@ -1486,20 +1505,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheWxPay();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheWxPay
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheWxPay() {
   await delCacheCtx(`dao.sql.wx_wx_pay`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdWxPay
 /** 微信支付设置 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdWxPay(
   id: WxPayId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1508,7 +1527,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "wx_wx_pay";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1538,13 +1557,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheWxPay();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdWxPay
 /** 根据 id 修改 微信支付设置 */
-export async function updateById(
+export async function updateByIdWxPay(
   id: WxPayId,
   input: WxPayInput,
   options?: {
@@ -1556,7 +1575,7 @@ export async function updateById(
 ): Promise<WxPayId> {
   
   const table = "wx_wx_pay";
-  const method = "updateById";
+  const method = "updateByIdWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1579,15 +1598,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdWxPay: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdWxPay: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdWxPay(id, input.tenant_id, options);
   }
   
   {
@@ -1595,7 +1614,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueWxPay(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1606,7 +1625,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdWxPay(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 微信支付设置 已被删除";
@@ -1630,6 +1649,12 @@ export async function updateById(
   if (input.mchid != null) {
     if (input.mchid != oldModel.mchid) {
       sql += `mchid=${ args.push(input.mchid) },`;
+      updateFldNum++;
+    }
+  }
+  if (input.serial_no != null) {
+    if (input.serial_no != oldModel.serial_no) {
+      sql += `serial_no=${ args.push(input.serial_no) },`;
       updateFldNum++;
     }
   }
@@ -1763,7 +1788,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheWxPay();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1771,7 +1796,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheWxPay();
   }
   
   if (!is_silent_mode) {
@@ -1781,9 +1806,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsWxPay
 /** 根据 ids 删除 微信支付设置 */
-export async function deleteByIds(
+export async function deleteByIdsWxPay(
   ids: WxPayId[],
   options?: {
     is_debug?: boolean;
@@ -1793,7 +1818,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "wx_wx_pay";
-  const method = "deleteByIds";
+  const method = "deleteByIdsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1816,12 +1841,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxPay();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdWxPay(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1854,14 +1879,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxPay();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdWxPay
 /** 根据 id 查找 微信支付设置 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdWxPay(
   id: WxPayId,
   options?: {
     is_debug?: boolean;
@@ -1871,7 +1896,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdWxPay(
     id,
     options,
   );
@@ -1880,9 +1905,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsWxPay
 /** 根据 ids 启用或者禁用 微信支付设置 */
-export async function enableByIds(
+export async function enableByIdsWxPay(
   ids: WxPayId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1891,7 +1916,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "wx_wx_pay";
-  const method = "enableByIds";
+  const method = "enableByIdsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1916,7 +1941,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheWxPay();
   }
   
   const args = new QueryArgs();
@@ -1924,14 +1949,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheWxPay();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdWxPay
 /** 根据 id 查找 微信支付设置 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdWxPay(
   id: WxPayId,
   options?: {
     is_debug?: boolean;
@@ -1941,18 +1966,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const wx_pay_model = await findByIdWxPay(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = wx_pay_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsWxPay
 /** 根据 ids 锁定或者解锁 微信支付设置 */
-export async function lockByIds(
+export async function lockByIdsWxPay(
   ids: WxPayId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -1961,7 +1986,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "wx_wx_pay";
-  const method = "lockByIds";
+  const method = "lockByIdsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1985,21 +2010,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxPay();
   
   const args = new QueryArgs();
   let sql = `update wx_wx_pay set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheWxPay();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsWxPay
 /** 根据 ids 还原 微信支付设置 */
-export async function revertByIds(
+export async function revertByIdsWxPay(
   ids: WxPayId[],
   options?: {
     is_debug?: boolean;
@@ -2007,7 +2032,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "wx_wx_pay";
-  const method = "revertByIds";
+  const method = "revertByIdsWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2028,12 +2053,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxPay();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneWxPay(
       {
         id,
         is_deleted: 1,
@@ -2042,7 +2067,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdWxPay(
         id,
         options,
       );
@@ -2055,7 +2080,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as WxPayInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueWxPay(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -2069,14 +2094,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxPay();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsWxPay
 /** 根据 ids 彻底删除 微信支付设置 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxPay(
   ids: WxPayId[],
   options?: {
     is_debug?: boolean;
@@ -2085,7 +2110,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "wx_wx_pay";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsWxPay";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2107,12 +2132,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxPay();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneWxPay(
       {
         id,
         is_deleted: 1,
@@ -2129,21 +2154,21 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxPay();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByWxPay
 /** 查找 微信支付设置 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByWxPay(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "wx_wx_pay";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByWxPay";
   
   const is_debug = get_is_debug(options?.is_debug);
   

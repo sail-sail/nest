@@ -27,10 +27,10 @@ export async function findCountPayTransactionsJsapi(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountPayTransactionsJsapi(search);
   
   return num;
 }
@@ -45,12 +45,12 @@ export async function findAllPayTransactionsJsapi(
 ): Promise<PayTransactionsJsapiModel[]> {
   
   const {
-    findAll,
+    findAllPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
   checkSortPayTransactionsJsapi(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllPayTransactionsJsapi(search, page, sort);
   
   return models;
 }
@@ -61,10 +61,10 @@ export async function findAllPayTransactionsJsapi(
 export async function getFieldCommentsPayTransactionsJsapi(): Promise<PayTransactionsJsapiFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsPayTransactionsJsapi();
   
   return field_comment;
 }
@@ -78,12 +78,12 @@ export async function findOnePayTransactionsJsapi(
 ): Promise<PayTransactionsJsapiModel | undefined> {
   
   const {
-    findOne,
+    findOnePayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
   checkSortPayTransactionsJsapi(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOnePayTransactionsJsapi(search, sort);
   
   return model;
 }
@@ -96,10 +96,10 @@ export async function findByIdPayTransactionsJsapi(
 ): Promise<PayTransactionsJsapiModel | undefined> {
   
   const {
-    findById,
+    findByIdPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdPayTransactionsJsapi(id);
   
   return model;
 }
@@ -112,10 +112,10 @@ export async function findByIdsPayTransactionsJsapi(
 ): Promise<PayTransactionsJsapiModel[]> {
   
   const {
-    findByIds,
+    findByIdsPayTransactionsJsapi,
   } = await import("./pay_transactions_jsapi.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsPayTransactionsJsapi(ids);
   
   for (const model of models) {
   }

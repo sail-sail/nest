@@ -6,7 +6,10 @@ JIupF44OSVKW9K0EYXE7Hw,D/YHbZPUS4OqHrJUa6e3dg,,女,2,3,1
 T7FzrvTKRwqw9yozIe2iRQ,VkG+mAlHR7y6IlfsDCoROw,微信统一下单-交易类型,小程序支付,JSAPI,1,1
 ApLvt0WkRTSHqCdoXyKOoQ,VkG+mAlHR7y6IlfsDCoROw,,Native支付,NATIVE,2,1
 csBTs+zjSAGNB2QOPVqCqw,VkG+mAlHR7y6IlfsDCoROw,,app支付,APP,3,1
-HKioSnw+REiuHb+rQyb2CQ,VkG+mAlHR7y6IlfsDCoROw,,H5支付,MWEB,4,1
+ya03CuEtQI6ztJREn0Cd1A,VkG+mAlHR7y6IlfsDCoROw,,扫码支付,MICROPAY,4,1
+HKioSnw+REiuHb+rQyb2CQ,VkG+mAlHR7y6IlfsDCoROw,,H5支付,MWEB,5,1
+prDoR8NIQ1O9f7J1iVNHSA,VkG+mAlHR7y6IlfsDCoROw,,刷脸支付,FACEPAY,6,1
+,,,,,,
 ,,,,,,
 0zU+qun9QN+Tu76RZPxCGA,glyIVuxrRauk7Sx/jH95Zw,微信统一下单-指定支付方式,不允许信用卡支付,no_credit,5,1
 ,,,,,,

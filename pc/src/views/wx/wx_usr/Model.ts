@@ -37,6 +37,8 @@ export const wxUsrFields = [
   // 用户
   "usr_id",
   "usr_id_lbl",
+  // 开发者ID
+  "appid",
   // 昵称
   "nick_name",
   // 头像

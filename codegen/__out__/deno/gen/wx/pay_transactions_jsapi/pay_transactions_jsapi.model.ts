@@ -56,8 +56,12 @@ declare global {
     /** 通知地址 */
     notify_url?: string;
     notify_url_like?: string;
-    /** 是否支持发票 */
-    support_fapiao?: number[];
+    /** 开发票 */
+    receipt?: string;
+    receipt_like?: string;
+    /** 分账 */
+    profit_sharing?: string;
+    profit_sharing_like?: string;
     /** 订单金额(分) */
     total_fee?: [(number|undefined|null), (number|undefined|null)];
     /** 货币类型 */
