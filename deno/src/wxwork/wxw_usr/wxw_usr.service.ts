@@ -16,31 +16,31 @@ import {
 } from "/src/wxwork/wxw_app_token/wxw_app_token.dao.ts";
 
 import {
-  findOne as findOneUsr,
-  findById as findByIdUsr,
-  create as createUsr,
-  updateById as updateUsrById,
-  validateIsEnabled as validateIsEnabledUsr,
+  findOneUsr,
+  findByIdUsr,
+  createUsr,
+  updateByIdUsr,
+  validateIsEnabledUsr,
 } from "/gen/base/usr/usr.dao.ts"
 
 import {
-  findAll as findAllWxwUsr,
-  findOne as findOneWxwUsr,
-  create as createWxwUsr,
-  updateById as updateWxwUsrById,
+  findAllWxwUsr,
+  findOneWxwUsr,
+  createWxwUsr,
+  updateByIdWxwUsr,
 } from "/gen/wxwork/wxw_usr/wxw_usr.dao.ts"
 
 import {
-  findById as findByIdWxwApp,
-  findOne as findOneWxwApp,
-  validateOption as validateOptionWxwApp,
-  validateIsEnabled as validateIsEnabledWxwApp,
+  findByIdWxwApp,
+  findOneWxwApp,
+  validateOptionWxwApp,
+  validateIsEnabledWxwApp,
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts"
 
 import {
-  findOne as findOneDomain,
-  validateOption as validateOptionDomain,
-  validateIsEnabled as validateIsEnabledDomain,
+  findOneDomain,
+  validateOptionDomain,
+  validateIsEnabledDomain,
 } from "/gen/base/domain/domain.dao.ts";
 
 import * as authService from "/lib/auth/auth.service.ts";
@@ -145,7 +145,7 @@ export async function wxwLoginByCode(
     wxw_usrModel.position !== position ||
     wxw_usrModel.tenant_id !== tenant_id
   ) {
-    await updateWxwUsrById(
+    await updateByIdWxwUsr(
       wxw_usrModel.id,
       {
         userid,
@@ -165,7 +165,7 @@ export async function wxwLoginByCode(
       usrModel.lbl !== name ||
       usrModel.tenant_id !== wxw_appModel.tenant_id!
     ) {
-      await updateUsrById(
+      await updateByIdUsr(
         usrModel.id,
         {
           username: name,
