@@ -37,7 +37,7 @@ impl OptbizGenQuery {
       .with_auth()?
       .build()
       .scope({
-        optbiz_resolver::find_all(
+        optbiz_resolver::find_all_optbiz(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl OptbizGenQuery {
       .with_auth()?
       .build()
       .scope({
-        optbiz_resolver::find_count(
+        optbiz_resolver::find_count_optbiz(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl OptbizGenQuery {
       .with_auth()?
       .build()
       .scope({
-        optbiz_resolver::find_one(
+        optbiz_resolver::find_one_optbiz(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl OptbizGenQuery {
       .with_auth()?
       .build()
       .scope({
-        optbiz_resolver::find_by_id(
+        optbiz_resolver::find_by_id_optbiz(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl OptbizGenQuery {
       .with_auth()?
       .build()
       .scope({
-        optbiz_resolver::find_by_ids(
+        optbiz_resolver::find_by_ids_optbiz(
           ids,
           None,
         )
@@ -127,7 +127,7 @@ impl OptbizGenQuery {
       .with_auth()?
       .build()
       .scope({
-        optbiz_resolver::get_is_enabled_by_id(
+        optbiz_resolver::get_is_enabled_by_id_optbiz(
           id,
           None,
         )
@@ -146,7 +146,7 @@ impl OptbizGenQuery {
       .with_auth()?
       .build()
       .scope({
-        optbiz_resolver::get_is_locked_by_id(
+        optbiz_resolver::get_is_locked_by_id_optbiz(
           id,
           None,
         )
@@ -161,7 +161,7 @@ impl OptbizGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        optbiz_resolver::get_field_comments(
+        optbiz_resolver::get_field_comments_optbiz(
           None,
         )
       }).await
@@ -176,7 +176,7 @@ impl OptbizGenQuery {
       .with_auth()?
       .build()
       .scope({
-        optbiz_resolver::find_last_order_by(
+        optbiz_resolver::find_last_order_by_optbiz(
           None,
         )
       }).await
@@ -207,7 +207,7 @@ impl OptbizGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        optbiz_resolver::creates(
+        optbiz_resolver::creates_optbiz(
           inputs,
           options.into(),
         )
@@ -226,7 +226,7 @@ impl OptbizGenMutation {
       .with_tran()
       .build()
       .scope({
-        optbiz_resolver::update_tenant_by_id(
+        optbiz_resolver::update_tenant_by_id_optbiz(
           id,
           tenant_id,
           None,
@@ -246,7 +246,7 @@ impl OptbizGenMutation {
       .with_tran()
       .build()
       .scope({
-        optbiz_resolver::update_by_id(
+        optbiz_resolver::update_by_id_optbiz(
           id,
           input,
           None,
@@ -265,7 +265,7 @@ impl OptbizGenMutation {
       .with_tran()
       .build()
       .scope({
-        optbiz_resolver::delete_by_ids(
+        optbiz_resolver::delete_by_ids_optbiz(
           ids,
           None,
         )
@@ -284,7 +284,7 @@ impl OptbizGenMutation {
       .with_tran()
       .build()
       .scope({
-        optbiz_resolver::enable_by_ids(
+        optbiz_resolver::enable_by_ids_optbiz(
           ids,
           is_enabled,
           None,
@@ -304,7 +304,7 @@ impl OptbizGenMutation {
       .with_tran()
       .build()
       .scope({
-        optbiz_resolver::lock_by_ids(
+        optbiz_resolver::lock_by_ids_optbiz(
           ids,
           is_locked,
           None,
@@ -323,7 +323,7 @@ impl OptbizGenMutation {
       .with_tran()
       .build()
       .scope({
-        optbiz_resolver::revert_by_ids(
+        optbiz_resolver::revert_by_ids_optbiz(
           ids,
           None,
         )
@@ -341,7 +341,7 @@ impl OptbizGenMutation {
       .with_tran()
       .build()
       .scope({
-        optbiz_resolver::force_delete_by_ids(
+        optbiz_resolver::force_delete_by_ids_optbiz(
           ids,
           None,
         )

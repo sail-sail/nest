@@ -17,7 +17,7 @@ use super::tenant_service;
 
 /// 根据搜索条件和分页查找租户列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_tenant(
   search: Option<TenantSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -32,7 +32,7 @@ pub async fn find_all(
   
   check_sort_tenant(sort.as_deref())?;
   
-  let models = tenant_service::find_all(
+  let models = tenant_service::find_all_tenant(
     search,
     page,
     sort,
@@ -44,7 +44,7 @@ pub async fn find_all(
 
 /// 根据条件查找租户总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_tenant(
   search: Option<TenantSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -55,7 +55,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = tenant_service::find_count(
+  let num = tenant_service::find_count_tenant(
     search,
     options,
   ).await?;
@@ -65,7 +65,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个租户
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_tenant(
   search: Option<TenantSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -79,7 +79,7 @@ pub async fn find_one(
   
   check_sort_tenant(sort.as_deref())?;
   
-  let model = tenant_service::find_one(
+  let model = tenant_service::find_one_tenant(
     search,
     sort,
     options,
@@ -90,7 +90,7 @@ pub async fn find_one(
 
 /// 根据 id 查找租户
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_tenant(
   id: TenantId,
   options: Option<Options>,
 ) -> Result<Option<TenantModel>> {
@@ -101,7 +101,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = tenant_service::find_by_id(
+  let model = tenant_service::find_by_id_tenant(
     id,
     options,
   ).await?;
@@ -111,7 +111,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找租户
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_tenant(
   ids: Vec<TenantId>,
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
@@ -122,7 +122,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = tenant_service::find_by_ids(
+  let models = tenant_service::find_by_ids_tenant(
     ids,
     options,
   ).await?;
@@ -133,7 +133,7 @@ pub async fn find_by_ids(
 /// 创建租户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_tenant(
   inputs: Vec<TenantInput>,
   options: Option<Options>,
 ) -> Result<Vec<TenantId>> {
@@ -152,7 +152,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = tenant_service::set_id_by_lbl(
+    let input = tenant_service::set_id_by_lbl_tenant(
       input,
     ).await?;
     inputs2.push(input);
@@ -164,7 +164,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = tenant_service::creates(
+  let ids = tenant_service::creates_tenant(
     inputs,
     options,
   ).await?;
@@ -175,7 +175,7 @@ pub async fn creates(
 /// 根据 id 修改租户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_tenant(
   id: TenantId,
   input: TenantInput,
   options: Option<Options>,
@@ -191,7 +191,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = tenant_service::set_id_by_lbl(
+  let input = tenant_service::set_id_by_lbl_tenant(
     input,
   ).await?;
   
@@ -200,7 +200,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = tenant_service::update_by_id(
+  let res = tenant_service::update_by_id_tenant(
     id,
     input,
     options,
@@ -212,7 +212,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除租户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_tenant(
   ids: Vec<TenantId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -228,7 +228,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = tenant_service::delete_by_ids(
+  let num = tenant_service::delete_by_ids_tenant(
     ids,
     options,
   ).await?;
@@ -240,7 +240,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_tenant(
   id: TenantId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -251,7 +251,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = tenant_service::get_is_enabled_by_id(
+  let is_enabled = tenant_service::get_is_enabled_by_id_tenant(
     id,
     options,
   ).await?;
@@ -262,7 +262,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用租户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_tenant(
   ids: Vec<TenantId>,
   is_enabled: u8,
   options: Option<Options>,
@@ -279,7 +279,7 @@ pub async fn enable_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = tenant_service::enable_by_ids(
+  let num = tenant_service::enable_by_ids_tenant(
     ids,
     is_enabled,
     options,
@@ -293,7 +293,7 @@ pub async fn enable_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_tenant(
   id: TenantId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -304,7 +304,7 @@ pub async fn get_is_locked_by_id(
     function_name = function_name!(),
   );
   
-  let is_locked = tenant_service::get_is_locked_by_id(
+  let is_locked = tenant_service::get_is_locked_by_id_tenant(
     id,
     options,
   ).await?;
@@ -315,7 +315,7 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或者解锁租户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_tenant(
   ids: Vec<TenantId>,
   is_locked: u8,
   options: Option<Options>,
@@ -332,7 +332,7 @@ pub async fn lock_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = tenant_service::lock_by_ids(
+  let num = tenant_service::lock_by_ids_tenant(
     ids,
     is_locked,
     options,
@@ -343,7 +343,7 @@ pub async fn lock_by_ids(
 
 /// 获取租户字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_tenant(
   options: Option<Options>,
 ) -> Result<TenantFieldComment> {
   
@@ -353,7 +353,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = tenant_service::get_field_comments(
+  let comments = tenant_service::get_field_comments_tenant(
     options,
   ).await?;
   
@@ -363,7 +363,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原租户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_tenant(
   ids: Vec<TenantId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -379,7 +379,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = tenant_service::revert_by_ids(
+  let num = tenant_service::revert_by_ids_tenant(
     ids,
     options,
   ).await?;
@@ -390,7 +390,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除租户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_tenant(
   ids: Vec<TenantId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -406,7 +406,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = tenant_service::force_delete_by_ids(
+  let num = tenant_service::force_delete_by_ids_tenant(
     ids,
     options,
   ).await?;
@@ -416,7 +416,7 @@ pub async fn force_delete_by_ids(
 
 /// 查找 租户 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_tenant(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -426,7 +426,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = tenant_service::find_last_order_by(
+  let res = tenant_service::find_last_order_by_tenant(
     options,
   ).await?;
   

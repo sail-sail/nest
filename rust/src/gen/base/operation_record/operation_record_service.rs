@@ -26,7 +26,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找操作记录列表
-pub async fn find_all(
+pub async fn find_all_operation_record(
   search: Option<OperationRecordSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -40,7 +40,7 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let operation_record_models = operation_record_dao::find_all(
+  let operation_record_models = operation_record_dao::find_all_operation_record(
     Some(search),
     page,
     sort,
@@ -51,7 +51,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找操作记录总数
-pub async fn find_count(
+pub async fn find_count_operation_record(
   search: Option<OperationRecordSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -63,7 +63,7 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let operation_record_num = operation_record_dao::find_count(
+  let operation_record_num = operation_record_dao::find_count_operation_record(
     Some(search),
     options,
   ).await?;
@@ -72,7 +72,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个操作记录
-pub async fn find_one(
+pub async fn find_one_operation_record(
   search: Option<OperationRecordSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -85,7 +85,7 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let operation_record_model = operation_record_dao::find_one(
+  let operation_record_model = operation_record_dao::find_one_operation_record(
     Some(search),
     sort,
     options,
@@ -95,12 +95,12 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找操作记录
-pub async fn find_by_id(
+pub async fn find_by_id_operation_record(
   operation_record_id: OperationRecordId,
   options: Option<Options>,
 ) -> Result<Option<OperationRecordModel>> {
   
-  let operation_record_model = operation_record_dao::find_by_id(
+  let operation_record_model = operation_record_dao::find_by_id_operation_record(
     operation_record_id,
     options,
   ).await?;
@@ -109,12 +109,12 @@ pub async fn find_by_id(
 }
 
 /// 根据 operation_record_ids 查找操作记录
-pub async fn find_by_ids(
+pub async fn find_by_ids_operation_record(
   operation_record_ids: Vec<OperationRecordId>,
   options: Option<Options>,
 ) -> Result<Vec<OperationRecordModel>> {
   
-  let operation_record_models = operation_record_dao::find_by_ids(
+  let operation_record_models = operation_record_dao::find_by_ids_operation_record(
     operation_record_ids,
     options,
   ).await?;
@@ -124,11 +124,11 @@ pub async fn find_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_operation_record(
   operation_record_input: OperationRecordInput,
 ) -> Result<OperationRecordInput> {
   
-  let operation_record_input = operation_record_dao::set_id_by_lbl(
+  let operation_record_input = operation_record_dao::set_id_by_lbl_operation_record(
     operation_record_input,
   ).await?;
   
@@ -137,12 +137,12 @@ pub async fn set_id_by_lbl(
 
 /// 创建操作记录
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_operation_record(
   operation_record_inputs: Vec<OperationRecordInput>,
   options: Option<Options>,
 ) -> Result<Vec<OperationRecordId>> {
   
-  let operation_record_ids = operation_record_dao::creates(
+  let operation_record_ids = operation_record_dao::creates_operation_record(
     operation_record_inputs,
     options,
   ).await?;
@@ -152,13 +152,13 @@ pub async fn creates(
 
 /// 操作记录根据 operation_record_id 修改租户id
 #[allow(dead_code)]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_operation_record(
   operation_record_id: OperationRecordId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = operation_record_dao::update_tenant_by_id(
+  let num = operation_record_dao::update_tenant_by_id_operation_record(
     operation_record_id,
     tenant_id,
     options,
@@ -169,13 +169,13 @@ pub async fn update_tenant_by_id(
 
 /// 根据 operation_record_id 修改操作记录
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_operation_record(
   operation_record_id: OperationRecordId,
   mut operation_record_input: OperationRecordInput,
   options: Option<Options>,
 ) -> Result<OperationRecordId> {
   
-  let operation_record_id = operation_record_dao::update_by_id(
+  let operation_record_id = operation_record_dao::update_by_id_operation_record(
     operation_record_id,
     operation_record_input,
     options.clone(),
@@ -186,23 +186,23 @@ pub async fn update_by_id(
 
 /// 校验操作记录是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_operation_record(
   operation_record_model: Option<OperationRecordModel>,
 ) -> Result<OperationRecordModel> {
   
-  let operation_record_model = operation_record_dao::validate_option(operation_record_model).await?;
+  let operation_record_model = operation_record_dao::validate_option_operation_record(operation_record_model).await?;
   
   Ok(operation_record_model)
 }
 
 /// 根据 operation_record_ids 删除操作记录
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_operation_record(
   operation_record_ids: Vec<OperationRecordId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = operation_record_dao::delete_by_ids(
+  let num = operation_record_dao::delete_by_ids_operation_record(
     operation_record_ids,
     options,
   ).await?;
@@ -211,11 +211,11 @@ pub async fn delete_by_ids(
 }
 
 /// 获取操作记录字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_operation_record(
   options: Option<Options>,
 ) -> Result<OperationRecordFieldComment> {
   
-  let comments = operation_record_dao::get_field_comments(
+  let comments = operation_record_dao::get_field_comments_operation_record(
     options,
   ).await?;
   
@@ -224,12 +224,12 @@ pub async fn get_field_comments(
 
 /// 根据 operation_record_ids 还原操作记录
 #[allow(dead_code)]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_operation_record(
   operation_record_ids: Vec<OperationRecordId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = operation_record_dao::revert_by_ids(
+  let num = operation_record_dao::revert_by_ids_operation_record(
     operation_record_ids,
     options,
   ).await?;
@@ -239,12 +239,12 @@ pub async fn revert_by_ids(
 
 /// 根据 operation_record_ids 彻底删除操作记录
 #[allow(dead_code)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_operation_record(
   operation_record_ids: Vec<OperationRecordId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = operation_record_dao::force_delete_by_ids(
+  let num = operation_record_dao::force_delete_by_ids_operation_record(
     operation_record_ids,
     options,
   ).await?;

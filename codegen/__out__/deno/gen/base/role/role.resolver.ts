@@ -29,10 +29,10 @@ export async function findCountRole(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountRole,
   } = await import("./role.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountRole(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllRole(
 ): Promise<RoleModel[]> {
   
   const {
-    findAll,
+    findAllRole,
   } = await import("./role.service.ts");
   
   checkSortRole(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllRole(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllRole(
 export async function getFieldCommentsRole(): Promise<RoleFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsRole,
   } = await import("./role.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsRole();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneRole(
 ): Promise<RoleModel | undefined> {
   
   const {
-    findOne,
+    findOneRole,
   } = await import("./role.service.ts");
   
   checkSortRole(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneRole(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdRole(
 ): Promise<RoleModel | undefined> {
   
   const {
-    findById,
+    findByIdRole,
   } = await import("./role.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdRole(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsRole(
 ): Promise<RoleModel[]> {
   
   const {
-    findByIds,
+    findByIdsRole,
   } = await import("./role.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsRole(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsRole(
 ): Promise<RoleId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateRole,
+    setIdByLblRole,
+    createsRole,
   } = await import("./role.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsRole(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblRole(input);
     
-    await validate(input);
+    await validateRole(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsRole(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdRole(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblRole,
+    updateByIdRole,
   } = await import("./role.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblRole(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: RoleId = await updateById(id, input);
+  const id2: RoleId = await updateByIdRole(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsRole(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsRole,
   } = await import("./role.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsRole(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsRole(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsRole(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsRole,
   } = await import("./role.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsRole(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsRole(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsRole(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsRole,
   } = await import("./role.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsRole(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsRole(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsRole(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsRole,
   } = await import("./role.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsRole(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsRole(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsRole(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsRole,
   } = await import("./role.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsRole(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsRole(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsRole(
 export async function findLastOrderByRole(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByRole,
   } = await import("./role.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByRole();
   
   return res;
 }

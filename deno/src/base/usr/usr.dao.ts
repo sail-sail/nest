@@ -12,8 +12,8 @@ import {
 
 // usr
 import {
-  findById as findByIdUsr,
-  validateOption as validateOptionUsr,
+  findByIdUsr,
+  validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 /** 根据 UsrId 获取 token, 用于内部登录 */

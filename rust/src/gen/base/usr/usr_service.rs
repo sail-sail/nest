@@ -26,7 +26,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找用户列表
-pub async fn find_all(
+pub async fn find_all_usr(
   search: Option<UsrSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -40,7 +40,7 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let usr_models = usr_dao::find_all(
+  let usr_models = usr_dao::find_all_usr(
     Some(search),
     page,
     sort,
@@ -51,7 +51,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找用户总数
-pub async fn find_count(
+pub async fn find_count_usr(
   search: Option<UsrSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -63,7 +63,7 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let usr_num = usr_dao::find_count(
+  let usr_num = usr_dao::find_count_usr(
     Some(search),
     options,
   ).await?;
@@ -72,7 +72,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个用户
-pub async fn find_one(
+pub async fn find_one_usr(
   search: Option<UsrSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -85,7 +85,7 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let usr_model = usr_dao::find_one(
+  let usr_model = usr_dao::find_one_usr(
     Some(search),
     sort,
     options,
@@ -95,12 +95,12 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找用户
-pub async fn find_by_id(
+pub async fn find_by_id_usr(
   usr_id: UsrId,
   options: Option<Options>,
 ) -> Result<Option<UsrModel>> {
   
-  let usr_model = usr_dao::find_by_id(
+  let usr_model = usr_dao::find_by_id_usr(
     usr_id,
     options,
   ).await?;
@@ -109,12 +109,12 @@ pub async fn find_by_id(
 }
 
 /// 根据 usr_ids 查找用户
-pub async fn find_by_ids(
+pub async fn find_by_ids_usr(
   usr_ids: Vec<UsrId>,
   options: Option<Options>,
 ) -> Result<Vec<UsrModel>> {
   
-  let usr_models = usr_dao::find_by_ids(
+  let usr_models = usr_dao::find_by_ids_usr(
     usr_ids,
     options,
   ).await?;
@@ -124,11 +124,11 @@ pub async fn find_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_usr(
   usr_input: UsrInput,
 ) -> Result<UsrInput> {
   
-  let usr_input = usr_dao::set_id_by_lbl(
+  let usr_input = usr_dao::set_id_by_lbl_usr(
     usr_input,
   ).await?;
   
@@ -137,12 +137,12 @@ pub async fn set_id_by_lbl(
 
 /// 创建用户
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_usr(
   usr_inputs: Vec<UsrInput>,
   options: Option<Options>,
 ) -> Result<Vec<UsrId>> {
   
-  let usr_ids = usr_dao::creates(
+  let usr_ids = usr_dao::creates_usr(
     usr_inputs,
     options,
   ).await?;
@@ -152,13 +152,13 @@ pub async fn creates(
 
 /// 用户根据 usr_id 修改租户id
 #[allow(dead_code)]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_usr(
   usr_id: UsrId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = usr_dao::update_tenant_by_id(
+  let num = usr_dao::update_tenant_by_id_usr(
     usr_id,
     tenant_id,
     options,
@@ -169,13 +169,13 @@ pub async fn update_tenant_by_id(
 
 /// 根据 usr_id 修改用户
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_usr(
   usr_id: UsrId,
   mut usr_input: UsrInput,
   options: Option<Options>,
 ) -> Result<UsrId> {
   
-  let is_locked = usr_dao::get_is_locked_by_id(
+  let is_locked = usr_dao::get_is_locked_by_id_usr(
     usr_id.clone(),
     None,
   ).await?;
@@ -185,7 +185,7 @@ pub async fn update_by_id(
     return Err(eyre!(err_msg));
   }
   
-  let usr_id = usr_dao::update_by_id(
+  let usr_id = usr_dao::update_by_id_usr(
     usr_id,
     usr_input,
     options.clone(),
@@ -196,23 +196,23 @@ pub async fn update_by_id(
 
 /// 校验用户是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_usr(
   usr_model: Option<UsrModel>,
 ) -> Result<UsrModel> {
   
-  let usr_model = usr_dao::validate_option(usr_model).await?;
+  let usr_model = usr_dao::validate_option_usr(usr_model).await?;
   
   Ok(usr_model)
 }
 
 /// 根据 usr_ids 删除用户
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_usr(
   usr_ids: Vec<UsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let old_models = usr_dao::find_all(
+  let old_models = usr_dao::find_all_usr(
     Some(UsrSearch {
       ids: Some(usr_ids.clone()),
       ..Default::default()
@@ -229,7 +229,7 @@ pub async fn delete_by_ids(
     }
   }
   
-  let num = usr_dao::delete_by_ids(
+  let num = usr_dao::delete_by_ids_usr(
     usr_ids,
     options,
   ).await?;
@@ -240,12 +240,12 @@ pub async fn delete_by_ids(
 /// 根据 usr_id 查找用户是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_usr(
   usr_id: UsrId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_enabled = usr_dao::get_is_enabled_by_id(
+  let is_enabled = usr_dao::get_is_enabled_by_id_usr(
     usr_id,
     options,
   ).await?;
@@ -255,13 +255,13 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 usr_ids 启用或者禁用用户
 #[allow(dead_code)]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_usr(
   usr_ids: Vec<UsrId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = usr_dao::enable_by_ids(
+  let num = usr_dao::enable_by_ids_usr(
     usr_ids,
     is_enabled,
     options,
@@ -274,12 +274,12 @@ pub async fn enable_by_ids(
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_usr(
   usr_id: UsrId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_locked = usr_dao::get_is_locked_by_id(
+  let is_locked = usr_dao::get_is_locked_by_id_usr(
     usr_id,
     options,
   ).await?;
@@ -289,13 +289,13 @@ pub async fn get_is_locked_by_id(
 
 /// 根据 usr_ids 锁定或者解锁用户
 #[allow(dead_code)]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_usr(
   usr_ids: Vec<UsrId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = usr_dao::lock_by_ids(
+  let num = usr_dao::lock_by_ids_usr(
     usr_ids,
     is_locked,
     options,
@@ -305,11 +305,11 @@ pub async fn lock_by_ids(
 }
 
 /// 获取用户字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_usr(
   options: Option<Options>,
 ) -> Result<UsrFieldComment> {
   
-  let comments = usr_dao::get_field_comments(
+  let comments = usr_dao::get_field_comments_usr(
     options,
   ).await?;
   
@@ -318,12 +318,12 @@ pub async fn get_field_comments(
 
 /// 根据 usr_ids 还原用户
 #[allow(dead_code)]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_usr(
   usr_ids: Vec<UsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = usr_dao::revert_by_ids(
+  let num = usr_dao::revert_by_ids_usr(
     usr_ids,
     options,
   ).await?;
@@ -333,12 +333,12 @@ pub async fn revert_by_ids(
 
 /// 根据 usr_ids 彻底删除用户
 #[allow(dead_code)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_usr(
   usr_ids: Vec<UsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = usr_dao::force_delete_by_ids(
+  let num = usr_dao::force_delete_by_ids_usr(
     usr_ids,
     options,
   ).await?;
@@ -347,11 +347,11 @@ pub async fn force_delete_by_ids(
 }
 
 /// 查找 用户 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_usr(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = usr_dao::find_last_order_by(
+  let res = usr_dao::find_last_order_by_usr(
     options,
   ).await?;
   

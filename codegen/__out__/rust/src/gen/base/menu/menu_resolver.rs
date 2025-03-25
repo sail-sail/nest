@@ -17,7 +17,7 @@ use super::menu_service;
 
 /// 根据搜索条件和分页查找菜单列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_menu(
   search: Option<MenuSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -38,7 +38,7 @@ pub async fn find_all(
   
   check_sort_menu(sort.as_deref())?;
   
-  let models = menu_service::find_all(
+  let models = menu_service::find_all_menu(
     search,
     page,
     sort,
@@ -50,7 +50,7 @@ pub async fn find_all(
 
 /// 根据条件查找菜单总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_menu(
   search: Option<MenuSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -67,7 +67,7 @@ pub async fn find_count(
     search
   });
   
-  let num = menu_service::find_count(
+  let num = menu_service::find_count_menu(
     search,
     options,
   ).await?;
@@ -77,7 +77,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个菜单
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_menu(
   search: Option<MenuSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -97,7 +97,7 @@ pub async fn find_one(
   
   check_sort_menu(sort.as_deref())?;
   
-  let model = menu_service::find_one(
+  let model = menu_service::find_one_menu(
     search,
     sort,
     options,
@@ -108,7 +108,7 @@ pub async fn find_one(
 
 /// 根据 id 查找菜单
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_menu(
   id: MenuId,
   options: Option<Options>,
 ) -> Result<Option<MenuModel>> {
@@ -119,7 +119,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = menu_service::find_by_id(
+  let model = menu_service::find_by_id_menu(
     id,
     options,
   ).await?;
@@ -129,7 +129,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找菜单
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_menu(
   ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
@@ -140,7 +140,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = menu_service::find_by_ids(
+  let models = menu_service::find_by_ids_menu(
     ids,
     options,
   ).await?;
@@ -151,7 +151,7 @@ pub async fn find_by_ids(
 /// 创建菜单
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_menu(
   inputs: Vec<MenuInput>,
   options: Option<Options>,
 ) -> Result<Vec<MenuId>> {
@@ -170,7 +170,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = menu_service::set_id_by_lbl(
+    let input = menu_service::set_id_by_lbl_menu(
       input,
     ).await?;
     inputs2.push(input);
@@ -182,7 +182,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = menu_service::creates(
+  let ids = menu_service::creates_menu(
     inputs,
     options,
   ).await?;
@@ -193,7 +193,7 @@ pub async fn creates(
 /// 根据 id 修改菜单
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_menu(
   id: MenuId,
   input: MenuInput,
   options: Option<Options>,
@@ -209,7 +209,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = menu_service::set_id_by_lbl(
+  let input = menu_service::set_id_by_lbl_menu(
     input,
   ).await?;
   
@@ -218,7 +218,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = menu_service::update_by_id(
+  let res = menu_service::update_by_id_menu(
     id,
     input,
     options,
@@ -230,7 +230,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除菜单
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_menu(
   ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -246,7 +246,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = menu_service::delete_by_ids(
+  let num = menu_service::delete_by_ids_menu(
     ids,
     options,
   ).await?;
@@ -258,7 +258,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_menu(
   id: MenuId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -269,7 +269,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = menu_service::get_is_enabled_by_id(
+  let is_enabled = menu_service::get_is_enabled_by_id_menu(
     id,
     options,
   ).await?;
@@ -280,7 +280,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用菜单
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_menu(
   ids: Vec<MenuId>,
   is_enabled: u8,
   options: Option<Options>,
@@ -297,7 +297,7 @@ pub async fn enable_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = menu_service::enable_by_ids(
+  let num = menu_service::enable_by_ids_menu(
     ids,
     is_enabled,
     options,
@@ -311,7 +311,7 @@ pub async fn enable_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_menu(
   id: MenuId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -322,7 +322,7 @@ pub async fn get_is_locked_by_id(
     function_name = function_name!(),
   );
   
-  let is_locked = menu_service::get_is_locked_by_id(
+  let is_locked = menu_service::get_is_locked_by_id_menu(
     id,
     options,
   ).await?;
@@ -333,7 +333,7 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或者解锁菜单
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_menu(
   ids: Vec<MenuId>,
   is_locked: u8,
   options: Option<Options>,
@@ -350,7 +350,7 @@ pub async fn lock_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = menu_service::lock_by_ids(
+  let num = menu_service::lock_by_ids_menu(
     ids,
     is_locked,
     options,
@@ -361,7 +361,7 @@ pub async fn lock_by_ids(
 
 /// 获取菜单字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_menu(
   options: Option<Options>,
 ) -> Result<MenuFieldComment> {
   
@@ -371,7 +371,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = menu_service::get_field_comments(
+  let comments = menu_service::get_field_comments_menu(
     options,
   ).await?;
   
@@ -381,7 +381,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原菜单
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_menu(
   ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -397,7 +397,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = menu_service::revert_by_ids(
+  let num = menu_service::revert_by_ids_menu(
     ids,
     options,
   ).await?;
@@ -408,7 +408,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除菜单
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_menu(
   ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -424,7 +424,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = menu_service::force_delete_by_ids(
+  let num = menu_service::force_delete_by_ids_menu(
     ids,
     options,
   ).await?;
@@ -434,7 +434,7 @@ pub async fn force_delete_by_ids(
 
 /// 查找 菜单 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_menu(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -444,7 +444,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = menu_service::find_last_order_by(
+  let res = menu_service::find_last_order_by_menu(
     options,
   ).await?;
   

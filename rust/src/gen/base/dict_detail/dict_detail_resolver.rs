@@ -17,7 +17,7 @@ use super::dict_detail_service;
 
 /// 根据搜索条件和分页查找系统字典明细列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_dict_detail(
   search: Option<DictDetailSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -32,7 +32,7 @@ pub async fn find_all(
   
   check_sort_dict_detail(sort.as_deref())?;
   
-  let models = dict_detail_service::find_all(
+  let models = dict_detail_service::find_all_dict_detail(
     search,
     page,
     sort,
@@ -44,7 +44,7 @@ pub async fn find_all(
 
 /// 根据条件查找系统字典明细总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_dict_detail(
   search: Option<DictDetailSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -55,7 +55,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = dict_detail_service::find_count(
+  let num = dict_detail_service::find_count_dict_detail(
     search,
     options,
   ).await?;
@@ -65,7 +65,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个系统字典明细
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_dict_detail(
   search: Option<DictDetailSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -79,7 +79,7 @@ pub async fn find_one(
   
   check_sort_dict_detail(sort.as_deref())?;
   
-  let model = dict_detail_service::find_one(
+  let model = dict_detail_service::find_one_dict_detail(
     search,
     sort,
     options,
@@ -90,7 +90,7 @@ pub async fn find_one(
 
 /// 根据 id 查找系统字典明细
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_dict_detail(
   id: DictDetailId,
   options: Option<Options>,
 ) -> Result<Option<DictDetailModel>> {
@@ -101,7 +101,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = dict_detail_service::find_by_id(
+  let model = dict_detail_service::find_by_id_dict_detail(
     id,
     options,
   ).await?;
@@ -111,7 +111,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找系统字典明细
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_dict_detail(
   ids: Vec<DictDetailId>,
   options: Option<Options>,
 ) -> Result<Vec<DictDetailModel>> {
@@ -122,7 +122,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = dict_detail_service::find_by_ids(
+  let models = dict_detail_service::find_by_ids_dict_detail(
     ids,
     options,
   ).await?;
@@ -133,7 +133,7 @@ pub async fn find_by_ids(
 /// 创建系统字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_dict_detail(
   inputs: Vec<DictDetailInput>,
   options: Option<Options>,
 ) -> Result<Vec<DictDetailId>> {
@@ -152,7 +152,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = dict_detail_service::set_id_by_lbl(
+    let input = dict_detail_service::set_id_by_lbl_dict_detail(
       input,
     ).await?;
     inputs2.push(input);
@@ -164,7 +164,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = dict_detail_service::creates(
+  let ids = dict_detail_service::creates_dict_detail(
     inputs,
     options,
   ).await?;
@@ -175,7 +175,7 @@ pub async fn creates(
 /// 根据 id 修改系统字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_dict_detail(
   id: DictDetailId,
   input: DictDetailInput,
   options: Option<Options>,
@@ -191,7 +191,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = dict_detail_service::set_id_by_lbl(
+  let input = dict_detail_service::set_id_by_lbl_dict_detail(
     input,
   ).await?;
   
@@ -200,7 +200,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = dict_detail_service::update_by_id(
+  let res = dict_detail_service::update_by_id_dict_detail(
     id,
     input,
     options,
@@ -212,7 +212,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除系统字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_dict_detail(
   ids: Vec<DictDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -228,7 +228,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = dict_detail_service::delete_by_ids(
+  let num = dict_detail_service::delete_by_ids_dict_detail(
     ids,
     options,
   ).await?;
@@ -240,7 +240,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_dict_detail(
   id: DictDetailId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -251,7 +251,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = dict_detail_service::get_is_enabled_by_id(
+  let is_enabled = dict_detail_service::get_is_enabled_by_id_dict_detail(
     id,
     options,
   ).await?;
@@ -262,7 +262,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用系统字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_dict_detail(
   ids: Vec<DictDetailId>,
   is_enabled: u8,
   options: Option<Options>,
@@ -279,7 +279,7 @@ pub async fn enable_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = dict_detail_service::enable_by_ids(
+  let num = dict_detail_service::enable_by_ids_dict_detail(
     ids,
     is_enabled,
     options,
@@ -290,7 +290,7 @@ pub async fn enable_by_ids(
 
 /// 获取系统字典明细字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_dict_detail(
   options: Option<Options>,
 ) -> Result<DictDetailFieldComment> {
   
@@ -300,7 +300,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = dict_detail_service::get_field_comments(
+  let comments = dict_detail_service::get_field_comments_dict_detail(
     options,
   ).await?;
   
@@ -310,7 +310,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原系统字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_dict_detail(
   ids: Vec<DictDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -326,7 +326,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = dict_detail_service::revert_by_ids(
+  let num = dict_detail_service::revert_by_ids_dict_detail(
     ids,
     options,
   ).await?;
@@ -337,7 +337,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除系统字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_dict_detail(
   ids: Vec<DictDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -353,7 +353,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = dict_detail_service::force_delete_by_ids(
+  let num = dict_detail_service::force_delete_by_ids_dict_detail(
     ids,
     options,
   ).await?;
@@ -363,7 +363,7 @@ pub async fn force_delete_by_ids(
 
 /// 查找 系统字典明细 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_dict_detail(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -373,7 +373,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = dict_detail_service::find_last_order_by(
+  let res = dict_detail_service::find_last_order_by_dict_detail(
     options,
   ).await?;
   

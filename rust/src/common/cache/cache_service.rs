@@ -3,8 +3,8 @@ use color_eyre::eyre::Result;
 // use crate::common::context::{get_auth_id_err, Options};
 
 // use crate::r#gen::base::usr::usr_dao::{
-//   find_by_id as find_by_id_usr,
-//   validate_option as validate_option_usr,
+//   find_by_id_usr,
+//   validate_option_usr,
 // };
 
 use super::cache_dao;

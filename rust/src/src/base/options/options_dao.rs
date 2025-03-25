@@ -11,7 +11,7 @@ pub async fn get_options_by_lbl(
   lbl: String,
 ) -> Result<Vec<OptionsModel>> {
   
-  let res = options_dao::find_all(
+  let res = options_dao::find_all_options(
     OptionsSearch {
       lbl: lbl.into(),
       ..Default::default()
@@ -41,7 +41,7 @@ pub async fn update_i18n_version() -> Result<String> {
       is_locked: 1.into(),
       ..Default::default()
     };
-    options_dao::create(
+    options_dao::create_options(
       input,
       None,
     ).await?;
@@ -52,7 +52,7 @@ pub async fn update_i18n_version() -> Result<String> {
   let i18n_version = i18n_version.parse().unwrap_or(0) + 1;
   let i18n_version = i18n_version.to_string();
   
-  options_dao::update_by_id(
+  options_dao::update_by_id_options(
     options_model.id,
     OptionsInput {
       val: i18n_version.clone().into(),

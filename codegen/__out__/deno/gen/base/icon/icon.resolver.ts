@@ -29,10 +29,10 @@ export async function findCountIcon(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountIcon,
   } = await import("./icon.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountIcon(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllIcon(
 ): Promise<IconModel[]> {
   
   const {
-    findAll,
+    findAllIcon,
   } = await import("./icon.service.ts");
   
   checkSortIcon(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllIcon(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllIcon(
 export async function getFieldCommentsIcon(): Promise<IconFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsIcon,
   } = await import("./icon.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsIcon();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneIcon(
 ): Promise<IconModel | undefined> {
   
   const {
-    findOne,
+    findOneIcon,
   } = await import("./icon.service.ts");
   
   checkSortIcon(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneIcon(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdIcon(
 ): Promise<IconModel | undefined> {
   
   const {
-    findById,
+    findByIdIcon,
   } = await import("./icon.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdIcon(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsIcon(
 ): Promise<IconModel[]> {
   
   const {
-    findByIds,
+    findByIdsIcon,
   } = await import("./icon.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsIcon(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsIcon(
 ): Promise<IconId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateIcon,
+    setIdByLblIcon,
+    createsIcon,
   } = await import("./icon.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsIcon(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblIcon(input);
     
-    await validate(input);
+    await validateIcon(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsIcon(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdIcon(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblIcon,
+    updateByIdIcon,
   } = await import("./icon.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblIcon(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: IconId = await updateById(id, input);
+  const id2: IconId = await updateByIdIcon(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsIcon(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsIcon,
   } = await import("./icon.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsIcon(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsIcon(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsIcon(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsIcon,
   } = await import("./icon.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsIcon(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsIcon(ids, is_enabled);
   
   return res;
 }
@@ -246,7 +246,7 @@ export async function revertByIdsIcon(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsIcon,
   } = await import("./icon.service.ts");
   
   set_is_tran(true);
@@ -256,7 +256,7 @@ export async function revertByIdsIcon(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsIcon(ids);
   
   return res;
 }
@@ -269,7 +269,7 @@ export async function forceDeleteByIdsIcon(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsIcon,
   } = await import("./icon.service.ts");
   
   set_is_tran(true);
@@ -279,7 +279,7 @@ export async function forceDeleteByIdsIcon(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsIcon(ids);
   
   return res;
 }
@@ -290,10 +290,10 @@ export async function forceDeleteByIdsIcon(
 export async function findLastOrderByIcon(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByIcon,
   } = await import("./icon.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByIcon();
   
   return res;
 }

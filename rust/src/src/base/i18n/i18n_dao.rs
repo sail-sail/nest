@@ -10,11 +10,11 @@ use crate::common::context::{
 };
 use regex::{Regex, Captures};
 
-use crate::r#gen::base::lang::lang_dao::find_one as find_one_lang;
+use crate::r#gen::base::lang::lang_dao::find_one_lang;
 use crate::r#gen::base::lang::lang_model::LangSearch;
-use crate::r#gen::base::i18n::i18n_dao::find_one as find_one_i18n;
+use crate::r#gen::base::i18n::i18n_dao::find_one_i18n;
 use crate::r#gen::base::i18n::i18n_model::I18nSearch;
-use crate::r#gen::base::menu::menu_dao::find_one as find_one_menu;
+use crate::r#gen::base::menu::menu_dao::find_one_menu;
 use crate::r#gen::base::menu::menu_model::MenuSearch;
 use crate::r#gen::base::menu::menu_model::MenuModel;
 
