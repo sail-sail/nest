@@ -27,10 +27,10 @@ export async function findCountSmsSendRecord(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountSmsSendRecord(search);
   
   return num;
 }
@@ -45,12 +45,12 @@ export async function findAllSmsSendRecord(
 ): Promise<SmsSendRecordModel[]> {
   
   const {
-    findAll,
+    findAllSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
   checkSortSmsSendRecord(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllSmsSendRecord(search, page, sort);
   
   return models;
 }
@@ -61,10 +61,10 @@ export async function findAllSmsSendRecord(
 export async function getFieldCommentsSmsSendRecord(): Promise<SmsSendRecordFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsSmsSendRecord();
   
   return field_comment;
 }
@@ -78,12 +78,12 @@ export async function findOneSmsSendRecord(
 ): Promise<SmsSendRecordModel | undefined> {
   
   const {
-    findOne,
+    findOneSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
   checkSortSmsSendRecord(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneSmsSendRecord(search, sort);
   
   return model;
 }
@@ -96,10 +96,10 @@ export async function findByIdSmsSendRecord(
 ): Promise<SmsSendRecordModel | undefined> {
   
   const {
-    findById,
+    findByIdSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdSmsSendRecord(id);
   
   return model;
 }
@@ -112,10 +112,10 @@ export async function findByIdsSmsSendRecord(
 ): Promise<SmsSendRecordModel[]> {
   
   const {
-    findByIds,
+    findByIdsSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsSmsSendRecord(ids);
   
   for (const model of models) {
   }
@@ -131,7 +131,7 @@ export async function deleteByIdsSmsSendRecord(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
   set_is_tran(true);
@@ -141,7 +141,7 @@ export async function deleteByIdsSmsSendRecord(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsSmsSendRecord(ids);
   
   return num;
 }
@@ -154,7 +154,7 @@ export async function revertByIdsSmsSendRecord(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
   set_is_tran(true);
@@ -164,7 +164,7 @@ export async function revertByIdsSmsSendRecord(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsSmsSendRecord(ids);
   
   return res;
 }
@@ -177,7 +177,7 @@ export async function forceDeleteByIdsSmsSendRecord(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsSmsSendRecord,
   } = await import("./sms_send_record.service.ts");
   
   set_is_tran(true);
@@ -187,7 +187,7 @@ export async function forceDeleteByIdsSmsSendRecord(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsSmsSendRecord(ids);
   
   return res;
 }

@@ -56,7 +56,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -71,11 +71,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneSmsApp,
+  findOneSmsApp,
 } from "/gen/submail/sms_app/sms_app.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -188,9 +188,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountSmsSendRecord
 /** 根据条件查找短信发送记录总数 */
-export async function findCount(
+export async function findCountSmsSendRecord(
   search?: Readonly<SmsSendRecordSearch>,
   options?: {
     is_debug?: boolean;
@@ -199,12 +199,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "submail_sms_send_record";
-  const method = "findCount";
+  const method = "findCountSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -273,9 +273,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllSmsSendRecord
 /** 根据搜索条件和分页查找短信发送记录列表 */
-export async function findAll(
+export async function findAllSmsSendRecord(
   search?: Readonly<SmsSendRecordSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -286,7 +286,7 @@ export async function findAll(
 ): Promise<SmsSendRecordModel[]> {
   
   const table = "submail_sms_send_record";
-  const method = "findAll";
+  const method = "findAllSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -426,9 +426,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblSmsSendRecord
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblSmsSendRecord(
   input: SmsSendRecordInput,
 ) {
   
@@ -441,14 +441,14 @@ export async function setIdByLbl(
     if (send_time_lbl.isValid()) {
       input.send_time = send_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsSmsSendRecord();
       throw `${ fieldComments.send_time } 日期格式错误`;
     }
   }
   if (input.send_time) {
     const send_time = dayjs(input.send_time);
     if (!send_time.isValid()) {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsSmsSendRecord();
       throw `${ fieldComments.send_time } 日期格式错误`;
     }
     input.send_time = dayjs(input.send_time).format("YYYY-MM-DD HH:mm:ss");
@@ -504,9 +504,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsSmsSendRecord
 /** 获取短信发送记录字段注释 */
-export async function getFieldComments(): Promise<SmsSendRecordFieldComment> {
+export async function getFieldCommentsSmsSendRecord(): Promise<SmsSendRecordFieldComment> {
   const fieldComments: SmsSendRecordFieldComment = {
     id: "ID",
     sms_app_id: "短信应用",
@@ -527,9 +527,9 @@ export async function getFieldComments(): Promise<SmsSendRecordFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueSmsSendRecord
 /** 通过唯一约束获得短信发送记录列表 */
-export async function findByUnique(
+export async function findByUniqueSmsSendRecord(
   search0: Readonly<SmsSendRecordInput>,
   options?: {
     is_debug?: boolean;
@@ -537,7 +537,7 @@ export async function findByUnique(
 ): Promise<SmsSendRecordModel[]> {
   
   const table = "submail_sms_send_record";
-  const method = "findByUnique";
+  const method = "findByUniqueSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -555,7 +555,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneSmsSendRecord(
       {
         id: search0.id,
       },
@@ -573,7 +573,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueSmsSendRecord(
   oldModel: Readonly<SmsSendRecordModel>,
   input: Readonly<SmsSendRecordInput>,
 ): boolean {
@@ -584,9 +584,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueSmsSendRecord
 /** 通过唯一约束检查 短信发送记录 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueSmsSendRecord(
   input: Readonly<SmsSendRecordInput>,
   oldModel: Readonly<SmsSendRecordModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -598,14 +598,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueSmsSendRecord(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 短信发送记录 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: SmsSendRecordId = await updateById(
+      const id: SmsSendRecordId = await updateByIdSmsSendRecord(
         oldModel.id,
         {
           ...input,
@@ -622,9 +622,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneSmsSendRecord
 /** 根据条件查找第一短信发送记录 */
-export async function findOne(
+export async function findOneSmsSendRecord(
   search?: Readonly<SmsSendRecordSearch>,
   sort?: SortInput[],
   options?: {
@@ -633,7 +633,7 @@ export async function findOne(
 ): Promise<SmsSendRecordModel | undefined> {
   
   const table = "submail_sms_send_record";
-  const method = "findOne";
+  const method = "findOneSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -660,7 +660,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllSmsSendRecord(
     search,
     page,
     sort,
@@ -670,9 +670,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdSmsSendRecord
 /** 根据 id 查找短信发送记录 */
-export async function findById(
+export async function findByIdSmsSendRecord(
   id?: SmsSendRecordId | null,
   options?: {
     is_debug?: boolean;
@@ -680,7 +680,7 @@ export async function findById(
 ): Promise<SmsSendRecordModel | undefined> {
   
   const table = "submail_sms_send_record";
-  const method = "findById";
+  const method = "findByIdSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -701,7 +701,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneSmsSendRecord(
     {
       id,
     },
@@ -712,9 +712,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsSmsSendRecord
 /** 根据 ids 查找短信发送记录 */
-export async function findByIds(
+export async function findByIdsSmsSendRecord(
   ids: SmsSendRecordId[],
   options?: {
     is_debug?: boolean;
@@ -722,7 +722,7 @@ export async function findByIds(
 ): Promise<SmsSendRecordModel[]> {
   
   const table = "submail_sms_send_record";
-  const method = "findByIds";
+  const method = "findByIdsSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -743,7 +743,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllSmsSendRecord(
     {
       ids,
     },
@@ -769,9 +769,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existSmsSendRecord
 /** 根据搜索条件判断短信发送记录是否存在 */
-export async function exist(
+export async function existSmsSendRecord(
   search?: Readonly<SmsSendRecordSearch>,
   options?: {
     is_debug?: boolean;
@@ -779,7 +779,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "submail_sms_send_record";
-  const method = "exist";
+  const method = "existSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -795,15 +795,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneSmsSendRecord(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdSmsSendRecord
 /** 根据id判断短信发送记录是否存在 */
-export async function existById(
+export async function existByIdSmsSendRecord(
   id?: Readonly<SmsSendRecordId | null>,
   options?: {
     is_debug?: boolean;
@@ -811,7 +811,7 @@ export async function existById(
 ) {
   
   const table = "submail_sms_send_record";
-  const method = "existById";
+  const method = "existByIdSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -844,9 +844,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionSmsSendRecord
 /** 校验短信发送记录是否存在 */
-export async function validateOption(
+export async function validateOptionSmsSendRecord(
   model?: SmsSendRecordModel,
 ) {
   if (!model) {
@@ -857,12 +857,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateSmsSendRecord
 /** 短信发送记录增加和修改时校验输入 */
-export async function validate(
+export async function validateSmsSendRecord(
   input: Readonly<SmsSendRecordInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsSmsSendRecord();
   
   // ID
   await validators.chars_max_length(
@@ -915,9 +915,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnSmsSendRecord
 /** 创建 短信发送记录 并返回 */
-export async function createReturn(
+export async function createReturnSmsSendRecord(
   input: Readonly<SmsSendRecordInput>,
   options?: {
     is_debug?: boolean;
@@ -928,7 +928,7 @@ export async function createReturn(
 ): Promise<SmsSendRecordModel> {
   
   const table = "submail_sms_send_record";
-  const method = "createReturn";
+  const method = "createReturnSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -953,8 +953,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionSmsSendRecord(
+    await findOneSmsSendRecord(
       {
         id,
       },
@@ -966,9 +966,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createSmsSendRecord
 /** 创建 短信发送记录 */
-export async function create(
+export async function createSmsSendRecord(
   input: Readonly<SmsSendRecordInput>,
   options?: {
     is_debug?: boolean;
@@ -979,7 +979,7 @@ export async function create(
 ): Promise<SmsSendRecordId> {
   
   const table = "submail_sms_send_record";
-  const method = "create";
+  const method = "createSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1007,9 +1007,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnSmsSendRecord
 /** 批量创建 短信发送记录 并返回 */
-export async function createsReturn(
+export async function createsReturnSmsSendRecord(
   inputs: SmsSendRecordInput[],
   options?: {
     is_debug?: boolean;
@@ -1020,7 +1020,7 @@ export async function createsReturn(
 ): Promise<SmsSendRecordModel[]> {
   
   const table = "submail_sms_send_record";
-  const method = "createsReturn";
+  const method = "createsReturnSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1039,14 +1039,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsSmsSendRecord(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsSmsSendRecord
 /** 批量创建 短信发送记录 */
-export async function creates(
+export async function createsSmsSendRecord(
   inputs: SmsSendRecordInput[],
   options?: {
     is_debug?: boolean;
@@ -1057,7 +1057,7 @@ export async function creates(
 ): Promise<SmsSendRecordId[]> {
   
   const table = "submail_sms_send_record";
-  const method = "creates";
+  const method = "createsSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1106,11 +1106,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueSmsSendRecord(input, options);
     if (oldModels.length > 0) {
       let id: SmsSendRecordId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueSmsSendRecord(
           input,
           oldModel,
           options?.uniqueType,
@@ -1288,9 +1288,9 @@ async function _creates(
   return ids2;
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdSmsSendRecord
 /** 短信发送记录 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdSmsSendRecord(
   id: SmsSendRecordId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1299,7 +1299,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "submail_sms_send_record";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1331,9 +1331,9 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdSmsSendRecord
 /** 根据 id 修改 短信发送记录 */
-export async function updateById(
+export async function updateByIdSmsSendRecord(
   id: SmsSendRecordId,
   input: SmsSendRecordInput,
   options?: {
@@ -1345,7 +1345,7 @@ export async function updateById(
 ): Promise<SmsSendRecordId> {
   
   const table = "submail_sms_send_record";
-  const method = "updateById";
+  const method = "updateByIdSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1368,15 +1368,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdSmsSendRecord: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdSmsSendRecord: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdSmsSendRecord(id, input.tenant_id, options);
   }
   
   {
@@ -1384,7 +1384,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueSmsSendRecord(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1395,7 +1395,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdSmsSendRecord(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 短信发送记录 已被删除";
@@ -1493,9 +1493,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsSmsSendRecord
 /** 根据 ids 删除 短信发送记录 */
-export async function deleteByIds(
+export async function deleteByIdsSmsSendRecord(
   ids: SmsSendRecordId[],
   options?: {
     is_debug?: boolean;
@@ -1505,7 +1505,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "submail_sms_send_record";
-  const method = "deleteByIds";
+  const method = "deleteByIdsSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1531,7 +1531,7 @@ export async function deleteByIds(
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdSmsSendRecord(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1567,9 +1567,9 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsSmsSendRecord
 /** 根据 ids 还原 短信发送记录 */
-export async function revertByIds(
+export async function revertByIdsSmsSendRecord(
   ids: SmsSendRecordId[],
   options?: {
     is_debug?: boolean;
@@ -1577,7 +1577,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "submail_sms_send_record";
-  const method = "revertByIds";
+  const method = "revertByIdsSmsSendRecord";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1601,7 +1601,7 @@ export async function revertByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneSmsSendRecord(
       {
         id,
         is_deleted: 1,
@@ -1610,7 +1610,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdSmsSendRecord(
         id,
         options,
       );
@@ -1623,7 +1623,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as SmsSendRecordInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueSmsSendRecord(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1640,9 +1640,9 @@ export async function revertByIds(
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsSmsSendRecord
 /** 根据 ids 彻底删除 短信发送记录 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsSmsSendRecord(
   ids: SmsSendRecordId[],
   options?: {
     is_debug?: boolean;
@@ -1651,7 +1651,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "submail_sms_send_record";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsSmsSendRecord";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1676,7 +1676,7 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneSmsSendRecord(
       {
         id,
         is_deleted: 1,
