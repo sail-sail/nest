@@ -231,18 +231,29 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.support_fapiao == null)">
+        <template v-if="(showBuildIn || builtInModel?.receipt == null)">
           <el-form-item
-            label="是否支持发票"
-            prop="support_fapiao"
+            label="开发票"
+            prop="receipt"
           >
-            <DictSelect
-              v-model="dialogModel.support_fapiao"
-              :set="dialogModel.support_fapiao = dialogModel.support_fapiao ?? undefined"
-              code="is_enabled"
-              placeholder="请选择 是否支持发票"
+            <CustomInput
+              v-model="dialogModel.receipt"
+              placeholder="请输入 开发票"
               :readonly="isLocked || isReadonly"
-            ></DictSelect>
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
+        <template v-if="(showBuildIn || builtInModel?.profit_sharing == null)">
+          <el-form-item
+            label="分账"
+            prop="profit_sharing"
+          >
+            <CustomInput
+              v-model="dialogModel.profit_sharing"
+              placeholder="请输入 分账"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
           </el-form-item>
         </template>
         
@@ -429,13 +440,6 @@ watchEffect(async () => {
       {
         required: true,
         message: "请选择 交易状态",
-      },
-    ],
-    // 是否支持发票
-    support_fapiao: [
-      {
-        required: true,
-        message: "请选择 是否支持发票",
       },
     ],
     // 货币类型
@@ -745,7 +749,6 @@ watch(
   () => [
     dialogModel.trade_state,
     dialogModel.success_time,
-    dialogModel.support_fapiao,
     dialogModel.currency,
   ],
   () => {
@@ -758,9 +761,6 @@ watch(
     if (!dialogModel.success_time) {
       dialogModel.success_time_lbl = "";
       dialogModel.success_time_save_null = true;
-    }
-    if (!dialogModel.support_fapiao) {
-      dialogModel.support_fapiao_lbl = "";
     }
     if (!dialogModel.currency) {
       dialogModel.currency_lbl = "";

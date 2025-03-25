@@ -17,6 +17,8 @@ type WxoUsrModel {
   usr_id: UsrId!
   "绑定用户"
   usr_id_lbl: String!
+  "开发者ID"
+  appid: String!
   "公众号用户唯一标识"
   openid: String!
   "用户统一标识"
@@ -63,6 +65,8 @@ type WxoUsrFieldComment {
   usr_id: String!
   "绑定用户"
   usr_id_lbl: String!
+  "开发者ID"
+  appid: String!
   "公众号用户唯一标识"
   openid: String!
   "用户统一标识"
@@ -107,6 +111,8 @@ input WxoUsrInput {
   usr_id: UsrId
   "绑定用户"
   usr_id_lbl: String
+  "开发者ID"
+  appid: String
   "公众号用户唯一标识"
   openid: String
   "用户统一标识"
@@ -142,6 +148,9 @@ input WxoUsrSearch {
   usr_id_lbl: [String!]
   "绑定用户"
   usr_id_lbl_like: String
+  "开发者ID"
+  appid: String
+  appid_like: String
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"

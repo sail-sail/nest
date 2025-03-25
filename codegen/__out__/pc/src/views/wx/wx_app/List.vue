@@ -550,15 +550,6 @@
             </el-table-column>
           </template>
           
-          <!-- 开发者密码 -->
-          <template v-else-if="'appsecret' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 锁定 -->
           <template v-else-if="'is_locked_lbl' === col.prop">
             <el-table-column
@@ -1045,14 +1036,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "开发者密码",
-      prop: "appsecret",
-      width: 260,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "锁定",
       prop: "is_locked_lbl",
       sortBy: "is_locked",
@@ -1396,7 +1379,6 @@ async function onImportExcel() {
     [ "原始ID" ]: "code",
     [ "名称" ]: "lbl",
     [ "开发者ID" ]: "appid",
-    [ "开发者密码" ]: "appsecret",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",
     [ "排序" ]: "order_by",
@@ -1425,7 +1407,6 @@ async function onImportExcel() {
           "code": "string",
           "lbl": "string",
           "appid": "string",
-          "appsecret": "string",
           "is_locked_lbl": "string",
           "is_enabled_lbl": "string",
           "order_by": "number",

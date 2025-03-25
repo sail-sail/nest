@@ -13,6 +13,10 @@ type WxoAppTokenModel {
   wxo_app_id: WxoAppId!
   "小程序设置"
   wxo_app_id_lbl: String!
+  "开发者ID"
+  appid: String!
+  "开发者密码"
+  appsecret: String!
   "令牌"
   access_token: String!
   "令牌创建时间"
@@ -31,6 +35,10 @@ type WxoAppTokenFieldComment {
   wxo_app_id: String!
   "小程序设置"
   wxo_app_id_lbl: String!
+  "开发者ID"
+  appid: String!
+  "开发者密码"
+  appsecret: String!
   "令牌"
   access_token: String!
   "令牌创建时间"
@@ -47,6 +55,10 @@ input WxoAppTokenInput {
   wxo_app_id: WxoAppId
   "小程序设置"
   wxo_app_id_lbl: String
+  "开发者ID"
+  appid: String
+  "开发者密码"
+  appsecret: String
   "令牌"
   access_token: String
   "令牌创建时间"

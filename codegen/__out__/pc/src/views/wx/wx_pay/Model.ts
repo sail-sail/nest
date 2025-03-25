@@ -36,6 +36,8 @@ export const wxPayFields = [
   "appid",
   // 商户号
   "mchid",
+  // 证书序列号
+  "serial_no",
   // 公钥
   "public_key",
   // 私钥

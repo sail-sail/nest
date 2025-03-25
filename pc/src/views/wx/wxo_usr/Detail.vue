@@ -124,6 +124,19 @@
           </el-form-item>
         </template>
         
+        <template v-if="(showBuildIn || builtInModel?.appid == null)">
+          <el-form-item
+            label="开发者ID"
+            prop="appid"
+          >
+            <CustomInput
+              v-model="dialogModel.appid"
+              placeholder="请输入 开发者ID"
+              :readonly="isLocked || isReadonly"
+            ></CustomInput>
+          </el-form-item>
+        </template>
+        
         <template v-if="(showBuildIn || builtInModel?.openid == null)">
           <el-form-item
             label="公众号用户唯一标识"
@@ -396,6 +409,18 @@ watchEffect(async () => {
       {
         required: true,
         message: "请选择 绑定用户",
+      },
+    ],
+    // 开发者ID
+    appid: [
+      {
+        required: true,
+        message: "请输入 开发者ID",
+      },
+      {
+        type: "string",
+        max: 22,
+        message: "开发者ID 长度不能超过 22",
       },
     ],
     // 性别

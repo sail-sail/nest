@@ -58,6 +58,12 @@
 			"style": {
 				"navigationBarTitleText": "绑定微信"
 			}
+		},
+		{
+			"path": "pages/wx/PayTest",
+			"style": {
+				"navigationBarTitleText": "微信支付测试"
+			}
 		}
 	],
   "tabBar": {

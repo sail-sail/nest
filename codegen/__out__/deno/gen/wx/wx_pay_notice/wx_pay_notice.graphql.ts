@@ -14,8 +14,12 @@ enum WxPayNoticeTradeType {
   NATIVE
   "app支付"
   APP
+  "扫码支付"
+  MICROPAY
   "H5支付"
   MWEB
+  "刷脸支付"
+  FACEPAY
 }
 
 "微信支付通知交易状态"

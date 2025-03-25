@@ -15,6 +15,8 @@ type WxPayModel {
   appid: String!
   "商户号"
   mchid: String!
+  "证书序列号"
+  serial_no: String!
   "公钥"
   public_key: String!
   "私钥"
@@ -65,6 +67,8 @@ type WxPayFieldComment {
   appid: String!
   "商户号"
   mchid: String!
+  "证书序列号"
+  serial_no: String!
   "公钥"
   public_key: String!
   "私钥"
@@ -113,6 +117,8 @@ input WxPayInput {
   appid: String
   "商户号"
   mchid: String
+  "证书序列号"
+  serial_no: String
   "公钥"
   public_key: String
   "私钥"

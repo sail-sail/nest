@@ -56,9 +56,10 @@ export const payTransactionsJsapiFields = [
   "attach2",
   // 通知地址
   "notify_url",
-  // 是否支持发票
-  "support_fapiao",
-  "support_fapiao_lbl",
+  // 开发票
+  "receipt",
+  // 分账
+  "profit_sharing",
   // 订单金额(分)
   "total_fee",
   // 货币类型

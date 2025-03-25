@@ -4,6 +4,8 @@ import type {
   MutationBindWxUsrArgs,
 } from "#/types";
 
+import cfg from "@/utils/config";
+
 export async function checkBindWxUsr() {
   // #ifndef H5
   {
@@ -61,5 +63,30 @@ export async function bindWxUsr(
     },
   }, opt);
   const data = res.bindWxUsr;
+  return data;
+}
+
+/** 微信支付测试 */
+export async function getTestPayOpt() {
+  const appid = cfg.appid;
+  const res: {
+    getTestPayOpt: Mutation["getTestPayOpt"],
+  } = await query({
+    query: /* GraphQL */ `
+      mutation($appid: String!) {
+        getTestPayOpt(appid: $appid) {
+          timeStamp
+          nonceStr
+          package
+          signType
+          paySign
+        }
+      }
+    `,
+    variables: {
+      appid,
+    },
+  });
+  const data = res.getTestPayOpt;
   return data;
 }

@@ -57,9 +57,10 @@ export function intoInput(
     attach2: model?.attach2,
     // 通知地址
     notify_url: model?.notify_url,
-    // 是否支持发票
-    support_fapiao: model?.support_fapiao,
-    support_fapiao_lbl: model?.support_fapiao_lbl,
+    // 开发票
+    receipt: model?.receipt,
+    // 分账
+    profit_sharing: model?.profit_sharing,
     // 订单金额(分)
     total_fee: model?.total_fee,
     // 货币类型
@@ -254,7 +255,6 @@ export function useExportExcel() {
             }
             getDict(codes: [
               "wx_pay_notice_trade_state",
-              "is_enabled",
               "wx_pay_notice_currency",
             ]) {
               code
@@ -306,7 +306,8 @@ export async function getDefaultInput() {
   const defaultInput: PayTransactionsJsapiInput = {
     trade_state: PayTransactionsJsapiTradeState.Notpay,
     trade_state_desc: "未支付",
-    support_fapiao: 0,
+    receipt: "N",
+    profit_sharing: "N",
     total_fee: 0,
     currency: PayTransactionsJsapiCurrency.Cny,
   };
