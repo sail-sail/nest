@@ -1,9 +1,9 @@
 use color_eyre::eyre::Result;
 use crate::common::context::{get_auth_model, Options};
 
-use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id_usr;
 
-use crate::r#gen::base::dept::dept_dao::find_all as find_all_dept;
+use crate::r#gen::base::dept::dept_dao::find_all_dept;
 use crate::r#gen::base::dept::dept_model::{DeptSearch, DeptId};
 
 use crate::common::auth::auth_model::AuthModel;

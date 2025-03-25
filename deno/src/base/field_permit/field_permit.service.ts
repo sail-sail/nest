@@ -3,21 +3,21 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findById as findByIdUsr,
-  validateOption as validateOptionUsr,
-  validateIsEnabled as validateIsEnabledUsr,
+  findByIdUsr,
+  validateOptionUsr,
+  validateIsEnabledUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  findByIds as findByIdsRole,
+  findByIdsRole,
 } from "/gen/base/role/role.dao.ts";
 
 import {
-  findAll as findAllFieldPermit,
+  findAllFieldPermit,
 } from "/gen/base/field_permit/field_permit.dao.ts";
 
 import {
-  findOne as findOneMenu,
+  findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
 
 // 字段权限

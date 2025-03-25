@@ -327,7 +327,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";<#
 }
 #><#
@@ -360,7 +360,7 @@ if (hasAudit && auditTable_Up) {
 #>
 
 import {
-  findAll as findAll<#=auditTable_Up#>,
+  findAll<#=auditTable_Up#>,
 } from "/gen/<#=auditMod#>/<#=auditTable#>/<#=auditTable#>.dao.ts";<#
 }
 #>
@@ -466,7 +466,7 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 import {
-  findOne as findOne<#=foreignTable_Up#>,
+  findOne<#=foreignTable_Up#>,
 } from "/gen/<#=foreignKey.mod#>/<#=foreignTable#>/<#=foreignTable#>.dao.ts";<#
   }
 #><#
@@ -564,37 +564,37 @@ for (let i = 0; i < columns.length; i++) {
 import {<#
   if (!hasFindAllTableUps) {
   #>
-  findAll as findAll<#=Table_Up#>,<#
+  findAll<#=Table_Up#>,<#
   }
   #><#
   if (!hasCreateTableUps) {
   #>
-  create as create<#=Table_Up#>,<#
+  create<#=Table_Up#>,<#
   }
   #><#
   if (!hasDeleteByIdsTableUps) {
   #>
-  deleteByIds as deleteByIds<#=Table_Up#>,<#
+  deleteByIds<#=Table_Up#>,<#
   }
   #><#
   if (!hasRevertByIdsTableUps) {
   #>
-  revertByIds as revertByIds<#=Table_Up#>,<#
+  revertByIds<#=Table_Up#>,<#
   }
   #><#
   if (!hasUpdateByIdTableUps) {
   #>
-  updateById as updateById<#=Table_Up#>,<#
+  updateById<#=Table_Up#>,<#
   }
   #><#
   if (!hasForceDeleteByIdsUps) {
   #>
-  forceDeleteByIds as forceDeleteByIds<#=Table_Up#>,<#
+  forceDeleteByIds<#=Table_Up#>,<#
   }
   #><#
   if (!hasEqualsByUniqueTableUps) {
   #>
-  equalsByUnique as equalsByUnique<#=Table_Up#>,<#
+  equalsByUnique<#=Table_Up#>,<#
   }
   #>
 } from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
@@ -646,32 +646,32 @@ for (const inlineForeignTab of inlineForeignTabs) {
 import {<#
   if (!hasFindAllTableUps) {
   #>
-  findAll as findAll<#=Table_Up#>,<#
+  findAll<#=Table_Up#>,<#
   }
   #><#
   if (!hasCreateTableUps) {
   #>
-  create as create<#=Table_Up#>,<#
+  create<#=Table_Up#>,<#
   }
   #><#
   if (!hasDeleteByIdsTableUps) {
   #>
-  deleteByIds as deleteByIds<#=Table_Up#>,<#
+  deleteByIds<#=Table_Up#>,<#
   }
   #><#
   if (!hasRevertByIdsTableUps) {
   #>
-  revertByIds as revertByIds<#=Table_Up#>,<#
+  revertByIds<#=Table_Up#>,<#
   }
   #><#
   if (!hasUpdateByIdTableUps) {
   #>
-  updateById as updateById<#=Table_Up#>,<#
+  updateById<#=Table_Up#>,<#
   }
   #><#
   if (!hasForceDeleteByIdsUps) {
   #>
-  forceDeleteByIds as forceDeleteByIds<#=Table_Up#>,<#
+  forceDeleteByIds<#=Table_Up#>,<#
   }
   #>
 } from "/gen/<#=mod#>/<#=table#>/<#=table#>.dao.ts";<#
@@ -689,15 +689,15 @@ if (
   if (!hasFindByIdTableUps) {
     findByIdTableUps.push(Table_Up);
   }
-#>
+#><#
+  if (!hasFindByIdTableUps && table_name !== "base_usr") {  
+  #>
 
-import {<#
-  if (!hasFindByIdTableUps) {  
-  #>
-  findById as findByIdUsr,<#
-  }
-  #>
+import {
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";<#
+}
+#><#
 }
 #><#
 if (hasIsIcon) {
@@ -1145,9 +1145,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCount<#=Table_Up#>
 /** 根据条件查找<#=table_comment#>总数 */
-export async function findCount(
+export async function findCount<#=Table_Up#>(
   search?: Readonly<<#=searchName#>>,
   options?: {
     is_debug?: boolean;
@@ -1161,12 +1161,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "findCount";
+  const method = "findCount<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -1266,9 +1266,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAll<#=Table_Up#>
 /** 根据搜索条件和分页查找<#=table_comment#>列表 */
-export async function findAll(
+export async function findAll<#=Table_Up#>(
   search?: Readonly<<#=searchName#>>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -1284,7 +1284,7 @@ export async function findAll(
 ): Promise<<#=modelName#>[]> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "findAll";
+  const method = "findAll<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2123,9 +2123,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLbl<#=Table_Up#>
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLbl<#=Table_Up#>(
   input: <#=inputName#>,
 ) {
   
@@ -2164,7 +2164,7 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();<#
+      const fieldComments = await getFieldComments<#=Table_Up#>();<#
       if (isUseI18n) {
       #>
       throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
@@ -2178,7 +2178,7 @@ export async function setIdByLbl(
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      const fieldComments = await getFieldComments();<#
+      const fieldComments = await getFieldComments<#=Table_Up#>();<#
       if (isUseI18n) {
       #>
       throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
@@ -2198,7 +2198,7 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();<#
+      const fieldComments = await getFieldComments<#=Table_Up#>();<#
       if (isUseI18n) {
       #>
       throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
@@ -2212,7 +2212,7 @@ export async function setIdByLbl(
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      const fieldComments = await getFieldComments();<#
+      const fieldComments = await getFieldComments<#=Table_Up#>();<#
       if (isUseI18n) {
       #>
       throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
@@ -2232,7 +2232,7 @@ export async function setIdByLbl(
     if (<#=column_name#>_lbl.isValid()) {
       input.<#=column_name#> = <#=column_name#>_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();<#
+      const fieldComments = await getFieldComments<#=Table_Up#>();<#
       if (isUseI18n) {
       #>
       throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
@@ -2246,7 +2246,7 @@ export async function setIdByLbl(
   if (input.<#=column_name#>) {
     const <#=column_name#> = dayjs(input.<#=column_name#>);
     if (!<#=column_name#>.isValid()) {
-      const fieldComments = await getFieldComments();<#
+      const fieldComments = await getFieldComments<#=Table_Up#>();<#
       if (isUseI18n) {
       #>
       throw `${ fieldComments.<#=column_name#> } ${ await ns("日期格式错误") }`;<#
@@ -2435,12 +2435,8 @@ export async function setIdByLbl(
   // <#=column_comment#>
   if (isNotEmpty(input.<#=column_name#>_<#=foreignKey.lbl#>) && input.<#=column_name#> == null) {
     input.<#=column_name#>_<#=foreignKey.lbl#> = String(input.<#=column_name#>_<#=foreignKey.lbl#>).trim();<#
-    let foreignTable_UpTmp = foreignTable_Up;
-    if (foreignTable_Up === Table_Up) {
-      foreignTable_UpTmp = "";
-    }
     #>
-    const <#=foreignTable#>Model = await findOne<#=foreignTable_UpTmp#>(
+    const <#=foreignTable#>Model = await findOne<#=foreignTable_Up#>(
       {
         <#=foreignKey.lbl#>: input.<#=column_name#>_<#=foreignKey.lbl#>,
       },
@@ -2451,7 +2447,7 @@ export async function setIdByLbl(
       input.<#=column_name#> = <#=foreignTable#>Model.id;
     }
   } else if (isEmpty(input.<#=column_name#>_<#=foreignKey.lbl#>) && input.<#=column_name#> != null) {
-    const <#=foreignTable#>_model = await findOne<#=foreignTable_UpTmp#>(
+    const <#=foreignTable#>_model = await findOne<#=foreignTable_Up#>(
       {
         id: input.<#=column_name#>,
       },
@@ -2611,9 +2607,9 @@ export async function setIdByLbl(
   #>
 }
 
-// MARK: getFieldComments
+// MARK: getFieldComments<#=Table_Up#>
 /** 获取<#=table_comment#>字段注释 */
-export async function getFieldComments(): Promise<<#=fieldCommentName#>> {<#
+export async function getFieldComments<#=Table_Up#>(): Promise<<#=fieldCommentName#>> {<#
   if (isUseI18n) {
   #>
   const n = initN(route_path);
@@ -2710,9 +2706,9 @@ export async function getFieldComments(): Promise<<#=fieldCommentName#>> {<#
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUnique<#=Table_Up#>
 /** 通过唯一约束获得<#=table_comment#>列表 */
-export async function findByUnique(
+export async function findByUnique<#=Table_Up#>(
   search0: Readonly<<#=inputName#>>,
   options?: {
     is_debug?: boolean;<#
@@ -2725,7 +2721,7 @@ export async function findByUnique(
 ): Promise<<#=modelName#>[]> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "findByUnique";
+  const method = "findByUnique<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2743,7 +2739,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOne<#=Table_Up#>(
       {
         id: search0.id,
       },
@@ -2838,7 +2834,7 @@ export async function findByUnique(
     #><#
     }
     #>
-    const modelTmps = await findAll(
+    const modelTmps = await findAll<#=Table_Up#>(
       {<#
         for (let k = 0; k < uniques.length; k++) {
           const unique = uniques[k];
@@ -2860,7 +2856,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUnique<#=Table_Up#>(
   oldModel: Readonly<<#=modelName#>>,
   input: Readonly<<#=inputName#>>,
 ): boolean {
@@ -2904,9 +2900,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUnique<#=Table_Up#>
 /** 通过唯一约束检查 <#=table_comment#> 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUnique<#=Table_Up#>(
   input: Readonly<<#=inputName#>>,
   oldModel: Readonly<<#=modelName#>>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -2918,7 +2914,7 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUnique<#=Table_Up#>(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {<#
@@ -2932,7 +2928,7 @@ export async function checkByUnique(
       #>
     }
     if (uniqueType === UniqueType.Update) {
-      const id: <#=Table_Up#>Id = await updateById(
+      const id: <#=Table_Up#>Id = await updateById<#=Table_Up#>(
         oldModel.id,
         {
           ...input,
@@ -2951,9 +2947,9 @@ export async function checkByUnique(
 if (hasSummary) {
 #>
 
-// MARK: findSummary
+// MARK: findSummary<#=Table_Up#>
 /** 根据搜索条件查找 <#=table_comment#> 合计 */
-export async function findSummary(
+export async function findSummary<#=Table_Up#>(
   search?: Readonly<<#=searchName#>>,
   options?: {
     is_debug?: boolean;<#
@@ -2966,7 +2962,7 @@ export async function findSummary(
 ): Promise<<#=Table_Up#>Summary> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "findSummary";
+  const method = "findSummary<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3018,9 +3014,9 @@ export async function findSummary(
 }
 #>
 
-// MARK: findOne
+// MARK: findOne<#=Table_Up#>
 /** 根据条件查找第一<#=table_comment#> */
-export async function findOne(
+export async function findOne<#=Table_Up#>(
   search?: Readonly<<#=searchName#>>,
   sort?: SortInput[],
   options?: {
@@ -3034,7 +3030,7 @@ export async function findOne(
 ): Promise<<#=modelName#> | undefined> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "findOne";
+  const method = "findOne<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3061,7 +3057,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAll<#=Table_Up#>(
     search,
     page,
     sort,
@@ -3071,9 +3067,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findById<#=Table_Up#>
 /** 根据 id 查找<#=table_comment#> */
-export async function findById(
+export async function findById<#=Table_Up#>(
   id?: <#=Table_Up#>Id | null,
   options?: {
     is_debug?: boolean;<#
@@ -3086,7 +3082,7 @@ export async function findById(
 ): Promise<<#=modelName#> | undefined> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "findById";
+  const method = "findById<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3107,7 +3103,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOne<#=Table_Up#>(
     {
       id,
     },
@@ -3118,9 +3114,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIds<#=Table_Up#>
 /** 根据 ids 查找<#=table_comment#> */
-export async function findByIds(
+export async function findByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   options?: {
     is_debug?: boolean;<#
@@ -3133,7 +3129,7 @@ export async function findByIds(
 ): Promise<<#=modelName#>[]> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "findByIds";
+  const method = "findByIds<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3154,7 +3150,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAll<#=Table_Up#>(
     {
       ids,
     },
@@ -3194,9 +3190,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: exist<#=Table_Up#>
 /** 根据搜索条件判断<#=table_comment#>是否存在 */
-export async function exist(
+export async function exist<#=Table_Up#>(
   search?: Readonly<<#=searchName#>>,
   options?: {
     is_debug?: boolean;<#
@@ -3209,7 +3205,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "exist";
+  const method = "exist<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3225,15 +3221,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOne<#=Table_Up#>(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existById<#=Table_Up#>
 /** 根据id判断<#=table_comment#>是否存在 */
-export async function existById(
+export async function existById<#=Table_Up#>(
   id?: Readonly<<#=Table_Up#>Id | null>,
   options?: {
     is_debug?: boolean;<#
@@ -3246,7 +3242,7 @@ export async function existById(
 ) {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "existById";
+  const method = "existById<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3302,9 +3298,9 @@ export async function existById(
 if (hasEnabled) {
 #>
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabled<#=Table_Up#>
 /** 校验<#=table_comment#>是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabled<#=Table_Up#>(
   model: Readonly<<#=modelName#>>,
 ) {
   if (model.is_enabled == 0) {<#
@@ -3321,9 +3317,9 @@ export async function validateIsEnabled(
 }
 #>
 
-// MARK: validateOption
+// MARK: validateOption<#=Table_Up#>
 /** 校验<#=table_comment#>是否存在 */
-export async function validateOption(
+export async function validateOption<#=Table_Up#>(
   model?: <#=modelName#>,
 ) {
   if (!model) {<#
@@ -3341,12 +3337,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validate<#=Table_Up#>
 /** <#=table_comment#>增加和修改时校验输入 */
-export async function validate(
+export async function validate<#=Table_Up#>(
   input: Readonly<<#=inputName#>>,
 ) {
-  const fieldComments = await getFieldComments();<#
+  const fieldComments = await getFieldComments<#=Table_Up#>();<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
     if (column.ignoreCodegen) continue;
@@ -3513,16 +3509,16 @@ const autoCodeColumn = columns.find((item) => item.autoCode);
 if (autoCodeColumn) {
 #>
 
-// MARK: findAutoCode
+// MARK: findAutoCode<#=Table_Up#>
 /** 获得 <#=table_comment#> 自动编码 */
-export async function findAutoCode(
+export async function findAutoCode<#=Table_Up#>(
   options?: {
     is_debug?: boolean;
   },
 ) {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "findAutoCode";
+  const method = "findAutoCode<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3539,7 +3535,7 @@ export async function findAutoCode(
   if (!dateSeq) {
   #>
   
-  const model = await findOne(
+  const model = await findOne<#=Table_Up#>(
     undefined,
     [
       {
@@ -3573,7 +3569,7 @@ export async function findAutoCode(
     const dateFormat = autoCodeColumn.autoCode.dateFormat || "YYYYMMDD";
   #>
   
-  const model = await findOne(
+  const model = await findOne<#=Table_Up#>(
     undefined,
     [
       {
@@ -3624,9 +3620,9 @@ export async function findAutoCode(
 }
 #>
 
-// MARK: createReturn
+// MARK: createReturn<#=Table_Up#>
 /** 创建 <#=table_comment#> 并返回 */
-export async function createReturn(
+export async function createReturn<#=Table_Up#>(
   input: Readonly<<#=inputName#>>,
   options?: {
     is_debug?: boolean;
@@ -3637,7 +3633,7 @@ export async function createReturn(
 ): Promise<<#=modelName#>> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "createReturn";
+  const method = "createReturn<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3662,8 +3658,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOption<#=Table_Up#>(
+    await findOne<#=Table_Up#>(
       {
         id,
       },
@@ -3675,9 +3671,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: create<#=Table_Up#>
 /** 创建 <#=table_comment#> */
-export async function create(
+export async function create<#=Table_Up#>(
   input: Readonly<<#=inputName#>>,
   options?: {
     is_debug?: boolean;
@@ -3688,7 +3684,7 @@ export async function create(
 ): Promise<<#=Table_Up#>Id> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "create";
+  const method = "create<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3716,9 +3712,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturn<#=Table_Up#>
 /** 批量创建 <#=table_comment#> 并返回 */
-export async function createsReturn(
+export async function createsReturn<#=Table_Up#>(
   inputs: <#=inputName#>[],
   options?: {
     is_debug?: boolean;
@@ -3729,7 +3725,7 @@ export async function createsReturn(
 ): Promise<<#=modelName#>[]> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "createsReturn";
+  const method = "createsReturn<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3748,14 +3744,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIds<#=Table_Up#>(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: creates<#=Table_Up#>
 /** 批量创建 <#=table_comment#> */
-export async function creates(
+export async function creates<#=Table_Up#>(
   inputs: <#=inputName#>[],
   options?: {
     is_debug?: boolean;
@@ -3766,7 +3762,7 @@ export async function creates(
 ): Promise<<#=Table_Up#>Id[]> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "creates";
+  const method = "creates<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -3818,7 +3814,7 @@ async function _creates(
       #>
       <#=autoCodeColumn.autoCode.seq#>,
       <#=autoCodeColumn.COLUMN_NAME#>,
-    } = await findAutoCode(options);<#
+    } = await findAutoCode<#=Table_Up#>(options);<#
     if (dateSeq) {
     #>
     input.<#=dateSeq#> = <#=dateSeq#>;<#
@@ -3916,11 +3912,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUnique<#=Table_Up#>(input, options);
     if (oldModels.length > 0) {
       let id: <#=Table_Up#>Id | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUnique<#=Table_Up#>(
           input,
           oldModel,
           options?.uniqueType,
@@ -3964,7 +3960,7 @@ async function _creates(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #>
   
@@ -4504,7 +4500,7 @@ for (const key of redundLblKeys) {
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #><#
   if (mod === "cron" && table === "cron_job") {
@@ -4519,9 +4515,9 @@ for (const key of redundLblKeys) {
 if (cache) {
 #>
 
-// MARK: delCache
+// MARK: delCache<#=Table_Up#>
 /** 删除缓存 */
-export async function delCache() {
+export async function delCache<#=Table_Up#>() {
   await delCacheCtx(`dao.sql.<#=mod#>_<#=table#>`);<#
   if (
     (mod === "base" && table === "tenant") ||
@@ -4539,9 +4535,9 @@ export async function delCache() {
 if (hasTenant_id) {
 #>
 
-// MARK: updateTenantById
+// MARK: updateTenantById<#=Table_Up#>
 /** <#=table_comment#> 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -4550,7 +4546,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "updateTenantById";
+  const method = "updateTenantById<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -4582,7 +4578,7 @@ export async function updateTenantById(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #><#
   if (mod === "cron" && table === "cron_job") {
@@ -4598,13 +4594,13 @@ export async function updateTenantById(
 if (hasVersion) {
 #>
 
-// MARK: getVersionById
+// MARK: getVersionById<#=Table_Up#>
 /** 根据 id 获取<#=table_comment#>版本号 */
-export async function getVersionById(
+export async function getVersionById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
 ): Promise<number> {
   
-  const model = await findById(
+  const model = await findById<#=Table_Up#>(
     id,
     {
       is_debug: false,
@@ -4622,9 +4618,9 @@ export async function getVersionById(
 if (hasDataPermit() && hasCreateUsrId) {
 #>
 
-// MARK: getEditableDataPermitsByIds
+// MARK: getEditableDataPermitsByIds<#=Table_Up#>
 /** 根据 ids 获取<#=table_comment#>是否可编辑数据权限 */
-export async function getEditableDataPermitsByIds(
+export async function getEditableDataPermitsByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
 ) {
   if (ids.length === 0) {
@@ -4645,7 +4641,7 @@ export async function getEditableDataPermitsByIds(
   const hasTenantPermit = dataPermitModels.some((item) => item.scope === DataPermitScope.Tenant && item.type === DataPermitType.Editable);
   
   const dataPermits = [ ];
-  const models = await findAll(
+  const models = await findAll<#=Table_Up#>(
     {
       ids,
     },
@@ -4863,9 +4859,9 @@ async function refreshLangByInput(
 }
 #>
 
-// MARK: updateById
+// MARK: updateById<#=Table_Up#>
 /** 根据 id 修改 <#=table_comment#> */
-export async function updateById(
+export async function updateById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
   options?: {
@@ -4882,7 +4878,7 @@ export async function updateById(
 ): Promise<<#=Table_Up#>Id> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "updateById";
+  const method = "updateById<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -4911,10 +4907,10 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateById<#=Table_Up#>: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateById<#=Table_Up#>: input cannot be null");
   }<#
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -4987,7 +4983,7 @@ export async function updateById(
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantById<#=Table_Up#>(id, input.tenant_id, options);
   }<#
   }
   #>
@@ -4997,7 +4993,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUnique<#=Table_Up#>(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {<#
@@ -5015,7 +5011,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findById<#=Table_Up#>(id, options);
   
   if (!oldModel) {<#
     if (isUseI18n) {
@@ -5643,7 +5639,7 @@ export async function updateById(
     #>
     if (!is_silent_mode) {
       if (input.version != null) {
-        const version = await getVersionById(id);
+        const version = await getVersionById<#=Table_Up#>(id);
         if (version && version > input.version) {<#
           if (isUseI18n) {
           #>
@@ -5683,7 +5679,7 @@ export async function updateById(
     if (cache) {
     #>
     
-    await delCache();<#
+    await delCache<#=Table_Up#>();<#
     }
     #>
     
@@ -5705,7 +5701,7 @@ export async function updateById(
   #>
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCache<#=Table_Up#>();
   }<#
   }
   #>
@@ -5717,7 +5713,7 @@ export async function updateById(
   #>
   
   if (!is_silent_mode) {
-    const newModel = await findById(id, options);
+    const newModel = await findById<#=Table_Up#>(id, options);
     
     if (!deepCompare(oldModel, newModel)) {
       const {
@@ -5746,9 +5742,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIds<#=Table_Up#>
 /** 根据 ids 删除 <#=table_comment#> */
-export async function deleteByIds(
+export async function deleteByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   options?: {
     is_debug?: boolean;
@@ -5763,7 +5759,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "deleteByIds";
+  const method = "deleteByIds<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -5815,14 +5811,14 @@ export async function deleteByIds(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #>
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findById<#=Table_Up#>(id, options);
     if (!oldModel) {
       continue;
     }
@@ -6142,7 +6138,7 @@ export async function deleteByIds(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #><#
   if (mod === "cron" && table === "cron_job") {
@@ -6157,24 +6153,24 @@ export async function deleteByIds(
 if (hasDefault) {
 #>
 
-// MARK: defaultById
+// MARK: defaultById<#=Table_Up#>
 /** 根据 id 设置默认<#=table_comment#> */
-export async function defaultById(
+export async function defaultById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   options?: {
   },
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "defaultById";
+  const method = "defaultById<#=Table_Up#>";
   
   if (!id) {
-    throw new Error("defaultById: id cannot be empty");
+    throw new Error("defaultById<#=Table_Up#>: id cannot be empty");
   }<#
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #>
   
@@ -6191,7 +6187,7 @@ export async function defaultById(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #>
   
@@ -6202,9 +6198,9 @@ export async function defaultById(
 if (hasEnabled) {
 #>
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledById<#=Table_Up#>
 /** 根据 id 查找 <#=table_comment#> 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   options?: {
     is_debug?: boolean;
@@ -6214,7 +6210,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findById<#=Table_Up#>(
     id,
     options,
   );
@@ -6223,9 +6219,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIds<#=Table_Up#>
 /** 根据 ids 启用或者禁用 <#=table_comment#> */
-export async function enableByIds(
+export async function enableByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -6234,7 +6230,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "enableByIds";
+  const method = "enableByIds<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -6261,7 +6257,7 @@ export async function enableByIds(
   #>
   
   if (ids.length > 0) {
-    await delCache();
+    await delCache<#=Table_Up#>();
   }<#
   }
   #>
@@ -6273,7 +6269,7 @@ export async function enableByIds(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #><#
   if (mod === "cron" && table === "cron_job") {
@@ -6290,9 +6286,9 @@ export async function enableByIds(
 if (hasLocked) {
 #>
 
-// MARK: getIsLockedById
+// MARK: getIsLockedById<#=Table_Up#>
 /** 根据 id 查找 <#=table_comment#> 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   options?: {
     is_debug?: boolean;
@@ -6302,18 +6298,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const <#=table#>_model = await findById<#=Table_Up#>(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = <#=table#>_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIds<#=Table_Up#>
 /** 根据 ids 锁定或者解锁 <#=table_comment#> */
-export async function lockByIds(
+export async function lockByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -6322,7 +6318,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "lockByIds";
+  const method = "lockByIds<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -6348,7 +6344,7 @@ export async function lockByIds(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #>
   
@@ -6359,7 +6355,7 @@ export async function lockByIds(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #>
   
@@ -6370,9 +6366,9 @@ export async function lockByIds(
 if (hasIsDeleted) {
 #>
 
-// MARK: revertByIds
+// MARK: revertByIds<#=Table_Up#>
 /** 根据 ids 还原 <#=table_comment#> */
-export async function revertByIds(
+export async function revertByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   options?: {
     is_debug?: boolean;
@@ -6380,7 +6376,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "revertByIds";
+  const method = "revertByIds<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);<#
   if (opts.langTable && isUseI18n) {
@@ -6408,14 +6404,14 @@ export async function revertByIds(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #>
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOne<#=Table_Up#>(
       {
         id,<#
         if (hasIsDeleted) {
@@ -6428,7 +6424,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findById<#=Table_Up#>(
         id,
         options,
       );
@@ -6441,7 +6437,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as <#=Table_Up#>Input;
-      const models = await findByUnique(input, options);
+      const models = await findByUnique<#=Table_Up#>(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -6607,7 +6603,7 @@ export async function revertByIds(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #><#
   if (mod === "cron" && table === "cron_job") {
@@ -6624,9 +6620,9 @@ export async function revertByIds(
 if (hasIsDeleted) {
 #>
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIds<#=Table_Up#>
 /** 根据 ids 彻底删除 <#=table_comment#> */
-export async function forceDeleteByIds(
+export async function forceDeleteByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   options?: {
     is_debug?: boolean;
@@ -6635,7 +6631,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIds<#=Table_Up#>";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);<#
@@ -6664,14 +6660,14 @@ export async function forceDeleteByIds(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #>
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOne<#=Table_Up#>(
       {
         id,<#
         if (hasIsDeleted) {
@@ -6844,7 +6840,7 @@ export async function forceDeleteByIds(
   if (cache) {
   #>
   
-  await delCache();<#
+  await delCache<#=Table_Up#>();<#
   }
   #>
   
@@ -6855,16 +6851,16 @@ export async function forceDeleteByIds(
 if (hasOrderBy) {
 #>
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderBy<#=Table_Up#>
 /** 查找 <#=table_comment#> order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderBy<#=Table_Up#>(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "<#=mod#>_<#=table#>";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderBy<#=Table_Up#>";
   
   const is_debug = get_is_debug(options?.is_debug);
   

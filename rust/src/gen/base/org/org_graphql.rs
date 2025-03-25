@@ -37,7 +37,7 @@ impl OrgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        org_resolver::find_all(
+        org_resolver::find_all_org(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl OrgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        org_resolver::find_count(
+        org_resolver::find_count_org(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl OrgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        org_resolver::find_one(
+        org_resolver::find_one_org(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl OrgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        org_resolver::find_by_id(
+        org_resolver::find_by_id_org(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl OrgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        org_resolver::find_by_ids(
+        org_resolver::find_by_ids_org(
           ids,
           None,
         )
@@ -127,7 +127,7 @@ impl OrgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        org_resolver::get_is_enabled_by_id(
+        org_resolver::get_is_enabled_by_id_org(
           id,
           None,
         )
@@ -146,7 +146,7 @@ impl OrgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        org_resolver::get_is_locked_by_id(
+        org_resolver::get_is_locked_by_id_org(
           id,
           None,
         )
@@ -161,7 +161,7 @@ impl OrgGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        org_resolver::get_field_comments(
+        org_resolver::get_field_comments_org(
           None,
         )
       }).await
@@ -176,7 +176,7 @@ impl OrgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        org_resolver::find_last_order_by(
+        org_resolver::find_last_order_by_org(
           None,
         )
       }).await
@@ -207,7 +207,7 @@ impl OrgGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        org_resolver::creates(
+        org_resolver::creates_org(
           inputs,
           options.into(),
         )
@@ -226,7 +226,7 @@ impl OrgGenMutation {
       .with_tran()
       .build()
       .scope({
-        org_resolver::update_tenant_by_id(
+        org_resolver::update_tenant_by_id_org(
           id,
           tenant_id,
           None,
@@ -246,7 +246,7 @@ impl OrgGenMutation {
       .with_tran()
       .build()
       .scope({
-        org_resolver::update_by_id(
+        org_resolver::update_by_id_org(
           id,
           input,
           None,
@@ -265,7 +265,7 @@ impl OrgGenMutation {
       .with_tran()
       .build()
       .scope({
-        org_resolver::delete_by_ids(
+        org_resolver::delete_by_ids_org(
           ids,
           None,
         )
@@ -284,7 +284,7 @@ impl OrgGenMutation {
       .with_tran()
       .build()
       .scope({
-        org_resolver::enable_by_ids(
+        org_resolver::enable_by_ids_org(
           ids,
           is_enabled,
           None,
@@ -304,7 +304,7 @@ impl OrgGenMutation {
       .with_tran()
       .build()
       .scope({
-        org_resolver::lock_by_ids(
+        org_resolver::lock_by_ids_org(
           ids,
           is_locked,
           None,
@@ -323,7 +323,7 @@ impl OrgGenMutation {
       .with_tran()
       .build()
       .scope({
-        org_resolver::revert_by_ids(
+        org_resolver::revert_by_ids_org(
           ids,
           None,
         )
@@ -341,7 +341,7 @@ impl OrgGenMutation {
       .with_tran()
       .build()
       .scope({
-        org_resolver::force_delete_by_ids(
+        org_resolver::force_delete_by_ids_org(
           ids,
           None,
         )
