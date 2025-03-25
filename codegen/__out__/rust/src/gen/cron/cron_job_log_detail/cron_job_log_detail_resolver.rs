@@ -19,7 +19,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找定时任务日志明细列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_cron_job_log_detail(
   search: Option<CronJobLogDetailSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +34,7 @@ pub async fn find_all(
   
   check_sort_cron_job_log_detail(sort.as_deref())?;
   
-  let models = cron_job_log_detail_service::find_all(
+  let models = cron_job_log_detail_service::find_all_cron_job_log_detail(
     search,
     page,
     sort,
@@ -46,7 +46,7 @@ pub async fn find_all(
 
 /// 根据条件查找定时任务日志明细总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_cron_job_log_detail(
   search: Option<CronJobLogDetailSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +57,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = cron_job_log_detail_service::find_count(
+  let num = cron_job_log_detail_service::find_count_cron_job_log_detail(
     search,
     options,
   ).await?;
@@ -67,7 +67,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个定时任务日志明细
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_cron_job_log_detail(
   search: Option<CronJobLogDetailSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +81,7 @@ pub async fn find_one(
   
   check_sort_cron_job_log_detail(sort.as_deref())?;
   
-  let model = cron_job_log_detail_service::find_one(
+  let model = cron_job_log_detail_service::find_one_cron_job_log_detail(
     search,
     sort,
     options,
@@ -92,7 +92,7 @@ pub async fn find_one(
 
 /// 根据 id 查找定时任务日志明细
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_cron_job_log_detail(
   id: CronJobLogDetailId,
   options: Option<Options>,
 ) -> Result<Option<CronJobLogDetailModel>> {
@@ -103,7 +103,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = cron_job_log_detail_service::find_by_id(
+  let model = cron_job_log_detail_service::find_by_id_cron_job_log_detail(
     id,
     options,
   ).await?;
@@ -113,7 +113,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找定时任务日志明细
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_cron_job_log_detail(
   ids: Vec<CronJobLogDetailId>,
   options: Option<Options>,
 ) -> Result<Vec<CronJobLogDetailModel>> {
@@ -124,7 +124,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = cron_job_log_detail_service::find_by_ids(
+  let models = cron_job_log_detail_service::find_by_ids_cron_job_log_detail(
     ids,
     options,
   ).await?;
@@ -135,7 +135,7 @@ pub async fn find_by_ids(
 /// 定时任务日志明细根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_cron_job_log_detail(
   id: CronJobLogDetailId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -147,7 +147,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = cron_job_log_detail_service::update_tenant_by_id(
+  let num = cron_job_log_detail_service::update_tenant_by_id_cron_job_log_detail(
     id,
     tenant_id,
     options,
@@ -159,7 +159,7 @@ pub async fn update_tenant_by_id(
 /// 根据 ids 删除定时任务日志明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_cron_job_log_detail(
   ids: Vec<CronJobLogDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -175,7 +175,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = cron_job_log_detail_service::delete_by_ids(
+  let num = cron_job_log_detail_service::delete_by_ids_cron_job_log_detail(
     ids,
     options,
   ).await?;
@@ -185,7 +185,7 @@ pub async fn delete_by_ids(
 
 /// 获取定时任务日志明细字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_cron_job_log_detail(
   options: Option<Options>,
 ) -> Result<CronJobLogDetailFieldComment> {
   
@@ -195,7 +195,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = cron_job_log_detail_service::get_field_comments(
+  let comments = cron_job_log_detail_service::get_field_comments_cron_job_log_detail(
     options,
   ).await?;
   
@@ -205,7 +205,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原定时任务日志明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_cron_job_log_detail(
   ids: Vec<CronJobLogDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -221,7 +221,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = cron_job_log_detail_service::revert_by_ids(
+  let num = cron_job_log_detail_service::revert_by_ids_cron_job_log_detail(
     ids,
     options,
   ).await?;
@@ -232,7 +232,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除定时任务日志明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_cron_job_log_detail(
   ids: Vec<CronJobLogDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -248,7 +248,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = cron_job_log_detail_service::force_delete_by_ids(
+  let num = cron_job_log_detail_service::force_delete_by_ids_cron_job_log_detail(
     ids,
     options,
   ).await?;

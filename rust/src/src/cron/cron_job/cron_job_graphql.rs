@@ -24,6 +24,7 @@ impl CronJobMutation {
       .scope({
         cron_job_resolver::run_cron_job(
           id,
+          None,
         )
       }).await
   }
