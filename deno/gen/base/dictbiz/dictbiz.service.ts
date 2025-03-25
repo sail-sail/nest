@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找业务字典总数
  */
-export async function findCount(
+export async function findCountDictbiz(
   search?: DictbizSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const dictbiz_num = await dictbizDao.findCount(search);
+  const dictbiz_num = await dictbizDao.findCountDictbiz(search);
   
   return dictbiz_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找业务字典列表
  */
-export async function findAll(
+export async function findAllDictbiz(
   search?: DictbizSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const dictbiz_models = await dictbizDao.findAll(search, page, sort);
+  const dictbiz_models = await dictbizDao.findAllDictbiz(search, page, sort);
   
   return dictbiz_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblDictbiz(
   input: DictbizInput,
 ): Promise<void> {
-  await dictbizDao.setIdByLbl(input);
+  await dictbizDao.setIdByLblDictbiz(input);
 }
 
 /**
  * 根据条件查找第一个业务字典
  */
-export async function findOne(
+export async function findOneDictbiz(
   search?: DictbizSearch,
   sort?: SortInput[],
 ): Promise<DictbizModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const dictbiz_model = await dictbizDao.findOne(search, sort);
+  const dictbiz_model = await dictbizDao.findOneDictbiz(search, sort);
   
   return dictbiz_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找业务字典
  */
-export async function findById(
+export async function findByIdDictbiz(
   dictbiz_id?: DictbizId | null,
 ): Promise<DictbizModel | undefined> {
   
-  const dictbiz_model = await dictbizDao.findById(dictbiz_id);
+  const dictbiz_model = await dictbizDao.findByIdDictbiz(dictbiz_id);
   
   return dictbiz_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找业务字典
  */
-export async function findByIds(
+export async function findByIdsDictbiz(
   dictbiz_ids: DictbizId[],
 ): Promise<DictbizModel[]> {
   
-  const dictbiz_models = await dictbizDao.findByIds(dictbiz_ids);
+  const dictbiz_models = await dictbizDao.findByIdsDictbiz(dictbiz_ids);
   
   return dictbiz_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找业务字典是否存在
  */
-export async function exist(
+export async function existDictbiz(
   search?: DictbizSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const dictbiz_exist = await dictbizDao.exist(search);
+  const dictbiz_exist = await dictbizDao.existDictbiz(search);
   
   return dictbiz_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找业务字典是否存在
  */
-export async function existById(
+export async function existByIdDictbiz(
   dictbiz_id?: DictbizId | null,
 ): Promise<boolean> {
   
-  const dictbiz_exist = await dictbizDao.existById(dictbiz_id);
+  const dictbiz_exist = await dictbizDao.existByIdDictbiz(dictbiz_id);
   
   return dictbiz_exist;
 }
@@ -127,16 +127,16 @@ export async function existById(
 /**
  * 增加和修改时校验业务字典
  */
-export async function validate(
+export async function validateDictbiz(
   input: DictbizInput,
 ): Promise<void> {
-  await dictbizDao.validate(input);
+  await dictbizDao.validateDictbiz(input);
 }
 
 /**
  * 批量创建业务字典
  */
-export async function creates(
+export async function createsDictbiz(
   inputs: DictbizInput[],
   options?: {
     uniqueType?: UniqueType;
@@ -147,40 +147,40 @@ export async function creates(
     input.is_add = undefined;
   }
   
-  const dictbiz_ids = await dictbizDao.creates(inputs, options);
+  const dictbiz_ids = await dictbizDao.createsDictbiz(inputs, options);
   return dictbiz_ids;
 }
 
 /**
  * 根据 id 修改业务字典
  */
-export async function updateById(
+export async function updateByIdDictbiz(
   dictbiz_id: DictbizId,
   input: DictbizInput,
 ): Promise<DictbizId> {
   
   input.is_add = undefined;
   
-  const dictbiz_id2 = await dictbizDao.updateById(dictbiz_id, input);
+  const dictbiz_id2 = await dictbizDao.updateByIdDictbiz(dictbiz_id, input);
   return dictbiz_id2;
 }
 
 /** 校验业务字典是否存在 */
-export async function validateOption(
+export async function validateOptionDictbiz(
   model0?: DictbizModel,
 ): Promise<DictbizModel> {
-  const dictbiz_model = await dictbizDao.validateOption(model0);
+  const dictbiz_model = await dictbizDao.validateOptionDictbiz(model0);
   return dictbiz_model;
 }
 
 /**
  * 根据 ids 删除业务字典
  */
-export async function deleteByIds(
+export async function deleteByIdsDictbiz(
   dictbiz_ids: DictbizId[],
 ): Promise<number> {
   
-  const old_models = await dictbizDao.findByIds(dictbiz_ids);
+  const old_models = await dictbizDao.findByIdsDictbiz(dictbiz_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_sys === 1) {
@@ -188,29 +188,29 @@ export async function deleteByIds(
     }
   }
   
-  const dictbiz_num = await dictbizDao.deleteByIds(dictbiz_ids);
+  const dictbiz_num = await dictbizDao.deleteByIdsDictbiz(dictbiz_ids);
   return dictbiz_num;
 }
 
 /**
  * 根据 ids 启用或者禁用业务字典
  */
-export async function enableByIds(
+export async function enableByIdsDictbiz(
   ids: DictbizId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const dictbiz_num = await dictbizDao.enableByIds(ids, is_enabled);
+  const dictbiz_num = await dictbizDao.enableByIdsDictbiz(ids, is_enabled);
   return dictbiz_num;
 }
 
 /**
  * 根据 ids 还原业务字典
  */
-export async function revertByIds(
+export async function revertByIdsDictbiz(
   dictbiz_ids: DictbizId[],
 ): Promise<number> {
   
-  const dictbiz_num = await dictbizDao.revertByIds(dictbiz_ids);
+  const dictbiz_num = await dictbizDao.revertByIdsDictbiz(dictbiz_ids);
   
   return dictbiz_num;
 }
@@ -218,11 +218,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除业务字典
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDictbiz(
   dictbiz_ids: DictbizId[],
 ): Promise<number> {
   
-  const dictbiz_num = await dictbizDao.forceDeleteByIds(dictbiz_ids);
+  const dictbiz_num = await dictbizDao.forceDeleteByIdsDictbiz(dictbiz_ids);
   
   return dictbiz_num;
 }
@@ -230,16 +230,16 @@ export async function forceDeleteByIds(
 /**
  * 获取业务字典字段注释
  */
-export async function getFieldComments(): Promise<DictbizFieldComment> {
-  const dictbiz_fields = await dictbizDao.getFieldComments();
+export async function getFieldCommentsDictbiz(): Promise<DictbizFieldComment> {
+  const dictbiz_fields = await dictbizDao.getFieldCommentsDictbiz();
   return dictbiz_fields;
 }
 
 /**
  * 查找 业务字典 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByDictbiz(
 ): Promise<number> {
-  const dictbiz_sort = await dictbizDao.findLastOrderBy();
+  const dictbiz_sort = await dictbizDao.findLastOrderByDictbiz();
   return dictbiz_sort;
 }

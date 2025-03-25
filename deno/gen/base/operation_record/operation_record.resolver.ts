@@ -27,10 +27,10 @@ export async function findCountOperationRecord(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountOperationRecord,
   } = await import("./operation_record.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountOperationRecord(search);
   
   return num;
 }
@@ -45,12 +45,12 @@ export async function findAllOperationRecord(
 ): Promise<OperationRecordModel[]> {
   
   const {
-    findAll,
+    findAllOperationRecord,
   } = await import("./operation_record.service.ts");
   
   checkSortOperationRecord(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllOperationRecord(search, page, sort);
   
   return models;
 }
@@ -61,10 +61,10 @@ export async function findAllOperationRecord(
 export async function getFieldCommentsOperationRecord(): Promise<OperationRecordFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsOperationRecord,
   } = await import("./operation_record.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsOperationRecord();
   
   return field_comment;
 }
@@ -78,12 +78,12 @@ export async function findOneOperationRecord(
 ): Promise<OperationRecordModel | undefined> {
   
   const {
-    findOne,
+    findOneOperationRecord,
   } = await import("./operation_record.service.ts");
   
   checkSortOperationRecord(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneOperationRecord(search, sort);
   
   return model;
 }
@@ -96,10 +96,10 @@ export async function findByIdOperationRecord(
 ): Promise<OperationRecordModel | undefined> {
   
   const {
-    findById,
+    findByIdOperationRecord,
   } = await import("./operation_record.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdOperationRecord(id);
   
   return model;
 }
@@ -112,10 +112,10 @@ export async function findByIdsOperationRecord(
 ): Promise<OperationRecordModel[]> {
   
   const {
-    findByIds,
+    findByIdsOperationRecord,
   } = await import("./operation_record.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsOperationRecord(ids);
   
   for (const model of models) {
   }
@@ -131,7 +131,7 @@ export async function deleteByIdsOperationRecord(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsOperationRecord,
   } = await import("./operation_record.service.ts");
   
   set_is_tran(true);
@@ -141,7 +141,7 @@ export async function deleteByIdsOperationRecord(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsOperationRecord(ids);
   
   return num;
 }
@@ -154,7 +154,7 @@ export async function revertByIdsOperationRecord(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsOperationRecord,
   } = await import("./operation_record.service.ts");
   
   set_is_tran(true);
@@ -164,7 +164,7 @@ export async function revertByIdsOperationRecord(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsOperationRecord(ids);
   
   return res;
 }
@@ -177,7 +177,7 @@ export async function forceDeleteByIdsOperationRecord(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsOperationRecord,
   } = await import("./operation_record.service.ts");
   
   set_is_tran(true);
@@ -187,7 +187,7 @@ export async function forceDeleteByIdsOperationRecord(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsOperationRecord(ids);
   
   return res;
 }

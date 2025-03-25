@@ -42,7 +42,7 @@ export async function getHostTenant(): Promise<typeof result> {
 /** 当前租户拥有的菜单 */
 export async function getMenuIdsByTenant(): Promise<MenuId[]> {
   const {
-    findById: findByIdTenant,
+    findByIdTenant,
   } = await import("/gen/base/tenant/tenant.dao.ts");
   let menu_idsInTenant: MenuId[] = [ ];
   const tenant_id = await getTenant_id();
