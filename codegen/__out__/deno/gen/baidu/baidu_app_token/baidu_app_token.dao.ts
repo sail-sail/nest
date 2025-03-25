@@ -54,7 +54,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -68,11 +68,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneBaiduApp,
+  findOneBaiduApp,
 } from "/gen/baidu/baidu_app/baidu_app.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -193,9 +193,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountBaiduAppToken
 /** 根据条件查找百度接口凭据总数 */
-export async function findCount(
+export async function findCountBaiduAppToken(
   search?: Readonly<BaiduAppTokenSearch>,
   options?: {
     is_debug?: boolean;
@@ -204,12 +204,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "baidu_baidu_app_token";
-  const method = "findCount";
+  const method = "findCountBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -281,9 +281,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllBaiduAppToken
 /** 根据搜索条件和分页查找百度接口凭据列表 */
-export async function findAll(
+export async function findAllBaiduAppToken(
   search?: Readonly<BaiduAppTokenSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -294,7 +294,7 @@ export async function findAll(
 ): Promise<BaiduAppTokenModel[]> {
   
   const table = "baidu_baidu_app_token";
-  const method = "findAll";
+  const method = "findAllBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -457,9 +457,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblBaiduAppToken
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblBaiduAppToken(
   input: BaiduAppTokenInput,
 ) {
   
@@ -472,14 +472,14 @@ export async function setIdByLbl(
     if (token_time_lbl.isValid()) {
       input.token_time = token_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsBaiduAppToken();
       throw `${ fieldComments.token_time } 日期格式错误`;
     }
   }
   if (input.token_time) {
     const token_time = dayjs(input.token_time);
     if (!token_time.isValid()) {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsBaiduAppToken();
       throw `${ fieldComments.token_time } 日期格式错误`;
     }
     input.token_time = dayjs(input.token_time).format("YYYY-MM-DD HH:mm:ss");
@@ -518,9 +518,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsBaiduAppToken
 /** 获取百度接口凭据字段注释 */
-export async function getFieldComments(): Promise<BaiduAppTokenFieldComment> {
+export async function getFieldCommentsBaiduAppToken(): Promise<BaiduAppTokenFieldComment> {
   const fieldComments: BaiduAppTokenFieldComment = {
     id: "ID",
     baidu_app_id: "百度应用",
@@ -533,9 +533,9 @@ export async function getFieldComments(): Promise<BaiduAppTokenFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueBaiduAppToken
 /** 通过唯一约束获得百度接口凭据列表 */
-export async function findByUnique(
+export async function findByUniqueBaiduAppToken(
   search0: Readonly<BaiduAppTokenInput>,
   options?: {
     is_debug?: boolean;
@@ -543,7 +543,7 @@ export async function findByUnique(
 ): Promise<BaiduAppTokenModel[]> {
   
   const table = "baidu_baidu_app_token";
-  const method = "findByUnique";
+  const method = "findByUniqueBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -561,7 +561,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneBaiduAppToken(
       {
         id: search0.id,
       },
@@ -584,7 +584,7 @@ export async function findByUnique(
     } else {
       baidu_app_id = search0.baidu_app_id || [ ];
     }
-    const modelTmps = await findAll(
+    const modelTmps = await findAllBaiduAppToken(
       {
         baidu_app_id,
       },
@@ -599,7 +599,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueBaiduAppToken(
   oldModel: Readonly<BaiduAppTokenModel>,
   input: Readonly<BaiduAppTokenInput>,
 ): boolean {
@@ -615,9 +615,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueBaiduAppToken
 /** 通过唯一约束检查 百度接口凭据 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueBaiduAppToken(
   input: Readonly<BaiduAppTokenInput>,
   oldModel: Readonly<BaiduAppTokenModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -629,14 +629,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueBaiduAppToken(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 百度接口凭据 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: BaiduAppTokenId = await updateById(
+      const id: BaiduAppTokenId = await updateByIdBaiduAppToken(
         oldModel.id,
         {
           ...input,
@@ -653,9 +653,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneBaiduAppToken
 /** 根据条件查找第一百度接口凭据 */
-export async function findOne(
+export async function findOneBaiduAppToken(
   search?: Readonly<BaiduAppTokenSearch>,
   sort?: SortInput[],
   options?: {
@@ -664,7 +664,7 @@ export async function findOne(
 ): Promise<BaiduAppTokenModel | undefined> {
   
   const table = "baidu_baidu_app_token";
-  const method = "findOne";
+  const method = "findOneBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -691,7 +691,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllBaiduAppToken(
     search,
     page,
     sort,
@@ -701,9 +701,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdBaiduAppToken
 /** 根据 id 查找百度接口凭据 */
-export async function findById(
+export async function findByIdBaiduAppToken(
   id?: BaiduAppTokenId | null,
   options?: {
     is_debug?: boolean;
@@ -711,7 +711,7 @@ export async function findById(
 ): Promise<BaiduAppTokenModel | undefined> {
   
   const table = "baidu_baidu_app_token";
-  const method = "findById";
+  const method = "findByIdBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -732,7 +732,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneBaiduAppToken(
     {
       id,
     },
@@ -743,9 +743,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsBaiduAppToken
 /** 根据 ids 查找百度接口凭据 */
-export async function findByIds(
+export async function findByIdsBaiduAppToken(
   ids: BaiduAppTokenId[],
   options?: {
     is_debug?: boolean;
@@ -753,7 +753,7 @@ export async function findByIds(
 ): Promise<BaiduAppTokenModel[]> {
   
   const table = "baidu_baidu_app_token";
-  const method = "findByIds";
+  const method = "findByIdsBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -774,7 +774,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllBaiduAppToken(
     {
       ids,
     },
@@ -800,9 +800,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existBaiduAppToken
 /** 根据搜索条件判断百度接口凭据是否存在 */
-export async function exist(
+export async function existBaiduAppToken(
   search?: Readonly<BaiduAppTokenSearch>,
   options?: {
     is_debug?: boolean;
@@ -810,7 +810,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "baidu_baidu_app_token";
-  const method = "exist";
+  const method = "existBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -826,15 +826,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneBaiduAppToken(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdBaiduAppToken
 /** 根据id判断百度接口凭据是否存在 */
-export async function existById(
+export async function existByIdBaiduAppToken(
   id?: Readonly<BaiduAppTokenId | null>,
   options?: {
     is_debug?: boolean;
@@ -842,7 +842,7 @@ export async function existById(
 ) {
   
   const table = "baidu_baidu_app_token";
-  const method = "existById";
+  const method = "existByIdBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -884,9 +884,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionBaiduAppToken
 /** 校验百度接口凭据是否存在 */
-export async function validateOption(
+export async function validateOptionBaiduAppToken(
   model?: BaiduAppTokenModel,
 ) {
   if (!model) {
@@ -897,12 +897,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateBaiduAppToken
 /** 百度接口凭据增加和修改时校验输入 */
-export async function validate(
+export async function validateBaiduAppToken(
   input: Readonly<BaiduAppTokenInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsBaiduAppToken();
   
   // ID
   await validators.chars_max_length(
@@ -927,9 +927,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnBaiduAppToken
 /** 创建 百度接口凭据 并返回 */
-export async function createReturn(
+export async function createReturnBaiduAppToken(
   input: Readonly<BaiduAppTokenInput>,
   options?: {
     is_debug?: boolean;
@@ -940,7 +940,7 @@ export async function createReturn(
 ): Promise<BaiduAppTokenModel> {
   
   const table = "baidu_baidu_app_token";
-  const method = "createReturn";
+  const method = "createReturnBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -965,8 +965,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionBaiduAppToken(
+    await findOneBaiduAppToken(
       {
         id,
       },
@@ -978,9 +978,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createBaiduAppToken
 /** 创建 百度接口凭据 */
-export async function create(
+export async function createBaiduAppToken(
   input: Readonly<BaiduAppTokenInput>,
   options?: {
     is_debug?: boolean;
@@ -991,7 +991,7 @@ export async function create(
 ): Promise<BaiduAppTokenId> {
   
   const table = "baidu_baidu_app_token";
-  const method = "create";
+  const method = "createBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1019,9 +1019,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnBaiduAppToken
 /** 批量创建 百度接口凭据 并返回 */
-export async function createsReturn(
+export async function createsReturnBaiduAppToken(
   inputs: BaiduAppTokenInput[],
   options?: {
     is_debug?: boolean;
@@ -1032,7 +1032,7 @@ export async function createsReturn(
 ): Promise<BaiduAppTokenModel[]> {
   
   const table = "baidu_baidu_app_token";
-  const method = "createsReturn";
+  const method = "createsReturnBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1051,14 +1051,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsBaiduAppToken(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsBaiduAppToken
 /** 批量创建 百度接口凭据 */
-export async function creates(
+export async function createsBaiduAppToken(
   inputs: BaiduAppTokenInput[],
   options?: {
     is_debug?: boolean;
@@ -1069,7 +1069,7 @@ export async function creates(
 ): Promise<BaiduAppTokenId[]> {
   
   const table = "baidu_baidu_app_token";
-  const method = "creates";
+  const method = "createsBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1118,11 +1118,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueBaiduAppToken(input, options);
     if (oldModels.length > 0) {
       let id: BaiduAppTokenId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueBaiduAppToken(
           input,
           oldModel,
           options?.uniqueType,
@@ -1152,7 +1152,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheBaiduAppToken();
   
   const args = new QueryArgs();
   let sql = "insert into baidu_baidu_app_token(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,baidu_app_id,access_token,token_time,expires_in)values";
@@ -1289,20 +1289,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheBaiduAppToken();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheBaiduAppToken
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheBaiduAppToken() {
   await delCacheCtx(`dao.sql.baidu_baidu_app_token`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdBaiduAppToken
 /** 百度接口凭据 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdBaiduAppToken(
   id: BaiduAppTokenId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1311,7 +1311,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "baidu_baidu_app_token";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1341,13 +1341,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheBaiduAppToken();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdBaiduAppToken
 /** 根据 id 修改 百度接口凭据 */
-export async function updateById(
+export async function updateByIdBaiduAppToken(
   id: BaiduAppTokenId,
   input: BaiduAppTokenInput,
   options?: {
@@ -1359,7 +1359,7 @@ export async function updateById(
 ): Promise<BaiduAppTokenId> {
   
   const table = "baidu_baidu_app_token";
-  const method = "updateById";
+  const method = "updateByIdBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1382,15 +1382,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdBaiduAppToken: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdBaiduAppToken: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdBaiduAppToken(id, input.tenant_id, options);
   }
   
   {
@@ -1398,7 +1398,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueBaiduAppToken(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1409,7 +1409,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdBaiduAppToken(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 百度接口凭据 已被删除";
@@ -1518,7 +1518,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheBaiduAppToken();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1526,7 +1526,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheBaiduAppToken();
   }
   
   if (!is_silent_mode) {
@@ -1536,9 +1536,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsBaiduAppToken
 /** 根据 ids 删除 百度接口凭据 */
-export async function deleteByIds(
+export async function deleteByIdsBaiduAppToken(
   ids: BaiduAppTokenId[],
   options?: {
     is_debug?: boolean;
@@ -1548,7 +1548,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "baidu_baidu_app_token";
-  const method = "deleteByIds";
+  const method = "deleteByIdsBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1571,12 +1571,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheBaiduAppToken();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdBaiduAppToken(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1609,14 +1609,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheBaiduAppToken();
   
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsBaiduAppToken
 /** 根据 ids 还原 百度接口凭据 */
-export async function revertByIds(
+export async function revertByIdsBaiduAppToken(
   ids: BaiduAppTokenId[],
   options?: {
     is_debug?: boolean;
@@ -1624,7 +1624,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "baidu_baidu_app_token";
-  const method = "revertByIds";
+  const method = "revertByIdsBaiduAppToken";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1645,12 +1645,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheBaiduAppToken();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneBaiduAppToken(
       {
         id,
         is_deleted: 1,
@@ -1659,7 +1659,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdBaiduAppToken(
         id,
         options,
       );
@@ -1672,7 +1672,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as BaiduAppTokenInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueBaiduAppToken(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1686,14 +1686,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheBaiduAppToken();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsBaiduAppToken
 /** 根据 ids 彻底删除 百度接口凭据 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsBaiduAppToken(
   ids: BaiduAppTokenId[],
   options?: {
     is_debug?: boolean;
@@ -1702,7 +1702,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "baidu_baidu_app_token";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsBaiduAppToken";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1724,12 +1724,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheBaiduAppToken();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneBaiduAppToken(
       {
         id,
         is_deleted: 1,
@@ -1746,7 +1746,7 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheBaiduAppToken();
   
   return num;
 }

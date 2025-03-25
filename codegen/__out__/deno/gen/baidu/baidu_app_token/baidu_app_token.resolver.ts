@@ -29,10 +29,10 @@ export async function findCountBaiduAppToken(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountBaiduAppToken(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllBaiduAppToken(
 ): Promise<BaiduAppTokenModel[]> {
   
   const {
-    findAll,
+    findAllBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
   checkSortBaiduAppToken(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllBaiduAppToken(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllBaiduAppToken(
 export async function getFieldCommentsBaiduAppToken(): Promise<BaiduAppTokenFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsBaiduAppToken();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneBaiduAppToken(
 ): Promise<BaiduAppTokenModel | undefined> {
   
   const {
-    findOne,
+    findOneBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
   checkSortBaiduAppToken(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneBaiduAppToken(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdBaiduAppToken(
 ): Promise<BaiduAppTokenModel | undefined> {
   
   const {
-    findById,
+    findByIdBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdBaiduAppToken(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsBaiduAppToken(
 ): Promise<BaiduAppTokenModel[]> {
   
   const {
-    findByIds,
+    findByIdsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsBaiduAppToken(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsBaiduAppToken(
 ): Promise<BaiduAppTokenId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateBaiduAppToken,
+    setIdByLblBaiduAppToken,
+    createsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsBaiduAppToken(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblBaiduAppToken(input);
     
-    await validate(input);
+    await validateBaiduAppToken(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsBaiduAppToken(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdBaiduAppToken(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblBaiduAppToken,
+    updateByIdBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblBaiduAppToken(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: BaiduAppTokenId = await updateById(id, input);
+  const id2: BaiduAppTokenId = await updateByIdBaiduAppToken(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsBaiduAppToken(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsBaiduAppToken(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsBaiduAppToken(ids);
   
   return num;
 }
@@ -219,7 +219,7 @@ export async function revertByIdsBaiduAppToken(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
   set_is_tran(true);
@@ -229,7 +229,7 @@ export async function revertByIdsBaiduAppToken(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsBaiduAppToken(ids);
   
   return res;
 }
@@ -242,7 +242,7 @@ export async function forceDeleteByIdsBaiduAppToken(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsBaiduAppToken,
   } = await import("./baidu_app_token.service.ts");
   
   set_is_tran(true);
@@ -252,7 +252,7 @@ export async function forceDeleteByIdsBaiduAppToken(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsBaiduAppToken(ids);
   
   return res;
 }

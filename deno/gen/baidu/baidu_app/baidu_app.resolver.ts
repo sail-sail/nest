@@ -29,10 +29,10 @@ export async function findCountBaiduApp(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountBaiduApp,
   } = await import("./baidu_app.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountBaiduApp(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllBaiduApp(
 ): Promise<BaiduAppModel[]> {
   
   const {
-    findAll,
+    findAllBaiduApp,
   } = await import("./baidu_app.service.ts");
   
   checkSortBaiduApp(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllBaiduApp(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllBaiduApp(
 export async function getFieldCommentsBaiduApp(): Promise<BaiduAppFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsBaiduApp();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneBaiduApp(
 ): Promise<BaiduAppModel | undefined> {
   
   const {
-    findOne,
+    findOneBaiduApp,
   } = await import("./baidu_app.service.ts");
   
   checkSortBaiduApp(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneBaiduApp(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdBaiduApp(
 ): Promise<BaiduAppModel | undefined> {
   
   const {
-    findById,
+    findByIdBaiduApp,
   } = await import("./baidu_app.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdBaiduApp(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsBaiduApp(
 ): Promise<BaiduAppModel[]> {
   
   const {
-    findByIds,
+    findByIdsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsBaiduApp(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsBaiduApp(
 ): Promise<BaiduAppId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateBaiduApp,
+    setIdByLblBaiduApp,
+    createsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsBaiduApp(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblBaiduApp(input);
     
-    await validate(input);
+    await validateBaiduApp(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsBaiduApp(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdBaiduApp(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblBaiduApp,
+    updateByIdBaiduApp,
   } = await import("./baidu_app.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblBaiduApp(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: BaiduAppId = await updateById(id, input);
+  const id2: BaiduAppId = await updateByIdBaiduApp(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsBaiduApp(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsBaiduApp(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsBaiduApp(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsBaiduApp(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsBaiduApp(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsBaiduApp(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsBaiduApp(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsBaiduApp(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsBaiduApp(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsBaiduApp(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsBaiduApp(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsBaiduApp(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsBaiduApp(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsBaiduApp,
   } = await import("./baidu_app.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsBaiduApp(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsBaiduApp(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsBaiduApp(
 export async function findLastOrderByBaiduApp(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByBaiduApp,
   } = await import("./baidu_app.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByBaiduApp();
   
   return res;
 }
