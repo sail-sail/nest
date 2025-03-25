@@ -29,10 +29,10 @@ export async function findCountCardRecharge(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountCardRecharge,
   } = await import("./card_recharge.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountCardRecharge(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllCardRecharge(
 ): Promise<CardRechargeModel[]> {
   
   const {
-    findAll,
+    findAllCardRecharge,
   } = await import("./card_recharge.service.ts");
   
   checkSortCardRecharge(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllCardRecharge(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllCardRecharge(
 export async function getFieldCommentsCardRecharge(): Promise<CardRechargeFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsCardRecharge,
   } = await import("./card_recharge.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsCardRecharge();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneCardRecharge(
 ): Promise<CardRechargeModel | undefined> {
   
   const {
-    findOne,
+    findOneCardRecharge,
   } = await import("./card_recharge.service.ts");
   
   checkSortCardRecharge(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneCardRecharge(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdCardRecharge(
 ): Promise<CardRechargeModel | undefined> {
   
   const {
-    findById,
+    findByIdCardRecharge,
   } = await import("./card_recharge.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdCardRecharge(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsCardRecharge(
 ): Promise<CardRechargeModel[]> {
   
   const {
-    findByIds,
+    findByIdsCardRecharge,
   } = await import("./card_recharge.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsCardRecharge(ids);
   
   for (const model of models) {
   }
@@ -133,7 +133,7 @@ export async function deleteByIdsCardRecharge(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsCardRecharge,
   } = await import("./card_recharge.service.ts");
   
   set_is_tran(true);
@@ -143,7 +143,7 @@ export async function deleteByIdsCardRecharge(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsCardRecharge(ids);
   
   return num;
 }
@@ -156,7 +156,7 @@ export async function revertByIdsCardRecharge(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsCardRecharge,
   } = await import("./card_recharge.service.ts");
   
   set_is_tran(true);
@@ -166,7 +166,7 @@ export async function revertByIdsCardRecharge(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsCardRecharge(ids);
   
   return res;
 }
@@ -179,7 +179,7 @@ export async function forceDeleteByIdsCardRecharge(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsCardRecharge,
   } = await import("./card_recharge.service.ts");
   
   set_is_tran(true);
@@ -189,7 +189,7 @@ export async function forceDeleteByIdsCardRecharge(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsCardRecharge(ids);
   
   return res;
 }

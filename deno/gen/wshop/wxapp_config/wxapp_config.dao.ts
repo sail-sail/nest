@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -72,7 +72,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneOrg,
+  findOneOrg,
 } from "/gen/base/org/org.dao.ts";
 
 import {
@@ -203,9 +203,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountWxappConfig
 /** 根据条件查找小程序配置总数 */
-export async function findCount(
+export async function findCountWxappConfig(
   search?: Readonly<WxappConfigSearch>,
   options?: {
     is_debug?: boolean;
@@ -214,12 +214,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "wshop_wxapp_config";
-  const method = "findCount";
+  const method = "findCountWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -313,9 +313,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllWxappConfig
 /** 根据搜索条件和分页查找小程序配置列表 */
-export async function findAll(
+export async function findAllWxappConfig(
   search?: Readonly<WxappConfigSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -326,7 +326,7 @@ export async function findAll(
 ): Promise<WxappConfigModel[]> {
   
   const table = "wshop_wxapp_config";
-  const method = "findAll";
+  const method = "findAllWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -534,9 +534,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblWxappConfig
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblWxappConfig(
   input: WxappConfigInput,
 ) {
   
@@ -601,9 +601,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsWxappConfig
 /** 获取小程序配置字段注释 */
-export async function getFieldComments(): Promise<WxappConfigFieldComment> {
+export async function getFieldCommentsWxappConfig(): Promise<WxappConfigFieldComment> {
   const fieldComments: WxappConfigFieldComment = {
     id: "ID",
     img: "图片",
@@ -626,9 +626,9 @@ export async function getFieldComments(): Promise<WxappConfigFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueWxappConfig
 /** 通过唯一约束获得小程序配置列表 */
-export async function findByUnique(
+export async function findByUniqueWxappConfig(
   search0: Readonly<WxappConfigInput>,
   options?: {
     is_debug?: boolean;
@@ -636,7 +636,7 @@ export async function findByUnique(
 ): Promise<WxappConfigModel[]> {
   
   const table = "wshop_wxapp_config";
-  const method = "findByUnique";
+  const method = "findByUniqueWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -654,7 +654,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneWxappConfig(
       {
         id: search0.id,
       },
@@ -672,7 +672,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllWxappConfig(
       {
         lbl,
       },
@@ -687,7 +687,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueWxappConfig(
   oldModel: Readonly<WxappConfigModel>,
   input: Readonly<WxappConfigInput>,
 ): boolean {
@@ -703,9 +703,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueWxappConfig
 /** 通过唯一约束检查 小程序配置 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueWxappConfig(
   input: Readonly<WxappConfigInput>,
   oldModel: Readonly<WxappConfigModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -717,14 +717,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueWxappConfig(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 小程序配置 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: WxappConfigId = await updateById(
+      const id: WxappConfigId = await updateByIdWxappConfig(
         oldModel.id,
         {
           ...input,
@@ -741,9 +741,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneWxappConfig
 /** 根据条件查找第一小程序配置 */
-export async function findOne(
+export async function findOneWxappConfig(
   search?: Readonly<WxappConfigSearch>,
   sort?: SortInput[],
   options?: {
@@ -752,7 +752,7 @@ export async function findOne(
 ): Promise<WxappConfigModel | undefined> {
   
   const table = "wshop_wxapp_config";
-  const method = "findOne";
+  const method = "findOneWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -779,7 +779,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllWxappConfig(
     search,
     page,
     sort,
@@ -789,9 +789,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdWxappConfig
 /** 根据 id 查找小程序配置 */
-export async function findById(
+export async function findByIdWxappConfig(
   id?: WxappConfigId | null,
   options?: {
     is_debug?: boolean;
@@ -799,7 +799,7 @@ export async function findById(
 ): Promise<WxappConfigModel | undefined> {
   
   const table = "wshop_wxapp_config";
-  const method = "findById";
+  const method = "findByIdWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -820,7 +820,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneWxappConfig(
     {
       id,
     },
@@ -831,9 +831,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsWxappConfig
 /** 根据 ids 查找小程序配置 */
-export async function findByIds(
+export async function findByIdsWxappConfig(
   ids: WxappConfigId[],
   options?: {
     is_debug?: boolean;
@@ -841,7 +841,7 @@ export async function findByIds(
 ): Promise<WxappConfigModel[]> {
   
   const table = "wshop_wxapp_config";
-  const method = "findByIds";
+  const method = "findByIdsWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -862,7 +862,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllWxappConfig(
     {
       ids,
     },
@@ -888,9 +888,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existWxappConfig
 /** 根据搜索条件判断小程序配置是否存在 */
-export async function exist(
+export async function existWxappConfig(
   search?: Readonly<WxappConfigSearch>,
   options?: {
     is_debug?: boolean;
@@ -898,7 +898,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "wshop_wxapp_config";
-  const method = "exist";
+  const method = "existWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -914,15 +914,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneWxappConfig(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdWxappConfig
 /** 根据id判断小程序配置是否存在 */
-export async function existById(
+export async function existByIdWxappConfig(
   id?: Readonly<WxappConfigId | null>,
   options?: {
     is_debug?: boolean;
@@ -930,7 +930,7 @@ export async function existById(
 ) {
   
   const table = "wshop_wxapp_config";
-  const method = "existById";
+  const method = "existByIdWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -972,9 +972,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledWxappConfig
 /** 校验小程序配置是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledWxappConfig(
   model: Readonly<WxappConfigModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -982,9 +982,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionWxappConfig
 /** 校验小程序配置是否存在 */
-export async function validateOption(
+export async function validateOptionWxappConfig(
   model?: WxappConfigModel,
 ) {
   if (!model) {
@@ -995,12 +995,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateWxappConfig
 /** 小程序配置增加和修改时校验输入 */
-export async function validate(
+export async function validateWxappConfig(
   input: Readonly<WxappConfigInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsWxappConfig();
   
   // ID
   await validators.chars_max_length(
@@ -1053,9 +1053,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnWxappConfig
 /** 创建 小程序配置 并返回 */
-export async function createReturn(
+export async function createReturnWxappConfig(
   input: Readonly<WxappConfigInput>,
   options?: {
     is_debug?: boolean;
@@ -1066,7 +1066,7 @@ export async function createReturn(
 ): Promise<WxappConfigModel> {
   
   const table = "wshop_wxapp_config";
-  const method = "createReturn";
+  const method = "createReturnWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1091,8 +1091,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionWxappConfig(
+    await findOneWxappConfig(
       {
         id,
       },
@@ -1104,9 +1104,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createWxappConfig
 /** 创建 小程序配置 */
-export async function create(
+export async function createWxappConfig(
   input: Readonly<WxappConfigInput>,
   options?: {
     is_debug?: boolean;
@@ -1117,7 +1117,7 @@ export async function create(
 ): Promise<WxappConfigId> {
   
   const table = "wshop_wxapp_config";
-  const method = "create";
+  const method = "createWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1145,9 +1145,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnWxappConfig
 /** 批量创建 小程序配置 并返回 */
-export async function createsReturn(
+export async function createsReturnWxappConfig(
   inputs: WxappConfigInput[],
   options?: {
     is_debug?: boolean;
@@ -1158,7 +1158,7 @@ export async function createsReturn(
 ): Promise<WxappConfigModel[]> {
   
   const table = "wshop_wxapp_config";
-  const method = "createsReturn";
+  const method = "createsReturnWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1177,14 +1177,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsWxappConfig(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsWxappConfig
 /** 批量创建 小程序配置 */
-export async function creates(
+export async function createsWxappConfig(
   inputs: WxappConfigInput[],
   options?: {
     is_debug?: boolean;
@@ -1195,7 +1195,7 @@ export async function creates(
 ): Promise<WxappConfigId[]> {
   
   const table = "wshop_wxapp_config";
-  const method = "creates";
+  const method = "createsWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1244,11 +1244,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueWxappConfig(input, options);
     if (oldModels.length > 0) {
       let id: WxappConfigId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueWxappConfig(
           input,
           oldModel,
           options?.uniqueType,
@@ -1278,7 +1278,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheWxappConfig();
   
   const args = new QueryArgs();
   let sql = "insert into wshop_wxapp_config(id,create_time,update_time,tenant_id,create_usr_id,update_usr_id,img,lbl,val,is_locked,is_enabled,rem,is_sys,org_id)values";
@@ -1400,20 +1400,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheWxappConfig();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheWxappConfig
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheWxappConfig() {
   await delCacheCtx(`dao.sql.wshop_wxapp_config`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdWxappConfig
 /** 小程序配置 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdWxappConfig(
   id: WxappConfigId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1422,7 +1422,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "wshop_wxapp_config";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1452,13 +1452,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheWxappConfig();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdWxappConfig
 /** 根据 id 修改 小程序配置 */
-export async function updateById(
+export async function updateByIdWxappConfig(
   id: WxappConfigId,
   input: WxappConfigInput,
   options?: {
@@ -1470,7 +1470,7 @@ export async function updateById(
 ): Promise<WxappConfigId> {
   
   const table = "wshop_wxapp_config";
-  const method = "updateById";
+  const method = "updateByIdWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1493,15 +1493,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdWxappConfig: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdWxappConfig: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdWxappConfig(id, input.tenant_id, options);
   }
   
   {
@@ -1509,7 +1509,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueWxappConfig(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1520,7 +1520,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdWxappConfig(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 小程序配置 已被删除";
@@ -1618,7 +1618,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheWxappConfig();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1626,7 +1626,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheWxappConfig();
   }
   
   if (!is_silent_mode) {
@@ -1636,9 +1636,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsWxappConfig
 /** 根据 ids 删除 小程序配置 */
-export async function deleteByIds(
+export async function deleteByIdsWxappConfig(
   ids: WxappConfigId[],
   options?: {
     is_debug?: boolean;
@@ -1648,7 +1648,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "wshop_wxapp_config";
-  const method = "deleteByIds";
+  const method = "deleteByIdsWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1671,12 +1671,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxappConfig();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdWxappConfig(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1693,14 +1693,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxappConfig();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdWxappConfig
 /** 根据 id 查找 小程序配置 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdWxappConfig(
   id: WxappConfigId,
   options?: {
     is_debug?: boolean;
@@ -1710,7 +1710,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdWxappConfig(
     id,
     options,
   );
@@ -1719,9 +1719,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsWxappConfig
 /** 根据 ids 启用或者禁用 小程序配置 */
-export async function enableByIds(
+export async function enableByIdsWxappConfig(
   ids: WxappConfigId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1730,7 +1730,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "wshop_wxapp_config";
-  const method = "enableByIds";
+  const method = "enableByIdsWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1755,7 +1755,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheWxappConfig();
   }
   
   const args = new QueryArgs();
@@ -1763,14 +1763,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheWxappConfig();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdWxappConfig
 /** 根据 id 查找 小程序配置 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdWxappConfig(
   id: WxappConfigId,
   options?: {
     is_debug?: boolean;
@@ -1780,18 +1780,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const wxapp_config_model = await findByIdWxappConfig(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = wxapp_config_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsWxappConfig
 /** 根据 ids 锁定或者解锁 小程序配置 */
-export async function lockByIds(
+export async function lockByIdsWxappConfig(
   ids: WxappConfigId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -1800,7 +1800,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "wshop_wxapp_config";
-  const method = "lockByIds";
+  const method = "lockByIdsWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1824,21 +1824,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxappConfig();
   
   const args = new QueryArgs();
   let sql = `update wshop_wxapp_config set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheWxappConfig();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsWxappConfig
 /** 根据 ids 还原 小程序配置 */
-export async function revertByIds(
+export async function revertByIdsWxappConfig(
   ids: WxappConfigId[],
   options?: {
     is_debug?: boolean;
@@ -1846,7 +1846,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "wshop_wxapp_config";
-  const method = "revertByIds";
+  const method = "revertByIdsWxappConfig";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1867,12 +1867,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxappConfig();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneWxappConfig(
       {
         id,
         is_deleted: 1,
@@ -1881,7 +1881,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdWxappConfig(
         id,
         options,
       );
@@ -1894,7 +1894,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as WxappConfigInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueWxappConfig(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1908,14 +1908,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxappConfig();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsWxappConfig
 /** 根据 ids 彻底删除 小程序配置 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxappConfig(
   ids: WxappConfigId[],
   options?: {
     is_debug?: boolean;
@@ -1924,7 +1924,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "wshop_wxapp_config";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsWxappConfig";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1946,12 +1946,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheWxappConfig();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneWxappConfig(
       {
         id,
         is_deleted: 1,
@@ -1968,7 +1968,7 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheWxappConfig();
   
   return num;
 }

@@ -29,10 +29,10 @@ export async function findCountWxappConfig(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountWxappConfig(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllWxappConfig(
 ): Promise<WxappConfigModel[]> {
   
   const {
-    findAll,
+    findAllWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
   checkSortWxappConfig(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllWxappConfig(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllWxappConfig(
 export async function getFieldCommentsWxappConfig(): Promise<WxappConfigFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsWxappConfig();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneWxappConfig(
 ): Promise<WxappConfigModel | undefined> {
   
   const {
-    findOne,
+    findOneWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
   checkSortWxappConfig(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneWxappConfig(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdWxappConfig(
 ): Promise<WxappConfigModel | undefined> {
   
   const {
-    findById,
+    findByIdWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdWxappConfig(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsWxappConfig(
 ): Promise<WxappConfigModel[]> {
   
   const {
-    findByIds,
+    findByIdsWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsWxappConfig(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsWxappConfig(
 ): Promise<WxappConfigId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateWxappConfig,
+    setIdByLblWxappConfig,
+    createsWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsWxappConfig(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblWxappConfig(input);
     
-    await validate(input);
+    await validateWxappConfig(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsWxappConfig(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdWxappConfig(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblWxappConfig,
+    updateByIdWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblWxappConfig(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: WxappConfigId = await updateById(id, input);
+  const id2: WxappConfigId = await updateByIdWxappConfig(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsWxappConfig(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsWxappConfig(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsWxappConfig(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsWxappConfig(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsWxappConfig(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsWxappConfig(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsWxappConfig(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsWxappConfig(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsWxappConfig(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsWxappConfig(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsWxappConfig(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsWxappConfig(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsWxappConfig(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsWxappConfig,
   } = await import("./wxapp_config.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsWxappConfig(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsWxappConfig(ids);
   
   return res;
 }

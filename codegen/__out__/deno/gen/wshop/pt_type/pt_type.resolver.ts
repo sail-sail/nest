@@ -29,10 +29,10 @@ export async function findCountPtType(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountPtType,
   } = await import("./pt_type.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountPtType(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllPtType(
 ): Promise<PtTypeModel[]> {
   
   const {
-    findAll,
+    findAllPtType,
   } = await import("./pt_type.service.ts");
   
   checkSortPtType(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllPtType(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllPtType(
 export async function getFieldCommentsPtType(): Promise<PtTypeFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsPtType,
   } = await import("./pt_type.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsPtType();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOnePtType(
 ): Promise<PtTypeModel | undefined> {
   
   const {
-    findOne,
+    findOnePtType,
   } = await import("./pt_type.service.ts");
   
   checkSortPtType(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOnePtType(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdPtType(
 ): Promise<PtTypeModel | undefined> {
   
   const {
-    findById,
+    findByIdPtType,
   } = await import("./pt_type.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdPtType(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsPtType(
 ): Promise<PtTypeModel[]> {
   
   const {
-    findByIds,
+    findByIdsPtType,
   } = await import("./pt_type.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsPtType(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsPtType(
 ): Promise<PtTypeId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validatePtType,
+    setIdByLblPtType,
+    createsPtType,
   } = await import("./pt_type.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsPtType(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblPtType(input);
     
-    await validate(input);
+    await validatePtType(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsPtType(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdPtType(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblPtType,
+    updateByIdPtType,
   } = await import("./pt_type.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblPtType(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: PtTypeId = await updateById(id, input);
+  const id2: PtTypeId = await updateByIdPtType(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsPtType(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsPtType,
   } = await import("./pt_type.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsPtType(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsPtType(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsPtType(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsPtType,
   } = await import("./pt_type.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsPtType(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsPtType(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsPtType(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsPtType,
   } = await import("./pt_type.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsPtType(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsPtType(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsPtType(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsPtType,
   } = await import("./pt_type.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsPtType(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsPtType(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsPtType(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsPtType,
   } = await import("./pt_type.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsPtType(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsPtType(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsPtType(
 export async function findLastOrderByPtType(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByPtType,
   } = await import("./pt_type.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByPtType();
   
   return res;
 }

@@ -31,10 +31,10 @@ export async function findCountOrder(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountOrder,
   } = await import("./order.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountOrder(search);
   
   return num;
 }
@@ -49,12 +49,12 @@ export async function findAllOrder(
 ): Promise<OrderModel[]> {
   
   const {
-    findAll,
+    findAllOrder,
   } = await import("./order.service.ts");
   
   checkSortOrder(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllOrder(search, page, sort);
   
   return models;
 }
@@ -65,10 +65,10 @@ export async function findAllOrder(
 export async function getFieldCommentsOrder(): Promise<OrderFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsOrder,
   } = await import("./order.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsOrder();
   
   return field_comment;
 }
@@ -82,12 +82,12 @@ export async function findOneOrder(
 ): Promise<OrderModel | undefined> {
   
   const {
-    findOne,
+    findOneOrder,
   } = await import("./order.service.ts");
   
   checkSortOrder(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneOrder(search, sort);
   
   return model;
 }
@@ -100,10 +100,10 @@ export async function findByIdOrder(
 ): Promise<OrderModel | undefined> {
   
   const {
-    findById,
+    findByIdOrder,
   } = await import("./order.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdOrder(id);
   
   return model;
 }
@@ -116,10 +116,10 @@ export async function findByIdsOrder(
 ): Promise<OrderModel[]> {
   
   const {
-    findByIds,
+    findByIdsOrder,
   } = await import("./order.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsOrder(ids);
   
   for (const model of models) {
   }
@@ -136,9 +136,9 @@ export async function createsOrder(
 ): Promise<OrderId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateOrder,
+    setIdByLblOrder,
+    createsOrder,
   } = await import("./order.service.ts");
   
   set_is_tran(true);
@@ -177,12 +177,12 @@ export async function createsOrder(
       input.give_balance = new Decimal(input.give_balance);
     }
     
-    await setIdByLbl(input);
+    await setIdByLblOrder(input);
     
-    await validate(input);
+    await validateOrder(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsOrder(inputs, { uniqueType });
   return ids;
 }
 
@@ -222,20 +222,20 @@ export async function updateByIdOrder(
   }
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblOrder,
+    updateByIdOrder,
   } = await import("./order.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblOrder(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: OrderId = await updateById(id, input);
+  const id2: OrderId = await updateByIdOrder(id, input);
   
   return id2;
 }
@@ -248,7 +248,7 @@ export async function deleteByIdsOrder(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsOrder,
   } = await import("./order.service.ts");
   
   set_is_tran(true);
@@ -258,7 +258,7 @@ export async function deleteByIdsOrder(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsOrder(ids);
   
   return num;
 }
@@ -272,7 +272,7 @@ export async function enableByIdsOrder(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsOrder,
   } = await import("./order.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -285,7 +285,7 @@ export async function enableByIdsOrder(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsOrder(ids, is_enabled);
   
   return res;
 }
@@ -299,7 +299,7 @@ export async function lockByIdsOrder(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsOrder,
   } = await import("./order.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -313,7 +313,7 @@ export async function lockByIdsOrder(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsOrder(ids, is_locked);
   
   return res;
 }
@@ -326,7 +326,7 @@ export async function revertByIdsOrder(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsOrder,
   } = await import("./order.service.ts");
   
   set_is_tran(true);
@@ -336,7 +336,7 @@ export async function revertByIdsOrder(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsOrder(ids);
   
   return res;
 }
@@ -349,7 +349,7 @@ export async function forceDeleteByIdsOrder(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsOrder,
   } = await import("./order.service.ts");
   
   set_is_tran(true);
@@ -359,7 +359,7 @@ export async function forceDeleteByIdsOrder(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsOrder(ids);
   
   return res;
 }

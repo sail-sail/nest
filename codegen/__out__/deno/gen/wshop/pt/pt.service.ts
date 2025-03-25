@@ -10,8 +10,8 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findById as findByIdUsr,
-  validateOption as validateOptionUsr,
+  findByIdUsr,
+  validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -24,12 +24,11 @@ async function setSearchQuery(
   search: PtSearch,
 ) {
   
-  const usr_id = await get_usr_id();
+  const usr_id = await get_usr_id(false);
   const org_id = await get_org_id();
-  const usr_model = await findByIdUsr(usr_id);
-  if (!usr_id || !usr_model) {
-    throw new Error("usr_id can not be null");
-  }
+  const usr_model = await validateOptionUsr(
+    await findByIdUsr(usr_id),
+  );
   const org_ids: OrgId[] = [ ];
   if (org_id) {
     org_ids.push(org_id);
@@ -47,7 +46,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找产品总数
  */
-export async function findCount(
+export async function findCountPt(
   search?: PtSearch,
 ): Promise<number> {
   
@@ -55,7 +54,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const pt_num = await ptDao.findCount(search);
+  const pt_num = await ptDao.findCountPt(search);
   
   return pt_num;
 }
@@ -63,7 +62,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找产品列表
  */
-export async function findAll(
+export async function findAllPt(
   search?: PtSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -73,7 +72,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const pt_models = await ptDao.findAll(search, page, sort);
+  const pt_models = await ptDao.findAllPt(search, page, sort);
   
   return pt_models;
 }
@@ -81,16 +80,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblPt(
   input: PtInput,
 ): Promise<void> {
-  await ptDao.setIdByLbl(input);
+  await ptDao.setIdByLblPt(input);
 }
 
 /**
  * 根据条件查找第一个产品
  */
-export async function findOne(
+export async function findOnePt(
   search?: PtSearch,
   sort?: SortInput[],
 ): Promise<PtModel | undefined> {
@@ -99,7 +98,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const pt_model = await ptDao.findOne(search, sort);
+  const pt_model = await ptDao.findOnePt(search, sort);
   
   return pt_model;
 }
@@ -107,11 +106,11 @@ export async function findOne(
 /**
  * 根据 id 查找产品
  */
-export async function findById(
+export async function findByIdPt(
   pt_id?: PtId | null,
 ): Promise<PtModel | undefined> {
   
-  const pt_model = await ptDao.findById(pt_id);
+  const pt_model = await ptDao.findByIdPt(pt_id);
   
   return pt_model;
 }
@@ -119,11 +118,11 @@ export async function findById(
 /**
  * 根据 ids 查找产品
  */
-export async function findByIds(
+export async function findByIdsPt(
   pt_ids: PtId[],
 ): Promise<PtModel[]> {
   
-  const pt_models = await ptDao.findByIds(pt_ids);
+  const pt_models = await ptDao.findByIdsPt(pt_ids);
   
   return pt_models;
 }
@@ -131,7 +130,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找产品是否存在
  */
-export async function exist(
+export async function existPt(
   search?: PtSearch,
 ): Promise<boolean> {
   
@@ -139,7 +138,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const pt_exist = await ptDao.exist(search);
+  const pt_exist = await ptDao.existPt(search);
   
   return pt_exist;
 }
@@ -147,11 +146,11 @@ export async function exist(
 /**
  * 根据 id 查找产品是否存在
  */
-export async function existById(
+export async function existByIdPt(
   pt_id?: PtId | null,
 ): Promise<boolean> {
   
-  const pt_exist = await ptDao.existById(pt_id);
+  const pt_exist = await ptDao.existByIdPt(pt_id);
   
   return pt_exist;
 }
@@ -159,22 +158,22 @@ export async function existById(
 /**
  * 增加和修改时校验产品
  */
-export async function validate(
+export async function validatePt(
   input: PtInput,
 ): Promise<void> {
-  await ptDao.validate(input);
+  await ptDao.validatePt(input);
 }
 
 /**
  * 批量创建产品
  */
-export async function creates(
+export async function createsPt(
   inputs: PtInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<PtId[]> {
-  const pt_ids = await ptDao.creates(inputs, options);
+  const pt_ids = await ptDao.createsPt(inputs, options);
   
   return pt_ids;
 }
@@ -182,37 +181,37 @@ export async function creates(
 /**
  * 根据 id 修改产品
  */
-export async function updateById(
+export async function updateByIdPt(
   pt_id: PtId,
   input: PtInput,
 ): Promise<PtId> {
   
-  const is_locked = await ptDao.getIsLockedById(pt_id);
+  const is_locked = await ptDao.getIsLockedByIdPt(pt_id);
   if (is_locked) {
     throw "不能修改已经锁定的 产品";
   }
   
-  const pt_id2 = await ptDao.updateById(pt_id, input);
+  const pt_id2 = await ptDao.updateByIdPt(pt_id, input);
   
   return pt_id2;
 }
 
 /** 校验产品是否存在 */
-export async function validateOption(
+export async function validateOptionPt(
   model0?: PtModel,
 ): Promise<PtModel> {
-  const pt_model = await ptDao.validateOption(model0);
+  const pt_model = await ptDao.validateOptionPt(model0);
   return pt_model;
 }
 
 /**
  * 根据 ids 删除产品
  */
-export async function deleteByIds(
+export async function deleteByIdsPt(
   pt_ids: PtId[],
 ): Promise<number> {
   
-  const old_models = await ptDao.findByIds(pt_ids);
+  const old_models = await ptDao.findByIdsPt(pt_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -220,40 +219,40 @@ export async function deleteByIds(
     }
   }
   
-  const pt_num = await ptDao.deleteByIds(pt_ids);
+  const pt_num = await ptDao.deleteByIdsPt(pt_ids);
   return pt_num;
 }
 
 /**
  * 根据 ids 启用或者禁用产品
  */
-export async function enableByIds(
+export async function enableByIdsPt(
   ids: PtId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const pt_num = await ptDao.enableByIds(ids, is_enabled);
+  const pt_num = await ptDao.enableByIdsPt(ids, is_enabled);
   return pt_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁产品
  */
-export async function lockByIds(
+export async function lockByIdsPt(
   pt_ids: PtId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const pt_num = await ptDao.lockByIds(pt_ids, is_locked);
+  const pt_num = await ptDao.lockByIdsPt(pt_ids, is_locked);
   return pt_num;
 }
 
 /**
  * 根据 ids 还原产品
  */
-export async function revertByIds(
+export async function revertByIdsPt(
   pt_ids: PtId[],
 ): Promise<number> {
   
-  const pt_num = await ptDao.revertByIds(pt_ids);
+  const pt_num = await ptDao.revertByIdsPt(pt_ids);
   
   return pt_num;
 }
@@ -261,11 +260,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除产品
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsPt(
   pt_ids: PtId[],
 ): Promise<number> {
   
-  const pt_num = await ptDao.forceDeleteByIds(pt_ids);
+  const pt_num = await ptDao.forceDeleteByIdsPt(pt_ids);
   
   return pt_num;
 }
@@ -273,16 +272,16 @@ export async function forceDeleteByIds(
 /**
  * 获取产品字段注释
  */
-export async function getFieldComments(): Promise<PtFieldComment> {
-  const pt_fields = await ptDao.getFieldComments();
+export async function getFieldCommentsPt(): Promise<PtFieldComment> {
+  const pt_fields = await ptDao.getFieldCommentsPt();
   return pt_fields;
 }
 
 /**
  * 查找 产品 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByPt(
 ): Promise<number> {
-  const pt_sort = await ptDao.findLastOrderBy();
+  const pt_sort = await ptDao.findLastOrderByPt();
   return pt_sort;
 }

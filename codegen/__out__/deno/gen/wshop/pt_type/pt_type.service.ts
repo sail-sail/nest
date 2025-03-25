@@ -10,8 +10,8 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findById as findByIdUsr,
-  validateOption as validateOptionUsr,
+  findByIdUsr,
+  validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -24,12 +24,11 @@ async function setSearchQuery(
   search: PtTypeSearch,
 ) {
   
-  const usr_id = await get_usr_id();
+  const usr_id = await get_usr_id(false);
   const org_id = await get_org_id();
-  const usr_model = await findByIdUsr(usr_id);
-  if (!usr_id || !usr_model) {
-    throw new Error("usr_id can not be null");
-  }
+  const usr_model = await validateOptionUsr(
+    await findByIdUsr(usr_id),
+  );
   const org_ids: OrgId[] = [ ];
   if (org_id) {
     org_ids.push(org_id);
@@ -47,7 +46,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找产品类别总数
  */
-export async function findCount(
+export async function findCountPtType(
   search?: PtTypeSearch,
 ): Promise<number> {
   
@@ -55,7 +54,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const pt_type_num = await pt_typeDao.findCount(search);
+  const pt_type_num = await pt_typeDao.findCountPtType(search);
   
   return pt_type_num;
 }
@@ -63,7 +62,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找产品类别列表
  */
-export async function findAll(
+export async function findAllPtType(
   search?: PtTypeSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -73,7 +72,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const pt_type_models = await pt_typeDao.findAll(search, page, sort);
+  const pt_type_models = await pt_typeDao.findAllPtType(search, page, sort);
   
   return pt_type_models;
 }
@@ -81,16 +80,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblPtType(
   input: PtTypeInput,
 ): Promise<void> {
-  await pt_typeDao.setIdByLbl(input);
+  await pt_typeDao.setIdByLblPtType(input);
 }
 
 /**
  * 根据条件查找第一个产品类别
  */
-export async function findOne(
+export async function findOnePtType(
   search?: PtTypeSearch,
   sort?: SortInput[],
 ): Promise<PtTypeModel | undefined> {
@@ -99,7 +98,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const pt_type_model = await pt_typeDao.findOne(search, sort);
+  const pt_type_model = await pt_typeDao.findOnePtType(search, sort);
   
   return pt_type_model;
 }
@@ -107,11 +106,11 @@ export async function findOne(
 /**
  * 根据 id 查找产品类别
  */
-export async function findById(
+export async function findByIdPtType(
   pt_type_id?: PtTypeId | null,
 ): Promise<PtTypeModel | undefined> {
   
-  const pt_type_model = await pt_typeDao.findById(pt_type_id);
+  const pt_type_model = await pt_typeDao.findByIdPtType(pt_type_id);
   
   return pt_type_model;
 }
@@ -119,11 +118,11 @@ export async function findById(
 /**
  * 根据 ids 查找产品类别
  */
-export async function findByIds(
+export async function findByIdsPtType(
   pt_type_ids: PtTypeId[],
 ): Promise<PtTypeModel[]> {
   
-  const pt_type_models = await pt_typeDao.findByIds(pt_type_ids);
+  const pt_type_models = await pt_typeDao.findByIdsPtType(pt_type_ids);
   
   return pt_type_models;
 }
@@ -131,7 +130,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找产品类别是否存在
  */
-export async function exist(
+export async function existPtType(
   search?: PtTypeSearch,
 ): Promise<boolean> {
   
@@ -139,7 +138,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const pt_type_exist = await pt_typeDao.exist(search);
+  const pt_type_exist = await pt_typeDao.existPtType(search);
   
   return pt_type_exist;
 }
@@ -147,11 +146,11 @@ export async function exist(
 /**
  * 根据 id 查找产品类别是否存在
  */
-export async function existById(
+export async function existByIdPtType(
   pt_type_id?: PtTypeId | null,
 ): Promise<boolean> {
   
-  const pt_type_exist = await pt_typeDao.existById(pt_type_id);
+  const pt_type_exist = await pt_typeDao.existByIdPtType(pt_type_id);
   
   return pt_type_exist;
 }
@@ -159,22 +158,22 @@ export async function existById(
 /**
  * 增加和修改时校验产品类别
  */
-export async function validate(
+export async function validatePtType(
   input: PtTypeInput,
 ): Promise<void> {
-  await pt_typeDao.validate(input);
+  await pt_typeDao.validatePtType(input);
 }
 
 /**
  * 批量创建产品类别
  */
-export async function creates(
+export async function createsPtType(
   inputs: PtTypeInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<PtTypeId[]> {
-  const pt_type_ids = await pt_typeDao.creates(inputs, options);
+  const pt_type_ids = await pt_typeDao.createsPtType(inputs, options);
   
   return pt_type_ids;
 }
@@ -182,37 +181,37 @@ export async function creates(
 /**
  * 根据 id 修改产品类别
  */
-export async function updateById(
+export async function updateByIdPtType(
   pt_type_id: PtTypeId,
   input: PtTypeInput,
 ): Promise<PtTypeId> {
   
-  const is_locked = await pt_typeDao.getIsLockedById(pt_type_id);
+  const is_locked = await pt_typeDao.getIsLockedByIdPtType(pt_type_id);
   if (is_locked) {
     throw "不能修改已经锁定的 产品类别";
   }
   
-  const pt_type_id2 = await pt_typeDao.updateById(pt_type_id, input);
+  const pt_type_id2 = await pt_typeDao.updateByIdPtType(pt_type_id, input);
   
   return pt_type_id2;
 }
 
 /** 校验产品类别是否存在 */
-export async function validateOption(
+export async function validateOptionPtType(
   model0?: PtTypeModel,
 ): Promise<PtTypeModel> {
-  const pt_type_model = await pt_typeDao.validateOption(model0);
+  const pt_type_model = await pt_typeDao.validateOptionPtType(model0);
   return pt_type_model;
 }
 
 /**
  * 根据 ids 删除产品类别
  */
-export async function deleteByIds(
+export async function deleteByIdsPtType(
   pt_type_ids: PtTypeId[],
 ): Promise<number> {
   
-  const old_models = await pt_typeDao.findByIds(pt_type_ids);
+  const old_models = await pt_typeDao.findByIdsPtType(pt_type_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -220,40 +219,40 @@ export async function deleteByIds(
     }
   }
   
-  const pt_type_num = await pt_typeDao.deleteByIds(pt_type_ids);
+  const pt_type_num = await pt_typeDao.deleteByIdsPtType(pt_type_ids);
   return pt_type_num;
 }
 
 /**
  * 根据 ids 启用或者禁用产品类别
  */
-export async function enableByIds(
+export async function enableByIdsPtType(
   ids: PtTypeId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const pt_type_num = await pt_typeDao.enableByIds(ids, is_enabled);
+  const pt_type_num = await pt_typeDao.enableByIdsPtType(ids, is_enabled);
   return pt_type_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁产品类别
  */
-export async function lockByIds(
+export async function lockByIdsPtType(
   pt_type_ids: PtTypeId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const pt_type_num = await pt_typeDao.lockByIds(pt_type_ids, is_locked);
+  const pt_type_num = await pt_typeDao.lockByIdsPtType(pt_type_ids, is_locked);
   return pt_type_num;
 }
 
 /**
  * 根据 ids 还原产品类别
  */
-export async function revertByIds(
+export async function revertByIdsPtType(
   pt_type_ids: PtTypeId[],
 ): Promise<number> {
   
-  const pt_type_num = await pt_typeDao.revertByIds(pt_type_ids);
+  const pt_type_num = await pt_typeDao.revertByIdsPtType(pt_type_ids);
   
   return pt_type_num;
 }
@@ -261,11 +260,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除产品类别
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsPtType(
   pt_type_ids: PtTypeId[],
 ): Promise<number> {
   
-  const pt_type_num = await pt_typeDao.forceDeleteByIds(pt_type_ids);
+  const pt_type_num = await pt_typeDao.forceDeleteByIdsPtType(pt_type_ids);
   
   return pt_type_num;
 }
@@ -273,16 +272,16 @@ export async function forceDeleteByIds(
 /**
  * 获取产品类别字段注释
  */
-export async function getFieldComments(): Promise<PtTypeFieldComment> {
-  const pt_type_fields = await pt_typeDao.getFieldComments();
+export async function getFieldCommentsPtType(): Promise<PtTypeFieldComment> {
+  const pt_type_fields = await pt_typeDao.getFieldCommentsPtType();
   return pt_type_fields;
 }
 
 /**
  * 查找 产品类别 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByPtType(
 ): Promise<number> {
-  const pt_type_sort = await pt_typeDao.findLastOrderBy();
+  const pt_type_sort = await pt_typeDao.findLastOrderByPtType();
   return pt_type_sort;
 }

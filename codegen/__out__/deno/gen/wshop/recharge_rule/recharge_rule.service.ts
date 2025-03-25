@@ -10,8 +10,8 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findById as findByIdUsr,
-  validateOption as validateOptionUsr,
+  findByIdUsr,
+  validateOptionUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -24,12 +24,11 @@ async function setSearchQuery(
   search: RechargeRuleSearch,
 ) {
   
-  const usr_id = await get_usr_id();
+  const usr_id = await get_usr_id(false);
   const org_id = await get_org_id();
-  const usr_model = await findByIdUsr(usr_id);
-  if (!usr_id || !usr_model) {
-    throw new Error("usr_id can not be null");
-  }
+  const usr_model = await validateOptionUsr(
+    await findByIdUsr(usr_id),
+  );
   const org_ids: OrgId[] = [ ];
   if (org_id) {
     org_ids.push(org_id);
@@ -47,7 +46,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找充值赠送规则总数
  */
-export async function findCount(
+export async function findCountRechargeRule(
   search?: RechargeRuleSearch,
 ): Promise<number> {
   
@@ -55,7 +54,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const recharge_rule_num = await recharge_ruleDao.findCount(search);
+  const recharge_rule_num = await recharge_ruleDao.findCountRechargeRule(search);
   
   return recharge_rule_num;
 }
@@ -63,7 +62,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找充值赠送规则列表
  */
-export async function findAll(
+export async function findAllRechargeRule(
   search?: RechargeRuleSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -73,7 +72,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const recharge_rule_models = await recharge_ruleDao.findAll(search, page, sort);
+  const recharge_rule_models = await recharge_ruleDao.findAllRechargeRule(search, page, sort);
   
   return recharge_rule_models;
 }
@@ -81,16 +80,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblRechargeRule(
   input: RechargeRuleInput,
 ): Promise<void> {
-  await recharge_ruleDao.setIdByLbl(input);
+  await recharge_ruleDao.setIdByLblRechargeRule(input);
 }
 
 /**
  * 根据条件查找第一个充值赠送规则
  */
-export async function findOne(
+export async function findOneRechargeRule(
   search?: RechargeRuleSearch,
   sort?: SortInput[],
 ): Promise<RechargeRuleModel | undefined> {
@@ -99,7 +98,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const recharge_rule_model = await recharge_ruleDao.findOne(search, sort);
+  const recharge_rule_model = await recharge_ruleDao.findOneRechargeRule(search, sort);
   
   return recharge_rule_model;
 }
@@ -107,11 +106,11 @@ export async function findOne(
 /**
  * 根据 id 查找充值赠送规则
  */
-export async function findById(
+export async function findByIdRechargeRule(
   recharge_rule_id?: RechargeRuleId | null,
 ): Promise<RechargeRuleModel | undefined> {
   
-  const recharge_rule_model = await recharge_ruleDao.findById(recharge_rule_id);
+  const recharge_rule_model = await recharge_ruleDao.findByIdRechargeRule(recharge_rule_id);
   
   return recharge_rule_model;
 }
@@ -119,11 +118,11 @@ export async function findById(
 /**
  * 根据 ids 查找充值赠送规则
  */
-export async function findByIds(
+export async function findByIdsRechargeRule(
   recharge_rule_ids: RechargeRuleId[],
 ): Promise<RechargeRuleModel[]> {
   
-  const recharge_rule_models = await recharge_ruleDao.findByIds(recharge_rule_ids);
+  const recharge_rule_models = await recharge_ruleDao.findByIdsRechargeRule(recharge_rule_ids);
   
   return recharge_rule_models;
 }
@@ -131,7 +130,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找充值赠送规则是否存在
  */
-export async function exist(
+export async function existRechargeRule(
   search?: RechargeRuleSearch,
 ): Promise<boolean> {
   
@@ -139,7 +138,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const recharge_rule_exist = await recharge_ruleDao.exist(search);
+  const recharge_rule_exist = await recharge_ruleDao.existRechargeRule(search);
   
   return recharge_rule_exist;
 }
@@ -147,11 +146,11 @@ export async function exist(
 /**
  * 根据 id 查找充值赠送规则是否存在
  */
-export async function existById(
+export async function existByIdRechargeRule(
   recharge_rule_id?: RechargeRuleId | null,
 ): Promise<boolean> {
   
-  const recharge_rule_exist = await recharge_ruleDao.existById(recharge_rule_id);
+  const recharge_rule_exist = await recharge_ruleDao.existByIdRechargeRule(recharge_rule_id);
   
   return recharge_rule_exist;
 }
@@ -159,22 +158,22 @@ export async function existById(
 /**
  * 增加和修改时校验充值赠送规则
  */
-export async function validate(
+export async function validateRechargeRule(
   input: RechargeRuleInput,
 ): Promise<void> {
-  await recharge_ruleDao.validate(input);
+  await recharge_ruleDao.validateRechargeRule(input);
 }
 
 /**
  * 批量创建充值赠送规则
  */
-export async function creates(
+export async function createsRechargeRule(
   inputs: RechargeRuleInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<RechargeRuleId[]> {
-  const recharge_rule_ids = await recharge_ruleDao.creates(inputs, options);
+  const recharge_rule_ids = await recharge_ruleDao.createsRechargeRule(inputs, options);
   
   return recharge_rule_ids;
 }
@@ -182,37 +181,37 @@ export async function creates(
 /**
  * 根据 id 修改充值赠送规则
  */
-export async function updateById(
+export async function updateByIdRechargeRule(
   recharge_rule_id: RechargeRuleId,
   input: RechargeRuleInput,
 ): Promise<RechargeRuleId> {
   
-  const is_locked = await recharge_ruleDao.getIsLockedById(recharge_rule_id);
+  const is_locked = await recharge_ruleDao.getIsLockedByIdRechargeRule(recharge_rule_id);
   if (is_locked) {
     throw "不能修改已经锁定的 充值赠送规则";
   }
   
-  const recharge_rule_id2 = await recharge_ruleDao.updateById(recharge_rule_id, input);
+  const recharge_rule_id2 = await recharge_ruleDao.updateByIdRechargeRule(recharge_rule_id, input);
   
   return recharge_rule_id2;
 }
 
 /** 校验充值赠送规则是否存在 */
-export async function validateOption(
+export async function validateOptionRechargeRule(
   model0?: RechargeRuleModel,
 ): Promise<RechargeRuleModel> {
-  const recharge_rule_model = await recharge_ruleDao.validateOption(model0);
+  const recharge_rule_model = await recharge_ruleDao.validateOptionRechargeRule(model0);
   return recharge_rule_model;
 }
 
 /**
  * 根据 ids 删除充值赠送规则
  */
-export async function deleteByIds(
+export async function deleteByIdsRechargeRule(
   recharge_rule_ids: RechargeRuleId[],
 ): Promise<number> {
   
-  const old_models = await recharge_ruleDao.findByIds(recharge_rule_ids);
+  const old_models = await recharge_ruleDao.findByIdsRechargeRule(recharge_rule_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -220,40 +219,40 @@ export async function deleteByIds(
     }
   }
   
-  const recharge_rule_num = await recharge_ruleDao.deleteByIds(recharge_rule_ids);
+  const recharge_rule_num = await recharge_ruleDao.deleteByIdsRechargeRule(recharge_rule_ids);
   return recharge_rule_num;
 }
 
 /**
  * 根据 ids 启用或者禁用充值赠送规则
  */
-export async function enableByIds(
+export async function enableByIdsRechargeRule(
   ids: RechargeRuleId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const recharge_rule_num = await recharge_ruleDao.enableByIds(ids, is_enabled);
+  const recharge_rule_num = await recharge_ruleDao.enableByIdsRechargeRule(ids, is_enabled);
   return recharge_rule_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁充值赠送规则
  */
-export async function lockByIds(
+export async function lockByIdsRechargeRule(
   recharge_rule_ids: RechargeRuleId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const recharge_rule_num = await recharge_ruleDao.lockByIds(recharge_rule_ids, is_locked);
+  const recharge_rule_num = await recharge_ruleDao.lockByIdsRechargeRule(recharge_rule_ids, is_locked);
   return recharge_rule_num;
 }
 
 /**
  * 根据 ids 还原充值赠送规则
  */
-export async function revertByIds(
+export async function revertByIdsRechargeRule(
   recharge_rule_ids: RechargeRuleId[],
 ): Promise<number> {
   
-  const recharge_rule_num = await recharge_ruleDao.revertByIds(recharge_rule_ids);
+  const recharge_rule_num = await recharge_ruleDao.revertByIdsRechargeRule(recharge_rule_ids);
   
   return recharge_rule_num;
 }
@@ -261,11 +260,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除充值赠送规则
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsRechargeRule(
   recharge_rule_ids: RechargeRuleId[],
 ): Promise<number> {
   
-  const recharge_rule_num = await recharge_ruleDao.forceDeleteByIds(recharge_rule_ids);
+  const recharge_rule_num = await recharge_ruleDao.forceDeleteByIdsRechargeRule(recharge_rule_ids);
   
   return recharge_rule_num;
 }
@@ -273,7 +272,7 @@ export async function forceDeleteByIds(
 /**
  * 获取充值赠送规则字段注释
  */
-export async function getFieldComments(): Promise<RechargeRuleFieldComment> {
-  const recharge_rule_fields = await recharge_ruleDao.getFieldComments();
+export async function getFieldCommentsRechargeRule(): Promise<RechargeRuleFieldComment> {
+  const recharge_rule_fields = await recharge_ruleDao.getFieldCommentsRechargeRule();
   return recharge_rule_fields;
 }

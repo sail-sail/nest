@@ -31,10 +31,10 @@ export async function findCountRechargeRule(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountRechargeRule(search);
   
   return num;
 }
@@ -49,12 +49,12 @@ export async function findAllRechargeRule(
 ): Promise<RechargeRuleModel[]> {
   
   const {
-    findAll,
+    findAllRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
   checkSortRechargeRule(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllRechargeRule(search, page, sort);
   
   return models;
 }
@@ -65,10 +65,10 @@ export async function findAllRechargeRule(
 export async function getFieldCommentsRechargeRule(): Promise<RechargeRuleFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsRechargeRule();
   
   return field_comment;
 }
@@ -82,12 +82,12 @@ export async function findOneRechargeRule(
 ): Promise<RechargeRuleModel | undefined> {
   
   const {
-    findOne,
+    findOneRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
   checkSortRechargeRule(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneRechargeRule(search, sort);
   
   return model;
 }
@@ -100,10 +100,10 @@ export async function findByIdRechargeRule(
 ): Promise<RechargeRuleModel | undefined> {
   
   const {
-    findById,
+    findByIdRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdRechargeRule(id);
   
   return model;
 }
@@ -116,10 +116,10 @@ export async function findByIdsRechargeRule(
 ): Promise<RechargeRuleModel[]> {
   
   const {
-    findByIds,
+    findByIdsRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsRechargeRule(ids);
   
   for (const model of models) {
   }
@@ -136,9 +136,9 @@ export async function createsRechargeRule(
 ): Promise<RechargeRuleId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateRechargeRule,
+    setIdByLblRechargeRule,
+    createsRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
   set_is_tran(true);
@@ -162,12 +162,12 @@ export async function createsRechargeRule(
       input.give_amt = new Decimal(input.give_amt);
     }
     
-    await setIdByLbl(input);
+    await setIdByLblRechargeRule(input);
     
-    await validate(input);
+    await validateRechargeRule(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsRechargeRule(inputs, { uniqueType });
   return ids;
 }
 
@@ -192,20 +192,20 @@ export async function updateByIdRechargeRule(
   }
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblRechargeRule,
+    updateByIdRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblRechargeRule(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: RechargeRuleId = await updateById(id, input);
+  const id2: RechargeRuleId = await updateByIdRechargeRule(id, input);
   
   return id2;
 }
@@ -218,7 +218,7 @@ export async function deleteByIdsRechargeRule(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
   set_is_tran(true);
@@ -228,7 +228,7 @@ export async function deleteByIdsRechargeRule(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsRechargeRule(ids);
   
   return num;
 }
@@ -242,7 +242,7 @@ export async function enableByIdsRechargeRule(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -255,7 +255,7 @@ export async function enableByIdsRechargeRule(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsRechargeRule(ids, is_enabled);
   
   return res;
 }
@@ -269,7 +269,7 @@ export async function lockByIdsRechargeRule(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -283,7 +283,7 @@ export async function lockByIdsRechargeRule(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsRechargeRule(ids, is_locked);
   
   return res;
 }
@@ -296,7 +296,7 @@ export async function revertByIdsRechargeRule(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
   set_is_tran(true);
@@ -306,7 +306,7 @@ export async function revertByIdsRechargeRule(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsRechargeRule(ids);
   
   return res;
 }
@@ -319,7 +319,7 @@ export async function forceDeleteByIdsRechargeRule(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsRechargeRule,
   } = await import("./recharge_rule.service.ts");
   
   set_is_tran(true);
@@ -329,7 +329,7 @@ export async function forceDeleteByIdsRechargeRule(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsRechargeRule(ids);
   
   return res;
 }

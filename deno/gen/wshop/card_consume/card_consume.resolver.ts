@@ -29,10 +29,10 @@ export async function findCountCardConsume(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountCardConsume,
   } = await import("./card_consume.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountCardConsume(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllCardConsume(
 ): Promise<CardConsumeModel[]> {
   
   const {
-    findAll,
+    findAllCardConsume,
   } = await import("./card_consume.service.ts");
   
   checkSortCardConsume(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllCardConsume(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllCardConsume(
 export async function getFieldCommentsCardConsume(): Promise<CardConsumeFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsCardConsume,
   } = await import("./card_consume.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsCardConsume();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneCardConsume(
 ): Promise<CardConsumeModel | undefined> {
   
   const {
-    findOne,
+    findOneCardConsume,
   } = await import("./card_consume.service.ts");
   
   checkSortCardConsume(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneCardConsume(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdCardConsume(
 ): Promise<CardConsumeModel | undefined> {
   
   const {
-    findById,
+    findByIdCardConsume,
   } = await import("./card_consume.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdCardConsume(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsCardConsume(
 ): Promise<CardConsumeModel[]> {
   
   const {
-    findByIds,
+    findByIdsCardConsume,
   } = await import("./card_consume.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsCardConsume(ids);
   
   for (const model of models) {
   }
@@ -133,7 +133,7 @@ export async function deleteByIdsCardConsume(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsCardConsume,
   } = await import("./card_consume.service.ts");
   
   set_is_tran(true);
@@ -143,7 +143,7 @@ export async function deleteByIdsCardConsume(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsCardConsume(ids);
   
   return num;
 }
@@ -156,7 +156,7 @@ export async function revertByIdsCardConsume(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsCardConsume,
   } = await import("./card_consume.service.ts");
   
   set_is_tran(true);
@@ -166,7 +166,7 @@ export async function revertByIdsCardConsume(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsCardConsume(ids);
   
   return res;
 }
@@ -179,7 +179,7 @@ export async function forceDeleteByIdsCardConsume(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsCardConsume,
   } = await import("./card_consume.service.ts");
   
   set_is_tran(true);
@@ -189,7 +189,7 @@ export async function forceDeleteByIdsCardConsume(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsCardConsume(ids);
   
   return res;
 }
