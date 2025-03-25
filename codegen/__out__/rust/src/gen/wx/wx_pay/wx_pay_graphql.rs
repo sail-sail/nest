@@ -37,7 +37,7 @@ impl WxPayGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_resolver::find_all(
+        wx_pay_resolver::find_all_wx_pay(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl WxPayGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_resolver::find_count(
+        wx_pay_resolver::find_count_wx_pay(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl WxPayGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_resolver::find_one(
+        wx_pay_resolver::find_one_wx_pay(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl WxPayGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_resolver::find_by_id(
+        wx_pay_resolver::find_by_id_wx_pay(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl WxPayGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_resolver::find_by_ids(
+        wx_pay_resolver::find_by_ids_wx_pay(
           ids,
           None,
         )
@@ -127,7 +127,7 @@ impl WxPayGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_resolver::get_is_enabled_by_id(
+        wx_pay_resolver::get_is_enabled_by_id_wx_pay(
           id,
           None,
         )
@@ -146,7 +146,7 @@ impl WxPayGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_resolver::get_is_locked_by_id(
+        wx_pay_resolver::get_is_locked_by_id_wx_pay(
           id,
           None,
         )
@@ -161,7 +161,7 @@ impl WxPayGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        wx_pay_resolver::get_field_comments(
+        wx_pay_resolver::get_field_comments_wx_pay(
           None,
         )
       }).await
@@ -176,7 +176,7 @@ impl WxPayGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_resolver::find_last_order_by(
+        wx_pay_resolver::find_last_order_by_wx_pay(
           None,
         )
       }).await
@@ -207,7 +207,7 @@ impl WxPayGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        wx_pay_resolver::creates(
+        wx_pay_resolver::creates_wx_pay(
           inputs,
           options.into(),
         )
@@ -226,7 +226,7 @@ impl WxPayGenMutation {
       .with_tran()
       .build()
       .scope({
-        wx_pay_resolver::update_tenant_by_id(
+        wx_pay_resolver::update_tenant_by_id_wx_pay(
           id,
           tenant_id,
           None,
@@ -246,7 +246,7 @@ impl WxPayGenMutation {
       .with_tran()
       .build()
       .scope({
-        wx_pay_resolver::update_by_id(
+        wx_pay_resolver::update_by_id_wx_pay(
           id,
           input,
           None,
@@ -265,7 +265,7 @@ impl WxPayGenMutation {
       .with_tran()
       .build()
       .scope({
-        wx_pay_resolver::delete_by_ids(
+        wx_pay_resolver::delete_by_ids_wx_pay(
           ids,
           None,
         )
@@ -284,7 +284,7 @@ impl WxPayGenMutation {
       .with_tran()
       .build()
       .scope({
-        wx_pay_resolver::enable_by_ids(
+        wx_pay_resolver::enable_by_ids_wx_pay(
           ids,
           is_enabled,
           None,
@@ -304,7 +304,7 @@ impl WxPayGenMutation {
       .with_tran()
       .build()
       .scope({
-        wx_pay_resolver::lock_by_ids(
+        wx_pay_resolver::lock_by_ids_wx_pay(
           ids,
           is_locked,
           None,
@@ -323,7 +323,7 @@ impl WxPayGenMutation {
       .with_tran()
       .build()
       .scope({
-        wx_pay_resolver::revert_by_ids(
+        wx_pay_resolver::revert_by_ids_wx_pay(
           ids,
           None,
         )
@@ -341,7 +341,7 @@ impl WxPayGenMutation {
       .with_tran()
       .build()
       .scope({
-        wx_pay_resolver::force_delete_by_ids(
+        wx_pay_resolver::force_delete_by_ids_wx_pay(
           ids,
           None,
         )

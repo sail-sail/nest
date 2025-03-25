@@ -11,29 +11,29 @@ use super::pay_transactions_jsapi_model::RequestPaymentOptions;
 
 // wx_pay
 use crate::r#gen::wx::wx_pay::wx_pay_dao::{
-  find_one as find_one_wx_pay,
-  validate_option as validate_option_wx_pay,
-  validate_is_enabled as validate_is_enabled_wx_pay,
+  find_one_wx_pay,
+  validate_option_wx_pay,
+  validate_is_enabled_wx_pay,
 };
 use crate::r#gen::wx::wx_pay::wx_pay_model::WxPaySearch;
 
 // wx_usr
 use crate::r#gen::wx::wx_usr::wx_usr_dao::{
-  find_by_id as find_by_id_wx_usr,
-  validate_option as validate_option_wx_usr,
+  find_by_id_wx_usr,
+  validate_option_wx_usr,
 };
 
 // wxo_usr
 use crate::r#gen::wx::wxo_usr::wxo_usr_dao::{
-  find_by_id as find_by_id_wxo_usr,
-  validate_option as validate_option_wxo_usr,
+  find_by_id_wxo_usr,
+  validate_option_wxo_usr,
 };
 
 use crate::r#gen::wx::pay_transactions_jsapi::pay_transactions_jsapi_model::{
   PayTransactionsJsapiTradeState,
   PayTransactionsJsapiInput,
 };
-use crate::r#gen::wx::pay_transactions_jsapi::pay_transactions_jsapi_dao::create as create_pay_transactions_jsapi;
+use crate::r#gen::wx::pay_transactions_jsapi::pay_transactions_jsapi_dao::create_pay_transactions_jsapi;
 
 use super::pay_transactions_jsapi_model::TransactionsJsapiInput;
 

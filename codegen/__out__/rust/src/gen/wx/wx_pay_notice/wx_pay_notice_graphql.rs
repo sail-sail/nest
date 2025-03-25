@@ -37,7 +37,7 @@ impl WxPayNoticeGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_notice_resolver::find_all(
+        wx_pay_notice_resolver::find_all_wx_pay_notice(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl WxPayNoticeGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_notice_resolver::find_count(
+        wx_pay_notice_resolver::find_count_wx_pay_notice(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl WxPayNoticeGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_notice_resolver::find_one(
+        wx_pay_notice_resolver::find_one_wx_pay_notice(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl WxPayNoticeGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_notice_resolver::find_by_id(
+        wx_pay_notice_resolver::find_by_id_wx_pay_notice(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl WxPayNoticeGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wx_pay_notice_resolver::find_by_ids(
+        wx_pay_notice_resolver::find_by_ids_wx_pay_notice(
           ids,
           None,
         )
@@ -124,7 +124,7 @@ impl WxPayNoticeGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        wx_pay_notice_resolver::get_field_comments(
+        wx_pay_notice_resolver::get_field_comments_wx_pay_notice(
           None,
         )
       }).await
@@ -160,7 +160,7 @@ impl WxPayNoticeGenMutation {
       .with_tran()
       .build()
       .scope({
-        wx_pay_notice_resolver::update_tenant_by_id(
+        wx_pay_notice_resolver::update_tenant_by_id_wx_pay_notice(
           id,
           tenant_id,
           None,

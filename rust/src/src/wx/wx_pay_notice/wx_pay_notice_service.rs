@@ -20,15 +20,15 @@ use crate::common::wx_pay::{
 
 // wx_pay
 use crate::r#gen::wx::wx_pay::wx_pay_dao::{
-  find_one as find_one_wx_pay,
-  validate_option as validate_option_wx_pay,
+  find_one_wx_pay,
+  validate_option_wx_pay,
 };
 use crate::r#gen::wx::wx_pay::wx_pay_model::WxPaySearch;
 
 // wx_pay_notice
 use crate::r#gen::wx::wx_pay_notice::wx_pay_notice_dao::{
-  create as create_wx_pay_notice,
-  update_tenant_by_id as update_tenant_by_id_wx_pay_notice,
+  create_wx_pay_notice,
+  update_tenant_by_id_wx_pay_notice,
 };
 use crate::r#gen::wx::wx_pay_notice::wx_pay_notice_model::{
   WxPayNoticeTradeType,
@@ -40,9 +40,9 @@ use crate::r#gen::wx::wx_pay_notice::wx_pay_notice_model::{
 
 // pay_transactions_jsapi
 use crate::r#gen::wx::pay_transactions_jsapi::pay_transactions_jsapi_dao::{
-  find_one as find_one_pay_transactions_jsapi,
-  validate_option as validate_option_pay_transactions_jsapi,
-  update_by_id as update_by_id_pay_transactions_jsapi,
+  find_one_pay_transactions_jsapi,
+  validate_option_pay_transactions_jsapi,
+  update_by_id_pay_transactions_jsapi,
 };
 use crate::r#gen::wx::pay_transactions_jsapi::pay_transactions_jsapi_model::{
   PayTransactionsJsapiTradeState,

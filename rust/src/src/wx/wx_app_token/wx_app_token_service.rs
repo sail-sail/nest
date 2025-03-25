@@ -12,9 +12,9 @@ use crate::common::util::http::client as reqwest_client;
 // wx_app
 use crate::r#gen::wx::wx_app::wx_app_model::WxAppSearch;
 use crate::r#gen::wx::wx_app::wx_app_dao::{
-  find_one as find_one_wx_app,
-  validate_option as validate_option_wx_app,
-  validate_is_enabled as validate_is_enabled_wx_app,
+  find_one_wx_app,
+  validate_option_wx_app,
+  validate_is_enabled_wx_app,
 };
 
 // wx_app_token
@@ -23,9 +23,9 @@ use crate::r#gen::wx::wx_app_token::wx_app_token_model::{
   WxAppTokenSearch,
 };
 use crate::r#gen::wx::wx_app_token::wx_app_token_dao::{
-  find_one as find_one_wx_app_token,
-  create as create_wx_app_token,
-  update_by_id as update_by_id_wx_app_token,
+  find_one_wx_app_token,
+  create_wx_app_token,
+  update_by_id_wx_app_token,
 };
 
 use super::wx_app_token_model::GetAccessTokenModel;

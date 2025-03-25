@@ -37,7 +37,7 @@ impl WxoAppGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_resolver::find_all(
+        wxo_app_resolver::find_all_wxo_app(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl WxoAppGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_resolver::find_count(
+        wxo_app_resolver::find_count_wxo_app(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl WxoAppGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_resolver::find_one(
+        wxo_app_resolver::find_one_wxo_app(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl WxoAppGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_resolver::find_by_id(
+        wxo_app_resolver::find_by_id_wxo_app(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl WxoAppGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_resolver::find_by_ids(
+        wxo_app_resolver::find_by_ids_wxo_app(
           ids,
           None,
         )
@@ -127,7 +127,7 @@ impl WxoAppGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_resolver::get_is_enabled_by_id(
+        wxo_app_resolver::get_is_enabled_by_id_wxo_app(
           id,
           None,
         )
@@ -146,7 +146,7 @@ impl WxoAppGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_resolver::get_is_locked_by_id(
+        wxo_app_resolver::get_is_locked_by_id_wxo_app(
           id,
           None,
         )
@@ -161,7 +161,7 @@ impl WxoAppGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        wxo_app_resolver::get_field_comments(
+        wxo_app_resolver::get_field_comments_wxo_app(
           None,
         )
       }).await
@@ -176,7 +176,7 @@ impl WxoAppGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_resolver::find_last_order_by(
+        wxo_app_resolver::find_last_order_by_wxo_app(
           None,
         )
       }).await
@@ -207,7 +207,7 @@ impl WxoAppGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        wxo_app_resolver::creates(
+        wxo_app_resolver::creates_wxo_app(
           inputs,
           options.into(),
         )
@@ -226,7 +226,7 @@ impl WxoAppGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_resolver::update_tenant_by_id(
+        wxo_app_resolver::update_tenant_by_id_wxo_app(
           id,
           tenant_id,
           None,
@@ -246,7 +246,7 @@ impl WxoAppGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_resolver::update_by_id(
+        wxo_app_resolver::update_by_id_wxo_app(
           id,
           input,
           None,
@@ -265,7 +265,7 @@ impl WxoAppGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_resolver::delete_by_ids(
+        wxo_app_resolver::delete_by_ids_wxo_app(
           ids,
           None,
         )
@@ -284,7 +284,7 @@ impl WxoAppGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_resolver::enable_by_ids(
+        wxo_app_resolver::enable_by_ids_wxo_app(
           ids,
           is_enabled,
           None,
@@ -304,7 +304,7 @@ impl WxoAppGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_resolver::lock_by_ids(
+        wxo_app_resolver::lock_by_ids_wxo_app(
           ids,
           is_locked,
           None,
@@ -323,7 +323,7 @@ impl WxoAppGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_resolver::revert_by_ids(
+        wxo_app_resolver::revert_by_ids_wxo_app(
           ids,
           None,
         )
@@ -341,7 +341,7 @@ impl WxoAppGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_resolver::force_delete_by_ids(
+        wxo_app_resolver::force_delete_by_ids_wxo_app(
           ids,
           None,
         )

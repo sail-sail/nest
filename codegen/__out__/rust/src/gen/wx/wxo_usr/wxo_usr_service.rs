@@ -26,7 +26,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找公众号用户列表
-pub async fn find_all(
+pub async fn find_all_wxo_usr(
   search: Option<WxoUsrSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -40,7 +40,7 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let wxo_usr_models = wxo_usr_dao::find_all(
+  let wxo_usr_models = wxo_usr_dao::find_all_wxo_usr(
     Some(search),
     page,
     sort,
@@ -51,7 +51,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找公众号用户总数
-pub async fn find_count(
+pub async fn find_count_wxo_usr(
   search: Option<WxoUsrSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -63,7 +63,7 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let wxo_usr_num = wxo_usr_dao::find_count(
+  let wxo_usr_num = wxo_usr_dao::find_count_wxo_usr(
     Some(search),
     options,
   ).await?;
@@ -72,7 +72,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个公众号用户
-pub async fn find_one(
+pub async fn find_one_wxo_usr(
   search: Option<WxoUsrSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -85,7 +85,7 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let wxo_usr_model = wxo_usr_dao::find_one(
+  let wxo_usr_model = wxo_usr_dao::find_one_wxo_usr(
     Some(search),
     sort,
     options,
@@ -95,12 +95,12 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找公众号用户
-pub async fn find_by_id(
+pub async fn find_by_id_wxo_usr(
   wxo_usr_id: WxoUsrId,
   options: Option<Options>,
 ) -> Result<Option<WxoUsrModel>> {
   
-  let wxo_usr_model = wxo_usr_dao::find_by_id(
+  let wxo_usr_model = wxo_usr_dao::find_by_id_wxo_usr(
     wxo_usr_id,
     options,
   ).await?;
@@ -109,12 +109,12 @@ pub async fn find_by_id(
 }
 
 /// 根据 wxo_usr_ids 查找公众号用户
-pub async fn find_by_ids(
+pub async fn find_by_ids_wxo_usr(
   wxo_usr_ids: Vec<WxoUsrId>,
   options: Option<Options>,
 ) -> Result<Vec<WxoUsrModel>> {
   
-  let wxo_usr_models = wxo_usr_dao::find_by_ids(
+  let wxo_usr_models = wxo_usr_dao::find_by_ids_wxo_usr(
     wxo_usr_ids,
     options,
   ).await?;
@@ -124,11 +124,11 @@ pub async fn find_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_wxo_usr(
   wxo_usr_input: WxoUsrInput,
 ) -> Result<WxoUsrInput> {
   
-  let wxo_usr_input = wxo_usr_dao::set_id_by_lbl(
+  let wxo_usr_input = wxo_usr_dao::set_id_by_lbl_wxo_usr(
     wxo_usr_input,
   ).await?;
   
@@ -137,12 +137,12 @@ pub async fn set_id_by_lbl(
 
 /// 创建公众号用户
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_wxo_usr(
   wxo_usr_inputs: Vec<WxoUsrInput>,
   options: Option<Options>,
 ) -> Result<Vec<WxoUsrId>> {
   
-  let wxo_usr_ids = wxo_usr_dao::creates(
+  let wxo_usr_ids = wxo_usr_dao::creates_wxo_usr(
     wxo_usr_inputs,
     options,
   ).await?;
@@ -152,13 +152,13 @@ pub async fn creates(
 
 /// 公众号用户根据 wxo_usr_id 修改租户id
 #[allow(dead_code)]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_wxo_usr(
   wxo_usr_id: WxoUsrId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = wxo_usr_dao::update_tenant_by_id(
+  let num = wxo_usr_dao::update_tenant_by_id_wxo_usr(
     wxo_usr_id,
     tenant_id,
     options,
@@ -169,13 +169,13 @@ pub async fn update_tenant_by_id(
 
 /// 根据 wxo_usr_id 修改公众号用户
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_wxo_usr(
   wxo_usr_id: WxoUsrId,
   mut wxo_usr_input: WxoUsrInput,
   options: Option<Options>,
 ) -> Result<WxoUsrId> {
   
-  let wxo_usr_id = wxo_usr_dao::update_by_id(
+  let wxo_usr_id = wxo_usr_dao::update_by_id_wxo_usr(
     wxo_usr_id,
     wxo_usr_input,
     options.clone(),
@@ -186,23 +186,23 @@ pub async fn update_by_id(
 
 /// 校验公众号用户是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_wxo_usr(
   wxo_usr_model: Option<WxoUsrModel>,
 ) -> Result<WxoUsrModel> {
   
-  let wxo_usr_model = wxo_usr_dao::validate_option(wxo_usr_model).await?;
+  let wxo_usr_model = wxo_usr_dao::validate_option_wxo_usr(wxo_usr_model).await?;
   
   Ok(wxo_usr_model)
 }
 
 /// 根据 wxo_usr_ids 删除公众号用户
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_wxo_usr(
   wxo_usr_ids: Vec<WxoUsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = wxo_usr_dao::delete_by_ids(
+  let num = wxo_usr_dao::delete_by_ids_wxo_usr(
     wxo_usr_ids,
     options,
   ).await?;
@@ -211,11 +211,11 @@ pub async fn delete_by_ids(
 }
 
 /// 获取公众号用户字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_wxo_usr(
   options: Option<Options>,
 ) -> Result<WxoUsrFieldComment> {
   
-  let comments = wxo_usr_dao::get_field_comments(
+  let comments = wxo_usr_dao::get_field_comments_wxo_usr(
     options,
   ).await?;
   
@@ -224,12 +224,12 @@ pub async fn get_field_comments(
 
 /// 根据 wxo_usr_ids 还原公众号用户
 #[allow(dead_code)]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_wxo_usr(
   wxo_usr_ids: Vec<WxoUsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = wxo_usr_dao::revert_by_ids(
+  let num = wxo_usr_dao::revert_by_ids_wxo_usr(
     wxo_usr_ids,
     options,
   ).await?;
@@ -239,12 +239,12 @@ pub async fn revert_by_ids(
 
 /// 根据 wxo_usr_ids 彻底删除公众号用户
 #[allow(dead_code)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_wxo_usr(
   wxo_usr_ids: Vec<WxoUsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = wxo_usr_dao::force_delete_by_ids(
+  let num = wxo_usr_dao::force_delete_by_ids_wxo_usr(
     wxo_usr_ids,
     options,
   ).await?;

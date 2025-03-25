@@ -18,9 +18,9 @@ use crate::src::base::usr::usr_model::LoginModel;
 // wx_app
 use crate::r#gen::wx::wx_app::wx_app_model::WxAppSearch;
 use crate::r#gen::wx::wx_app::wx_app_dao::{
-  find_one as find_one_wx_app,
-  validate_option as validate_option_wx_app,
-  validate_is_enabled as validate_is_enabled_wx_app,
+  find_one_wx_app,
+  validate_option_wx_app,
+  validate_is_enabled_wx_app,
 };
 
 // wx_usr
@@ -29,21 +29,21 @@ use crate::r#gen::wx::wx_usr::wx_usr_model::{
   WxUsrSearch,
 };
 use crate::r#gen::wx::wx_usr::wx_usr_dao::{
-  find_by_id as find_by_id_wx_usr,
-  find_one as find_one_wx_usr,
-  validate_option as validate_option_wx_usr,
-  create as create_wx_usr,
-  update_by_id as update_by_id_wx_usr,
-  update_tenant_by_id as update_tenant_by_id_wx_usr,
+  find_by_id_wx_usr,
+  find_one_wx_usr,
+  validate_option_wx_usr,
+  create_wx_usr,
+  update_by_id_wx_usr,
+  update_tenant_by_id_wx_usr,
 };
 
 // base_usr
 use crate::r#gen::base::usr::usr_model::UsrInput;
 use crate::r#gen::base::usr::usr_dao::{
-  validate_option as validate_option_usr,
-  create as create_usr,
-  update_tenant_by_id as update_tenant_by_id_usr,
-  find_by_id as find_by_id_usr,
+  validate_option_usr,
+  create_usr,
+  update_tenant_by_id_usr,
+  find_by_id_usr,
 };
 
 // base_org
