@@ -49,7 +49,7 @@ use crate::src::base::dict_detail::dict_detail_dao::get_dict;
 use super::menu_model::*;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -511,10 +511,10 @@ async fn get_from_query(
   Ok(from_query)
 }
 
-// MARK: find_all
+// MARK: find_all_menu
 /// 根据搜索条件和分页查找菜单列表
 #[allow(unused_mut)]
-pub async fn find_all(
+pub async fn find_all_menu(
   search: Option<MenuSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -522,7 +522,7 @@ pub async fn find_all(
 ) -> Result<Vec<MenuModel>> {
   
   let table = "base_menu";
-  let method = "find_all";
+  let method = "find_all_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -738,15 +738,15 @@ pub async fn find_all(
   Ok(res)
 }
 
-// MARK: find_count
+// MARK: find_count_menu
 /// 根据条件查找菜单总数
-pub async fn find_count(
+pub async fn find_count_menu(
   search: Option<MenuSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_menu";
-  let method = "find_count";
+  let method = "find_count_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -905,9 +905,9 @@ pub async fn find_count(
   Ok(total)
 }
 
-// MARK: get_field_comments
+// MARK: get_field_comments_menu
 /// 获取菜单字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_menu(
   _options: Option<Options>,
 ) -> Result<MenuFieldComment> {
   
@@ -936,16 +936,16 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-// MARK: find_one
+// MARK: find_one_menu
 /// 根据条件查找第一个菜单
-pub async fn find_one(
+pub async fn find_one_menu(
   search: Option<MenuSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<MenuModel>> {
   
   let table = "base_menu";
-  let method = "find_one";
+  let method = "find_one_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -981,7 +981,7 @@ pub async fn find_one(
     pg_size: 1.into(),
   }.into();
   
-  let res = find_all(
+  let res = find_all_menu(
     search,
     page,
     sort,
@@ -993,15 +993,15 @@ pub async fn find_one(
   Ok(model)
 }
 
-// MARK: find_by_id
+// MARK: find_by_id_menu
 /// 根据 id 查找菜单
-pub async fn find_by_id(
+pub async fn find_by_id_menu(
   id: MenuId,
   options: Option<Options>,
 ) -> Result<Option<MenuModel>> {
   
   let table = "base_menu";
-  let method = "find_by_id";
+  let method = "find_by_id_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1030,25 +1030,25 @@ pub async fn find_by_id(
     ..Default::default()
   }.into();
   
-  let res = find_one(
+  let menu_model = find_one_menu(
     search,
     None,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(menu_model)
 }
 
-// MARK: find_by_ids
+// MARK: find_by_ids_menu
 /// 根据 ids 查找菜单
 #[allow(dead_code)]
-pub async fn find_by_ids(
+pub async fn find_by_ids_menu(
   ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
   let table = "base_menu";
-  let method = "find_by_ids";
+  let method = "find_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1083,7 +1083,7 @@ pub async fn find_by_ids(
     ..Default::default()
   }.into();
   
-  let models = find_all(
+  let models = find_all_menu(
     search,
     None,
     None,
@@ -1112,16 +1112,16 @@ pub async fn find_by_ids(
   Ok(models)
 }
 
-// MARK: exists
+// MARK: exists_menu
 /// 根据搜索条件判断菜单是否存在
 #[allow(dead_code)]
-pub async fn exists(
+pub async fn exists_menu(
   search: Option<MenuSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "base_menu";
-  let method = "exists";
+  let method = "exists_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1143,7 +1143,7 @@ pub async fn exists(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count(
+  let total = find_count_menu(
     search,
     options,
   ).await?;
@@ -1151,16 +1151,16 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-// MARK: exists_by_id
+// MARK: exists_by_id_menu
 /// 根据 id 判断菜单是否存在
 #[allow(dead_code)]
-pub async fn exists_by_id(
+pub async fn exists_by_id_menu(
   id: MenuId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "base_menu";
-  let method = "exists_by_id";
+  let method = "exists_by_id_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1185,7 +1185,7 @@ pub async fn exists_by_id(
     ..Default::default()
   }.into();
   
-  let res = exists(
+  let res = exists_menu(
     search,
     options,
   ).await?;
@@ -1193,17 +1193,17 @@ pub async fn exists_by_id(
   Ok(res)
 }
 
-// MARK: find_by_unique
+// MARK: find_by_unique_menu
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique(
+pub async fn find_by_unique_menu(
   search: MenuSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
   let table = "base_menu";
-  let method = "find_by_unique";
+  let method = "find_by_unique_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1227,7 +1227,7 @@ pub async fn find_by_unique(
   let options = Some(options);
   
   if let Some(id) = search.id {
-    let model = find_by_id(
+    let model = find_by_id_menu(
       id,
       options.clone(),
     ).await?;
@@ -1250,7 +1250,7 @@ pub async fn find_by_unique(
       ..Default::default()
     };
     
-    find_all(
+    find_all_menu(
       search.into(),
       None,
       sort.clone(),
@@ -1281,17 +1281,17 @@ pub fn equals_by_unique(
   false
 }
 
-// MARK: check_by_unique
+// MARK: check_by_unique_menu
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique(
+pub async fn check_by_unique_menu(
   input: MenuInput,
   model: MenuModel,
   options: Option<Options>,
 ) -> Result<Option<MenuId>> {
   
   let table = "base_menu";
-  let method = "check_by_unique";
+  let method = "check_by_unique_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1329,7 +1329,7 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let id = update_by_id(
+    let id = update_by_id_menu(
       model.id.clone(),
       input,
       options,
@@ -1343,10 +1343,10 @@ pub async fn check_by_unique(
   Ok(None)
 }
 
-// MARK: set_id_by_lbl
+// MARK: set_id_by_lbl_menu
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables, dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_menu(
   input: MenuInput,
 ) -> Result<MenuInput> {
   
@@ -1396,7 +1396,7 @@ pub async fn set_id_by_lbl(
     input.parent_id_lbl = input.parent_id_lbl.map(|item| 
       item.trim().to_owned()
     );
-    let model = find_one(
+    let model = find_one_menu(
       MenuSearch {
         lbl: input.parent_id_lbl.clone(),
         ..Default::default()
@@ -1411,7 +1411,7 @@ pub async fn set_id_by_lbl(
     (input.parent_id_lbl.is_none() || input.parent_id_lbl.as_ref().unwrap().is_empty())
     && input.parent_id.is_some()
   {
-    let menu_model = find_one(
+    let menu_model = find_one_menu(
       MenuSearch {
         id: input.parent_id.clone(),
         ..Default::default()
@@ -1477,16 +1477,16 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-// MARK: creates_return
+// MARK: creates_return_menu
 /// 批量创建菜单并返回
 #[allow(dead_code)]
-pub async fn creates_return(
+pub async fn creates_return_menu(
   inputs: Vec<MenuInput>,
   options: Option<Options>,
 ) -> Result<Vec<MenuModel>> {
   
   let table = "base_menu";
-  let method = "creates_return";
+  let method = "creates_return_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1507,23 +1507,23 @@ pub async fn creates_return(
     options.clone(),
   ).await?;
   
-  let models = find_by_ids(
+  let models_menu = find_by_ids_menu(
     ids,
     options,
   ).await?;
   
-  Ok(models)
+  Ok(models_menu)
 }
 
-// MARK: creates
+// MARK: creates_menu
 /// 批量创建菜单
-pub async fn creates(
+pub async fn creates_menu(
   inputs: Vec<MenuInput>,
   options: Option<Options>,
 ) -> Result<Vec<MenuId>> {
   
   let table = "base_menu";
-  let method = "creates";
+  let method = "creates_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1573,7 +1573,7 @@ async fn _creates(
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
     
-    let old_models = find_by_unique(
+    let old_models = find_by_unique_menu(
       input.clone().into(),
       None,
       options.clone(),
@@ -1586,7 +1586,7 @@ async fn _creates(
         let options = Options::from(options.clone())
           .set_unique_type(unique_type);
         
-        id = check_by_unique(
+        id = check_by_unique_menu(
           input.clone(),
           old_model,
           Some(options),
@@ -1859,43 +1859,52 @@ async fn _creates(
   Ok(ids2)
 }
 
-// MARK: create_return
+// MARK: create_return_menu
 /// 创建菜单并返回
 #[allow(dead_code)]
-pub async fn create_return(
+pub async fn create_return_menu(
   #[allow(unused_mut)]
   mut input: MenuInput,
   options: Option<Options>,
 ) -> Result<MenuModel> {
   
-  let table = "base_menu";
+  let id = create_menu(
+    input.clone(),
+    options.clone(),
+  ).await?;
   
-  let id = create(input.clone(), options.clone()).await?;
-  
-  let model = find_by_id(
+  let model_menu = find_by_id_menu(
     id,
     options,
   ).await?;
   
-  if model.is_none() {
-    return Err(eyre!("create_return: Create failed in dao: {table}"));
+  if model_menu.is_none() {
+    let err_msg = "create_return_menu: model_menu.is_none()";
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
-  let model = model.unwrap();
+  let model_menu = model_menu.unwrap();
   
-  Ok(model)
+  Ok(model_menu)
 }
 
-// MARK: create
+// MARK: create_menu
 /// 创建菜单
 #[allow(dead_code)]
-pub async fn create(
+pub async fn create_menu(
   #[allow(unused_mut)]
   mut input: MenuInput,
   options: Option<Options>,
 ) -> Result<MenuId> {
   
   let table = "base_menu";
-  let method = "create";
+  let method = "create_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1924,18 +1933,18 @@ pub async fn create(
   Ok(id)
 }
 
-// MARK: update_by_id
+// MARK: update_by_id_menu
 /// 根据 id 修改菜单
 #[allow(unused_mut)]
 #[allow(unused_variables)]
-pub async fn update_by_id(
+pub async fn update_by_id_menu(
   id: MenuId,
   mut input: MenuInput,
   options: Option<Options>,
 ) -> Result<MenuId> {
   
   let table = "base_menu";
-  let method = "update_by_id";
+  let method = "update_by_id_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1959,7 +1968,7 @@ pub async fn update_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_model = find_by_id(
+  let old_model = find_by_id_menu(
     id.clone(),
     options.clone(),
   ).await?;
@@ -1984,7 +1993,7 @@ pub async fn update_by_id(
     let mut input = input.clone();
     input.id = None;
     
-    let models = find_by_unique(
+    let models = find_by_unique_menu(
       input.into(),
       None,
       options.clone(),
@@ -2200,10 +2209,10 @@ fn get_cache_tables() -> Vec<&'static str> {
   ]
 }
 
-// MARK: del_cache
+// MARK: del_cache_menu
 /// 清空缓存
 #[allow(dead_code)]
-pub async fn del_cache() -> Result<()> {
+pub async fn del_cache_menu() -> Result<()> {
   let cache_key1s = get_cache_tables();
   del_caches(
     cache_key1s.as_slice(),
@@ -2211,16 +2220,16 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-// MARK: delete_by_ids
+// MARK: delete_by_ids_menu
 /// 根据 ids 删除菜单
 #[allow(unused_variables)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_menu(
   ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_menu";
-  let method = "delete_by_ids";
+  let method = "delete_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2258,7 +2267,7 @@ pub async fn delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_by_id(
+    let old_model = find_by_id_menu(
       id.clone(),
       options.clone(),
     ).await?;
@@ -2368,10 +2377,10 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-// MARK: get_is_enabled_by_id
+// MARK: get_is_enabled_by_id_menu
 /// 根据 id 查找菜单是否已启用
 /// 记录不存在则返回 false
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_menu(
   id: MenuId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -2380,7 +2389,7 @@ pub async fn get_is_enabled_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let model = find_by_id(
+  let model = find_by_id_menu(
     id,
     options,
   ).await?;
@@ -2396,16 +2405,16 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-// MARK: enable_by_ids
+// MARK: enable_by_ids_menu
 /// 根据 ids 启用或者禁用菜单
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_menu(
   ids: Vec<MenuId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_menu";
-  let method = "enable_by_ids";
+  let method = "enable_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2462,11 +2471,11 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-// MARK: get_is_locked_by_id
+// MARK: get_is_locked_by_id_menu
 /// 根据 id 查找菜单是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_menu(
   id: MenuId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -2475,7 +2484,7 @@ pub async fn get_is_locked_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let model = find_by_id(
+  let model = find_by_id_menu(
     id,
     options,
   ).await?;
@@ -2491,16 +2500,16 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
-// MARK: lock_by_ids
+// MARK: lock_by_ids_menu
 /// 根据 ids 锁定或者解锁菜单
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_menu(
   ids: Vec<MenuId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_menu";
-  let method = "lock_by_ids";
+  let method = "lock_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2556,15 +2565,15 @@ pub async fn lock_by_ids(
   Ok(num)
 }
 
-// MARK: revert_by_ids
+// MARK: revert_by_ids_menu
 /// 根据 ids 还原菜单
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_menu(
   ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_menu";
-  let method = "revert_by_ids";
+  let method = "revert_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2603,7 +2612,7 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let mut old_model = find_one(
+    let mut old_model = find_one_menu(
       MenuSearch {
         id: Some(id.clone()),
         is_deleted: Some(1),
@@ -2614,7 +2623,7 @@ pub async fn revert_by_ids(
     ).await?;
     
     if old_model.is_none() {
-      old_model = find_by_id(
+      old_model = find_by_id_menu(
         id.clone(),
         options.clone(),
       ).await?;
@@ -2629,7 +2638,7 @@ pub async fn revert_by_ids(
       let mut input: MenuInput = old_model.clone().into();
       input.id = None;
       
-      let models = find_by_unique(
+      let models = find_by_unique_menu(
         input.into(),
         None,
         options.clone(),
@@ -2663,16 +2672,16 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-// MARK: force_delete_by_ids
+// MARK: force_delete_by_ids_menu
 /// 根据 ids 彻底删除菜单
 #[allow(unused_variables)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_menu(
   ids: Vec<MenuId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_menu";
-  let method = "force_delete_by_ids";
+  let method = "force_delete_by_ids_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2701,7 +2710,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all(
+    let old_model = find_all_menu(
       MenuSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -2781,14 +2790,14 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-// MARK: find_last_order_by
+// MARK: find_last_order_by_menu
 /// 查找 菜单 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_menu(
   options: Option<Options>,
 ) -> Result<u32> {
   
   let table = "base_menu";
-  let method = "find_last_order_by";
+  let method = "find_last_order_by_menu";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2839,10 +2848,10 @@ pub async fn find_last_order_by(
   Ok(order_by)
 }
 
-// MARK: validate_is_enabled
+// MARK: validate_is_enabled_menu
 /// 校验菜单是否启用
 #[allow(dead_code)]
-pub async fn validate_is_enabled(
+pub async fn validate_is_enabled_menu(
   model: &MenuModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
@@ -2852,10 +2861,10 @@ pub async fn validate_is_enabled(
   Ok(())
 }
 
-// MARK: validate_option
+// MARK: validate_option_menu
 /// 校验菜单是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_menu(
   model: Option<MenuModel>,
 ) -> Result<MenuModel> {
   if model.is_none() {

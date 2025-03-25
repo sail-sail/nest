@@ -14,7 +14,7 @@ pub async fn get_menu_ids_by_tenant() -> Result<Vec<MenuId>> {
     return Ok(vec![]);
   }
   let tenant_id = tenant_id.unwrap();
-  let tenant_model = tenant_dao::find_by_id(
+  let tenant_model = tenant_dao::find_by_id_tenant(
     tenant_id,
     None,
   ).await?;

@@ -29,10 +29,10 @@ export async function findCountDept(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountDept,
   } = await import("./dept.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountDept(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllDept(
 ): Promise<DeptModel[]> {
   
   const {
-    findAll,
+    findAllDept,
   } = await import("./dept.service.ts");
   
   checkSortDept(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllDept(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllDept(
 export async function getFieldCommentsDept(): Promise<DeptFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsDept,
   } = await import("./dept.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsDept();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneDept(
 ): Promise<DeptModel | undefined> {
   
   const {
-    findOne,
+    findOneDept,
   } = await import("./dept.service.ts");
   
   checkSortDept(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneDept(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdDept(
 ): Promise<DeptModel | undefined> {
   
   const {
-    findById,
+    findByIdDept,
   } = await import("./dept.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdDept(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsDept(
 ): Promise<DeptModel[]> {
   
   const {
-    findByIds,
+    findByIdsDept,
   } = await import("./dept.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsDept(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsDept(
 ): Promise<DeptId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateDept,
+    setIdByLblDept,
+    createsDept,
   } = await import("./dept.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsDept(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblDept(input);
     
-    await validate(input);
+    await validateDept(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsDept(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdDept(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblDept,
+    updateByIdDept,
   } = await import("./dept.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblDept(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: DeptId = await updateById(id, input);
+  const id2: DeptId = await updateByIdDept(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsDept(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsDept,
   } = await import("./dept.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsDept(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsDept(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsDept(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsDept,
   } = await import("./dept.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsDept(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsDept(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsDept(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsDept,
   } = await import("./dept.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsDept(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsDept(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsDept(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsDept,
   } = await import("./dept.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsDept(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsDept(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsDept(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsDept,
   } = await import("./dept.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsDept(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsDept(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsDept(
 export async function findLastOrderByDept(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByDept,
   } = await import("./dept.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByDept();
   
   return res;
 }

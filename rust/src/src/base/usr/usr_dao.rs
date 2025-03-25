@@ -14,9 +14,9 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::org::org_model::OrgId;
 
 use crate::r#gen::base::usr::usr_dao::{
-  find_by_id as find_by_id_usr,
-  validate_option as validate_option_usr,
-  validate_is_enabled as validate_is_enabled_usr,
+  find_by_id_usr,
+  validate_option_usr,
+  validate_is_enabled_usr,
 };
 
 use super::usr_model::LoginModel;

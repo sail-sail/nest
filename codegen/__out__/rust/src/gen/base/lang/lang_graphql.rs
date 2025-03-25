@@ -35,7 +35,7 @@ impl LangGenQuery {
       .with_auth()?
       .build()
       .scope({
-        lang_resolver::find_all(
+        lang_resolver::find_all_lang(
           search,
           page,
           sort,
@@ -54,7 +54,7 @@ impl LangGenQuery {
       .with_auth()?
       .build()
       .scope({
-        lang_resolver::find_count(
+        lang_resolver::find_count_lang(
           search,
           None,
         )
@@ -72,7 +72,7 @@ impl LangGenQuery {
       .with_auth()?
       .build()
       .scope({
-        lang_resolver::find_one(
+        lang_resolver::find_one_lang(
           search,
           sort,
           None,
@@ -90,7 +90,7 @@ impl LangGenQuery {
       .with_auth()?
       .build()
       .scope({
-        lang_resolver::find_by_id(
+        lang_resolver::find_by_id_lang(
           id,
           None,
         )
@@ -107,7 +107,7 @@ impl LangGenQuery {
       .with_auth()?
       .build()
       .scope({
-        lang_resolver::find_by_ids(
+        lang_resolver::find_by_ids_lang(
           ids,
           None,
         )
@@ -125,7 +125,7 @@ impl LangGenQuery {
       .with_auth()?
       .build()
       .scope({
-        lang_resolver::get_is_enabled_by_id(
+        lang_resolver::get_is_enabled_by_id_lang(
           id,
           None,
         )
@@ -140,7 +140,7 @@ impl LangGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        lang_resolver::get_field_comments(
+        lang_resolver::get_field_comments_lang(
           None,
         )
       }).await
@@ -155,7 +155,7 @@ impl LangGenQuery {
       .with_auth()?
       .build()
       .scope({
-        lang_resolver::find_last_order_by(
+        lang_resolver::find_last_order_by_lang(
           None,
         )
       }).await
@@ -186,7 +186,7 @@ impl LangGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        lang_resolver::creates(
+        lang_resolver::creates_lang(
           inputs,
           options.into(),
         )
@@ -205,7 +205,7 @@ impl LangGenMutation {
       .with_tran()
       .build()
       .scope({
-        lang_resolver::update_by_id(
+        lang_resolver::update_by_id_lang(
           id,
           input,
           None,
@@ -224,7 +224,7 @@ impl LangGenMutation {
       .with_tran()
       .build()
       .scope({
-        lang_resolver::delete_by_ids(
+        lang_resolver::delete_by_ids_lang(
           ids,
           None,
         )
@@ -243,7 +243,7 @@ impl LangGenMutation {
       .with_tran()
       .build()
       .scope({
-        lang_resolver::enable_by_ids(
+        lang_resolver::enable_by_ids_lang(
           ids,
           is_enabled,
           None,
@@ -262,7 +262,7 @@ impl LangGenMutation {
       .with_tran()
       .build()
       .scope({
-        lang_resolver::revert_by_ids(
+        lang_resolver::revert_by_ids_lang(
           ids,
           None,
         )
@@ -280,7 +280,7 @@ impl LangGenMutation {
       .with_tran()
       .build()
       .scope({
-        lang_resolver::force_delete_by_ids(
+        lang_resolver::force_delete_by_ids_lang(
           ids,
           None,
         )

@@ -29,10 +29,10 @@ export async function findCountOptions(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountOptions,
   } = await import("./options.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountOptions(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllOptions(
 ): Promise<OptionsModel[]> {
   
   const {
-    findAll,
+    findAllOptions,
   } = await import("./options.service.ts");
   
   checkSortOptions(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllOptions(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllOptions(
 export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsOptions,
   } = await import("./options.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsOptions();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneOptions(
 ): Promise<OptionsModel | undefined> {
   
   const {
-    findOne,
+    findOneOptions,
   } = await import("./options.service.ts");
   
   checkSortOptions(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneOptions(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdOptions(
 ): Promise<OptionsModel | undefined> {
   
   const {
-    findById,
+    findByIdOptions,
   } = await import("./options.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdOptions(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsOptions(
 ): Promise<OptionsModel[]> {
   
   const {
-    findByIds,
+    findByIdsOptions,
   } = await import("./options.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsOptions(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsOptions(
 ): Promise<OptionsId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateOptions,
+    setIdByLblOptions,
+    createsOptions,
   } = await import("./options.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsOptions(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblOptions(input);
     
-    await validate(input);
+    await validateOptions(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsOptions(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdOptions(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblOptions,
+    updateByIdOptions,
   } = await import("./options.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblOptions(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: OptionsId = await updateById(id, input);
+  const id2: OptionsId = await updateByIdOptions(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsOptions(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsOptions,
   } = await import("./options.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsOptions(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsOptions(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsOptions(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsOptions,
   } = await import("./options.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsOptions(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsOptions(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsOptions(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsOptions,
   } = await import("./options.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsOptions(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsOptions(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsOptions(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsOptions,
   } = await import("./options.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsOptions(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsOptions(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsOptions(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsOptions,
   } = await import("./options.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsOptions(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsOptions(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsOptions(
 export async function findLastOrderByOptions(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByOptions,
   } = await import("./options.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByOptions();
   
   return res;
 }

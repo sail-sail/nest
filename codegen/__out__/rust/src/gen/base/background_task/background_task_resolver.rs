@@ -19,7 +19,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找后台任务列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_background_task(
   search: Option<BackgroundTaskSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +34,7 @@ pub async fn find_all(
   
   check_sort_background_task(sort.as_deref())?;
   
-  let models = background_task_service::find_all(
+  let models = background_task_service::find_all_background_task(
     search,
     page,
     sort,
@@ -46,7 +46,7 @@ pub async fn find_all(
 
 /// 根据条件查找后台任务总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_background_task(
   search: Option<BackgroundTaskSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +57,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = background_task_service::find_count(
+  let num = background_task_service::find_count_background_task(
     search,
     options,
   ).await?;
@@ -67,7 +67,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个后台任务
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_background_task(
   search: Option<BackgroundTaskSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +81,7 @@ pub async fn find_one(
   
   check_sort_background_task(sort.as_deref())?;
   
-  let model = background_task_service::find_one(
+  let model = background_task_service::find_one_background_task(
     search,
     sort,
     options,
@@ -92,7 +92,7 @@ pub async fn find_one(
 
 /// 根据 id 查找后台任务
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_background_task(
   id: BackgroundTaskId,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
@@ -103,7 +103,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = background_task_service::find_by_id(
+  let model = background_task_service::find_by_id_background_task(
     id,
     options,
   ).await?;
@@ -113,7 +113,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找后台任务
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_background_task(
   ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<Vec<BackgroundTaskModel>> {
@@ -124,7 +124,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = background_task_service::find_by_ids(
+  let models = background_task_service::find_by_ids_background_task(
     ids,
     options,
   ).await?;
@@ -135,7 +135,7 @@ pub async fn find_by_ids(
 /// 后台任务根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_background_task(
   id: BackgroundTaskId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -147,7 +147,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = background_task_service::update_tenant_by_id(
+  let num = background_task_service::update_tenant_by_id_background_task(
     id,
     tenant_id,
     options,
@@ -159,7 +159,7 @@ pub async fn update_tenant_by_id(
 /// 根据 ids 删除后台任务
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_background_task(
   ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -175,7 +175,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = background_task_service::delete_by_ids(
+  let num = background_task_service::delete_by_ids_background_task(
     ids,
     options,
   ).await?;
@@ -185,7 +185,7 @@ pub async fn delete_by_ids(
 
 /// 获取后台任务字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_background_task(
   options: Option<Options>,
 ) -> Result<BackgroundTaskFieldComment> {
   
@@ -195,7 +195,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = background_task_service::get_field_comments(
+  let comments = background_task_service::get_field_comments_background_task(
     options,
   ).await?;
   
@@ -205,7 +205,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原后台任务
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_background_task(
   ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -221,7 +221,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = background_task_service::revert_by_ids(
+  let num = background_task_service::revert_by_ids_background_task(
     ids,
     options,
   ).await?;
@@ -232,7 +232,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除后台任务
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_background_task(
   ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -248,7 +248,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = background_task_service::force_delete_by_ids(
+  let num = background_task_service::force_delete_by_ids_background_task(
     ids,
     options,
   ).await?;

@@ -35,7 +35,7 @@ impl DictDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_detail_resolver::find_all(
+        dict_detail_resolver::find_all_dict_detail(
           search,
           page,
           sort,
@@ -54,7 +54,7 @@ impl DictDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_detail_resolver::find_count(
+        dict_detail_resolver::find_count_dict_detail(
           search,
           None,
         )
@@ -72,7 +72,7 @@ impl DictDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_detail_resolver::find_one(
+        dict_detail_resolver::find_one_dict_detail(
           search,
           sort,
           None,
@@ -90,7 +90,7 @@ impl DictDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_detail_resolver::find_by_id(
+        dict_detail_resolver::find_by_id_dict_detail(
           id,
           None,
         )
@@ -107,7 +107,7 @@ impl DictDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_detail_resolver::find_by_ids(
+        dict_detail_resolver::find_by_ids_dict_detail(
           ids,
           None,
         )
@@ -125,7 +125,7 @@ impl DictDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_detail_resolver::get_is_enabled_by_id(
+        dict_detail_resolver::get_is_enabled_by_id_dict_detail(
           id,
           None,
         )
@@ -140,7 +140,7 @@ impl DictDetailGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        dict_detail_resolver::get_field_comments(
+        dict_detail_resolver::get_field_comments_dict_detail(
           None,
         )
       }).await
@@ -155,7 +155,7 @@ impl DictDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dict_detail_resolver::find_last_order_by(
+        dict_detail_resolver::find_last_order_by_dict_detail(
           None,
         )
       }).await
@@ -186,7 +186,7 @@ impl DictDetailGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        dict_detail_resolver::creates(
+        dict_detail_resolver::creates_dict_detail(
           inputs,
           options.into(),
         )
@@ -205,7 +205,7 @@ impl DictDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dict_detail_resolver::update_by_id(
+        dict_detail_resolver::update_by_id_dict_detail(
           id,
           input,
           None,
@@ -224,7 +224,7 @@ impl DictDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dict_detail_resolver::delete_by_ids(
+        dict_detail_resolver::delete_by_ids_dict_detail(
           ids,
           None,
         )
@@ -243,7 +243,7 @@ impl DictDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dict_detail_resolver::enable_by_ids(
+        dict_detail_resolver::enable_by_ids_dict_detail(
           ids,
           is_enabled,
           None,
@@ -262,7 +262,7 @@ impl DictDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dict_detail_resolver::revert_by_ids(
+        dict_detail_resolver::revert_by_ids_dict_detail(
           ids,
           None,
         )
@@ -280,7 +280,7 @@ impl DictDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dict_detail_resolver::force_delete_by_ids(
+        dict_detail_resolver::force_delete_by_ids_dict_detail(
           ids,
           None,
         )
