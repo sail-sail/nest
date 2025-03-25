@@ -7,7 +7,7 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findById as findByIdOrg,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -33,7 +33,7 @@ export async function orgLoginSelect(
     return "";
   }
   if (org_id) {
-    const usr_model = await findByIdOrg(authModel.id);
+    const usr_model = await findByIdUsr(authModel.id);
     const org_ids = usr_model?.org_ids || [ ];
     if (!org_ids.includes(org_id)) {
       throw await ns("无权限切换到该组织");

@@ -6,9 +6,9 @@ export async function log(
   input: OperationRecordInput,
 ) {
   const {
-    create,
+    createOperationRecord,
   } = await import("/gen/base/operation_record/operation_record.dao.ts");
   
-  const id = await create(input);
+  const id = await createOperationRecord(input);
   return id;
 }

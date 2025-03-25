@@ -1,9 +1,9 @@
 import {
-  findOne as findOneMenu,
+  findOneMenu,
 } from "/gen/base/menu/menu.dao.ts"
 
 import {
-  findAll as findAllDataPermit,
+  findAllDataPermit,
 } from "/gen/base/data_permit/data_permit.dao.ts"
 
 import {
@@ -11,13 +11,13 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findById as findByIdUsr,
-  validateOption as validateOptionUsr,
-  validateIsEnabled as validateIsEnabledUsr,
+  findByIdUsr,
+  validateOptionUsr,
+  validateIsEnabledUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  findAll as findAllRole,
+  findAllRole,
 } from "/gen/base/role/role.dao.ts";
 
 /**

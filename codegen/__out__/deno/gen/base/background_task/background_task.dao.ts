@@ -56,7 +56,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -72,7 +72,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -204,9 +204,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountBackgroundTask
 /** 根据条件查找后台任务总数 */
-export async function findCount(
+export async function findCountBackgroundTask(
   search?: Readonly<BackgroundTaskSearch>,
   options?: {
     is_debug?: boolean;
@@ -215,12 +215,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_background_task";
-  const method = "findCount";
+  const method = "findCountBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -300,9 +300,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllBackgroundTask
 /** 根据搜索条件和分页查找后台任务列表 */
-export async function findAll(
+export async function findAllBackgroundTask(
   search?: Readonly<BackgroundTaskSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -313,7 +313,7 @@ export async function findAll(
 ): Promise<BackgroundTaskModel[]> {
   
   const table = "base_background_task";
-  const method = "findAll";
+  const method = "findAllBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -525,9 +525,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblBackgroundTask
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblBackgroundTask(
   input: BackgroundTaskInput,
 ) {
   
@@ -540,14 +540,14 @@ export async function setIdByLbl(
     if (begin_time_lbl.isValid()) {
       input.begin_time = begin_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsBackgroundTask();
       throw `${ fieldComments.begin_time } 日期格式错误`;
     }
   }
   if (input.begin_time) {
     const begin_time = dayjs(input.begin_time);
     if (!begin_time.isValid()) {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsBackgroundTask();
       throw `${ fieldComments.begin_time } 日期格式错误`;
     }
     input.begin_time = dayjs(input.begin_time).format("YYYY-MM-DD HH:mm:ss");
@@ -558,14 +558,14 @@ export async function setIdByLbl(
     if (end_time_lbl.isValid()) {
       input.end_time = end_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsBackgroundTask();
       throw `${ fieldComments.end_time } 日期格式错误`;
     }
   }
   if (input.end_time) {
     const end_time = dayjs(input.end_time);
     if (!end_time.isValid()) {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsBackgroundTask();
       throw `${ fieldComments.end_time } 日期格式错误`;
     }
     input.end_time = dayjs(input.end_time).format("YYYY-MM-DD HH:mm:ss");
@@ -614,9 +614,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsBackgroundTask
 /** 获取后台任务字段注释 */
-export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
+export async function getFieldCommentsBackgroundTask(): Promise<BackgroundTaskFieldComment> {
   const fieldComments: BackgroundTaskFieldComment = {
     id: "ID",
     lbl: "名称",
@@ -643,9 +643,9 @@ export async function getFieldComments(): Promise<BackgroundTaskFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueBackgroundTask
 /** 通过唯一约束获得后台任务列表 */
-export async function findByUnique(
+export async function findByUniqueBackgroundTask(
   search0: Readonly<BackgroundTaskInput>,
   options?: {
     is_debug?: boolean;
@@ -653,7 +653,7 @@ export async function findByUnique(
 ): Promise<BackgroundTaskModel[]> {
   
   const table = "base_background_task";
-  const method = "findByUnique";
+  const method = "findByUniqueBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -671,7 +671,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneBackgroundTask(
       {
         id: search0.id,
       },
@@ -689,7 +689,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueBackgroundTask(
   oldModel: Readonly<BackgroundTaskModel>,
   input: Readonly<BackgroundTaskInput>,
 ): boolean {
@@ -700,9 +700,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueBackgroundTask
 /** 通过唯一约束检查 后台任务 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueBackgroundTask(
   input: Readonly<BackgroundTaskInput>,
   oldModel: Readonly<BackgroundTaskModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -714,14 +714,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueBackgroundTask(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 后台任务 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: BackgroundTaskId = await updateById(
+      const id: BackgroundTaskId = await updateByIdBackgroundTask(
         oldModel.id,
         {
           ...input,
@@ -738,9 +738,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneBackgroundTask
 /** 根据条件查找第一后台任务 */
-export async function findOne(
+export async function findOneBackgroundTask(
   search?: Readonly<BackgroundTaskSearch>,
   sort?: SortInput[],
   options?: {
@@ -749,7 +749,7 @@ export async function findOne(
 ): Promise<BackgroundTaskModel | undefined> {
   
   const table = "base_background_task";
-  const method = "findOne";
+  const method = "findOneBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -776,7 +776,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllBackgroundTask(
     search,
     page,
     sort,
@@ -786,9 +786,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdBackgroundTask
 /** 根据 id 查找后台任务 */
-export async function findById(
+export async function findByIdBackgroundTask(
   id?: BackgroundTaskId | null,
   options?: {
     is_debug?: boolean;
@@ -796,7 +796,7 @@ export async function findById(
 ): Promise<BackgroundTaskModel | undefined> {
   
   const table = "base_background_task";
-  const method = "findById";
+  const method = "findByIdBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -817,7 +817,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneBackgroundTask(
     {
       id,
     },
@@ -828,9 +828,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsBackgroundTask
 /** 根据 ids 查找后台任务 */
-export async function findByIds(
+export async function findByIdsBackgroundTask(
   ids: BackgroundTaskId[],
   options?: {
     is_debug?: boolean;
@@ -838,7 +838,7 @@ export async function findByIds(
 ): Promise<BackgroundTaskModel[]> {
   
   const table = "base_background_task";
-  const method = "findByIds";
+  const method = "findByIdsBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -859,7 +859,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllBackgroundTask(
     {
       ids,
     },
@@ -885,9 +885,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existBackgroundTask
 /** 根据搜索条件判断后台任务是否存在 */
-export async function exist(
+export async function existBackgroundTask(
   search?: Readonly<BackgroundTaskSearch>,
   options?: {
     is_debug?: boolean;
@@ -895,7 +895,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_background_task";
-  const method = "exist";
+  const method = "existBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -911,15 +911,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneBackgroundTask(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdBackgroundTask
 /** 根据id判断后台任务是否存在 */
-export async function existById(
+export async function existByIdBackgroundTask(
   id?: Readonly<BackgroundTaskId | null>,
   options?: {
     is_debug?: boolean;
@@ -927,7 +927,7 @@ export async function existById(
 ) {
   
   const table = "base_background_task";
-  const method = "existById";
+  const method = "existByIdBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -960,9 +960,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionBackgroundTask
 /** 校验后台任务是否存在 */
-export async function validateOption(
+export async function validateOptionBackgroundTask(
   model?: BackgroundTaskModel,
 ) {
   if (!model) {
@@ -973,12 +973,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateBackgroundTask
 /** 后台任务增加和修改时校验输入 */
-export async function validate(
+export async function validateBackgroundTask(
   input: Readonly<BackgroundTaskInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsBackgroundTask();
   
   // ID
   await validators.chars_max_length(
@@ -1031,9 +1031,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnBackgroundTask
 /** 创建 后台任务 并返回 */
-export async function createReturn(
+export async function createReturnBackgroundTask(
   input: Readonly<BackgroundTaskInput>,
   options?: {
     is_debug?: boolean;
@@ -1044,7 +1044,7 @@ export async function createReturn(
 ): Promise<BackgroundTaskModel> {
   
   const table = "base_background_task";
-  const method = "createReturn";
+  const method = "createReturnBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1069,8 +1069,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionBackgroundTask(
+    await findOneBackgroundTask(
       {
         id,
       },
@@ -1082,9 +1082,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createBackgroundTask
 /** 创建 后台任务 */
-export async function create(
+export async function createBackgroundTask(
   input: Readonly<BackgroundTaskInput>,
   options?: {
     is_debug?: boolean;
@@ -1095,7 +1095,7 @@ export async function create(
 ): Promise<BackgroundTaskId> {
   
   const table = "base_background_task";
-  const method = "create";
+  const method = "createBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1123,9 +1123,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnBackgroundTask
 /** 批量创建 后台任务 并返回 */
-export async function createsReturn(
+export async function createsReturnBackgroundTask(
   inputs: BackgroundTaskInput[],
   options?: {
     is_debug?: boolean;
@@ -1136,7 +1136,7 @@ export async function createsReturn(
 ): Promise<BackgroundTaskModel[]> {
   
   const table = "base_background_task";
-  const method = "createsReturn";
+  const method = "createsReturnBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1155,14 +1155,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsBackgroundTask(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsBackgroundTask
 /** 批量创建 后台任务 */
-export async function creates(
+export async function createsBackgroundTask(
   inputs: BackgroundTaskInput[],
   options?: {
     is_debug?: boolean;
@@ -1173,7 +1173,7 @@ export async function creates(
 ): Promise<BackgroundTaskId[]> {
   
   const table = "base_background_task";
-  const method = "creates";
+  const method = "createsBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1222,11 +1222,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueBackgroundTask(input, options);
     if (oldModels.length > 0) {
       let id: BackgroundTaskId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueBackgroundTask(
           input,
           oldModel,
           options?.uniqueType,
@@ -1414,9 +1414,9 @@ async function _creates(
   return ids2;
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdBackgroundTask
 /** 后台任务 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdBackgroundTask(
   id: BackgroundTaskId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1425,7 +1425,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "base_background_task";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1457,9 +1457,9 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdBackgroundTask
 /** 根据 id 修改 后台任务 */
-export async function updateById(
+export async function updateByIdBackgroundTask(
   id: BackgroundTaskId,
   input: BackgroundTaskInput,
   options?: {
@@ -1471,7 +1471,7 @@ export async function updateById(
 ): Promise<BackgroundTaskId> {
   
   const table = "base_background_task";
-  const method = "updateById";
+  const method = "updateByIdBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1494,15 +1494,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdBackgroundTask: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdBackgroundTask: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdBackgroundTask(id, input.tenant_id, options);
   }
   
   {
@@ -1510,7 +1510,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueBackgroundTask(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1521,7 +1521,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdBackgroundTask(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 后台任务 已被删除";
@@ -1666,9 +1666,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsBackgroundTask
 /** 根据 ids 删除 后台任务 */
-export async function deleteByIds(
+export async function deleteByIdsBackgroundTask(
   ids: BackgroundTaskId[],
   options?: {
     is_debug?: boolean;
@@ -1678,7 +1678,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_background_task";
-  const method = "deleteByIds";
+  const method = "deleteByIdsBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1704,7 +1704,7 @@ export async function deleteByIds(
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdBackgroundTask(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1740,9 +1740,9 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsBackgroundTask
 /** 根据 ids 还原 后台任务 */
-export async function revertByIds(
+export async function revertByIdsBackgroundTask(
   ids: BackgroundTaskId[],
   options?: {
     is_debug?: boolean;
@@ -1750,7 +1750,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_background_task";
-  const method = "revertByIds";
+  const method = "revertByIdsBackgroundTask";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1774,7 +1774,7 @@ export async function revertByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneBackgroundTask(
       {
         id,
         is_deleted: 1,
@@ -1783,7 +1783,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdBackgroundTask(
         id,
         options,
       );
@@ -1796,7 +1796,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as BackgroundTaskInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueBackgroundTask(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1813,9 +1813,9 @@ export async function revertByIds(
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsBackgroundTask
 /** 根据 ids 彻底删除 后台任务 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsBackgroundTask(
   ids: BackgroundTaskId[],
   options?: {
     is_debug?: boolean;
@@ -1824,7 +1824,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_background_task";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsBackgroundTask";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1849,7 +1849,7 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneBackgroundTask(
       {
         id,
         is_deleted: 1,
