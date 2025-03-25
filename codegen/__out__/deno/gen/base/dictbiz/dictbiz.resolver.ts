@@ -29,10 +29,10 @@ export async function findCountDictbiz(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountDictbiz,
   } = await import("./dictbiz.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountDictbiz(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllDictbiz(
 ): Promise<DictbizModel[]> {
   
   const {
-    findAll,
+    findAllDictbiz,
   } = await import("./dictbiz.service.ts");
   
   checkSortDictbiz(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllDictbiz(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllDictbiz(
 export async function getFieldCommentsDictbiz(): Promise<DictbizFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsDictbiz,
   } = await import("./dictbiz.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsDictbiz();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneDictbiz(
 ): Promise<DictbizModel | undefined> {
   
   const {
-    findOne,
+    findOneDictbiz,
   } = await import("./dictbiz.service.ts");
   
   checkSortDictbiz(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneDictbiz(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdDictbiz(
 ): Promise<DictbizModel | undefined> {
   
   const {
-    findById,
+    findByIdDictbiz,
   } = await import("./dictbiz.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdDictbiz(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsDictbiz(
 ): Promise<DictbizModel[]> {
   
   const {
-    findByIds,
+    findByIdsDictbiz,
   } = await import("./dictbiz.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsDictbiz(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsDictbiz(
 ): Promise<DictbizId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateDictbiz,
+    setIdByLblDictbiz,
+    createsDictbiz,
   } = await import("./dictbiz.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsDictbiz(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblDictbiz(input);
     
-    await validate(input);
+    await validateDictbiz(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsDictbiz(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdDictbiz(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblDictbiz,
+    updateByIdDictbiz,
   } = await import("./dictbiz.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblDictbiz(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: DictbizId = await updateById(id, input);
+  const id2: DictbizId = await updateByIdDictbiz(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsDictbiz(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsDictbiz,
   } = await import("./dictbiz.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsDictbiz(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsDictbiz(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsDictbiz(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsDictbiz,
   } = await import("./dictbiz.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsDictbiz(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsDictbiz(ids, is_enabled);
   
   return res;
 }
@@ -246,7 +246,7 @@ export async function revertByIdsDictbiz(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsDictbiz,
   } = await import("./dictbiz.service.ts");
   
   set_is_tran(true);
@@ -256,7 +256,7 @@ export async function revertByIdsDictbiz(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsDictbiz(ids);
   
   return res;
 }
@@ -269,7 +269,7 @@ export async function forceDeleteByIdsDictbiz(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsDictbiz,
   } = await import("./dictbiz.service.ts");
   
   set_is_tran(true);
@@ -279,7 +279,7 @@ export async function forceDeleteByIdsDictbiz(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsDictbiz(ids);
   
   return res;
 }
@@ -290,10 +290,10 @@ export async function forceDeleteByIdsDictbiz(
 export async function findLastOrderByDictbiz(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByDictbiz,
   } = await import("./dictbiz.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByDictbiz();
   
   return res;
 }

@@ -59,7 +59,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -78,12 +78,8 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneOrg,
+  findOneOrg,
 } from "/gen/base/org/org.dao.ts";
-
-import {
-  findById as findByIdUsr,
-} from "/gen/base/usr/usr.dao.ts";
 
 import {
   route_path,
@@ -293,9 +289,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountUsr
 /** 根据条件查找用户总数 */
-export async function findCount(
+export async function findCountUsr(
   search?: Readonly<UsrSearch>,
   options?: {
     is_debug?: boolean;
@@ -304,12 +300,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_usr";
-  const method = "findCount";
+  const method = "findCountUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -458,9 +454,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllUsr
 /** 根据搜索条件和分页查找用户列表 */
-export async function findAll(
+export async function findAllUsr(
   search?: Readonly<UsrSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -471,7 +467,7 @@ export async function findAll(
 ): Promise<UsrModel[]> {
   
   const table = "base_usr";
-  const method = "findAll";
+  const method = "findAllUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -836,9 +832,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblUsr
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblUsr(
   input: UsrInput,
 ) {
   
@@ -982,9 +978,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsUsr
 /** 获取用户字段注释 */
-export async function getFieldComments(): Promise<UsrFieldComment> {
+export async function getFieldCommentsUsr(): Promise<UsrFieldComment> {
   const fieldComments: UsrFieldComment = {
     id: "ID",
     img: "头像",
@@ -1018,9 +1014,9 @@ export async function getFieldComments(): Promise<UsrFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueUsr
 /** 通过唯一约束获得用户列表 */
-export async function findByUnique(
+export async function findByUniqueUsr(
   search0: Readonly<UsrInput>,
   options?: {
     is_debug?: boolean;
@@ -1028,7 +1024,7 @@ export async function findByUnique(
 ): Promise<UsrModel[]> {
   
   const table = "base_usr";
-  const method = "findByUnique";
+  const method = "findByUniqueUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1046,7 +1042,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneUsr(
       {
         id: search0.id,
       },
@@ -1064,7 +1060,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllUsr(
       {
         lbl,
       },
@@ -1079,7 +1075,7 @@ export async function findByUnique(
       return [ ];
     }
     const username = search0.username;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllUsr(
       {
         username,
       },
@@ -1094,7 +1090,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueUsr(
   oldModel: Readonly<UsrModel>,
   input: Readonly<UsrInput>,
 ): boolean {
@@ -1115,9 +1111,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueUsr
 /** 通过唯一约束检查 用户 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueUsr(
   input: Readonly<UsrInput>,
   oldModel: Readonly<UsrModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -1129,14 +1125,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueUsr(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 用户 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: UsrId = await updateById(
+      const id: UsrId = await updateByIdUsr(
         oldModel.id,
         {
           ...input,
@@ -1153,9 +1149,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneUsr
 /** 根据条件查找第一用户 */
-export async function findOne(
+export async function findOneUsr(
   search?: Readonly<UsrSearch>,
   sort?: SortInput[],
   options?: {
@@ -1164,7 +1160,7 @@ export async function findOne(
 ): Promise<UsrModel | undefined> {
   
   const table = "base_usr";
-  const method = "findOne";
+  const method = "findOneUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1191,7 +1187,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllUsr(
     search,
     page,
     sort,
@@ -1201,9 +1197,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdUsr
 /** 根据 id 查找用户 */
-export async function findById(
+export async function findByIdUsr(
   id?: UsrId | null,
   options?: {
     is_debug?: boolean;
@@ -1211,7 +1207,7 @@ export async function findById(
 ): Promise<UsrModel | undefined> {
   
   const table = "base_usr";
-  const method = "findById";
+  const method = "findByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1232,7 +1228,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneUsr(
     {
       id,
     },
@@ -1243,9 +1239,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsUsr
 /** 根据 ids 查找用户 */
-export async function findByIds(
+export async function findByIdsUsr(
   ids: UsrId[],
   options?: {
     is_debug?: boolean;
@@ -1253,7 +1249,7 @@ export async function findByIds(
 ): Promise<UsrModel[]> {
   
   const table = "base_usr";
-  const method = "findByIds";
+  const method = "findByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1274,7 +1270,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllUsr(
     {
       ids,
     },
@@ -1300,9 +1296,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existUsr
 /** 根据搜索条件判断用户是否存在 */
-export async function exist(
+export async function existUsr(
   search?: Readonly<UsrSearch>,
   options?: {
     is_debug?: boolean;
@@ -1310,7 +1306,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_usr";
-  const method = "exist";
+  const method = "existUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1326,15 +1322,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneUsr(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdUsr
 /** 根据id判断用户是否存在 */
-export async function existById(
+export async function existByIdUsr(
   id?: Readonly<UsrId | null>,
   options?: {
     is_debug?: boolean;
@@ -1342,7 +1338,7 @@ export async function existById(
 ) {
   
   const table = "base_usr";
-  const method = "existById";
+  const method = "existByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1384,9 +1380,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledUsr
 /** 校验用户是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledUsr(
   model: Readonly<UsrModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -1394,9 +1390,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionUsr
 /** 校验用户是否存在 */
-export async function validateOption(
+export async function validateOptionUsr(
   model?: UsrModel,
 ) {
   if (!model) {
@@ -1407,12 +1403,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateUsr
 /** 用户增加和修改时校验输入 */
-export async function validate(
+export async function validateUsr(
   input: Readonly<UsrInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsUsr();
   
   // ID
   await validators.chars_max_length(
@@ -1472,9 +1468,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnUsr
 /** 创建 用户 并返回 */
-export async function createReturn(
+export async function createReturnUsr(
   input: Readonly<UsrInput>,
   options?: {
     is_debug?: boolean;
@@ -1485,7 +1481,7 @@ export async function createReturn(
 ): Promise<UsrModel> {
   
   const table = "base_usr";
-  const method = "createReturn";
+  const method = "createReturnUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1510,8 +1506,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionUsr(
+    await findOneUsr(
       {
         id,
       },
@@ -1523,9 +1519,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createUsr
 /** 创建 用户 */
-export async function create(
+export async function createUsr(
   input: Readonly<UsrInput>,
   options?: {
     is_debug?: boolean;
@@ -1536,7 +1532,7 @@ export async function create(
 ): Promise<UsrId> {
   
   const table = "base_usr";
-  const method = "create";
+  const method = "createUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1564,9 +1560,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnUsr
 /** 批量创建 用户 并返回 */
-export async function createsReturn(
+export async function createsReturnUsr(
   inputs: UsrInput[],
   options?: {
     is_debug?: boolean;
@@ -1577,7 +1573,7 @@ export async function createsReturn(
 ): Promise<UsrModel[]> {
   
   const table = "base_usr";
-  const method = "createsReturn";
+  const method = "createsReturnUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1596,14 +1592,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsUsr(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsUsr
 /** 批量创建 用户 */
-export async function creates(
+export async function createsUsr(
   inputs: UsrInput[],
   options?: {
     is_debug?: boolean;
@@ -1614,7 +1610,7 @@ export async function creates(
 ): Promise<UsrId[]> {
   
   const table = "base_usr";
-  const method = "creates";
+  const method = "createsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1663,11 +1659,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueUsr(input, options);
     if (oldModels.length > 0) {
       let id: UsrId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueUsr(
           input,
           oldModel,
           options?.uniqueType,
@@ -1697,7 +1693,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheUsr();
   
   const args = new QueryArgs();
   let sql = "insert into base_usr(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,img,lbl,username,password,default_org_id,type,is_locked,is_enabled,order_by,rem,is_hidden)values";
@@ -1909,21 +1905,21 @@ async function _creates(
     );
   }
   
-  await delCache();
+  await delCacheUsr();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheUsr
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheUsr() {
   await delCacheCtx(`dao.sql.base_usr`);
   await delCacheCtx(`dao.sql.base_menu._getMenus`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdUsr
 /** 用户 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdUsr(
   id: UsrId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1932,7 +1928,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "base_usr";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1962,13 +1958,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheUsr();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdUsr
 /** 根据 id 修改 用户 */
-export async function updateById(
+export async function updateByIdUsr(
   id: UsrId,
   input: UsrInput,
   options?: {
@@ -1980,7 +1976,7 @@ export async function updateById(
 ): Promise<UsrId> {
   
   const table = "base_usr";
-  const method = "updateById";
+  const method = "updateByIdUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2003,15 +1999,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdUsr: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdUsr: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdUsr(id, input.tenant_id, options);
   }
   
   {
@@ -2019,7 +2015,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueUsr(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -2030,7 +2026,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdUsr(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 用户 已被删除";
@@ -2231,7 +2227,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheUsr();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -2239,7 +2235,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheUsr();
   }
   
   if (!is_silent_mode) {
@@ -2249,9 +2245,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsUsr
 /** 根据 ids 删除 用户 */
-export async function deleteByIds(
+export async function deleteByIdsUsr(
   ids: UsrId[],
   options?: {
     is_debug?: boolean;
@@ -2261,7 +2257,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_usr";
-  const method = "deleteByIds";
+  const method = "deleteByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2284,12 +2280,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheUsr();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdUsr(id, options);
     if (!oldModel) {
       continue;
     }
@@ -2351,14 +2347,14 @@ export async function deleteByIds(
     }
   }
   
-  await delCache();
+  await delCacheUsr();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdUsr
 /** 根据 id 查找 用户 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdUsr(
   id: UsrId,
   options?: {
     is_debug?: boolean;
@@ -2368,7 +2364,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdUsr(
     id,
     options,
   );
@@ -2377,9 +2373,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsUsr
 /** 根据 ids 启用或者禁用 用户 */
-export async function enableByIds(
+export async function enableByIdsUsr(
   ids: UsrId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -2388,7 +2384,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "base_usr";
-  const method = "enableByIds";
+  const method = "enableByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2413,7 +2409,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheUsr();
   }
   
   const args = new QueryArgs();
@@ -2421,14 +2417,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheUsr();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdUsr
 /** 根据 id 查找 用户 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdUsr(
   id: UsrId,
   options?: {
     is_debug?: boolean;
@@ -2438,18 +2434,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const usr_model = await findByIdUsr(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = usr_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsUsr
 /** 根据 ids 锁定或者解锁 用户 */
-export async function lockByIds(
+export async function lockByIdsUsr(
   ids: UsrId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -2458,7 +2454,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "base_usr";
-  const method = "lockByIds";
+  const method = "lockByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2482,21 +2478,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheUsr();
   
   const args = new QueryArgs();
   let sql = `update base_usr set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheUsr();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsUsr
 /** 根据 ids 还原 用户 */
-export async function revertByIds(
+export async function revertByIdsUsr(
   ids: UsrId[],
   options?: {
     is_debug?: boolean;
@@ -2504,7 +2500,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_usr";
-  const method = "revertByIds";
+  const method = "revertByIdsUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2525,12 +2521,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheUsr();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneUsr(
       {
         id,
         is_deleted: 1,
@@ -2539,7 +2535,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdUsr(
         id,
         options,
       );
@@ -2552,7 +2548,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as UsrInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueUsr(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -2590,14 +2586,14 @@ export async function revertByIds(
     }
   }
   
-  await delCache();
+  await delCacheUsr();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsUsr
 /** 根据 ids 彻底删除 用户 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsUsr(
   ids: UsrId[],
   options?: {
     is_debug?: boolean;
@@ -2606,7 +2602,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_usr";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsUsr";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2628,12 +2624,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheUsr();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneUsr(
       {
         id,
         is_deleted: 1,
@@ -2679,21 +2675,21 @@ export async function forceDeleteByIds(
     }
   }
   
-  await delCache();
+  await delCacheUsr();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByUsr
 /** 查找 用户 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByUsr(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_usr";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByUsr";
   
   const is_debug = get_is_debug(options?.is_debug);
   

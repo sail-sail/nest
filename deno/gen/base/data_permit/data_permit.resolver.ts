@@ -29,10 +29,10 @@ export async function findCountDataPermit(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountDataPermit,
   } = await import("./data_permit.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountDataPermit(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllDataPermit(
 ): Promise<DataPermitModel[]> {
   
   const {
-    findAll,
+    findAllDataPermit,
   } = await import("./data_permit.service.ts");
   
   checkSortDataPermit(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllDataPermit(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllDataPermit(
 export async function getFieldCommentsDataPermit(): Promise<DataPermitFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsDataPermit,
   } = await import("./data_permit.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsDataPermit();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneDataPermit(
 ): Promise<DataPermitModel | undefined> {
   
   const {
-    findOne,
+    findOneDataPermit,
   } = await import("./data_permit.service.ts");
   
   checkSortDataPermit(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneDataPermit(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdDataPermit(
 ): Promise<DataPermitModel | undefined> {
   
   const {
-    findById,
+    findByIdDataPermit,
   } = await import("./data_permit.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdDataPermit(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsDataPermit(
 ): Promise<DataPermitModel[]> {
   
   const {
-    findByIds,
+    findByIdsDataPermit,
   } = await import("./data_permit.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsDataPermit(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsDataPermit(
 ): Promise<DataPermitId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateDataPermit,
+    setIdByLblDataPermit,
+    createsDataPermit,
   } = await import("./data_permit.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsDataPermit(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblDataPermit(input);
     
-    await validate(input);
+    await validateDataPermit(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsDataPermit(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdDataPermit(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblDataPermit,
+    updateByIdDataPermit,
   } = await import("./data_permit.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblDataPermit(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: DataPermitId = await updateById(id, input);
+  const id2: DataPermitId = await updateByIdDataPermit(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsDataPermit(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsDataPermit,
   } = await import("./data_permit.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsDataPermit(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsDataPermit(ids);
   
   return num;
 }
@@ -219,7 +219,7 @@ export async function revertByIdsDataPermit(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsDataPermit,
   } = await import("./data_permit.service.ts");
   
   set_is_tran(true);
@@ -229,7 +229,7 @@ export async function revertByIdsDataPermit(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsDataPermit(ids);
   
   return res;
 }
@@ -242,7 +242,7 @@ export async function forceDeleteByIdsDataPermit(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsDataPermit,
   } = await import("./data_permit.service.ts");
   
   set_is_tran(true);
@@ -252,7 +252,7 @@ export async function forceDeleteByIdsDataPermit(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsDataPermit(ids);
   
   return res;
 }
