@@ -1969,7 +1969,7 @@ pub async fn find_all_<#=table#>(
     model.<#=column_name#>_lbl = {
       let res = get_object(&model.<#=column_name#>).await?;
       if let Some(res) = res {
-        String::from_utf8(res)?
+        String::from_utf8(res.to_vec())?
       } else {
         String::new()
       }
