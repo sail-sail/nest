@@ -37,7 +37,7 @@ impl WxwUsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxw_usr_resolver::find_all(
+        wxw_usr_resolver::find_all_wxw_usr(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl WxwUsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxw_usr_resolver::find_count(
+        wxw_usr_resolver::find_count_wxw_usr(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl WxwUsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxw_usr_resolver::find_one(
+        wxw_usr_resolver::find_one_wxw_usr(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl WxwUsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxw_usr_resolver::find_by_id(
+        wxw_usr_resolver::find_by_id_wxw_usr(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl WxwUsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxw_usr_resolver::find_by_ids(
+        wxw_usr_resolver::find_by_ids_wxw_usr(
           ids,
           None,
         )
@@ -124,7 +124,7 @@ impl WxwUsrGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        wxw_usr_resolver::get_field_comments(
+        wxw_usr_resolver::get_field_comments_wxw_usr(
           None,
         )
       }).await
@@ -155,7 +155,7 @@ impl WxwUsrGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        wxw_usr_resolver::creates(
+        wxw_usr_resolver::creates_wxw_usr(
           inputs,
           options.into(),
         )
@@ -174,7 +174,7 @@ impl WxwUsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxw_usr_resolver::update_tenant_by_id(
+        wxw_usr_resolver::update_tenant_by_id_wxw_usr(
           id,
           tenant_id,
           None,
@@ -194,7 +194,7 @@ impl WxwUsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxw_usr_resolver::update_by_id(
+        wxw_usr_resolver::update_by_id_wxw_usr(
           id,
           input,
           None,
@@ -213,7 +213,7 @@ impl WxwUsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxw_usr_resolver::delete_by_ids(
+        wxw_usr_resolver::delete_by_ids_wxw_usr(
           ids,
           None,
         )
@@ -231,7 +231,7 @@ impl WxwUsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxw_usr_resolver::revert_by_ids(
+        wxw_usr_resolver::revert_by_ids_wxw_usr(
           ids,
           None,
         )
@@ -249,7 +249,7 @@ impl WxwUsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxw_usr_resolver::force_delete_by_ids(
+        wxw_usr_resolver::force_delete_by_ids_wxw_usr(
           ids,
           None,
         )

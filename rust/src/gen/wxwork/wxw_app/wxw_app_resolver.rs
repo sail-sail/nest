@@ -19,7 +19,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找企微应用列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_wxw_app(
   search: Option<WxwAppSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +34,7 @@ pub async fn find_all(
   
   check_sort_wxw_app(sort.as_deref())?;
   
-  let models = wxw_app_service::find_all(
+  let models = wxw_app_service::find_all_wxw_app(
     search,
     page,
     sort,
@@ -46,7 +46,7 @@ pub async fn find_all(
 
 /// 根据条件查找企微应用总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_wxw_app(
   search: Option<WxwAppSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +57,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = wxw_app_service::find_count(
+  let num = wxw_app_service::find_count_wxw_app(
     search,
     options,
   ).await?;
@@ -67,7 +67,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个企微应用
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_wxw_app(
   search: Option<WxwAppSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +81,7 @@ pub async fn find_one(
   
   check_sort_wxw_app(sort.as_deref())?;
   
-  let model = wxw_app_service::find_one(
+  let model = wxw_app_service::find_one_wxw_app(
     search,
     sort,
     options,
@@ -92,7 +92,7 @@ pub async fn find_one(
 
 /// 根据 id 查找企微应用
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_wxw_app(
   id: WxwAppId,
   options: Option<Options>,
 ) -> Result<Option<WxwAppModel>> {
@@ -103,7 +103,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = wxw_app_service::find_by_id(
+  let model = wxw_app_service::find_by_id_wxw_app(
     id,
     options,
   ).await?;
@@ -113,7 +113,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找企微应用
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_wxw_app(
   ids: Vec<WxwAppId>,
   options: Option<Options>,
 ) -> Result<Vec<WxwAppModel>> {
@@ -124,7 +124,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = wxw_app_service::find_by_ids(
+  let models = wxw_app_service::find_by_ids_wxw_app(
     ids,
     options,
   ).await?;
@@ -135,7 +135,7 @@ pub async fn find_by_ids(
 /// 创建企微应用
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_wxw_app(
   inputs: Vec<WxwAppInput>,
   options: Option<Options>,
 ) -> Result<Vec<WxwAppId>> {
@@ -154,7 +154,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = wxw_app_service::set_id_by_lbl(
+    let input = wxw_app_service::set_id_by_lbl_wxw_app(
       input,
     ).await?;
     inputs2.push(input);
@@ -166,7 +166,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = wxw_app_service::creates(
+  let ids = wxw_app_service::creates_wxw_app(
     inputs,
     options,
   ).await?;
@@ -177,7 +177,7 @@ pub async fn creates(
 /// 企微应用根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_wxw_app(
   id: WxwAppId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -189,7 +189,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = wxw_app_service::update_tenant_by_id(
+  let num = wxw_app_service::update_tenant_by_id_wxw_app(
     id,
     tenant_id,
     options,
@@ -201,7 +201,7 @@ pub async fn update_tenant_by_id(
 /// 根据 id 修改企微应用
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_wxw_app(
   id: WxwAppId,
   input: WxwAppInput,
   options: Option<Options>,
@@ -217,7 +217,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = wxw_app_service::set_id_by_lbl(
+  let input = wxw_app_service::set_id_by_lbl_wxw_app(
     input,
   ).await?;
   
@@ -226,7 +226,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = wxw_app_service::update_by_id(
+  let res = wxw_app_service::update_by_id_wxw_app(
     id,
     input,
     options,
@@ -238,7 +238,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除企微应用
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_wxw_app(
   ids: Vec<WxwAppId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -254,7 +254,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = wxw_app_service::delete_by_ids(
+  let num = wxw_app_service::delete_by_ids_wxw_app(
     ids,
     options,
   ).await?;
@@ -266,7 +266,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_wxw_app(
   id: WxwAppId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -277,7 +277,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = wxw_app_service::get_is_enabled_by_id(
+  let is_enabled = wxw_app_service::get_is_enabled_by_id_wxw_app(
     id,
     options,
   ).await?;
@@ -288,7 +288,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用企微应用
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_wxw_app(
   ids: Vec<WxwAppId>,
   is_enabled: u8,
   options: Option<Options>,
@@ -305,7 +305,7 @@ pub async fn enable_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = wxw_app_service::enable_by_ids(
+  let num = wxw_app_service::enable_by_ids_wxw_app(
     ids,
     is_enabled,
     options,
@@ -319,7 +319,7 @@ pub async fn enable_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_wxw_app(
   id: WxwAppId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -330,7 +330,7 @@ pub async fn get_is_locked_by_id(
     function_name = function_name!(),
   );
   
-  let is_locked = wxw_app_service::get_is_locked_by_id(
+  let is_locked = wxw_app_service::get_is_locked_by_id_wxw_app(
     id,
     options,
   ).await?;
@@ -341,7 +341,7 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或者解锁企微应用
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_wxw_app(
   ids: Vec<WxwAppId>,
   is_locked: u8,
   options: Option<Options>,
@@ -358,7 +358,7 @@ pub async fn lock_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = wxw_app_service::lock_by_ids(
+  let num = wxw_app_service::lock_by_ids_wxw_app(
     ids,
     is_locked,
     options,
@@ -369,7 +369,7 @@ pub async fn lock_by_ids(
 
 /// 获取企微应用字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_wxw_app(
   options: Option<Options>,
 ) -> Result<WxwAppFieldComment> {
   
@@ -379,7 +379,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = wxw_app_service::get_field_comments(
+  let comments = wxw_app_service::get_field_comments_wxw_app(
     options,
   ).await?;
   
@@ -389,7 +389,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原企微应用
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_wxw_app(
   ids: Vec<WxwAppId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -405,7 +405,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = wxw_app_service::revert_by_ids(
+  let num = wxw_app_service::revert_by_ids_wxw_app(
     ids,
     options,
   ).await?;
@@ -416,7 +416,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除企微应用
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_wxw_app(
   ids: Vec<WxwAppId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -432,7 +432,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = wxw_app_service::force_delete_by_ids(
+  let num = wxw_app_service::force_delete_by_ids_wxw_app(
     ids,
     options,
   ).await?;
@@ -442,7 +442,7 @@ pub async fn force_delete_by_ids(
 
 /// 查找 企微应用 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_wxw_app(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -452,7 +452,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = wxw_app_service::find_last_order_by(
+  let res = wxw_app_service::find_last_order_by_wxw_app(
     options,
   ).await?;
   

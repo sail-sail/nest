@@ -37,7 +37,7 @@ impl WxwMsgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxw_msg_resolver::find_all(
+        wxw_msg_resolver::find_all_wxw_msg(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl WxwMsgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxw_msg_resolver::find_count(
+        wxw_msg_resolver::find_count_wxw_msg(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl WxwMsgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxw_msg_resolver::find_one(
+        wxw_msg_resolver::find_one_wxw_msg(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl WxwMsgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxw_msg_resolver::find_by_id(
+        wxw_msg_resolver::find_by_id_wxw_msg(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl WxwMsgGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxw_msg_resolver::find_by_ids(
+        wxw_msg_resolver::find_by_ids_wxw_msg(
           ids,
           None,
         )
@@ -124,7 +124,7 @@ impl WxwMsgGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        wxw_msg_resolver::get_field_comments(
+        wxw_msg_resolver::get_field_comments_wxw_msg(
           None,
         )
       }).await
@@ -160,7 +160,7 @@ impl WxwMsgGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxw_msg_resolver::update_tenant_by_id(
+        wxw_msg_resolver::update_tenant_by_id_wxw_msg(
           id,
           tenant_id,
           None,
@@ -179,7 +179,7 @@ impl WxwMsgGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxw_msg_resolver::delete_by_ids(
+        wxw_msg_resolver::delete_by_ids_wxw_msg(
           ids,
           None,
         )
@@ -197,7 +197,7 @@ impl WxwMsgGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxw_msg_resolver::revert_by_ids(
+        wxw_msg_resolver::revert_by_ids_wxw_msg(
           ids,
           None,
         )
@@ -215,7 +215,7 @@ impl WxwMsgGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxw_msg_resolver::force_delete_by_ids(
+        wxw_msg_resolver::force_delete_by_ids_wxw_msg(
           ids,
           None,
         )
