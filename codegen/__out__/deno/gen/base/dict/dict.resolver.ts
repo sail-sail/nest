@@ -29,10 +29,10 @@ export async function findCountDict(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountDict,
   } = await import("./dict.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountDict(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllDict(
 ): Promise<DictModel[]> {
   
   const {
-    findAll,
+    findAllDict,
   } = await import("./dict.service.ts");
   
   checkSortDict(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllDict(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllDict(
 export async function getFieldCommentsDict(): Promise<DictFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsDict,
   } = await import("./dict.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsDict();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneDict(
 ): Promise<DictModel | undefined> {
   
   const {
-    findOne,
+    findOneDict,
   } = await import("./dict.service.ts");
   
   checkSortDict(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneDict(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdDict(
 ): Promise<DictModel | undefined> {
   
   const {
-    findById,
+    findByIdDict,
   } = await import("./dict.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdDict(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsDict(
 ): Promise<DictModel[]> {
   
   const {
-    findByIds,
+    findByIdsDict,
   } = await import("./dict.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsDict(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsDict(
 ): Promise<DictId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateDict,
+    setIdByLblDict,
+    createsDict,
   } = await import("./dict.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsDict(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblDict(input);
     
-    await validate(input);
+    await validateDict(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsDict(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdDict(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblDict,
+    updateByIdDict,
   } = await import("./dict.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblDict(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: DictId = await updateById(id, input);
+  const id2: DictId = await updateByIdDict(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsDict(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsDict,
   } = await import("./dict.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsDict(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsDict(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsDict(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsDict,
   } = await import("./dict.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsDict(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsDict(ids, is_enabled);
   
   return res;
 }
@@ -246,7 +246,7 @@ export async function revertByIdsDict(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsDict,
   } = await import("./dict.service.ts");
   
   set_is_tran(true);
@@ -256,7 +256,7 @@ export async function revertByIdsDict(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsDict(ids);
   
   return res;
 }
@@ -269,7 +269,7 @@ export async function forceDeleteByIdsDict(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsDict,
   } = await import("./dict.service.ts");
   
   set_is_tran(true);
@@ -279,7 +279,7 @@ export async function forceDeleteByIdsDict(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsDict(ids);
   
   return res;
 }
@@ -290,10 +290,10 @@ export async function forceDeleteByIdsDict(
 export async function findLastOrderByDict(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByDict,
   } = await import("./dict.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByDict();
   
   return res;
 }
