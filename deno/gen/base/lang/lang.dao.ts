@@ -64,7 +64,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -170,9 +170,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountLang
 /** 根据条件查找语言总数 */
-export async function findCount(
+export async function findCountLang(
   search?: Readonly<LangSearch>,
   options?: {
     is_debug?: boolean;
@@ -181,12 +181,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_lang";
-  const method = "findCount";
+  const method = "findCountLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -258,9 +258,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllLang
 /** 根据搜索条件和分页查找语言列表 */
-export async function findAll(
+export async function findAllLang(
   search?: Readonly<LangSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -271,7 +271,7 @@ export async function findAll(
 ): Promise<LangModel[]> {
   
   const table = "base_lang";
-  const method = "findAll";
+  const method = "findAllLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -440,9 +440,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblLang
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblLang(
   input: LangInput,
 ) {
   
@@ -468,9 +468,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsLang
 /** 获取语言字段注释 */
-export async function getFieldComments(): Promise<LangFieldComment> {
+export async function getFieldCommentsLang(): Promise<LangFieldComment> {
   const fieldComments: LangFieldComment = {
     id: "ID",
     code: "编码",
@@ -491,9 +491,9 @@ export async function getFieldComments(): Promise<LangFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueLang
 /** 通过唯一约束获得语言列表 */
-export async function findByUnique(
+export async function findByUniqueLang(
   search0: Readonly<LangInput>,
   options?: {
     is_debug?: boolean;
@@ -501,7 +501,7 @@ export async function findByUnique(
 ): Promise<LangModel[]> {
   
   const table = "base_lang";
-  const method = "findByUnique";
+  const method = "findByUniqueLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -519,7 +519,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneLang(
       {
         id: search0.id,
       },
@@ -537,7 +537,7 @@ export async function findByUnique(
       return [ ];
     }
     const code = search0.code;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllLang(
       {
         code,
       },
@@ -552,7 +552,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllLang(
       {
         lbl,
       },
@@ -567,7 +567,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueLang(
   oldModel: Readonly<LangModel>,
   input: Readonly<LangInput>,
 ): boolean {
@@ -588,9 +588,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueLang
 /** 通过唯一约束检查 语言 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueLang(
   input: Readonly<LangInput>,
   oldModel: Readonly<LangModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -602,14 +602,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueLang(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 语言 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: LangId = await updateById(
+      const id: LangId = await updateByIdLang(
         oldModel.id,
         {
           ...input,
@@ -626,9 +626,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneLang
 /** 根据条件查找第一语言 */
-export async function findOne(
+export async function findOneLang(
   search?: Readonly<LangSearch>,
   sort?: SortInput[],
   options?: {
@@ -637,7 +637,7 @@ export async function findOne(
 ): Promise<LangModel | undefined> {
   
   const table = "base_lang";
-  const method = "findOne";
+  const method = "findOneLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -664,7 +664,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllLang(
     search,
     page,
     sort,
@@ -674,9 +674,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdLang
 /** 根据 id 查找语言 */
-export async function findById(
+export async function findByIdLang(
   id?: LangId | null,
   options?: {
     is_debug?: boolean;
@@ -684,7 +684,7 @@ export async function findById(
 ): Promise<LangModel | undefined> {
   
   const table = "base_lang";
-  const method = "findById";
+  const method = "findByIdLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -705,7 +705,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneLang(
     {
       id,
     },
@@ -716,9 +716,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsLang
 /** 根据 ids 查找语言 */
-export async function findByIds(
+export async function findByIdsLang(
   ids: LangId[],
   options?: {
     is_debug?: boolean;
@@ -726,7 +726,7 @@ export async function findByIds(
 ): Promise<LangModel[]> {
   
   const table = "base_lang";
-  const method = "findByIds";
+  const method = "findByIdsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -747,7 +747,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllLang(
     {
       ids,
     },
@@ -773,9 +773,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existLang
 /** 根据搜索条件判断语言是否存在 */
-export async function exist(
+export async function existLang(
   search?: Readonly<LangSearch>,
   options?: {
     is_debug?: boolean;
@@ -783,7 +783,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_lang";
-  const method = "exist";
+  const method = "existLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -799,15 +799,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneLang(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdLang
 /** 根据id判断语言是否存在 */
-export async function existById(
+export async function existByIdLang(
   id?: Readonly<LangId | null>,
   options?: {
     is_debug?: boolean;
@@ -815,7 +815,7 @@ export async function existById(
 ) {
   
   const table = "base_lang";
-  const method = "existById";
+  const method = "existByIdLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -857,9 +857,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledLang
 /** 校验语言是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledLang(
   model: Readonly<LangModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -867,9 +867,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionLang
 /** 校验语言是否存在 */
-export async function validateOption(
+export async function validateOptionLang(
   model?: LangModel,
 ) {
   if (!model) {
@@ -880,12 +880,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateLang
 /** 语言增加和修改时校验输入 */
-export async function validate(
+export async function validateLang(
   input: Readonly<LangInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsLang();
   
   // ID
   await validators.chars_max_length(
@@ -931,9 +931,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnLang
 /** 创建 语言 并返回 */
-export async function createReturn(
+export async function createReturnLang(
   input: Readonly<LangInput>,
   options?: {
     is_debug?: boolean;
@@ -944,7 +944,7 @@ export async function createReturn(
 ): Promise<LangModel> {
   
   const table = "base_lang";
-  const method = "createReturn";
+  const method = "createReturnLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -969,8 +969,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionLang(
+    await findOneLang(
       {
         id,
       },
@@ -982,9 +982,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createLang
 /** 创建 语言 */
-export async function create(
+export async function createLang(
   input: Readonly<LangInput>,
   options?: {
     is_debug?: boolean;
@@ -995,7 +995,7 @@ export async function create(
 ): Promise<LangId> {
   
   const table = "base_lang";
-  const method = "create";
+  const method = "createLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1023,9 +1023,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnLang
 /** 批量创建 语言 并返回 */
-export async function createsReturn(
+export async function createsReturnLang(
   inputs: LangInput[],
   options?: {
     is_debug?: boolean;
@@ -1036,7 +1036,7 @@ export async function createsReturn(
 ): Promise<LangModel[]> {
   
   const table = "base_lang";
-  const method = "createsReturn";
+  const method = "createsReturnLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1055,14 +1055,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsLang(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsLang
 /** 批量创建 语言 */
-export async function creates(
+export async function createsLang(
   inputs: LangInput[],
   options?: {
     is_debug?: boolean;
@@ -1073,7 +1073,7 @@ export async function creates(
 ): Promise<LangId[]> {
   
   const table = "base_lang";
-  const method = "creates";
+  const method = "createsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1122,11 +1122,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueLang(input, options);
     if (oldModels.length > 0) {
       let id: LangId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueLang(
           input,
           oldModel,
           options?.uniqueType,
@@ -1156,7 +1156,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheLang();
   
   const args = new QueryArgs();
   let sql = "insert into base_lang(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,is_enabled,order_by,rem,is_sys)values";
@@ -1290,20 +1290,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheLang();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheLang
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheLang() {
   await delCacheCtx(`dao.sql.base_lang`);
 }
 
-// MARK: updateById
+// MARK: updateByIdLang
 /** 根据 id 修改 语言 */
-export async function updateById(
+export async function updateByIdLang(
   id: LangId,
   input: LangInput,
   options?: {
@@ -1315,7 +1315,7 @@ export async function updateById(
 ): Promise<LangId> {
   
   const table = "base_lang";
-  const method = "updateById";
+  const method = "updateByIdLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1338,10 +1338,10 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdLang: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdLang: input cannot be null");
   }
   
   {
@@ -1349,7 +1349,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueLang(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1360,7 +1360,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdLang(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 语言 已被删除";
@@ -1481,7 +1481,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheLang();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1489,7 +1489,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheLang();
   }
   
   if (!is_silent_mode) {
@@ -1499,9 +1499,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsLang
 /** 根据 ids 删除 语言 */
-export async function deleteByIds(
+export async function deleteByIdsLang(
   ids: LangId[],
   options?: {
     is_debug?: boolean;
@@ -1511,7 +1511,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_lang";
-  const method = "deleteByIds";
+  const method = "deleteByIdsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1534,12 +1534,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheLang();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdLang(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1572,14 +1572,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheLang();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdLang
 /** 根据 id 查找 语言 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdLang(
   id: LangId,
   options?: {
     is_debug?: boolean;
@@ -1589,7 +1589,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdLang(
     id,
     options,
   );
@@ -1598,9 +1598,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsLang
 /** 根据 ids 启用或者禁用 语言 */
-export async function enableByIds(
+export async function enableByIdsLang(
   ids: LangId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1609,7 +1609,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "base_lang";
-  const method = "enableByIds";
+  const method = "enableByIdsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1634,7 +1634,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheLang();
   }
   
   const args = new QueryArgs();
@@ -1642,14 +1642,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheLang();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsLang
 /** 根据 ids 还原 语言 */
-export async function revertByIds(
+export async function revertByIdsLang(
   ids: LangId[],
   options?: {
     is_debug?: boolean;
@@ -1657,7 +1657,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_lang";
-  const method = "revertByIds";
+  const method = "revertByIdsLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1678,12 +1678,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheLang();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneLang(
       {
         id,
         is_deleted: 1,
@@ -1692,7 +1692,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdLang(
         id,
         options,
       );
@@ -1705,7 +1705,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as LangInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueLang(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1719,14 +1719,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheLang();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsLang
 /** 根据 ids 彻底删除 语言 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsLang(
   ids: LangId[],
   options?: {
     is_debug?: boolean;
@@ -1735,7 +1735,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_lang";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsLang";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1757,12 +1757,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheLang();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneLang(
       {
         id,
         is_deleted: 1,
@@ -1779,21 +1779,21 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheLang();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByLang
 /** 查找 语言 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByLang(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_lang";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByLang";
   
   const is_debug = get_is_debug(options?.is_debug);
   

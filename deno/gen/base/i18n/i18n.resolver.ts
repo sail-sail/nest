@@ -29,10 +29,10 @@ export async function findCountI18n(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountI18n,
   } = await import("./i18n.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountI18n(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllI18n(
 ): Promise<I18nModel[]> {
   
   const {
-    findAll,
+    findAllI18n,
   } = await import("./i18n.service.ts");
   
   checkSortI18n(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllI18n(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllI18n(
 export async function getFieldCommentsI18n(): Promise<I18nFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsI18n,
   } = await import("./i18n.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsI18n();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneI18n(
 ): Promise<I18nModel | undefined> {
   
   const {
-    findOne,
+    findOneI18n,
   } = await import("./i18n.service.ts");
   
   checkSortI18n(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneI18n(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdI18n(
 ): Promise<I18nModel | undefined> {
   
   const {
-    findById,
+    findByIdI18n,
   } = await import("./i18n.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdI18n(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsI18n(
 ): Promise<I18nModel[]> {
   
   const {
-    findByIds,
+    findByIdsI18n,
   } = await import("./i18n.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsI18n(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsI18n(
 ): Promise<I18nId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateI18n,
+    setIdByLblI18n,
+    createsI18n,
   } = await import("./i18n.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsI18n(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblI18n(input);
     
-    await validate(input);
+    await validateI18n(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsI18n(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdI18n(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblI18n,
+    updateByIdI18n,
   } = await import("./i18n.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblI18n(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: I18nId = await updateById(id, input);
+  const id2: I18nId = await updateByIdI18n(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsI18n(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsI18n,
   } = await import("./i18n.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsI18n(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsI18n(ids);
   
   return num;
 }
@@ -219,7 +219,7 @@ export async function revertByIdsI18n(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsI18n,
   } = await import("./i18n.service.ts");
   
   set_is_tran(true);
@@ -229,7 +229,7 @@ export async function revertByIdsI18n(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsI18n(ids);
   
   return res;
 }
@@ -242,7 +242,7 @@ export async function forceDeleteByIdsI18n(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsI18n,
   } = await import("./i18n.service.ts");
   
   set_is_tran(true);
@@ -252,7 +252,7 @@ export async function forceDeleteByIdsI18n(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsI18n(ids);
   
   return res;
 }

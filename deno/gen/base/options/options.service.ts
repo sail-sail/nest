@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找系统选项总数
  */
-export async function findCount(
+export async function findCountOptions(
   search?: OptionsSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const options_num = await optionsDao.findCount(search);
+  const options_num = await optionsDao.findCountOptions(search);
   
   return options_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找系统选项列表
  */
-export async function findAll(
+export async function findAllOptions(
   search?: OptionsSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const options_models = await optionsDao.findAll(search, page, sort);
+  const options_models = await optionsDao.findAllOptions(search, page, sort);
   
   return options_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblOptions(
   input: OptionsInput,
 ): Promise<void> {
-  await optionsDao.setIdByLbl(input);
+  await optionsDao.setIdByLblOptions(input);
 }
 
 /**
  * 根据条件查找第一个系统选项
  */
-export async function findOne(
+export async function findOneOptions(
   search?: OptionsSearch,
   sort?: SortInput[],
 ): Promise<OptionsModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const options_model = await optionsDao.findOne(search, sort);
+  const options_model = await optionsDao.findOneOptions(search, sort);
   
   return options_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找系统选项
  */
-export async function findById(
+export async function findByIdOptions(
   options_id?: OptionsId | null,
 ): Promise<OptionsModel | undefined> {
   
-  const options_model = await optionsDao.findById(options_id);
+  const options_model = await optionsDao.findByIdOptions(options_id);
   
   return options_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找系统选项
  */
-export async function findByIds(
+export async function findByIdsOptions(
   options_ids: OptionsId[],
 ): Promise<OptionsModel[]> {
   
-  const options_models = await optionsDao.findByIds(options_ids);
+  const options_models = await optionsDao.findByIdsOptions(options_ids);
   
   return options_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找系统选项是否存在
  */
-export async function exist(
+export async function existOptions(
   search?: OptionsSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const options_exist = await optionsDao.exist(search);
+  const options_exist = await optionsDao.existOptions(search);
   
   return options_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找系统选项是否存在
  */
-export async function existById(
+export async function existByIdOptions(
   options_id?: OptionsId | null,
 ): Promise<boolean> {
   
-  const options_exist = await optionsDao.existById(options_id);
+  const options_exist = await optionsDao.existByIdOptions(options_id);
   
   return options_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验系统选项
  */
-export async function validate(
+export async function validateOptions(
   input: OptionsInput,
 ): Promise<void> {
-  await optionsDao.validate(input);
+  await optionsDao.validateOptions(input);
 }
 
 /**
  * 批量创建系统选项
  */
-export async function creates(
+export async function createsOptions(
   inputs: OptionsInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<OptionsId[]> {
-  const options_ids = await optionsDao.creates(inputs, options);
+  const options_ids = await optionsDao.createsOptions(inputs, options);
   
   return options_ids;
 }
@@ -150,24 +150,24 @@ export async function creates(
 /**
  * 根据 id 获取系统选项版本号
  */
-export async function getVersionById(id: OptionsId) {
-  const version = await optionsDao.getVersionById(id);
+export async function getVersionByIdOptions(id: OptionsId) {
+  const version = await optionsDao.getVersionByIdOptions(id);
   return version;
 }
 
 /**
  * 根据 id 修改系统选项
  */
-export async function updateById(
+export async function updateByIdOptions(
   options_id: OptionsId,
   input: OptionsInput,
 ): Promise<OptionsId> {
   
-  const old_model = await optionsDao.validateOption(
-    await optionsDao.findById(options_id),
+  const old_model = await optionsDao.validateOptionOptions(
+    await optionsDao.findByIdOptions(options_id),
   );
   
-  const is_locked = await optionsDao.getIsLockedById(options_id);
+  const is_locked = await optionsDao.getIsLockedByIdOptions(options_id);
   if (is_locked) {
     throw "不能修改已经锁定的 系统选项";
   }
@@ -180,27 +180,27 @@ export async function updateById(
     input.ky = undefined;
   }
   
-  const options_id2 = await optionsDao.updateById(options_id, input);
+  const options_id2 = await optionsDao.updateByIdOptions(options_id, input);
   
   return options_id2;
 }
 
 /** 校验系统选项是否存在 */
-export async function validateOption(
+export async function validateOptionOptions(
   model0?: OptionsModel,
 ): Promise<OptionsModel> {
-  const options_model = await optionsDao.validateOption(model0);
+  const options_model = await optionsDao.validateOptionOptions(model0);
   return options_model;
 }
 
 /**
  * 根据 ids 删除系统选项
  */
-export async function deleteByIds(
+export async function deleteByIdsOptions(
   options_ids: OptionsId[],
 ): Promise<number> {
   
-  const old_models = await optionsDao.findByIds(options_ids);
+  const old_models = await optionsDao.findByIdsOptions(options_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -214,40 +214,40 @@ export async function deleteByIds(
     }
   }
   
-  const options_num = await optionsDao.deleteByIds(options_ids);
+  const options_num = await optionsDao.deleteByIdsOptions(options_ids);
   return options_num;
 }
 
 /**
  * 根据 ids 启用或者禁用系统选项
  */
-export async function enableByIds(
+export async function enableByIdsOptions(
   ids: OptionsId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const options_num = await optionsDao.enableByIds(ids, is_enabled);
+  const options_num = await optionsDao.enableByIdsOptions(ids, is_enabled);
   return options_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁系统选项
  */
-export async function lockByIds(
+export async function lockByIdsOptions(
   options_ids: OptionsId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const options_num = await optionsDao.lockByIds(options_ids, is_locked);
+  const options_num = await optionsDao.lockByIdsOptions(options_ids, is_locked);
   return options_num;
 }
 
 /**
  * 根据 ids 还原系统选项
  */
-export async function revertByIds(
+export async function revertByIdsOptions(
   options_ids: OptionsId[],
 ): Promise<number> {
   
-  const options_num = await optionsDao.revertByIds(options_ids);
+  const options_num = await optionsDao.revertByIdsOptions(options_ids);
   
   return options_num;
 }
@@ -255,11 +255,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除系统选项
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsOptions(
   options_ids: OptionsId[],
 ): Promise<number> {
   
-  const options_num = await optionsDao.forceDeleteByIds(options_ids);
+  const options_num = await optionsDao.forceDeleteByIdsOptions(options_ids);
   
   return options_num;
 }
@@ -267,16 +267,16 @@ export async function forceDeleteByIds(
 /**
  * 获取系统选项字段注释
  */
-export async function getFieldComments(): Promise<OptionsFieldComment> {
-  const options_fields = await optionsDao.getFieldComments();
+export async function getFieldCommentsOptions(): Promise<OptionsFieldComment> {
+  const options_fields = await optionsDao.getFieldCommentsOptions();
   return options_fields;
 }
 
 /**
  * 查找 系统选项 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByOptions(
 ): Promise<number> {
-  const options_sort = await optionsDao.findLastOrderBy();
+  const options_sort = await optionsDao.findLastOrderByOptions();
   return options_sort;
 }
