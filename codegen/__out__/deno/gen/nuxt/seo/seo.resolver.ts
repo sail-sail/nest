@@ -29,10 +29,10 @@ export async function findCountSeo(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountSeo,
   } = await import("./seo.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountSeo(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllSeo(
 ): Promise<SeoModel[]> {
   
   const {
-    findAll,
+    findAllSeo,
   } = await import("./seo.service.ts");
   
   checkSortSeo(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllSeo(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllSeo(
 export async function getFieldCommentsSeo(): Promise<SeoFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsSeo,
   } = await import("./seo.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsSeo();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneSeo(
 ): Promise<SeoModel | undefined> {
   
   const {
-    findOne,
+    findOneSeo,
   } = await import("./seo.service.ts");
   
   checkSortSeo(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneSeo(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdSeo(
 ): Promise<SeoModel | undefined> {
   
   const {
-    findById,
+    findByIdSeo,
   } = await import("./seo.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdSeo(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsSeo(
 ): Promise<SeoModel[]> {
   
   const {
-    findByIds,
+    findByIdsSeo,
   } = await import("./seo.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsSeo(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsSeo(
 ): Promise<SeoId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateSeo,
+    setIdByLblSeo,
+    createsSeo,
   } = await import("./seo.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsSeo(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblSeo(input);
     
-    await validate(input);
+    await validateSeo(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsSeo(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdSeo(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblSeo,
+    updateByIdSeo,
   } = await import("./seo.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblSeo(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: SeoId = await updateById(id, input);
+  const id2: SeoId = await updateByIdSeo(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsSeo(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsSeo,
   } = await import("./seo.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsSeo(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsSeo(ids);
   
   return num;
 }
@@ -219,7 +219,7 @@ export async function defaultByIdSeo(
 ): Promise<number> {
   
   const {
-    defaultById,
+    defaultByIdSeo,
   } = await import("./seo.service.ts");
   
   set_is_tran(true);
@@ -229,7 +229,7 @@ export async function defaultByIdSeo(
     "edit",
   );
   
-  const res = await defaultById(id);
+  const res = await defaultByIdSeo(id);
   return res;
 }
 
@@ -242,7 +242,7 @@ export async function lockByIdsSeo(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsSeo,
   } = await import("./seo.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -256,7 +256,7 @@ export async function lockByIdsSeo(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsSeo(ids, is_locked);
   
   return res;
 }
@@ -269,7 +269,7 @@ export async function revertByIdsSeo(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsSeo,
   } = await import("./seo.service.ts");
   
   set_is_tran(true);
@@ -279,7 +279,7 @@ export async function revertByIdsSeo(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsSeo(ids);
   
   return res;
 }
@@ -292,7 +292,7 @@ export async function forceDeleteByIdsSeo(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsSeo,
   } = await import("./seo.service.ts");
   
   set_is_tran(true);
@@ -302,7 +302,7 @@ export async function forceDeleteByIdsSeo(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsSeo(ids);
   
   return res;
 }
@@ -313,10 +313,10 @@ export async function forceDeleteByIdsSeo(
 export async function findLastOrderBySeo(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderBySeo,
   } = await import("./seo.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderBySeo();
   
   return res;
 }

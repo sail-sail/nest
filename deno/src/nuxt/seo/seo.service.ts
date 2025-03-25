@@ -1,5 +1,5 @@
 import {
-  findOne as findOneSeo,
+  findOneSeo,
 } from "/gen/nuxt/seo/seo.dao.ts";
 
 /**
