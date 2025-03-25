@@ -56,7 +56,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -72,7 +72,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -264,9 +264,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountPayTransactionsJsapi
 /** 根据条件查找微信JSAPI下单总数 */
-export async function findCount(
+export async function findCountPayTransactionsJsapi(
   search?: Readonly<PayTransactionsJsapiSearch>,
   options?: {
     is_debug?: boolean;
@@ -275,12 +275,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "findCount";
+  const method = "findCountPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -360,9 +360,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllPayTransactionsJsapi
 /** 根据搜索条件和分页查找微信JSAPI下单列表 */
-export async function findAll(
+export async function findAllPayTransactionsJsapi(
   search?: Readonly<PayTransactionsJsapiSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -373,7 +373,7 @@ export async function findAll(
 ): Promise<PayTransactionsJsapiModel[]> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "findAll";
+  const method = "findAllPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -565,9 +565,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblPayTransactionsJsapi
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblPayTransactionsJsapi(
   input: PayTransactionsJsapiInput,
 ) {
   
@@ -580,14 +580,14 @@ export async function setIdByLbl(
     if (success_time_lbl.isValid()) {
       input.success_time = success_time_lbl.format("YYYY-MM-DD HH:mm:ss");
     } else {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsPayTransactionsJsapi();
       throw `${ fieldComments.success_time } 日期格式错误`;
     }
   }
   if (input.success_time) {
     const success_time = dayjs(input.success_time);
     if (!success_time.isValid()) {
-      const fieldComments = await getFieldComments();
+      const fieldComments = await getFieldCommentsPayTransactionsJsapi();
       throw `${ fieldComments.success_time } 日期格式错误`;
     }
     input.success_time = dayjs(input.success_time).format("YYYY-MM-DD HH:mm:ss");
@@ -630,9 +630,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsPayTransactionsJsapi
 /** 获取微信JSAPI下单字段注释 */
-export async function getFieldComments(): Promise<PayTransactionsJsapiFieldComment> {
+export async function getFieldCommentsPayTransactionsJsapi(): Promise<PayTransactionsJsapiFieldComment> {
   const fieldComments: PayTransactionsJsapiFieldComment = {
     id: "ID",
     appid: "开发者ID",
@@ -668,9 +668,9 @@ export async function getFieldComments(): Promise<PayTransactionsJsapiFieldComme
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniquePayTransactionsJsapi
 /** 通过唯一约束获得微信JSAPI下单列表 */
-export async function findByUnique(
+export async function findByUniquePayTransactionsJsapi(
   search0: Readonly<PayTransactionsJsapiInput>,
   options?: {
     is_debug?: boolean;
@@ -678,7 +678,7 @@ export async function findByUnique(
 ): Promise<PayTransactionsJsapiModel[]> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "findByUnique";
+  const method = "findByUniquePayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -696,7 +696,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOnePayTransactionsJsapi(
       {
         id: search0.id,
       },
@@ -714,7 +714,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniquePayTransactionsJsapi(
   oldModel: Readonly<PayTransactionsJsapiModel>,
   input: Readonly<PayTransactionsJsapiInput>,
 ): boolean {
@@ -725,9 +725,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniquePayTransactionsJsapi
 /** 通过唯一约束检查 微信JSAPI下单 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniquePayTransactionsJsapi(
   input: Readonly<PayTransactionsJsapiInput>,
   oldModel: Readonly<PayTransactionsJsapiModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -739,14 +739,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniquePayTransactionsJsapi(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 微信JSAPI下单 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: PayTransactionsJsapiId = await updateById(
+      const id: PayTransactionsJsapiId = await updateByIdPayTransactionsJsapi(
         oldModel.id,
         {
           ...input,
@@ -763,9 +763,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOnePayTransactionsJsapi
 /** 根据条件查找第一微信JSAPI下单 */
-export async function findOne(
+export async function findOnePayTransactionsJsapi(
   search?: Readonly<PayTransactionsJsapiSearch>,
   sort?: SortInput[],
   options?: {
@@ -774,7 +774,7 @@ export async function findOne(
 ): Promise<PayTransactionsJsapiModel | undefined> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "findOne";
+  const method = "findOnePayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -801,7 +801,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllPayTransactionsJsapi(
     search,
     page,
     sort,
@@ -811,9 +811,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdPayTransactionsJsapi
 /** 根据 id 查找微信JSAPI下单 */
-export async function findById(
+export async function findByIdPayTransactionsJsapi(
   id?: PayTransactionsJsapiId | null,
   options?: {
     is_debug?: boolean;
@@ -821,7 +821,7 @@ export async function findById(
 ): Promise<PayTransactionsJsapiModel | undefined> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "findById";
+  const method = "findByIdPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -842,7 +842,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOnePayTransactionsJsapi(
     {
       id,
     },
@@ -853,9 +853,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsPayTransactionsJsapi
 /** 根据 ids 查找微信JSAPI下单 */
-export async function findByIds(
+export async function findByIdsPayTransactionsJsapi(
   ids: PayTransactionsJsapiId[],
   options?: {
     is_debug?: boolean;
@@ -863,7 +863,7 @@ export async function findByIds(
 ): Promise<PayTransactionsJsapiModel[]> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "findByIds";
+  const method = "findByIdsPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -884,7 +884,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllPayTransactionsJsapi(
     {
       ids,
     },
@@ -910,9 +910,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existPayTransactionsJsapi
 /** 根据搜索条件判断微信JSAPI下单是否存在 */
-export async function exist(
+export async function existPayTransactionsJsapi(
   search?: Readonly<PayTransactionsJsapiSearch>,
   options?: {
     is_debug?: boolean;
@@ -920,7 +920,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "exist";
+  const method = "existPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -936,15 +936,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOnePayTransactionsJsapi(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdPayTransactionsJsapi
 /** 根据id判断微信JSAPI下单是否存在 */
-export async function existById(
+export async function existByIdPayTransactionsJsapi(
   id?: Readonly<PayTransactionsJsapiId | null>,
   options?: {
     is_debug?: boolean;
@@ -952,7 +952,7 @@ export async function existById(
 ) {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "existById";
+  const method = "existByIdPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -985,9 +985,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionPayTransactionsJsapi
 /** 校验微信JSAPI下单是否存在 */
-export async function validateOption(
+export async function validateOptionPayTransactionsJsapi(
   model?: PayTransactionsJsapiModel,
 ) {
   if (!model) {
@@ -998,12 +998,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validatePayTransactionsJsapi
 /** 微信JSAPI下单增加和修改时校验输入 */
-export async function validate(
+export async function validatePayTransactionsJsapi(
   input: Readonly<PayTransactionsJsapiInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsPayTransactionsJsapi();
   
   // ID
   await validators.chars_max_length(
@@ -1126,9 +1126,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnPayTransactionsJsapi
 /** 创建 微信JSAPI下单 并返回 */
-export async function createReturn(
+export async function createReturnPayTransactionsJsapi(
   input: Readonly<PayTransactionsJsapiInput>,
   options?: {
     is_debug?: boolean;
@@ -1139,7 +1139,7 @@ export async function createReturn(
 ): Promise<PayTransactionsJsapiModel> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "createReturn";
+  const method = "createReturnPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1164,8 +1164,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionPayTransactionsJsapi(
+    await findOnePayTransactionsJsapi(
       {
         id,
       },
@@ -1177,9 +1177,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createPayTransactionsJsapi
 /** 创建 微信JSAPI下单 */
-export async function create(
+export async function createPayTransactionsJsapi(
   input: Readonly<PayTransactionsJsapiInput>,
   options?: {
     is_debug?: boolean;
@@ -1190,7 +1190,7 @@ export async function create(
 ): Promise<PayTransactionsJsapiId> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "create";
+  const method = "createPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1218,9 +1218,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnPayTransactionsJsapi
 /** 批量创建 微信JSAPI下单 并返回 */
-export async function createsReturn(
+export async function createsReturnPayTransactionsJsapi(
   inputs: PayTransactionsJsapiInput[],
   options?: {
     is_debug?: boolean;
@@ -1231,7 +1231,7 @@ export async function createsReturn(
 ): Promise<PayTransactionsJsapiModel[]> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "createsReturn";
+  const method = "createsReturnPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1250,14 +1250,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsPayTransactionsJsapi(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsPayTransactionsJsapi
 /** 批量创建 微信JSAPI下单 */
-export async function creates(
+export async function createsPayTransactionsJsapi(
   inputs: PayTransactionsJsapiInput[],
   options?: {
     is_debug?: boolean;
@@ -1268,7 +1268,7 @@ export async function creates(
 ): Promise<PayTransactionsJsapiId[]> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "creates";
+  const method = "createsPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1317,11 +1317,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniquePayTransactionsJsapi(input, options);
     if (oldModels.length > 0) {
       let id: PayTransactionsJsapiId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniquePayTransactionsJsapi(
           input,
           oldModel,
           options?.uniqueType,
@@ -1559,9 +1559,9 @@ async function _creates(
   return ids2;
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdPayTransactionsJsapi
 /** 微信JSAPI下单 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdPayTransactionsJsapi(
   id: PayTransactionsJsapiId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1570,7 +1570,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1602,9 +1602,9 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdPayTransactionsJsapi
 /** 根据 id 修改 微信JSAPI下单 */
-export async function updateById(
+export async function updateByIdPayTransactionsJsapi(
   id: PayTransactionsJsapiId,
   input: PayTransactionsJsapiInput,
   options?: {
@@ -1616,7 +1616,7 @@ export async function updateById(
 ): Promise<PayTransactionsJsapiId> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "updateById";
+  const method = "updateByIdPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1639,15 +1639,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdPayTransactionsJsapi: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdPayTransactionsJsapi: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdPayTransactionsJsapi(id, input.tenant_id, options);
   }
   
   {
@@ -1655,7 +1655,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniquePayTransactionsJsapi(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1666,7 +1666,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdPayTransactionsJsapi(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 微信JSAPI下单 已被删除";
@@ -1871,9 +1871,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsPayTransactionsJsapi
 /** 根据 ids 删除 微信JSAPI下单 */
-export async function deleteByIds(
+export async function deleteByIdsPayTransactionsJsapi(
   ids: PayTransactionsJsapiId[],
   options?: {
     is_debug?: boolean;
@@ -1883,7 +1883,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "deleteByIds";
+  const method = "deleteByIdsPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1909,7 +1909,7 @@ export async function deleteByIds(
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdPayTransactionsJsapi(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1945,9 +1945,9 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsPayTransactionsJsapi
 /** 根据 ids 还原 微信JSAPI下单 */
-export async function revertByIds(
+export async function revertByIdsPayTransactionsJsapi(
   ids: PayTransactionsJsapiId[],
   options?: {
     is_debug?: boolean;
@@ -1955,7 +1955,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "revertByIds";
+  const method = "revertByIdsPayTransactionsJsapi";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1979,7 +1979,7 @@ export async function revertByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOnePayTransactionsJsapi(
       {
         id,
         is_deleted: 1,
@@ -1988,7 +1988,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdPayTransactionsJsapi(
         id,
         options,
       );
@@ -2001,7 +2001,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as PayTransactionsJsapiInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniquePayTransactionsJsapi(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -2018,9 +2018,9 @@ export async function revertByIds(
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsPayTransactionsJsapi
 /** 根据 ids 彻底删除 微信JSAPI下单 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsPayTransactionsJsapi(
   ids: PayTransactionsJsapiId[],
   options?: {
     is_debug?: boolean;
@@ -2029,7 +2029,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "wx_pay_transactions_jsapi";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsPayTransactionsJsapi";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2054,7 +2054,7 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOnePayTransactionsJsapi(
       {
         id,
         is_deleted: 1,
