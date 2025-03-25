@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -72,7 +72,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -190,9 +190,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountCompany
 /** 根据条件查找单位总数 */
-export async function findCount(
+export async function findCountCompany(
   search?: Readonly<CompanySearch>,
   options?: {
     is_debug?: boolean;
@@ -201,12 +201,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "eams_company";
-  const method = "findCount";
+  const method = "findCountCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -289,9 +289,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllCompany
 /** 根据搜索条件和分页查找单位列表 */
-export async function findAll(
+export async function findAllCompany(
   search?: Readonly<CompanySearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -302,7 +302,7 @@ export async function findAll(
 ): Promise<CompanyModel[]> {
   
   const table = "eams_company";
-  const method = "findAll";
+  const method = "findAllCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -494,9 +494,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblCompany
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblCompany(
   input: CompanyInput,
 ) {
   
@@ -535,9 +535,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsCompany
 /** 获取单位字段注释 */
-export async function getFieldComments(): Promise<CompanyFieldComment> {
+export async function getFieldCommentsCompany(): Promise<CompanyFieldComment> {
   const fieldComments: CompanyFieldComment = {
     id: "ID",
     code: "编号",
@@ -560,9 +560,9 @@ export async function getFieldComments(): Promise<CompanyFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueCompany
 /** 通过唯一约束获得单位列表 */
-export async function findByUnique(
+export async function findByUniqueCompany(
   search0: Readonly<CompanyInput>,
   options?: {
     is_debug?: boolean;
@@ -570,7 +570,7 @@ export async function findByUnique(
 ): Promise<CompanyModel[]> {
   
   const table = "eams_company";
-  const method = "findByUnique";
+  const method = "findByUniqueCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -588,7 +588,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneCompany(
       {
         id: search0.id,
       },
@@ -606,7 +606,7 @@ export async function findByUnique(
       return [ ];
     }
     const code = search0.code;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllCompany(
       {
         code,
       },
@@ -621,7 +621,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllCompany(
       {
         lbl,
       },
@@ -636,7 +636,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueCompany(
   oldModel: Readonly<CompanyModel>,
   input: Readonly<CompanyInput>,
 ): boolean {
@@ -657,9 +657,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueCompany
 /** 通过唯一约束检查 单位 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueCompany(
   input: Readonly<CompanyInput>,
   oldModel: Readonly<CompanyModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -671,14 +671,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueCompany(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 单位 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: CompanyId = await updateById(
+      const id: CompanyId = await updateByIdCompany(
         oldModel.id,
         {
           ...input,
@@ -695,9 +695,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneCompany
 /** 根据条件查找第一单位 */
-export async function findOne(
+export async function findOneCompany(
   search?: Readonly<CompanySearch>,
   sort?: SortInput[],
   options?: {
@@ -706,7 +706,7 @@ export async function findOne(
 ): Promise<CompanyModel | undefined> {
   
   const table = "eams_company";
-  const method = "findOne";
+  const method = "findOneCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -733,7 +733,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllCompany(
     search,
     page,
     sort,
@@ -743,9 +743,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdCompany
 /** 根据 id 查找单位 */
-export async function findById(
+export async function findByIdCompany(
   id?: CompanyId | null,
   options?: {
     is_debug?: boolean;
@@ -753,7 +753,7 @@ export async function findById(
 ): Promise<CompanyModel | undefined> {
   
   const table = "eams_company";
-  const method = "findById";
+  const method = "findByIdCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -774,7 +774,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneCompany(
     {
       id,
     },
@@ -785,9 +785,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsCompany
 /** 根据 ids 查找单位 */
-export async function findByIds(
+export async function findByIdsCompany(
   ids: CompanyId[],
   options?: {
     is_debug?: boolean;
@@ -795,7 +795,7 @@ export async function findByIds(
 ): Promise<CompanyModel[]> {
   
   const table = "eams_company";
-  const method = "findByIds";
+  const method = "findByIdsCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -816,7 +816,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllCompany(
     {
       ids,
     },
@@ -842,9 +842,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existCompany
 /** 根据搜索条件判断单位是否存在 */
-export async function exist(
+export async function existCompany(
   search?: Readonly<CompanySearch>,
   options?: {
     is_debug?: boolean;
@@ -852,7 +852,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "eams_company";
-  const method = "exist";
+  const method = "existCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -868,15 +868,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneCompany(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdCompany
 /** 根据id判断单位是否存在 */
-export async function existById(
+export async function existByIdCompany(
   id?: Readonly<CompanyId | null>,
   options?: {
     is_debug?: boolean;
@@ -884,7 +884,7 @@ export async function existById(
 ) {
   
   const table = "eams_company";
-  const method = "existById";
+  const method = "existByIdCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -926,9 +926,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledCompany
 /** 校验单位是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledCompany(
   model: Readonly<CompanyModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -936,9 +936,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionCompany
 /** 校验单位是否存在 */
-export async function validateOption(
+export async function validateOptionCompany(
   model?: CompanyModel,
 ) {
   if (!model) {
@@ -949,12 +949,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateCompany
 /** 单位增加和修改时校验输入 */
-export async function validate(
+export async function validateCompany(
   input: Readonly<CompanyInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsCompany();
   
   // ID
   await validators.chars_max_length(
@@ -1000,9 +1000,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnCompany
 /** 创建 单位 并返回 */
-export async function createReturn(
+export async function createReturnCompany(
   input: Readonly<CompanyInput>,
   options?: {
     is_debug?: boolean;
@@ -1013,7 +1013,7 @@ export async function createReturn(
 ): Promise<CompanyModel> {
   
   const table = "eams_company";
-  const method = "createReturn";
+  const method = "createReturnCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1038,8 +1038,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionCompany(
+    await findOneCompany(
       {
         id,
       },
@@ -1051,9 +1051,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createCompany
 /** 创建 单位 */
-export async function create(
+export async function createCompany(
   input: Readonly<CompanyInput>,
   options?: {
     is_debug?: boolean;
@@ -1064,7 +1064,7 @@ export async function create(
 ): Promise<CompanyId> {
   
   const table = "eams_company";
-  const method = "create";
+  const method = "createCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1092,9 +1092,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnCompany
 /** 批量创建 单位 并返回 */
-export async function createsReturn(
+export async function createsReturnCompany(
   inputs: CompanyInput[],
   options?: {
     is_debug?: boolean;
@@ -1105,7 +1105,7 @@ export async function createsReturn(
 ): Promise<CompanyModel[]> {
   
   const table = "eams_company";
-  const method = "createsReturn";
+  const method = "createsReturnCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1124,14 +1124,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsCompany(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsCompany
 /** 批量创建 单位 */
-export async function creates(
+export async function createsCompany(
   inputs: CompanyInput[],
   options?: {
     is_debug?: boolean;
@@ -1142,7 +1142,7 @@ export async function creates(
 ): Promise<CompanyId[]> {
   
   const table = "eams_company";
-  const method = "creates";
+  const method = "createsCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1191,11 +1191,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueCompany(input, options);
     if (oldModels.length > 0) {
       let id: CompanyId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueCompany(
           input,
           oldModel,
           options?.uniqueType,
@@ -1225,7 +1225,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheCompany();
   
   const args = new QueryArgs();
   let sql = "insert into eams_company(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code,lbl,is_locked,is_enabled,order_by,rem)values";
@@ -1372,20 +1372,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheCompany();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheCompany
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheCompany() {
   await delCacheCtx(`dao.sql.eams_company`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdCompany
 /** 单位 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdCompany(
   id: CompanyId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1394,7 +1394,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "eams_company";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1424,13 +1424,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheCompany();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdCompany
 /** 根据 id 修改 单位 */
-export async function updateById(
+export async function updateByIdCompany(
   id: CompanyId,
   input: CompanyInput,
   options?: {
@@ -1442,7 +1442,7 @@ export async function updateById(
 ): Promise<CompanyId> {
   
   const table = "eams_company";
-  const method = "updateById";
+  const method = "updateByIdCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1465,15 +1465,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdCompany: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdCompany: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdCompany(id, input.tenant_id, options);
   }
   
   {
@@ -1481,7 +1481,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueCompany(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1492,7 +1492,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdCompany(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 单位 已被删除";
@@ -1613,7 +1613,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheCompany();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1621,7 +1621,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheCompany();
   }
   
   if (!is_silent_mode) {
@@ -1631,9 +1631,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsCompany
 /** 根据 ids 删除 单位 */
-export async function deleteByIds(
+export async function deleteByIdsCompany(
   ids: CompanyId[],
   options?: {
     is_debug?: boolean;
@@ -1643,7 +1643,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "eams_company";
-  const method = "deleteByIds";
+  const method = "deleteByIdsCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1666,12 +1666,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheCompany();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdCompany(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1704,14 +1704,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheCompany();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdCompany
 /** 根据 id 查找 单位 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdCompany(
   id: CompanyId,
   options?: {
     is_debug?: boolean;
@@ -1721,7 +1721,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdCompany(
     id,
     options,
   );
@@ -1730,9 +1730,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsCompany
 /** 根据 ids 启用或者禁用 单位 */
-export async function enableByIds(
+export async function enableByIdsCompany(
   ids: CompanyId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1741,7 +1741,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "eams_company";
-  const method = "enableByIds";
+  const method = "enableByIdsCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1766,7 +1766,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheCompany();
   }
   
   const args = new QueryArgs();
@@ -1774,14 +1774,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheCompany();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdCompany
 /** 根据 id 查找 单位 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdCompany(
   id: CompanyId,
   options?: {
     is_debug?: boolean;
@@ -1791,18 +1791,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const company_model = await findByIdCompany(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = company_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsCompany
 /** 根据 ids 锁定或者解锁 单位 */
-export async function lockByIds(
+export async function lockByIdsCompany(
   ids: CompanyId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -1811,7 +1811,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "eams_company";
-  const method = "lockByIds";
+  const method = "lockByIdsCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1835,21 +1835,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheCompany();
   
   const args = new QueryArgs();
   let sql = `update eams_company set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheCompany();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsCompany
 /** 根据 ids 还原 单位 */
-export async function revertByIds(
+export async function revertByIdsCompany(
   ids: CompanyId[],
   options?: {
     is_debug?: boolean;
@@ -1857,7 +1857,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "eams_company";
-  const method = "revertByIds";
+  const method = "revertByIdsCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1878,12 +1878,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheCompany();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneCompany(
       {
         id,
         is_deleted: 1,
@@ -1892,7 +1892,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdCompany(
         id,
         options,
       );
@@ -1905,7 +1905,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as CompanyInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueCompany(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1919,14 +1919,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheCompany();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsCompany
 /** 根据 ids 彻底删除 单位 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsCompany(
   ids: CompanyId[],
   options?: {
     is_debug?: boolean;
@@ -1935,7 +1935,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "eams_company";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsCompany";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1957,12 +1957,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheCompany();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneCompany(
       {
         id,
         is_deleted: 1,
@@ -1979,21 +1979,21 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheCompany();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByCompany
 /** 查找 单位 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByCompany(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "eams_company";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByCompany";
   
   const is_debug = get_is_debug(options?.is_debug);
   
