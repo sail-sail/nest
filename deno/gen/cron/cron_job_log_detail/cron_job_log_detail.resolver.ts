@@ -27,10 +27,10 @@ export async function findCountCronJobLogDetail(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountCronJobLogDetail(search);
   
   return num;
 }
@@ -45,12 +45,12 @@ export async function findAllCronJobLogDetail(
 ): Promise<CronJobLogDetailModel[]> {
   
   const {
-    findAll,
+    findAllCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
   checkSortCronJobLogDetail(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllCronJobLogDetail(search, page, sort);
   
   return models;
 }
@@ -61,10 +61,10 @@ export async function findAllCronJobLogDetail(
 export async function getFieldCommentsCronJobLogDetail(): Promise<CronJobLogDetailFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsCronJobLogDetail();
   
   return field_comment;
 }
@@ -78,12 +78,12 @@ export async function findOneCronJobLogDetail(
 ): Promise<CronJobLogDetailModel | undefined> {
   
   const {
-    findOne,
+    findOneCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
   checkSortCronJobLogDetail(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneCronJobLogDetail(search, sort);
   
   return model;
 }
@@ -96,10 +96,10 @@ export async function findByIdCronJobLogDetail(
 ): Promise<CronJobLogDetailModel | undefined> {
   
   const {
-    findById,
+    findByIdCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdCronJobLogDetail(id);
   
   return model;
 }
@@ -112,10 +112,10 @@ export async function findByIdsCronJobLogDetail(
 ): Promise<CronJobLogDetailModel[]> {
   
   const {
-    findByIds,
+    findByIdsCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsCronJobLogDetail(ids);
   
   for (const model of models) {
   }
@@ -131,7 +131,7 @@ export async function deleteByIdsCronJobLogDetail(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
   set_is_tran(true);
@@ -141,7 +141,7 @@ export async function deleteByIdsCronJobLogDetail(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsCronJobLogDetail(ids);
   
   return num;
 }
@@ -154,7 +154,7 @@ export async function revertByIdsCronJobLogDetail(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
   set_is_tran(true);
@@ -164,7 +164,7 @@ export async function revertByIdsCronJobLogDetail(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsCronJobLogDetail(ids);
   
   return res;
 }
@@ -177,7 +177,7 @@ export async function forceDeleteByIdsCronJobLogDetail(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsCronJobLogDetail,
   } = await import("./cron_job_log_detail.service.ts");
   
   set_is_tran(true);
@@ -187,7 +187,7 @@ export async function forceDeleteByIdsCronJobLogDetail(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsCronJobLogDetail(ids);
   
   return res;
 }
