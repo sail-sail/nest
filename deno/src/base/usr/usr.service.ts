@@ -15,35 +15,35 @@ import {
 } from "./usr.dao.ts";
 
 import {
-  findById as findByIdUsr,
-  findOne as findOneUsr,
-  validateOption as validateOptionUsr,
-  validateIsEnabled as validateIsEnabledUsr,
-  updateById as updateByIdUsr,
+  findByIdUsr,
+  findOneUsr,
+  validateOptionUsr,
+  validateIsEnabledUsr,
+  updateByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  findById as findByIdTenant,
-  validateOption as validateOptionTenant,
-  validateIsEnabled as validateIsEnabledTenant,
+  findByIdTenant,
+  validateOptionTenant,
+  validateIsEnabledTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
-  findById as findByIdLang,
+  findByIdLang,
 } from "/gen/base/lang/lang.dao.ts";
 
 import {
-  findAll as findAllOrg,
+  findAllOrg,
 } from "/gen/base/org/org.dao.ts";
 
 import {
-  create as createLoginLog,
-  findCount as findCountLoginLog,
+  createLoginLog,
+  findCountLoginLog,
 } from "/gen/base/login_log/login_log.dao.ts";
 
 // 角色
 import {
-  findByIds as findByIdsRole,
+  findByIdsRole,
 } from "/gen/base/role/role.dao.ts";
 
 import type {

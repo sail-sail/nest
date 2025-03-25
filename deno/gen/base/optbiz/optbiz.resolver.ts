@@ -29,10 +29,10 @@ export async function findCountOptbiz(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountOptbiz,
   } = await import("./optbiz.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountOptbiz(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllOptbiz(
 ): Promise<OptbizModel[]> {
   
   const {
-    findAll,
+    findAllOptbiz,
   } = await import("./optbiz.service.ts");
   
   checkSortOptbiz(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllOptbiz(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllOptbiz(
 export async function getFieldCommentsOptbiz(): Promise<OptbizFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsOptbiz,
   } = await import("./optbiz.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsOptbiz();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneOptbiz(
 ): Promise<OptbizModel | undefined> {
   
   const {
-    findOne,
+    findOneOptbiz,
   } = await import("./optbiz.service.ts");
   
   checkSortOptbiz(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneOptbiz(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdOptbiz(
 ): Promise<OptbizModel | undefined> {
   
   const {
-    findById,
+    findByIdOptbiz,
   } = await import("./optbiz.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdOptbiz(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsOptbiz(
 ): Promise<OptbizModel[]> {
   
   const {
-    findByIds,
+    findByIdsOptbiz,
   } = await import("./optbiz.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsOptbiz(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsOptbiz(
 ): Promise<OptbizId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateOptbiz,
+    setIdByLblOptbiz,
+    createsOptbiz,
   } = await import("./optbiz.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsOptbiz(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblOptbiz(input);
     
-    await validate(input);
+    await validateOptbiz(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsOptbiz(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdOptbiz(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblOptbiz,
+    updateByIdOptbiz,
   } = await import("./optbiz.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblOptbiz(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: OptbizId = await updateById(id, input);
+  const id2: OptbizId = await updateByIdOptbiz(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsOptbiz(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsOptbiz,
   } = await import("./optbiz.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsOptbiz(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsOptbiz(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsOptbiz(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsOptbiz,
   } = await import("./optbiz.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsOptbiz(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsOptbiz(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsOptbiz(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsOptbiz,
   } = await import("./optbiz.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsOptbiz(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsOptbiz(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsOptbiz(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsOptbiz,
   } = await import("./optbiz.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsOptbiz(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsOptbiz(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsOptbiz(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsOptbiz,
   } = await import("./optbiz.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsOptbiz(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsOptbiz(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsOptbiz(
 export async function findLastOrderByOptbiz(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByOptbiz,
   } = await import("./optbiz.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByOptbiz();
   
   return res;
 }

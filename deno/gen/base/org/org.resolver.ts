@@ -29,10 +29,10 @@ export async function findCountOrg(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountOrg,
   } = await import("./org.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountOrg(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllOrg(
 ): Promise<OrgModel[]> {
   
   const {
-    findAll,
+    findAllOrg,
   } = await import("./org.service.ts");
   
   checkSortOrg(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllOrg(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllOrg(
 export async function getFieldCommentsOrg(): Promise<OrgFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsOrg,
   } = await import("./org.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsOrg();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneOrg(
 ): Promise<OrgModel | undefined> {
   
   const {
-    findOne,
+    findOneOrg,
   } = await import("./org.service.ts");
   
   checkSortOrg(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneOrg(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdOrg(
 ): Promise<OrgModel | undefined> {
   
   const {
-    findById,
+    findByIdOrg,
   } = await import("./org.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdOrg(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsOrg(
 ): Promise<OrgModel[]> {
   
   const {
-    findByIds,
+    findByIdsOrg,
   } = await import("./org.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsOrg(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsOrg(
 ): Promise<OrgId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateOrg,
+    setIdByLblOrg,
+    createsOrg,
   } = await import("./org.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsOrg(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblOrg(input);
     
-    await validate(input);
+    await validateOrg(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsOrg(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdOrg(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblOrg,
+    updateByIdOrg,
   } = await import("./org.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblOrg(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: OrgId = await updateById(id, input);
+  const id2: OrgId = await updateByIdOrg(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsOrg(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsOrg,
   } = await import("./org.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsOrg(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsOrg(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsOrg(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsOrg,
   } = await import("./org.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsOrg(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsOrg(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsOrg(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsOrg,
   } = await import("./org.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsOrg(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsOrg(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsOrg(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsOrg,
   } = await import("./org.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsOrg(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsOrg(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsOrg(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsOrg,
   } = await import("./org.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsOrg(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsOrg(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsOrg(
 export async function findLastOrderByOrg(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByOrg,
   } = await import("./org.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByOrg();
   
   return res;
 }
