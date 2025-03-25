@@ -29,10 +29,10 @@ export async function findCountDomain(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountDomain,
   } = await import("./domain.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountDomain(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllDomain(
 ): Promise<DomainModel[]> {
   
   const {
-    findAll,
+    findAllDomain,
   } = await import("./domain.service.ts");
   
   checkSortDomain(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllDomain(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllDomain(
 export async function getFieldCommentsDomain(): Promise<DomainFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsDomain,
   } = await import("./domain.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsDomain();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneDomain(
 ): Promise<DomainModel | undefined> {
   
   const {
-    findOne,
+    findOneDomain,
   } = await import("./domain.service.ts");
   
   checkSortDomain(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneDomain(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdDomain(
 ): Promise<DomainModel | undefined> {
   
   const {
-    findById,
+    findByIdDomain,
   } = await import("./domain.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdDomain(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsDomain(
 ): Promise<DomainModel[]> {
   
   const {
-    findByIds,
+    findByIdsDomain,
   } = await import("./domain.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsDomain(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsDomain(
 ): Promise<DomainId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateDomain,
+    setIdByLblDomain,
+    createsDomain,
   } = await import("./domain.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsDomain(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblDomain(input);
     
-    await validate(input);
+    await validateDomain(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsDomain(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdDomain(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblDomain,
+    updateByIdDomain,
   } = await import("./domain.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblDomain(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: DomainId = await updateById(id, input);
+  const id2: DomainId = await updateByIdDomain(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsDomain(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsDomain,
   } = await import("./domain.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsDomain(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsDomain(ids);
   
   return num;
 }
@@ -219,7 +219,7 @@ export async function defaultByIdDomain(
 ): Promise<number> {
   
   const {
-    defaultById,
+    defaultByIdDomain,
   } = await import("./domain.service.ts");
   
   set_is_tran(true);
@@ -229,7 +229,7 @@ export async function defaultByIdDomain(
     "edit",
   );
   
-  const res = await defaultById(id);
+  const res = await defaultByIdDomain(id);
   return res;
 }
 
@@ -242,7 +242,7 @@ export async function enableByIdsDomain(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsDomain,
   } = await import("./domain.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -255,7 +255,7 @@ export async function enableByIdsDomain(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsDomain(ids, is_enabled);
   
   return res;
 }
@@ -269,7 +269,7 @@ export async function lockByIdsDomain(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsDomain,
   } = await import("./domain.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -283,7 +283,7 @@ export async function lockByIdsDomain(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsDomain(ids, is_locked);
   
   return res;
 }
@@ -296,7 +296,7 @@ export async function revertByIdsDomain(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsDomain,
   } = await import("./domain.service.ts");
   
   set_is_tran(true);
@@ -306,7 +306,7 @@ export async function revertByIdsDomain(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsDomain(ids);
   
   return res;
 }
@@ -319,7 +319,7 @@ export async function forceDeleteByIdsDomain(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsDomain,
   } = await import("./domain.service.ts");
   
   set_is_tran(true);
@@ -329,7 +329,7 @@ export async function forceDeleteByIdsDomain(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsDomain(ids);
   
   return res;
 }
@@ -340,10 +340,10 @@ export async function forceDeleteByIdsDomain(
 export async function findLastOrderByDomain(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByDomain,
   } = await import("./domain.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByDomain();
   
   return res;
 }

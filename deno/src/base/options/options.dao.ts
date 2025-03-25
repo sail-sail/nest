@@ -1,7 +1,7 @@
 import {
-  findAll as findAllOptions,
-  create as createOptions,
-  updateById as updateOptionsById,
+  findAllOptions,
+  createOptions,
+  updateByIdOptions,
 } from "/gen/base/options/options.dao.ts";
 
 /**
@@ -37,7 +37,7 @@ export async function update_i18n_version() {
     return i18n_version;
   }
   const i18n_version = ((Number(optionsModel.val) || 0) + 1).toString();
-  await updateOptionsById(
+  await updateByIdOptions(
     optionsModel.id,
     {
       version: optionsModel.version,

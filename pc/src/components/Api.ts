@@ -1,3 +1,6 @@
+import type {
+  GetStatsOss,
+} from "#/types"
 
 /**
  * 获取附件信息列表, 包括文件名
@@ -14,9 +17,11 @@ export async function getStatsOss(
   if (ids.length === 0) {
     return [ ];
   }
-  const rvData = await query({
+  const res: {
+    getStatsOss: GetStatsOss[];
+  } = await query({
     query: /* GraphQL */ `
-      query($ids: [ID]!) {
+      query($ids: [ID!]!) {
         getStatsOss(ids: $ids) {
           id
           lbl
@@ -29,7 +34,7 @@ export async function getStatsOss(
       ids,
     },
   }, opt);
-  const data = rvData?.getStatsOss;
+  const data = res.getStatsOss;
   return data;
 }
 

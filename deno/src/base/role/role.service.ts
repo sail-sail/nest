@@ -1,11 +1,11 @@
 import {
-  findAll as findAllRole,
+  findAllRole,
 } from "/gen/base/role/role.dao.ts";
 
 import {
-  findById as findByIdUsr,
-  validateOption as validateOptionUsr,
-  validateIsEnabled as validateIsEnabledUsr,
+  findByIdUsr,
+  validateOptionUsr,
+  validateIsEnabledUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {

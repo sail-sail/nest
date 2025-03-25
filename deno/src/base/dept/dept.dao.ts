@@ -3,11 +3,11 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
-  findAll as findAllDept,
+  findAllDept,
 } from "/gen/base/dept/dept.dao.ts";
 
 export async function getAuthDeptIds() {
