@@ -14,7 +14,7 @@ import {
 } from "/gen/wxwork/wxw_app/wxw_app.dao.ts";
 
 import {
-  create as createWxwMsg,
+  createWxwMsg,
 } from "/gen/wxwork/wxw_msg/wxw_msg.dao.ts";
 
 import type {
