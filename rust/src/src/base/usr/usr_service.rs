@@ -19,11 +19,11 @@ use crate::common::auth::auth_dao::{
 use crate::common::auth::auth_model::AuthModel;
 
 use crate::r#gen::base::usr::usr_dao::{
-  find_by_id as find_by_id_usr,
-  find_one as find_one_usr,
-  validate_option as validate_option_usr,
-  validate_is_enabled as validate_is_enabled_usr,
-  update_by_id as update_by_id_usr,
+  find_by_id_usr,
+  find_one_usr,
+  validate_option_usr,
+  validate_is_enabled_usr,
+  update_by_id_usr,
 };
 use crate::r#gen::base::usr::usr_model::{
   UsrInput,
@@ -31,17 +31,17 @@ use crate::r#gen::base::usr::usr_model::{
 };
 
 // 角色
-use crate::r#gen::base::role::role_dao::find_by_ids as find_by_ids_role;
+use crate::r#gen::base::role::role_dao::find_by_ids_role;
 
 // 租户
 use crate::r#gen::base::tenant::tenant_dao::{
-  find_by_id as find_by_id_tenant,
-  validate_option as validate_option_tenant,
-  validate_is_enabled as validate_is_enabled_tenant,
+  find_by_id_tenant,
+  validate_option_tenant,
+  validate_is_enabled_tenant,
 };
 
 // 语言
-use crate::r#gen::base::lang::lang_dao::find_by_id as find_by_id_lang;
+use crate::r#gen::base::lang::lang_dao::find_by_id_lang;
 
 use super::usr_model::{
   LoginInput,
@@ -52,8 +52,8 @@ use super::usr_model::{
 
 #[allow(unused_imports)]
 use crate::r#gen::base::login_log::login_log_dao::{
-  create as create_login_log,
-  find_count as find_count_login_log,
+  create_login_log,
+  find_count_login_log,
 };
 
 #[allow(unused_imports)]

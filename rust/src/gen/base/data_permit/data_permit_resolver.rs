@@ -19,7 +19,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找数据权限列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_data_permit(
   search: Option<DataPermitSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +34,7 @@ pub async fn find_all(
   
   check_sort_data_permit(sort.as_deref())?;
   
-  let models = data_permit_service::find_all(
+  let models = data_permit_service::find_all_data_permit(
     search,
     page,
     sort,
@@ -46,7 +46,7 @@ pub async fn find_all(
 
 /// 根据条件查找数据权限总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_data_permit(
   search: Option<DataPermitSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +57,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = data_permit_service::find_count(
+  let num = data_permit_service::find_count_data_permit(
     search,
     options,
   ).await?;
@@ -67,7 +67,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个数据权限
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_data_permit(
   search: Option<DataPermitSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +81,7 @@ pub async fn find_one(
   
   check_sort_data_permit(sort.as_deref())?;
   
-  let model = data_permit_service::find_one(
+  let model = data_permit_service::find_one_data_permit(
     search,
     sort,
     options,
@@ -92,7 +92,7 @@ pub async fn find_one(
 
 /// 根据 id 查找数据权限
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_data_permit(
   id: DataPermitId,
   options: Option<Options>,
 ) -> Result<Option<DataPermitModel>> {
@@ -103,7 +103,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = data_permit_service::find_by_id(
+  let model = data_permit_service::find_by_id_data_permit(
     id,
     options,
   ).await?;
@@ -113,7 +113,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找数据权限
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_data_permit(
   ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<Vec<DataPermitModel>> {
@@ -124,7 +124,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = data_permit_service::find_by_ids(
+  let models = data_permit_service::find_by_ids_data_permit(
     ids,
     options,
   ).await?;
@@ -135,7 +135,7 @@ pub async fn find_by_ids(
 /// 创建数据权限
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_data_permit(
   inputs: Vec<DataPermitInput>,
   options: Option<Options>,
 ) -> Result<Vec<DataPermitId>> {
@@ -154,7 +154,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = data_permit_service::set_id_by_lbl(
+    let input = data_permit_service::set_id_by_lbl_data_permit(
       input,
     ).await?;
     inputs2.push(input);
@@ -166,7 +166,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = data_permit_service::creates(
+  let ids = data_permit_service::creates_data_permit(
     inputs,
     options,
   ).await?;
@@ -177,7 +177,7 @@ pub async fn creates(
 /// 数据权限根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_data_permit(
   id: DataPermitId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -189,7 +189,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = data_permit_service::update_tenant_by_id(
+  let num = data_permit_service::update_tenant_by_id_data_permit(
     id,
     tenant_id,
     options,
@@ -201,7 +201,7 @@ pub async fn update_tenant_by_id(
 /// 根据 id 修改数据权限
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_data_permit(
   id: DataPermitId,
   input: DataPermitInput,
   options: Option<Options>,
@@ -217,7 +217,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = data_permit_service::set_id_by_lbl(
+  let input = data_permit_service::set_id_by_lbl_data_permit(
     input,
   ).await?;
   
@@ -226,7 +226,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = data_permit_service::update_by_id(
+  let res = data_permit_service::update_by_id_data_permit(
     id,
     input,
     options,
@@ -238,7 +238,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除数据权限
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_data_permit(
   ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -254,7 +254,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = data_permit_service::delete_by_ids(
+  let num = data_permit_service::delete_by_ids_data_permit(
     ids,
     options,
   ).await?;
@@ -264,7 +264,7 @@ pub async fn delete_by_ids(
 
 /// 获取数据权限字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_data_permit(
   options: Option<Options>,
 ) -> Result<DataPermitFieldComment> {
   
@@ -274,7 +274,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = data_permit_service::get_field_comments(
+  let comments = data_permit_service::get_field_comments_data_permit(
     options,
   ).await?;
   
@@ -284,7 +284,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原数据权限
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_data_permit(
   ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -300,7 +300,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = data_permit_service::revert_by_ids(
+  let num = data_permit_service::revert_by_ids_data_permit(
     ids,
     options,
   ).await?;
@@ -311,7 +311,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除数据权限
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_data_permit(
   ids: Vec<DataPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -327,7 +327,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = data_permit_service::force_delete_by_ids(
+  let num = data_permit_service::force_delete_by_ids_data_permit(
     ids,
     options,
   ).await?;

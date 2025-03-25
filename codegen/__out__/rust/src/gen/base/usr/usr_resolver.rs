@@ -19,7 +19,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找用户列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_usr(
   search: Option<UsrSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -40,7 +40,7 @@ pub async fn find_all(
   
   check_sort_usr(sort.as_deref())?;
   
-  let models = usr_service::find_all(
+  let models = usr_service::find_all_usr(
     search,
     page,
     sort,
@@ -59,7 +59,7 @@ pub async fn find_all(
 
 /// 根据条件查找用户总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_usr(
   search: Option<UsrSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -76,7 +76,7 @@ pub async fn find_count(
     search
   });
   
-  let num = usr_service::find_count(
+  let num = usr_service::find_count_usr(
     search,
     options,
   ).await?;
@@ -86,7 +86,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个用户
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_usr(
   search: Option<UsrSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -106,7 +106,7 @@ pub async fn find_one(
   
   check_sort_usr(sort.as_deref())?;
   
-  let model = usr_service::find_one(
+  let model = usr_service::find_one_usr(
     search,
     sort,
     options,
@@ -124,7 +124,7 @@ pub async fn find_one(
 
 /// 根据 id 查找用户
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_usr(
   id: UsrId,
   options: Option<Options>,
 ) -> Result<Option<UsrModel>> {
@@ -135,7 +135,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = usr_service::find_by_id(
+  let model = usr_service::find_by_id_usr(
     id,
     options,
   ).await?;
@@ -152,7 +152,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找用户
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_usr(
   ids: Vec<UsrId>,
   options: Option<Options>,
 ) -> Result<Vec<UsrModel>> {
@@ -163,7 +163,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = usr_service::find_by_ids(
+  let models = usr_service::find_by_ids_usr(
     ids,
     options,
   ).await?;
@@ -181,7 +181,7 @@ pub async fn find_by_ids(
 /// 创建用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_usr(
   inputs: Vec<UsrInput>,
   options: Option<Options>,
 ) -> Result<Vec<UsrId>> {
@@ -200,7 +200,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = usr_service::set_id_by_lbl(
+    let input = usr_service::set_id_by_lbl_usr(
       input,
     ).await?;
     inputs2.push(input);
@@ -212,7 +212,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = usr_service::creates(
+  let ids = usr_service::creates_usr(
     inputs,
     options,
   ).await?;
@@ -223,7 +223,7 @@ pub async fn creates(
 /// 用户根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_usr(
   id: UsrId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -235,7 +235,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = usr_service::update_tenant_by_id(
+  let num = usr_service::update_tenant_by_id_usr(
     id,
     tenant_id,
     options,
@@ -247,7 +247,7 @@ pub async fn update_tenant_by_id(
 /// 根据 id 修改用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_usr(
   id: UsrId,
   input: UsrInput,
   options: Option<Options>,
@@ -263,7 +263,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = usr_service::set_id_by_lbl(
+  let input = usr_service::set_id_by_lbl_usr(
     input,
   ).await?;
   
@@ -272,7 +272,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = usr_service::update_by_id(
+  let res = usr_service::update_by_id_usr(
     id,
     input,
     options,
@@ -284,7 +284,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_usr(
   ids: Vec<UsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -300,7 +300,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = usr_service::delete_by_ids(
+  let num = usr_service::delete_by_ids_usr(
     ids,
     options,
   ).await?;
@@ -312,7 +312,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_usr(
   id: UsrId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -323,7 +323,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = usr_service::get_is_enabled_by_id(
+  let is_enabled = usr_service::get_is_enabled_by_id_usr(
     id,
     options,
   ).await?;
@@ -334,7 +334,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_usr(
   ids: Vec<UsrId>,
   is_enabled: u8,
   options: Option<Options>,
@@ -351,7 +351,7 @@ pub async fn enable_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = usr_service::enable_by_ids(
+  let num = usr_service::enable_by_ids_usr(
     ids,
     is_enabled,
     options,
@@ -365,7 +365,7 @@ pub async fn enable_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_usr(
   id: UsrId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -376,7 +376,7 @@ pub async fn get_is_locked_by_id(
     function_name = function_name!(),
   );
   
-  let is_locked = usr_service::get_is_locked_by_id(
+  let is_locked = usr_service::get_is_locked_by_id_usr(
     id,
     options,
   ).await?;
@@ -387,7 +387,7 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或者解锁用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_usr(
   ids: Vec<UsrId>,
   is_locked: u8,
   options: Option<Options>,
@@ -404,7 +404,7 @@ pub async fn lock_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = usr_service::lock_by_ids(
+  let num = usr_service::lock_by_ids_usr(
     ids,
     is_locked,
     options,
@@ -415,7 +415,7 @@ pub async fn lock_by_ids(
 
 /// 获取用户字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_usr(
   options: Option<Options>,
 ) -> Result<UsrFieldComment> {
   
@@ -425,7 +425,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = usr_service::get_field_comments(
+  let comments = usr_service::get_field_comments_usr(
     options,
   ).await?;
   
@@ -435,7 +435,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_usr(
   ids: Vec<UsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -451,7 +451,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = usr_service::revert_by_ids(
+  let num = usr_service::revert_by_ids_usr(
     ids,
     options,
   ).await?;
@@ -462,7 +462,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除用户
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_usr(
   ids: Vec<UsrId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -478,7 +478,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = usr_service::force_delete_by_ids(
+  let num = usr_service::force_delete_by_ids_usr(
     ids,
     options,
   ).await?;
@@ -488,7 +488,7 @@ pub async fn force_delete_by_ids(
 
 /// 查找 用户 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_usr(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -498,7 +498,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = usr_service::find_last_order_by(
+  let res = usr_service::find_last_order_by_usr(
     options,
   ).await?;
   

@@ -57,7 +57,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 use crate::r#gen::base::org::org_model::OrgId;
 
-use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -591,10 +591,10 @@ async fn get_from_query(
   Ok(from_query)
 }
 
-// MARK: find_all
+// MARK: find_all_dept
 /// 根据搜索条件和分页查找部门列表
 #[allow(unused_mut)]
-pub async fn find_all(
+pub async fn find_all_dept(
   search: Option<DeptSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -602,7 +602,7 @@ pub async fn find_all(
 ) -> Result<Vec<DeptModel>> {
   
   let table = "base_dept";
-  let method = "find_all";
+  let method = "find_all_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -836,15 +836,15 @@ pub async fn find_all(
   Ok(res)
 }
 
-// MARK: find_count
+// MARK: find_count_dept
 /// 根据条件查找部门总数
-pub async fn find_count(
+pub async fn find_count_dept(
   search: Option<DeptSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dept";
-  let method = "find_count";
+  let method = "find_count_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1019,9 +1019,9 @@ pub async fn find_count(
   Ok(total)
 }
 
-// MARK: get_field_comments
+// MARK: get_field_comments_dept
 /// 获取部门字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_dept(
   _options: Option<Options>,
 ) -> Result<DeptFieldComment> {
   
@@ -1052,16 +1052,16 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-// MARK: find_one
+// MARK: find_one_dept
 /// 根据条件查找第一个部门
-pub async fn find_one(
+pub async fn find_one_dept(
   search: Option<DeptSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<DeptModel>> {
   
   let table = "base_dept";
-  let method = "find_one";
+  let method = "find_one_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1097,7 +1097,7 @@ pub async fn find_one(
     pg_size: 1.into(),
   }.into();
   
-  let res = find_all(
+  let res = find_all_dept(
     search,
     page,
     sort,
@@ -1109,15 +1109,15 @@ pub async fn find_one(
   Ok(model)
 }
 
-// MARK: find_by_id
+// MARK: find_by_id_dept
 /// 根据 id 查找部门
-pub async fn find_by_id(
+pub async fn find_by_id_dept(
   id: DeptId,
   options: Option<Options>,
 ) -> Result<Option<DeptModel>> {
   
   let table = "base_dept";
-  let method = "find_by_id";
+  let method = "find_by_id_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1146,25 +1146,25 @@ pub async fn find_by_id(
     ..Default::default()
   }.into();
   
-  let res = find_one(
+  let dept_model = find_one_dept(
     search,
     None,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(dept_model)
 }
 
-// MARK: find_by_ids
+// MARK: find_by_ids_dept
 /// 根据 ids 查找部门
 #[allow(dead_code)]
-pub async fn find_by_ids(
+pub async fn find_by_ids_dept(
   ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
   let table = "base_dept";
-  let method = "find_by_ids";
+  let method = "find_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1199,7 +1199,7 @@ pub async fn find_by_ids(
     ..Default::default()
   }.into();
   
-  let models = find_all(
+  let models = find_all_dept(
     search,
     None,
     None,
@@ -1228,16 +1228,16 @@ pub async fn find_by_ids(
   Ok(models)
 }
 
-// MARK: exists
+// MARK: exists_dept
 /// 根据搜索条件判断部门是否存在
 #[allow(dead_code)]
-pub async fn exists(
+pub async fn exists_dept(
   search: Option<DeptSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "base_dept";
-  let method = "exists";
+  let method = "exists_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1259,7 +1259,7 @@ pub async fn exists(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count(
+  let total = find_count_dept(
     search,
     options,
   ).await?;
@@ -1267,16 +1267,16 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-// MARK: exists_by_id
+// MARK: exists_by_id_dept
 /// 根据 id 判断部门是否存在
 #[allow(dead_code)]
-pub async fn exists_by_id(
+pub async fn exists_by_id_dept(
   id: DeptId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "base_dept";
-  let method = "exists_by_id";
+  let method = "exists_by_id_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1301,7 +1301,7 @@ pub async fn exists_by_id(
     ..Default::default()
   }.into();
   
-  let res = exists(
+  let res = exists_dept(
     search,
     options,
   ).await?;
@@ -1309,17 +1309,17 @@ pub async fn exists_by_id(
   Ok(res)
 }
 
-// MARK: find_by_unique
+// MARK: find_by_unique_dept
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique(
+pub async fn find_by_unique_dept(
   search: DeptSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
   let table = "base_dept";
-  let method = "find_by_unique";
+  let method = "find_by_unique_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1343,7 +1343,7 @@ pub async fn find_by_unique(
   let options = Some(options);
   
   if let Some(id) = search.id {
-    let model = find_by_id(
+    let model = find_by_id_dept(
       id,
       options.clone(),
     ).await?;
@@ -1366,7 +1366,7 @@ pub async fn find_by_unique(
       ..Default::default()
     };
     
-    find_all(
+    find_all_dept(
       search.into(),
       None,
       sort.clone(),
@@ -1397,17 +1397,17 @@ pub fn equals_by_unique(
   false
 }
 
-// MARK: check_by_unique
+// MARK: check_by_unique_dept
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique(
+pub async fn check_by_unique_dept(
   input: DeptInput,
   model: DeptModel,
   options: Option<Options>,
 ) -> Result<Option<DeptId>> {
   
   let table = "base_dept";
-  let method = "check_by_unique";
+  let method = "check_by_unique_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1445,7 +1445,7 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let id = update_by_id(
+    let id = update_by_id_dept(
       model.id.clone(),
       input,
       options,
@@ -1459,10 +1459,10 @@ pub async fn check_by_unique(
   Ok(None)
 }
 
-// MARK: set_id_by_lbl
+// MARK: set_id_by_lbl_dept
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables, dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_dept(
   input: DeptInput,
 ) -> Result<DeptInput> {
   
@@ -1512,7 +1512,7 @@ pub async fn set_id_by_lbl(
     input.parent_id_lbl = input.parent_id_lbl.map(|item| 
       item.trim().to_owned()
     );
-    let model = find_one(
+    let model = find_one_dept(
       DeptSearch {
         lbl: input.parent_id_lbl.clone(),
         ..Default::default()
@@ -1527,7 +1527,7 @@ pub async fn set_id_by_lbl(
     (input.parent_id_lbl.is_none() || input.parent_id_lbl.as_ref().unwrap().is_empty())
     && input.parent_id.is_some()
   {
-    let dept_model = find_one(
+    let dept_model = find_one_dept(
       DeptSearch {
         id: input.parent_id.clone(),
         ..Default::default()
@@ -1556,7 +1556,7 @@ pub async fn set_id_by_lbl(
     });
     let mut models = vec![];
     for lbl in input.usr_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::r#gen::base::usr::usr_dao::find_one(
+      let model = crate::r#gen::base::usr::usr_dao::find_one_usr(
         crate::r#gen::base::usr::usr_model::UsrSearch {
           lbl: lbl.into(),
           ..Default::default()
@@ -1632,7 +1632,7 @@ pub async fn set_id_by_lbl(
     input.org_id_lbl = input.org_id_lbl.map(|item| 
       item.trim().to_owned()
     );
-    let model = crate::r#gen::base::org::org_dao::find_one(
+    let model = crate::r#gen::base::org::org_dao::find_one_org(
       crate::r#gen::base::org::org_model::OrgSearch {
         lbl: input.org_id_lbl.clone(),
         ..Default::default()
@@ -1647,7 +1647,7 @@ pub async fn set_id_by_lbl(
     (input.org_id_lbl.is_none() || input.org_id_lbl.as_ref().unwrap().is_empty())
     && input.org_id.is_some()
   {
-    let org_model = crate::r#gen::base::org::org_dao::find_one(
+    let org_model = crate::r#gen::base::org::org_dao::find_one_org(
       crate::r#gen::base::org::org_model::OrgSearch {
         id: input.org_id.clone(),
         ..Default::default()
@@ -1663,16 +1663,16 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-// MARK: creates_return
+// MARK: creates_return_dept
 /// 批量创建部门并返回
 #[allow(dead_code)]
-pub async fn creates_return(
+pub async fn creates_return_dept(
   inputs: Vec<DeptInput>,
   options: Option<Options>,
 ) -> Result<Vec<DeptModel>> {
   
   let table = "base_dept";
-  let method = "creates_return";
+  let method = "creates_return_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1693,23 +1693,23 @@ pub async fn creates_return(
     options.clone(),
   ).await?;
   
-  let models = find_by_ids(
+  let models_dept = find_by_ids_dept(
     ids,
     options,
   ).await?;
   
-  Ok(models)
+  Ok(models_dept)
 }
 
-// MARK: creates
+// MARK: creates_dept
 /// 批量创建部门
-pub async fn creates(
+pub async fn creates_dept(
   inputs: Vec<DeptInput>,
   options: Option<Options>,
 ) -> Result<Vec<DeptId>> {
   
   let table = "base_dept";
-  let method = "creates";
+  let method = "creates_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1759,7 +1759,7 @@ async fn _creates(
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
     
-    let old_models = find_by_unique(
+    let old_models = find_by_unique_dept(
       input.clone().into(),
       None,
       options.clone(),
@@ -1772,7 +1772,7 @@ async fn _creates(
         let options = Options::from(options.clone())
           .set_unique_type(unique_type);
         
-        id = check_by_unique(
+        id = check_by_unique_dept(
           input.clone(),
           old_model,
           Some(options),
@@ -2067,43 +2067,52 @@ async fn _creates(
   Ok(ids2)
 }
 
-// MARK: create_return
+// MARK: create_return_dept
 /// 创建部门并返回
 #[allow(dead_code)]
-pub async fn create_return(
+pub async fn create_return_dept(
   #[allow(unused_mut)]
   mut input: DeptInput,
   options: Option<Options>,
 ) -> Result<DeptModel> {
   
-  let table = "base_dept";
+  let id = create_dept(
+    input.clone(),
+    options.clone(),
+  ).await?;
   
-  let id = create(input.clone(), options.clone()).await?;
-  
-  let model = find_by_id(
+  let model_dept = find_by_id_dept(
     id,
     options,
   ).await?;
   
-  if model.is_none() {
-    return Err(eyre!("create_return: Create failed in dao: {table}"));
+  if model_dept.is_none() {
+    let err_msg = "create_return_dept: model_dept.is_none()";
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
-  let model = model.unwrap();
+  let model_dept = model_dept.unwrap();
   
-  Ok(model)
+  Ok(model_dept)
 }
 
-// MARK: create
+// MARK: create_dept
 /// 创建部门
 #[allow(dead_code)]
-pub async fn create(
+pub async fn create_dept(
   #[allow(unused_mut)]
   mut input: DeptInput,
   options: Option<Options>,
 ) -> Result<DeptId> {
   
   let table = "base_dept";
-  let method = "create";
+  let method = "create_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2132,15 +2141,15 @@ pub async fn create(
   Ok(id)
 }
 
-// MARK: update_tenant_by_id
+// MARK: update_tenant_by_id_dept
 /// 部门根据id修改租户id
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_dept(
   id: DeptId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "base_dept";
-  let method = "update_tenant_by_id";
+  let method = "update_tenant_by_id_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2178,18 +2187,18 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-// MARK: update_by_id
+// MARK: update_by_id_dept
 /// 根据 id 修改部门
 #[allow(unused_mut)]
 #[allow(unused_variables)]
-pub async fn update_by_id(
+pub async fn update_by_id_dept(
   id: DeptId,
   mut input: DeptInput,
   options: Option<Options>,
 ) -> Result<DeptId> {
   
   let table = "base_dept";
-  let method = "update_by_id";
+  let method = "update_by_id_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2213,7 +2222,7 @@ pub async fn update_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_model = find_by_id(
+  let old_model = find_by_id_dept(
     id.clone(),
     options.clone(),
   ).await?;
@@ -2238,7 +2247,7 @@ pub async fn update_by_id(
     let mut input = input.clone();
     input.id = None;
     
-    let models = find_by_unique(
+    let models = find_by_unique_dept(
       input.into(),
       None,
       options.clone(),
@@ -2470,10 +2479,10 @@ fn get_cache_tables() -> Vec<&'static str> {
   ]
 }
 
-// MARK: del_cache
+// MARK: del_cache_dept
 /// 清空缓存
 #[allow(dead_code)]
-pub async fn del_cache() -> Result<()> {
+pub async fn del_cache_dept() -> Result<()> {
   let cache_key1s = get_cache_tables();
   del_caches(
     cache_key1s.as_slice(),
@@ -2481,16 +2490,16 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-// MARK: delete_by_ids
+// MARK: delete_by_ids_dept
 /// 根据 ids 删除部门
 #[allow(unused_variables)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_dept(
   ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dept";
-  let method = "delete_by_ids";
+  let method = "delete_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2524,7 +2533,7 @@ pub async fn delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_by_id(
+    let old_model = find_by_id_dept(
       id.clone(),
       options.clone(),
     ).await?;
@@ -2646,10 +2655,10 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-// MARK: get_is_enabled_by_id
+// MARK: get_is_enabled_by_id_dept
 /// 根据 id 查找部门是否已启用
 /// 记录不存在则返回 false
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_dept(
   id: DeptId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -2658,7 +2667,7 @@ pub async fn get_is_enabled_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let model = find_by_id(
+  let model = find_by_id_dept(
     id,
     options,
   ).await?;
@@ -2674,16 +2683,16 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-// MARK: enable_by_ids
+// MARK: enable_by_ids_dept
 /// 根据 ids 启用或者禁用部门
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_dept(
   ids: Vec<DeptId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dept";
-  let method = "enable_by_ids";
+  let method = "enable_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2732,11 +2741,11 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-// MARK: get_is_locked_by_id
+// MARK: get_is_locked_by_id_dept
 /// 根据 id 查找部门是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_dept(
   id: DeptId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -2745,7 +2754,7 @@ pub async fn get_is_locked_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let model = find_by_id(
+  let model = find_by_id_dept(
     id,
     options,
   ).await?;
@@ -2761,16 +2770,16 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
-// MARK: lock_by_ids
+// MARK: lock_by_ids_dept
 /// 根据 ids 锁定或者解锁部门
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_dept(
   ids: Vec<DeptId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dept";
-  let method = "lock_by_ids";
+  let method = "lock_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2818,15 +2827,15 @@ pub async fn lock_by_ids(
   Ok(num)
 }
 
-// MARK: revert_by_ids
+// MARK: revert_by_ids_dept
 /// 根据 ids 还原部门
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_dept(
   ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dept";
-  let method = "revert_by_ids";
+  let method = "revert_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2861,7 +2870,7 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let mut old_model = find_one(
+    let mut old_model = find_one_dept(
       DeptSearch {
         id: Some(id.clone()),
         is_deleted: Some(1),
@@ -2872,7 +2881,7 @@ pub async fn revert_by_ids(
     ).await?;
     
     if old_model.is_none() {
-      old_model = find_by_id(
+      old_model = find_by_id_dept(
         id.clone(),
         options.clone(),
       ).await?;
@@ -2887,7 +2896,7 @@ pub async fn revert_by_ids(
       let mut input: DeptInput = old_model.clone().into();
       input.id = None;
       
-      let models = find_by_unique(
+      let models = find_by_unique_dept(
         input.into(),
         None,
         options.clone(),
@@ -2944,16 +2953,16 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-// MARK: force_delete_by_ids
+// MARK: force_delete_by_ids_dept
 /// 根据 ids 彻底删除部门
 #[allow(unused_variables)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_dept(
   ids: Vec<DeptId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dept";
-  let method = "force_delete_by_ids";
+  let method = "force_delete_by_ids_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2982,7 +2991,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all(
+    let old_model = find_all_dept(
       DeptSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -3065,14 +3074,14 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-// MARK: find_last_order_by
+// MARK: find_last_order_by_dept
 /// 查找 部门 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_dept(
   options: Option<Options>,
 ) -> Result<u32> {
   
   let table = "base_dept";
-  let method = "find_last_order_by";
+  let method = "find_last_order_by_dept";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -3128,10 +3137,10 @@ pub async fn find_last_order_by(
   Ok(order_by)
 }
 
-// MARK: validate_is_enabled
+// MARK: validate_is_enabled_dept
 /// 校验部门是否启用
 #[allow(dead_code)]
-pub async fn validate_is_enabled(
+pub async fn validate_is_enabled_dept(
   model: &DeptModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
@@ -3141,10 +3150,10 @@ pub async fn validate_is_enabled(
   Ok(())
 }
 
-// MARK: validate_option
+// MARK: validate_option_dept
 /// 校验部门是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_dept(
   model: Option<DeptModel>,
 ) -> Result<DeptModel> {
   if model.is_none() {

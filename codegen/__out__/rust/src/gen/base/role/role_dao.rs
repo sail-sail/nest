@@ -60,7 +60,7 @@ use crate::r#gen::base::data_permit::data_permit_model::DataPermitId;
 use crate::r#gen::base::field_permit::field_permit_model::FieldPermitId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -638,10 +638,10 @@ async fn get_from_query(
   Ok(from_query)
 }
 
-// MARK: find_all
+// MARK: find_all_role
 /// 根据搜索条件和分页查找角色列表
 #[allow(unused_mut)]
-pub async fn find_all(
+pub async fn find_all_role(
   search: Option<RoleSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -649,7 +649,7 @@ pub async fn find_all(
 ) -> Result<Vec<RoleModel>> {
   
   let table = "base_role";
-  let method = "find_all";
+  let method = "find_all_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -903,15 +903,15 @@ pub async fn find_all(
   Ok(res)
 }
 
-// MARK: find_count
+// MARK: find_count_role
 /// 根据条件查找角色总数
-pub async fn find_count(
+pub async fn find_count_role(
   search: Option<RoleSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_role";
-  let method = "find_count";
+  let method = "find_count_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1102,9 +1102,9 @@ pub async fn find_count(
   Ok(total)
 }
 
-// MARK: get_field_comments
+// MARK: get_field_comments_role
 /// 获取角色字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_role(
   _options: Option<Options>,
 ) -> Result<RoleFieldComment> {
   
@@ -1139,16 +1139,16 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-// MARK: find_one
+// MARK: find_one_role
 /// 根据条件查找第一个角色
-pub async fn find_one(
+pub async fn find_one_role(
   search: Option<RoleSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
   
   let table = "base_role";
-  let method = "find_one";
+  let method = "find_one_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1184,7 +1184,7 @@ pub async fn find_one(
     pg_size: 1.into(),
   }.into();
   
-  let res = find_all(
+  let res = find_all_role(
     search,
     page,
     sort,
@@ -1196,15 +1196,15 @@ pub async fn find_one(
   Ok(model)
 }
 
-// MARK: find_by_id
+// MARK: find_by_id_role
 /// 根据 id 查找角色
-pub async fn find_by_id(
+pub async fn find_by_id_role(
   id: RoleId,
   options: Option<Options>,
 ) -> Result<Option<RoleModel>> {
   
   let table = "base_role";
-  let method = "find_by_id";
+  let method = "find_by_id_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1233,25 +1233,25 @@ pub async fn find_by_id(
     ..Default::default()
   }.into();
   
-  let res = find_one(
+  let role_model = find_one_role(
     search,
     None,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(role_model)
 }
 
-// MARK: find_by_ids
+// MARK: find_by_ids_role
 /// 根据 ids 查找角色
 #[allow(dead_code)]
-pub async fn find_by_ids(
+pub async fn find_by_ids_role(
   ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
   let table = "base_role";
-  let method = "find_by_ids";
+  let method = "find_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1286,7 +1286,7 @@ pub async fn find_by_ids(
     ..Default::default()
   }.into();
   
-  let models = find_all(
+  let models = find_all_role(
     search,
     None,
     None,
@@ -1315,16 +1315,16 @@ pub async fn find_by_ids(
   Ok(models)
 }
 
-// MARK: exists
+// MARK: exists_role
 /// 根据搜索条件判断角色是否存在
 #[allow(dead_code)]
-pub async fn exists(
+pub async fn exists_role(
   search: Option<RoleSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "base_role";
-  let method = "exists";
+  let method = "exists_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1346,7 +1346,7 @@ pub async fn exists(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count(
+  let total = find_count_role(
     search,
     options,
   ).await?;
@@ -1354,16 +1354,16 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-// MARK: exists_by_id
+// MARK: exists_by_id_role
 /// 根据 id 判断角色是否存在
 #[allow(dead_code)]
-pub async fn exists_by_id(
+pub async fn exists_by_id_role(
   id: RoleId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "base_role";
-  let method = "exists_by_id";
+  let method = "exists_by_id_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1388,7 +1388,7 @@ pub async fn exists_by_id(
     ..Default::default()
   }.into();
   
-  let res = exists(
+  let res = exists_role(
     search,
     options,
   ).await?;
@@ -1396,17 +1396,17 @@ pub async fn exists_by_id(
   Ok(res)
 }
 
-// MARK: find_by_unique
+// MARK: find_by_unique_role
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique(
+pub async fn find_by_unique_role(
   search: RoleSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
   let table = "base_role";
-  let method = "find_by_unique";
+  let method = "find_by_unique_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1430,7 +1430,7 @@ pub async fn find_by_unique(
   let options = Some(options);
   
   if let Some(id) = search.id {
-    let model = find_by_id(
+    let model = find_by_id_role(
       id,
       options.clone(),
     ).await?;
@@ -1451,7 +1451,7 @@ pub async fn find_by_unique(
       ..Default::default()
     };
     
-    find_all(
+    find_all_role(
       search.into(),
       None,
       sort.clone(),
@@ -1472,7 +1472,7 @@ pub async fn find_by_unique(
       ..Default::default()
     };
     
-    find_all(
+    find_all_role(
       search.into(),
       None,
       sort.clone(),
@@ -1508,17 +1508,17 @@ pub fn equals_by_unique(
   false
 }
 
-// MARK: check_by_unique
+// MARK: check_by_unique_role
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique(
+pub async fn check_by_unique_role(
   input: RoleInput,
   model: RoleModel,
   options: Option<Options>,
 ) -> Result<Option<RoleId>> {
   
   let table = "base_role";
-  let method = "check_by_unique";
+  let method = "check_by_unique_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1556,7 +1556,7 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let id = update_by_id(
+    let id = update_by_id_role(
       model.id.clone(),
       input,
       options,
@@ -1570,10 +1570,10 @@ pub async fn check_by_unique(
   Ok(None)
 }
 
-// MARK: set_id_by_lbl
+// MARK: set_id_by_lbl_role
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables, dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_role(
   input: RoleInput,
 ) -> Result<RoleInput> {
   
@@ -1631,7 +1631,7 @@ pub async fn set_id_by_lbl(
     });
     let mut models = vec![];
     for lbl in input.menu_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::r#gen::base::menu::menu_dao::find_one(
+      let model = crate::r#gen::base::menu::menu_dao::find_one_menu(
         crate::r#gen::base::menu::menu_model::MenuSearch {
           lbl: lbl.into(),
           ..Default::default()
@@ -1665,7 +1665,7 @@ pub async fn set_id_by_lbl(
     });
     let mut models = vec![];
     for lbl in input.permit_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::r#gen::base::permit::permit_dao::find_one(
+      let model = crate::r#gen::base::permit::permit_dao::find_one_permit(
         crate::r#gen::base::permit::permit_model::PermitSearch {
           lbl: lbl.into(),
           ..Default::default()
@@ -1699,7 +1699,7 @@ pub async fn set_id_by_lbl(
     });
     let mut models = vec![];
     for lbl in input.field_permit_ids_lbl.clone().unwrap_or_default() {
-      let model = crate::r#gen::base::field_permit::field_permit_dao::find_one(
+      let model = crate::r#gen::base::field_permit::field_permit_dao::find_one_field_permit(
         crate::r#gen::base::field_permit::field_permit_model::FieldPermitSearch {
           lbl: lbl.into(),
           ..Default::default()
@@ -1770,16 +1770,16 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-// MARK: creates_return
+// MARK: creates_return_role
 /// 批量创建角色并返回
 #[allow(dead_code)]
-pub async fn creates_return(
+pub async fn creates_return_role(
   inputs: Vec<RoleInput>,
   options: Option<Options>,
 ) -> Result<Vec<RoleModel>> {
   
   let table = "base_role";
-  let method = "creates_return";
+  let method = "creates_return_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1800,23 +1800,23 @@ pub async fn creates_return(
     options.clone(),
   ).await?;
   
-  let models = find_by_ids(
+  let models_role = find_by_ids_role(
     ids,
     options,
   ).await?;
   
-  Ok(models)
+  Ok(models_role)
 }
 
-// MARK: creates
+// MARK: creates_role
 /// 批量创建角色
-pub async fn creates(
+pub async fn creates_role(
   inputs: Vec<RoleInput>,
   options: Option<Options>,
 ) -> Result<Vec<RoleId>> {
   
   let table = "base_role";
-  let method = "creates";
+  let method = "creates_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1866,7 +1866,7 @@ async fn _creates(
     let (
       code_seq,
       code,
-    ) = find_auto_code(options.clone()).await?;
+    ) = find_auto_code_role(options.clone()).await?;
     input.code_seq = Some(code_seq);
     input.code = Some(code);
   }
@@ -1888,7 +1888,7 @@ async fn _creates(
     }
     let input = input;
     
-    let old_models = find_by_unique(
+    let old_models = find_by_unique_role(
       input.clone().into(),
       None,
       options.clone(),
@@ -1901,7 +1901,7 @@ async fn _creates(
         let options = Options::from(options.clone())
           .set_unique_type(unique_type);
         
-        id = check_by_unique(
+        id = check_by_unique_role(
           input.clone(),
           old_model,
           Some(options),
@@ -2260,14 +2260,14 @@ async fn _creates(
   Ok(ids2)
 }
 
-// MARK: findAutoCode
+// MARK: find_auto_code_role
 /// 获得 角色 自动编码
-pub async fn find_auto_code(
+pub async fn find_auto_code_role(
   options: Option<Options>,
 ) -> Result<(u32, String)> {
   
   let table = "base_role";
-  let method = "find_auto_code";
+  let method = "find_auto_code_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2282,7 +2282,7 @@ pub async fn find_auto_code(
     );
   }
   
-  let model = find_one(
+  let model = find_one_role(
     None,
     Some(vec![
       SortInput {
@@ -2302,43 +2302,52 @@ pub async fn find_auto_code(
   Ok((code_seq, code))
 }
 
-// MARK: create_return
+// MARK: create_return_role
 /// 创建角色并返回
 #[allow(dead_code)]
-pub async fn create_return(
+pub async fn create_return_role(
   #[allow(unused_mut)]
   mut input: RoleInput,
   options: Option<Options>,
 ) -> Result<RoleModel> {
   
-  let table = "base_role";
+  let id = create_role(
+    input.clone(),
+    options.clone(),
+  ).await?;
   
-  let id = create(input.clone(), options.clone()).await?;
-  
-  let model = find_by_id(
+  let model_role = find_by_id_role(
     id,
     options,
   ).await?;
   
-  if model.is_none() {
-    return Err(eyre!("create_return: Create failed in dao: {table}"));
+  if model_role.is_none() {
+    let err_msg = "create_return_role: model_role.is_none()";
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
-  let model = model.unwrap();
+  let model_role = model_role.unwrap();
   
-  Ok(model)
+  Ok(model_role)
 }
 
-// MARK: create
+// MARK: create_role
 /// 创建角色
 #[allow(dead_code)]
-pub async fn create(
+pub async fn create_role(
   #[allow(unused_mut)]
   mut input: RoleInput,
   options: Option<Options>,
 ) -> Result<RoleId> {
   
   let table = "base_role";
-  let method = "create";
+  let method = "create_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2367,15 +2376,15 @@ pub async fn create(
   Ok(id)
 }
 
-// MARK: update_tenant_by_id
+// MARK: update_tenant_by_id_role
 /// 角色根据id修改租户id
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_role(
   id: RoleId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "base_role";
-  let method = "update_tenant_by_id";
+  let method = "update_tenant_by_id_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2413,18 +2422,18 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-// MARK: update_by_id
+// MARK: update_by_id_role
 /// 根据 id 修改角色
 #[allow(unused_mut)]
 #[allow(unused_variables)]
-pub async fn update_by_id(
+pub async fn update_by_id_role(
   id: RoleId,
   mut input: RoleInput,
   options: Option<Options>,
 ) -> Result<RoleId> {
   
   let table = "base_role";
-  let method = "update_by_id";
+  let method = "update_by_id_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2454,7 +2463,7 @@ pub async fn update_by_id(
     ).await?.into();
   }
   
-  let old_model = find_by_id(
+  let old_model = find_by_id_role(
     id.clone(),
     options.clone(),
   ).await?;
@@ -2479,7 +2488,7 @@ pub async fn update_by_id(
     let mut input = input.clone();
     input.id = None;
     
-    let models = find_by_unique(
+    let models = find_by_unique_role(
       input.into(),
       None,
       options.clone(),
@@ -2789,10 +2798,10 @@ fn get_cache_tables() -> Vec<&'static str> {
   ]
 }
 
-// MARK: del_cache
+// MARK: del_cache_role
 /// 清空缓存
 #[allow(dead_code)]
-pub async fn del_cache() -> Result<()> {
+pub async fn del_cache_role() -> Result<()> {
   let cache_key1s = get_cache_tables();
   del_caches(
     cache_key1s.as_slice(),
@@ -2800,16 +2809,16 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-// MARK: delete_by_ids
+// MARK: delete_by_ids_role
 /// 根据 ids 删除角色
 #[allow(unused_variables)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_role(
   ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_role";
-  let method = "delete_by_ids";
+  let method = "delete_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2847,7 +2856,7 @@ pub async fn delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_by_id(
+    let old_model = find_by_id_role(
       id.clone(),
       options.clone(),
     ).await?;
@@ -3054,10 +3063,10 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-// MARK: get_is_enabled_by_id
+// MARK: get_is_enabled_by_id_role
 /// 根据 id 查找角色是否已启用
 /// 记录不存在则返回 false
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_role(
   id: RoleId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -3066,7 +3075,7 @@ pub async fn get_is_enabled_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let model = find_by_id(
+  let model = find_by_id_role(
     id,
     options,
   ).await?;
@@ -3082,16 +3091,16 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-// MARK: enable_by_ids
+// MARK: enable_by_ids_role
 /// 根据 ids 启用或者禁用角色
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_role(
   ids: Vec<RoleId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_role";
-  let method = "enable_by_ids";
+  let method = "enable_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -3148,11 +3157,11 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-// MARK: get_is_locked_by_id
+// MARK: get_is_locked_by_id_role
 /// 根据 id 查找角色是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_role(
   id: RoleId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -3161,7 +3170,7 @@ pub async fn get_is_locked_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let model = find_by_id(
+  let model = find_by_id_role(
     id,
     options,
   ).await?;
@@ -3177,16 +3186,16 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
-// MARK: lock_by_ids
+// MARK: lock_by_ids_role
 /// 根据 ids 锁定或者解锁角色
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_role(
   ids: Vec<RoleId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_role";
-  let method = "lock_by_ids";
+  let method = "lock_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -3242,15 +3251,15 @@ pub async fn lock_by_ids(
   Ok(num)
 }
 
-// MARK: revert_by_ids
+// MARK: revert_by_ids_role
 /// 根据 ids 还原角色
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_role(
   ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_role";
-  let method = "revert_by_ids";
+  let method = "revert_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -3289,7 +3298,7 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let mut old_model = find_one(
+    let mut old_model = find_one_role(
       RoleSearch {
         id: Some(id.clone()),
         is_deleted: Some(1),
@@ -3300,7 +3309,7 @@ pub async fn revert_by_ids(
     ).await?;
     
     if old_model.is_none() {
-      old_model = find_by_id(
+      old_model = find_by_id_role(
         id.clone(),
         options.clone(),
       ).await?;
@@ -3315,7 +3324,7 @@ pub async fn revert_by_ids(
       let mut input: RoleInput = old_model.clone().into();
       input.id = None;
       
-      let models = find_by_unique(
+      let models = find_by_unique_role(
         input.into(),
         None,
         options.clone(),
@@ -3457,16 +3466,16 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-// MARK: force_delete_by_ids
+// MARK: force_delete_by_ids_role
 /// 根据 ids 彻底删除角色
 #[allow(unused_variables)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_role(
   ids: Vec<RoleId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_role";
-  let method = "force_delete_by_ids";
+  let method = "force_delete_by_ids_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -3495,7 +3504,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all(
+    let old_model = find_all_role(
       RoleSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -3652,14 +3661,14 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-// MARK: find_last_order_by
+// MARK: find_last_order_by_role
 /// 查找 角色 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_role(
   options: Option<Options>,
 ) -> Result<u32> {
   
   let table = "base_role";
-  let method = "find_last_order_by";
+  let method = "find_last_order_by_role";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -3715,10 +3724,10 @@ pub async fn find_last_order_by(
   Ok(order_by)
 }
 
-// MARK: validate_is_enabled
+// MARK: validate_is_enabled_role
 /// 校验角色是否启用
 #[allow(dead_code)]
-pub async fn validate_is_enabled(
+pub async fn validate_is_enabled_role(
   model: &RoleModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
@@ -3728,10 +3737,10 @@ pub async fn validate_is_enabled(
   Ok(())
 }
 
-// MARK: validate_option
+// MARK: validate_option_role
 /// 校验角色是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_role(
   model: Option<RoleModel>,
 ) -> Result<RoleModel> {
   if model.is_none() {
