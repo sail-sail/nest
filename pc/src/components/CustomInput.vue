@@ -54,7 +54,7 @@
     <div
       un-flex="~ [1_0_0]"
       un-overflow-hidden
-      un-p="x-2.5 y-0.875"
+      un-p="x-2.5"
       un-box-border
       un-w="full"
       un-min="h-7.5"
@@ -70,21 +70,25 @@
       }"
       v-bind="$attrs"
     >
-      <template
+      <span
         v-if="!(modelValue ?? '')"
+        un-relative
+        un-top="-1px"
       >
         {{ props.readonlyPlaceholder ?? "" }}
-      </template>
-      <template
+      </span>
+      <span
         v-else
+        un-relative
+        un-top="-1px"
       >
         {{ modelValue ?? "" }}
-      </template>
+      </span>
     </div>
     <div
       un-flex="~"
       un-overflow-hidden
-      un-p="x-2.5 y-0.875"
+      un-p="x-2.5"
       un-box-border
       un-min="h-7.5"
       un-items="center"

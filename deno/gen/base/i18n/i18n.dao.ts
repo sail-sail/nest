@@ -60,15 +60,15 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneLang,
+  findOneLang,
 } from "/gen/base/lang/lang.dao.ts";
 
 import {
-  findOne as findOneMenu,
+  findOneMenu,
 } from "/gen/base/menu/menu.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -189,9 +189,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountI18n
 /** 根据条件查找国际化总数 */
-export async function findCount(
+export async function findCountI18n(
   search?: Readonly<I18nSearch>,
   options?: {
     is_debug?: boolean;
@@ -200,12 +200,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_i18n";
-  const method = "findCount";
+  const method = "findCountI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -288,9 +288,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllI18n
 /** 根据搜索条件和分页查找国际化列表 */
-export async function findAll(
+export async function findAllI18n(
   search?: Readonly<I18nSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -301,7 +301,7 @@ export async function findAll(
 ): Promise<I18nModel[]> {
   
   const table = "base_i18n";
-  const method = "findAll";
+  const method = "findAllI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -466,9 +466,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblI18n
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblI18n(
   input: I18nInput,
 ) {
   
@@ -529,9 +529,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsI18n
 /** 获取国际化字段注释 */
-export async function getFieldComments(): Promise<I18nFieldComment> {
+export async function getFieldCommentsI18n(): Promise<I18nFieldComment> {
   const fieldComments: I18nFieldComment = {
     id: "ID",
     lang_id: "语言",
@@ -553,9 +553,9 @@ export async function getFieldComments(): Promise<I18nFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueI18n
 /** 通过唯一约束获得国际化列表 */
-export async function findByUnique(
+export async function findByUniqueI18n(
   search0: Readonly<I18nInput>,
   options?: {
     is_debug?: boolean;
@@ -563,7 +563,7 @@ export async function findByUnique(
 ): Promise<I18nModel[]> {
   
   const table = "base_i18n";
-  const method = "findByUnique";
+  const method = "findByUniqueI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -581,7 +581,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneI18n(
       {
         id: search0.id,
       },
@@ -617,7 +617,7 @@ export async function findByUnique(
       return [ ];
     }
     const code = search0.code;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllI18n(
       {
         lang_id,
         menu_id,
@@ -634,7 +634,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueI18n(
   oldModel: Readonly<I18nModel>,
   input: Readonly<I18nInput>,
 ): boolean {
@@ -652,9 +652,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueI18n
 /** 通过唯一约束检查 国际化 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueI18n(
   input: Readonly<I18nInput>,
   oldModel: Readonly<I18nModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -666,14 +666,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueI18n(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 国际化 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: I18nId = await updateById(
+      const id: I18nId = await updateByIdI18n(
         oldModel.id,
         {
           ...input,
@@ -690,9 +690,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneI18n
 /** 根据条件查找第一国际化 */
-export async function findOne(
+export async function findOneI18n(
   search?: Readonly<I18nSearch>,
   sort?: SortInput[],
   options?: {
@@ -701,7 +701,7 @@ export async function findOne(
 ): Promise<I18nModel | undefined> {
   
   const table = "base_i18n";
-  const method = "findOne";
+  const method = "findOneI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -728,7 +728,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllI18n(
     search,
     page,
     sort,
@@ -738,9 +738,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdI18n
 /** 根据 id 查找国际化 */
-export async function findById(
+export async function findByIdI18n(
   id?: I18nId | null,
   options?: {
     is_debug?: boolean;
@@ -748,7 +748,7 @@ export async function findById(
 ): Promise<I18nModel | undefined> {
   
   const table = "base_i18n";
-  const method = "findById";
+  const method = "findByIdI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -769,7 +769,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneI18n(
     {
       id,
     },
@@ -780,9 +780,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsI18n
 /** 根据 ids 查找国际化 */
-export async function findByIds(
+export async function findByIdsI18n(
   ids: I18nId[],
   options?: {
     is_debug?: boolean;
@@ -790,7 +790,7 @@ export async function findByIds(
 ): Promise<I18nModel[]> {
   
   const table = "base_i18n";
-  const method = "findByIds";
+  const method = "findByIdsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -811,7 +811,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllI18n(
     {
       ids,
     },
@@ -837,9 +837,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existI18n
 /** 根据搜索条件判断国际化是否存在 */
-export async function exist(
+export async function existI18n(
   search?: Readonly<I18nSearch>,
   options?: {
     is_debug?: boolean;
@@ -847,7 +847,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_i18n";
-  const method = "exist";
+  const method = "existI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -863,15 +863,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneI18n(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdI18n
 /** 根据id判断国际化是否存在 */
-export async function existById(
+export async function existByIdI18n(
   id?: Readonly<I18nId | null>,
   options?: {
     is_debug?: boolean;
@@ -879,7 +879,7 @@ export async function existById(
 ) {
   
   const table = "base_i18n";
-  const method = "existById";
+  const method = "existByIdI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -921,9 +921,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionI18n
 /** 校验国际化是否存在 */
-export async function validateOption(
+export async function validateOptionI18n(
   model?: I18nModel,
 ) {
   if (!model) {
@@ -934,12 +934,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateI18n
 /** 国际化增加和修改时校验输入 */
-export async function validate(
+export async function validateI18n(
   input: Readonly<I18nInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsI18n();
   
   // ID
   await validators.chars_max_length(
@@ -999,9 +999,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnI18n
 /** 创建 国际化 并返回 */
-export async function createReturn(
+export async function createReturnI18n(
   input: Readonly<I18nInput>,
   options?: {
     is_debug?: boolean;
@@ -1012,7 +1012,7 @@ export async function createReturn(
 ): Promise<I18nModel> {
   
   const table = "base_i18n";
-  const method = "createReturn";
+  const method = "createReturnI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1037,8 +1037,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionI18n(
+    await findOneI18n(
       {
         id,
       },
@@ -1050,9 +1050,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createI18n
 /** 创建 国际化 */
-export async function create(
+export async function createI18n(
   input: Readonly<I18nInput>,
   options?: {
     is_debug?: boolean;
@@ -1063,7 +1063,7 @@ export async function create(
 ): Promise<I18nId> {
   
   const table = "base_i18n";
-  const method = "create";
+  const method = "createI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1091,9 +1091,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnI18n
 /** 批量创建 国际化 并返回 */
-export async function createsReturn(
+export async function createsReturnI18n(
   inputs: I18nInput[],
   options?: {
     is_debug?: boolean;
@@ -1104,7 +1104,7 @@ export async function createsReturn(
 ): Promise<I18nModel[]> {
   
   const table = "base_i18n";
-  const method = "createsReturn";
+  const method = "createsReturnI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1123,14 +1123,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsI18n(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsI18n
 /** 批量创建 国际化 */
-export async function creates(
+export async function createsI18n(
   inputs: I18nInput[],
   options?: {
     is_debug?: boolean;
@@ -1141,7 +1141,7 @@ export async function creates(
 ): Promise<I18nId[]> {
   
   const table = "base_i18n";
-  const method = "creates";
+  const method = "createsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1190,11 +1190,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueI18n(input, options);
     if (oldModels.length > 0) {
       let id: I18nId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueI18n(
           input,
           oldModel,
           options?.uniqueType,
@@ -1224,7 +1224,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheI18n();
   
   const args = new QueryArgs();
   let sql = "insert into base_i18n(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lang_id,menu_id,code,lbl,rem)values";
@@ -1353,20 +1353,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheI18n();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheI18n
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheI18n() {
   await delCacheCtx(`dao.sql.base_i18n`);
 }
 
-// MARK: updateById
+// MARK: updateByIdI18n
 /** 根据 id 修改 国际化 */
-export async function updateById(
+export async function updateByIdI18n(
   id: I18nId,
   input: I18nInput,
   options?: {
@@ -1378,7 +1378,7 @@ export async function updateById(
 ): Promise<I18nId> {
   
   const table = "base_i18n";
-  const method = "updateById";
+  const method = "updateByIdI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1401,10 +1401,10 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdI18n: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdI18n: input cannot be null");
   }
   
   {
@@ -1412,7 +1412,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueI18n(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1423,7 +1423,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdI18n(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 国际化 已被删除";
@@ -1538,7 +1538,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheI18n();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1546,7 +1546,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheI18n();
   }
   
   if (!is_silent_mode) {
@@ -1556,9 +1556,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsI18n
 /** 根据 ids 删除 国际化 */
-export async function deleteByIds(
+export async function deleteByIdsI18n(
   ids: I18nId[],
   options?: {
     is_debug?: boolean;
@@ -1568,7 +1568,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_i18n";
-  const method = "deleteByIds";
+  const method = "deleteByIdsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1591,12 +1591,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheI18n();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdI18n(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1629,14 +1629,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheI18n();
   
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsI18n
 /** 根据 ids 还原 国际化 */
-export async function revertByIds(
+export async function revertByIdsI18n(
   ids: I18nId[],
   options?: {
     is_debug?: boolean;
@@ -1644,7 +1644,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_i18n";
-  const method = "revertByIds";
+  const method = "revertByIdsI18n";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1665,12 +1665,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheI18n();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneI18n(
       {
         id,
         is_deleted: 1,
@@ -1679,7 +1679,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdI18n(
         id,
         options,
       );
@@ -1692,7 +1692,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as I18nInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueI18n(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1706,14 +1706,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheI18n();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsI18n
 /** 根据 ids 彻底删除 国际化 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsI18n(
   ids: I18nId[],
   options?: {
     is_debug?: boolean;
@@ -1722,7 +1722,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_i18n";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsI18n";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1744,12 +1744,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheI18n();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneI18n(
       {
         id,
         is_deleted: 1,
@@ -1766,7 +1766,7 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheI18n();
   
   return num;
 }
