@@ -35,7 +35,7 @@ impl MenuGenQuery {
       .with_auth()?
       .build()
       .scope({
-        menu_resolver::find_all(
+        menu_resolver::find_all_menu(
           search,
           page,
           sort,
@@ -54,7 +54,7 @@ impl MenuGenQuery {
       .with_auth()?
       .build()
       .scope({
-        menu_resolver::find_count(
+        menu_resolver::find_count_menu(
           search,
           None,
         )
@@ -72,7 +72,7 @@ impl MenuGenQuery {
       .with_auth()?
       .build()
       .scope({
-        menu_resolver::find_one(
+        menu_resolver::find_one_menu(
           search,
           sort,
           None,
@@ -90,7 +90,7 @@ impl MenuGenQuery {
       .with_auth()?
       .build()
       .scope({
-        menu_resolver::find_by_id(
+        menu_resolver::find_by_id_menu(
           id,
           None,
         )
@@ -107,7 +107,7 @@ impl MenuGenQuery {
       .with_auth()?
       .build()
       .scope({
-        menu_resolver::find_by_ids(
+        menu_resolver::find_by_ids_menu(
           ids,
           None,
         )
@@ -125,7 +125,7 @@ impl MenuGenQuery {
       .with_auth()?
       .build()
       .scope({
-        menu_resolver::get_is_enabled_by_id(
+        menu_resolver::get_is_enabled_by_id_menu(
           id,
           None,
         )
@@ -144,7 +144,7 @@ impl MenuGenQuery {
       .with_auth()?
       .build()
       .scope({
-        menu_resolver::get_is_locked_by_id(
+        menu_resolver::get_is_locked_by_id_menu(
           id,
           None,
         )
@@ -159,7 +159,7 @@ impl MenuGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        menu_resolver::get_field_comments(
+        menu_resolver::get_field_comments_menu(
           None,
         )
       }).await
@@ -174,7 +174,7 @@ impl MenuGenQuery {
       .with_auth()?
       .build()
       .scope({
-        menu_resolver::find_last_order_by(
+        menu_resolver::find_last_order_by_menu(
           None,
         )
       }).await
@@ -205,7 +205,7 @@ impl MenuGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        menu_resolver::creates(
+        menu_resolver::creates_menu(
           inputs,
           options.into(),
         )
@@ -224,7 +224,7 @@ impl MenuGenMutation {
       .with_tran()
       .build()
       .scope({
-        menu_resolver::update_by_id(
+        menu_resolver::update_by_id_menu(
           id,
           input,
           None,
@@ -243,7 +243,7 @@ impl MenuGenMutation {
       .with_tran()
       .build()
       .scope({
-        menu_resolver::delete_by_ids(
+        menu_resolver::delete_by_ids_menu(
           ids,
           None,
         )
@@ -262,7 +262,7 @@ impl MenuGenMutation {
       .with_tran()
       .build()
       .scope({
-        menu_resolver::enable_by_ids(
+        menu_resolver::enable_by_ids_menu(
           ids,
           is_enabled,
           None,
@@ -282,7 +282,7 @@ impl MenuGenMutation {
       .with_tran()
       .build()
       .scope({
-        menu_resolver::lock_by_ids(
+        menu_resolver::lock_by_ids_menu(
           ids,
           is_locked,
           None,
@@ -301,7 +301,7 @@ impl MenuGenMutation {
       .with_tran()
       .build()
       .scope({
-        menu_resolver::revert_by_ids(
+        menu_resolver::revert_by_ids_menu(
           ids,
           None,
         )
@@ -319,7 +319,7 @@ impl MenuGenMutation {
       .with_tran()
       .build()
       .scope({
-        menu_resolver::force_delete_by_ids(
+        menu_resolver::force_delete_by_ids_menu(
           ids,
           None,
         )

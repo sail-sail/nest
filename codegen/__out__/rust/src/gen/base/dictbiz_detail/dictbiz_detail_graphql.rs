@@ -37,7 +37,7 @@ impl DictbizDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dictbiz_detail_resolver::find_all(
+        dictbiz_detail_resolver::find_all_dictbiz_detail(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl DictbizDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dictbiz_detail_resolver::find_count(
+        dictbiz_detail_resolver::find_count_dictbiz_detail(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl DictbizDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dictbiz_detail_resolver::find_one(
+        dictbiz_detail_resolver::find_one_dictbiz_detail(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl DictbizDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dictbiz_detail_resolver::find_by_id(
+        dictbiz_detail_resolver::find_by_id_dictbiz_detail(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl DictbizDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dictbiz_detail_resolver::find_by_ids(
+        dictbiz_detail_resolver::find_by_ids_dictbiz_detail(
           ids,
           None,
         )
@@ -127,7 +127,7 @@ impl DictbizDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dictbiz_detail_resolver::get_is_enabled_by_id(
+        dictbiz_detail_resolver::get_is_enabled_by_id_dictbiz_detail(
           id,
           None,
         )
@@ -142,7 +142,7 @@ impl DictbizDetailGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        dictbiz_detail_resolver::get_field_comments(
+        dictbiz_detail_resolver::get_field_comments_dictbiz_detail(
           None,
         )
       }).await
@@ -157,7 +157,7 @@ impl DictbizDetailGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dictbiz_detail_resolver::find_last_order_by(
+        dictbiz_detail_resolver::find_last_order_by_dictbiz_detail(
           None,
         )
       }).await
@@ -188,7 +188,7 @@ impl DictbizDetailGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        dictbiz_detail_resolver::creates(
+        dictbiz_detail_resolver::creates_dictbiz_detail(
           inputs,
           options.into(),
         )
@@ -207,7 +207,7 @@ impl DictbizDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dictbiz_detail_resolver::update_tenant_by_id(
+        dictbiz_detail_resolver::update_tenant_by_id_dictbiz_detail(
           id,
           tenant_id,
           None,
@@ -227,7 +227,7 @@ impl DictbizDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dictbiz_detail_resolver::update_by_id(
+        dictbiz_detail_resolver::update_by_id_dictbiz_detail(
           id,
           input,
           None,
@@ -246,7 +246,7 @@ impl DictbizDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dictbiz_detail_resolver::delete_by_ids(
+        dictbiz_detail_resolver::delete_by_ids_dictbiz_detail(
           ids,
           None,
         )
@@ -265,7 +265,7 @@ impl DictbizDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dictbiz_detail_resolver::enable_by_ids(
+        dictbiz_detail_resolver::enable_by_ids_dictbiz_detail(
           ids,
           is_enabled,
           None,
@@ -284,7 +284,7 @@ impl DictbizDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dictbiz_detail_resolver::revert_by_ids(
+        dictbiz_detail_resolver::revert_by_ids_dictbiz_detail(
           ids,
           None,
         )
@@ -302,7 +302,7 @@ impl DictbizDetailGenMutation {
       .with_tran()
       .build()
       .scope({
-        dictbiz_detail_resolver::force_delete_by_ids(
+        dictbiz_detail_resolver::force_delete_by_ids_dictbiz_detail(
           ids,
           None,
         )

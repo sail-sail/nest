@@ -24,7 +24,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找图标库列表
-pub async fn find_all(
+pub async fn find_all_icon(
   search: Option<IconSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -38,7 +38,7 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let icon_models = icon_dao::find_all(
+  let icon_models = icon_dao::find_all_icon(
     Some(search),
     page,
     sort,
@@ -49,7 +49,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找图标库总数
-pub async fn find_count(
+pub async fn find_count_icon(
   search: Option<IconSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -61,7 +61,7 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let icon_num = icon_dao::find_count(
+  let icon_num = icon_dao::find_count_icon(
     Some(search),
     options,
   ).await?;
@@ -70,7 +70,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个图标库
-pub async fn find_one(
+pub async fn find_one_icon(
   search: Option<IconSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -83,7 +83,7 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let icon_model = icon_dao::find_one(
+  let icon_model = icon_dao::find_one_icon(
     Some(search),
     sort,
     options,
@@ -93,12 +93,12 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找图标库
-pub async fn find_by_id(
+pub async fn find_by_id_icon(
   icon_id: IconId,
   options: Option<Options>,
 ) -> Result<Option<IconModel>> {
   
-  let icon_model = icon_dao::find_by_id(
+  let icon_model = icon_dao::find_by_id_icon(
     icon_id,
     options,
   ).await?;
@@ -107,12 +107,12 @@ pub async fn find_by_id(
 }
 
 /// 根据 icon_ids 查找图标库
-pub async fn find_by_ids(
+pub async fn find_by_ids_icon(
   icon_ids: Vec<IconId>,
   options: Option<Options>,
 ) -> Result<Vec<IconModel>> {
   
-  let icon_models = icon_dao::find_by_ids(
+  let icon_models = icon_dao::find_by_ids_icon(
     icon_ids,
     options,
   ).await?;
@@ -122,11 +122,11 @@ pub async fn find_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_icon(
   icon_input: IconInput,
 ) -> Result<IconInput> {
   
-  let icon_input = icon_dao::set_id_by_lbl(
+  let icon_input = icon_dao::set_id_by_lbl_icon(
     icon_input,
   ).await?;
   
@@ -135,12 +135,12 @@ pub async fn set_id_by_lbl(
 
 /// 创建图标库
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_icon(
   icon_inputs: Vec<IconInput>,
   options: Option<Options>,
 ) -> Result<Vec<IconId>> {
   
-  let icon_ids = icon_dao::creates(
+  let icon_ids = icon_dao::creates_icon(
     icon_inputs,
     options,
   ).await?;
@@ -150,13 +150,13 @@ pub async fn creates(
 
 /// 根据 icon_id 修改图标库
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_icon(
   icon_id: IconId,
   mut icon_input: IconInput,
   options: Option<Options>,
 ) -> Result<IconId> {
   
-  let icon_id = icon_dao::update_by_id(
+  let icon_id = icon_dao::update_by_id_icon(
     icon_id,
     icon_input,
     options.clone(),
@@ -167,23 +167,23 @@ pub async fn update_by_id(
 
 /// 校验图标库是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_icon(
   icon_model: Option<IconModel>,
 ) -> Result<IconModel> {
   
-  let icon_model = icon_dao::validate_option(icon_model).await?;
+  let icon_model = icon_dao::validate_option_icon(icon_model).await?;
   
   Ok(icon_model)
 }
 
 /// 根据 icon_ids 删除图标库
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_icon(
   icon_ids: Vec<IconId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = icon_dao::delete_by_ids(
+  let num = icon_dao::delete_by_ids_icon(
     icon_ids,
     options,
   ).await?;
@@ -194,12 +194,12 @@ pub async fn delete_by_ids(
 /// 根据 icon_id 查找图标库是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_icon(
   icon_id: IconId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_enabled = icon_dao::get_is_enabled_by_id(
+  let is_enabled = icon_dao::get_is_enabled_by_id_icon(
     icon_id,
     options,
   ).await?;
@@ -209,13 +209,13 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 icon_ids 启用或者禁用图标库
 #[allow(dead_code)]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_icon(
   icon_ids: Vec<IconId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = icon_dao::enable_by_ids(
+  let num = icon_dao::enable_by_ids_icon(
     icon_ids,
     is_enabled,
     options,
@@ -225,11 +225,11 @@ pub async fn enable_by_ids(
 }
 
 /// 获取图标库字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_icon(
   options: Option<Options>,
 ) -> Result<IconFieldComment> {
   
-  let comments = icon_dao::get_field_comments(
+  let comments = icon_dao::get_field_comments_icon(
     options,
   ).await?;
   
@@ -238,12 +238,12 @@ pub async fn get_field_comments(
 
 /// 根据 icon_ids 还原图标库
 #[allow(dead_code)]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_icon(
   icon_ids: Vec<IconId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = icon_dao::revert_by_ids(
+  let num = icon_dao::revert_by_ids_icon(
     icon_ids,
     options,
   ).await?;
@@ -253,12 +253,12 @@ pub async fn revert_by_ids(
 
 /// 根据 icon_ids 彻底删除图标库
 #[allow(dead_code)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_icon(
   icon_ids: Vec<IconId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = icon_dao::force_delete_by_ids(
+  let num = icon_dao::force_delete_by_ids_icon(
     icon_ids,
     options,
   ).await?;
@@ -267,11 +267,11 @@ pub async fn force_delete_by_ids(
 }
 
 /// 查找 图标库 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_icon(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = icon_dao::find_last_order_by(
+  let res = icon_dao::find_last_order_by_icon(
     options,
   ).await?;
   

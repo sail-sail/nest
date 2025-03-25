@@ -1,13 +1,13 @@
 use color_eyre::eyre::Result;
 use crate::common::context::{get_auth_id_err, Options};
 
-use crate::r#gen::base::role::role_dao::find_all as find_all_role;
+use crate::r#gen::base::role::role_dao::find_all_role;
 
 use crate::r#gen::base::role::role_model::RoleSearch;
 use crate::r#gen::base::usr::usr_dao::{
-  find_by_id as find_usr_by_id,
-  validate_option as validate_option_usr,
-  validate_is_enabled as validate_is_enabled_usr,
+  find_by_id_usr,
+  validate_option_usr,
+  validate_is_enabled_usr,
 };
 
 /// 获取当前角色的首页轮播图路由
@@ -20,7 +20,7 @@ pub async fn get_home_urls() -> Result<Vec<String>> {
   let usr_id = get_auth_id_err()?;
   
   // 获取当前登录用户
-  let usr_model = find_usr_by_id(
+  let usr_model = find_by_id_usr(
     usr_id,
     options.clone(),
   ).await?;

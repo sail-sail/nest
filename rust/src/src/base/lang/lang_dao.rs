@@ -17,7 +17,7 @@ use crate::r#gen::base::lang::lang_model::{
 
 pub async fn get_login_langs() -> Result<Vec<LangModel>> {
   
-  let res = lang_dao::find_all(
+  let res = lang_dao::find_all_lang(
     None,
     None,
     None,

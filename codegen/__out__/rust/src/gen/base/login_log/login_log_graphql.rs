@@ -37,7 +37,7 @@ impl LoginLogGenQuery {
       .with_auth()?
       .build()
       .scope({
-        login_log_resolver::find_all(
+        login_log_resolver::find_all_login_log(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl LoginLogGenQuery {
       .with_auth()?
       .build()
       .scope({
-        login_log_resolver::find_count(
+        login_log_resolver::find_count_login_log(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl LoginLogGenQuery {
       .with_auth()?
       .build()
       .scope({
-        login_log_resolver::find_one(
+        login_log_resolver::find_one_login_log(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl LoginLogGenQuery {
       .with_auth()?
       .build()
       .scope({
-        login_log_resolver::find_by_id(
+        login_log_resolver::find_by_id_login_log(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl LoginLogGenQuery {
       .with_auth()?
       .build()
       .scope({
-        login_log_resolver::find_by_ids(
+        login_log_resolver::find_by_ids_login_log(
           ids,
           None,
         )
@@ -124,7 +124,7 @@ impl LoginLogGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        login_log_resolver::get_field_comments(
+        login_log_resolver::get_field_comments_login_log(
           None,
         )
       }).await
@@ -160,7 +160,7 @@ impl LoginLogGenMutation {
       .with_tran()
       .build()
       .scope({
-        login_log_resolver::update_tenant_by_id(
+        login_log_resolver::update_tenant_by_id_login_log(
           id,
           tenant_id,
           None,
@@ -179,7 +179,7 @@ impl LoginLogGenMutation {
       .with_tran()
       .build()
       .scope({
-        login_log_resolver::delete_by_ids(
+        login_log_resolver::delete_by_ids_login_log(
           ids,
           None,
         )
@@ -197,7 +197,7 @@ impl LoginLogGenMutation {
       .with_tran()
       .build()
       .scope({
-        login_log_resolver::revert_by_ids(
+        login_log_resolver::revert_by_ids_login_log(
           ids,
           None,
         )
@@ -215,7 +215,7 @@ impl LoginLogGenMutation {
       .with_tran()
       .build()
       .scope({
-        login_log_resolver::force_delete_by_ids(
+        login_log_resolver::force_delete_by_ids_login_log(
           ids,
           None,
         )
