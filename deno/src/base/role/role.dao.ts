@@ -3,12 +3,12 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 // 角色
 import {
-  findByIds as findByIdsRole,
+  findByIdsRole,
 } from "/gen/base/role/role.dao.ts";
 
 /**
