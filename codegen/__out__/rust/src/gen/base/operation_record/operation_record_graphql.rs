@@ -37,7 +37,7 @@ impl OperationRecordGenQuery {
       .with_auth()?
       .build()
       .scope({
-        operation_record_resolver::find_all(
+        operation_record_resolver::find_all_operation_record(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl OperationRecordGenQuery {
       .with_auth()?
       .build()
       .scope({
-        operation_record_resolver::find_count(
+        operation_record_resolver::find_count_operation_record(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl OperationRecordGenQuery {
       .with_auth()?
       .build()
       .scope({
-        operation_record_resolver::find_one(
+        operation_record_resolver::find_one_operation_record(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl OperationRecordGenQuery {
       .with_auth()?
       .build()
       .scope({
-        operation_record_resolver::find_by_id(
+        operation_record_resolver::find_by_id_operation_record(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl OperationRecordGenQuery {
       .with_auth()?
       .build()
       .scope({
-        operation_record_resolver::find_by_ids(
+        operation_record_resolver::find_by_ids_operation_record(
           ids,
           None,
         )
@@ -124,7 +124,7 @@ impl OperationRecordGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        operation_record_resolver::get_field_comments(
+        operation_record_resolver::get_field_comments_operation_record(
           None,
         )
       }).await
@@ -160,7 +160,7 @@ impl OperationRecordGenMutation {
       .with_tran()
       .build()
       .scope({
-        operation_record_resolver::update_tenant_by_id(
+        operation_record_resolver::update_tenant_by_id_operation_record(
           id,
           tenant_id,
           None,
@@ -179,7 +179,7 @@ impl OperationRecordGenMutation {
       .with_tran()
       .build()
       .scope({
-        operation_record_resolver::delete_by_ids(
+        operation_record_resolver::delete_by_ids_operation_record(
           ids,
           None,
         )
@@ -197,7 +197,7 @@ impl OperationRecordGenMutation {
       .with_tran()
       .build()
       .scope({
-        operation_record_resolver::revert_by_ids(
+        operation_record_resolver::revert_by_ids_operation_record(
           ids,
           None,
         )
@@ -215,7 +215,7 @@ impl OperationRecordGenMutation {
       .with_tran()
       .build()
       .scope({
-        operation_record_resolver::force_delete_by_ids(
+        operation_record_resolver::force_delete_by_ids_operation_record(
           ids,
           None,
         )

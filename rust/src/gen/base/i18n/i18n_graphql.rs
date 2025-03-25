@@ -36,7 +36,7 @@ impl I18nGenQuery {
       .with_auth()?
       .build()
       .scope({
-        i18n_resolver::find_all(
+        i18n_resolver::find_all_i18n(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl I18nGenQuery {
       .with_auth()?
       .build()
       .scope({
-        i18n_resolver::find_count(
+        i18n_resolver::find_count_i18n(
           search,
           None,
         )
@@ -75,7 +75,7 @@ impl I18nGenQuery {
       .with_auth()?
       .build()
       .scope({
-        i18n_resolver::find_one(
+        i18n_resolver::find_one_i18n(
           search,
           sort,
           None,
@@ -94,7 +94,7 @@ impl I18nGenQuery {
       .with_auth()?
       .build()
       .scope({
-        i18n_resolver::find_by_id(
+        i18n_resolver::find_by_id_i18n(
           id,
           None,
         )
@@ -112,7 +112,7 @@ impl I18nGenQuery {
       .with_auth()?
       .build()
       .scope({
-        i18n_resolver::find_by_ids(
+        i18n_resolver::find_by_ids_i18n(
           ids,
           None,
         )
@@ -128,7 +128,7 @@ impl I18nGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        i18n_resolver::get_field_comments(
+        i18n_resolver::get_field_comments_i18n(
           None,
         )
       }).await
@@ -160,7 +160,7 @@ impl I18nGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        i18n_resolver::creates(
+        i18n_resolver::creates_i18n(
           inputs,
           options.into(),
         )
@@ -180,7 +180,7 @@ impl I18nGenMutation {
       .with_tran()
       .build()
       .scope({
-        i18n_resolver::update_by_id(
+        i18n_resolver::update_by_id_i18n(
           id,
           input,
           None,
@@ -200,7 +200,7 @@ impl I18nGenMutation {
       .with_tran()
       .build()
       .scope({
-        i18n_resolver::delete_by_ids(
+        i18n_resolver::delete_by_ids_i18n(
           ids,
           None,
         )
@@ -219,7 +219,7 @@ impl I18nGenMutation {
       .with_tran()
       .build()
       .scope({
-        i18n_resolver::revert_by_ids(
+        i18n_resolver::revert_by_ids_i18n(
           ids,
           None,
         )
@@ -238,7 +238,7 @@ impl I18nGenMutation {
       .with_tran()
       .build()
       .scope({
-        i18n_resolver::force_delete_by_ids(
+        i18n_resolver::force_delete_by_ids_i18n(
           ids,
           None,
         )

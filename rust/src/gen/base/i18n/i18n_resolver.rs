@@ -17,7 +17,7 @@ use super::i18n_service;
 
 /// 根据搜索条件和分页查找国际化列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_i18n(
   search: Option<I18nSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -32,7 +32,7 @@ pub async fn find_all(
   
   check_sort_i18n(sort.as_deref())?;
   
-  let models = i18n_service::find_all(
+  let models = i18n_service::find_all_i18n(
     search,
     page,
     sort,
@@ -44,7 +44,7 @@ pub async fn find_all(
 
 /// 根据条件查找国际化总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_i18n(
   search: Option<I18nSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -55,7 +55,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = i18n_service::find_count(
+  let num = i18n_service::find_count_i18n(
     search,
     options,
   ).await?;
@@ -65,7 +65,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个国际化
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_i18n(
   search: Option<I18nSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -79,7 +79,7 @@ pub async fn find_one(
   
   check_sort_i18n(sort.as_deref())?;
   
-  let model = i18n_service::find_one(
+  let model = i18n_service::find_one_i18n(
     search,
     sort,
     options,
@@ -90,7 +90,7 @@ pub async fn find_one(
 
 /// 根据 id 查找国际化
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_i18n(
   id: I18nId,
   options: Option<Options>,
 ) -> Result<Option<I18nModel>> {
@@ -101,7 +101,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = i18n_service::find_by_id(
+  let model = i18n_service::find_by_id_i18n(
     id,
     options,
   ).await?;
@@ -111,7 +111,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找国际化
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_i18n(
   ids: Vec<I18nId>,
   options: Option<Options>,
 ) -> Result<Vec<I18nModel>> {
@@ -122,7 +122,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = i18n_service::find_by_ids(
+  let models = i18n_service::find_by_ids_i18n(
     ids,
     options,
   ).await?;
@@ -133,7 +133,7 @@ pub async fn find_by_ids(
 /// 创建国际化
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_i18n(
   inputs: Vec<I18nInput>,
   options: Option<Options>,
 ) -> Result<Vec<I18nId>> {
@@ -152,7 +152,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = i18n_service::set_id_by_lbl(
+    let input = i18n_service::set_id_by_lbl_i18n(
       input,
     ).await?;
     inputs2.push(input);
@@ -164,7 +164,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = i18n_service::creates(
+  let ids = i18n_service::creates_i18n(
     inputs,
     options,
   ).await?;
@@ -175,7 +175,7 @@ pub async fn creates(
 /// 根据 id 修改国际化
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_i18n(
   id: I18nId,
   input: I18nInput,
   options: Option<Options>,
@@ -191,7 +191,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = i18n_service::set_id_by_lbl(
+  let input = i18n_service::set_id_by_lbl_i18n(
     input,
   ).await?;
   
@@ -200,7 +200,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = i18n_service::update_by_id(
+  let res = i18n_service::update_by_id_i18n(
     id,
     input,
     options,
@@ -212,7 +212,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除国际化
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_i18n(
   ids: Vec<I18nId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -228,7 +228,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = i18n_service::delete_by_ids(
+  let num = i18n_service::delete_by_ids_i18n(
     ids,
     options,
   ).await?;
@@ -238,7 +238,7 @@ pub async fn delete_by_ids(
 
 /// 获取国际化字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_i18n(
   options: Option<Options>,
 ) -> Result<I18nFieldComment> {
   
@@ -248,7 +248,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = i18n_service::get_field_comments(
+  let comments = i18n_service::get_field_comments_i18n(
     options,
   ).await?;
   
@@ -258,7 +258,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原国际化
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_i18n(
   ids: Vec<I18nId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -274,7 +274,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = i18n_service::revert_by_ids(
+  let num = i18n_service::revert_by_ids_i18n(
     ids,
     options,
   ).await?;
@@ -285,7 +285,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除国际化
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_i18n(
   ids: Vec<I18nId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -301,7 +301,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = i18n_service::force_delete_by_ids(
+  let num = i18n_service::force_delete_by_ids_i18n(
     ids,
     options,
   ).await?;

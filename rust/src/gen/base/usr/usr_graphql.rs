@@ -37,7 +37,7 @@ impl UsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        usr_resolver::find_all(
+        usr_resolver::find_all_usr(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl UsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        usr_resolver::find_count(
+        usr_resolver::find_count_usr(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl UsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        usr_resolver::find_one(
+        usr_resolver::find_one_usr(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl UsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        usr_resolver::find_by_id(
+        usr_resolver::find_by_id_usr(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl UsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        usr_resolver::find_by_ids(
+        usr_resolver::find_by_ids_usr(
           ids,
           None,
         )
@@ -127,7 +127,7 @@ impl UsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        usr_resolver::get_is_enabled_by_id(
+        usr_resolver::get_is_enabled_by_id_usr(
           id,
           None,
         )
@@ -146,7 +146,7 @@ impl UsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        usr_resolver::get_is_locked_by_id(
+        usr_resolver::get_is_locked_by_id_usr(
           id,
           None,
         )
@@ -161,7 +161,7 @@ impl UsrGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        usr_resolver::get_field_comments(
+        usr_resolver::get_field_comments_usr(
           None,
         )
       }).await
@@ -176,7 +176,7 @@ impl UsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        usr_resolver::find_last_order_by(
+        usr_resolver::find_last_order_by_usr(
           None,
         )
       }).await
@@ -207,7 +207,7 @@ impl UsrGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        usr_resolver::creates(
+        usr_resolver::creates_usr(
           inputs,
           options.into(),
         )
@@ -226,7 +226,7 @@ impl UsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        usr_resolver::update_tenant_by_id(
+        usr_resolver::update_tenant_by_id_usr(
           id,
           tenant_id,
           None,
@@ -246,7 +246,7 @@ impl UsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        usr_resolver::update_by_id(
+        usr_resolver::update_by_id_usr(
           id,
           input,
           None,
@@ -265,7 +265,7 @@ impl UsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        usr_resolver::delete_by_ids(
+        usr_resolver::delete_by_ids_usr(
           ids,
           None,
         )
@@ -284,7 +284,7 @@ impl UsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        usr_resolver::enable_by_ids(
+        usr_resolver::enable_by_ids_usr(
           ids,
           is_enabled,
           None,
@@ -304,7 +304,7 @@ impl UsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        usr_resolver::lock_by_ids(
+        usr_resolver::lock_by_ids_usr(
           ids,
           is_locked,
           None,
@@ -323,7 +323,7 @@ impl UsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        usr_resolver::revert_by_ids(
+        usr_resolver::revert_by_ids_usr(
           ids,
           None,
         )
@@ -341,7 +341,7 @@ impl UsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        usr_resolver::force_delete_by_ids(
+        usr_resolver::force_delete_by_ids_usr(
           ids,
           None,
         )
