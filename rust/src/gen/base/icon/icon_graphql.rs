@@ -35,7 +35,7 @@ impl IconGenQuery {
       .with_auth()?
       .build()
       .scope({
-        icon_resolver::find_all(
+        icon_resolver::find_all_icon(
           search,
           page,
           sort,
@@ -54,7 +54,7 @@ impl IconGenQuery {
       .with_auth()?
       .build()
       .scope({
-        icon_resolver::find_count(
+        icon_resolver::find_count_icon(
           search,
           None,
         )
@@ -72,7 +72,7 @@ impl IconGenQuery {
       .with_auth()?
       .build()
       .scope({
-        icon_resolver::find_one(
+        icon_resolver::find_one_icon(
           search,
           sort,
           None,
@@ -90,7 +90,7 @@ impl IconGenQuery {
       .with_auth()?
       .build()
       .scope({
-        icon_resolver::find_by_id(
+        icon_resolver::find_by_id_icon(
           id,
           None,
         )
@@ -107,7 +107,7 @@ impl IconGenQuery {
       .with_auth()?
       .build()
       .scope({
-        icon_resolver::find_by_ids(
+        icon_resolver::find_by_ids_icon(
           ids,
           None,
         )
@@ -125,7 +125,7 @@ impl IconGenQuery {
       .with_auth()?
       .build()
       .scope({
-        icon_resolver::get_is_enabled_by_id(
+        icon_resolver::get_is_enabled_by_id_icon(
           id,
           None,
         )
@@ -140,7 +140,7 @@ impl IconGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        icon_resolver::get_field_comments(
+        icon_resolver::get_field_comments_icon(
           None,
         )
       }).await
@@ -155,7 +155,7 @@ impl IconGenQuery {
       .with_auth()?
       .build()
       .scope({
-        icon_resolver::find_last_order_by(
+        icon_resolver::find_last_order_by_icon(
           None,
         )
       }).await
@@ -186,7 +186,7 @@ impl IconGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        icon_resolver::creates(
+        icon_resolver::creates_icon(
           inputs,
           options.into(),
         )
@@ -205,7 +205,7 @@ impl IconGenMutation {
       .with_tran()
       .build()
       .scope({
-        icon_resolver::update_by_id(
+        icon_resolver::update_by_id_icon(
           id,
           input,
           None,
@@ -224,7 +224,7 @@ impl IconGenMutation {
       .with_tran()
       .build()
       .scope({
-        icon_resolver::delete_by_ids(
+        icon_resolver::delete_by_ids_icon(
           ids,
           None,
         )
@@ -243,7 +243,7 @@ impl IconGenMutation {
       .with_tran()
       .build()
       .scope({
-        icon_resolver::enable_by_ids(
+        icon_resolver::enable_by_ids_icon(
           ids,
           is_enabled,
           None,
@@ -262,7 +262,7 @@ impl IconGenMutation {
       .with_tran()
       .build()
       .scope({
-        icon_resolver::revert_by_ids(
+        icon_resolver::revert_by_ids_icon(
           ids,
           None,
         )
@@ -280,7 +280,7 @@ impl IconGenMutation {
       .with_tran()
       .build()
       .scope({
-        icon_resolver::force_delete_by_ids(
+        icon_resolver::force_delete_by_ids_icon(
           ids,
           None,
         )

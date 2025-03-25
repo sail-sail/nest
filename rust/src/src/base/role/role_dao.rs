@@ -7,12 +7,12 @@ use crate::common::context::{
 
 // 用户
 use crate::r#gen::base::usr::usr_model::UsrId;
-use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id_usr;
 
 // 角色
 use crate::r#gen::base::role::role_model::RoleId;
 use crate::r#gen::base::role::role_model::RoleModel;
-use crate::r#gen::base::role::role_dao::find_by_ids as find_by_ids_role;
+use crate::r#gen::base::role::role_dao::find_by_ids_role;
 
 /// 获取当前用户拥有的角色列表
 #[allow(dead_code)]

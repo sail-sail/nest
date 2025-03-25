@@ -24,7 +24,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找字段权限列表
-pub async fn find_all(
+pub async fn find_all_field_permit(
   search: Option<FieldPermitSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -38,7 +38,7 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let field_permit_models = field_permit_dao::find_all(
+  let field_permit_models = field_permit_dao::find_all_field_permit(
     Some(search),
     page,
     sort,
@@ -49,7 +49,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找字段权限总数
-pub async fn find_count(
+pub async fn find_count_field_permit(
   search: Option<FieldPermitSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -61,7 +61,7 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let field_permit_num = field_permit_dao::find_count(
+  let field_permit_num = field_permit_dao::find_count_field_permit(
     Some(search),
     options,
   ).await?;
@@ -70,7 +70,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个字段权限
-pub async fn find_one(
+pub async fn find_one_field_permit(
   search: Option<FieldPermitSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -83,7 +83,7 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let field_permit_model = field_permit_dao::find_one(
+  let field_permit_model = field_permit_dao::find_one_field_permit(
     Some(search),
     sort,
     options,
@@ -93,12 +93,12 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找字段权限
-pub async fn find_by_id(
+pub async fn find_by_id_field_permit(
   field_permit_id: FieldPermitId,
   options: Option<Options>,
 ) -> Result<Option<FieldPermitModel>> {
   
-  let field_permit_model = field_permit_dao::find_by_id(
+  let field_permit_model = field_permit_dao::find_by_id_field_permit(
     field_permit_id,
     options,
   ).await?;
@@ -107,12 +107,12 @@ pub async fn find_by_id(
 }
 
 /// 根据 field_permit_ids 查找字段权限
-pub async fn find_by_ids(
+pub async fn find_by_ids_field_permit(
   field_permit_ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitModel>> {
   
-  let field_permit_models = field_permit_dao::find_by_ids(
+  let field_permit_models = field_permit_dao::find_by_ids_field_permit(
     field_permit_ids,
     options,
   ).await?;
@@ -122,11 +122,11 @@ pub async fn find_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_field_permit(
   field_permit_input: FieldPermitInput,
 ) -> Result<FieldPermitInput> {
   
-  let field_permit_input = field_permit_dao::set_id_by_lbl(
+  let field_permit_input = field_permit_dao::set_id_by_lbl_field_permit(
     field_permit_input,
   ).await?;
   
@@ -135,12 +135,12 @@ pub async fn set_id_by_lbl(
 
 /// 创建字段权限
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_field_permit(
   field_permit_inputs: Vec<FieldPermitInput>,
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitId>> {
   
-  let field_permit_ids = field_permit_dao::creates(
+  let field_permit_ids = field_permit_dao::creates_field_permit(
     field_permit_inputs,
     options,
   ).await?;
@@ -150,14 +150,14 @@ pub async fn creates(
 
 /// 根据 field_permit_id 修改字段权限
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_field_permit(
   field_permit_id: FieldPermitId,
   mut field_permit_input: FieldPermitInput,
   options: Option<Options>,
 ) -> Result<FieldPermitId> {
   
-  let old_model = validate_option(
-    field_permit_dao::find_by_id(
+  let old_model = validate_option_field_permit(
+    field_permit_dao::find_by_id_field_permit(
       field_permit_id.clone(),
       options.clone(),
     ).await?,
@@ -172,7 +172,7 @@ pub async fn update_by_id(
     field_permit_input.code = None;
   }
   
-  let field_permit_id = field_permit_dao::update_by_id(
+  let field_permit_id = field_permit_dao::update_by_id_field_permit(
     field_permit_id,
     field_permit_input,
     options.clone(),
@@ -183,23 +183,23 @@ pub async fn update_by_id(
 
 /// 校验字段权限是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_field_permit(
   field_permit_model: Option<FieldPermitModel>,
 ) -> Result<FieldPermitModel> {
   
-  let field_permit_model = field_permit_dao::validate_option(field_permit_model).await?;
+  let field_permit_model = field_permit_dao::validate_option_field_permit(field_permit_model).await?;
   
   Ok(field_permit_model)
 }
 
 /// 根据 field_permit_ids 删除字段权限
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_field_permit(
   field_permit_ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let old_models = field_permit_dao::find_all(
+  let old_models = field_permit_dao::find_all_field_permit(
     Some(FieldPermitSearch {
       ids: Some(field_permit_ids.clone()),
       ..Default::default()
@@ -216,7 +216,7 @@ pub async fn delete_by_ids(
     }
   }
   
-  let num = field_permit_dao::delete_by_ids(
+  let num = field_permit_dao::delete_by_ids_field_permit(
     field_permit_ids,
     options,
   ).await?;
@@ -225,11 +225,11 @@ pub async fn delete_by_ids(
 }
 
 /// 获取字段权限字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_field_permit(
   options: Option<Options>,
 ) -> Result<FieldPermitFieldComment> {
   
-  let comments = field_permit_dao::get_field_comments(
+  let comments = field_permit_dao::get_field_comments_field_permit(
     options,
   ).await?;
   
@@ -237,11 +237,11 @@ pub async fn get_field_comments(
 }
 
 /// 查找 字段权限 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_field_permit(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = field_permit_dao::find_last_order_by(
+  let res = field_permit_dao::find_last_order_by_field_permit(
     options,
   ).await?;
   

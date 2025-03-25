@@ -37,7 +37,7 @@ impl DeptGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dept_resolver::find_all(
+        dept_resolver::find_all_dept(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl DeptGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dept_resolver::find_count(
+        dept_resolver::find_count_dept(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl DeptGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dept_resolver::find_one(
+        dept_resolver::find_one_dept(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl DeptGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dept_resolver::find_by_id(
+        dept_resolver::find_by_id_dept(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl DeptGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dept_resolver::find_by_ids(
+        dept_resolver::find_by_ids_dept(
           ids,
           None,
         )
@@ -127,7 +127,7 @@ impl DeptGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dept_resolver::get_is_enabled_by_id(
+        dept_resolver::get_is_enabled_by_id_dept(
           id,
           None,
         )
@@ -146,7 +146,7 @@ impl DeptGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dept_resolver::get_is_locked_by_id(
+        dept_resolver::get_is_locked_by_id_dept(
           id,
           None,
         )
@@ -161,7 +161,7 @@ impl DeptGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        dept_resolver::get_field_comments(
+        dept_resolver::get_field_comments_dept(
           None,
         )
       }).await
@@ -176,7 +176,7 @@ impl DeptGenQuery {
       .with_auth()?
       .build()
       .scope({
-        dept_resolver::find_last_order_by(
+        dept_resolver::find_last_order_by_dept(
           None,
         )
       }).await
@@ -207,7 +207,7 @@ impl DeptGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        dept_resolver::creates(
+        dept_resolver::creates_dept(
           inputs,
           options.into(),
         )
@@ -226,7 +226,7 @@ impl DeptGenMutation {
       .with_tran()
       .build()
       .scope({
-        dept_resolver::update_tenant_by_id(
+        dept_resolver::update_tenant_by_id_dept(
           id,
           tenant_id,
           None,
@@ -246,7 +246,7 @@ impl DeptGenMutation {
       .with_tran()
       .build()
       .scope({
-        dept_resolver::update_by_id(
+        dept_resolver::update_by_id_dept(
           id,
           input,
           None,
@@ -265,7 +265,7 @@ impl DeptGenMutation {
       .with_tran()
       .build()
       .scope({
-        dept_resolver::delete_by_ids(
+        dept_resolver::delete_by_ids_dept(
           ids,
           None,
         )
@@ -284,7 +284,7 @@ impl DeptGenMutation {
       .with_tran()
       .build()
       .scope({
-        dept_resolver::enable_by_ids(
+        dept_resolver::enable_by_ids_dept(
           ids,
           is_enabled,
           None,
@@ -304,7 +304,7 @@ impl DeptGenMutation {
       .with_tran()
       .build()
       .scope({
-        dept_resolver::lock_by_ids(
+        dept_resolver::lock_by_ids_dept(
           ids,
           is_locked,
           None,
@@ -323,7 +323,7 @@ impl DeptGenMutation {
       .with_tran()
       .build()
       .scope({
-        dept_resolver::revert_by_ids(
+        dept_resolver::revert_by_ids_dept(
           ids,
           None,
         )
@@ -341,7 +341,7 @@ impl DeptGenMutation {
       .with_tran()
       .build()
       .scope({
-        dept_resolver::force_delete_by_ids(
+        dept_resolver::force_delete_by_ids_dept(
           ids,
           None,
         )

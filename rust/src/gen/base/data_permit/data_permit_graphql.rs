@@ -37,7 +37,7 @@ impl DataPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        data_permit_resolver::find_all(
+        data_permit_resolver::find_all_data_permit(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl DataPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        data_permit_resolver::find_count(
+        data_permit_resolver::find_count_data_permit(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl DataPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        data_permit_resolver::find_one(
+        data_permit_resolver::find_one_data_permit(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl DataPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        data_permit_resolver::find_by_id(
+        data_permit_resolver::find_by_id_data_permit(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl DataPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        data_permit_resolver::find_by_ids(
+        data_permit_resolver::find_by_ids_data_permit(
           ids,
           None,
         )
@@ -124,7 +124,7 @@ impl DataPermitGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        data_permit_resolver::get_field_comments(
+        data_permit_resolver::get_field_comments_data_permit(
           None,
         )
       }).await
@@ -155,7 +155,7 @@ impl DataPermitGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        data_permit_resolver::creates(
+        data_permit_resolver::creates_data_permit(
           inputs,
           options.into(),
         )
@@ -174,7 +174,7 @@ impl DataPermitGenMutation {
       .with_tran()
       .build()
       .scope({
-        data_permit_resolver::update_tenant_by_id(
+        data_permit_resolver::update_tenant_by_id_data_permit(
           id,
           tenant_id,
           None,
@@ -194,7 +194,7 @@ impl DataPermitGenMutation {
       .with_tran()
       .build()
       .scope({
-        data_permit_resolver::update_by_id(
+        data_permit_resolver::update_by_id_data_permit(
           id,
           input,
           None,
@@ -213,7 +213,7 @@ impl DataPermitGenMutation {
       .with_tran()
       .build()
       .scope({
-        data_permit_resolver::delete_by_ids(
+        data_permit_resolver::delete_by_ids_data_permit(
           ids,
           None,
         )
@@ -231,7 +231,7 @@ impl DataPermitGenMutation {
       .with_tran()
       .build()
       .scope({
-        data_permit_resolver::revert_by_ids(
+        data_permit_resolver::revert_by_ids_data_permit(
           ids,
           None,
         )
@@ -249,7 +249,7 @@ impl DataPermitGenMutation {
       .with_tran()
       .build()
       .scope({
-        data_permit_resolver::force_delete_by_ids(
+        data_permit_resolver::force_delete_by_ids_data_permit(
           ids,
           None,
         )

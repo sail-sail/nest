@@ -24,7 +24,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找租户列表
-pub async fn find_all(
+pub async fn find_all_tenant(
   search: Option<TenantSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -38,7 +38,7 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let tenant_models = tenant_dao::find_all(
+  let tenant_models = tenant_dao::find_all_tenant(
     Some(search),
     page,
     sort,
@@ -49,7 +49,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找租户总数
-pub async fn find_count(
+pub async fn find_count_tenant(
   search: Option<TenantSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -61,7 +61,7 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let tenant_num = tenant_dao::find_count(
+  let tenant_num = tenant_dao::find_count_tenant(
     Some(search),
     options,
   ).await?;
@@ -70,7 +70,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个租户
-pub async fn find_one(
+pub async fn find_one_tenant(
   search: Option<TenantSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -83,7 +83,7 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let tenant_model = tenant_dao::find_one(
+  let tenant_model = tenant_dao::find_one_tenant(
     Some(search),
     sort,
     options,
@@ -93,12 +93,12 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找租户
-pub async fn find_by_id(
+pub async fn find_by_id_tenant(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<Option<TenantModel>> {
   
-  let tenant_model = tenant_dao::find_by_id(
+  let tenant_model = tenant_dao::find_by_id_tenant(
     tenant_id,
     options,
   ).await?;
@@ -107,12 +107,12 @@ pub async fn find_by_id(
 }
 
 /// 根据 tenant_ids 查找租户
-pub async fn find_by_ids(
+pub async fn find_by_ids_tenant(
   tenant_ids: Vec<TenantId>,
   options: Option<Options>,
 ) -> Result<Vec<TenantModel>> {
   
-  let tenant_models = tenant_dao::find_by_ids(
+  let tenant_models = tenant_dao::find_by_ids_tenant(
     tenant_ids,
     options,
   ).await?;
@@ -122,11 +122,11 @@ pub async fn find_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_tenant(
   tenant_input: TenantInput,
 ) -> Result<TenantInput> {
   
-  let tenant_input = tenant_dao::set_id_by_lbl(
+  let tenant_input = tenant_dao::set_id_by_lbl_tenant(
     tenant_input,
   ).await?;
   
@@ -135,12 +135,12 @@ pub async fn set_id_by_lbl(
 
 /// 创建租户
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_tenant(
   tenant_inputs: Vec<TenantInput>,
   options: Option<Options>,
 ) -> Result<Vec<TenantId>> {
   
-  let tenant_ids = tenant_dao::creates(
+  let tenant_ids = tenant_dao::creates_tenant(
     tenant_inputs,
     options,
   ).await?;
@@ -150,13 +150,13 @@ pub async fn creates(
 
 /// 根据 tenant_id 修改租户
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_tenant(
   tenant_id: TenantId,
   mut tenant_input: TenantInput,
   options: Option<Options>,
 ) -> Result<TenantId> {
   
-  let is_locked = tenant_dao::get_is_locked_by_id(
+  let is_locked = tenant_dao::get_is_locked_by_id_tenant(
     tenant_id.clone(),
     None,
   ).await?;
@@ -166,7 +166,7 @@ pub async fn update_by_id(
     return Err(eyre!(err_msg));
   }
   
-  let tenant_id = tenant_dao::update_by_id(
+  let tenant_id = tenant_dao::update_by_id_tenant(
     tenant_id,
     tenant_input,
     options.clone(),
@@ -177,23 +177,23 @@ pub async fn update_by_id(
 
 /// 校验租户是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_tenant(
   tenant_model: Option<TenantModel>,
 ) -> Result<TenantModel> {
   
-  let tenant_model = tenant_dao::validate_option(tenant_model).await?;
+  let tenant_model = tenant_dao::validate_option_tenant(tenant_model).await?;
   
   Ok(tenant_model)
 }
 
 /// 根据 tenant_ids 删除租户
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_tenant(
   tenant_ids: Vec<TenantId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let old_models = tenant_dao::find_all(
+  let old_models = tenant_dao::find_all_tenant(
     Some(TenantSearch {
       ids: Some(tenant_ids.clone()),
       ..Default::default()
@@ -217,7 +217,7 @@ pub async fn delete_by_ids(
     }
   }
   
-  let num = tenant_dao::delete_by_ids(
+  let num = tenant_dao::delete_by_ids_tenant(
     tenant_ids,
     options,
   ).await?;
@@ -228,12 +228,12 @@ pub async fn delete_by_ids(
 /// 根据 tenant_id 查找租户是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_tenant(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_enabled = tenant_dao::get_is_enabled_by_id(
+  let is_enabled = tenant_dao::get_is_enabled_by_id_tenant(
     tenant_id,
     options,
   ).await?;
@@ -243,13 +243,13 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 tenant_ids 启用或者禁用租户
 #[allow(dead_code)]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_tenant(
   tenant_ids: Vec<TenantId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = tenant_dao::enable_by_ids(
+  let num = tenant_dao::enable_by_ids_tenant(
     tenant_ids,
     is_enabled,
     options,
@@ -262,12 +262,12 @@ pub async fn enable_by_ids(
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_tenant(
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_locked = tenant_dao::get_is_locked_by_id(
+  let is_locked = tenant_dao::get_is_locked_by_id_tenant(
     tenant_id,
     options,
   ).await?;
@@ -277,13 +277,13 @@ pub async fn get_is_locked_by_id(
 
 /// 根据 tenant_ids 锁定或者解锁租户
 #[allow(dead_code)]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_tenant(
   tenant_ids: Vec<TenantId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = tenant_dao::lock_by_ids(
+  let num = tenant_dao::lock_by_ids_tenant(
     tenant_ids,
     is_locked,
     options,
@@ -293,11 +293,11 @@ pub async fn lock_by_ids(
 }
 
 /// 获取租户字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_tenant(
   options: Option<Options>,
 ) -> Result<TenantFieldComment> {
   
-  let comments = tenant_dao::get_field_comments(
+  let comments = tenant_dao::get_field_comments_tenant(
     options,
   ).await?;
   
@@ -306,12 +306,12 @@ pub async fn get_field_comments(
 
 /// 根据 tenant_ids 还原租户
 #[allow(dead_code)]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_tenant(
   tenant_ids: Vec<TenantId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = tenant_dao::revert_by_ids(
+  let num = tenant_dao::revert_by_ids_tenant(
     tenant_ids,
     options,
   ).await?;
@@ -321,12 +321,12 @@ pub async fn revert_by_ids(
 
 /// 根据 tenant_ids 彻底删除租户
 #[allow(dead_code)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_tenant(
   tenant_ids: Vec<TenantId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = tenant_dao::force_delete_by_ids(
+  let num = tenant_dao::force_delete_by_ids_tenant(
     tenant_ids,
     options,
   ).await?;
@@ -335,11 +335,11 @@ pub async fn force_delete_by_ids(
 }
 
 /// 查找 租户 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_tenant(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = tenant_dao::find_last_order_by(
+  let res = tenant_dao::find_last_order_by_tenant(
     options,
   ).await?;
   

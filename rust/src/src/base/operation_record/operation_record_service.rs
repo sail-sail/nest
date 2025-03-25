@@ -7,7 +7,7 @@ use crate::r#gen::base::operation_record::operation_record_model::OperationRecor
 pub async fn log(
   input: OperationRecordInput,
 ) -> Result<()> {
-  operation_record_dao::create(
+  operation_record_dao::create_operation_record(
     input,
     None,
   ).await?;

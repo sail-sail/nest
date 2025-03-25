@@ -2,8 +2,8 @@ use color_eyre::eyre::Result;
 // use crate::common::context::get_auth_tenant_id;
 
 use crate::r#gen::base::tenant::tenant_dao::{
-  find_all as find_all_tenant,
-  del_cache as del_cache_tenant,
+  find_all_tenant,
+  del_cache_tenant,
 };
 use crate::r#gen::base::tenant::tenant_model::TenantSearch;
 
@@ -11,8 +11,8 @@ use super::tenant_model::GetLoginTenants;
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 use crate::r#gen::base::domain::domain_dao::{
-  find_all as find_all_domain,
-  del_cache as del_cache_domain,
+  find_all_domain,
+  del_cache_domain,
 };
 use crate::r#gen::base::domain::domain_model::{
   DomainSearch,
@@ -22,18 +22,18 @@ use crate::r#gen::base::domain::domain_model::{
 
 // 租户
 use crate::r#gen::base::tenant::tenant_dao::{
-  find_by_id as find_by_id_tenant,
-  validate_option as validate_option_tenant,
+  find_by_id_tenant,
+  validate_option_tenant,
 };
 
 // 语言
-use crate::r#gen::base::lang::lang_dao::find_by_id as find_by_id_lang;
+use crate::r#gen::base::lang::lang_dao::find_by_id_lang;
 
 // 用户
 use crate::r#gen::base::usr::usr_dao::{
-  find_one as find_one_usr,
-  update_by_id as update_by_id_usr,
-  create as create_usr,
+  find_one_usr,
+  update_by_id_usr,
+  create_usr,
 };
 use crate::r#gen::base::usr::usr_model::{
   UsrInput,

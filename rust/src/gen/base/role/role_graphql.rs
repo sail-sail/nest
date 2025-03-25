@@ -37,7 +37,7 @@ impl RoleGenQuery {
       .with_auth()?
       .build()
       .scope({
-        role_resolver::find_all(
+        role_resolver::find_all_role(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl RoleGenQuery {
       .with_auth()?
       .build()
       .scope({
-        role_resolver::find_count(
+        role_resolver::find_count_role(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl RoleGenQuery {
       .with_auth()?
       .build()
       .scope({
-        role_resolver::find_one(
+        role_resolver::find_one_role(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl RoleGenQuery {
       .with_auth()?
       .build()
       .scope({
-        role_resolver::find_by_id(
+        role_resolver::find_by_id_role(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl RoleGenQuery {
       .with_auth()?
       .build()
       .scope({
-        role_resolver::find_by_ids(
+        role_resolver::find_by_ids_role(
           ids,
           None,
         )
@@ -127,7 +127,7 @@ impl RoleGenQuery {
       .with_auth()?
       .build()
       .scope({
-        role_resolver::get_is_enabled_by_id(
+        role_resolver::get_is_enabled_by_id_role(
           id,
           None,
         )
@@ -146,7 +146,7 @@ impl RoleGenQuery {
       .with_auth()?
       .build()
       .scope({
-        role_resolver::get_is_locked_by_id(
+        role_resolver::get_is_locked_by_id_role(
           id,
           None,
         )
@@ -161,7 +161,7 @@ impl RoleGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        role_resolver::get_field_comments(
+        role_resolver::get_field_comments_role(
           None,
         )
       }).await
@@ -176,7 +176,7 @@ impl RoleGenQuery {
       .with_auth()?
       .build()
       .scope({
-        role_resolver::find_last_order_by(
+        role_resolver::find_last_order_by_role(
           None,
         )
       }).await
@@ -207,7 +207,7 @@ impl RoleGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        role_resolver::creates(
+        role_resolver::creates_role(
           inputs,
           options.into(),
         )
@@ -226,7 +226,7 @@ impl RoleGenMutation {
       .with_tran()
       .build()
       .scope({
-        role_resolver::update_tenant_by_id(
+        role_resolver::update_tenant_by_id_role(
           id,
           tenant_id,
           None,
@@ -246,7 +246,7 @@ impl RoleGenMutation {
       .with_tran()
       .build()
       .scope({
-        role_resolver::update_by_id(
+        role_resolver::update_by_id_role(
           id,
           input,
           None,
@@ -265,7 +265,7 @@ impl RoleGenMutation {
       .with_tran()
       .build()
       .scope({
-        role_resolver::delete_by_ids(
+        role_resolver::delete_by_ids_role(
           ids,
           None,
         )
@@ -284,7 +284,7 @@ impl RoleGenMutation {
       .with_tran()
       .build()
       .scope({
-        role_resolver::enable_by_ids(
+        role_resolver::enable_by_ids_role(
           ids,
           is_enabled,
           None,
@@ -304,7 +304,7 @@ impl RoleGenMutation {
       .with_tran()
       .build()
       .scope({
-        role_resolver::lock_by_ids(
+        role_resolver::lock_by_ids_role(
           ids,
           is_locked,
           None,
@@ -323,7 +323,7 @@ impl RoleGenMutation {
       .with_tran()
       .build()
       .scope({
-        role_resolver::revert_by_ids(
+        role_resolver::revert_by_ids_role(
           ids,
           None,
         )
@@ -341,7 +341,7 @@ impl RoleGenMutation {
       .with_tran()
       .build()
       .scope({
-        role_resolver::force_delete_by_ids(
+        role_resolver::force_delete_by_ids_role(
           ids,
           None,
         )

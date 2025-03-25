@@ -5,22 +5,22 @@ use crate::common::context::{
   get_auth_id,
 };
 
-use crate::r#gen::base::menu::menu_dao::find_one as find_one_menu;
+use crate::r#gen::base::menu::menu_dao::find_one_menu;
 use crate::r#gen::base::menu::menu_model::MenuSearch;
 
-use crate::r#gen::base::data_permit::data_permit_dao::find_all as find_all_permit;
+use crate::r#gen::base::data_permit::data_permit_dao::find_all_data_permit;
 use crate::r#gen::base::data_permit::data_permit_model::{
   DataPermitModel,
   DataPermitSearch,
 };
 
 use crate::r#gen::base::usr::usr_dao::{
-  find_by_id as find_by_id_usr,
-  validate_option as validate_option_usr,
-  validate_is_enabled as validate_is_enabled_usr,
+  find_by_id_usr,
+  validate_option_usr,
+  validate_is_enabled_usr,
 };
 
-use crate::r#gen::base::role::role_dao::find_all as find_all_role;
+use crate::r#gen::base::role::role_dao::find_all_role;
 use crate::r#gen::base::role::role_model::RoleSearch;
 
 /// 获取数据权限列表
@@ -100,7 +100,7 @@ pub async fn get_data_permits(
     .into_iter()
     .collect::<Vec<_>>();
   
-  let data_permit_models = find_all_permit(
+  let data_permit_models = find_all_data_permit(
     DataPermitSearch {
       ids: data_permit_ids.into(),
       menu_id: vec![menu_id].into(),
