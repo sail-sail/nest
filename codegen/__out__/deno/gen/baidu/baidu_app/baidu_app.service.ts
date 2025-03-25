@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找百度应用总数
  */
-export async function findCount(
+export async function findCountBaiduApp(
   search?: BaiduAppSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const baidu_app_num = await baidu_appDao.findCount(search);
+  const baidu_app_num = await baidu_appDao.findCountBaiduApp(search);
   
   return baidu_app_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找百度应用列表
  */
-export async function findAll(
+export async function findAllBaiduApp(
   search?: BaiduAppSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const baidu_app_models = await baidu_appDao.findAll(search, page, sort);
+  const baidu_app_models = await baidu_appDao.findAllBaiduApp(search, page, sort);
   
   return baidu_app_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblBaiduApp(
   input: BaiduAppInput,
 ): Promise<void> {
-  await baidu_appDao.setIdByLbl(input);
+  await baidu_appDao.setIdByLblBaiduApp(input);
 }
 
 /**
  * 根据条件查找第一个百度应用
  */
-export async function findOne(
+export async function findOneBaiduApp(
   search?: BaiduAppSearch,
   sort?: SortInput[],
 ): Promise<BaiduAppModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const baidu_app_model = await baidu_appDao.findOne(search, sort);
+  const baidu_app_model = await baidu_appDao.findOneBaiduApp(search, sort);
   
   return baidu_app_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找百度应用
  */
-export async function findById(
+export async function findByIdBaiduApp(
   baidu_app_id?: BaiduAppId | null,
 ): Promise<BaiduAppModel | undefined> {
   
-  const baidu_app_model = await baidu_appDao.findById(baidu_app_id);
+  const baidu_app_model = await baidu_appDao.findByIdBaiduApp(baidu_app_id);
   
   return baidu_app_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找百度应用
  */
-export async function findByIds(
+export async function findByIdsBaiduApp(
   baidu_app_ids: BaiduAppId[],
 ): Promise<BaiduAppModel[]> {
   
-  const baidu_app_models = await baidu_appDao.findByIds(baidu_app_ids);
+  const baidu_app_models = await baidu_appDao.findByIdsBaiduApp(baidu_app_ids);
   
   return baidu_app_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找百度应用是否存在
  */
-export async function exist(
+export async function existBaiduApp(
   search?: BaiduAppSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const baidu_app_exist = await baidu_appDao.exist(search);
+  const baidu_app_exist = await baidu_appDao.existBaiduApp(search);
   
   return baidu_app_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找百度应用是否存在
  */
-export async function existById(
+export async function existByIdBaiduApp(
   baidu_app_id?: BaiduAppId | null,
 ): Promise<boolean> {
   
-  const baidu_app_exist = await baidu_appDao.existById(baidu_app_id);
+  const baidu_app_exist = await baidu_appDao.existByIdBaiduApp(baidu_app_id);
   
   return baidu_app_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验百度应用
  */
-export async function validate(
+export async function validateBaiduApp(
   input: BaiduAppInput,
 ): Promise<void> {
-  await baidu_appDao.validate(input);
+  await baidu_appDao.validateBaiduApp(input);
 }
 
 /**
  * 批量创建百度应用
  */
-export async function creates(
+export async function createsBaiduApp(
   inputs: BaiduAppInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<BaiduAppId[]> {
-  const baidu_app_ids = await baidu_appDao.creates(inputs, options);
+  const baidu_app_ids = await baidu_appDao.createsBaiduApp(inputs, options);
   
   return baidu_app_ids;
 }
@@ -150,37 +150,37 @@ export async function creates(
 /**
  * 根据 id 修改百度应用
  */
-export async function updateById(
+export async function updateByIdBaiduApp(
   baidu_app_id: BaiduAppId,
   input: BaiduAppInput,
 ): Promise<BaiduAppId> {
   
-  const is_locked = await baidu_appDao.getIsLockedById(baidu_app_id);
+  const is_locked = await baidu_appDao.getIsLockedByIdBaiduApp(baidu_app_id);
   if (is_locked) {
     throw "不能修改已经锁定的 百度应用";
   }
   
-  const baidu_app_id2 = await baidu_appDao.updateById(baidu_app_id, input);
+  const baidu_app_id2 = await baidu_appDao.updateByIdBaiduApp(baidu_app_id, input);
   
   return baidu_app_id2;
 }
 
 /** 校验百度应用是否存在 */
-export async function validateOption(
+export async function validateOptionBaiduApp(
   model0?: BaiduAppModel,
 ): Promise<BaiduAppModel> {
-  const baidu_app_model = await baidu_appDao.validateOption(model0);
+  const baidu_app_model = await baidu_appDao.validateOptionBaiduApp(model0);
   return baidu_app_model;
 }
 
 /**
  * 根据 ids 删除百度应用
  */
-export async function deleteByIds(
+export async function deleteByIdsBaiduApp(
   baidu_app_ids: BaiduAppId[],
 ): Promise<number> {
   
-  const old_models = await baidu_appDao.findByIds(baidu_app_ids);
+  const old_models = await baidu_appDao.findByIdsBaiduApp(baidu_app_ids);
   
   for (const old_model of old_models) {
     if (old_model.is_locked === 1) {
@@ -188,40 +188,40 @@ export async function deleteByIds(
     }
   }
   
-  const baidu_app_num = await baidu_appDao.deleteByIds(baidu_app_ids);
+  const baidu_app_num = await baidu_appDao.deleteByIdsBaiduApp(baidu_app_ids);
   return baidu_app_num;
 }
 
 /**
  * 根据 ids 启用或者禁用百度应用
  */
-export async function enableByIds(
+export async function enableByIdsBaiduApp(
   ids: BaiduAppId[],
   is_enabled: 0 | 1,
 ): Promise<number> {
-  const baidu_app_num = await baidu_appDao.enableByIds(ids, is_enabled);
+  const baidu_app_num = await baidu_appDao.enableByIdsBaiduApp(ids, is_enabled);
   return baidu_app_num;
 }
 
 /**
  * 根据 ids 锁定或者解锁百度应用
  */
-export async function lockByIds(
+export async function lockByIdsBaiduApp(
   baidu_app_ids: BaiduAppId[],
   is_locked: 0 | 1,
 ): Promise<number> {
-  const baidu_app_num = await baidu_appDao.lockByIds(baidu_app_ids, is_locked);
+  const baidu_app_num = await baidu_appDao.lockByIdsBaiduApp(baidu_app_ids, is_locked);
   return baidu_app_num;
 }
 
 /**
  * 根据 ids 还原百度应用
  */
-export async function revertByIds(
+export async function revertByIdsBaiduApp(
   baidu_app_ids: BaiduAppId[],
 ): Promise<number> {
   
-  const baidu_app_num = await baidu_appDao.revertByIds(baidu_app_ids);
+  const baidu_app_num = await baidu_appDao.revertByIdsBaiduApp(baidu_app_ids);
   
   return baidu_app_num;
 }
@@ -229,11 +229,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除百度应用
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsBaiduApp(
   baidu_app_ids: BaiduAppId[],
 ): Promise<number> {
   
-  const baidu_app_num = await baidu_appDao.forceDeleteByIds(baidu_app_ids);
+  const baidu_app_num = await baidu_appDao.forceDeleteByIdsBaiduApp(baidu_app_ids);
   
   return baidu_app_num;
 }
@@ -241,16 +241,16 @@ export async function forceDeleteByIds(
 /**
  * 获取百度应用字段注释
  */
-export async function getFieldComments(): Promise<BaiduAppFieldComment> {
-  const baidu_app_fields = await baidu_appDao.getFieldComments();
+export async function getFieldCommentsBaiduApp(): Promise<BaiduAppFieldComment> {
+  const baidu_app_fields = await baidu_appDao.getFieldCommentsBaiduApp();
   return baidu_app_fields;
 }
 
 /**
  * 查找 百度应用 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByBaiduApp(
 ): Promise<number> {
-  const baidu_app_sort = await baidu_appDao.findLastOrderBy();
+  const baidu_app_sort = await baidu_appDao.findLastOrderByBaiduApp();
   return baidu_app_sort;
 }

@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -72,7 +72,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -208,9 +208,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountBaiduApp
 /** 根据条件查找百度应用总数 */
-export async function findCount(
+export async function findCountBaiduApp(
   search?: Readonly<BaiduAppSearch>,
   options?: {
     is_debug?: boolean;
@@ -219,12 +219,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "baidu_baidu_app";
-  const method = "findCount";
+  const method = "findCountBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -307,9 +307,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllBaiduApp
 /** 根据搜索条件和分页查找百度应用列表 */
-export async function findAll(
+export async function findAllBaiduApp(
   search?: Readonly<BaiduAppSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -320,7 +320,7 @@ export async function findAll(
 ): Promise<BaiduAppModel[]> {
   
   const table = "baidu_baidu_app";
-  const method = "findAll";
+  const method = "findAllBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -512,9 +512,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblBaiduApp
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblBaiduApp(
   input: BaiduAppInput,
 ) {
   
@@ -553,9 +553,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsBaiduApp
 /** 获取百度应用字段注释 */
-export async function getFieldComments(): Promise<BaiduAppFieldComment> {
+export async function getFieldCommentsBaiduApp(): Promise<BaiduAppFieldComment> {
   const fieldComments: BaiduAppFieldComment = {
     id: "ID",
     lbl: "应用名称",
@@ -581,9 +581,9 @@ export async function getFieldComments(): Promise<BaiduAppFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueBaiduApp
 /** 通过唯一约束获得百度应用列表 */
-export async function findByUnique(
+export async function findByUniqueBaiduApp(
   search0: Readonly<BaiduAppInput>,
   options?: {
     is_debug?: boolean;
@@ -591,7 +591,7 @@ export async function findByUnique(
 ): Promise<BaiduAppModel[]> {
   
   const table = "baidu_baidu_app";
-  const method = "findByUnique";
+  const method = "findByUniqueBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -609,7 +609,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneBaiduApp(
       {
         id: search0.id,
       },
@@ -627,7 +627,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllBaiduApp(
       {
         lbl,
       },
@@ -642,7 +642,7 @@ export async function findByUnique(
       return [ ];
     }
     const appid = search0.appid;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllBaiduApp(
       {
         appid,
       },
@@ -657,7 +657,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueBaiduApp(
   oldModel: Readonly<BaiduAppModel>,
   input: Readonly<BaiduAppInput>,
 ): boolean {
@@ -678,9 +678,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueBaiduApp
 /** 通过唯一约束检查 百度应用 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueBaiduApp(
   input: Readonly<BaiduAppInput>,
   oldModel: Readonly<BaiduAppModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -692,14 +692,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueBaiduApp(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 百度应用 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: BaiduAppId = await updateById(
+      const id: BaiduAppId = await updateByIdBaiduApp(
         oldModel.id,
         {
           ...input,
@@ -716,9 +716,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneBaiduApp
 /** 根据条件查找第一百度应用 */
-export async function findOne(
+export async function findOneBaiduApp(
   search?: Readonly<BaiduAppSearch>,
   sort?: SortInput[],
   options?: {
@@ -727,7 +727,7 @@ export async function findOne(
 ): Promise<BaiduAppModel | undefined> {
   
   const table = "baidu_baidu_app";
-  const method = "findOne";
+  const method = "findOneBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -754,7 +754,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllBaiduApp(
     search,
     page,
     sort,
@@ -764,9 +764,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdBaiduApp
 /** 根据 id 查找百度应用 */
-export async function findById(
+export async function findByIdBaiduApp(
   id?: BaiduAppId | null,
   options?: {
     is_debug?: boolean;
@@ -774,7 +774,7 @@ export async function findById(
 ): Promise<BaiduAppModel | undefined> {
   
   const table = "baidu_baidu_app";
-  const method = "findById";
+  const method = "findByIdBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -795,7 +795,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneBaiduApp(
     {
       id,
     },
@@ -806,9 +806,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsBaiduApp
 /** 根据 ids 查找百度应用 */
-export async function findByIds(
+export async function findByIdsBaiduApp(
   ids: BaiduAppId[],
   options?: {
     is_debug?: boolean;
@@ -816,7 +816,7 @@ export async function findByIds(
 ): Promise<BaiduAppModel[]> {
   
   const table = "baidu_baidu_app";
-  const method = "findByIds";
+  const method = "findByIdsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -837,7 +837,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllBaiduApp(
     {
       ids,
     },
@@ -863,9 +863,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existBaiduApp
 /** 根据搜索条件判断百度应用是否存在 */
-export async function exist(
+export async function existBaiduApp(
   search?: Readonly<BaiduAppSearch>,
   options?: {
     is_debug?: boolean;
@@ -873,7 +873,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "baidu_baidu_app";
-  const method = "exist";
+  const method = "existBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -889,15 +889,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneBaiduApp(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdBaiduApp
 /** 根据id判断百度应用是否存在 */
-export async function existById(
+export async function existByIdBaiduApp(
   id?: Readonly<BaiduAppId | null>,
   options?: {
     is_debug?: boolean;
@@ -905,7 +905,7 @@ export async function existById(
 ) {
   
   const table = "baidu_baidu_app";
-  const method = "existById";
+  const method = "existByIdBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -947,9 +947,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledBaiduApp
 /** 校验百度应用是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledBaiduApp(
   model: Readonly<BaiduAppModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -957,9 +957,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionBaiduApp
 /** 校验百度应用是否存在 */
-export async function validateOption(
+export async function validateOptionBaiduApp(
   model?: BaiduAppModel,
 ) {
   if (!model) {
@@ -970,12 +970,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateBaiduApp
 /** 百度应用增加和修改时校验输入 */
-export async function validate(
+export async function validateBaiduApp(
   input: Readonly<BaiduAppInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsBaiduApp();
   
   // ID
   await validators.chars_max_length(
@@ -1042,9 +1042,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnBaiduApp
 /** 创建 百度应用 并返回 */
-export async function createReturn(
+export async function createReturnBaiduApp(
   input: Readonly<BaiduAppInput>,
   options?: {
     is_debug?: boolean;
@@ -1055,7 +1055,7 @@ export async function createReturn(
 ): Promise<BaiduAppModel> {
   
   const table = "baidu_baidu_app";
-  const method = "createReturn";
+  const method = "createReturnBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1080,8 +1080,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionBaiduApp(
+    await findOneBaiduApp(
       {
         id,
       },
@@ -1093,9 +1093,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createBaiduApp
 /** 创建 百度应用 */
-export async function create(
+export async function createBaiduApp(
   input: Readonly<BaiduAppInput>,
   options?: {
     is_debug?: boolean;
@@ -1106,7 +1106,7 @@ export async function create(
 ): Promise<BaiduAppId> {
   
   const table = "baidu_baidu_app";
-  const method = "create";
+  const method = "createBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1134,9 +1134,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnBaiduApp
 /** 批量创建 百度应用 并返回 */
-export async function createsReturn(
+export async function createsReturnBaiduApp(
   inputs: BaiduAppInput[],
   options?: {
     is_debug?: boolean;
@@ -1147,7 +1147,7 @@ export async function createsReturn(
 ): Promise<BaiduAppModel[]> {
   
   const table = "baidu_baidu_app";
-  const method = "createsReturn";
+  const method = "createsReturnBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1166,14 +1166,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsBaiduApp(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsBaiduApp
 /** 批量创建 百度应用 */
-export async function creates(
+export async function createsBaiduApp(
   inputs: BaiduAppInput[],
   options?: {
     is_debug?: boolean;
@@ -1184,7 +1184,7 @@ export async function creates(
 ): Promise<BaiduAppId[]> {
   
   const table = "baidu_baidu_app";
-  const method = "creates";
+  const method = "createsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1233,11 +1233,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueBaiduApp(input, options);
     if (oldModels.length > 0) {
       let id: BaiduAppId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueBaiduApp(
           input,
           oldModel,
           options?.uniqueType,
@@ -1267,7 +1267,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheBaiduApp();
   
   const args = new QueryArgs();
   let sql = "insert into baidu_baidu_app(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,lbl,appid,api_key,secret_key,aes_key,is_locked,is_enabled,order_by,rem)values";
@@ -1429,20 +1429,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheBaiduApp();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheBaiduApp
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheBaiduApp() {
   await delCacheCtx(`dao.sql.baidu_baidu_app`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdBaiduApp
 /** 百度应用 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdBaiduApp(
   id: BaiduAppId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1451,7 +1451,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "baidu_baidu_app";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1481,13 +1481,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheBaiduApp();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdBaiduApp
 /** 根据 id 修改 百度应用 */
-export async function updateById(
+export async function updateByIdBaiduApp(
   id: BaiduAppId,
   input: BaiduAppInput,
   options?: {
@@ -1499,7 +1499,7 @@ export async function updateById(
 ): Promise<BaiduAppId> {
   
   const table = "baidu_baidu_app";
-  const method = "updateById";
+  const method = "updateByIdBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1522,15 +1522,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdBaiduApp: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdBaiduApp: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdBaiduApp(id, input.tenant_id, options);
   }
   
   {
@@ -1538,7 +1538,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueBaiduApp(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1549,7 +1549,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdBaiduApp(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 百度应用 已被删除";
@@ -1688,7 +1688,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheBaiduApp();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1696,7 +1696,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheBaiduApp();
   }
   
   if (!is_silent_mode) {
@@ -1706,9 +1706,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsBaiduApp
 /** 根据 ids 删除 百度应用 */
-export async function deleteByIds(
+export async function deleteByIdsBaiduApp(
   ids: BaiduAppId[],
   options?: {
     is_debug?: boolean;
@@ -1718,7 +1718,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "baidu_baidu_app";
-  const method = "deleteByIds";
+  const method = "deleteByIdsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1741,12 +1741,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheBaiduApp();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdBaiduApp(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1779,14 +1779,14 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheBaiduApp();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdBaiduApp
 /** 根据 id 查找 百度应用 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdBaiduApp(
   id: BaiduAppId,
   options?: {
     is_debug?: boolean;
@@ -1796,7 +1796,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdBaiduApp(
     id,
     options,
   );
@@ -1805,9 +1805,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsBaiduApp
 /** 根据 ids 启用或者禁用 百度应用 */
-export async function enableByIds(
+export async function enableByIdsBaiduApp(
   ids: BaiduAppId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -1816,7 +1816,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "baidu_baidu_app";
-  const method = "enableByIds";
+  const method = "enableByIdsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1841,7 +1841,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheBaiduApp();
   }
   
   const args = new QueryArgs();
@@ -1849,14 +1849,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheBaiduApp();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdBaiduApp
 /** 根据 id 查找 百度应用 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdBaiduApp(
   id: BaiduAppId,
   options?: {
     is_debug?: boolean;
@@ -1866,18 +1866,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const baidu_app_model = await findByIdBaiduApp(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = baidu_app_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsBaiduApp
 /** 根据 ids 锁定或者解锁 百度应用 */
-export async function lockByIds(
+export async function lockByIdsBaiduApp(
   ids: BaiduAppId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -1886,7 +1886,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "baidu_baidu_app";
-  const method = "lockByIds";
+  const method = "lockByIdsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1910,21 +1910,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheBaiduApp();
   
   const args = new QueryArgs();
   let sql = `update baidu_baidu_app set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheBaiduApp();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsBaiduApp
 /** 根据 ids 还原 百度应用 */
-export async function revertByIds(
+export async function revertByIdsBaiduApp(
   ids: BaiduAppId[],
   options?: {
     is_debug?: boolean;
@@ -1932,7 +1932,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "baidu_baidu_app";
-  const method = "revertByIds";
+  const method = "revertByIdsBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1953,12 +1953,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheBaiduApp();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneBaiduApp(
       {
         id,
         is_deleted: 1,
@@ -1967,7 +1967,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdBaiduApp(
         id,
         options,
       );
@@ -1980,7 +1980,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as BaiduAppInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueBaiduApp(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1994,14 +1994,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheBaiduApp();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsBaiduApp
 /** 根据 ids 彻底删除 百度应用 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsBaiduApp(
   ids: BaiduAppId[],
   options?: {
     is_debug?: boolean;
@@ -2010,7 +2010,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "baidu_baidu_app";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsBaiduApp";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2032,12 +2032,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheBaiduApp();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneBaiduApp(
       {
         id,
         is_deleted: 1,
@@ -2054,21 +2054,21 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheBaiduApp();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByBaiduApp
 /** 查找 百度应用 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByBaiduApp(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "baidu_baidu_app";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByBaiduApp";
   
   const is_debug = get_is_debug(options?.is_debug);
   

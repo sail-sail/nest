@@ -14,16 +14,16 @@ import {
 import dayjs from "dayjs";
  
 import {
-  findOne as findOneBaiduAppToken,
-  create as createBaiduAppToken,
-  updateById as updateByIdABaiduppToken,
+  findOneBaiduAppToken,
+  createBaiduAppToken,
+  updateByIdBaiduAppToken,
 } from "/gen/baidu/baidu_app_token/baidu_app_token.dao.ts";
 
 import {
-  findOne as findOneBaiduApp,
-  findById as findByIdBaiduApp,
-  validateOption as validateOptionBaiduApp,
-  validateIsEnabled as validateIsEnabledBaiduApp,
+  findOneBaiduApp,
+  findByIdBaiduApp,
+  validateOptionBaiduApp,
+  validateIsEnabledBaiduApp,
 } from "/gen/baidu/baidu_app/baidu_app.dao.ts";
 
 import type {
@@ -141,7 +141,7 @@ export async function getAccessToken(
     log(`百度应用 ${ baidu_app_model.lbl } 的 access_token 已过期，重新获取`);
     const data = await fetchBaiduAppToken(baidu_app_model);
     access_token = data.access_token;
-    await updateByIdABaiduppToken(
+    await updateByIdBaiduAppToken(
       baidu_app_token_model.id,
       {
         access_token,
