@@ -58,7 +58,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -72,7 +72,7 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -214,9 +214,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountSeo
 /** 根据条件查找SEO优化总数 */
-export async function findCount(
+export async function findCountSeo(
   search?: Readonly<SeoSearch>,
   options?: {
     is_debug?: boolean;
@@ -225,12 +225,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "nuxt_seo";
-  const method = "findCount";
+  const method = "findCountSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -313,9 +313,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllSeo
 /** 根据搜索条件和分页查找SEO优化列表 */
-export async function findAll(
+export async function findAllSeo(
   search?: Readonly<SeoSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -326,7 +326,7 @@ export async function findAll(
 ): Promise<SeoModel[]> {
   
   const table = "nuxt_seo";
-  const method = "findAll";
+  const method = "findAllSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -518,9 +518,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblSeo
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblSeo(
   input: SeoInput,
 ) {
   
@@ -559,9 +559,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsSeo
 /** 获取SEO优化字段注释 */
-export async function getFieldComments(): Promise<SeoFieldComment> {
+export async function getFieldCommentsSeo(): Promise<SeoFieldComment> {
   const fieldComments: SeoFieldComment = {
     id: "ID",
     title: "标题",
@@ -588,9 +588,9 @@ export async function getFieldComments(): Promise<SeoFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueSeo
 /** 通过唯一约束获得SEO优化列表 */
-export async function findByUnique(
+export async function findByUniqueSeo(
   search0: Readonly<SeoInput>,
   options?: {
     is_debug?: boolean;
@@ -598,7 +598,7 @@ export async function findByUnique(
 ): Promise<SeoModel[]> {
   
   const table = "nuxt_seo";
-  const method = "findByUnique";
+  const method = "findByUniqueSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -616,7 +616,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneSeo(
       {
         id: search0.id,
       },
@@ -634,7 +634,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueSeo(
   oldModel: Readonly<SeoModel>,
   input: Readonly<SeoInput>,
 ): boolean {
@@ -645,9 +645,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueSeo
 /** 通过唯一约束检查 SEO优化 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueSeo(
   input: Readonly<SeoInput>,
   oldModel: Readonly<SeoModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -659,14 +659,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueSeo(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 SEO优化 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: SeoId = await updateById(
+      const id: SeoId = await updateByIdSeo(
         oldModel.id,
         {
           ...input,
@@ -683,9 +683,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneSeo
 /** 根据条件查找第一SEO优化 */
-export async function findOne(
+export async function findOneSeo(
   search?: Readonly<SeoSearch>,
   sort?: SortInput[],
   options?: {
@@ -694,7 +694,7 @@ export async function findOne(
 ): Promise<SeoModel | undefined> {
   
   const table = "nuxt_seo";
-  const method = "findOne";
+  const method = "findOneSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -721,7 +721,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllSeo(
     search,
     page,
     sort,
@@ -731,9 +731,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdSeo
 /** 根据 id 查找SEO优化 */
-export async function findById(
+export async function findByIdSeo(
   id?: SeoId | null,
   options?: {
     is_debug?: boolean;
@@ -741,7 +741,7 @@ export async function findById(
 ): Promise<SeoModel | undefined> {
   
   const table = "nuxt_seo";
-  const method = "findById";
+  const method = "findByIdSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -762,7 +762,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneSeo(
     {
       id,
     },
@@ -773,9 +773,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsSeo
 /** 根据 ids 查找SEO优化 */
-export async function findByIds(
+export async function findByIdsSeo(
   ids: SeoId[],
   options?: {
     is_debug?: boolean;
@@ -783,7 +783,7 @@ export async function findByIds(
 ): Promise<SeoModel[]> {
   
   const table = "nuxt_seo";
-  const method = "findByIds";
+  const method = "findByIdsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -804,7 +804,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllSeo(
     {
       ids,
     },
@@ -830,9 +830,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existSeo
 /** 根据搜索条件判断SEO优化是否存在 */
-export async function exist(
+export async function existSeo(
   search?: Readonly<SeoSearch>,
   options?: {
     is_debug?: boolean;
@@ -840,7 +840,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "nuxt_seo";
-  const method = "exist";
+  const method = "existSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -856,15 +856,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneSeo(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdSeo
 /** 根据id判断SEO优化是否存在 */
-export async function existById(
+export async function existByIdSeo(
   id?: Readonly<SeoId | null>,
   options?: {
     is_debug?: boolean;
@@ -872,7 +872,7 @@ export async function existById(
 ) {
   
   const table = "nuxt_seo";
-  const method = "existById";
+  const method = "existByIdSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -914,9 +914,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionSeo
 /** 校验SEO优化是否存在 */
-export async function validateOption(
+export async function validateOptionSeo(
   model?: SeoModel,
 ) {
   if (!model) {
@@ -927,12 +927,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateSeo
 /** SEO优化增加和修改时校验输入 */
-export async function validate(
+export async function validateSeo(
   input: Readonly<SeoInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsSeo();
   
   // ID
   await validators.chars_max_length(
@@ -1006,9 +1006,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnSeo
 /** 创建 SEO优化 并返回 */
-export async function createReturn(
+export async function createReturnSeo(
   input: Readonly<SeoInput>,
   options?: {
     is_debug?: boolean;
@@ -1019,7 +1019,7 @@ export async function createReturn(
 ): Promise<SeoModel> {
   
   const table = "nuxt_seo";
-  const method = "createReturn";
+  const method = "createReturnSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1044,8 +1044,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionSeo(
+    await findOneSeo(
       {
         id,
       },
@@ -1057,9 +1057,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createSeo
 /** 创建 SEO优化 */
-export async function create(
+export async function createSeo(
   input: Readonly<SeoInput>,
   options?: {
     is_debug?: boolean;
@@ -1070,7 +1070,7 @@ export async function create(
 ): Promise<SeoId> {
   
   const table = "nuxt_seo";
-  const method = "create";
+  const method = "createSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1098,9 +1098,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnSeo
 /** 批量创建 SEO优化 并返回 */
-export async function createsReturn(
+export async function createsReturnSeo(
   inputs: SeoInput[],
   options?: {
     is_debug?: boolean;
@@ -1111,7 +1111,7 @@ export async function createsReturn(
 ): Promise<SeoModel[]> {
   
   const table = "nuxt_seo";
-  const method = "createsReturn";
+  const method = "createsReturnSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1130,14 +1130,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsSeo(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsSeo
 /** 批量创建 SEO优化 */
-export async function creates(
+export async function createsSeo(
   inputs: SeoInput[],
   options?: {
     is_debug?: boolean;
@@ -1148,7 +1148,7 @@ export async function creates(
 ): Promise<SeoId[]> {
   
   const table = "nuxt_seo";
-  const method = "creates";
+  const method = "createsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1197,11 +1197,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueSeo(input, options);
     if (oldModels.length > 0) {
       let id: SeoId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueSeo(
           input,
           oldModel,
           options?.uniqueType,
@@ -1231,7 +1231,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheSeo();
   
   const args = new QueryArgs();
   let sql = "insert into nuxt_seo(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,title,description,keywords,og_image,og_title,og_description,is_locked,is_default,order_by,rem)values";
@@ -1398,20 +1398,20 @@ async function _creates(
     throw new Error(`affectedRows: ${ affectedRows } != ${ inputs2.length }`);
   }
   
-  await delCache();
+  await delCacheSeo();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheSeo
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheSeo() {
   await delCacheCtx(`dao.sql.nuxt_seo`);
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdSeo
 /** SEO优化 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdSeo(
   id: SeoId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1420,7 +1420,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "nuxt_seo";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1450,13 +1450,13 @@ export async function updateTenantById(
   const res = await execute(sql, args);
   const affectedRows = res.affectedRows;
   
-  await delCache();
+  await delCacheSeo();
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdSeo
 /** 根据 id 修改 SEO优化 */
-export async function updateById(
+export async function updateByIdSeo(
   id: SeoId,
   input: SeoInput,
   options?: {
@@ -1468,7 +1468,7 @@ export async function updateById(
 ): Promise<SeoId> {
   
   const table = "nuxt_seo";
-  const method = "updateById";
+  const method = "updateByIdSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1491,15 +1491,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdSeo: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdSeo: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdSeo(id, input.tenant_id, options);
   }
   
   {
@@ -1507,7 +1507,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueSeo(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1518,7 +1518,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdSeo(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 SEO优化 已被删除";
@@ -1663,7 +1663,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheSeo();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -1671,7 +1671,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheSeo();
   }
   
   if (!is_silent_mode) {
@@ -1681,9 +1681,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsSeo
 /** 根据 ids 删除 SEO优化 */
-export async function deleteByIds(
+export async function deleteByIdsSeo(
   ids: SeoId[],
   options?: {
     is_debug?: boolean;
@@ -1693,7 +1693,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "nuxt_seo";
-  const method = "deleteByIds";
+  const method = "deleteByIdsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1716,12 +1716,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheSeo();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdSeo(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1754,27 +1754,27 @@ export async function deleteByIds(
     affectedRows += res.affectedRows;
   }
   
-  await delCache();
+  await delCacheSeo();
   
   return affectedRows;
 }
 
-// MARK: defaultById
+// MARK: defaultByIdSeo
 /** 根据 id 设置默认SEO优化 */
-export async function defaultById(
+export async function defaultByIdSeo(
   id: SeoId,
   options?: {
   },
 ): Promise<number> {
   
   const table = "nuxt_seo";
-  const method = "defaultById";
+  const method = "defaultByIdSeo";
   
   if (!id) {
-    throw new Error("defaultById: id cannot be empty");
+    throw new Error("defaultByIdSeo: id cannot be empty");
   }
   
-  await delCache();
+  await delCacheSeo();
   
   {
     const args = new QueryArgs();
@@ -1787,14 +1787,14 @@ export async function defaultById(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheSeo();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdSeo
 /** 根据 id 查找 SEO优化 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdSeo(
   id: SeoId,
   options?: {
     is_debug?: boolean;
@@ -1804,18 +1804,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const seo_model = await findByIdSeo(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = seo_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsSeo
 /** 根据 ids 锁定或者解锁 SEO优化 */
-export async function lockByIds(
+export async function lockByIdsSeo(
   ids: SeoId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -1824,7 +1824,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "nuxt_seo";
-  const method = "lockByIds";
+  const method = "lockByIdsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1848,21 +1848,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheSeo();
   
   const args = new QueryArgs();
   let sql = `update nuxt_seo set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheSeo();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsSeo
 /** 根据 ids 还原 SEO优化 */
-export async function revertByIds(
+export async function revertByIdsSeo(
   ids: SeoId[],
   options?: {
     is_debug?: boolean;
@@ -1870,7 +1870,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "nuxt_seo";
-  const method = "revertByIds";
+  const method = "revertByIdsSeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1891,12 +1891,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheSeo();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneSeo(
       {
         id,
         is_deleted: 1,
@@ -1905,7 +1905,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdSeo(
         id,
         options,
       );
@@ -1918,7 +1918,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as SeoInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueSeo(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1932,14 +1932,14 @@ export async function revertByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheSeo();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsSeo
 /** 根据 ids 彻底删除 SEO优化 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsSeo(
   ids: SeoId[],
   options?: {
     is_debug?: boolean;
@@ -1948,7 +1948,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "nuxt_seo";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsSeo";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1970,12 +1970,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheSeo();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneSeo(
       {
         id,
         is_deleted: 1,
@@ -1992,21 +1992,21 @@ export async function forceDeleteByIds(
     num += result.affectedRows;
   }
   
-  await delCache();
+  await delCacheSeo();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderBySeo
 /** 查找 SEO优化 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderBySeo(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "nuxt_seo";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderBySeo";
   
   const is_debug = get_is_debug(options?.is_debug);
   
