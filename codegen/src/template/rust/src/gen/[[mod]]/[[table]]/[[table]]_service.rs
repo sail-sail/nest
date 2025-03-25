@@ -811,8 +811,8 @@ pub async fn audit_reject_<#=table#>(
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let old_model = validate_option(
-    <#=table#>_dao::find_by_id(
+  let old_model = validate_option_<#=table#>(
+    <#=table#>_dao::find_by_id_<#=table#>(
       <#=table#>_id.clone(),
       options.clone(),
     ).await?,
