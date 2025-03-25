@@ -4,13 +4,13 @@ import {
 } from "/lib/context.ts";
 
 import {
-  create as createSmsSendRecord,
-  updateById as updateByIdSmsSendRecord,
+  createSmsSendRecord,
+  updateByIdSmsSendRecord,
 } from "/gen/submail/sms_send_record/sms_send_record.dao.ts";
 
 import {
-  findOne as findOneSmsSendRecord,
-  validateOption as validateOptionSmsSendRecord,
+  findOneSmsApp,
+  validateOptionSmsApp,
 } from "/gen/submail/sms_app/sms_app.dao.ts";
 
 import {
@@ -48,8 +48,8 @@ export async function xsendSms(
     "submail_sms_send_record_status",
   ]);
   
-  const sms_app_model = await validateOptionSmsSendRecord(
-    await findOneSmsSendRecord(
+  const sms_app_model = await validateOptionSmsApp(
+    await findOneSmsApp(
       {
         is_enabled: [ 1 ],
       },
@@ -212,8 +212,8 @@ export async function sendSms(
     "submail_sms_send_record_status",
   ]);
   
-  const sms_app_model = await validateOptionSmsSendRecord(
-    await findOneSmsSendRecord(
+  const sms_app_model = await validateOptionSmsApp(
+    await findOneSmsApp(
       {
         is_enabled: [ 1 ],
       },

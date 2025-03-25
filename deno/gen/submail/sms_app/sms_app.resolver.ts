@@ -29,10 +29,10 @@ export async function findCountSmsApp(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountSmsApp,
   } = await import("./sms_app.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountSmsApp(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllSmsApp(
 ): Promise<SmsAppModel[]> {
   
   const {
-    findAll,
+    findAllSmsApp,
   } = await import("./sms_app.service.ts");
   
   checkSortSmsApp(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllSmsApp(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllSmsApp(
 export async function getFieldCommentsSmsApp(): Promise<SmsAppFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsSmsApp,
   } = await import("./sms_app.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsSmsApp();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneSmsApp(
 ): Promise<SmsAppModel | undefined> {
   
   const {
-    findOne,
+    findOneSmsApp,
   } = await import("./sms_app.service.ts");
   
   checkSortSmsApp(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneSmsApp(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdSmsApp(
 ): Promise<SmsAppModel | undefined> {
   
   const {
-    findById,
+    findByIdSmsApp,
   } = await import("./sms_app.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdSmsApp(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsSmsApp(
 ): Promise<SmsAppModel[]> {
   
   const {
-    findByIds,
+    findByIdsSmsApp,
   } = await import("./sms_app.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsSmsApp(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsSmsApp(
 ): Promise<SmsAppId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateSmsApp,
+    setIdByLblSmsApp,
+    createsSmsApp,
   } = await import("./sms_app.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsSmsApp(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblSmsApp(input);
     
-    await validate(input);
+    await validateSmsApp(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsSmsApp(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdSmsApp(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblSmsApp,
+    updateByIdSmsApp,
   } = await import("./sms_app.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblSmsApp(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: SmsAppId = await updateById(id, input);
+  const id2: SmsAppId = await updateByIdSmsApp(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsSmsApp(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsSmsApp,
   } = await import("./sms_app.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsSmsApp(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsSmsApp(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsSmsApp(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsSmsApp,
   } = await import("./sms_app.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsSmsApp(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsSmsApp(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsSmsApp(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsSmsApp,
   } = await import("./sms_app.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsSmsApp(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsSmsApp(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsSmsApp(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsSmsApp,
   } = await import("./sms_app.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsSmsApp(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsSmsApp(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsSmsApp(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsSmsApp,
   } = await import("./sms_app.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsSmsApp(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsSmsApp(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsSmsApp(
 export async function findLastOrderBySmsApp(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderBySmsApp,
   } = await import("./sms_app.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderBySmsApp();
   
   return res;
 }
