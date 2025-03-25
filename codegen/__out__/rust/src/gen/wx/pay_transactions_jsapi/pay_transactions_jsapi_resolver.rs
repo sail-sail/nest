@@ -19,7 +19,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找微信JSAPI下单列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_pay_transactions_jsapi(
   search: Option<PayTransactionsJsapiSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +34,7 @@ pub async fn find_all(
   
   check_sort_pay_transactions_jsapi(sort.as_deref())?;
   
-  let models = pay_transactions_jsapi_service::find_all(
+  let models = pay_transactions_jsapi_service::find_all_pay_transactions_jsapi(
     search,
     page,
     sort,
@@ -46,7 +46,7 @@ pub async fn find_all(
 
 /// 根据条件查找微信JSAPI下单总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_pay_transactions_jsapi(
   search: Option<PayTransactionsJsapiSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +57,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = pay_transactions_jsapi_service::find_count(
+  let num = pay_transactions_jsapi_service::find_count_pay_transactions_jsapi(
     search,
     options,
   ).await?;
@@ -67,7 +67,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个微信JSAPI下单
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_pay_transactions_jsapi(
   search: Option<PayTransactionsJsapiSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +81,7 @@ pub async fn find_one(
   
   check_sort_pay_transactions_jsapi(sort.as_deref())?;
   
-  let model = pay_transactions_jsapi_service::find_one(
+  let model = pay_transactions_jsapi_service::find_one_pay_transactions_jsapi(
     search,
     sort,
     options,
@@ -92,7 +92,7 @@ pub async fn find_one(
 
 /// 根据 id 查找微信JSAPI下单
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_pay_transactions_jsapi(
   id: PayTransactionsJsapiId,
   options: Option<Options>,
 ) -> Result<Option<PayTransactionsJsapiModel>> {
@@ -103,7 +103,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = pay_transactions_jsapi_service::find_by_id(
+  let model = pay_transactions_jsapi_service::find_by_id_pay_transactions_jsapi(
     id,
     options,
   ).await?;
@@ -113,7 +113,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找微信JSAPI下单
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_pay_transactions_jsapi(
   ids: Vec<PayTransactionsJsapiId>,
   options: Option<Options>,
 ) -> Result<Vec<PayTransactionsJsapiModel>> {
@@ -124,7 +124,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = pay_transactions_jsapi_service::find_by_ids(
+  let models = pay_transactions_jsapi_service::find_by_ids_pay_transactions_jsapi(
     ids,
     options,
   ).await?;
@@ -135,7 +135,7 @@ pub async fn find_by_ids(
 /// 微信JSAPI下单根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_pay_transactions_jsapi(
   id: PayTransactionsJsapiId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -147,7 +147,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = pay_transactions_jsapi_service::update_tenant_by_id(
+  let num = pay_transactions_jsapi_service::update_tenant_by_id_pay_transactions_jsapi(
     id,
     tenant_id,
     options,
@@ -158,7 +158,7 @@ pub async fn update_tenant_by_id(
 
 /// 获取微信JSAPI下单字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_pay_transactions_jsapi(
   options: Option<Options>,
 ) -> Result<PayTransactionsJsapiFieldComment> {
   
@@ -168,7 +168,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = pay_transactions_jsapi_service::get_field_comments(
+  let comments = pay_transactions_jsapi_service::get_field_comments_pay_transactions_jsapi(
     options,
   ).await?;
   
@@ -178,7 +178,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原微信JSAPI下单
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_pay_transactions_jsapi(
   ids: Vec<PayTransactionsJsapiId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -194,7 +194,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = pay_transactions_jsapi_service::revert_by_ids(
+  let num = pay_transactions_jsapi_service::revert_by_ids_pay_transactions_jsapi(
     ids,
     options,
   ).await?;
@@ -205,7 +205,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除微信JSAPI下单
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_pay_transactions_jsapi(
   ids: Vec<PayTransactionsJsapiId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -221,7 +221,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = pay_transactions_jsapi_service::force_delete_by_ids(
+  let num = pay_transactions_jsapi_service::force_delete_by_ids_pay_transactions_jsapi(
     ids,
     options,
   ).await?;

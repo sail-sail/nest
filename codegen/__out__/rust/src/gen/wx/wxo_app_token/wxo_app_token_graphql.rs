@@ -35,7 +35,7 @@ impl WxoAppTokenGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_token_resolver::find_all(
+        wxo_app_token_resolver::find_all_wxo_app_token(
           search,
           page,
           sort,
@@ -54,7 +54,7 @@ impl WxoAppTokenGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_token_resolver::find_count(
+        wxo_app_token_resolver::find_count_wxo_app_token(
           search,
           None,
         )
@@ -72,7 +72,7 @@ impl WxoAppTokenGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_token_resolver::find_one(
+        wxo_app_token_resolver::find_one_wxo_app_token(
           search,
           sort,
           None,
@@ -90,7 +90,7 @@ impl WxoAppTokenGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_token_resolver::find_by_id(
+        wxo_app_token_resolver::find_by_id_wxo_app_token(
           id,
           None,
         )
@@ -107,7 +107,7 @@ impl WxoAppTokenGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_app_token_resolver::find_by_ids(
+        wxo_app_token_resolver::find_by_ids_wxo_app_token(
           ids,
           None,
         )
@@ -122,7 +122,7 @@ impl WxoAppTokenGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        wxo_app_token_resolver::get_field_comments(
+        wxo_app_token_resolver::get_field_comments_wxo_app_token(
           None,
         )
       }).await
@@ -153,7 +153,7 @@ impl WxoAppTokenGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        wxo_app_token_resolver::creates(
+        wxo_app_token_resolver::creates_wxo_app_token(
           inputs,
           options.into(),
         )
@@ -172,7 +172,7 @@ impl WxoAppTokenGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_token_resolver::update_by_id(
+        wxo_app_token_resolver::update_by_id_wxo_app_token(
           id,
           input,
           None,
@@ -191,7 +191,7 @@ impl WxoAppTokenGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_token_resolver::delete_by_ids(
+        wxo_app_token_resolver::delete_by_ids_wxo_app_token(
           ids,
           None,
         )
@@ -209,7 +209,7 @@ impl WxoAppTokenGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_token_resolver::revert_by_ids(
+        wxo_app_token_resolver::revert_by_ids_wxo_app_token(
           ids,
           None,
         )
@@ -227,7 +227,7 @@ impl WxoAppTokenGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_app_token_resolver::force_delete_by_ids(
+        wxo_app_token_resolver::force_delete_by_ids_wxo_app_token(
           ids,
           None,
         )

@@ -37,7 +37,7 @@ impl WxoUsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_usr_resolver::find_all(
+        wxo_usr_resolver::find_all_wxo_usr(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl WxoUsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_usr_resolver::find_count(
+        wxo_usr_resolver::find_count_wxo_usr(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl WxoUsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_usr_resolver::find_one(
+        wxo_usr_resolver::find_one_wxo_usr(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl WxoUsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_usr_resolver::find_by_id(
+        wxo_usr_resolver::find_by_id_wxo_usr(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl WxoUsrGenQuery {
       .with_auth()?
       .build()
       .scope({
-        wxo_usr_resolver::find_by_ids(
+        wxo_usr_resolver::find_by_ids_wxo_usr(
           ids,
           None,
         )
@@ -124,7 +124,7 @@ impl WxoUsrGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        wxo_usr_resolver::get_field_comments(
+        wxo_usr_resolver::get_field_comments_wxo_usr(
           None,
         )
       }).await
@@ -155,7 +155,7 @@ impl WxoUsrGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        wxo_usr_resolver::creates(
+        wxo_usr_resolver::creates_wxo_usr(
           inputs,
           options.into(),
         )
@@ -174,7 +174,7 @@ impl WxoUsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_usr_resolver::update_tenant_by_id(
+        wxo_usr_resolver::update_tenant_by_id_wxo_usr(
           id,
           tenant_id,
           None,
@@ -194,7 +194,7 @@ impl WxoUsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_usr_resolver::update_by_id(
+        wxo_usr_resolver::update_by_id_wxo_usr(
           id,
           input,
           None,
@@ -213,7 +213,7 @@ impl WxoUsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_usr_resolver::delete_by_ids(
+        wxo_usr_resolver::delete_by_ids_wxo_usr(
           ids,
           None,
         )
@@ -231,7 +231,7 @@ impl WxoUsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_usr_resolver::revert_by_ids(
+        wxo_usr_resolver::revert_by_ids_wxo_usr(
           ids,
           None,
         )
@@ -249,7 +249,7 @@ impl WxoUsrGenMutation {
       .with_tran()
       .build()
       .scope({
-        wxo_usr_resolver::force_delete_by_ids(
+        wxo_usr_resolver::force_delete_by_ids_wxo_usr(
           ids,
           None,
         )

@@ -37,7 +37,7 @@ impl PayTransactionsJsapiGenQuery {
       .with_auth()?
       .build()
       .scope({
-        pay_transactions_jsapi_resolver::find_all(
+        pay_transactions_jsapi_resolver::find_all_pay_transactions_jsapi(
           search,
           page,
           sort,
@@ -56,7 +56,7 @@ impl PayTransactionsJsapiGenQuery {
       .with_auth()?
       .build()
       .scope({
-        pay_transactions_jsapi_resolver::find_count(
+        pay_transactions_jsapi_resolver::find_count_pay_transactions_jsapi(
           search,
           None,
         )
@@ -74,7 +74,7 @@ impl PayTransactionsJsapiGenQuery {
       .with_auth()?
       .build()
       .scope({
-        pay_transactions_jsapi_resolver::find_one(
+        pay_transactions_jsapi_resolver::find_one_pay_transactions_jsapi(
           search,
           sort,
           None,
@@ -92,7 +92,7 @@ impl PayTransactionsJsapiGenQuery {
       .with_auth()?
       .build()
       .scope({
-        pay_transactions_jsapi_resolver::find_by_id(
+        pay_transactions_jsapi_resolver::find_by_id_pay_transactions_jsapi(
           id,
           None,
         )
@@ -109,7 +109,7 @@ impl PayTransactionsJsapiGenQuery {
       .with_auth()?
       .build()
       .scope({
-        pay_transactions_jsapi_resolver::find_by_ids(
+        pay_transactions_jsapi_resolver::find_by_ids_pay_transactions_jsapi(
           ids,
           None,
         )
@@ -124,7 +124,7 @@ impl PayTransactionsJsapiGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        pay_transactions_jsapi_resolver::get_field_comments(
+        pay_transactions_jsapi_resolver::get_field_comments_pay_transactions_jsapi(
           None,
         )
       }).await
@@ -160,7 +160,7 @@ impl PayTransactionsJsapiGenMutation {
       .with_tran()
       .build()
       .scope({
-        pay_transactions_jsapi_resolver::update_tenant_by_id(
+        pay_transactions_jsapi_resolver::update_tenant_by_id_pay_transactions_jsapi(
           id,
           tenant_id,
           None,

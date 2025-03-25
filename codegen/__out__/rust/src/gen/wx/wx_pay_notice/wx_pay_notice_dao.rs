@@ -50,7 +50,7 @@ use super::wx_pay_notice_model::*;
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -656,10 +656,10 @@ async fn get_from_query(
   Ok(from_query)
 }
 
-// MARK: find_all
+// MARK: find_all_wx_pay_notice
 /// 根据搜索条件和分页查找微信支付通知列表
 #[allow(unused_mut)]
-pub async fn find_all(
+pub async fn find_all_wx_pay_notice(
   search: Option<WxPayNoticeSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -667,7 +667,7 @@ pub async fn find_all(
 ) -> Result<Vec<WxPayNoticeModel>> {
   
   let table = "wx_wx_pay_notice";
-  let method = "find_all";
+  let method = "find_all_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -902,15 +902,15 @@ pub async fn find_all(
   Ok(res)
 }
 
-// MARK: find_count
+// MARK: find_count_wx_pay_notice
 /// 根据条件查找微信支付通知总数
-pub async fn find_count(
+pub async fn find_count_wx_pay_notice(
   search: Option<WxPayNoticeSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "wx_wx_pay_notice";
-  let method = "find_count";
+  let method = "find_count_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1063,9 +1063,9 @@ pub async fn find_count(
   Ok(total)
 }
 
-// MARK: get_field_comments
+// MARK: get_field_comments_wx_pay_notice
 /// 获取微信支付通知字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_wx_pay_notice(
   _options: Option<Options>,
 ) -> Result<WxPayNoticeFieldComment> {
   
@@ -1106,16 +1106,16 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-// MARK: find_one
+// MARK: find_one_wx_pay_notice
 /// 根据条件查找第一个微信支付通知
-pub async fn find_one(
+pub async fn find_one_wx_pay_notice(
   search: Option<WxPayNoticeSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<WxPayNoticeModel>> {
   
   let table = "wx_wx_pay_notice";
-  let method = "find_one";
+  let method = "find_one_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1151,7 +1151,7 @@ pub async fn find_one(
     pg_size: 1.into(),
   }.into();
   
-  let res = find_all(
+  let res = find_all_wx_pay_notice(
     search,
     page,
     sort,
@@ -1163,15 +1163,15 @@ pub async fn find_one(
   Ok(model)
 }
 
-// MARK: find_by_id
+// MARK: find_by_id_wx_pay_notice
 /// 根据 id 查找微信支付通知
-pub async fn find_by_id(
+pub async fn find_by_id_wx_pay_notice(
   id: WxPayNoticeId,
   options: Option<Options>,
 ) -> Result<Option<WxPayNoticeModel>> {
   
   let table = "wx_wx_pay_notice";
-  let method = "find_by_id";
+  let method = "find_by_id_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1200,25 +1200,25 @@ pub async fn find_by_id(
     ..Default::default()
   }.into();
   
-  let res = find_one(
+  let wx_pay_notice_model = find_one_wx_pay_notice(
     search,
     None,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(wx_pay_notice_model)
 }
 
-// MARK: find_by_ids
+// MARK: find_by_ids_wx_pay_notice
 /// 根据 ids 查找微信支付通知
 #[allow(dead_code)]
-pub async fn find_by_ids(
+pub async fn find_by_ids_wx_pay_notice(
   ids: Vec<WxPayNoticeId>,
   options: Option<Options>,
 ) -> Result<Vec<WxPayNoticeModel>> {
   
   let table = "wx_wx_pay_notice";
-  let method = "find_by_ids";
+  let method = "find_by_ids_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1253,7 +1253,7 @@ pub async fn find_by_ids(
     ..Default::default()
   }.into();
   
-  let models = find_all(
+  let models = find_all_wx_pay_notice(
     search,
     None,
     None,
@@ -1282,16 +1282,16 @@ pub async fn find_by_ids(
   Ok(models)
 }
 
-// MARK: exists
+// MARK: exists_wx_pay_notice
 /// 根据搜索条件判断微信支付通知是否存在
 #[allow(dead_code)]
-pub async fn exists(
+pub async fn exists_wx_pay_notice(
   search: Option<WxPayNoticeSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "wx_wx_pay_notice";
-  let method = "exists";
+  let method = "exists_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1313,7 +1313,7 @@ pub async fn exists(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count(
+  let total = find_count_wx_pay_notice(
     search,
     options,
   ).await?;
@@ -1321,16 +1321,16 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-// MARK: exists_by_id
+// MARK: exists_by_id_wx_pay_notice
 /// 根据 id 判断微信支付通知是否存在
 #[allow(dead_code)]
-pub async fn exists_by_id(
+pub async fn exists_by_id_wx_pay_notice(
   id: WxPayNoticeId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "wx_wx_pay_notice";
-  let method = "exists_by_id";
+  let method = "exists_by_id_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1355,7 +1355,7 @@ pub async fn exists_by_id(
     ..Default::default()
   }.into();
   
-  let res = exists(
+  let res = exists_wx_pay_notice(
     search,
     options,
   ).await?;
@@ -1363,17 +1363,17 @@ pub async fn exists_by_id(
   Ok(res)
 }
 
-// MARK: find_by_unique
+// MARK: find_by_unique_wx_pay_notice
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique(
+pub async fn find_by_unique_wx_pay_notice(
   search: WxPayNoticeSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<WxPayNoticeModel>> {
   
   let table = "wx_wx_pay_notice";
-  let method = "find_by_unique";
+  let method = "find_by_unique_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1397,7 +1397,7 @@ pub async fn find_by_unique(
   let options = Some(options);
   
   if let Some(id) = search.id {
-    let model = find_by_id(
+    let model = find_by_id_wx_pay_notice(
       id,
       options.clone(),
     ).await?;
@@ -1419,17 +1419,17 @@ pub fn equals_by_unique(
   false
 }
 
-// MARK: check_by_unique
+// MARK: check_by_unique_wx_pay_notice
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique(
+pub async fn check_by_unique_wx_pay_notice(
   input: WxPayNoticeInput,
   model: WxPayNoticeModel,
   options: Option<Options>,
 ) -> Result<Option<WxPayNoticeId>> {
   
   let table = "wx_wx_pay_notice";
-  let method = "check_by_unique";
+  let method = "check_by_unique_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1467,7 +1467,7 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let id = update_by_id(
+    let id = update_by_id_wx_pay_notice(
       model.id.clone(),
       input,
       options,
@@ -1481,10 +1481,10 @@ pub async fn check_by_unique(
   Ok(None)
 }
 
-// MARK: set_id_by_lbl
+// MARK: set_id_by_lbl_wx_pay_notice
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables, dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_wx_pay_notice(
   input: WxPayNoticeInput,
 ) -> Result<WxPayNoticeInput> {
   
@@ -1499,7 +1499,7 @@ pub async fn set_id_by_lbl(
         input.success_time = chrono::NaiveDateTime::parse_from_str(success_time_lbl, "%Y-%m-%d").ok();
       }
       if input.success_time.is_none() {
-        let field_comments = get_field_comments(
+        let field_comments = get_field_comments_wx_pay_notice(
           None,
         ).await?;
         let column_comment = field_comments.success_time;
@@ -1680,16 +1680,16 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-// MARK: creates_return
+// MARK: creates_return_wx_pay_notice
 /// 批量创建微信支付通知并返回
 #[allow(dead_code)]
-pub async fn creates_return(
+pub async fn creates_return_wx_pay_notice(
   inputs: Vec<WxPayNoticeInput>,
   options: Option<Options>,
 ) -> Result<Vec<WxPayNoticeModel>> {
   
   let table = "wx_wx_pay_notice";
-  let method = "creates_return";
+  let method = "creates_return_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1710,23 +1710,23 @@ pub async fn creates_return(
     options.clone(),
   ).await?;
   
-  let models = find_by_ids(
+  let models_wx_pay_notice = find_by_ids_wx_pay_notice(
     ids,
     options,
   ).await?;
   
-  Ok(models)
+  Ok(models_wx_pay_notice)
 }
 
-// MARK: creates
+// MARK: creates_wx_pay_notice
 /// 批量创建微信支付通知
-pub async fn creates(
+pub async fn creates_wx_pay_notice(
   inputs: Vec<WxPayNoticeInput>,
   options: Option<Options>,
 ) -> Result<Vec<WxPayNoticeId>> {
   
   let table = "wx_wx_pay_notice";
-  let method = "creates";
+  let method = "creates_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1776,7 +1776,7 @@ async fn _creates(
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
     
-    let old_models = find_by_unique(
+    let old_models = find_by_unique_wx_pay_notice(
       input.clone().into(),
       None,
       options.clone(),
@@ -1789,7 +1789,7 @@ async fn _creates(
         let options = Options::from(options.clone())
           .set_unique_type(unique_type);
         
-        id = check_by_unique(
+        id = check_by_unique_wx_pay_notice(
           input.clone(),
           old_model,
           Some(options),
@@ -2146,43 +2146,52 @@ async fn _creates(
   Ok(ids2)
 }
 
-// MARK: create_return
+// MARK: create_return_wx_pay_notice
 /// 创建微信支付通知并返回
 #[allow(dead_code)]
-pub async fn create_return(
+pub async fn create_return_wx_pay_notice(
   #[allow(unused_mut)]
   mut input: WxPayNoticeInput,
   options: Option<Options>,
 ) -> Result<WxPayNoticeModel> {
   
-  let table = "wx_wx_pay_notice";
+  let id = create_wx_pay_notice(
+    input.clone(),
+    options.clone(),
+  ).await?;
   
-  let id = create(input.clone(), options.clone()).await?;
-  
-  let model = find_by_id(
+  let model_wx_pay_notice = find_by_id_wx_pay_notice(
     id,
     options,
   ).await?;
   
-  if model.is_none() {
-    return Err(eyre!("create_return: Create failed in dao: {table}"));
+  if model_wx_pay_notice.is_none() {
+    let err_msg = "create_return_wx_pay_notice: model_wx_pay_notice.is_none()";
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
-  let model = model.unwrap();
+  let model_wx_pay_notice = model_wx_pay_notice.unwrap();
   
-  Ok(model)
+  Ok(model_wx_pay_notice)
 }
 
-// MARK: create
+// MARK: create_wx_pay_notice
 /// 创建微信支付通知
 #[allow(dead_code)]
-pub async fn create(
+pub async fn create_wx_pay_notice(
   #[allow(unused_mut)]
   mut input: WxPayNoticeInput,
   options: Option<Options>,
 ) -> Result<WxPayNoticeId> {
   
   let table = "wx_wx_pay_notice";
-  let method = "create";
+  let method = "create_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2211,15 +2220,15 @@ pub async fn create(
   Ok(id)
 }
 
-// MARK: update_tenant_by_id
+// MARK: update_tenant_by_id_wx_pay_notice
 /// 微信支付通知根据id修改租户id
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_wx_pay_notice(
   id: WxPayNoticeId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "wx_wx_pay_notice";
-  let method = "update_tenant_by_id";
+  let method = "update_tenant_by_id_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2257,18 +2266,18 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-// MARK: update_by_id
+// MARK: update_by_id_wx_pay_notice
 /// 根据 id 修改微信支付通知
 #[allow(unused_mut)]
 #[allow(unused_variables)]
-pub async fn update_by_id(
+pub async fn update_by_id_wx_pay_notice(
   id: WxPayNoticeId,
   mut input: WxPayNoticeInput,
   options: Option<Options>,
 ) -> Result<WxPayNoticeId> {
   
   let table = "wx_wx_pay_notice";
-  let method = "update_by_id";
+  let method = "update_by_id_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2292,7 +2301,7 @@ pub async fn update_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_model = find_by_id(
+  let old_model = find_by_id_wx_pay_notice(
     id.clone(),
     options.clone(),
   ).await?;
@@ -2317,7 +2326,7 @@ pub async fn update_by_id(
     let mut input = input.clone();
     input.id = None;
     
-    let models = find_by_unique(
+    let models = find_by_unique_wx_pay_notice(
       input.into(),
       None,
       options.clone(),
@@ -2572,10 +2581,10 @@ fn get_cache_tables() -> Vec<&'static str> {
   ]
 }
 
-// MARK: del_cache
+// MARK: del_cache_wx_pay_notice
 /// 清空缓存
 #[allow(dead_code)]
-pub async fn del_cache() -> Result<()> {
+pub async fn del_cache_wx_pay_notice() -> Result<()> {
   let cache_key1s = get_cache_tables();
   del_caches(
     cache_key1s.as_slice(),
@@ -2583,16 +2592,16 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-// MARK: delete_by_ids
+// MARK: delete_by_ids_wx_pay_notice
 /// 根据 ids 删除微信支付通知
 #[allow(unused_variables)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_wx_pay_notice(
   ids: Vec<WxPayNoticeId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "wx_wx_pay_notice";
-  let method = "delete_by_ids";
+  let method = "delete_by_ids_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2626,7 +2635,7 @@ pub async fn delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_by_id(
+    let old_model = find_by_id_wx_pay_notice(
       id.clone(),
       options.clone(),
     ).await?;
@@ -2708,15 +2717,15 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-// MARK: revert_by_ids
+// MARK: revert_by_ids_wx_pay_notice
 /// 根据 ids 还原微信支付通知
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_wx_pay_notice(
   ids: Vec<WxPayNoticeId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "wx_wx_pay_notice";
-  let method = "revert_by_ids";
+  let method = "revert_by_ids_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2750,7 +2759,7 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let mut old_model = find_one(
+    let mut old_model = find_one_wx_pay_notice(
       WxPayNoticeSearch {
         id: Some(id.clone()),
         is_deleted: Some(1),
@@ -2761,7 +2770,7 @@ pub async fn revert_by_ids(
     ).await?;
     
     if old_model.is_none() {
-      old_model = find_by_id(
+      old_model = find_by_id_wx_pay_notice(
         id.clone(),
         options.clone(),
       ).await?;
@@ -2776,7 +2785,7 @@ pub async fn revert_by_ids(
       let mut input: WxPayNoticeInput = old_model.clone().into();
       input.id = None;
       
-      let models = find_by_unique(
+      let models = find_by_unique_wx_pay_notice(
         input.into(),
         None,
         options.clone(),
@@ -2806,16 +2815,16 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-// MARK: force_delete_by_ids
+// MARK: force_delete_by_ids_wx_pay_notice
 /// 根据 ids 彻底删除微信支付通知
 #[allow(unused_variables)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_wx_pay_notice(
   ids: Vec<WxPayNoticeId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "wx_wx_pay_notice";
-  let method = "force_delete_by_ids";
+  let method = "force_delete_by_ids_wx_pay_notice";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2844,7 +2853,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all(
+    let old_model = find_all_wx_pay_notice(
       WxPayNoticeSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -2892,10 +2901,10 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-// MARK: validate_option
+// MARK: validate_option_wx_pay_notice
 /// 校验微信支付通知是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_wx_pay_notice(
   model: Option<WxPayNoticeModel>,
 ) -> Result<WxPayNoticeModel> {
   if model.is_none() {
