@@ -8,7 +8,7 @@ import {
 } from "@hexagon/croner";
 
 import {
-  findAll as findAllCronJob,
+  findAllCronJob,
 } from "/gen/cron/cron_job/cron_job.dao.ts";
 
 import {

@@ -1,16 +1,16 @@
 import {
-  validateOption as validateOptionJob,
-  validateIsEnabled as validateIsEnabledJob,
-  findById as findByIdJob,
+  validateOptionJob,
+  validateIsEnabledJob,
+  findByIdJob,
 } from "/gen/cron/job/job.dao.ts";
 
 import {
-  create as createCronJobLog,
-  updateById as updateByIdCronJobLog,
+  createCronJobLog,
+  updateByIdCronJobLog,
 } from "/gen/cron/cron_job_log/cron_job_log.dao.ts";
 
 import {
-  create as createCronJobLogDetail,
+  createCronJobLogDetail,
 } from "/gen/cron/cron_job_log_detail/cron_job_log_detail.dao.ts";
 
 import dayjs from "dayjs";
