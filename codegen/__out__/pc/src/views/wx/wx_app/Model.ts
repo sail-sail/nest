@@ -4,7 +4,7 @@ import type {
   WxAppModel as WxAppModelType,
   WxAppSearch as WxAppSearchType,
   WxAppFieldComment as WxAppFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

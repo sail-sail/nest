@@ -391,11 +391,11 @@ import type {
 } from "vue";
 
 import {
-  findOne,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  findOneWxPayNotice,
+  getDefaultInputWxPayNotice,
+  getPagePathWxPayNotice,
+  intoInputWxPayNotice,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -406,7 +406,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathWxPayNotice();
 
 const permitStore = usePermitStore();
 
@@ -497,7 +497,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneWxPayNotice;
 
 /** 打开对话框 */
 async function showDialog(
@@ -512,7 +512,7 @@ async function showDialog(
       ids?: WxPayNoticeId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneWxPayNotice;
     action: DialogAction;
   },
 ) {
@@ -539,7 +539,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneWxPayNotice;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -567,7 +567,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputWxPayNotice(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -641,7 +641,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputWxPayNotice(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -672,7 +672,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputWxPayNotice({
       ...data,
     });
   }

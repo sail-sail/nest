@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   wxPayQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: WxPayModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputWxPay(
   model?: WxPayInput,
 ) {
   const input: WxPayInput = {
@@ -61,9 +61,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找微信支付设置列表
+ * 根据搜索条件查找 微信支付设置 列表
  */
-export async function findAll(
+export async function findAllWxPay(
   search?: WxPaySearch,
   page?: PageInput,
   sort?: Sort[],
@@ -96,7 +96,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个微信支付设置
  */
-export async function findOne(
+export async function findOneWxPay(
   search?: WxPaySearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -122,9 +122,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找微信支付设置总数
+ * 根据搜索条件查找 微信支付设置 总数
  */
-export async function findCount(
+export async function findCountWxPay(
   search?: WxPaySearch,
   opt?: GqlOpt,
 ) {
@@ -145,17 +145,14 @@ export async function findCount(
 }
 
 /**
- * 创建微信支付设置
- * @param {WxPayInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 微信支付设置
  */
-export async function create(
+export async function createWxPay(
   input: WxPayInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxPayId> {
-  const ids = await creates(
+  const ids = await createsWxPay(
     [ input ],
     unique_type,
     opt,
@@ -165,14 +162,14 @@ export async function create(
 }
 
 /**
- * 批量创建微信支付设置
+ * 批量创建 微信支付设置
  */
-export async function creates(
+export async function createsWxPay(
   inputs: WxPayInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxPayId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputWxPay);
   const data: {
     createsWxPay: Mutation["createsWxPay"];
   } = await mutation({
@@ -191,14 +188,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改微信支付设置
+ * 根据 id 修改 微信支付设置
  */
-export async function updateById(
+export async function updateByIdWxPay(
   id: WxPayId,
   input: WxPayInput,
   opt?: GqlOpt,
 ): Promise<WxPayId> {
-  input = intoInput(input);
+  input = intoInputWxPay(input);
   const data: {
     updateByIdWxPay: Mutation["updateByIdWxPay"];
   } = await mutation({
@@ -217,9 +214,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找微信支付设置
+ * 根据 id 查找 微信支付设置
  */
-export async function findById(
+export async function findByIdWxPay(
   id?: WxPayId,
   opt?: GqlOpt,
 ): Promise<WxPayModel | undefined> {
@@ -246,9 +243,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找微信支付设置
+ * 根据 ids 查找 微信支付设置
  */
-export async function findByIds(
+export async function findByIdsWxPay(
   ids: WxPayId[],
   opt?: GqlOpt,
 ): Promise<WxPayModel[]> {
@@ -283,9 +280,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除微信支付设置
+ * 根据 ids 删除 微信支付设置
  */
-export async function deleteByIds(
+export async function deleteByIdsWxPay(
   ids: WxPayId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -309,9 +306,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用微信支付设置
+ * 根据 ids 启用或禁用 微信支付设置
  */
-export async function enableByIds(
+export async function enableByIdsWxPay(
   ids: WxPayId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -337,9 +334,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁微信支付设置
+ * 根据 ids 锁定或解锁 微信支付设置
  */
-export async function lockByIds(
+export async function lockByIdsWxPay(
   ids: WxPayId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -365,9 +362,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原微信支付设置
+ * 根据 ids 还原 微信支付设置
  */
-export async function revertByIds(
+export async function revertByIdsWxPay(
   ids: WxPayId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -391,9 +388,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除微信支付设置
+ * 根据 ids 彻底删除 微信支付设置
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxPay(
   ids: WxPayId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -417,9 +414,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载微信支付设置导入模板
+ * 下载 微信支付设置 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateWxPay() {
   const {
     workerFn,
     workerStatus,
@@ -470,7 +467,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelWxPay() {
   const {
     workerFn,
     workerStatus,
@@ -541,9 +538,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入微信支付设置
+ * 批量导入 微信支付设置
  */
-export async function importModels(
+export async function importModelsWxPay(
   inputs: WxPayInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -570,7 +567,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsWxPay(
         inputs,
         UniqueType.Update,
         opt,
@@ -590,7 +587,7 @@ export async function importModels(
 /**
  * 查找 微信支付设置 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByWxPay(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -606,12 +603,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathWxPay() {
   return "/wx/wx_pay";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputWxPay() {
   const defaultInput: WxPayInput = {
     is_locked: 1,
     is_enabled: 1,
