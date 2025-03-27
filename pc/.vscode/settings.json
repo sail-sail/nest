@@ -70,8 +70,5 @@
   "terminal.integrated.env.windows": {
     "VUE_EDITOR": "code"
   },
-  "files.eol": "\n",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  }
+  "files.eol": "\n"
 }
