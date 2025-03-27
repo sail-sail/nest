@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   langQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: LangModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputLang(
   model?: LangInput,
 ) {
   const input: LangInput = {
@@ -44,9 +44,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找语言列表
+ * 根据搜索条件查找 语言 列表
  */
-export async function findAll(
+export async function findAllLang(
   search?: LangSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -79,7 +79,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个语言
  */
-export async function findOne(
+export async function findOneLang(
   search?: LangSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -105,9 +105,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找语言总数
+ * 根据搜索条件查找 语言 总数
  */
-export async function findCount(
+export async function findCountLang(
   search?: LangSearch,
   opt?: GqlOpt,
 ) {
@@ -128,17 +128,14 @@ export async function findCount(
 }
 
 /**
- * 创建语言
- * @param {LangInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 语言
  */
-export async function create(
+export async function createLang(
   input: LangInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<LangId> {
-  const ids = await creates(
+  const ids = await createsLang(
     [ input ],
     unique_type,
     opt,
@@ -148,14 +145,14 @@ export async function create(
 }
 
 /**
- * 批量创建语言
+ * 批量创建 语言
  */
-export async function creates(
+export async function createsLang(
   inputs: LangInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<LangId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputLang);
   const data: {
     createsLang: Mutation["createsLang"];
   } = await mutation({
@@ -174,14 +171,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改语言
+ * 根据 id 修改 语言
  */
-export async function updateById(
+export async function updateByIdLang(
   id: LangId,
   input: LangInput,
   opt?: GqlOpt,
 ): Promise<LangId> {
-  input = intoInput(input);
+  input = intoInputLang(input);
   const data: {
     updateByIdLang: Mutation["updateByIdLang"];
   } = await mutation({
@@ -200,9 +197,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找语言
+ * 根据 id 查找 语言
  */
-export async function findById(
+export async function findByIdLang(
   id?: LangId,
   opt?: GqlOpt,
 ): Promise<LangModel | undefined> {
@@ -229,9 +226,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找语言
+ * 根据 ids 查找 语言
  */
-export async function findByIds(
+export async function findByIdsLang(
   ids: LangId[],
   opt?: GqlOpt,
 ): Promise<LangModel[]> {
@@ -266,9 +263,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除语言
+ * 根据 ids 删除 语言
  */
-export async function deleteByIds(
+export async function deleteByIdsLang(
   ids: LangId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -292,9 +289,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用语言
+ * 根据 ids 启用或禁用 语言
  */
-export async function enableByIds(
+export async function enableByIdsLang(
   ids: LangId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -320,9 +317,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 还原语言
+ * 根据 ids 还原 语言
  */
-export async function revertByIds(
+export async function revertByIdsLang(
   ids: LangId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -346,9 +343,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除语言
+ * 根据 ids 彻底删除 语言
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsLang(
   ids: LangId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -372,9 +369,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载语言导入模板
+ * 下载 语言 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateLang() {
   const {
     workerFn,
     workerStatus,
@@ -420,7 +417,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelLang() {
   const {
     workerFn,
     workerStatus,
@@ -490,9 +487,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入语言
+ * 批量导入 语言
  */
-export async function importModels(
+export async function importModelsLang(
   inputs: LangInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -519,7 +516,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsLang(
         inputs,
         UniqueType.Update,
         opt,
@@ -539,7 +536,7 @@ export async function importModels(
 /**
  * 查找 语言 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByLang(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -555,12 +552,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathLang() {
   return "/base/lang";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputLang() {
   const defaultInput: LangInput = {
     is_enabled: 1,
     order_by: 1,
