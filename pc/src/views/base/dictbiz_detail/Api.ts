@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   dictbizDetailQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: DictbizDetailModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputDictbizDetail(
   model?: DictbizDetailInput,
 ) {
   const input: DictbizDetailInput = {
@@ -47,9 +47,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找业务字典明细列表
+ * 根据搜索条件查找 业务字典明细 列表
  */
-export async function findAll(
+export async function findAllDictbizDetail(
   search?: DictbizDetailSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -82,7 +82,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个业务字典明细
  */
-export async function findOne(
+export async function findOneDictbizDetail(
   search?: DictbizDetailSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -108,9 +108,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找业务字典明细总数
+ * 根据搜索条件查找 业务字典明细 总数
  */
-export async function findCount(
+export async function findCountDictbizDetail(
   search?: DictbizDetailSearch,
   opt?: GqlOpt,
 ) {
@@ -131,17 +131,14 @@ export async function findCount(
 }
 
 /**
- * 创建业务字典明细
- * @param {DictbizDetailInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 业务字典明细
  */
-export async function create(
+export async function createDictbizDetail(
   input: DictbizDetailInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictbizDetailId> {
-  const ids = await creates(
+  const ids = await createsDictbizDetail(
     [ input ],
     unique_type,
     opt,
@@ -151,14 +148,14 @@ export async function create(
 }
 
 /**
- * 批量创建业务字典明细
+ * 批量创建 业务字典明细
  */
-export async function creates(
+export async function createsDictbizDetail(
   inputs: DictbizDetailInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictbizDetailId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputDictbizDetail);
   const data: {
     createsDictbizDetail: Mutation["createsDictbizDetail"];
   } = await mutation({
@@ -177,14 +174,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改业务字典明细
+ * 根据 id 修改 业务字典明细
  */
-export async function updateById(
+export async function updateByIdDictbizDetail(
   id: DictbizDetailId,
   input: DictbizDetailInput,
   opt?: GqlOpt,
 ): Promise<DictbizDetailId> {
-  input = intoInput(input);
+  input = intoInputDictbizDetail(input);
   const data: {
     updateByIdDictbizDetail: Mutation["updateByIdDictbizDetail"];
   } = await mutation({
@@ -203,9 +200,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找业务字典明细
+ * 根据 id 查找 业务字典明细
  */
-export async function findById(
+export async function findByIdDictbizDetail(
   id?: DictbizDetailId,
   opt?: GqlOpt,
 ): Promise<DictbizDetailModel | undefined> {
@@ -232,9 +229,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找业务字典明细
+ * 根据 ids 查找 业务字典明细
  */
-export async function findByIds(
+export async function findByIdsDictbizDetail(
   ids: DictbizDetailId[],
   opt?: GqlOpt,
 ): Promise<DictbizDetailModel[]> {
@@ -269,9 +266,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除业务字典明细
+ * 根据 ids 删除 业务字典明细
  */
-export async function deleteByIds(
+export async function deleteByIdsDictbizDetail(
   ids: DictbizDetailId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -295,9 +292,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用业务字典明细
+ * 根据 ids 启用或禁用 业务字典明细
  */
-export async function enableByIds(
+export async function enableByIdsDictbizDetail(
   ids: DictbizDetailId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -323,9 +320,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 还原业务字典明细
+ * 根据 ids 还原 业务字典明细
  */
-export async function revertByIds(
+export async function revertByIdsDictbizDetail(
   ids: DictbizDetailId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -349,9 +346,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除业务字典明细
+ * 根据 ids 彻底删除 业务字典明细
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDictbizDetail(
   ids: DictbizDetailId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -397,11 +394,11 @@ export async function findAllDictbiz(
       sort,
     },
   }, opt);
-  const res = data.findAllDictbiz;
-  return res;
+  const dictbiz_models = data.findAllDictbiz;
+  return dictbiz_models;
 }
 
-export async function getDictbizList() {
+export async function getListDictbiz() {
   const data = await findAllDictbiz(
     {
       is_enabled: [ 1 ],
@@ -421,9 +418,9 @@ export async function getDictbizList() {
 }
 
 /**
- * 下载业务字典明细导入模板
+ * 下载 业务字典明细 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateDictbizDetail() {
   const {
     workerFn,
     workerStatus,
@@ -474,7 +471,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelDictbizDetail() {
   const {
     workerFn,
     workerStatus,
@@ -547,9 +544,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入业务字典明细
+ * 批量导入 业务字典明细
  */
-export async function importModels(
+export async function importModelsDictbizDetail(
   inputs: DictbizDetailInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -576,7 +573,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsDictbizDetail(
         inputs,
         UniqueType.Update,
         opt,
@@ -596,7 +593,7 @@ export async function importModels(
 /**
  * 查找 业务字典明细 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByDictbizDetail(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -612,12 +609,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathDictbizDetail() {
   return "/base/dictbiz_detail";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputDictbizDetail() {
   const defaultInput: DictbizDetailInput = {
     is_enabled: 1,
     order_by: 1,

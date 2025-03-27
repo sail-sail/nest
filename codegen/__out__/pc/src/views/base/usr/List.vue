@@ -61,7 +61,7 @@
         >
           <CustomSelect
             v-model="role_ids_search"
-            :method="getRoleList"
+            :method="getListRole"
             :options-map="((item: RoleModel) => {
               return {
                 label: item.lbl,
@@ -82,7 +82,7 @@
         >
           <CustomTreeSelect
             v-model="dept_ids_search"
-            :method="getDeptTree"
+            :method="getTreeDept"
             :options-map="((item: DeptModel) => {
               return {
                 label: item.lbl,
@@ -103,7 +103,7 @@
         >
           <CustomSelect
             v-model="org_ids_search"
-            :method="getOrgList"
+            :method="getListOrg"
             :options-map="((item: OrgModel) => {
               return {
                 label: item.lbl,
@@ -709,7 +709,7 @@
                   v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  @change="updateById(
+                  @change="updateByIdUsr(
                     row.id,
                     {
                       order_by: row.order_by,
@@ -827,34 +827,34 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  enableByIds,
-  lockByIds,
-  useExportExcel,
-  updateById,
-  importModels,
-  useDownloadImportTemplate,
+  getPagePathUsr,
+  findAllUsr,
+  findCountUsr,
+  revertByIdsUsr,
+  deleteByIdsUsr,
+  forceDeleteByIdsUsr,
+  enableByIdsUsr,
+  lockByIdsUsr,
+  useExportExcelUsr,
+  updateByIdUsr,
+  importModelsUsr,
+  useDownloadImportTemplateUsr,
+} from "./Api.ts";
+
+import {
+  getListRole, // 所属角色
+  getListOrg, // 所属组织
 } from "./Api";
 
 import {
-  getRoleList, // 所属角色
-  getOrgList, // 所属组织
-} from "./Api";
-
-import {
-  getDeptTree,
-} from "@/views/base/dept/Api";
+  getTreeDept,
+} from "@/views/base/dept/Api.ts";
 
 defineOptions({
   name: "用户",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathUsr();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1401,7 +1401,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllUsr(
       search,
       {
         pgSize,
@@ -1413,7 +1413,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllUsr(
       search,
       undefined,
       [
@@ -1429,7 +1429,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountUsr(
     search2,
     opt,
   );
@@ -1480,7 +1480,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelUsr());
 
 /** 导出Excel */
 async function onExport() {
@@ -1584,7 +1584,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate());
+const downloadImportTemplate = $ref(useDownloadImportTemplateUsr());
 
 /**
  * 下载导入模板
@@ -1651,7 +1651,7 @@ async function onImportExcel() {
       },
     );
     messageHandler.close();
-    const res = await importModels(
+    const res = await importModelsUsr(
       models,
       $$(importPercentage),
       $$(isStopImport),
@@ -1682,7 +1682,7 @@ async function onIs_locked(id: UsrId, is_locked: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await lockByIds(
+  await lockByIdsUsr(
     [ id ],
     is_locked,
     {
@@ -1704,7 +1704,7 @@ async function onIs_enabled(id: UsrId, is_enabled: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await enableByIds(
+  await enableByIdsUsr(
     [ id ],
     is_enabled,
     {
@@ -1850,7 +1850,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsUsr(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1882,7 +1882,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsUsr(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 用户 成功`);
@@ -1911,7 +1911,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await enableByIds(selectedIds, is_enabled);
+  const num = await enableByIdsUsr(selectedIds, is_enabled);
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
@@ -1945,7 +1945,7 @@ async function onLockByIds(is_locked: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await lockByIds(selectedIds, is_locked);
+  const num = await lockByIdsUsr(selectedIds, is_locked);
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -1982,7 +1982,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsUsr(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);

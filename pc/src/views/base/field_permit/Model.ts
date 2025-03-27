@@ -4,7 +4,7 @@ import type {
   FieldPermitModel as FieldPermitModelType,
   FieldPermitSearch as FieldPermitSearchType,
   FieldPermitFieldComment as FieldPermitFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
