@@ -60,7 +60,7 @@
           >
             <CustomTreeSelect
               v-model="dialogModel.menu_id"
-              :method="getMenuTree"
+              :method="getTreeMenu"
               placeholder="请选择 菜单"
               :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
             ></CustomTreeSelect>
@@ -207,17 +207,17 @@ import type {
 } from "vue";
 
 import {
-  findOne,
-  findLastOrderBy,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  findOneFieldPermit,
+  findLastOrderByFieldPermit,
+  updateByIdFieldPermit,
+  getDefaultInputFieldPermit,
+  getPagePathFieldPermit,
+  intoInputFieldPermit,
+} from "./Api.ts";
 
 import {
-  getMenuTree,
-} from "@/views/base/menu/Api";
+  getTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -228,7 +228,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathFieldPermit();
 
 const permitStore = usePermitStore();
 
@@ -310,7 +310,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneFieldPermit;
 
 /** 打开对话框 */
 async function showDialog(
@@ -325,7 +325,7 @@ async function showDialog(
       ids?: FieldPermitId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneFieldPermit;
     action: DialogAction;
   },
 ) {
@@ -352,7 +352,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneFieldPermit;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -381,8 +381,8 @@ async function showDialog(
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputFieldPermit(),
+      findLastOrderByFieldPermit({
         notLoading: !inited,
       }),
     ]);
@@ -402,11 +402,11 @@ async function showDialog(
       data,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputFieldPermit(),
       findOneModel({
         id,
       }),
-      findLastOrderBy({
+      findLastOrderByFieldPermit({
         notLoading: !inited,
       }),
     ]);
@@ -474,8 +474,8 @@ async function onReset() {
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputFieldPermit(),
+      findLastOrderByFieldPermit({
         notLoading: !inited,
       }),
     ]);
@@ -508,7 +508,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputFieldPermit({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -658,7 +658,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdFieldPermit(
       dialogModel.id,
       dialogModel2,
     );

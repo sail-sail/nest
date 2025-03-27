@@ -4,7 +4,7 @@ import type {
   OperationRecordModel as OperationRecordModelType,
   OperationRecordSearch as OperationRecordSearchType,
   OperationRecordFieldComment as OperationRecordFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
