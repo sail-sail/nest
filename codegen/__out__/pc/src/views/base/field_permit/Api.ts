@@ -1,21 +1,21 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   fieldPermitQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 import {
-  findTree as findMenuTree,
-} from "@/views/base/menu/Api";
+  findTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 async function setLblById(
   model?: FieldPermitModel | null,
@@ -26,7 +26,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputFieldPermit(
   model?: FieldPermitInput,
 ) {
   const input: FieldPermitInput = {
@@ -48,9 +48,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找字段权限列表
+ * 根据搜索条件查找 字段权限 列表
  */
-export async function findAll(
+export async function findAllFieldPermit(
   search?: FieldPermitSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -83,7 +83,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个字段权限
  */
-export async function findOne(
+export async function findOneFieldPermit(
   search?: FieldPermitSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -109,9 +109,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找字段权限总数
+ * 根据搜索条件查找 字段权限 总数
  */
-export async function findCount(
+export async function findCountFieldPermit(
   search?: FieldPermitSearch,
   opt?: GqlOpt,
 ) {
@@ -132,14 +132,14 @@ export async function findCount(
 }
 
 /**
- * 根据 id 修改字段权限
+ * 根据 id 修改 字段权限
  */
-export async function updateById(
+export async function updateByIdFieldPermit(
   id: FieldPermitId,
   input: FieldPermitInput,
   opt?: GqlOpt,
 ): Promise<FieldPermitId> {
-  input = intoInput(input);
+  input = intoInputFieldPermit(input);
   const data: {
     updateByIdFieldPermit: Mutation["updateByIdFieldPermit"];
   } = await mutation({
@@ -158,9 +158,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找字段权限
+ * 根据 id 查找 字段权限
  */
-export async function findById(
+export async function findByIdFieldPermit(
   id?: FieldPermitId,
   opt?: GqlOpt,
 ): Promise<FieldPermitModel | undefined> {
@@ -187,9 +187,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找字段权限
+ * 根据 ids 查找 字段权限
  */
-export async function findByIds(
+export async function findByIdsFieldPermit(
   ids: FieldPermitId[],
   opt?: GqlOpt,
 ): Promise<FieldPermitModel[]> {
@@ -246,11 +246,11 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const res = data.findAllMenu;
-  return res;
+  const menu_models = data.findAllMenu;
+  return menu_models;
 }
 
-export async function getMenuList() {
+export async function getListMenu() {
   const data = await findAllMenu(
     {
       is_enabled: [ 1 ],
@@ -269,8 +269,8 @@ export async function getMenuList() {
   return data;
 }
 
-export async function getMenuTree() {
-  const data = await findMenuTree(
+export async function getTreeMenu() {
+  const data = await findTreeMenu(
     {
       is_enabled: [ 1 ],
     },
@@ -290,7 +290,7 @@ export async function getMenuTree() {
 /**
  * 查找 字段权限 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByFieldPermit(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -306,12 +306,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathFieldPermit() {
   return "/base/field_permit";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputFieldPermit() {
   const defaultInput: FieldPermitInput = {
     order_by: 1,
   };

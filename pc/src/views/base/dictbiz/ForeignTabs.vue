@@ -28,14 +28,14 @@
           <el-tab-pane
             :label="'业务字典' + (dictbiz_detail_total != null ? ` (${ dictbiz_detail_total })` : '')"
           >
-            <Dictbiz_detailList
+            <DictbizDetailList
               :dictbiz_id="dialogModel.id"
               :is_deleted="dialogModel.is_deleted ? '1' : '0'"
               :is-locked="dialogModel.is_deleted ? '1' : '0'"
               @add="useAllFindDebounce"
               @remove="useAllFindDebounce"
               @revert="useAllFindDebounce"
-            ></Dictbiz_detailList>
+            ></DictbizDetailList>
           </el-tab-pane>
           
         </template>
@@ -67,10 +67,10 @@
 
 <script lang="ts" setup>
 
-import Dictbiz_detailList from "@/views/base/dictbiz_detail/List.vue";
+import DictbizDetailList from "@/views/base/dictbiz_detail/List.vue";
 
 import {
-  findCount as findCountDictbiz_detail,
+  findCountDictbizDetail,
 } from "@/views/base/dictbiz_detail/Api";
 
 let inited = $ref(false);
@@ -88,9 +88,9 @@ const tabName = $ref<string>();
 
 let dictbiz_detail_total = $ref<number>();
 
-async function useFindCountDictbiz_detail() {
+async function useFindCountDictbizDetail() {
   const dictbiz_id: DictbizId[] = [ dialogModel.id! ];
-  dictbiz_detail_total = await findCountDictbiz_detail(
+  dictbiz_detail_total = await findCountDictbizDetail(
     {
       is_deleted: dialogModel.is_deleted,
       dictbiz_id,
@@ -100,7 +100,7 @@ async function useFindCountDictbiz_detail() {
 
 async function useAllFindCount() {
   await Promise.all([
-    useFindCountDictbiz_detail(),
+    useFindCountDictbizDetail(),
   ]);
 }
 

@@ -112,7 +112,7 @@ for (let i = 0; i < columns.length; i++) {
 }
 #><#
 if (hasUsrStore) {
-#>import cfg from "@/utils/config";
+#>import cfg from "@/utils/config.ts";
 <#
 }
 #><#
@@ -120,7 +120,7 @@ if (opts.noAdd !== true || opts.noEdit !== true) {
 #>
 import {
   UniqueType,
-} from "#/types";<#
+} from "#/types.ts";<#
 }
 #><#
 let hasDefaultValue = false;
@@ -224,7 +224,7 @@ import {<#
   <#=Table_Up#><#=Column_Up#>,<#
   }
   #>
-} from "#/types";<#
+} from "#/types.ts";<#
 }
 #>
 
@@ -232,11 +232,12 @@ import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   <#=table_Up#>QueryField,
-} from "./Model";<#
+} from "./Model.ts";<#
+const old_Table_Up = Table_Up;
 const importForeignTablesTree = [ ];
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -251,6 +252,9 @@ for (let i = 0; i < columns.length; i++) {
   const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
     return item.substring(0, 1).toUpperCase() + item.substring(1);
   }).join("");
+  if (Foreign_Table_Up === old_Table_Up) {
+    continue;
+  }
   if (importForeignTablesTree.includes(Foreign_Table_Up)) {
     continue;
   }
@@ -271,8 +275,8 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 import {
-  findTree as find<#=Foreign_Table_Up#>Tree,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+  findTree<#=Foreign_Table_Up#>,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
 }
 #><#
 for (const inlineForeignTab of inlineForeignTabs) {
@@ -297,6 +301,9 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const Foreign_Table_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
+    if (Foreign_Table_Up === Table_Up) {
+      continue;
+    }
     if (importForeignTablesTree.includes(Foreign_Table_Up)) {
       continue;
     }
@@ -317,8 +324,8 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 import {
-  findTree as find<#=Foreign_Table_Up#>Tree,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+  findTree<#=Foreign_Table_Up#>,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
   }
 }
 #><#
@@ -361,8 +368,8 @@ for (const inlineForeignTab of inlineForeignTabs) {
     intoInputTableUps.push(Table_Up);
 #>
 import {
-  intoInput as intoInput<#=Table_Up#>,
-} from "@/views/<#=mod#>/<#=table#>/Api";<#
+  intoInput<#=Table_Up#>,
+} from "@/views/<#=mod#>/<#=table#>/Api.ts";<#
   }
 #><#
 }
@@ -448,7 +455,7 @@ for (let i = 0; i < columns.length; i++) {
 
 // <#=foreignSchema.opts?.table_comment#>
 import {
-  findOne as findOne<#=foreignTable_Up#>0,
+  findOne<#=foreignTable_Up#>0,
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
 }
 #>
@@ -520,7 +527,7 @@ async function setLblById(
   #>
 }
 
-export function intoInput(
+export function intoInput<#=Table_Up#>(
   model?: <#=inputName#>,
 ) {
   const input: <#=inputName#> = {<#
@@ -690,9 +697,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找<#=table_comment#>列表
+ * 根据搜索条件查找 <#=table_comment#> 列表
  */
-export async function findAll(
+export async function findAll<#=Table_Up#>(
   search?: <#=searchName#>,
   page?: PageInput,
   sort?: Sort[],
@@ -737,7 +744,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个<#=table_comment#>
  */
-export async function findOne(
+export async function findOne<#=Table_Up#>(
   search?: <#=searchName#>,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -777,9 +784,9 @@ if (hasDataPermit() && hasCreateUsrId) {
 #>
 
 /**
- * 根据 ids 获取会员卡是否可编辑数据权限
+ * 根据 ids 获取 <#=table_comment#> 是否可编辑数据权限
  */
-export async function getEditableDataPermitsByIds(
+export async function getEditableDataPermitsByIds<#=Table_Up#>(
   ids: <#=Table_Up2#>Id[],
   opt?: GqlOpt,
 ) {
@@ -808,14 +815,14 @@ export type <#=modelNameTree#> = <#=modelName#> & {
 }
 
 /**
- * 查找<#=table_comment#>树形列表
+ * 查找 <#=table_comment#> 树形列表
  */
-export async function findTree(
+export async function findTree<#=Table_Up#>(
   search?: <#=searchName#>,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const res = await findAll(
+  const res = await findAll<#=Table_Up#>(
     search,
     undefined,
     sort,
@@ -828,9 +835,9 @@ export async function findTree(
 #>
 
 /**
- * 根据搜索条件查找<#=table_comment#>总数
+ * 根据搜索条件查找 <#=table_comment#> 总数
  */
-export async function findCount(
+export async function findCount<#=Table_Up#>(
   search?: <#=searchName#>,
   opt?: GqlOpt,
 ) {
@@ -853,9 +860,9 @@ if (hasSummary) {
 #>
 
 /**
- * 根据搜索条件查找<#=table_comment#>合计
+ * 根据搜索条件查找 <#=table_comment#> 合计
  */
-export async function findSummary(
+export async function findSummary<#=Table_Up#>(
   search?: <#=searchName#>,
   opt?: GqlOpt,
 ) {
@@ -895,17 +902,14 @@ if (opts.noAdd !== true) {
 #>
 
 /**
- * 创建<#=table_comment#>
- * @param {<#=inputName#>} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 <#=table_comment#>
  */
-export async function create(
+export async function create<#=Table_Up#>(
   input: <#=inputName#>,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<<#=Table_Up#>Id> {
-  const ids = await creates(
+  const ids = await creates<#=Table_Up#>(
     [ input ],
     unique_type,
     opt,
@@ -915,14 +919,14 @@ export async function create(
 }
 
 /**
- * 批量创建<#=table_comment#>
+ * 批量创建 <#=table_comment#>
  */
-export async function creates(
+export async function creates<#=Table_Up#>(
   inputs: <#=inputName#>[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<<#=Table_Up#>Id[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInput<#=Table_Up#>);
   const data: {
     creates<#=Table_Up2#>: Mutation["creates<#=Table_Up2#>"];
   } = await mutation({
@@ -945,14 +949,14 @@ if (opts.noEdit !== true) {
 #>
 
 /**
- * 根据 id 修改<#=table_comment#>
+ * 根据 id 修改 <#=table_comment#>
  */
-export async function updateById(
+export async function updateById<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   input: <#=inputName#>,
   opt?: GqlOpt,
 ): Promise<<#=Table_Up#>Id> {
-  input = intoInput(input);
+  input = intoInput<#=Table_Up#>(input);
   const data: {
     updateById<#=Table_Up2#>: Mutation["updateById<#=Table_Up2#>"];
   } = await mutation({
@@ -975,7 +979,7 @@ if (hasAudit) {
 #>
 
 /** 审核提交 */
-export async function auditSubmit(
+export async function auditSubmit<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ) {
@@ -996,7 +1000,7 @@ export async function auditSubmit(
 }
 
 /** 审核通过 */
-export async function auditPass(
+export async function auditPass<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ) {
@@ -1017,7 +1021,7 @@ export async function auditPass(
 }
 
 /** 审核拒绝 */
-export async function auditReject(
+export async function auditReject<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   input: <#=auditTable_Up#>Input,
   opt?: GqlOpt,
@@ -1042,7 +1046,7 @@ if (hasReviewed) {
 #>
 
 /** 复核通过 */
-export async function auditReview(
+export async function auditReview<#=Table_Up#>(
   id: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ) {
@@ -1067,9 +1071,9 @@ export async function auditReview(
 #>
 
 /**
- * 根据 id 查找<#=table_comment#>
+ * 根据 id 查找 <#=table_comment#>
  */
-export async function findById(
+export async function findById<#=Table_Up#>(
   id?: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ): Promise<<#=modelName#> | undefined> {
@@ -1108,9 +1112,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找<#=table_comment#>
+ * 根据 ids 查找 <#=table_comment#>
  */
-export async function findByIds(
+export async function findByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   opt?: GqlOpt,
 ): Promise<<#=modelName#>[]> {
@@ -1159,9 +1163,9 @@ if (opts.noDelete !== true) {
 #>
 
 /**
- * 根据 ids 删除<#=table_comment#>
+ * 根据 ids 删除 <#=table_comment#>
  */
-export async function deleteByIds(
+export async function deleteByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -1189,9 +1193,9 @@ if (hasDefault && opts.noEdit !== true) {
 #>
 
 /**
- * 根据 id 设置默认<#=table_comment#>
+ * 根据 id 设置默认 <#=table_comment#>
  */
-export async function defaultById(
+export async function defaultById<#=Table_Up#>(
   id?: <#=Table_Up#>Id,
   opt?: GqlOpt,
 ) {
@@ -1219,9 +1223,9 @@ if (hasEnabled && opts.noEdit !== true) {
 #>
 
 /**
- * 根据 ids 启用或禁用<#=table_comment#>
+ * 根据 ids 启用或禁用 <#=table_comment#>
  */
-export async function enableByIds(
+export async function enableByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -1251,9 +1255,9 @@ if (hasLocked && opts.noEdit !== true) {
 #>
 
 /**
- * 根据 ids 锁定或解锁<#=table_comment#>
+ * 根据 ids 锁定或解锁 <#=table_comment#>
  */
-export async function lockByIds(
+export async function lockByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -1283,9 +1287,9 @@ if (opts.noRevert !== true && hasIsDeleted) {
 #>
 
 /**
- * 根据 ids 还原<#=table_comment#>
+ * 根据 ids 还原 <#=table_comment#>
  */
-export async function revertByIds(
+export async function revertByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -1313,9 +1317,9 @@ if (opts.noForceDelete !== true && hasIsDeleted) {
 #>
 
 /**
- * 根据 ids 彻底删除<#=table_comment#>
+ * 根据 ids 彻底删除 <#=table_comment#>
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIds<#=Table_Up#>(
   ids: <#=Table_Up#>Id[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -1369,6 +1373,8 @@ for (let i = 0; i < columns.length; i++) {
   const defaultSort = foreignKey && foreignKey.defaultSort;
   const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
   const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
+#><#
+if (Foreign_Table_Up !== Table_Up) {
 #>
 
 export async function findAll<#=Foreign_Table_Up#>(
@@ -1394,11 +1400,13 @@ export async function findAll<#=Foreign_Table_Up#>(
       sort,
     },
   }, opt);
-  const res = data.findAll<#=Foreign_Table_Up#>;
-  return res;
+  const <#=foreignTable#>_models = data.findAll<#=Foreign_Table_Up#>;
+  return <#=foreignTable#>_models;
+}<#
 }
+#>
 
-export async function get<#=Foreign_Table_Up#>List() {
+export async function getList<#=Foreign_Table_Up#>() {
   const data = await findAll<#=Foreign_Table_Up#>(<#
     if (foreignHasEnabled && foreignTable !== table) {
     #>
@@ -1461,8 +1469,8 @@ for (let i = 0; i < columns.length; i++) {
   }
 #>
 
-export async function get<#=Foreign_Table_Up#>Tree() {
-  const data = await find<#=Foreign_Table_Up#>Tree(<#
+export async function getTree<#=Foreign_Table_Up#>() {
+  const data = await findTree<#=Foreign_Table_Up#>(<#
     if (list_treeForeignTable && list_treeForeignTable.columns.some(function (item) { return item.COLUMN_NAME === "is_enabled" })) {
     #>
     {
@@ -1551,6 +1559,9 @@ for (const inlineForeignTab of inlineForeignTabs) {
     const defaultSort = foreignKey && foreignKey.defaultSort;
     const foreignSchema = optTables[foreignKey.mod + "_" + foreignTable];
     const foreignHasEnabled = foreignSchema.columns.some((column) => column.COLUMN_NAME === "is_enabled");
+    if (Foreign_Table_Up === old_Table_Up) {
+      continue;
+    }
 #>
 
 export async function findAll<#=Foreign_Table_Up#>(
@@ -1576,11 +1587,11 @@ export async function findAll<#=Foreign_Table_Up#>(
       sort,
     },
   }, opt);
-  const res = data.findAll<#=Foreign_Table_Up#>;
-  return res;
+  const <#=foreignTable#>_models = data.findAll<#=Foreign_Table_Up#>;
+  return <#=foreignTable#>_models;
 }
 
-export async function get<#=Foreign_Table_Up#>List() {
+export async function getList<#=Foreign_Table_Up#>() {
   const data = await findAll<#=Foreign_Table_Up#>(<#
     if (foreignHasEnabled && foreignTable !== table) {
     #>
@@ -1652,8 +1663,8 @@ for (const inlineForeignTab of inlineForeignTabs) {
     }
 #>
 
-export async function get<#=Foreign_Table_Up#>Tree() {
-  const data = await find<#=Foreign_Table_Up#>Tree(<#
+export async function getTree<#=Foreign_Table_Up#>() {
+  const data = await findTree<#=Foreign_Table_Up#>(<#
     if (list_treeForeignTable && list_treeForeignTable.columns.some(function (item) { return item.COLUMN_NAME === "is_enabled" })) {
     #>
     {
@@ -1737,9 +1748,9 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>
 
 /**
- * 下载<#=table_comment#>导入模板
+ * 下载 <#=table_comment#> 导入模板
  */
-export function useDownloadImportTemplate(<#
+export function useDownloadImportTemplate<#=Table_Up#>(<#
 if (isUseI18n) {
 #>routePath: string<#
 }
@@ -2021,7 +2032,7 @@ if (opts.noExport !== true) {
 /**
  * 导出Excel
  */
-export function useExportExcel(<#
+export function useExportExcel<#=Table_Up#>(<#
 if (isUseI18n) {
 #>routePath: string<#
 }
@@ -2235,9 +2246,9 @@ if (opts.noAdd !== true && opts.noEdit !== true && opts.noImport !== true) {
 #>
 
 /**
- * 批量导入<#=table_comment#>
+ * 批量导入 <#=table_comment#>
  */
-export async function importModels(
+export async function importModels<#=Table_Up#>(
   inputs: <#=inputName#>[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -2272,7 +2283,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await creates<#=Table_Up#>(
         inputs,
         UniqueType.Update,
         opt,
@@ -2303,7 +2314,7 @@ if (hasOrderBy) {
 /**
  * 查找 <#=table_comment#> order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderBy<#=Table_Up#>(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -2321,12 +2332,12 @@ export async function findLastOrderBy(
 }
 #>
 
-export function getPagePath() {
+export function getPagePath<#=Table_Up#>() {
   return "/<#=mod#>/<#=table#>";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {<#
+export async function getDefaultInput<#=Table_Up#>() {<#
   if (hasUsrStore) {
   #>
   const usrStore = useUsrStore(cfg.pinia);<#

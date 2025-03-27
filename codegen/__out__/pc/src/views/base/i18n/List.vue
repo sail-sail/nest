@@ -35,7 +35,7 @@
         >
           <CustomSelect
             v-model="lang_id_search"
-            :method="getLangList"
+            :method="getListLang"
             :options-map="((item: LangModel) => {
               return {
                 label: item.lbl,
@@ -56,7 +56,7 @@
         >
           <CustomTreeSelect
             v-model="menu_id_search"
-            :method="getMenuTree"
+            :method="getTreeMenu"
             :options-map="((item: MenuModel) => {
               return {
                 label: item.lbl,
@@ -644,30 +644,30 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  useExportExcel,
-  importModels,
-  useDownloadImportTemplate,
+  getPagePathI18n,
+  findAllI18n,
+  findCountI18n,
+  revertByIdsI18n,
+  deleteByIdsI18n,
+  forceDeleteByIdsI18n,
+  useExportExcelI18n,
+  importModelsI18n,
+  useDownloadImportTemplateI18n,
+} from "./Api.ts";
+
+import {
+  getListLang, // 语言
 } from "./Api";
 
 import {
-  getLangList, // 语言
-} from "./Api";
-
-import {
-  getMenuTree,
-} from "@/views/base/menu/Api";
+  getTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 defineOptions({
   name: "国际化List",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathI18n();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1113,7 +1113,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllI18n(
       search,
       {
         pgSize,
@@ -1125,7 +1125,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllI18n(
       search,
       undefined,
       [
@@ -1141,7 +1141,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountI18n(
     search2,
     opt,
   );
@@ -1192,7 +1192,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelI18n());
 
 /** 导出Excel */
 async function onExport() {
@@ -1296,7 +1296,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate());
+const downloadImportTemplate = $ref(useDownloadImportTemplateI18n());
 
 /**
  * 下载导入模板
@@ -1349,7 +1349,7 @@ async function onImportExcel() {
       },
     );
     messageHandler.close();
-    const res = await importModels(
+    const res = await importModelsI18n(
       models,
       $$(importPercentage),
       $$(isStopImport),
@@ -1504,7 +1504,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsI18n(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1536,7 +1536,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsI18n(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 国际化 成功`);
@@ -1568,7 +1568,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsI18n(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
