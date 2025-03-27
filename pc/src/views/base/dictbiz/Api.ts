@@ -1,25 +1,25 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   DictbizType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   dictbizQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 import {
-  intoInput as intoInputDictbizDetail,
-} from "@/views/base/dictbiz_detail/Api";
+  intoInputDictbizDetail,
+} from "@/views/base/dictbiz_detail/Api.ts";
 
 async function setLblById(
   model?: DictbizModel | null,
@@ -30,7 +30,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputDictbiz(
   model?: DictbizInput,
 ) {
   const input: DictbizInput = {
@@ -59,9 +59,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找业务字典列表
+ * 根据搜索条件查找 业务字典 列表
  */
-export async function findAll(
+export async function findAllDictbiz(
   search?: DictbizSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -94,7 +94,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个业务字典
  */
-export async function findOne(
+export async function findOneDictbiz(
   search?: DictbizSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -120,9 +120,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找业务字典总数
+ * 根据搜索条件查找 业务字典 总数
  */
-export async function findCount(
+export async function findCountDictbiz(
   search?: DictbizSearch,
   opt?: GqlOpt,
 ) {
@@ -143,17 +143,14 @@ export async function findCount(
 }
 
 /**
- * 创建业务字典
- * @param {DictbizInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 业务字典
  */
-export async function create(
+export async function createDictbiz(
   input: DictbizInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictbizId> {
-  const ids = await creates(
+  const ids = await createsDictbiz(
     [ input ],
     unique_type,
     opt,
@@ -163,14 +160,14 @@ export async function create(
 }
 
 /**
- * 批量创建业务字典
+ * 批量创建 业务字典
  */
-export async function creates(
+export async function createsDictbiz(
   inputs: DictbizInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictbizId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputDictbiz);
   const data: {
     createsDictbiz: Mutation["createsDictbiz"];
   } = await mutation({
@@ -189,14 +186,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改业务字典
+ * 根据 id 修改 业务字典
  */
-export async function updateById(
+export async function updateByIdDictbiz(
   id: DictbizId,
   input: DictbizInput,
   opt?: GqlOpt,
 ): Promise<DictbizId> {
-  input = intoInput(input);
+  input = intoInputDictbiz(input);
   const data: {
     updateByIdDictbiz: Mutation["updateByIdDictbiz"];
   } = await mutation({
@@ -215,9 +212,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找业务字典
+ * 根据 id 查找 业务字典
  */
-export async function findById(
+export async function findByIdDictbiz(
   id?: DictbizId,
   opt?: GqlOpt,
 ): Promise<DictbizModel | undefined> {
@@ -244,9 +241,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找业务字典
+ * 根据 ids 查找 业务字典
  */
-export async function findByIds(
+export async function findByIdsDictbiz(
   ids: DictbizId[],
   opt?: GqlOpt,
 ): Promise<DictbizModel[]> {
@@ -281,9 +278,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除业务字典
+ * 根据 ids 删除 业务字典
  */
-export async function deleteByIds(
+export async function deleteByIdsDictbiz(
   ids: DictbizId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -307,9 +304,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用业务字典
+ * 根据 ids 启用或禁用 业务字典
  */
-export async function enableByIds(
+export async function enableByIdsDictbiz(
   ids: DictbizId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -335,9 +332,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 还原业务字典
+ * 根据 ids 还原 业务字典
  */
-export async function revertByIds(
+export async function revertByIdsDictbiz(
   ids: DictbizId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -361,9 +358,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除业务字典
+ * 根据 ids 彻底删除 业务字典
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDictbiz(
   ids: DictbizId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -386,56 +383,10 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllDictbiz(
-  search?: DictbizSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllDictbiz: DictbizModel[];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: DictbizSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllDictbiz(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllDictbiz;
-  return res;
-}
-
-export async function getDictbizList() {
-  const data = await findAllDictbiz(
-    {
-      is_enabled: [ 1 ],
-    },
-    undefined,
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 /**
- * 下载业务字典导入模板
+ * 下载 业务字典 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateDictbiz() {
   const {
     workerFn,
     workerStatus,
@@ -489,7 +440,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelDictbiz() {
   const {
     workerFn,
     workerStatus,
@@ -560,9 +511,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入业务字典
+ * 批量导入 业务字典
  */
-export async function importModels(
+export async function importModelsDictbiz(
   inputs: DictbizInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -589,7 +540,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsDictbiz(
         inputs,
         UniqueType.Update,
         opt,
@@ -609,7 +560,7 @@ export async function importModels(
 /**
  * 查找 业务字典 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByDictbiz(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -625,12 +576,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathDictbiz() {
   return "/base/dictbiz";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputDictbiz() {
   const defaultInput: DictbizInput = {
     is_add: 0,
     type: DictbizType.String,

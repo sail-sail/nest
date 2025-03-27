@@ -4,7 +4,7 @@ import type {
   OrgModel as OrgModelType,
   OrgSearch as OrgSearchType,
   OrgFieldComment as OrgFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

@@ -1,21 +1,21 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   i18nQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 import {
-  findTree as findMenuTree,
-} from "@/views/base/menu/Api";
+  findTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 async function setLblById(
   model?: I18nModel | null,
@@ -26,7 +26,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputI18n(
   model?: I18nInput,
 ) {
   const input: I18nInput = {
@@ -49,9 +49,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找国际化列表
+ * 根据搜索条件查找 国际化 列表
  */
-export async function findAll(
+export async function findAllI18n(
   search?: I18nSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -84,7 +84,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个国际化
  */
-export async function findOne(
+export async function findOneI18n(
   search?: I18nSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -110,9 +110,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找国际化总数
+ * 根据搜索条件查找 国际化 总数
  */
-export async function findCount(
+export async function findCountI18n(
   search?: I18nSearch,
   opt?: GqlOpt,
 ) {
@@ -133,17 +133,14 @@ export async function findCount(
 }
 
 /**
- * 创建国际化
- * @param {I18nInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 国际化
  */
-export async function create(
+export async function createI18n(
   input: I18nInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<I18nId> {
-  const ids = await creates(
+  const ids = await createsI18n(
     [ input ],
     unique_type,
     opt,
@@ -153,14 +150,14 @@ export async function create(
 }
 
 /**
- * 批量创建国际化
+ * 批量创建 国际化
  */
-export async function creates(
+export async function createsI18n(
   inputs: I18nInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<I18nId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputI18n);
   const data: {
     createsI18n: Mutation["createsI18n"];
   } = await mutation({
@@ -179,14 +176,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改国际化
+ * 根据 id 修改 国际化
  */
-export async function updateById(
+export async function updateByIdI18n(
   id: I18nId,
   input: I18nInput,
   opt?: GqlOpt,
 ): Promise<I18nId> {
-  input = intoInput(input);
+  input = intoInputI18n(input);
   const data: {
     updateByIdI18n: Mutation["updateByIdI18n"];
   } = await mutation({
@@ -205,9 +202,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找国际化
+ * 根据 id 查找 国际化
  */
-export async function findById(
+export async function findByIdI18n(
   id?: I18nId,
   opt?: GqlOpt,
 ): Promise<I18nModel | undefined> {
@@ -234,9 +231,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找国际化
+ * 根据 ids 查找 国际化
  */
-export async function findByIds(
+export async function findByIdsI18n(
   ids: I18nId[],
   opt?: GqlOpt,
 ): Promise<I18nModel[]> {
@@ -271,9 +268,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除国际化
+ * 根据 ids 删除 国际化
  */
-export async function deleteByIds(
+export async function deleteByIdsI18n(
   ids: I18nId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -297,9 +294,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原国际化
+ * 根据 ids 还原 国际化
  */
-export async function revertByIds(
+export async function revertByIdsI18n(
   ids: I18nId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -323,9 +320,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除国际化
+ * 根据 ids 彻底删除 国际化
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsI18n(
   ids: I18nId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -371,11 +368,11 @@ export async function findAllLang(
       sort,
     },
   }, opt);
-  const res = data.findAllLang;
-  return res;
+  const lang_models = data.findAllLang;
+  return lang_models;
 }
 
-export async function getLangList() {
+export async function getListLang() {
   const data = await findAllLang(
     {
       is_enabled: [ 1 ],
@@ -417,11 +414,11 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const res = data.findAllMenu;
-  return res;
+  const menu_models = data.findAllMenu;
+  return menu_models;
 }
 
-export async function getMenuList() {
+export async function getListMenu() {
   const data = await findAllMenu(
     {
       is_enabled: [ 1 ],
@@ -440,8 +437,8 @@ export async function getMenuList() {
   return data;
 }
 
-export async function getMenuTree() {
-  const data = await findMenuTree(
+export async function getTreeMenu() {
+  const data = await findTreeMenu(
     {
       is_enabled: [ 1 ],
     },
@@ -459,9 +456,9 @@ export async function getMenuTree() {
 }
 
 /**
- * 下载国际化导入模板
+ * 下载 国际化 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateI18n() {
   const {
     workerFn,
     workerStatus,
@@ -516,7 +513,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelI18n() {
   const {
     workerFn,
     workerStatus,
@@ -586,9 +583,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入国际化
+ * 批量导入 国际化
  */
-export async function importModels(
+export async function importModelsI18n(
   inputs: I18nInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -615,7 +612,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsI18n(
         inputs,
         UniqueType.Update,
         opt,
@@ -632,12 +629,12 @@ export async function importModels(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
-export function getPagePath() {
+export function getPagePathI18n() {
   return "/base/i18n";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputI18n() {
   const defaultInput: I18nInput = {
   };
   return defaultInput;
