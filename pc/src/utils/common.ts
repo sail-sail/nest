@@ -2,7 +2,7 @@ import type {
   GetDict,
   GetDictbiz,
   Query,
-} from "#/types";
+} from "#/types.ts";
 
 const dictCacheKey = "common.dictCache";
 

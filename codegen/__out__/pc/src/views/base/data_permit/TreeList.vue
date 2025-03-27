@@ -81,13 +81,13 @@
 import List from "./List.vue";
 
 import {
-  getPagePath,
-} from "./Api";
+  getPagePathDataPermit,
+} from "./Api.ts";
 
 import {
-  findTree,
+  findTreeMenu,
   useMenuTreeFilter,
-} from "@/views/base/menu/Api";
+} from "@/views/base/menu/Api.ts";
 
 import type {
   TreeNodeData,
@@ -95,7 +95,7 @@ import type {
 } from "element-plus/es/components/tree/src/tree.type";
 
 defineOptions({
-  name: "数据权限",
+  name: "数据权限TreeList",
 });
 
 const props = defineProps<{
@@ -103,7 +103,7 @@ const props = defineProps<{
   showBuildIn?: string;
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathDataPermit();
 
 let inited = $ref(false);
 
@@ -122,7 +122,7 @@ watch(
   },
 );
 
-type ModelTree = Awaited<ReturnType<typeof findTree>>[0];
+type ModelTree = Awaited<ReturnType<typeof findTreeMenu>>[0];
 
 let treeData = $ref<ModelTree[]>([ ]);
 
@@ -184,7 +184,7 @@ function getById(
 }
 
 async function onFindTree() {
-  treeData = await findTree({ is_enabled: [ 1 ] });
+  treeData = await findTreeMenu({ is_enabled: [ 1 ] });
   if (parent_id) {
     const node = getById(parent_id, treeData);
     if (!node) {
