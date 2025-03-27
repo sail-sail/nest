@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   domainQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: DomainModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputDomain(
   model?: DomainInput,
 ) {
   const input: DomainInput = {
@@ -50,9 +50,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找域名列表
+ * 根据搜索条件查找 域名 列表
  */
-export async function findAll(
+export async function findAllDomain(
   search?: DomainSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -85,7 +85,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个域名
  */
-export async function findOne(
+export async function findOneDomain(
   search?: DomainSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -111,9 +111,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找域名总数
+ * 根据搜索条件查找 域名 总数
  */
-export async function findCount(
+export async function findCountDomain(
   search?: DomainSearch,
   opt?: GqlOpt,
 ) {
@@ -134,17 +134,14 @@ export async function findCount(
 }
 
 /**
- * 创建域名
- * @param {DomainInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 域名
  */
-export async function create(
+export async function createDomain(
   input: DomainInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DomainId> {
-  const ids = await creates(
+  const ids = await createsDomain(
     [ input ],
     unique_type,
     opt,
@@ -154,14 +151,14 @@ export async function create(
 }
 
 /**
- * 批量创建域名
+ * 批量创建 域名
  */
-export async function creates(
+export async function createsDomain(
   inputs: DomainInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DomainId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputDomain);
   const data: {
     createsDomain: Mutation["createsDomain"];
   } = await mutation({
@@ -180,14 +177,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改域名
+ * 根据 id 修改 域名
  */
-export async function updateById(
+export async function updateByIdDomain(
   id: DomainId,
   input: DomainInput,
   opt?: GqlOpt,
 ): Promise<DomainId> {
-  input = intoInput(input);
+  input = intoInputDomain(input);
   const data: {
     updateByIdDomain: Mutation["updateByIdDomain"];
   } = await mutation({
@@ -206,9 +203,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找域名
+ * 根据 id 查找 域名
  */
-export async function findById(
+export async function findByIdDomain(
   id?: DomainId,
   opt?: GqlOpt,
 ): Promise<DomainModel | undefined> {
@@ -235,9 +232,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找域名
+ * 根据 ids 查找 域名
  */
-export async function findByIds(
+export async function findByIdsDomain(
   ids: DomainId[],
   opt?: GqlOpt,
 ): Promise<DomainModel[]> {
@@ -272,9 +269,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除域名
+ * 根据 ids 删除 域名
  */
-export async function deleteByIds(
+export async function deleteByIdsDomain(
   ids: DomainId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -298,9 +295,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 id 设置默认域名
+ * 根据 id 设置默认 域名
  */
-export async function defaultById(
+export async function defaultByIdDomain(
   id?: DomainId,
   opt?: GqlOpt,
 ) {
@@ -324,9 +321,9 @@ export async function defaultById(
 }
 
 /**
- * 根据 ids 启用或禁用域名
+ * 根据 ids 启用或禁用 域名
  */
-export async function enableByIds(
+export async function enableByIdsDomain(
   ids: DomainId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -352,9 +349,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁域名
+ * 根据 ids 锁定或解锁 域名
  */
-export async function lockByIds(
+export async function lockByIdsDomain(
   ids: DomainId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -380,9 +377,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原域名
+ * 根据 ids 还原 域名
  */
-export async function revertByIds(
+export async function revertByIdsDomain(
   ids: DomainId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -406,9 +403,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除域名
+ * 根据 ids 彻底删除 域名
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDomain(
   ids: DomainId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -432,9 +429,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载域名导入模板
+ * 下载 域名 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateDomain() {
   const {
     workerFn,
     workerStatus,
@@ -480,7 +477,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelDomain() {
   const {
     workerFn,
     workerStatus,
@@ -552,9 +549,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入域名
+ * 批量导入 域名
  */
-export async function importModels(
+export async function importModelsDomain(
   inputs: DomainInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -581,7 +578,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsDomain(
         inputs,
         UniqueType.Update,
         opt,
@@ -601,7 +598,7 @@ export async function importModels(
 /**
  * 查找 域名 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByDomain(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -617,12 +614,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathDomain() {
   return "/base/domain";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputDomain() {
   const defaultInput: DomainInput = {
     protocol: "https",
     is_locked: 0,

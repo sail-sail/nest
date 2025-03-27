@@ -1,25 +1,25 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   DictType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   dictQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 import {
-  intoInput as intoInputDictDetail,
-} from "@/views/base/dict_detail/Api";
+  intoInputDictDetail,
+} from "@/views/base/dict_detail/Api.ts";
 
 async function setLblById(
   model?: DictModel | null,
@@ -30,7 +30,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputDict(
   model?: DictInput,
 ) {
   const input: DictInput = {
@@ -59,9 +59,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找系统字典列表
+ * 根据搜索条件查找 系统字典 列表
  */
-export async function findAll(
+export async function findAllDict(
   search?: DictSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -94,7 +94,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个系统字典
  */
-export async function findOne(
+export async function findOneDict(
   search?: DictSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -120,9 +120,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找系统字典总数
+ * 根据搜索条件查找 系统字典 总数
  */
-export async function findCount(
+export async function findCountDict(
   search?: DictSearch,
   opt?: GqlOpt,
 ) {
@@ -143,17 +143,14 @@ export async function findCount(
 }
 
 /**
- * 创建系统字典
- * @param {DictInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 系统字典
  */
-export async function create(
+export async function createDict(
   input: DictInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictId> {
-  const ids = await creates(
+  const ids = await createsDict(
     [ input ],
     unique_type,
     opt,
@@ -163,14 +160,14 @@ export async function create(
 }
 
 /**
- * 批量创建系统字典
+ * 批量创建 系统字典
  */
-export async function creates(
+export async function createsDict(
   inputs: DictInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DictId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputDict);
   const data: {
     createsDict: Mutation["createsDict"];
   } = await mutation({
@@ -189,14 +186,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改系统字典
+ * 根据 id 修改 系统字典
  */
-export async function updateById(
+export async function updateByIdDict(
   id: DictId,
   input: DictInput,
   opt?: GqlOpt,
 ): Promise<DictId> {
-  input = intoInput(input);
+  input = intoInputDict(input);
   const data: {
     updateByIdDict: Mutation["updateByIdDict"];
   } = await mutation({
@@ -215,9 +212,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找系统字典
+ * 根据 id 查找 系统字典
  */
-export async function findById(
+export async function findByIdDict(
   id?: DictId,
   opt?: GqlOpt,
 ): Promise<DictModel | undefined> {
@@ -244,9 +241,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找系统字典
+ * 根据 ids 查找 系统字典
  */
-export async function findByIds(
+export async function findByIdsDict(
   ids: DictId[],
   opt?: GqlOpt,
 ): Promise<DictModel[]> {
@@ -281,9 +278,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除系统字典
+ * 根据 ids 删除 系统字典
  */
-export async function deleteByIds(
+export async function deleteByIdsDict(
   ids: DictId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -307,9 +304,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用系统字典
+ * 根据 ids 启用或禁用 系统字典
  */
-export async function enableByIds(
+export async function enableByIdsDict(
   ids: DictId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -335,9 +332,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 还原系统字典
+ * 根据 ids 还原 系统字典
  */
-export async function revertByIds(
+export async function revertByIdsDict(
   ids: DictId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -361,9 +358,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除系统字典
+ * 根据 ids 彻底删除 系统字典
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDict(
   ids: DictId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -386,56 +383,10 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllDict(
-  search?: DictSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllDict: DictModel[];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: DictSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllDict(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllDict;
-  return res;
-}
-
-export async function getDictList() {
-  const data = await findAllDict(
-    {
-      is_enabled: [ 1 ],
-    },
-    undefined,
-    [
-      {
-        prop: "order_by",
-        order: "ascending",
-      },
-    ],
-    {
-      notLoading: true,
-    },
-  );
-  return data;
-}
-
 /**
- * 下载系统字典导入模板
+ * 下载 系统字典 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateDict() {
   const {
     workerFn,
     workerStatus,
@@ -489,7 +440,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelDict() {
   const {
     workerFn,
     workerStatus,
@@ -560,9 +511,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入系统字典
+ * 批量导入 系统字典
  */
-export async function importModels(
+export async function importModelsDict(
   inputs: DictInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -589,7 +540,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsDict(
         inputs,
         UniqueType.Update,
         opt,
@@ -609,7 +560,7 @@ export async function importModels(
 /**
  * 查找 系统字典 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByDict(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -625,12 +576,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathDict() {
   return "/base/dict";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputDict() {
   const defaultInput: DictInput = {
     type: DictType.String,
     is_add: 0,

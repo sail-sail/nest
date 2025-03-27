@@ -60,7 +60,7 @@
           >
             <CustomTreeSelect
               v-model="dialogModel.menu_id"
-              :method="getMenuTree"
+              :method="getTreeMenu"
               placeholder="请选择 菜单"
               :readonly="true"
             ></CustomTreeSelect>
@@ -207,17 +207,17 @@ import type {
 } from "vue";
 
 import {
-  findOne,
-  findLastOrderBy,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  findOnePermit,
+  findLastOrderByPermit,
+  updateByIdPermit,
+  getDefaultInputPermit,
+  getPagePathPermit,
+  intoInputPermit,
+} from "./Api.ts";
 
 import {
-  getMenuTree,
-} from "@/views/base/menu/Api";
+  getTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -228,7 +228,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathPermit();
 
 const permitStore = usePermitStore();
 
@@ -303,7 +303,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOnePermit;
 
 /** 打开对话框 */
 async function showDialog(
@@ -318,7 +318,7 @@ async function showDialog(
       ids?: PermitId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOnePermit;
     action: DialogAction;
   },
 ) {
@@ -345,7 +345,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOnePermit;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -374,8 +374,8 @@ async function showDialog(
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputPermit(),
+      findLastOrderByPermit({
         notLoading: !inited,
       }),
     ]);
@@ -395,11 +395,11 @@ async function showDialog(
       data,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputPermit(),
       findOneModel({
         id,
       }),
-      findLastOrderBy({
+      findLastOrderByPermit({
         notLoading: !inited,
       }),
     ]);
@@ -468,8 +468,8 @@ async function onReset() {
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputPermit(),
+      findLastOrderByPermit({
         notLoading: !inited,
       }),
     ]);
@@ -502,7 +502,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputPermit({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -638,7 +638,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdPermit(
       dialogModel.id,
       dialogModel2,
     );
