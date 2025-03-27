@@ -1,25 +1,25 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   UsrType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   usrQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 import {
-  findTree as findDeptTree,
-} from "@/views/base/dept/Api";
+  findTreeDept,
+} from "@/views/base/dept/Api.ts";
 
 async function setLblById(
   model?: UsrModel | null,
@@ -38,7 +38,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputUsr(
   model?: UsrInput,
 ) {
   const input: UsrInput = {
@@ -82,9 +82,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找用户列表
+ * 根据搜索条件查找 用户 列表
  */
-export async function findAll(
+export async function findAllUsr(
   search?: UsrSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -117,7 +117,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个用户
  */
-export async function findOne(
+export async function findOneUsr(
   search?: UsrSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -143,9 +143,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找用户总数
+ * 根据搜索条件查找 用户 总数
  */
-export async function findCount(
+export async function findCountUsr(
   search?: UsrSearch,
   opt?: GqlOpt,
 ) {
@@ -166,17 +166,14 @@ export async function findCount(
 }
 
 /**
- * 创建用户
- * @param {UsrInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 用户
  */
-export async function create(
+export async function createUsr(
   input: UsrInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<UsrId> {
-  const ids = await creates(
+  const ids = await createsUsr(
     [ input ],
     unique_type,
     opt,
@@ -186,14 +183,14 @@ export async function create(
 }
 
 /**
- * 批量创建用户
+ * 批量创建 用户
  */
-export async function creates(
+export async function createsUsr(
   inputs: UsrInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<UsrId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputUsr);
   const data: {
     createsUsr: Mutation["createsUsr"];
   } = await mutation({
@@ -212,14 +209,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改用户
+ * 根据 id 修改 用户
  */
-export async function updateById(
+export async function updateByIdUsr(
   id: UsrId,
   input: UsrInput,
   opt?: GqlOpt,
 ): Promise<UsrId> {
-  input = intoInput(input);
+  input = intoInputUsr(input);
   const data: {
     updateByIdUsr: Mutation["updateByIdUsr"];
   } = await mutation({
@@ -238,9 +235,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找用户
+ * 根据 id 查找 用户
  */
-export async function findById(
+export async function findByIdUsr(
   id?: UsrId,
   opt?: GqlOpt,
 ): Promise<UsrModel | undefined> {
@@ -267,9 +264,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找用户
+ * 根据 ids 查找 用户
  */
-export async function findByIds(
+export async function findByIdsUsr(
   ids: UsrId[],
   opt?: GqlOpt,
 ): Promise<UsrModel[]> {
@@ -304,9 +301,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除用户
+ * 根据 ids 删除 用户
  */
-export async function deleteByIds(
+export async function deleteByIdsUsr(
   ids: UsrId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -330,9 +327,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用用户
+ * 根据 ids 启用或禁用 用户
  */
-export async function enableByIds(
+export async function enableByIdsUsr(
   ids: UsrId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -358,9 +355,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁用户
+ * 根据 ids 锁定或解锁 用户
  */
-export async function lockByIds(
+export async function lockByIdsUsr(
   ids: UsrId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -386,9 +383,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原用户
+ * 根据 ids 还原 用户
  */
-export async function revertByIds(
+export async function revertByIdsUsr(
   ids: UsrId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -412,9 +409,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除用户
+ * 根据 ids 彻底删除 用户
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsUsr(
   ids: UsrId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -460,11 +457,11 @@ export async function findAllRole(
       sort,
     },
   }, opt);
-  const res = data.findAllRole;
-  return res;
+  const role_models = data.findAllRole;
+  return role_models;
 }
 
-export async function getRoleList() {
+export async function getListRole() {
   const data = await findAllRole(
     {
       is_enabled: [ 1 ],
@@ -506,11 +503,11 @@ export async function findAllDept(
       sort,
     },
   }, opt);
-  const res = data.findAllDept;
-  return res;
+  const dept_models = data.findAllDept;
+  return dept_models;
 }
 
-export async function getDeptList() {
+export async function getListDept() {
   const data = await findAllDept(
     {
       is_enabled: [ 1 ],
@@ -552,11 +549,11 @@ export async function findAllOrg(
       sort,
     },
   }, opt);
-  const res = data.findAllOrg;
-  return res;
+  const org_models = data.findAllOrg;
+  return org_models;
 }
 
-export async function getOrgList() {
+export async function getListOrg() {
   const data = await findAllOrg(
     {
       is_enabled: [ 1 ],
@@ -575,8 +572,8 @@ export async function getOrgList() {
   return data;
 }
 
-export async function getDeptTree() {
-  const data = await findDeptTree(
+export async function getTreeDept() {
+  const data = await findTreeDept(
     undefined,
     [
       {
@@ -592,9 +589,9 @@ export async function getDeptTree() {
 }
 
 /**
- * 下载用户导入模板
+ * 下载 用户 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateUsr() {
   const {
     workerFn,
     workerStatus,
@@ -664,7 +661,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelUsr() {
   const {
     workerFn,
     workerStatus,
@@ -745,9 +742,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入用户
+ * 批量导入 用户
  */
-export async function importModels(
+export async function importModelsUsr(
   inputs: UsrInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -774,7 +771,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsUsr(
         inputs,
         UniqueType.Update,
         opt,
@@ -794,7 +791,7 @@ export async function importModels(
 /**
  * 查找 用户 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByUsr(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -810,12 +807,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathUsr() {
   return "/base/usr";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputUsr() {
   const defaultInput: UsrInput = {
     type: UsrType.Login,
     is_locked: 0,

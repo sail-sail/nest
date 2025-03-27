@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   optionsQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: OptionsModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputOptions(
   model?: OptionsInput,
 ) {
   const input: OptionsInput = {
@@ -50,9 +50,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找系统选项列表
+ * 根据搜索条件查找 系统选项 列表
  */
-export async function findAll(
+export async function findAllOptions(
   search?: OptionsSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -85,7 +85,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个系统选项
  */
-export async function findOne(
+export async function findOneOptions(
   search?: OptionsSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -111,9 +111,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找系统选项总数
+ * 根据搜索条件查找 系统选项 总数
  */
-export async function findCount(
+export async function findCountOptions(
   search?: OptionsSearch,
   opt?: GqlOpt,
 ) {
@@ -134,17 +134,14 @@ export async function findCount(
 }
 
 /**
- * 创建系统选项
- * @param {OptionsInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 系统选项
  */
-export async function create(
+export async function createOptions(
   input: OptionsInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OptionsId> {
-  const ids = await creates(
+  const ids = await createsOptions(
     [ input ],
     unique_type,
     opt,
@@ -154,14 +151,14 @@ export async function create(
 }
 
 /**
- * 批量创建系统选项
+ * 批量创建 系统选项
  */
-export async function creates(
+export async function createsOptions(
   inputs: OptionsInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OptionsId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputOptions);
   const data: {
     createsOptions: Mutation["createsOptions"];
   } = await mutation({
@@ -180,14 +177,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改系统选项
+ * 根据 id 修改 系统选项
  */
-export async function updateById(
+export async function updateByIdOptions(
   id: OptionsId,
   input: OptionsInput,
   opt?: GqlOpt,
 ): Promise<OptionsId> {
-  input = intoInput(input);
+  input = intoInputOptions(input);
   const data: {
     updateByIdOptions: Mutation["updateByIdOptions"];
   } = await mutation({
@@ -206,9 +203,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找系统选项
+ * 根据 id 查找 系统选项
  */
-export async function findById(
+export async function findByIdOptions(
   id?: OptionsId,
   opt?: GqlOpt,
 ): Promise<OptionsModel | undefined> {
@@ -235,9 +232,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找系统选项
+ * 根据 ids 查找 系统选项
  */
-export async function findByIds(
+export async function findByIdsOptions(
   ids: OptionsId[],
   opt?: GqlOpt,
 ): Promise<OptionsModel[]> {
@@ -272,9 +269,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除系统选项
+ * 根据 ids 删除 系统选项
  */
-export async function deleteByIds(
+export async function deleteByIdsOptions(
   ids: OptionsId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -298,9 +295,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用系统选项
+ * 根据 ids 启用或禁用 系统选项
  */
-export async function enableByIds(
+export async function enableByIdsOptions(
   ids: OptionsId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -326,9 +323,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁系统选项
+ * 根据 ids 锁定或解锁 系统选项
  */
-export async function lockByIds(
+export async function lockByIdsOptions(
   ids: OptionsId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -354,9 +351,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原系统选项
+ * 根据 ids 还原 系统选项
  */
-export async function revertByIds(
+export async function revertByIdsOptions(
   ids: OptionsId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -380,9 +377,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除系统选项
+ * 根据 ids 彻底删除 系统选项
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsOptions(
   ids: OptionsId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -406,9 +403,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载系统选项导入模板
+ * 下载 系统选项 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateOptions() {
   const {
     workerFn,
     workerStatus,
@@ -455,7 +452,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelOptions() {
   const {
     workerFn,
     workerStatus,
@@ -526,9 +523,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入系统选项
+ * 批量导入 系统选项
  */
-export async function importModels(
+export async function importModelsOptions(
   inputs: OptionsInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -555,7 +552,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsOptions(
         inputs,
         UniqueType.Update,
         opt,
@@ -575,7 +572,7 @@ export async function importModels(
 /**
  * 查找 系统选项 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByOptions(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -591,12 +588,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathOptions() {
   return "/base/options";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputOptions() {
   const defaultInput: OptionsInput = {
     version: 1,
     is_locked: 0,

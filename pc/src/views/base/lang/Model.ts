@@ -4,7 +4,7 @@ import type {
   LangModel as LangModelType,
   LangSearch as LangSearchType,
   LangFieldComment as LangFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
