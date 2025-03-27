@@ -4,7 +4,7 @@ import type {
   DictbizModel as DictbizModelType,
   DictbizSearch as DictbizSearchType,
   DictbizFieldComment as DictbizFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   dictbizDetailFields,
