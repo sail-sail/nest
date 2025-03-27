@@ -4,11 +4,11 @@ import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   wxwMsgQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: WxwMsgModel | null,
@@ -19,7 +19,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputWxwMsg(
   model?: WxwMsgInput,
 ) {
   const input: WxwMsgInput = {
@@ -46,9 +46,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找企微消息列表
+ * 根据搜索条件查找 企微消息 列表
  */
-export async function findAll(
+export async function findAllWxwMsg(
   search?: WxwMsgSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -81,7 +81,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个企微消息
  */
-export async function findOne(
+export async function findOneWxwMsg(
   search?: WxwMsgSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -107,9 +107,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找企微消息总数
+ * 根据搜索条件查找 企微消息 总数
  */
-export async function findCount(
+export async function findCountWxwMsg(
   search?: WxwMsgSearch,
   opt?: GqlOpt,
 ) {
@@ -130,9 +130,9 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找企微消息
+ * 根据 id 查找 企微消息
  */
-export async function findById(
+export async function findByIdWxwMsg(
   id?: WxwMsgId,
   opt?: GqlOpt,
 ): Promise<WxwMsgModel | undefined> {
@@ -159,9 +159,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找企微消息
+ * 根据 ids 查找 企微消息
  */
-export async function findByIds(
+export async function findByIdsWxwMsg(
   ids: WxwMsgId[],
   opt?: GqlOpt,
 ): Promise<WxwMsgModel[]> {
@@ -196,9 +196,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除企微消息
+ * 根据 ids 删除 企微消息
  */
-export async function deleteByIds(
+export async function deleteByIdsWxwMsg(
   ids: WxwMsgId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -222,9 +222,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原企微消息
+ * 根据 ids 还原 企微消息
  */
-export async function revertByIds(
+export async function revertByIdsWxwMsg(
   ids: WxwMsgId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -248,9 +248,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除企微消息
+ * 根据 ids 彻底删除 企微消息
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxwMsg(
   ids: WxwMsgId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -296,11 +296,11 @@ export async function findAllWxwApp(
       sort,
     },
   }, opt);
-  const res = data.findAllWxwApp;
-  return res;
+  const wxw_app_models = data.findAllWxwApp;
+  return wxw_app_models;
 }
 
-export async function getWxwAppList() {
+export async function getListWxwApp() {
   const data = await findAllWxwApp(
     {
       is_enabled: [ 1 ],
@@ -322,7 +322,7 @@ export async function getWxwAppList() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelWxwMsg() {
   const {
     workerFn,
     workerStatus,
@@ -394,12 +394,12 @@ export function useExportExcel() {
   };
 }
 
-export function getPagePath() {
+export function getPagePathWxwMsg() {
   return "/wxwork/wxw_msg";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputWxwMsg() {
   const defaultInput: WxwMsgInput = {
   };
   return defaultInput;
