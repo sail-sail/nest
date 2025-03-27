@@ -258,11 +258,11 @@ import {
 import DictbizDetailDialog from "@/views/base/dictbiz_detail/Detail.vue";
 
 import {
-  findOne as findOneDictbiz,
+  findOneDictbiz,
 } from "@/views/base/dictbiz/Api.ts";
 
 import {
-  findAll as findAllDictbizDetail,
+  findAllDictbizDetail,
 } from "@/views/base/dictbiz_detail/Api.ts";
 
 export type DictbizModel = GetDictbiz;

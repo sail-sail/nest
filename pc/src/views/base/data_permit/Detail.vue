@@ -81,7 +81,7 @@
           >
             <CustomTreeSelect
               v-model="dialogModel.menu_id"
-              :method="getMenuTree"
+              :method="getTreeMenu"
               placeholder="请选择 菜单"
               :readonly="isLocked || isReadonly || !!dialogModel.is_sys"
               :props="{
@@ -238,18 +238,18 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  createDataPermit,
+  findOneDataPermit,
+  updateByIdDataPermit,
+  getDefaultInputDataPermit,
+  getPagePathDataPermit,
+  intoInputDataPermit,
+} from "./Api.ts";
 
 import {
-  getMenuTree,
+  getTreeMenu,
   useMenuTreeFilter,
-} from "@/views/base/menu/Api";
+} from "@/views/base/menu/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -260,7 +260,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathDataPermit();
 
 const permitStore = usePermitStore();
 
@@ -344,7 +344,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneDataPermit;
 
 /** 打开对话框 */
 async function showDialog(
@@ -359,7 +359,7 @@ async function showDialog(
       ids?: DataPermitId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneDataPermit;
     action: DialogAction;
   },
 ) {
@@ -386,7 +386,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneDataPermit;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -414,7 +414,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputDataPermit(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -495,7 +495,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputDataPermit(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -526,7 +526,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputDataPermit({
       ...data,
     });
   }
@@ -680,7 +680,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createDataPermit(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -695,7 +695,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdDataPermit(
       dialogModel.id,
       dialogModel2,
     );

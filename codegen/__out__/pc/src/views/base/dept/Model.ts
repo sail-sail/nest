@@ -4,7 +4,7 @@ import type {
   DeptModel as DeptModelType,
   DeptSearch as DeptSearchType,
   DeptFieldComment as DeptFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

@@ -65,8 +65,8 @@ import type {
 } from "vue";
 
 import {
-  findByIds,
-} from "./Api";
+  findByIdsUsr,
+} from "./Api.ts";
 
 import List from "./List.vue";
 
@@ -150,13 +150,13 @@ function selectedIdsChg(value: UsrId[]) {
 }
 
 async function getModelsByIds(ids: UsrId[]) {
-  const res = await findByIds(
+  const usr_models = await findByIdsUsr(
     ids,
     {
       notLoading: true,
     },
   );
-  return res;
+  return usr_models;
 }
 
 /** 键盘回车按键 */
