@@ -4,7 +4,7 @@ import type {
   CronJobLogDetailModel as CronJobLogDetailModelType,
   CronJobLogDetailSearch as CronJobLogDetailSearchType,
   CronJobLogDetailFieldComment as CronJobLogDetailFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
