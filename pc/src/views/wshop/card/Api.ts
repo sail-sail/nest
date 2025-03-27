@@ -1,21 +1,21 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   CardGrade,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   cardQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: CardModel | null,
@@ -65,7 +65,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputCard(
   model?: CardInput,
 ) {
   const input: CardInput = {
@@ -107,9 +107,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找会员卡列表
+ * 根据搜索条件查找 会员卡 列表
  */
-export async function findAll(
+export async function findAllCard(
   search?: CardSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -142,7 +142,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个会员卡
  */
-export async function findOne(
+export async function findOneCard(
   search?: CardSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -168,9 +168,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找会员卡总数
+ * 根据搜索条件查找 会员卡 总数
  */
-export async function findCount(
+export async function findCountCard(
   search?: CardSearch,
   opt?: GqlOpt,
 ) {
@@ -191,17 +191,14 @@ export async function findCount(
 }
 
 /**
- * 创建会员卡
- * @param {CardInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 会员卡
  */
-export async function create(
+export async function createCard(
   input: CardInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<CardId> {
-  const ids = await creates(
+  const ids = await createsCard(
     [ input ],
     unique_type,
     opt,
@@ -211,14 +208,14 @@ export async function create(
 }
 
 /**
- * 批量创建会员卡
+ * 批量创建 会员卡
  */
-export async function creates(
+export async function createsCard(
   inputs: CardInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<CardId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputCard);
   const data: {
     createsCard: Mutation["createsCard"];
   } = await mutation({
@@ -237,14 +234,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改会员卡
+ * 根据 id 修改 会员卡
  */
-export async function updateById(
+export async function updateByIdCard(
   id: CardId,
   input: CardInput,
   opt?: GqlOpt,
 ): Promise<CardId> {
-  input = intoInput(input);
+  input = intoInputCard(input);
   const data: {
     updateByIdCard: Mutation["updateByIdCard"];
   } = await mutation({
@@ -263,9 +260,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找会员卡
+ * 根据 id 查找 会员卡
  */
-export async function findById(
+export async function findByIdCard(
   id?: CardId,
   opt?: GqlOpt,
 ): Promise<CardModel | undefined> {
@@ -292,9 +289,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找会员卡
+ * 根据 ids 查找 会员卡
  */
-export async function findByIds(
+export async function findByIdsCard(
   ids: CardId[],
   opt?: GqlOpt,
 ): Promise<CardModel[]> {
@@ -329,9 +326,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除会员卡
+ * 根据 ids 删除 会员卡
  */
-export async function deleteByIds(
+export async function deleteByIdsCard(
   ids: CardId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -355,9 +352,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用会员卡
+ * 根据 ids 启用或禁用 会员卡
  */
-export async function enableByIds(
+export async function enableByIdsCard(
   ids: CardId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -383,9 +380,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁会员卡
+ * 根据 ids 锁定或解锁 会员卡
  */
-export async function lockByIds(
+export async function lockByIdsCard(
   ids: CardId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -411,9 +408,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原会员卡
+ * 根据 ids 还原 会员卡
  */
-export async function revertByIds(
+export async function revertByIdsCard(
   ids: CardId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -437,9 +434,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除会员卡
+ * 根据 ids 彻底删除 会员卡
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsCard(
   ids: CardId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -485,11 +482,11 @@ export async function findAllUsr(
       sort,
     },
   }, opt);
-  const res = data.findAllUsr;
-  return res;
+  const usr_models = data.findAllUsr;
+  return usr_models;
 }
 
-export async function getUsrList() {
+export async function getListUsr() {
   const data = await findAllUsr(
     {
       is_enabled: [ 1 ],
@@ -509,9 +506,9 @@ export async function getUsrList() {
 }
 
 /**
- * 下载会员卡导入模板
+ * 下载 会员卡 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateCard() {
   const {
     workerFn,
     workerStatus,
@@ -578,7 +575,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelCard() {
   const {
     workerFn,
     workerStatus,
@@ -659,9 +656,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入会员卡
+ * 批量导入 会员卡
  */
-export async function importModels(
+export async function importModelsCard(
   inputs: CardInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -688,7 +685,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsCard(
         inputs,
         UniqueType.Update,
         opt,
@@ -705,12 +702,12 @@ export async function importModels(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
-export function getPagePath() {
+export function getPagePathCard() {
   return "/wshop/card";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputCard() {
   const defaultInput: CardInput = {
     grade: CardGrade.Normal,
     balance: new Decimal(0.00),

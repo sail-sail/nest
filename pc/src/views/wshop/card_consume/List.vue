@@ -35,7 +35,7 @@
         >
           <CustomSelect
             v-model="card_id_search"
-            :method="getCardList"
+            :method="getListCard"
             :options-map="((item: CardModel) => {
               return {
                 label: item.lbl,
@@ -56,7 +56,7 @@
         >
           <CustomSelect
             v-model="usr_id_search"
-            :method="getUsrList"
+            :method="getListUsr"
             :options-map="((item: UsrModel) => {
               return {
                 label: item.lbl,
@@ -589,25 +589,25 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  useExportExcel,
-} from "./Api";
+  getPagePathCardConsume,
+  findAllCardConsume,
+  findCountCardConsume,
+  revertByIdsCardConsume,
+  deleteByIdsCardConsume,
+  forceDeleteByIdsCardConsume,
+  useExportExcelCardConsume,
+} from "./Api.ts";
 
 import {
-  getCardList, // 卡号
-  getUsrList, // 用户
+  getListCard, // 卡号
+  getListUsr, // 用户
 } from "./Api";
 
 defineOptions({
   name: "会员卡消费记录",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathCardConsume();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1073,7 +1073,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllCardConsume(
       search,
       {
         pgSize,
@@ -1085,7 +1085,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllCardConsume(
       search,
       undefined,
       [
@@ -1101,7 +1101,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountCardConsume(
     search2,
     opt,
   );
@@ -1152,7 +1152,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelCardConsume());
 
 /** 导出Excel */
 async function onExport() {
@@ -1254,7 +1254,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsCardConsume(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1286,7 +1286,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsCardConsume(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 会员卡消费记录 成功`);
@@ -1318,7 +1318,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsCardConsume(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);

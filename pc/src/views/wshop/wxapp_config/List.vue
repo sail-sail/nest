@@ -665,25 +665,25 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  enableByIds,
-  lockByIds,
-  useExportExcel,
-  updateById,
-  importModels,
-  useDownloadImportTemplate,
-} from "./Api";
+  getPagePathWxappConfig,
+  findAllWxappConfig,
+  findCountWxappConfig,
+  revertByIdsWxappConfig,
+  deleteByIdsWxappConfig,
+  forceDeleteByIdsWxappConfig,
+  enableByIdsWxappConfig,
+  lockByIdsWxappConfig,
+  useExportExcelWxappConfig,
+  updateByIdWxappConfig,
+  importModelsWxappConfig,
+  useDownloadImportTemplateWxappConfig,
+} from "./Api.ts";
 
 defineOptions({
   name: "小程序配置",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathWxappConfig();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1115,7 +1115,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllWxappConfig(
       search,
       {
         pgSize,
@@ -1127,7 +1127,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllWxappConfig(
       search,
       undefined,
       [
@@ -1143,7 +1143,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountWxappConfig(
     search2,
     opt,
   );
@@ -1194,7 +1194,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelWxappConfig());
 
 /** 导出Excel */
 async function onExport() {
@@ -1298,7 +1298,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate());
+const downloadImportTemplate = $ref(useDownloadImportTemplateWxappConfig());
 
 /**
  * 下载导入模板
@@ -1353,7 +1353,7 @@ async function onImportExcel() {
       },
     );
     messageHandler.close();
-    const res = await importModels(
+    const res = await importModelsWxappConfig(
       models,
       $$(importPercentage),
       $$(isStopImport),
@@ -1384,7 +1384,7 @@ async function onIs_locked(id: WxappConfigId, is_locked: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await lockByIds(
+  await lockByIdsWxappConfig(
     [ id ],
     is_locked,
     {
@@ -1406,7 +1406,7 @@ async function onIs_enabled(id: WxappConfigId, is_enabled: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await enableByIds(
+  await enableByIdsWxappConfig(
     [ id ],
     is_enabled,
     {
@@ -1552,7 +1552,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsWxappConfig(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1584,7 +1584,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsWxappConfig(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 小程序配置 成功`);
@@ -1613,7 +1613,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await enableByIds(selectedIds, is_enabled);
+  const num = await enableByIdsWxappConfig(selectedIds, is_enabled);
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
@@ -1647,7 +1647,7 @@ async function onLockByIds(is_locked: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await lockByIds(selectedIds, is_locked);
+  const num = await lockByIdsWxappConfig(selectedIds, is_locked);
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -1684,7 +1684,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsWxappConfig(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);

@@ -3,10 +3,6 @@ import {
   UniqueType,
 } from "#/types.ts";
 
-import {
-  UsrType,
-} from "#/types.ts";
-
 import type {
   Query,
   Mutation,

@@ -4,7 +4,7 @@ import type {
   PtModel as PtModelType,
   PtSearch as PtSearchType,
   PtFieldComment as PtFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

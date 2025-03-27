@@ -4,7 +4,7 @@ import type {
   RechargeRuleModel as RechargeRuleModelType,
   RechargeRuleSearch as RechargeRuleSearchType,
   RechargeRuleFieldComment as RechargeRuleFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

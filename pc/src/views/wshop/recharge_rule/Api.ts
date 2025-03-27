@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   rechargeRuleQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: RechargeRuleModel | null,
@@ -48,7 +48,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputRechargeRule(
   model?: RechargeRuleInput,
 ) {
   const input: RechargeRuleInput = {
@@ -73,9 +73,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找充值赠送规则列表
+ * 根据搜索条件查找 充值赠送规则 列表
  */
-export async function findAll(
+export async function findAllRechargeRule(
   search?: RechargeRuleSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -108,7 +108,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个充值赠送规则
  */
-export async function findOne(
+export async function findOneRechargeRule(
   search?: RechargeRuleSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -134,9 +134,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找充值赠送规则总数
+ * 根据搜索条件查找 充值赠送规则 总数
  */
-export async function findCount(
+export async function findCountRechargeRule(
   search?: RechargeRuleSearch,
   opt?: GqlOpt,
 ) {
@@ -157,17 +157,14 @@ export async function findCount(
 }
 
 /**
- * 创建充值赠送规则
- * @param {RechargeRuleInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 充值赠送规则
  */
-export async function create(
+export async function createRechargeRule(
   input: RechargeRuleInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<RechargeRuleId> {
-  const ids = await creates(
+  const ids = await createsRechargeRule(
     [ input ],
     unique_type,
     opt,
@@ -177,14 +174,14 @@ export async function create(
 }
 
 /**
- * 批量创建充值赠送规则
+ * 批量创建 充值赠送规则
  */
-export async function creates(
+export async function createsRechargeRule(
   inputs: RechargeRuleInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<RechargeRuleId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputRechargeRule);
   const data: {
     createsRechargeRule: Mutation["createsRechargeRule"];
   } = await mutation({
@@ -203,14 +200,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改充值赠送规则
+ * 根据 id 修改 充值赠送规则
  */
-export async function updateById(
+export async function updateByIdRechargeRule(
   id: RechargeRuleId,
   input: RechargeRuleInput,
   opt?: GqlOpt,
 ): Promise<RechargeRuleId> {
-  input = intoInput(input);
+  input = intoInputRechargeRule(input);
   const data: {
     updateByIdRechargeRule: Mutation["updateByIdRechargeRule"];
   } = await mutation({
@@ -229,9 +226,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找充值赠送规则
+ * 根据 id 查找 充值赠送规则
  */
-export async function findById(
+export async function findByIdRechargeRule(
   id?: RechargeRuleId,
   opt?: GqlOpt,
 ): Promise<RechargeRuleModel | undefined> {
@@ -258,9 +255,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找充值赠送规则
+ * 根据 ids 查找 充值赠送规则
  */
-export async function findByIds(
+export async function findByIdsRechargeRule(
   ids: RechargeRuleId[],
   opt?: GqlOpt,
 ): Promise<RechargeRuleModel[]> {
@@ -295,9 +292,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除充值赠送规则
+ * 根据 ids 删除 充值赠送规则
  */
-export async function deleteByIds(
+export async function deleteByIdsRechargeRule(
   ids: RechargeRuleId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -321,9 +318,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用充值赠送规则
+ * 根据 ids 启用或禁用 充值赠送规则
  */
-export async function enableByIds(
+export async function enableByIdsRechargeRule(
   ids: RechargeRuleId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -349,9 +346,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁充值赠送规则
+ * 根据 ids 锁定或解锁 充值赠送规则
  */
-export async function lockByIds(
+export async function lockByIdsRechargeRule(
   ids: RechargeRuleId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -377,9 +374,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原充值赠送规则
+ * 根据 ids 还原 充值赠送规则
  */
-export async function revertByIds(
+export async function revertByIdsRechargeRule(
   ids: RechargeRuleId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -403,9 +400,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除充值赠送规则
+ * 根据 ids 彻底删除 充值赠送规则
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsRechargeRule(
   ids: RechargeRuleId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -429,9 +426,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载充值赠送规则导入模板
+ * 下载 充值赠送规则 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateRechargeRule() {
   const {
     workerFn,
     workerStatus,
@@ -477,7 +474,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelRechargeRule() {
   const {
     workerFn,
     workerStatus,
@@ -548,9 +545,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入充值赠送规则
+ * 批量导入 充值赠送规则
  */
-export async function importModels(
+export async function importModelsRechargeRule(
   inputs: RechargeRuleInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -577,7 +574,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsRechargeRule(
         inputs,
         UniqueType.Update,
         opt,
@@ -594,12 +591,12 @@ export async function importModels(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
-export function getPagePath() {
+export function getPagePathRechargeRule() {
   return "/wshop/recharge_rule";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputRechargeRule() {
   const defaultInput: RechargeRuleInput = {
     amt: new Decimal(0.00),
     give_amt: new Decimal(0.00),

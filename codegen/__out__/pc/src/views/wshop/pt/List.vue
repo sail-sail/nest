@@ -630,7 +630,7 @@
                   v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  @change="updateById(
+                  @change="updateByIdPt(
                     row.id,
                     {
                       order_by: row.order_by,
@@ -787,25 +787,25 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  enableByIds,
-  lockByIds,
-  useExportExcel,
-  updateById,
-  importModels,
-  useDownloadImportTemplate,
-} from "./Api";
+  getPagePathPt,
+  findAllPt,
+  findCountPt,
+  revertByIdsPt,
+  deleteByIdsPt,
+  forceDeleteByIdsPt,
+  enableByIdsPt,
+  lockByIdsPt,
+  useExportExcelPt,
+  updateByIdPt,
+  importModelsPt,
+  useDownloadImportTemplatePt,
+} from "./Api.ts";
 
 defineOptions({
   name: "产品",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathPt();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1313,7 +1313,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllPt(
       search,
       {
         pgSize,
@@ -1325,7 +1325,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllPt(
       search,
       undefined,
       [
@@ -1341,7 +1341,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountPt(
     search2,
     opt,
   );
@@ -1392,7 +1392,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelPt());
 
 /** 导出Excel */
 async function onExport() {
@@ -1496,7 +1496,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate());
+const downloadImportTemplate = $ref(useDownloadImportTemplatePt());
 
 /**
  * 下载导入模板
@@ -1569,7 +1569,7 @@ async function onImportExcel() {
       },
     );
     messageHandler.close();
-    const res = await importModels(
+    const res = await importModelsPt(
       models,
       $$(importPercentage),
       $$(isStopImport),
@@ -1600,7 +1600,7 @@ async function onIs_new(id: PtId, is_new: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await updateById(
+  await updateByIdPt(
     id,
     {
       is_new,
@@ -1624,7 +1624,7 @@ async function onIs_locked(id: PtId, is_locked: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await lockByIds(
+  await lockByIdsPt(
     [ id ],
     is_locked,
     {
@@ -1646,7 +1646,7 @@ async function onIs_enabled(id: PtId, is_enabled: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await enableByIds(
+  await enableByIdsPt(
     [ id ],
     is_enabled,
     {
@@ -1792,7 +1792,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsPt(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1824,7 +1824,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsPt(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 产品 成功`);
@@ -1853,7 +1853,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await enableByIds(selectedIds, is_enabled);
+  const num = await enableByIdsPt(selectedIds, is_enabled);
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
@@ -1887,7 +1887,7 @@ async function onLockByIds(is_locked: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await lockByIds(selectedIds, is_locked);
+  const num = await lockByIdsPt(selectedIds, is_locked);
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -1924,7 +1924,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsPt(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);

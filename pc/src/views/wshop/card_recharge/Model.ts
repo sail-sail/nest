@@ -4,7 +4,7 @@ import type {
   CardRechargeModel as CardRechargeModelType,
   CardRechargeSearch as CardRechargeSearchType,
   CardRechargeFieldComment as CardRechargeFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

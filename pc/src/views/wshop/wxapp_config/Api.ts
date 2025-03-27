@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   wxappConfigQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: WxappConfigModel | null,
@@ -30,7 +30,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputWxappConfig(
   model?: WxappConfigInput,
 ) {
   const input: WxappConfigInput = {
@@ -55,9 +55,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找小程序配置列表
+ * 根据搜索条件查找 小程序配置 列表
  */
-export async function findAll(
+export async function findAllWxappConfig(
   search?: WxappConfigSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -90,7 +90,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个小程序配置
  */
-export async function findOne(
+export async function findOneWxappConfig(
   search?: WxappConfigSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -116,9 +116,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找小程序配置总数
+ * 根据搜索条件查找 小程序配置 总数
  */
-export async function findCount(
+export async function findCountWxappConfig(
   search?: WxappConfigSearch,
   opt?: GqlOpt,
 ) {
@@ -139,17 +139,14 @@ export async function findCount(
 }
 
 /**
- * 创建小程序配置
- * @param {WxappConfigInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 小程序配置
  */
-export async function create(
+export async function createWxappConfig(
   input: WxappConfigInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxappConfigId> {
-  const ids = await creates(
+  const ids = await createsWxappConfig(
     [ input ],
     unique_type,
     opt,
@@ -159,14 +156,14 @@ export async function create(
 }
 
 /**
- * 批量创建小程序配置
+ * 批量创建 小程序配置
  */
-export async function creates(
+export async function createsWxappConfig(
   inputs: WxappConfigInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxappConfigId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputWxappConfig);
   const data: {
     createsWxappConfig: Mutation["createsWxappConfig"];
   } = await mutation({
@@ -185,14 +182,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改小程序配置
+ * 根据 id 修改 小程序配置
  */
-export async function updateById(
+export async function updateByIdWxappConfig(
   id: WxappConfigId,
   input: WxappConfigInput,
   opt?: GqlOpt,
 ): Promise<WxappConfigId> {
-  input = intoInput(input);
+  input = intoInputWxappConfig(input);
   const data: {
     updateByIdWxappConfig: Mutation["updateByIdWxappConfig"];
   } = await mutation({
@@ -211,9 +208,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找小程序配置
+ * 根据 id 查找 小程序配置
  */
-export async function findById(
+export async function findByIdWxappConfig(
   id?: WxappConfigId,
   opt?: GqlOpt,
 ): Promise<WxappConfigModel | undefined> {
@@ -240,9 +237,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找小程序配置
+ * 根据 ids 查找 小程序配置
  */
-export async function findByIds(
+export async function findByIdsWxappConfig(
   ids: WxappConfigId[],
   opt?: GqlOpt,
 ): Promise<WxappConfigModel[]> {
@@ -277,9 +274,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除小程序配置
+ * 根据 ids 删除 小程序配置
  */
-export async function deleteByIds(
+export async function deleteByIdsWxappConfig(
   ids: WxappConfigId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -303,9 +300,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用小程序配置
+ * 根据 ids 启用或禁用 小程序配置
  */
-export async function enableByIds(
+export async function enableByIdsWxappConfig(
   ids: WxappConfigId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -331,9 +328,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁小程序配置
+ * 根据 ids 锁定或解锁 小程序配置
  */
-export async function lockByIds(
+export async function lockByIdsWxappConfig(
   ids: WxappConfigId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -359,9 +356,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原小程序配置
+ * 根据 ids 还原 小程序配置
  */
-export async function revertByIds(
+export async function revertByIdsWxappConfig(
   ids: WxappConfigId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -385,9 +382,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除小程序配置
+ * 根据 ids 彻底删除 小程序配置
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxappConfig(
   ids: WxappConfigId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -411,9 +408,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载小程序配置导入模板
+ * 下载 小程序配置 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateWxappConfig() {
   const {
     workerFn,
     workerStatus,
@@ -459,7 +456,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelWxappConfig() {
   const {
     workerFn,
     workerStatus,
@@ -530,9 +527,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入小程序配置
+ * 批量导入 小程序配置
  */
-export async function importModels(
+export async function importModelsWxappConfig(
   inputs: WxappConfigInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -559,7 +556,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsWxappConfig(
         inputs,
         UniqueType.Update,
         opt,
@@ -576,12 +573,12 @@ export async function importModels(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
-export function getPagePath() {
+export function getPagePathWxappConfig() {
   return "/wshop/wxapp_config";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputWxappConfig() {
   const defaultInput: WxappConfigInput = {
     is_locked: 0,
     is_enabled: 1,

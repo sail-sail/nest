@@ -23,10 +23,10 @@ declare global {
   interface TenantSearch extends TenantSearchType {
     /** 编码-序列号 */
     code_seq?: [(number|undefined|null), (number|undefined|null)];
-    /** 标题 */
+    /** 简介 */
     title?: string;
     title_like?: string;
-    /** 简介 */
+    /** 描述 */
     info?: string;
     info_like?: string;
     /** 锁定 */
