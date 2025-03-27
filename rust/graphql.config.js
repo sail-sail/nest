@@ -3,5 +3,5 @@ module.exports = {
     "src/common/gql/base.graphql",
     "src/common/gql/schema.graphql",
   ],
-  documents: "../src/views/**/*.ts",
+  documents: "../pc/src/views/**/*.ts",
 };
