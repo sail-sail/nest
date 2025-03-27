@@ -78,7 +78,7 @@
             <CustomSelect
               v-model="dialogModel.sms_app_id"
               v-model:model-label="dialogModel.sms_app_id_lbl"
-              :method="getSmsAppList"
+              :method="getListSmsApp"
               :find-by-values="findByIdsSmsApp"
               :options-map="((item: SmsAppModel) => {
                 return {
@@ -248,18 +248,18 @@ import type {
 } from "vue";
 
 import {
-  findOne,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  findOneSmsSendRecord,
+  getDefaultInputSmsSendRecord,
+  getPagePathSmsSendRecord,
+  intoInputSmsSendRecord,
+} from "./Api.ts";
+
+import {
+  getListSmsApp,
 } from "./Api";
 
 import {
-  getSmsAppList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsSmsApp,
+  findByIdsSmsApp,
 } from "@/views/submail/sms_app/Api.ts";
 
 const emit = defineEmits<{
@@ -271,7 +271,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathSmsSendRecord();
 
 const permitStore = usePermitStore();
 
@@ -348,7 +348,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneSmsSendRecord;
 
 /** 打开对话框 */
 async function showDialog(
@@ -363,7 +363,7 @@ async function showDialog(
       ids?: SmsSendRecordId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneSmsSendRecord;
     action: DialogAction;
   },
 ) {
@@ -390,7 +390,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneSmsSendRecord;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -418,7 +418,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputSmsSendRecord(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -492,7 +492,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputSmsSendRecord(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -523,7 +523,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputSmsSendRecord({
       ...data,
     });
   }
