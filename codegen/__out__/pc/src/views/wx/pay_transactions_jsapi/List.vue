@@ -613,17 +613,17 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  useExportExcel,
-} from "./Api";
+  getPagePathPayTransactionsJsapi,
+  findAllPayTransactionsJsapi,
+  findCountPayTransactionsJsapi,
+  useExportExcelPayTransactionsJsapi,
+} from "./Api.ts";
 
 defineOptions({
   name: "微信JSAPI下单",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathPayTransactionsJsapi();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1134,7 +1134,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllPayTransactionsJsapi(
       search,
       {
         pgSize,
@@ -1146,7 +1146,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllPayTransactionsJsapi(
       search,
       undefined,
       [
@@ -1162,7 +1162,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountPayTransactionsJsapi(
     search2,
     opt,
   );
@@ -1213,7 +1213,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelPayTransactionsJsapi());
 
 /** 导出Excel */
 async function onExport() {

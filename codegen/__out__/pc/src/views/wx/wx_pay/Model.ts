@@ -4,7 +4,7 @@ import type {
   WxPayModel as WxPayModelType,
   WxPaySearch as WxPaySearchType,
   WxPayFieldComment as WxPayFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

@@ -4,7 +4,7 @@ import type {
   WxPayNoticeModel as WxPayNoticeModelType,
   WxPayNoticeSearch as WxPayNoticeSearchType,
   WxPayNoticeFieldComment as WxPayNoticeFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

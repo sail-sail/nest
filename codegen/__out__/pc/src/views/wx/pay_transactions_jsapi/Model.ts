@@ -4,7 +4,7 @@ import type {
   PayTransactionsJsapiModel as PayTransactionsJsapiModelType,
   PayTransactionsJsapiSearch as PayTransactionsJsapiSearchType,
   PayTransactionsJsapiFieldComment as PayTransactionsJsapiFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
