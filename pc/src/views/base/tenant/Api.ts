@@ -42,9 +42,9 @@ export function intoInputTenant(
     // 菜单权限
     menu_ids: model?.menu_ids,
     menu_ids_lbl: model?.menu_ids_lbl,
-    // 标题
-    title: model?.title,
     // 简介
+    title: model?.title,
+    // 描述
     info: model?.info,
     // 语言
     lang_id: model?.lang_id,

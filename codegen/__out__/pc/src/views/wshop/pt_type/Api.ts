@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   ptTypeQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: PtTypeModel | null,
@@ -30,7 +30,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputPtType(
   model?: PtTypeInput,
 ) {
   const input: PtTypeInput = {
@@ -61,9 +61,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找产品类别列表
+ * 根据搜索条件查找 产品类别 列表
  */
-export async function findAll(
+export async function findAllPtType(
   search?: PtTypeSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -96,7 +96,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个产品类别
  */
-export async function findOne(
+export async function findOnePtType(
   search?: PtTypeSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -122,9 +122,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找产品类别总数
+ * 根据搜索条件查找 产品类别 总数
  */
-export async function findCount(
+export async function findCountPtType(
   search?: PtTypeSearch,
   opt?: GqlOpt,
 ) {
@@ -145,17 +145,14 @@ export async function findCount(
 }
 
 /**
- * 创建产品类别
- * @param {PtTypeInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 产品类别
  */
-export async function create(
+export async function createPtType(
   input: PtTypeInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<PtTypeId> {
-  const ids = await creates(
+  const ids = await createsPtType(
     [ input ],
     unique_type,
     opt,
@@ -165,14 +162,14 @@ export async function create(
 }
 
 /**
- * 批量创建产品类别
+ * 批量创建 产品类别
  */
-export async function creates(
+export async function createsPtType(
   inputs: PtTypeInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<PtTypeId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputPtType);
   const data: {
     createsPtType: Mutation["createsPtType"];
   } = await mutation({
@@ -191,14 +188,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改产品类别
+ * 根据 id 修改 产品类别
  */
-export async function updateById(
+export async function updateByIdPtType(
   id: PtTypeId,
   input: PtTypeInput,
   opt?: GqlOpt,
 ): Promise<PtTypeId> {
-  input = intoInput(input);
+  input = intoInputPtType(input);
   const data: {
     updateByIdPtType: Mutation["updateByIdPtType"];
   } = await mutation({
@@ -217,9 +214,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找产品类别
+ * 根据 id 查找 产品类别
  */
-export async function findById(
+export async function findByIdPtType(
   id?: PtTypeId,
   opt?: GqlOpt,
 ): Promise<PtTypeModel | undefined> {
@@ -246,9 +243,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找产品类别
+ * 根据 ids 查找 产品类别
  */
-export async function findByIds(
+export async function findByIdsPtType(
   ids: PtTypeId[],
   opt?: GqlOpt,
 ): Promise<PtTypeModel[]> {
@@ -283,9 +280,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除产品类别
+ * 根据 ids 删除 产品类别
  */
-export async function deleteByIds(
+export async function deleteByIdsPtType(
   ids: PtTypeId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -309,9 +306,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用产品类别
+ * 根据 ids 启用或禁用 产品类别
  */
-export async function enableByIds(
+export async function enableByIdsPtType(
   ids: PtTypeId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -337,9 +334,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁产品类别
+ * 根据 ids 锁定或解锁 产品类别
  */
-export async function lockByIds(
+export async function lockByIdsPtType(
   ids: PtTypeId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -365,9 +362,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原产品类别
+ * 根据 ids 还原 产品类别
  */
-export async function revertByIds(
+export async function revertByIdsPtType(
   ids: PtTypeId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -391,9 +388,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除产品类别
+ * 根据 ids 彻底删除 产品类别
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsPtType(
   ids: PtTypeId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -417,9 +414,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载产品类别导入模板
+ * 下载 产品类别 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplatePtType() {
   const {
     workerFn,
     workerStatus,
@@ -474,7 +471,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelPtType() {
   const {
     workerFn,
     workerStatus,
@@ -547,9 +544,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入产品类别
+ * 批量导入 产品类别
  */
-export async function importModels(
+export async function importModelsPtType(
   inputs: PtTypeInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -576,7 +573,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsPtType(
         inputs,
         UniqueType.Update,
         opt,
@@ -596,7 +593,7 @@ export async function importModels(
 /**
  * 查找 产品类别 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByPtType(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -612,12 +609,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathPtType() {
   return "/wshop/pt_type";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputPtType() {
   const defaultInput: PtTypeInput = {
     is_home: 1,
     is_recommend: 0,

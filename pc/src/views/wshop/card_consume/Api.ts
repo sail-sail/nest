@@ -4,11 +4,11 @@ import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   cardConsumeQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: CardConsumeModel | null,
@@ -71,7 +71,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputCardConsume(
   model?: CardConsumeInput,
 ) {
   const input: CardConsumeInput = {
@@ -100,9 +100,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找会员卡消费记录列表
+ * 根据搜索条件查找 会员卡消费记录 列表
  */
-export async function findAll(
+export async function findAllCardConsume(
   search?: CardConsumeSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -135,7 +135,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个会员卡消费记录
  */
-export async function findOne(
+export async function findOneCardConsume(
   search?: CardConsumeSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -161,9 +161,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找会员卡消费记录总数
+ * 根据搜索条件查找 会员卡消费记录 总数
  */
-export async function findCount(
+export async function findCountCardConsume(
   search?: CardConsumeSearch,
   opt?: GqlOpt,
 ) {
@@ -184,9 +184,9 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找会员卡消费记录
+ * 根据 id 查找 会员卡消费记录
  */
-export async function findById(
+export async function findByIdCardConsume(
   id?: CardConsumeId,
   opt?: GqlOpt,
 ): Promise<CardConsumeModel | undefined> {
@@ -213,9 +213,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找会员卡消费记录
+ * 根据 ids 查找 会员卡消费记录
  */
-export async function findByIds(
+export async function findByIdsCardConsume(
   ids: CardConsumeId[],
   opt?: GqlOpt,
 ): Promise<CardConsumeModel[]> {
@@ -250,9 +250,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除会员卡消费记录
+ * 根据 ids 删除 会员卡消费记录
  */
-export async function deleteByIds(
+export async function deleteByIdsCardConsume(
   ids: CardConsumeId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -276,9 +276,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原会员卡消费记录
+ * 根据 ids 还原 会员卡消费记录
  */
-export async function revertByIds(
+export async function revertByIdsCardConsume(
   ids: CardConsumeId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -302,9 +302,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除会员卡消费记录
+ * 根据 ids 彻底删除 会员卡消费记录
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsCardConsume(
   ids: CardConsumeId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -350,11 +350,11 @@ export async function findAllCard(
       sort,
     },
   }, opt);
-  const res = data.findAllCard;
-  return res;
+  const card_models = data.findAllCard;
+  return card_models;
 }
 
-export async function getCardList() {
+export async function getListCard() {
   const data = await findAllCard(
     {
       is_enabled: [ 1 ],
@@ -396,11 +396,11 @@ export async function findAllUsr(
       sort,
     },
   }, opt);
-  const res = data.findAllUsr;
-  return res;
+  const usr_models = data.findAllUsr;
+  return usr_models;
 }
 
-export async function getUsrList() {
+export async function getListUsr() {
   const data = await findAllUsr(
     {
       is_enabled: [ 1 ],
@@ -422,7 +422,7 @@ export async function getUsrList() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelCardConsume() {
   const {
     workerFn,
     workerStatus,
@@ -491,12 +491,12 @@ export function useExportExcel() {
   };
 }
 
-export function getPagePath() {
+export function getPagePathCardConsume() {
   return "/wshop/card_consume";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputCardConsume() {
   const defaultInput: CardConsumeInput = {
     amt: new Decimal(0.00),
     give_amt: new Decimal(0.00),

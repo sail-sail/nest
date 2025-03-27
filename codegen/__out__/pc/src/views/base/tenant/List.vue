@@ -581,7 +581,7 @@
             </el-table-column>
           </template>
           
-          <!-- 标题 -->
+          <!-- 简介 -->
           <template v-else-if="'title' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -590,7 +590,7 @@
             </el-table-column>
           </template>
           
-          <!-- 简介 -->
+          <!-- 描述 -->
           <template v-else-if="'info' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
@@ -1147,7 +1147,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: false,
     },
     {
-      label: "标题",
+      label: "简介",
       prop: "title",
       width: 160,
       align: "center",
@@ -1155,7 +1155,7 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "简介",
+      label: "描述",
       prop: "info",
       width: 180,
       align: "left",
@@ -1515,8 +1515,8 @@ async function onImportExcel() {
     [ "名称" ]: "lbl",
     [ "所属域名" ]: "domain_ids_lbl",
     [ "菜单权限" ]: "menu_ids_lbl",
-    [ "标题" ]: "title",
-    [ "简介" ]: "info",
+    [ "简介" ]: "title",
+    [ "描述" ]: "info",
     [ "语言" ]: "lang_id_lbl",
     [ "锁定" ]: "is_locked_lbl",
     [ "启用" ]: "is_enabled_lbl",

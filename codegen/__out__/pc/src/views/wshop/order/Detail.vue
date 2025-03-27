@@ -136,7 +136,7 @@
           >
             <CustomSelect
               v-model="dialogModel.usr_id"
-              :method="getUsrList"
+              :method="getListUsr"
               :find-by-values="findByIdsUsr"
               :options-map="((item: UsrModel) => {
                 return {
@@ -306,24 +306,24 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  createOrder,
+  findOneOrder,
+  updateByIdOrder,
+  getDefaultInputOrder,
+  getPagePathOrder,
+  intoInputOrder,
+} from "./Api.ts";
+
+import {
+  getListUsr,
 } from "./Api";
 
 import {
-  getUsrList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsUsr,
+  findByIdsUsr,
 } from "@/views/base/usr/Api.ts";
 
 import {
-  findByIds as findByIdsCard,
+  findByIdsCard,
 } from "@/views/wshop/card/Api.ts";
 
 import SelectInputCard from "@/views/wshop/card/SelectInput.vue";
@@ -337,7 +337,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathOrder();
 
 const permitStore = usePermitStore();
 
@@ -459,7 +459,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneOrder;
 
 /** 打开对话框 */
 async function showDialog(
@@ -474,7 +474,7 @@ async function showDialog(
       ids?: OrderId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneOrder;
     action: DialogAction;
   },
 ) {
@@ -501,7 +501,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneOrder;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -533,7 +533,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputOrder(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -549,7 +549,7 @@ async function showDialog(
       defaultInput,
       data,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputOrder(),
       findOneModel({
         id,
         is_deleted,
@@ -640,7 +640,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputOrder(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -671,7 +671,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputOrder({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -830,7 +830,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createOrder(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -845,7 +845,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdOrder(
       dialogModel.id,
       dialogModel2,
     );

@@ -4,7 +4,7 @@ import type {
   OrderModel as OrderModelType,
   OrderSearch as OrderSearchType,
   OrderFieldComment as OrderFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

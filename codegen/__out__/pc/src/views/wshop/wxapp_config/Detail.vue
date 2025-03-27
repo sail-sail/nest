@@ -228,13 +228,13 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  createWxappConfig,
+  findOneWxappConfig,
+  updateByIdWxappConfig,
+  getDefaultInputWxappConfig,
+  getPagePathWxappConfig,
+  intoInputWxappConfig,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -245,7 +245,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathWxappConfig();
 
 const permitStore = usePermitStore();
 
@@ -320,7 +320,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneWxappConfig;
 
 /** 打开对话框 */
 async function showDialog(
@@ -335,7 +335,7 @@ async function showDialog(
       ids?: WxappConfigId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneWxappConfig;
     action: DialogAction;
   },
 ) {
@@ -362,7 +362,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneWxappConfig;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -394,7 +394,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputWxappConfig(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -498,7 +498,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputWxappConfig(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -529,7 +529,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputWxappConfig({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -662,7 +662,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createWxappConfig(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -677,7 +677,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdWxappConfig(
       dialogModel.id,
       dialogModel2,
     );

@@ -1,22 +1,22 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   OrderStatus,
   OrderType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   orderQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: OrderModel | null,
@@ -92,7 +92,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputOrder(
   model?: OrderInput,
 ) {
   const input: OrderInput = {
@@ -141,9 +141,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找订单列表
+ * 根据搜索条件查找 订单 列表
  */
-export async function findAll(
+export async function findAllOrder(
   search?: OrderSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -176,7 +176,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个订单
  */
-export async function findOne(
+export async function findOneOrder(
   search?: OrderSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -202,9 +202,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找订单总数
+ * 根据搜索条件查找 订单 总数
  */
-export async function findCount(
+export async function findCountOrder(
   search?: OrderSearch,
   opt?: GqlOpt,
 ) {
@@ -225,17 +225,14 @@ export async function findCount(
 }
 
 /**
- * 创建订单
- * @param {OrderInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 订单
  */
-export async function create(
+export async function createOrder(
   input: OrderInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OrderId> {
-  const ids = await creates(
+  const ids = await createsOrder(
     [ input ],
     unique_type,
     opt,
@@ -245,14 +242,14 @@ export async function create(
 }
 
 /**
- * 批量创建订单
+ * 批量创建 订单
  */
-export async function creates(
+export async function createsOrder(
   inputs: OrderInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OrderId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputOrder);
   const data: {
     createsOrder: Mutation["createsOrder"];
   } = await mutation({
@@ -271,14 +268,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改订单
+ * 根据 id 修改 订单
  */
-export async function updateById(
+export async function updateByIdOrder(
   id: OrderId,
   input: OrderInput,
   opt?: GqlOpt,
 ): Promise<OrderId> {
-  input = intoInput(input);
+  input = intoInputOrder(input);
   const data: {
     updateByIdOrder: Mutation["updateByIdOrder"];
   } = await mutation({
@@ -297,9 +294,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找订单
+ * 根据 id 查找 订单
  */
-export async function findById(
+export async function findByIdOrder(
   id?: OrderId,
   opt?: GqlOpt,
 ): Promise<OrderModel | undefined> {
@@ -326,9 +323,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找订单
+ * 根据 ids 查找 订单
  */
-export async function findByIds(
+export async function findByIdsOrder(
   ids: OrderId[],
   opt?: GqlOpt,
 ): Promise<OrderModel[]> {
@@ -363,9 +360,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除订单
+ * 根据 ids 删除 订单
  */
-export async function deleteByIds(
+export async function deleteByIdsOrder(
   ids: OrderId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -389,9 +386,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用订单
+ * 根据 ids 启用或禁用 订单
  */
-export async function enableByIds(
+export async function enableByIdsOrder(
   ids: OrderId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -417,9 +414,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁订单
+ * 根据 ids 锁定或解锁 订单
  */
-export async function lockByIds(
+export async function lockByIdsOrder(
   ids: OrderId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -445,9 +442,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原订单
+ * 根据 ids 还原 订单
  */
-export async function revertByIds(
+export async function revertByIdsOrder(
   ids: OrderId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -471,9 +468,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除订单
+ * 根据 ids 彻底删除 订单
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsOrder(
   ids: OrderId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -519,11 +516,11 @@ export async function findAllUsr(
       sort,
     },
   }, opt);
-  const res = data.findAllUsr;
-  return res;
+  const usr_models = data.findAllUsr;
+  return usr_models;
 }
 
-export async function getUsrList() {
+export async function getListUsr() {
   const data = await findAllUsr(
     {
       is_enabled: [ 1 ],
@@ -565,11 +562,11 @@ export async function findAllCard(
       sort,
     },
   }, opt);
-  const res = data.findAllCard;
-  return res;
+  const card_models = data.findAllCard;
+  return card_models;
 }
 
-export async function getCardList() {
+export async function getListCard() {
   const data = await findAllCard(
     {
       is_enabled: [ 1 ],
@@ -589,9 +586,9 @@ export async function getCardList() {
 }
 
 /**
- * 下载订单导入模板
+ * 下载 订单 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateOrder() {
   const {
     workerFn,
     workerStatus,
@@ -656,7 +653,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelOrder() {
   const {
     workerFn,
     workerStatus,
@@ -740,9 +737,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入订单
+ * 批量导入 订单
  */
-export async function importModels(
+export async function importModelsOrder(
   inputs: OrderInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -769,7 +766,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsOrder(
         inputs,
         UniqueType.Update,
         opt,
@@ -786,12 +783,12 @@ export async function importModels(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
-export function getPagePath() {
+export function getPagePathOrder() {
   return "/wshop/order";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputOrder() {
   const defaultInput: OrderInput = {
     status: OrderStatus.ToBePaid,
     price: new Decimal(0.00),

@@ -4,7 +4,7 @@ import type {
   CardModel as CardModelType,
   CardSearch as CardSearchType,
   CardFieldComment as CardFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

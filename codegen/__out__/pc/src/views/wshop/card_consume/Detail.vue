@@ -77,7 +77,7 @@
           >
             <CustomSelect
               v-model="dialogModel.card_id"
-              :method="getCardList"
+              :method="getListCard"
               :find-by-values="findByIdsCard"
               :options-map="((item: CardModel) => {
                 return {
@@ -98,7 +98,7 @@
           >
             <CustomSelect
               v-model="dialogModel.usr_id"
-              :method="getUsrList"
+              :method="getListUsr"
               :find-by-values="findByIdsUsr"
               :options-map="((item: UsrModel) => {
                 return {
@@ -274,23 +274,23 @@ import type {
 } from "vue";
 
 import {
-  findOne,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  findOneCardConsume,
+  getDefaultInputCardConsume,
+  getPagePathCardConsume,
+  intoInputCardConsume,
+} from "./Api.ts";
+
+import {
+  getListCard,
+  getListUsr,
 } from "./Api";
 
 import {
-  getCardList,
-  getUsrList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsCard,
+  findByIdsCard,
 } from "@/views/wshop/card/Api.ts";
 
 import {
-  findByIds as findByIdsUsr,
+  findByIdsUsr,
 } from "@/views/base/usr/Api.ts";
 
 const emit = defineEmits<{
@@ -302,7 +302,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathCardConsume();
 
 const permitStore = usePermitStore();
 
@@ -379,7 +379,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneCardConsume;
 
 /** 打开对话框 */
 async function showDialog(
@@ -394,7 +394,7 @@ async function showDialog(
       ids?: CardConsumeId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneCardConsume;
     action: DialogAction;
   },
 ) {
@@ -421,7 +421,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneCardConsume;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -449,7 +449,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputCardConsume(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -523,7 +523,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputCardConsume(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -554,7 +554,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputCardConsume({
       ...data,
     });
   }
