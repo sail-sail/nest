@@ -481,7 +481,6 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       try {
         await treeDir(dir+"/"+file, writeFnArr);
       } catch (err) {
-        console.error(err);
         throw err;
       }
 		}
