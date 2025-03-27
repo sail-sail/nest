@@ -21,7 +21,7 @@
     "@swc/wasm": "1.11.13",
     "@types/fs-extra": "11.0.4",
     "@types/minimist": "1.2.5",
-    "@types/node": "22.13.13",
+    "@types/node": "22.13.14",
     "chokidar": "3.6.0",
     "commander": "13.1.0",
     "dotenv": "16.4.7",
