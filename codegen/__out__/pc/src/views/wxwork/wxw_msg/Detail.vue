@@ -77,7 +77,7 @@
           >
             <CustomSelect
               v-model="dialogModel.wxw_app_id"
-              :method="getWxwAppList"
+              :method="getListWxwApp"
               :find-by-values="findByIdsWxwApp"
               :options-map="((item: WxwAppModel) => {
                 return {
@@ -243,18 +243,18 @@ import type {
 } from "vue";
 
 import {
-  findOne,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  findOneWxwMsg,
+  getDefaultInputWxwMsg,
+  getPagePathWxwMsg,
+  intoInputWxwMsg,
+} from "./Api.ts";
+
+import {
+  getListWxwApp,
 } from "./Api";
 
 import {
-  getWxwAppList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsWxwApp,
+  findByIdsWxwApp,
 } from "@/views/wxwork/wxw_app/Api.ts";
 
 const emit = defineEmits<{
@@ -266,7 +266,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathWxwMsg();
 
 const permitStore = usePermitStore();
 
@@ -343,7 +343,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneWxwMsg;
 
 /** 打开对话框 */
 async function showDialog(
@@ -358,7 +358,7 @@ async function showDialog(
       ids?: WxwMsgId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneWxwMsg;
     action: DialogAction;
   },
 ) {
@@ -385,7 +385,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneWxwMsg;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -413,7 +413,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputWxwMsg(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -487,7 +487,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputWxwMsg(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -518,7 +518,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputWxwMsg({
       ...data,
     });
   }

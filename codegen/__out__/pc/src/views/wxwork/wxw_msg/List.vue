@@ -35,7 +35,7 @@
         >
           <CustomSelect
             v-model="wxw_app_id_search"
-            :method="getWxwAppList"
+            :method="getListWxwApp"
             :options-map="((item: WxwAppModel) => {
               return {
                 label: item.lbl,
@@ -563,24 +563,24 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  useExportExcel,
-} from "./Api";
+  getPagePathWxwMsg,
+  findAllWxwMsg,
+  findCountWxwMsg,
+  revertByIdsWxwMsg,
+  deleteByIdsWxwMsg,
+  forceDeleteByIdsWxwMsg,
+  useExportExcelWxwMsg,
+} from "./Api.ts";
 
 import {
-  getWxwAppList, // 企微应用
+  getListWxwApp, // 企微应用
 } from "./Api";
 
 defineOptions({
   name: "企微消息",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathWxwMsg();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1020,7 +1020,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllWxwMsg(
       search,
       {
         pgSize,
@@ -1032,7 +1032,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllWxwMsg(
       search,
       undefined,
       [
@@ -1048,7 +1048,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountWxwMsg(
     search2,
     opt,
   );
@@ -1099,7 +1099,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelWxwMsg());
 
 /** 导出Excel */
 async function onExport() {
@@ -1201,7 +1201,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsWxwMsg(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1233,7 +1233,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsWxwMsg(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 企微消息 成功`);
@@ -1265,7 +1265,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsWxwMsg(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
