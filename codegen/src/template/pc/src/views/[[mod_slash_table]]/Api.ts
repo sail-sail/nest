@@ -409,8 +409,8 @@ for (let i = 0; i < columns.length; i++) {
     intoInputTableUps.push(Table_Up);
 #>
 import {
-  intoInput as intoInput<#=Table_Up#>,
-} from "@/views/<#=mod#>/<#=table#>/Api";<#
+  intoInput<#=Table_Up#>,
+} from "@/views/<#=mod#>/<#=table#>/Api.ts";<#
   }
 #><#
 }
