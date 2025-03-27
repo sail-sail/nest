@@ -455,7 +455,7 @@ for (let i = 0; i < columns.length; i++) {
 
 // <#=foreignSchema.opts?.table_comment#>
 import {
-  findOne<#=foreignTable_Up#>0,
+  findOne<#=foreignTable_Up#> as findOne<#=foreignTable_Up#>0,
 } from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
 }
 #>
