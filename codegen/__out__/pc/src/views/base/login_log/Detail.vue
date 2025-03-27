@@ -198,11 +198,11 @@ import type {
 } from "vue";
 
 import {
-  findOne,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  findOneLoginLog,
+  getDefaultInputLoginLog,
+  getPagePathLoginLog,
+  intoInputLoginLog,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -213,7 +213,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathLoginLog();
 
 const permitStore = usePermitStore();
 
@@ -302,7 +302,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneLoginLog;
 
 /** 打开对话框 */
 async function showDialog(
@@ -317,7 +317,7 @@ async function showDialog(
       ids?: LoginLogId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneLoginLog;
     action: DialogAction;
   },
 ) {
@@ -344,7 +344,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneLoginLog;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -372,7 +372,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputLoginLog(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -446,7 +446,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputLoginLog(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -477,7 +477,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputLoginLog({
       ...data,
     });
   }

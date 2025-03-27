@@ -4,7 +4,7 @@ import type {
   PermitModel as PermitModelType,
   PermitSearch as PermitSearchType,
   PermitFieldComment as PermitFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

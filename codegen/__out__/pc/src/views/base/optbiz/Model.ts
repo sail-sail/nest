@@ -4,7 +4,7 @@ import type {
   OptbizModel as OptbizModelType,
   OptbizSearch as OptbizSearchType,
   OptbizFieldComment as OptbizFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   optbizQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: OptbizModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputOptbiz(
   model?: OptbizInput,
 ) {
   const input: OptbizInput = {
@@ -50,9 +50,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找业务选项列表
+ * 根据搜索条件查找 业务选项 列表
  */
-export async function findAll(
+export async function findAllOptbiz(
   search?: OptbizSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -85,7 +85,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个业务选项
  */
-export async function findOne(
+export async function findOneOptbiz(
   search?: OptbizSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -111,9 +111,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找业务选项总数
+ * 根据搜索条件查找 业务选项 总数
  */
-export async function findCount(
+export async function findCountOptbiz(
   search?: OptbizSearch,
   opt?: GqlOpt,
 ) {
@@ -134,17 +134,14 @@ export async function findCount(
 }
 
 /**
- * 创建业务选项
- * @param {OptbizInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 业务选项
  */
-export async function create(
+export async function createOptbiz(
   input: OptbizInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OptbizId> {
-  const ids = await creates(
+  const ids = await createsOptbiz(
     [ input ],
     unique_type,
     opt,
@@ -154,14 +151,14 @@ export async function create(
 }
 
 /**
- * 批量创建业务选项
+ * 批量创建 业务选项
  */
-export async function creates(
+export async function createsOptbiz(
   inputs: OptbizInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OptbizId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputOptbiz);
   const data: {
     createsOptbiz: Mutation["createsOptbiz"];
   } = await mutation({
@@ -180,14 +177,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改业务选项
+ * 根据 id 修改 业务选项
  */
-export async function updateById(
+export async function updateByIdOptbiz(
   id: OptbizId,
   input: OptbizInput,
   opt?: GqlOpt,
 ): Promise<OptbizId> {
-  input = intoInput(input);
+  input = intoInputOptbiz(input);
   const data: {
     updateByIdOptbiz: Mutation["updateByIdOptbiz"];
   } = await mutation({
@@ -206,9 +203,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找业务选项
+ * 根据 id 查找 业务选项
  */
-export async function findById(
+export async function findByIdOptbiz(
   id?: OptbizId,
   opt?: GqlOpt,
 ): Promise<OptbizModel | undefined> {
@@ -235,9 +232,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找业务选项
+ * 根据 ids 查找 业务选项
  */
-export async function findByIds(
+export async function findByIdsOptbiz(
   ids: OptbizId[],
   opt?: GqlOpt,
 ): Promise<OptbizModel[]> {
@@ -272,9 +269,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除业务选项
+ * 根据 ids 删除 业务选项
  */
-export async function deleteByIds(
+export async function deleteByIdsOptbiz(
   ids: OptbizId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -298,9 +295,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用业务选项
+ * 根据 ids 启用或禁用 业务选项
  */
-export async function enableByIds(
+export async function enableByIdsOptbiz(
   ids: OptbizId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -326,9 +323,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁业务选项
+ * 根据 ids 锁定或解锁 业务选项
  */
-export async function lockByIds(
+export async function lockByIdsOptbiz(
   ids: OptbizId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -354,9 +351,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原业务选项
+ * 根据 ids 还原 业务选项
  */
-export async function revertByIds(
+export async function revertByIdsOptbiz(
   ids: OptbizId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -380,9 +377,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除业务选项
+ * 根据 ids 彻底删除 业务选项
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsOptbiz(
   ids: OptbizId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -406,9 +403,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载业务选项导入模板
+ * 下载 业务选项 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateOptbiz() {
   const {
     workerFn,
     workerStatus,
@@ -455,7 +452,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelOptbiz() {
   const {
     workerFn,
     workerStatus,
@@ -526,9 +523,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入业务选项
+ * 批量导入 业务选项
  */
-export async function importModels(
+export async function importModelsOptbiz(
   inputs: OptbizInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -555,7 +552,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsOptbiz(
         inputs,
         UniqueType.Update,
         opt,
@@ -575,7 +572,7 @@ export async function importModels(
 /**
  * 查找 业务选项 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByOptbiz(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -591,12 +588,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathOptbiz() {
   return "/base/optbiz";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputOptbiz() {
   const defaultInput: OptbizInput = {
     version: 1,
     is_locked: 0,
