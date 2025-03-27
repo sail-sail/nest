@@ -4,7 +4,7 @@ import type {
   WxUsrModel as WxUsrModelType,
   WxUsrSearch as WxUsrSearchType,
   WxUsrFieldComment as WxUsrFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
