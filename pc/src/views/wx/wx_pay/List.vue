@@ -632,7 +632,7 @@
                   v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  @change="updateById(
+                  @change="updateByIdWxPay(
                     row.id,
                     {
                       order_by: row.order_by,
@@ -750,25 +750,25 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  enableByIds,
-  lockByIds,
-  useExportExcel,
-  updateById,
-  importModels,
-  useDownloadImportTemplate,
-} from "./Api";
+  getPagePathWxPay,
+  findAllWxPay,
+  findCountWxPay,
+  revertByIdsWxPay,
+  deleteByIdsWxPay,
+  forceDeleteByIdsWxPay,
+  enableByIdsWxPay,
+  lockByIdsWxPay,
+  useExportExcelWxPay,
+  updateByIdWxPay,
+  importModelsWxPay,
+  useDownloadImportTemplateWxPay,
+} from "./Api.ts";
 
 defineOptions({
   name: "微信支付设置",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathWxPay();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1241,7 +1241,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllWxPay(
       search,
       {
         pgSize,
@@ -1253,7 +1253,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllWxPay(
       search,
       undefined,
       [
@@ -1269,7 +1269,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountWxPay(
     search2,
     opt,
   );
@@ -1320,7 +1320,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelWxPay());
 
 /** 导出Excel */
 async function onExport() {
@@ -1338,7 +1338,7 @@ async function onCancelExport() {
 }
 
 async function onLinkAtt(row: WxPayModel, key: keyof WxPayModel) {
-  await updateById(row.id, { [key]: row[key] });
+  await updateByIdWxPay(row.id, { [key]: row[key] });
 }
 
 /** 打开新增页面 */
@@ -1428,7 +1428,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate());
+const downloadImportTemplate = $ref(useDownloadImportTemplateWxPay());
 
 /**
  * 下载导入模板
@@ -1493,7 +1493,7 @@ async function onImportExcel() {
       },
     );
     messageHandler.close();
-    const res = await importModels(
+    const res = await importModelsWxPay(
       models,
       $$(importPercentage),
       $$(isStopImport),
@@ -1524,7 +1524,7 @@ async function onIs_locked(id: WxPayId, is_locked: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await lockByIds(
+  await lockByIdsWxPay(
     [ id ],
     is_locked,
     {
@@ -1546,7 +1546,7 @@ async function onIs_enabled(id: WxPayId, is_enabled: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await enableByIds(
+  await enableByIdsWxPay(
     [ id ],
     is_enabled,
     {
@@ -1692,7 +1692,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsWxPay(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1724,7 +1724,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsWxPay(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 微信支付设置 成功`);
@@ -1753,7 +1753,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await enableByIds(selectedIds, is_enabled);
+  const num = await enableByIdsWxPay(selectedIds, is_enabled);
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
@@ -1787,7 +1787,7 @@ async function onLockByIds(is_locked: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await lockByIds(selectedIds, is_locked);
+  const num = await lockByIdsWxPay(selectedIds, is_locked);
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -1824,7 +1824,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsWxPay(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);

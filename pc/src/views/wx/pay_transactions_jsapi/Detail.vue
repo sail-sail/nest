@@ -383,11 +383,11 @@ import type {
 } from "vue";
 
 import {
-  findOne,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  findOnePayTransactionsJsapi,
+  getDefaultInputPayTransactionsJsapi,
+  getPagePathPayTransactionsJsapi,
+  intoInputPayTransactionsJsapi,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -398,7 +398,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathPayTransactionsJsapi();
 
 const permitStore = usePermitStore();
 
@@ -475,7 +475,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOnePayTransactionsJsapi;
 
 /** 打开对话框 */
 async function showDialog(
@@ -490,7 +490,7 @@ async function showDialog(
       ids?: PayTransactionsJsapiId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOnePayTransactionsJsapi;
     action: DialogAction;
   },
 ) {
@@ -517,7 +517,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOnePayTransactionsJsapi;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -545,7 +545,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputPayTransactionsJsapi(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -619,7 +619,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputPayTransactionsJsapi(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -650,7 +650,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputPayTransactionsJsapi({
       ...data,
     });
   }

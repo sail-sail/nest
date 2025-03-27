@@ -95,7 +95,7 @@
             <CustomSelect
               v-model="dialogModel.usr_id"
               v-model:model-label="dialogModel.usr_id_lbl"
-              :method="getUsrList"
+              :method="getListUsr"
               :find-by-values="findByIdsUsr"
               :options-map="((item: UsrModel) => {
                 return {
@@ -369,20 +369,20 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  createWxUsr,
+  findOneWxUsr,
+  updateByIdWxUsr,
+  getDefaultInputWxUsr,
+  getPagePathWxUsr,
+  intoInputWxUsr,
+} from "./Api.ts";
+
+import {
+  getListUsr,
 } from "./Api";
 
 import {
-  getUsrList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsUsr,
+  findByIdsUsr,
 } from "@/views/base/usr/Api.ts";
 
 const emit = defineEmits<{
@@ -394,7 +394,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathWxUsr();
 
 const permitStore = usePermitStore();
 
@@ -495,7 +495,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneWxUsr;
 
 /** 打开对话框 */
 async function showDialog(
@@ -510,7 +510,7 @@ async function showDialog(
       ids?: WxUsrId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneWxUsr;
     action: DialogAction;
   },
 ) {
@@ -537,7 +537,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneWxUsr;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -565,7 +565,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputWxUsr(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -646,7 +646,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputWxUsr(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -677,7 +677,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputWxUsr({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -828,7 +828,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createWxUsr(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -843,7 +843,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdWxUsr(
       dialogModel.id,
       dialogModel2,
     );
