@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   seoQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: SeoModel | null,
@@ -30,7 +30,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputSeo(
   model?: SeoInput,
 ) {
   const input: SeoInput = {
@@ -63,9 +63,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找SEO优化列表
+ * 根据搜索条件查找 SEO优化 列表
  */
-export async function findAll(
+export async function findAllSeo(
   search?: SeoSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -98,7 +98,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个SEO优化
  */
-export async function findOne(
+export async function findOneSeo(
   search?: SeoSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -124,9 +124,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找SEO优化总数
+ * 根据搜索条件查找 SEO优化 总数
  */
-export async function findCount(
+export async function findCountSeo(
   search?: SeoSearch,
   opt?: GqlOpt,
 ) {
@@ -147,17 +147,14 @@ export async function findCount(
 }
 
 /**
- * 创建SEO优化
- * @param {SeoInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 SEO优化
  */
-export async function create(
+export async function createSeo(
   input: SeoInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<SeoId> {
-  const ids = await creates(
+  const ids = await createsSeo(
     [ input ],
     unique_type,
     opt,
@@ -167,14 +164,14 @@ export async function create(
 }
 
 /**
- * 批量创建SEO优化
+ * 批量创建 SEO优化
  */
-export async function creates(
+export async function createsSeo(
   inputs: SeoInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<SeoId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputSeo);
   const data: {
     createsSeo: Mutation["createsSeo"];
   } = await mutation({
@@ -193,14 +190,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改SEO优化
+ * 根据 id 修改 SEO优化
  */
-export async function updateById(
+export async function updateByIdSeo(
   id: SeoId,
   input: SeoInput,
   opt?: GqlOpt,
 ): Promise<SeoId> {
-  input = intoInput(input);
+  input = intoInputSeo(input);
   const data: {
     updateByIdSeo: Mutation["updateByIdSeo"];
   } = await mutation({
@@ -219,9 +216,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找SEO优化
+ * 根据 id 查找 SEO优化
  */
-export async function findById(
+export async function findByIdSeo(
   id?: SeoId,
   opt?: GqlOpt,
 ): Promise<SeoModel | undefined> {
@@ -248,9 +245,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找SEO优化
+ * 根据 ids 查找 SEO优化
  */
-export async function findByIds(
+export async function findByIdsSeo(
   ids: SeoId[],
   opt?: GqlOpt,
 ): Promise<SeoModel[]> {
@@ -285,9 +282,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除SEO优化
+ * 根据 ids 删除 SEO优化
  */
-export async function deleteByIds(
+export async function deleteByIdsSeo(
   ids: SeoId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -311,9 +308,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 id 设置默认SEO优化
+ * 根据 id 设置默认 SEO优化
  */
-export async function defaultById(
+export async function defaultByIdSeo(
   id?: SeoId,
   opt?: GqlOpt,
 ) {
@@ -337,9 +334,9 @@ export async function defaultById(
 }
 
 /**
- * 根据 ids 锁定或解锁SEO优化
+ * 根据 ids 锁定或解锁 SEO优化
  */
-export async function lockByIds(
+export async function lockByIdsSeo(
   ids: SeoId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -365,9 +362,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原SEO优化
+ * 根据 ids 还原 SEO优化
  */
-export async function revertByIds(
+export async function revertByIdsSeo(
   ids: SeoId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -391,9 +388,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除SEO优化
+ * 根据 ids 彻底删除 SEO优化
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsSeo(
   ids: SeoId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -417,9 +414,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载SEO优化导入模板
+ * 下载 SEO优化 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateSeo() {
   const {
     workerFn,
     workerStatus,
@@ -469,7 +466,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelSeo() {
   const {
     workerFn,
     workerStatus,
@@ -540,9 +537,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入SEO优化
+ * 批量导入 SEO优化
  */
-export async function importModels(
+export async function importModelsSeo(
   inputs: SeoInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -569,7 +566,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsSeo(
         inputs,
         UniqueType.Update,
         opt,
@@ -589,7 +586,7 @@ export async function importModels(
 /**
  * 查找 SEO优化 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderBySeo(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -605,12 +602,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathSeo() {
   return "/nuxt/seo";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputSeo() {
   const defaultInput: SeoInput = {
     is_locked: 0,
     order_by: 1,

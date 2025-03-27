@@ -4,7 +4,7 @@ import type {
   SeoModel as SeoModelType,
   SeoSearch as SeoSearchType,
   SeoFieldComment as SeoFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
