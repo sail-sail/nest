@@ -641,7 +641,7 @@ impl <#=tableUP#>GenMutation {<#
   #><#
   if (opts.noDelete !== true) {
   #><#
-  if (hasIsDeleted) {
+  if (opts.noRevert !== true && hasIsDeleted) {
   #>
   
   /// 根据 ids 还原<#=table_comment#><#
@@ -668,7 +668,7 @@ impl <#=tableUP#>GenMutation {<#
   }<#
   }
   #><#
-  if (hasIsDeleted) {
+  if (opts.noForceDelete !== true && hasIsDeleted) {
   #>
   
   /// 根据 ids 彻底删除<#=table_comment#><#
