@@ -138,7 +138,7 @@
             <CustomSelect
               v-model="dialogModel.role_ids"
               :set="dialogModel.role_ids = dialogModel.role_ids ?? [ ]"
-              :method="getRoleList"
+              :method="getListRole"
               :find-by-values="findByIdsRole"
               :options-map="((item: RoleModel) => {
                 return {
@@ -161,7 +161,7 @@
             <CustomTreeSelect
               v-model="dialogModel.dept_ids"
               :set="dialogModel.dept_ids = dialogModel.dept_ids ?? [ ]"
-              :method="getDeptTree"
+              :method="getTreeDept"
               placeholder="请选择 所属部门"
               multiple
               :readonly="isLocked || isReadonly"
@@ -177,7 +177,7 @@
             <CustomSelect
               v-model="dialogModel.org_ids"
               :set="dialogModel.org_ids = dialogModel.org_ids ?? [ ]"
-              :method="getOrgList"
+              :method="getListOrg"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
@@ -201,7 +201,7 @@
               ref="default_org_idRef"
               v-model="dialogModel.default_org_id"
               :init="false"
-              :method="getOrgListApi"
+              :method="getListOrgApi"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
@@ -357,31 +357,31 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  findLastOrderBy,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  createUsr,
+  findOneUsr,
+  findLastOrderByUsr,
+  updateByIdUsr,
+  getDefaultInputUsr,
+  getPagePathUsr,
+  intoInputUsr,
+} from "./Api.ts";
+
+import {
+  getListRole,
+  getListOrg,
 } from "./Api";
 
 import {
-  getRoleList,
-  getOrgList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsRole,
+  findByIdsRole,
 } from "@/views/base/role/Api.ts";
 
 import {
-  findByIds as findByIdsOrg,
+  findByIdsOrg,
 } from "@/views/base/org/Api.ts";
 
 import {
-  getDeptTree,
-} from "@/views/base/dept/Api";
+  getTreeDept,
+} from "@/views/base/dept/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -392,7 +392,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathUsr();
 
 const permitStore = usePermitStore();
 
@@ -496,7 +496,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneUsr;
 
 /** 打开对话框 */
 async function showDialog(
@@ -511,7 +511,7 @@ async function showDialog(
       ids?: UsrId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneUsr;
     action: DialogAction;
   },
 ) {
@@ -538,7 +538,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneUsr;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -571,8 +571,8 @@ async function showDialog(
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputUsr(),
+      findLastOrderByUsr({
         notLoading: !inited,
       }),
     ]);
@@ -595,7 +595,7 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderBy({
+      findLastOrderByUsr({
         notLoading: !inited,
       }),
     ]);
@@ -685,8 +685,8 @@ async function onReset() {
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputUsr(),
+      findLastOrderByUsr({
         notLoading: !inited,
       }),
     ]);
@@ -720,7 +720,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputUsr({
       ...data,
     });
     old_default_org_id = dialogModel.default_org_id;
@@ -884,7 +884,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createUsr(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -899,7 +899,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdUsr(
       dialogModel.id,
       dialogModel2,
     );
@@ -935,7 +935,7 @@ async function onSave() {
 const default_org_idRef = $(useTemplateRef<InstanceType<typeof CustomSelect>>("default_org_idRef"));
 let old_default_org_id: OrgId | null | undefined = undefined;
 
-async function getOrgListApi() {
+async function getListOrgApi() {
   const org_ids = dialogModel.org_ids || [ ];
   if (!dialogModel.default_org_id && old_default_org_id) {
     if (org_ids.includes(old_default_org_id)) {
@@ -945,7 +945,7 @@ async function getOrgListApi() {
   if (!dialogModel.default_org_id || !org_ids.includes(dialogModel.default_org_id)) {
     dialogModel.default_org_id = undefined;
   }
-  let data = await getOrgList();
+  let data = await getListOrg();
   data = data.filter((item) => {
     return org_ids.includes(item.id);
   });

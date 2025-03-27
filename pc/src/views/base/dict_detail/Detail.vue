@@ -81,7 +81,7 @@
           >
             <CustomSelect
               v-model="dialogModel.dict_id"
-              :method="getDictList"
+              :method="getListDict"
               :find-by-values="findByIdsDict"
               :options-map="((item: DictModel) => {
                 return {
@@ -247,21 +247,21 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  findLastOrderBy,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  createDictDetail,
+  findOneDictDetail,
+  findLastOrderByDictDetail,
+  updateByIdDictDetail,
+  getDefaultInputDictDetail,
+  getPagePathDictDetail,
+  intoInputDictDetail,
+} from "./Api.ts";
+
+import {
+  getListDict,
 } from "./Api";
 
 import {
-  getDictList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsDict,
+  findByIdsDict,
 } from "@/views/base/dict/Api.ts";
 
 const emit = defineEmits<{
@@ -273,7 +273,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathDictDetail();
 
 const permitStore = usePermitStore();
 
@@ -374,7 +374,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneDictDetail;
 
 /** 打开对话框 */
 async function showDialog(
@@ -389,7 +389,7 @@ async function showDialog(
       ids?: DictDetailId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneDictDetail;
     action: DialogAction;
   },
 ) {
@@ -416,7 +416,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneDictDetail;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -445,8 +445,8 @@ async function showDialog(
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputDictDetail(),
+      findLastOrderByDictDetail({
         notLoading: !inited,
       }),
     ]);
@@ -469,7 +469,7 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderBy({
+      findLastOrderByDictDetail({
         notLoading: !inited,
       }),
     ]);
@@ -536,8 +536,8 @@ async function onReset() {
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputDictDetail(),
+      findLastOrderByDictDetail({
         notLoading: !inited,
       }),
     ]);
@@ -571,7 +571,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputDictDetail({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -718,7 +718,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createDictDetail(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -733,7 +733,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdDictDetail(
       dialogModel.id,
       dialogModel2,
     );

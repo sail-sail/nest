@@ -21,7 +21,7 @@
 
 // 租户
 import {
-  findById as findByIdTenant,
+  findByIdTenant,
 } from "@/views/base/tenant/Api.ts";
 
 const menuStore = useMenuStore();

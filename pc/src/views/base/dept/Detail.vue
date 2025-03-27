@@ -81,7 +81,7 @@
           >
             <CustomTreeSelect
               v-model="dialogModel.parent_id"
-              :method="getDeptTree"
+              :method="getTreeDept"
               placeholder="请选择 父部门"
               :readonly="isLocked || isReadonly"
             ></CustomTreeSelect>
@@ -109,7 +109,7 @@
             <CustomSelect
               v-model="dialogModel.usr_ids"
               :set="dialogModel.usr_ids = dialogModel.usr_ids ?? [ ]"
-              :method="getUsrList"
+              :method="getListUsr"
               :find-by-values="findByIdsUsr"
               :options-map="((item: UsrModel) => {
                 return {
@@ -145,7 +145,7 @@
             <CustomSelect
               v-model="dialogModel.org_id"
               v-model:model-label="dialogModel.org_id_lbl"
-              :method="getOrgList"
+              :method="getListOrg"
               :find-by-values="findByIdsOrg"
               :options-map="((item: OrgModel) => {
                 return {
@@ -272,31 +272,31 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  findLastOrderBy,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  createDept,
+  findOneDept,
+  findLastOrderByDept,
+  updateByIdDept,
+  getDefaultInputDept,
+  getPagePathDept,
+  intoInputDept,
+} from "./Api.ts";
+
+import {
+  getListUsr,
+  getListOrg,
 } from "./Api";
 
 import {
-  getUsrList,
-  getOrgList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsUsr,
+  findByIdsUsr,
 } from "@/views/base/usr/Api.ts";
 
 import {
-  findByIds as findByIdsOrg,
+  findByIdsOrg,
 } from "@/views/base/org/Api.ts";
 
 import {
-  getDeptTree,
-} from "@/views/base/dept/Api";
+  getTreeDept,
+} from "@/views/base/dept/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -307,7 +307,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathDept();
 
 const permitStore = usePermitStore();
 
@@ -397,7 +397,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneDept;
 
 /** 打开对话框 */
 async function showDialog(
@@ -412,7 +412,7 @@ async function showDialog(
       ids?: DeptId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneDept;
     action: DialogAction;
   },
 ) {
@@ -439,7 +439,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneDept;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -472,8 +472,8 @@ async function showDialog(
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputDept(),
+      findLastOrderByDept({
         notLoading: !inited,
       }),
     ]);
@@ -496,7 +496,7 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderBy({
+      findLastOrderByDept({
         notLoading: !inited,
       }),
     ]);
@@ -586,8 +586,8 @@ async function onReset() {
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputDept(),
+      findLastOrderByDept({
         notLoading: !inited,
       }),
     ]);
@@ -621,7 +621,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputDept({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -776,7 +776,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createDept(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -791,7 +791,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdDept(
       dialogModel.id,
       dialogModel2,
     );

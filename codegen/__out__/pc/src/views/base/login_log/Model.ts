@@ -4,7 +4,7 @@ import type {
   LoginLogModel as LoginLogModelType,
   LoginLogSearch as LoginLogSearchType,
   LoginLogFieldComment as LoginLogFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
