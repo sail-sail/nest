@@ -263,7 +263,7 @@ CREATE TABLE if not exists `wx_wx_pay_notice` (
   `success_time` datetime DEFAULT NULL COMMENT '支付完成时间',
   `total` int unsigned NOT NULL DEFAULT 0 COMMENT '总金额',
   `payer_total` int unsigned NOT NULL DEFAULT 0 COMMENT '用户支付金额',
-  `currency` varchar(16) NOT NULL DEFAULT 'CNY' COMMENT '货币类型,dict:wx_pay_notice_currency',
+  `currency` ENUM('CNY') NOT NULL DEFAULT 'CNY' COMMENT '货币类型,dict:wx_pay_notice_currency',
   `payer_currency` ENUM('CNY') NOT NULL DEFAULT 'CNY' COMMENT '用户支付币种,dict:wx_pay_notice_currency',
   `device_id` varchar(32) NOT NULL DEFAULT '' COMMENT '商户端设备号',
   `rem` varchar(50) NOT NULL DEFAULT '' COMMENT '备注',
