@@ -1,21 +1,21 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   wxwAppQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 // 域名
 import {
-  findOne as findOneDomain0,
+  findOneDomain as findOneDomain0,
 } from "@/views/base/domain/Api.ts";
 
 async function setLblById(
@@ -27,7 +27,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputWxwApp(
   model?: WxwAppInput,
 ) {
   const input: WxwAppInput = {
@@ -61,9 +61,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找企微应用列表
+ * 根据搜索条件查找 企微应用 列表
  */
-export async function findAll(
+export async function findAllWxwApp(
   search?: WxwAppSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -96,7 +96,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个企微应用
  */
-export async function findOne(
+export async function findOneWxwApp(
   search?: WxwAppSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -122,9 +122,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找企微应用总数
+ * 根据搜索条件查找 企微应用 总数
  */
-export async function findCount(
+export async function findCountWxwApp(
   search?: WxwAppSearch,
   opt?: GqlOpt,
 ) {
@@ -145,17 +145,14 @@ export async function findCount(
 }
 
 /**
- * 创建企微应用
- * @param {WxwAppInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 企微应用
  */
-export async function create(
+export async function createWxwApp(
   input: WxwAppInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxwAppId> {
-  const ids = await creates(
+  const ids = await createsWxwApp(
     [ input ],
     unique_type,
     opt,
@@ -165,14 +162,14 @@ export async function create(
 }
 
 /**
- * 批量创建企微应用
+ * 批量创建 企微应用
  */
-export async function creates(
+export async function createsWxwApp(
   inputs: WxwAppInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxwAppId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputWxwApp);
   const data: {
     createsWxwApp: Mutation["createsWxwApp"];
   } = await mutation({
@@ -191,14 +188,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改企微应用
+ * 根据 id 修改 企微应用
  */
-export async function updateById(
+export async function updateByIdWxwApp(
   id: WxwAppId,
   input: WxwAppInput,
   opt?: GqlOpt,
 ): Promise<WxwAppId> {
-  input = intoInput(input);
+  input = intoInputWxwApp(input);
   const data: {
     updateByIdWxwApp: Mutation["updateByIdWxwApp"];
   } = await mutation({
@@ -217,9 +214,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找企微应用
+ * 根据 id 查找 企微应用
  */
-export async function findById(
+export async function findByIdWxwApp(
   id?: WxwAppId,
   opt?: GqlOpt,
 ): Promise<WxwAppModel | undefined> {
@@ -246,9 +243,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找企微应用
+ * 根据 ids 查找 企微应用
  */
-export async function findByIds(
+export async function findByIdsWxwApp(
   ids: WxwAppId[],
   opt?: GqlOpt,
 ): Promise<WxwAppModel[]> {
@@ -283,9 +280,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除企微应用
+ * 根据 ids 删除 企微应用
  */
-export async function deleteByIds(
+export async function deleteByIdsWxwApp(
   ids: WxwAppId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -309,9 +306,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用企微应用
+ * 根据 ids 启用或禁用 企微应用
  */
-export async function enableByIds(
+export async function enableByIdsWxwApp(
   ids: WxwAppId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -337,9 +334,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁企微应用
+ * 根据 ids 锁定或解锁 企微应用
  */
-export async function lockByIds(
+export async function lockByIdsWxwApp(
   ids: WxwAppId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -365,9 +362,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原企微应用
+ * 根据 ids 还原 企微应用
  */
-export async function revertByIds(
+export async function revertByIdsWxwApp(
   ids: WxwAppId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -391,9 +388,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除企微应用
+ * 根据 ids 彻底删除 企微应用
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxwApp(
   ids: WxwAppId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -439,11 +436,11 @@ export async function findAllDomain(
       sort,
     },
   }, opt);
-  const res = data.findAllDomain;
-  return res;
+  const domain_models = data.findAllDomain;
+  return domain_models;
 }
 
-export async function getDomainList() {
+export async function getListDomain() {
   const data = await findAllDomain(
     {
       is_enabled: [ 1 ],
@@ -463,9 +460,9 @@ export async function getDomainList() {
 }
 
 /**
- * 下载企微应用导入模板
+ * 下载 企微应用 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateWxwApp() {
   const {
     workerFn,
     workerStatus,
@@ -519,7 +516,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelWxwApp() {
   const {
     workerFn,
     workerStatus,
@@ -593,9 +590,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入企微应用
+ * 批量导入 企微应用
  */
-export async function importModels(
+export async function importModelsWxwApp(
   inputs: WxwAppInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -622,7 +619,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsWxwApp(
         inputs,
         UniqueType.Update,
         opt,
@@ -642,7 +639,7 @@ export async function importModels(
 /**
  * 查找 企微应用 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByWxwApp(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -658,12 +655,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathWxwApp() {
   return "/wxwork/wxw_app";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputWxwApp() {
   const defaultInput: WxwAppInput = {
     domain_id: (await findOneDomain0({
       is_enabled: [ 1 ],
