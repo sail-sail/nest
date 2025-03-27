@@ -81,7 +81,7 @@
           >
             <CustomSelect
               v-model="dialogModel.lang_id"
-              :method="getLangList"
+              :method="getListLang"
               :find-by-values="findByIdsLang"
               :options-map="((item: LangModel) => {
                 return {
@@ -102,7 +102,7 @@
           >
             <CustomTreeSelect
               v-model="dialogModel.menu_id"
-              :method="getMenuTree"
+              :method="getTreeMenu"
               placeholder="请选择 菜单"
               :readonly="isLocked || isReadonly"
             ></CustomTreeSelect>
@@ -248,25 +248,25 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  createI18n,
+  findOneI18n,
+  updateByIdI18n,
+  getDefaultInputI18n,
+  getPagePathI18n,
+  intoInputI18n,
+} from "./Api.ts";
+
+import {
+  getListLang,
 } from "./Api";
 
 import {
-  getLangList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsLang,
+  findByIdsLang,
 } from "@/views/base/lang/Api.ts";
 
 import {
-  getMenuTree,
-} from "@/views/base/menu/Api";
+  getTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -277,7 +277,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathI18n();
 
 const permitStore = usePermitStore();
 
@@ -371,7 +371,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneI18n;
 
 /** 打开对话框 */
 async function showDialog(
@@ -386,7 +386,7 @@ async function showDialog(
       ids?: I18nId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneI18n;
     action: DialogAction;
   },
 ) {
@@ -413,7 +413,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneI18n;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -441,7 +441,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputI18n(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -522,7 +522,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputI18n(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -553,7 +553,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputI18n({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -704,7 +704,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createI18n(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -719,7 +719,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdI18n(
       dialogModel.id,
       dialogModel2,
     );

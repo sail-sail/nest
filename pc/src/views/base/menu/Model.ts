@@ -4,7 +4,7 @@ import type {
   MenuModel as MenuModelType,
   MenuSearch as MenuSearchType,
   MenuFieldComment as MenuFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

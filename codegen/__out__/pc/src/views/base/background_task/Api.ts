@@ -3,17 +3,17 @@
 import {
   BackgroundTaskState,
   BackgroundTaskType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   backgroundTaskQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: BackgroundTaskModel | null,
@@ -24,7 +24,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputBackgroundTask(
   model?: BackgroundTaskInput,
 ) {
   const input: BackgroundTaskInput = {
@@ -57,9 +57,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找后台任务列表
+ * 根据搜索条件查找 后台任务 列表
  */
-export async function findAll(
+export async function findAllBackgroundTask(
   search?: BackgroundTaskSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -92,7 +92,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个后台任务
  */
-export async function findOne(
+export async function findOneBackgroundTask(
   search?: BackgroundTaskSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -118,9 +118,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找后台任务总数
+ * 根据搜索条件查找 后台任务 总数
  */
-export async function findCount(
+export async function findCountBackgroundTask(
   search?: BackgroundTaskSearch,
   opt?: GqlOpt,
 ) {
@@ -141,9 +141,9 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找后台任务
+ * 根据 id 查找 后台任务
  */
-export async function findById(
+export async function findByIdBackgroundTask(
   id?: BackgroundTaskId,
   opt?: GqlOpt,
 ): Promise<BackgroundTaskModel | undefined> {
@@ -170,9 +170,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找后台任务
+ * 根据 ids 查找 后台任务
  */
-export async function findByIds(
+export async function findByIdsBackgroundTask(
   ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ): Promise<BackgroundTaskModel[]> {
@@ -207,9 +207,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除后台任务
+ * 根据 ids 删除 后台任务
  */
-export async function deleteByIds(
+export async function deleteByIdsBackgroundTask(
   ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -233,9 +233,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原后台任务
+ * 根据 ids 还原 后台任务
  */
-export async function revertByIds(
+export async function revertByIdsBackgroundTask(
   ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -259,9 +259,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除后台任务
+ * 根据 ids 彻底删除 后台任务
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsBackgroundTask(
   ids: BackgroundTaskId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -284,12 +284,12 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathBackgroundTask() {
   return "/base/background_task";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputBackgroundTask() {
   const defaultInput: BackgroundTaskInput = {
     state: BackgroundTaskState.Running,
     type: BackgroundTaskType.Text,

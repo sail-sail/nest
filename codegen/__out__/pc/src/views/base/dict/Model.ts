@@ -4,7 +4,7 @@ import type {
   DictModel as DictModelType,
   DictSearch as DictSearchType,
   DictFieldComment as DictFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   dictDetailFields,

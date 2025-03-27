@@ -122,8 +122,8 @@ import type {
 } from "vue";
 
 import {
-  findByIds,
-} from "./Api";<#
+  findByIds<#=Table_Up#>,
+} from "./Api.ts";<#
 if (!list_tree) {
 #>
 
@@ -224,13 +224,13 @@ function selectedIdsChg(value: <#=Table_Up#>Id[]) {
 }
 
 async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
-  const res = await findByIds(
+  const <#=table#>_models = await findByIds<#=Table_Up#>(
     ids,
     {
       notLoading: true,
     },
   );
-  return res;
+  return <#=table#>_models;
 }
 
 /** 键盘回车按键 */
