@@ -3,17 +3,17 @@
 import {
   PayTransactionsJsapiTradeState,
   PayTransactionsJsapiCurrency,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   payTransactionsJsapiQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: PayTransactionsJsapiModel | null,
@@ -24,7 +24,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputPayTransactionsJsapi(
   model?: PayTransactionsJsapiInput,
 ) {
   const input: PayTransactionsJsapiInput = {
@@ -75,9 +75,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找微信JSAPI下单列表
+ * 根据搜索条件查找 微信JSAPI下单 列表
  */
-export async function findAll(
+export async function findAllPayTransactionsJsapi(
   search?: PayTransactionsJsapiSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -110,7 +110,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个微信JSAPI下单
  */
-export async function findOne(
+export async function findOnePayTransactionsJsapi(
   search?: PayTransactionsJsapiSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -136,9 +136,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找微信JSAPI下单总数
+ * 根据搜索条件查找 微信JSAPI下单 总数
  */
-export async function findCount(
+export async function findCountPayTransactionsJsapi(
   search?: PayTransactionsJsapiSearch,
   opt?: GqlOpt,
 ) {
@@ -159,9 +159,9 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找微信JSAPI下单
+ * 根据 id 查找 微信JSAPI下单
  */
-export async function findById(
+export async function findByIdPayTransactionsJsapi(
   id?: PayTransactionsJsapiId,
   opt?: GqlOpt,
 ): Promise<PayTransactionsJsapiModel | undefined> {
@@ -188,9 +188,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找微信JSAPI下单
+ * 根据 ids 查找 微信JSAPI下单
  */
-export async function findByIds(
+export async function findByIdsPayTransactionsJsapi(
   ids: PayTransactionsJsapiId[],
   opt?: GqlOpt,
 ): Promise<PayTransactionsJsapiModel[]> {
@@ -227,7 +227,7 @@ export async function findByIds(
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelPayTransactionsJsapi() {
   const {
     workerFn,
     workerStatus,
@@ -297,12 +297,12 @@ export function useExportExcel() {
   };
 }
 
-export function getPagePath() {
+export function getPagePathPayTransactionsJsapi() {
   return "/wx/pay_transactions_jsapi";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputPayTransactionsJsapi() {
   const defaultInput: PayTransactionsJsapiInput = {
     trade_state: PayTransactionsJsapiTradeState.Notpay,
     trade_state_desc: "未支付",

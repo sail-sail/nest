@@ -5,17 +5,17 @@ import {
   WxPayNoticeTradeState,
   WxPayNoticeCurrency,
   WxPayNoticePayerCurrency,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   wxPayNoticeQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: WxPayNoticeModel | null,
@@ -26,7 +26,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputWxPayNotice(
   model?: WxPayNoticeInput,
 ) {
   const input: WxPayNoticeInput = {
@@ -79,9 +79,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找微信支付通知列表
+ * 根据搜索条件查找 微信支付通知 列表
  */
-export async function findAll(
+export async function findAllWxPayNotice(
   search?: WxPayNoticeSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -114,7 +114,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个微信支付通知
  */
-export async function findOne(
+export async function findOneWxPayNotice(
   search?: WxPayNoticeSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -140,9 +140,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找微信支付通知总数
+ * 根据搜索条件查找 微信支付通知 总数
  */
-export async function findCount(
+export async function findCountWxPayNotice(
   search?: WxPayNoticeSearch,
   opt?: GqlOpt,
 ) {
@@ -163,9 +163,9 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找微信支付通知
+ * 根据 id 查找 微信支付通知
  */
-export async function findById(
+export async function findByIdWxPayNotice(
   id?: WxPayNoticeId,
   opt?: GqlOpt,
 ): Promise<WxPayNoticeModel | undefined> {
@@ -192,9 +192,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找微信支付通知
+ * 根据 ids 查找 微信支付通知
  */
-export async function findByIds(
+export async function findByIdsWxPayNotice(
   ids: WxPayNoticeId[],
   opt?: GqlOpt,
 ): Promise<WxPayNoticeModel[]> {
@@ -231,7 +231,7 @@ export async function findByIds(
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelWxPayNotice() {
   const {
     workerFn,
     workerStatus,
@@ -303,12 +303,12 @@ export function useExportExcel() {
   };
 }
 
-export function getPagePath() {
+export function getPagePathWxPayNotice() {
   return "/wx/wx_pay_notice";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputWxPayNotice() {
   const defaultInput: WxPayNoticeInput = {
     trade_type: WxPayNoticeTradeType.Jsapi,
     trade_state: WxPayNoticeTradeState.Notpay,
