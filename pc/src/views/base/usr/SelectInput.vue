@@ -105,9 +105,9 @@ import {
 import SelectList from "./SelectList.vue";
 
 import {
-  findByIds,
-  getPagePath,
-} from "./Api";
+  findByIdsUsr,
+  getPagePathUsr,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: UsrId | UsrId[] | null): void,
@@ -120,7 +120,7 @@ const {
   formItem,
 } = useFormItem();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathUsr();
 
 const props = withDefaults(
   defineProps<{
@@ -206,13 +206,13 @@ async function getModelsByIds(ids: UsrId[]) {
   if (ids.length === 0) {
     return [ ];
   }
-  const res = await findByIds(
+  const usr_models = await findByIdsUsr(
     ids,
     {
       notLoading: true,
     },
   );
-  return res;
+  return usr_models;
 }
 
 async function validateField() {

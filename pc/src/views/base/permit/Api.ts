@@ -1,21 +1,21 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   permitQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 import {
-  findTree as findMenuTree,
-} from "@/views/base/menu/Api";
+  findTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 async function setLblById(
   model?: PermitModel | null,
@@ -26,7 +26,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputPermit(
   model?: PermitInput,
 ) {
   const input: PermitInput = {
@@ -48,9 +48,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找按钮权限列表
+ * 根据搜索条件查找 按钮权限 列表
  */
-export async function findAll(
+export async function findAllPermit(
   search?: PermitSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -83,7 +83,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个按钮权限
  */
-export async function findOne(
+export async function findOnePermit(
   search?: PermitSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -109,9 +109,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找按钮权限总数
+ * 根据搜索条件查找 按钮权限 总数
  */
-export async function findCount(
+export async function findCountPermit(
   search?: PermitSearch,
   opt?: GqlOpt,
 ) {
@@ -132,14 +132,14 @@ export async function findCount(
 }
 
 /**
- * 根据 id 修改按钮权限
+ * 根据 id 修改 按钮权限
  */
-export async function updateById(
+export async function updateByIdPermit(
   id: PermitId,
   input: PermitInput,
   opt?: GqlOpt,
 ): Promise<PermitId> {
-  input = intoInput(input);
+  input = intoInputPermit(input);
   const data: {
     updateByIdPermit: Mutation["updateByIdPermit"];
   } = await mutation({
@@ -158,9 +158,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找按钮权限
+ * 根据 id 查找 按钮权限
  */
-export async function findById(
+export async function findByIdPermit(
   id?: PermitId,
   opt?: GqlOpt,
 ): Promise<PermitModel | undefined> {
@@ -187,9 +187,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找按钮权限
+ * 根据 ids 查找 按钮权限
  */
-export async function findByIds(
+export async function findByIdsPermit(
   ids: PermitId[],
   opt?: GqlOpt,
 ): Promise<PermitModel[]> {
@@ -246,11 +246,11 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const res = data.findAllMenu;
-  return res;
+  const menu_models = data.findAllMenu;
+  return menu_models;
 }
 
-export async function getMenuList() {
+export async function getListMenu() {
   const data = await findAllMenu(
     {
       is_enabled: [ 1 ],
@@ -269,8 +269,8 @@ export async function getMenuList() {
   return data;
 }
 
-export async function getMenuTree() {
-  const data = await findMenuTree(
+export async function getTreeMenu() {
+  const data = await findTreeMenu(
     {
       is_enabled: [ 1 ],
     },
@@ -290,7 +290,7 @@ export async function getMenuTree() {
 /**
  * 查找 按钮权限 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByPermit(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -306,12 +306,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathPermit() {
   return "/base/permit";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputPermit() {
   const defaultInput: PermitInput = {
     order_by: 1,
   };
