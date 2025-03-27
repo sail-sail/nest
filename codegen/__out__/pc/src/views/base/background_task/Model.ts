@@ -4,7 +4,7 @@ import type {
   BackgroundTaskModel as BackgroundTaskModelType,
   BackgroundTaskSearch as BackgroundTaskSearchType,
   BackgroundTaskFieldComment as BackgroundTaskFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

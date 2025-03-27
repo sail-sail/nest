@@ -148,11 +148,11 @@ if (hasAudit) {
 
 <script lang="ts" setup>
 import {
-  getPagePath,
-  auditReject,
+  getPagePath<#=Table_Up#>,
+  auditReject<#=Table_Up#>,
 } from "./Api.ts";
 
-const pagePath = getPagePath();
+const pagePath = getPagePath<#=Table_Up#>();
 
 const permitStore = usePermitStore();
 
@@ -271,7 +271,7 @@ async function onSave() {
       ...dialogModel,
       id: undefined,
     };
-    await auditReject(
+    await auditReject<#=Table_Up#>(
       id,
       dialogModel2,
     );
