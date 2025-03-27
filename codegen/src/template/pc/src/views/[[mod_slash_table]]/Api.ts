@@ -1283,7 +1283,7 @@ export async function lockByIds<#=Table_Up#>(
 }<#
 }
 #><#
-if (opts.noRevert !== true && hasIsDeleted) {
+if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
 #>
 
 /**
@@ -1313,7 +1313,7 @@ export async function revertByIds<#=Table_Up#>(
 }<#
 }
 #><#
-if (opts.noForceDelete !== true && hasIsDeleted) {
+if (opts.noDelete !== true && opts.noForceDelete !== true && hasIsDeleted) {
 #>
 
 /**
