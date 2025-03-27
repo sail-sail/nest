@@ -4,7 +4,7 @@ import type {
   UsrModel as UsrModelType,
   UsrSearch as UsrSearchType,
   UsrFieldComment as UsrFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

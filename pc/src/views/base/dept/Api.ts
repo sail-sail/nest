@@ -1,22 +1,18 @@
-import cfg from "@/utils/config";
+import cfg from "@/utils/config.ts";
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   deptQueryField,
-} from "./Model";
-
-import {
-  findTree as findDeptTree,
-} from "@/views/base/dept/Api";
+} from "./Model.ts";
 
 async function setLblById(
   model?: DeptModel | null,
@@ -27,7 +23,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputDept(
   model?: DeptInput,
 ) {
   const input: DeptInput = {
@@ -59,9 +55,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找部门列表
+ * 根据搜索条件查找 部门 列表
  */
-export async function findAll(
+export async function findAllDept(
   search?: DeptSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -94,7 +90,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个部门
  */
-export async function findOne(
+export async function findOneDept(
   search?: DeptSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -124,14 +120,14 @@ export type DeptModelTree = DeptModel & {
 }
 
 /**
- * 查找部门树形列表
+ * 查找 部门 树形列表
  */
-export async function findTree(
+export async function findTreeDept(
   search?: DeptSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const res = await findAll(
+  const res = await findAllDept(
     search,
     undefined,
     sort,
@@ -142,9 +138,9 @@ export async function findTree(
 }
 
 /**
- * 根据搜索条件查找部门总数
+ * 根据搜索条件查找 部门 总数
  */
-export async function findCount(
+export async function findCountDept(
   search?: DeptSearch,
   opt?: GqlOpt,
 ) {
@@ -165,17 +161,14 @@ export async function findCount(
 }
 
 /**
- * 创建部门
- * @param {DeptInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 部门
  */
-export async function create(
+export async function createDept(
   input: DeptInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DeptId> {
-  const ids = await creates(
+  const ids = await createsDept(
     [ input ],
     unique_type,
     opt,
@@ -185,14 +178,14 @@ export async function create(
 }
 
 /**
- * 批量创建部门
+ * 批量创建 部门
  */
-export async function creates(
+export async function createsDept(
   inputs: DeptInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DeptId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputDept);
   const data: {
     createsDept: Mutation["createsDept"];
   } = await mutation({
@@ -211,14 +204,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改部门
+ * 根据 id 修改 部门
  */
-export async function updateById(
+export async function updateByIdDept(
   id: DeptId,
   input: DeptInput,
   opt?: GqlOpt,
 ): Promise<DeptId> {
-  input = intoInput(input);
+  input = intoInputDept(input);
   const data: {
     updateByIdDept: Mutation["updateByIdDept"];
   } = await mutation({
@@ -237,9 +230,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找部门
+ * 根据 id 查找 部门
  */
-export async function findById(
+export async function findByIdDept(
   id?: DeptId,
   opt?: GqlOpt,
 ): Promise<DeptModel | undefined> {
@@ -266,9 +259,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找部门
+ * 根据 ids 查找 部门
  */
-export async function findByIds(
+export async function findByIdsDept(
   ids: DeptId[],
   opt?: GqlOpt,
 ): Promise<DeptModel[]> {
@@ -303,9 +296,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除部门
+ * 根据 ids 删除 部门
  */
-export async function deleteByIds(
+export async function deleteByIdsDept(
   ids: DeptId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -329,9 +322,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用部门
+ * 根据 ids 启用或禁用 部门
  */
-export async function enableByIds(
+export async function enableByIdsDept(
   ids: DeptId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -357,9 +350,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁部门
+ * 根据 ids 锁定或解锁 部门
  */
-export async function lockByIds(
+export async function lockByIdsDept(
   ids: DeptId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -385,9 +378,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原部门
+ * 根据 ids 还原 部门
  */
-export async function revertByIds(
+export async function revertByIdsDept(
   ids: DeptId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -411,9 +404,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除部门
+ * 根据 ids 彻底删除 部门
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDept(
   ids: DeptId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -436,34 +429,7 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllDept(
-  search?: DeptSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllDept: DeptModel[];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: DeptSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllDept(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllDept;
-  return res;
-}
-
-export async function getDeptList() {
+export async function getListDept() {
   const data = await findAllDept(
     undefined,
     undefined,
@@ -503,11 +469,11 @@ export async function findAllUsr(
       sort,
     },
   }, opt);
-  const res = data.findAllUsr;
-  return res;
+  const usr_models = data.findAllUsr;
+  return usr_models;
 }
 
-export async function getUsrList() {
+export async function getListUsr() {
   const data = await findAllUsr(
     {
       is_enabled: [ 1 ],
@@ -549,11 +515,11 @@ export async function findAllOrg(
       sort,
     },
   }, opt);
-  const res = data.findAllOrg;
-  return res;
+  const org_models = data.findAllOrg;
+  return org_models;
 }
 
-export async function getOrgList() {
+export async function getListOrg() {
   const data = await findAllOrg(
     {
       is_enabled: [ 1 ],
@@ -572,8 +538,8 @@ export async function getOrgList() {
   return data;
 }
 
-export async function getDeptTree() {
-  const data = await findDeptTree(
+export async function getTreeDept() {
+  const data = await findTreeDept(
     undefined,
     [
       {
@@ -589,9 +555,9 @@ export async function getDeptTree() {
 }
 
 /**
- * 下载部门导入模板
+ * 下载 部门 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateDept() {
   const {
     workerFn,
     workerStatus,
@@ -651,7 +617,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelDept() {
   const {
     workerFn,
     workerStatus,
@@ -728,9 +694,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入部门
+ * 批量导入 部门
  */
-export async function importModels(
+export async function importModelsDept(
   inputs: DeptInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -757,7 +723,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsDept(
         inputs,
         UniqueType.Update,
         opt,
@@ -777,7 +743,7 @@ export async function importModels(
 /**
  * 查找 部门 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByDept(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -793,12 +759,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathDept() {
   return "/base/dept";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputDept() {
   const usrStore = useUsrStore(cfg.pinia);
   const defaultInput: DeptInput = {
     is_locked: 0,
