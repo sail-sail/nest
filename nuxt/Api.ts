@@ -1,7 +1,7 @@
 import type {
   GetLoginTenants,
   SeoModel,
-} from "./typings/types";
+} from "#/types.ts";
 
 export async function useMySeoMeta() {
   const seo_model = (await useAsyncData(() => findDefaultSeo())).data.value;
