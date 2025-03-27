@@ -144,12 +144,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.title == null)">
           <el-form-item
-            label="标题"
+            label="简介"
             prop="title"
           >
             <CustomInput
               v-model="dialogModel.title"
-              placeholder="请输入 标题"
+              placeholder="请输入 简介"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -157,12 +157,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.info == null)">
           <el-form-item
-            label="简介"
+            label="描述"
             prop="info"
           >
             <CustomInput
               v-model="dialogModel.info"
-              placeholder="请输入 简介"
+              placeholder="请输入 描述"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>

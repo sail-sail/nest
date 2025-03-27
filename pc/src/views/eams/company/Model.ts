@@ -4,7 +4,7 @@ import type {
   CompanyModel as CompanyModelType,
   CompanySearch as CompanySearchType,
   CompanyFieldComment as CompanyFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
