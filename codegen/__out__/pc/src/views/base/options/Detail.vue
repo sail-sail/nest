@@ -239,14 +239,14 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  findLastOrderBy,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  createOptions,
+  findOneOptions,
+  findLastOrderByOptions,
+  updateByIdOptions,
+  getDefaultInputOptions,
+  getPagePathOptions,
+  intoInputOptions,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -257,7 +257,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathOptions();
 
 const permitStore = usePermitStore();
 
@@ -339,7 +339,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneOptions;
 
 /** 打开对话框 */
 async function showDialog(
@@ -354,7 +354,7 @@ async function showDialog(
       ids?: OptionsId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneOptions;
     action: DialogAction;
   },
 ) {
@@ -381,7 +381,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneOptions;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -415,8 +415,8 @@ async function showDialog(
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputOptions(),
+      findLastOrderByOptions({
         notLoading: !inited,
       }),
     ]);
@@ -439,7 +439,7 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderBy({
+      findLastOrderByOptions({
         notLoading: !inited,
       }),
     ]);
@@ -530,8 +530,8 @@ async function onReset() {
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputOptions(),
+      findLastOrderByOptions({
         notLoading: !inited,
       }),
     ]);
@@ -565,7 +565,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputOptions({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -698,7 +698,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createOptions(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -713,7 +713,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdOptions(
       dialogModel.id,
       dialogModel2,
     );

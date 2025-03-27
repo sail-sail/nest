@@ -462,7 +462,7 @@ for (let i = 0; i < columns.length; i++) {
               :method="getOrgListApi"<#
               } else {
               #>
-              :method="get<#=Foreign_Table_Up#>List"<#
+              :method="getList<#=Foreign_Table_Up#>"<#
               }
               #>
               :find-by-values="findByIds<#=Foreign_Table_Up#>"
@@ -620,7 +620,7 @@ for (let i = 0; i < columns.length; i++) {
               :set="dialogModel.<#=column_name#> = dialogModel.<#=column_name#> ?? [ ]"<#
               }
               #>
-              :method="get<#=Foreign_Table_Up#>Tree"<#
+              :method="getTree<#=Foreign_Table_Up#>"<#
               if (isUseI18n) {
               #>
               :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
@@ -1304,7 +1304,7 @@ for (let i = 0; i < columns.length; i++) {
                       v-model:model-label="row.<#=modelLabel#>"<#
                       }
                       #>
-                      :method="get<#=Foreign_Table_Up#>List"
+                      :method="getList<#=Foreign_Table_Up#>"
                       :find-by-values="findByIds<#=Foreign_Table_Up#>"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
@@ -1409,7 +1409,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       v-model="row.<#=column_name#>"
-                      :method="get<#=Foreign_Table_Up#>Tree"<#
+                      :method="getTree<#=Foreign_Table_Up#>"<#
                       if (isUseI18n) {
                       #>
                       :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
@@ -2052,7 +2052,7 @@ for (let i = 0; i < columns.length; i++) {
                     :method="getOrgListApi"<#
                     } else {
                     #>
-                    :method="get<#=Foreign_Table_Up#>List"<#
+                    :method="getList<#=Foreign_Table_Up#>"<#
                     }
                     #>
                     :find-by-values="findByIds<#=Foreign_Table_Up#>"
@@ -2210,7 +2210,7 @@ for (let i = 0; i < columns.length; i++) {
                     }
                     #>
                     v-model="dialogModel.<#=inline_column_name#>.<#=column_name#>"
-                    :method="get<#=Foreign_Table_Up#>Tree"<#
+                    :method="getTree<#=Foreign_Table_Up#>"<#
                     if (isUseI18n) {
                     #>
                     :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
@@ -2789,7 +2789,7 @@ for (let i = 0; i < columns.length; i++) {
                       v-model:model-label="row.<#=modelLabel#>"<#
                       }
                       #>
-                      :method="get<#=Foreign_Table_Up#>List"
+                      :method="getList<#=Foreign_Table_Up#>"
                       :find-by-values="findByIds<#=Foreign_Table_Up#>"
                       :options-map="((item: <#=Foreign_Table_Up#>Model) => {
                         return {
@@ -2889,7 +2889,7 @@ for (let i = 0; i < columns.length; i++) {
                       }
                       #>
                       v-model="row.<#=column_name#>"
-                      :method="get<#=Foreign_Table_Up#>Tree"<#
+                      :method="getTree<#=Foreign_Table_Up#>"<#
                       if (isUseI18n) {
                       #>
                       :placeholder="`${ ns('请选择') } ${ n('<#=column_comment#>') }`"<#
@@ -3711,24 +3711,24 @@ import type {
 import {<#
   if (opts.noAdd !== true) {
   #>
-  create,<#
+  create<#=Table_Up#>,<#
   }
   #>
-  findOne,<#
+  findOne<#=Table_Up#>,<#
   if(hasOrderBy) {
   #>
-  findLastOrderBy,<#
+  findLastOrderBy<#=Table_Up#>,<#
   }
   #><#
   if (opts.noEdit !== true) {
   #>
-  updateById,<#
+  updateById<#=Table_Up#>,<#
   }
   #><#
   if (hasAudit) {
   #>
-  auditSubmit,
-  auditPass,<#
+  auditSubmit<#=Table_Up#>,
+  auditPass<#=Table_Up#>,<#
   if (hasReviewed) {
   #>
   auditReview,<#
@@ -3736,15 +3736,15 @@ import {<#
   #><#
   }
   #>
-  getDefaultInput,<#
+  getDefaultInput<#=Table_Up#>,<#
   if (hasDataPermit() && hasCreateUsrId) {
   #>
-  getEditableDataPermitsByIds,<#
+  getEditableDataPermitsByIds<#=Table_Up#>,<#
   }
   #>
-  getPagePath,
-  intoInput,
-} from "./Api";<#
+  getPagePath<#=Table_Up#>,
+  intoInput<#=Table_Up#>,
+} from "./Api.ts";<#
 if (hasAudit) {
 #>
 
@@ -3833,7 +3833,7 @@ import {<#
       continue;
     }
   #>
-  get<#=Foreign_Table_Up#>List,<#
+  getList<#=Foreign_Table_Up#>,<#
   }
   #>
 } from "./Api";<#
@@ -3877,7 +3877,7 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 import {
-  findByIds as findByIds<#=Foreign_Table_Up#>,
+  findByIds<#=Foreign_Table_Up#>,
 } from "@/views/<#=foreignKey.mod#>/<#=foreignKey.table#>/Api.ts";<#
 }
 #><#
@@ -3923,13 +3923,13 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 import {
-  get<#=Foreign_Table_Up#>Tree,<#
+  getTree<#=Foreign_Table_Up#>,<#
   if (mod === "base" && table === "data_permit" && column_name === "menu_id") {
   #>
   useMenuTreeFilter,<#
   }
   #>
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
 }
 #><#
 const findAllTableUps = [ ];
@@ -3982,7 +3982,7 @@ for (let i = 0; i < columns.length; i++) {
 import {<#
   if (!hasFindAllTableUps) {
   #>
-  findAll as findAll<#=foreign_Table_Up#>,<#
+  findAll<#=foreign_Table_Up#>,<#
   }
   #>
 } from "@/views/<#=foreign_mod#>/<#=foreign_table#>/Api";<#
@@ -4008,7 +4008,7 @@ import <#=foreign_Table_Up#>List from "@/views/<#=foreign_mod#>/<#=foreign_table
 import {<#
   if (!hasGetDefaultInputTableUps) {
   #>
-  getDefaultInput as getDefaultInput<#=Table_Up#>,<#
+  getDefaultInput<#=Table_Up#>,<#
   }
   #>
 } from "@/views/<#=mod#>/<#=table#>/Api";<#
@@ -4140,7 +4140,7 @@ import {<#
       }
       foreignTableArr2.push(foreignTable);
   #>
-  get<#=Foreign_Table_Up#>List,<#
+  getList<#=Foreign_Table_Up#>,<#
     }
   }
   #>
@@ -4188,8 +4188,8 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 import {
-  get<#=Foreign_Table_Up#>Tree,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+  getTree<#=Foreign_Table_Up#>,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
   }
 }
 #><#
@@ -4243,7 +4243,7 @@ for (const inlineForeignTab of inlineForeignTabs) {
 #>
 
 import {
-  getDefaultInput as getDefaultInput<#=Table_Up#>,
+  getDefaultInput<#=Table_Up#>,
 } from "@/views/<#=mod#>/<#=table#>/Api";<#
 }
 #><#
@@ -4316,7 +4316,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();<#
+const pagePath = getPagePath<#=Table_Up#>();<#
 if (isUseI18n) {
 #>
 
@@ -5097,7 +5097,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;<#
+let findOneModel = findOne<#=Table_Up#>;<#
 let hasDefaultInputColumn = false;
 for (let i = 0; i < columns.length; i++) {
   const column = columns[i];
@@ -5136,7 +5136,7 @@ async function showDialog(
       ids?: <#=Table_Up#>Id[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOne<#=Table_Up#>;
     action: DialogAction;
   },
 ) {
@@ -5174,7 +5174,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOne<#=Table_Up#>;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -5285,10 +5285,10 @@ async function showDialog(
       }
       #>
     ] = await Promise.all([
-      getDefaultInput(),<#
+      getDefaultInput<#=Table_Up#>(),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy({
+      findLastOrderBy<#=Table_Up#>({
         notLoading: !inited,
       }),<#
       }
@@ -5468,7 +5468,7 @@ async function showDialog(
     ] = await Promise.all([<#
       if (hasDefaultInputColumn) {
       #>
-      getDefaultInput(),<#
+      getDefaultInput<#=Table_Up#>(),<#
       }
       #>
       findOneModel({
@@ -5481,7 +5481,7 @@ async function showDialog(
       }),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy({
+      findLastOrderBy<#=Table_Up#>({
         notLoading: !inited,
       }),<#
       }
@@ -5899,10 +5899,10 @@ async function onReset() {
       }
       #>
     ] = await Promise.all([
-      getDefaultInput(),<#
+      getDefaultInput<#=Table_Up#>(),<#
       if (hasOrderBy) {
       #>
-      findLastOrderBy({
+      findLastOrderBy<#=Table_Up#>({
         notLoading: !inited,
       }),<#
       }
@@ -6100,7 +6100,7 @@ async function onRefresh() {
     }),<#
     if (hasDataPermit() && hasCreateUsrId) {
     #>
-    getEditableDataPermitsByIds([ id ]),<#
+    getEditableDataPermitsByIds<#=Table_Up#>([ id ]),<#
     }
     #><#
     for (let i = 0; i < columns.length; i++) {
@@ -6194,7 +6194,7 @@ async function onRefresh() {
   }
   #>
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInput<#=Table_Up#>({
       ...data,<#
       for (const inlineForeignTab of inlineForeignTabs) {
         const table = inlineForeignTab.table;
@@ -6551,7 +6551,7 @@ async function onAuditSubmit() {
   } catch (err) {
     return;
   }
-  await auditSubmit(id);
+  await auditSubmit<#=Table_Up#>(id);
   ElMessage({<#
     if (isUseI18n) {
     #>
@@ -6612,7 +6612,7 @@ async function onAuditPass() {
   } catch (err) {
     return;
   }
-  await auditPass(id);
+  await auditPass<#=Table_Up#>(id);
   ElMessage({<#
     if (isUseI18n) {
     #>
@@ -6836,7 +6836,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await create<#=Table_Up#>(dialogModel2);
     dialogModel.id = id;<#
     if (opts?.isRealData) {
     #>
@@ -6914,12 +6914,12 @@ async function save() {
     if (hasAudit) {
     #>
     
-    const defaultInput = await getDefaultInput();
+    const defaultInput = await getDefaultInput<#=Table_Up#>();
     dialogModel2.<#=auditColumn#> = defaultInput.<#=auditColumn#>;<#
     }
     #>
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateById<#=Table_Up#>(
       dialogModel.id,
       dialogModel2,
     );<#
@@ -6980,7 +6980,7 @@ async function onSaveAndCopy() {
   ] = await Promise.all([<#
     if (hasDefaultInputColumn) {
     #>
-    getDefaultInput(),<#
+    getDefaultInput<#=Table_Up#>(),<#
     }
     #>
     findOneModel({
@@ -6993,7 +6993,7 @@ async function onSaveAndCopy() {
     }),<#
     if (hasOrderBy) {
     #>
-    findLastOrderBy({
+    findLastOrderBy<#=Table_Up#>({
       notLoading: !inited,
     }),<#
     }
@@ -7113,7 +7113,7 @@ async function onSave() {
             type: "warning",
           },
         );
-        await auditSubmit(id);
+        await auditSubmit<#=Table_Up#>(id);
       } catch (err) { /* empty */ }
     }
   }<#
