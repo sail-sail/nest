@@ -4,7 +4,7 @@ import type {
   TenantModel as TenantModelType,
   TenantSearch as TenantSearchType,
   TenantFieldComment as TenantFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

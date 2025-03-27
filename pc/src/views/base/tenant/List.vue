@@ -61,7 +61,7 @@
         >
           <CustomTreeSelect
             v-model="menu_ids_search"
-            :method="getMenuTree"
+            :method="getTreeMenu"
             :options-map="((item: MenuModel) => {
               return {
                 label: item.lbl,
@@ -663,7 +663,7 @@
                   v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  @change="updateById(
+                  @change="updateByIdTenant(
                     row.id,
                     {
                       order_by: row.order_by,
@@ -804,29 +804,29 @@ import PwdDialog from "./PwdDialog.vue";
 import MenuTreeList from "../menu/TreeList.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  enableByIds,
-  lockByIds,
-  useExportExcel,
-  updateById,
-  importModels,
-  useDownloadImportTemplate,
-} from "./Api";
+  getPagePathTenant,
+  findAllTenant,
+  findCountTenant,
+  revertByIdsTenant,
+  deleteByIdsTenant,
+  forceDeleteByIdsTenant,
+  enableByIdsTenant,
+  lockByIdsTenant,
+  useExportExcelTenant,
+  updateByIdTenant,
+  importModelsTenant,
+  useDownloadImportTemplateTenant,
+} from "./Api.ts";
 
 import {
-  getMenuTree,
-} from "@/views/base/menu/Api";
+  getTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 defineOptions({
   name: "租户",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathTenant();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
@@ -1345,7 +1345,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllTenant(
       search,
       {
         pgSize,
@@ -1357,7 +1357,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllTenant(
       search,
       undefined,
       [
@@ -1373,7 +1373,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountTenant(
     search2,
     opt,
   );
@@ -1424,7 +1424,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelTenant());
 
 /** 导出Excel */
 async function onExport() {
@@ -1528,7 +1528,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate());
+const downloadImportTemplate = $ref(useDownloadImportTemplateTenant());
 
 /**
  * 下载导入模板
@@ -1591,7 +1591,7 @@ async function onImportExcel() {
       },
     );
     messageHandler.close();
-    const res = await importModels(
+    const res = await importModelsTenant(
       models,
       $$(importPercentage),
       $$(isStopImport),
@@ -1622,7 +1622,7 @@ async function onIs_locked(id: TenantId, is_locked: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await lockByIds(
+  await lockByIdsTenant(
     [ id ],
     is_locked,
     {
@@ -1644,7 +1644,7 @@ async function onIs_enabled(id: TenantId, is_enabled: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await enableByIds(
+  await enableByIdsTenant(
     [ id ],
     is_enabled,
     {
@@ -1821,7 +1821,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsTenant(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1853,7 +1853,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsTenant(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 租户 成功`);
@@ -1882,7 +1882,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await enableByIds(selectedIds, is_enabled);
+  const num = await enableByIdsTenant(selectedIds, is_enabled);
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
@@ -1916,7 +1916,7 @@ async function onLockByIds(is_locked: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await lockByIds(selectedIds, is_locked);
+  const num = await lockByIdsTenant(selectedIds, is_locked);
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -1953,7 +1953,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsTenant(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
@@ -2053,7 +2053,7 @@ async function onMenu_ids(row: TenantModel) {
     return;
   }
   row.menu_ids = selectedIds2;
-  await updateById(row.id, { menu_ids: selectedIds2 });
+  await updateByIdTenant(row.id, { menu_ids: selectedIds2 });
   dirtyStore.fireDirty(pageName);
   await dataGrid();
 }

@@ -4,7 +4,7 @@ import type {
   OptionsModel as OptionsModelType,
   OptionsSearch as OptionsSearchType,
   OptionsFieldComment as OptionsFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
