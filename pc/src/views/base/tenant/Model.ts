@@ -42,9 +42,9 @@ export const tenantFields = [
   // 菜单权限
   "menu_ids",
   "menu_ids_lbl",
-  // 标题
-  "title",
   // 简介
+  "title",
+  // 描述
   "info",
   // 语言
   "lang_id",

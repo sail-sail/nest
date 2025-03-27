@@ -4,7 +4,7 @@ import type {
   ArchiveModel as ArchiveModelType,
   ArchiveSearch as ArchiveSearchType,
   ArchiveFieldComment as ArchiveFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

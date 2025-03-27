@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   archiveQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: ArchiveModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputArchive(
   model?: ArchiveInput,
 ) {
   const input: ArchiveInput = {
@@ -44,9 +44,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找全宗设置列表
+ * 根据搜索条件查找 全宗设置 列表
  */
-export async function findAll(
+export async function findAllArchive(
   search?: ArchiveSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -79,7 +79,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个全宗设置
  */
-export async function findOne(
+export async function findOneArchive(
   search?: ArchiveSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -105,9 +105,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找全宗设置总数
+ * 根据搜索条件查找 全宗设置 总数
  */
-export async function findCount(
+export async function findCountArchive(
   search?: ArchiveSearch,
   opt?: GqlOpt,
 ) {
@@ -128,17 +128,14 @@ export async function findCount(
 }
 
 /**
- * 创建全宗设置
- * @param {ArchiveInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 全宗设置
  */
-export async function create(
+export async function createArchive(
   input: ArchiveInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<ArchiveId> {
-  const ids = await creates(
+  const ids = await createsArchive(
     [ input ],
     unique_type,
     opt,
@@ -148,14 +145,14 @@ export async function create(
 }
 
 /**
- * 批量创建全宗设置
+ * 批量创建 全宗设置
  */
-export async function creates(
+export async function createsArchive(
   inputs: ArchiveInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<ArchiveId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputArchive);
   const data: {
     createsArchive: Mutation["createsArchive"];
   } = await mutation({
@@ -174,14 +171,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改全宗设置
+ * 根据 id 修改 全宗设置
  */
-export async function updateById(
+export async function updateByIdArchive(
   id: ArchiveId,
   input: ArchiveInput,
   opt?: GqlOpt,
 ): Promise<ArchiveId> {
-  input = intoInput(input);
+  input = intoInputArchive(input);
   const data: {
     updateByIdArchive: Mutation["updateByIdArchive"];
   } = await mutation({
@@ -200,9 +197,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找全宗设置
+ * 根据 id 查找 全宗设置
  */
-export async function findById(
+export async function findByIdArchive(
   id?: ArchiveId,
   opt?: GqlOpt,
 ): Promise<ArchiveModel | undefined> {
@@ -229,9 +226,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找全宗设置
+ * 根据 ids 查找 全宗设置
  */
-export async function findByIds(
+export async function findByIdsArchive(
   ids: ArchiveId[],
   opt?: GqlOpt,
 ): Promise<ArchiveModel[]> {
@@ -266,9 +263,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除全宗设置
+ * 根据 ids 删除 全宗设置
  */
-export async function deleteByIds(
+export async function deleteByIdsArchive(
   ids: ArchiveId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -292,9 +289,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原全宗设置
+ * 根据 ids 还原 全宗设置
  */
-export async function revertByIds(
+export async function revertByIdsArchive(
   ids: ArchiveId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -318,9 +315,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除全宗设置
+ * 根据 ids 彻底删除 全宗设置
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsArchive(
   ids: ArchiveId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -366,11 +363,11 @@ export async function findAllCompany(
       sort,
     },
   }, opt);
-  const res = data.findAllCompany;
-  return res;
+  const company_models = data.findAllCompany;
+  return company_models;
 }
 
-export async function getCompanyList() {
+export async function getListCompany() {
   const data = await findAllCompany(
     {
       is_enabled: [ 1 ],
@@ -390,9 +387,9 @@ export async function getCompanyList() {
 }
 
 /**
- * 下载全宗设置导入模板
+ * 下载 全宗设置 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateArchive() {
   const {
     workerFn,
     workerStatus,
@@ -443,7 +440,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelArchive() {
   const {
     workerFn,
     workerStatus,
@@ -510,9 +507,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入全宗设置
+ * 批量导入 全宗设置
  */
-export async function importModels(
+export async function importModelsArchive(
   inputs: ArchiveInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -539,7 +536,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsArchive(
         inputs,
         UniqueType.Update,
         opt,
@@ -559,7 +556,7 @@ export async function importModels(
 /**
  * 查找 全宗设置 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByArchive(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -575,12 +572,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathArchive() {
   return "/eams/archive";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputArchive() {
   const defaultInput: ArchiveInput = {
     order_by: 0,
   };
