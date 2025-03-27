@@ -970,6 +970,18 @@ if (opts.noAdd !== true
   || (opts.noRevert !== true && hasIsDeleted)
   || (opts.noForceDelete !== true && hasIsDeleted)
 ) {
+#><#
+if (
+  opts.noAdd !== true ||
+  opts.noEdit !== true ||
+  hasAudit ||
+  opts.noDelete !== true ||
+  (hasDefault && opts.noEdit !== true) ||
+  (hasEnabled && opts.noEdit !== true) ||
+  (hasLocked && opts.noEdit !== true) ||
+  (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) ||
+  (opts.noDelete !== true && opts.noForceDelete !== true && hasIsDeleted)
+) {
 #>
 type Mutation {<#
   if (opts.noAdd !== true) {
@@ -1024,19 +1036,21 @@ type Mutation {<#
   lockByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!, is_locked: Int!): Int!<#
   }
   #><#
-  if (opts.noRevert !== true && hasIsDeleted) {
+  if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
   #>
   "根据 ids 还原<#=table_comment#>"
   revertByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
   #><#
-  if (opts.noForceDelete !== true && hasIsDeleted) {
+  if (opts.noDelete !== true && opts.noForceDelete !== true && hasIsDeleted) {
   #>
   "根据 ids 彻底删除<#=table_comment#>"
   forceDeleteByIds<#=Table_Up2#>(ids: [<#=Table_Up#>Id!]!): Int!<#
   }
   #>
 }<#
+}
+#><#
 }
 #>
 

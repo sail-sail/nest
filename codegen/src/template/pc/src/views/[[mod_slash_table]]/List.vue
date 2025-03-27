@@ -1275,7 +1275,7 @@ for (let i = 0; i < columns.length; i++) {
     </template>
     
     <template v-else><#
-      if (opts.noRevert !== true && hasIsDeleted) {
+      if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
       #>
       
       <el-button
@@ -1298,7 +1298,7 @@ for (let i = 0; i < columns.length; i++) {
       </el-button><#
       }
       #><#
-      if (opts.noForceDelete !== true && hasIsDeleted) {
+      if (opts.noDelete !== true && opts.noForceDelete !== true && hasIsDeleted) {
       #>
       
       <el-button
@@ -2358,7 +2358,7 @@ import {
   getPagePath<#=Table_Up#>,
   findAll<#=Table_Up#>,
   findCount<#=Table_Up#>,<#
-    if (opts.noRevert !== true && hasIsDeleted) {
+    if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
   #>
   revertByIds<#=Table_Up#>,<#
     }
@@ -2368,7 +2368,7 @@ import {
   deleteByIds<#=Table_Up#>,<#
     }
   #><#
-    if (opts.noForceDelete !== true && hasIsDeleted) {
+    if (opts.noDelete !== true && opts.noForceDelete !== true && hasIsDeleted) {
   #>
   forceDeleteByIds<#=Table_Up#>,<#
     }
@@ -4487,7 +4487,7 @@ async function onDeleteByIds() {
 }<#
 }
 #><#
-if (opts.noForceDelete !== true && hasIsDeleted) {
+if (opts.noDelete !== true && opts.noForceDelete !== true && hasIsDeleted) {
 #>
 
 /** 点击彻底删除 */
@@ -4712,7 +4712,7 @@ async function onLockByIds(is_locked: 0 | 1) {
 }<#
 }
 #><#
-if (opts.noRevert !== true && hasIsDeleted) {
+if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
 #>
 
 /** 点击还原 */
