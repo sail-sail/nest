@@ -409,8 +409,8 @@ for (let i = 0; i < columns.length; i++) {
     intoInputTableUps.push(Table_Up);
 #>
 import {
-  intoInput as intoInput<#=Table_Up#>,
-} from "@/views/<#=mod#>/<#=table#>/Api";<#
+  intoInput<#=Table_Up#>,
+} from "@/views/<#=mod#>/<#=table#>/Api.ts";<#
   }
 #><#
 }
@@ -1283,7 +1283,7 @@ export async function lockByIds<#=Table_Up#>(
 }<#
 }
 #><#
-if (opts.noRevert !== true && hasIsDeleted) {
+if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
 #>
 
 /**
@@ -1313,7 +1313,7 @@ export async function revertByIds<#=Table_Up#>(
 }<#
 }
 #><#
-if (opts.noForceDelete !== true && hasIsDeleted) {
+if (opts.noDelete !== true && opts.noForceDelete !== true && hasIsDeleted) {
 #>
 
 /**
