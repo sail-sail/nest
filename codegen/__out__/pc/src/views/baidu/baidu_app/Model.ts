@@ -4,7 +4,7 @@ import type {
   BaiduAppModel as BaiduAppModelType,
   BaiduAppSearch as BaiduAppSearchType,
   BaiduAppFieldComment as BaiduAppFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   baiduAppQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: BaiduAppModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputBaiduApp(
   model?: BaiduAppInput,
 ) {
   const input: BaiduAppInput = {
@@ -53,9 +53,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找百度应用列表
+ * 根据搜索条件查找 百度应用 列表
  */
-export async function findAll(
+export async function findAllBaiduApp(
   search?: BaiduAppSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -88,7 +88,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个百度应用
  */
-export async function findOne(
+export async function findOneBaiduApp(
   search?: BaiduAppSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -114,9 +114,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找百度应用总数
+ * 根据搜索条件查找 百度应用 总数
  */
-export async function findCount(
+export async function findCountBaiduApp(
   search?: BaiduAppSearch,
   opt?: GqlOpt,
 ) {
@@ -137,17 +137,14 @@ export async function findCount(
 }
 
 /**
- * 创建百度应用
- * @param {BaiduAppInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 百度应用
  */
-export async function create(
+export async function createBaiduApp(
   input: BaiduAppInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<BaiduAppId> {
-  const ids = await creates(
+  const ids = await createsBaiduApp(
     [ input ],
     unique_type,
     opt,
@@ -157,14 +154,14 @@ export async function create(
 }
 
 /**
- * 批量创建百度应用
+ * 批量创建 百度应用
  */
-export async function creates(
+export async function createsBaiduApp(
   inputs: BaiduAppInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<BaiduAppId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputBaiduApp);
   const data: {
     createsBaiduApp: Mutation["createsBaiduApp"];
   } = await mutation({
@@ -183,14 +180,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改百度应用
+ * 根据 id 修改 百度应用
  */
-export async function updateById(
+export async function updateByIdBaiduApp(
   id: BaiduAppId,
   input: BaiduAppInput,
   opt?: GqlOpt,
 ): Promise<BaiduAppId> {
-  input = intoInput(input);
+  input = intoInputBaiduApp(input);
   const data: {
     updateByIdBaiduApp: Mutation["updateByIdBaiduApp"];
   } = await mutation({
@@ -209,9 +206,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找百度应用
+ * 根据 id 查找 百度应用
  */
-export async function findById(
+export async function findByIdBaiduApp(
   id?: BaiduAppId,
   opt?: GqlOpt,
 ): Promise<BaiduAppModel | undefined> {
@@ -238,9 +235,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找百度应用
+ * 根据 ids 查找 百度应用
  */
-export async function findByIds(
+export async function findByIdsBaiduApp(
   ids: BaiduAppId[],
   opt?: GqlOpt,
 ): Promise<BaiduAppModel[]> {
@@ -275,9 +272,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除百度应用
+ * 根据 ids 删除 百度应用
  */
-export async function deleteByIds(
+export async function deleteByIdsBaiduApp(
   ids: BaiduAppId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -301,9 +298,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用百度应用
+ * 根据 ids 启用或禁用 百度应用
  */
-export async function enableByIds(
+export async function enableByIdsBaiduApp(
   ids: BaiduAppId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -329,9 +326,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁百度应用
+ * 根据 ids 锁定或解锁 百度应用
  */
-export async function lockByIds(
+export async function lockByIdsBaiduApp(
   ids: BaiduAppId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -357,9 +354,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原百度应用
+ * 根据 ids 还原 百度应用
  */
-export async function revertByIds(
+export async function revertByIdsBaiduApp(
   ids: BaiduAppId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -383,9 +380,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除百度应用
+ * 根据 ids 彻底删除 百度应用
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsBaiduApp(
   ids: BaiduAppId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -409,9 +406,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载百度应用导入模板
+ * 下载 百度应用 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateBaiduApp() {
   const {
     workerFn,
     workerStatus,
@@ -460,7 +457,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelBaiduApp() {
   const {
     workerFn,
     workerStatus,
@@ -531,9 +528,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入百度应用
+ * 批量导入 百度应用
  */
-export async function importModels(
+export async function importModelsBaiduApp(
   inputs: BaiduAppInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -560,7 +557,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsBaiduApp(
         inputs,
         UniqueType.Update,
         opt,
@@ -580,7 +577,7 @@ export async function importModels(
 /**
  * 查找 百度应用 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByBaiduApp(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -596,12 +593,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathBaiduApp() {
   return "/baidu/baidu_app";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputBaiduApp() {
   const defaultInput: BaiduAppInput = {
     is_locked: 0,
     is_enabled: 1,
