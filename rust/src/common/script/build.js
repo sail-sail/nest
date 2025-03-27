@@ -31,6 +31,12 @@ const rustDir = projectDir + "/rust";
 const pcDir = projectDir + "/pc";
 const uniDir = projectDir + "/uni";
 
+async function removeExcelTemplate() {
+  console.log("removeExcelTemplate");
+  await remove(`${ pcDir }/public/import_template/`);
+  await remove(`${ pcDir }/public/export_template/`);
+}
+
 async function codegen() {
   console.log("codegen");
   child_process.execSync("npm run codegen", {
@@ -127,6 +133,8 @@ async function publish() {
     await remove(buildDir + "/deno");
   } catch (err) {
   }
+  
+  await removeExcelTemplate();
   
   await codegen();
   await gqlgen();
