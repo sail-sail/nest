@@ -1,26 +1,26 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   DataPermitScope,
   DataPermitType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   dataPermitQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 import {
-  findTree as findMenuTree,
-} from "@/views/base/menu/Api";
+  findTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 async function setLblById(
   model?: DataPermitModel | null,
@@ -31,7 +31,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputDataPermit(
   model?: DataPermitInput,
 ) {
   const input: DataPermitInput = {
@@ -53,9 +53,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找数据权限列表
+ * 根据搜索条件查找 数据权限 列表
  */
-export async function findAll(
+export async function findAllDataPermit(
   search?: DataPermitSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -88,7 +88,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个数据权限
  */
-export async function findOne(
+export async function findOneDataPermit(
   search?: DataPermitSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -114,9 +114,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找数据权限总数
+ * 根据搜索条件查找 数据权限 总数
  */
-export async function findCount(
+export async function findCountDataPermit(
   search?: DataPermitSearch,
   opt?: GqlOpt,
 ) {
@@ -137,17 +137,14 @@ export async function findCount(
 }
 
 /**
- * 创建数据权限
- * @param {DataPermitInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 数据权限
  */
-export async function create(
+export async function createDataPermit(
   input: DataPermitInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DataPermitId> {
-  const ids = await creates(
+  const ids = await createsDataPermit(
     [ input ],
     unique_type,
     opt,
@@ -157,14 +154,14 @@ export async function create(
 }
 
 /**
- * 批量创建数据权限
+ * 批量创建 数据权限
  */
-export async function creates(
+export async function createsDataPermit(
   inputs: DataPermitInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<DataPermitId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputDataPermit);
   const data: {
     createsDataPermit: Mutation["createsDataPermit"];
   } = await mutation({
@@ -183,14 +180,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改数据权限
+ * 根据 id 修改 数据权限
  */
-export async function updateById(
+export async function updateByIdDataPermit(
   id: DataPermitId,
   input: DataPermitInput,
   opt?: GqlOpt,
 ): Promise<DataPermitId> {
-  input = intoInput(input);
+  input = intoInputDataPermit(input);
   const data: {
     updateByIdDataPermit: Mutation["updateByIdDataPermit"];
   } = await mutation({
@@ -209,9 +206,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找数据权限
+ * 根据 id 查找 数据权限
  */
-export async function findById(
+export async function findByIdDataPermit(
   id?: DataPermitId,
   opt?: GqlOpt,
 ): Promise<DataPermitModel | undefined> {
@@ -238,9 +235,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找数据权限
+ * 根据 ids 查找 数据权限
  */
-export async function findByIds(
+export async function findByIdsDataPermit(
   ids: DataPermitId[],
   opt?: GqlOpt,
 ): Promise<DataPermitModel[]> {
@@ -275,9 +272,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除数据权限
+ * 根据 ids 删除 数据权限
  */
-export async function deleteByIds(
+export async function deleteByIdsDataPermit(
   ids: DataPermitId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -301,9 +298,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原数据权限
+ * 根据 ids 还原 数据权限
  */
-export async function revertByIds(
+export async function revertByIdsDataPermit(
   ids: DataPermitId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -327,9 +324,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除数据权限
+ * 根据 ids 彻底删除 数据权限
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsDataPermit(
   ids: DataPermitId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -375,11 +372,11 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const res = data.findAllMenu;
-  return res;
+  const menu_models = data.findAllMenu;
+  return menu_models;
 }
 
-export async function getMenuList() {
+export async function getListMenu() {
   const data = await findAllMenu(
     {
       is_enabled: [ 1 ],
@@ -398,8 +395,8 @@ export async function getMenuList() {
   return data;
 }
 
-export async function getMenuTree() {
-  const data = await findMenuTree(
+export async function getTreeMenu() {
+  const data = await findTreeMenu(
     {
       is_enabled: [ 1 ],
     },
@@ -417,9 +414,9 @@ export async function getMenuTree() {
 }
 
 /**
- * 下载数据权限导入模板
+ * 下载 数据权限 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateDataPermit() {
   const {
     workerFn,
     workerStatus,
@@ -476,7 +473,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelDataPermit() {
   const {
     workerFn,
     workerStatus,
@@ -550,9 +547,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入数据权限
+ * 批量导入 数据权限
  */
-export async function importModels(
+export async function importModelsDataPermit(
   inputs: DataPermitInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -579,7 +576,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsDataPermit(
         inputs,
         UniqueType.Update,
         opt,
@@ -596,12 +593,12 @@ export async function importModels(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
-export function getPagePath() {
+export function getPagePathDataPermit() {
   return "/base/data_permit";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputDataPermit() {
   const defaultInput: DataPermitInput = {
     scope: DataPermitScope.Tenant,
     type: DataPermitType.Editable,

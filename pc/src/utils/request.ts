@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ElMessage } from "element-plus";
-import useUsrStore from "../store/usr";
-import useIndexStore from "../store/index";
+import useUsrStore from "../store/usr.ts";
+import useIndexStore from "../store/index.ts";
 import { saveAs } from "file-saver";
 
-import cfg from "./config";
+import cfg from "./config.ts";
 
 export const baseURL = "";
 

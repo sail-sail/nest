@@ -241,14 +241,14 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  findLastOrderBy,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  createRole,
+  findOneRole,
+  findLastOrderByRole,
+  updateByIdRole,
+  getDefaultInputRole,
+  getPagePathRole,
+  intoInputRole,
+} from "./Api.ts";
 
 import {
   getHomeUrlMap,
@@ -263,7 +263,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathRole();
 
 const {
   n,
@@ -357,7 +357,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneRole;
 
 /** 打开对话框 */
 async function showDialog(
@@ -372,7 +372,7 @@ async function showDialog(
       ids?: RoleId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneRole;
     action: DialogAction;
   },
 ) {
@@ -399,7 +399,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneRole;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -432,8 +432,8 @@ async function showDialog(
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputRole(),
+      findLastOrderByRole({
         notLoading: !inited,
       }),
     ]);
@@ -453,12 +453,12 @@ async function showDialog(
       data,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputRole(),
       findOneModel({
         id,
         is_deleted,
       }),
-      findLastOrderBy({
+      findLastOrderByRole({
         notLoading: !inited,
       }),
     ]);
@@ -549,8 +549,8 @@ async function onReset() {
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputRole(),
+      findLastOrderByRole({
         notLoading: !inited,
       }),
     ]);
@@ -584,7 +584,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputRole({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -740,7 +740,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createRole(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -755,7 +755,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdRole(
       dialogModel.id,
       dialogModel2,
     );

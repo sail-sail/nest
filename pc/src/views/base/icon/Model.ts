@@ -4,7 +4,7 @@ import type {
   IconModel as IconModelType,
   IconSearch as IconSearchType,
   IconFieldComment as IconFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
