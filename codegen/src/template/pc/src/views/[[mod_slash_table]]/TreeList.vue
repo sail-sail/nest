@@ -128,12 +128,13 @@ if (typeof list_tree === "string") {
 
 <script lang="ts" setup>
 import List from "./List.vue";<#
+const old_Table_Up = Table_Up;
 if (list_tree === true) {
 #>
 
 import {
-  findTree,
-  getPagePath,
+  findTree<#=Table_Up#>,
+  getPagePath<#=Table_Up#>,
 } from "./Api";<#
 } else {
   Table_Up = list_treeForeignKey.table.split("_").map(function(item) {
@@ -142,17 +143,17 @@ import {
 #>
 
 import {
-  getPagePath,
-} from "./Api";
+  getPagePath<#=old_Table_Up#>,
+} from "./Api.ts";
 
 import {
-  findTree,<#
+  findTree<#=Table_Up#>,<#
   if (mod === "base" && table === "data_permit") {
   #>
   useMenuTreeFilter,<#
   }
   #>
-} from "@/views/<#=list_treeForeignKey.mod#>/<#=list_treeForeignKey.table#>/Api";<#
+} from "@/views/<#=list_treeForeignKey.mod#>/<#=list_treeForeignKey.table#>/Api.ts";<#
 }
 #>
 
@@ -162,7 +163,7 @@ import type {
 } from "element-plus/es/components/tree/src/tree.type";
 
 defineOptions({
-  name: "<#=table_comment#>",
+  name: "<#=table_comment#>TreeList",
 });
 
 const props = defineProps<{
@@ -170,7 +171,7 @@ const props = defineProps<{
   showBuildIn?: string;
 }>();
 
-const pagePath = getPagePath();<#
+const pagePath = getPagePath<#=old_Table_Up#>();<#
 if (isUseI18n) {
 #>
 
@@ -197,7 +198,7 @@ watch(
   },
 );
 
-type ModelTree = Awaited<ReturnType<typeof findTree>>[0];
+type ModelTree = Awaited<ReturnType<typeof findTree<#=Table_Up#>>>[0];
 
 let treeData = $ref<ModelTree[]>([ ]);
 
@@ -263,7 +264,7 @@ function getById(
 }
 
 async function onFindTree() {
-  treeData = await findTree(<#
+  treeData = await findTree<#=Table_Up#>(<#
   if (list_treeForeignTable && list_treeForeignTable.columns.some(function (item) { return item.COLUMN_NAME === "is_enabled" })) {
   #>{ is_enabled: [ 1 ] }<#
   }

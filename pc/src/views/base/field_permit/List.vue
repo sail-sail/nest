@@ -35,7 +35,7 @@
         >
           <CustomTreeSelect
             v-model="menu_id_search"
-            :method="getMenuTree"
+            :method="getTreeMenu"
             :options-map="((item: MenuModel) => {
               return {
                 label: item.lbl,
@@ -386,20 +386,20 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-} from "./Api";
+  getPagePathFieldPermit,
+  findAllFieldPermit,
+  findCountFieldPermit,
+} from "./Api.ts";
 
 import {
-  getMenuTree,
-} from "@/views/base/menu/Api";
+  getTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 defineOptions({
   name: "字段权限List",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathFieldPermit();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -778,7 +778,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllFieldPermit(
       search,
       {
         pgSize,
@@ -790,7 +790,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllFieldPermit(
       search,
       undefined,
       [
@@ -806,7 +806,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountFieldPermit(
     search2,
     opt,
   );

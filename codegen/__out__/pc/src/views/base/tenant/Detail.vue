@@ -110,7 +110,7 @@
               ref="domain_idsRef"
               v-model="dialogModel.domain_ids"
               :set="dialogModel.domain_ids = dialogModel.domain_ids ?? [ ]"
-              :method="getDomainList"
+              :method="getListDomain"
               :find-by-values="findByIdsDomain"
               :options-map="((item: DomainModel) => {
                 return {
@@ -144,12 +144,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.title == null)">
           <el-form-item
-            label="简介"
+            label="标题"
             prop="title"
           >
             <CustomInput
               v-model="dialogModel.title"
-              placeholder="请输入 简介"
+              placeholder="请输入 标题"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -157,12 +157,12 @@
         
         <template v-if="(showBuildIn || builtInModel?.info == null)">
           <el-form-item
-            label="描述"
+            label="简介"
             prop="info"
           >
             <CustomInput
               v-model="dialogModel.info"
-              placeholder="请输入 描述"
+              placeholder="请输入 简介"
               :readonly="isLocked || isReadonly"
             ></CustomInput>
           </el-form-item>
@@ -176,7 +176,7 @@
             <CustomSelect
               v-model="dialogModel.lang_id"
               v-model:model-label="dialogModel.lang_id_lbl"
-              :method="getLangList"
+              :method="getListLang"
               :find-by-values="findByIdsLang"
               :options-map="((item: LangModel) => {
                 return {
@@ -321,26 +321,26 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  findLastOrderBy,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  createTenant,
+  findOneTenant,
+  findLastOrderByTenant,
+  updateByIdTenant,
+  getDefaultInputTenant,
+  getPagePathTenant,
+  intoInputTenant,
+} from "./Api.ts";
+
+import {
+  getListDomain,
+  getListLang,
 } from "./Api";
 
 import {
-  getDomainList,
-  getLangList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsDomain,
+  findByIdsDomain,
 } from "@/views/base/domain/Api.ts";
 
 import {
-  findByIds as findByIdsLang,
+  findByIdsLang,
 } from "@/views/base/lang/Api.ts";
 
 // 域名
@@ -355,7 +355,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathTenant();
 
 const permitStore = usePermitStore();
 
@@ -484,7 +484,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneTenant;
 
 /** 打开对话框 */
 async function showDialog(
@@ -499,7 +499,7 @@ async function showDialog(
       ids?: TenantId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneTenant;
     action: DialogAction;
   },
 ) {
@@ -526,7 +526,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneTenant;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -559,8 +559,8 @@ async function showDialog(
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputTenant(),
+      findLastOrderByTenant({
         notLoading: !inited,
       }),
     ]);
@@ -580,12 +580,12 @@ async function showDialog(
       data,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputTenant(),
       findOneModel({
         id,
         is_deleted,
       }),
-      findLastOrderBy({
+      findLastOrderByTenant({
         notLoading: !inited,
       }),
     ]);
@@ -676,8 +676,8 @@ async function onReset() {
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputTenant(),
+      findLastOrderByTenant({
         notLoading: !inited,
       }),
     ]);
@@ -711,7 +711,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputTenant({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -866,7 +866,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createTenant(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -881,7 +881,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdTenant(
       dialogModel.id,
       dialogModel2,
     );
