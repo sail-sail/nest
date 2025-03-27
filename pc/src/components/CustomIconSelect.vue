@@ -248,7 +248,7 @@ import {
 } from "@/utils/image_util";
 
 import {
-  findAll as findAllIcon,
+  findAllIcon,
 } from "@/views/base/icon/Api.ts";
 
 import {
