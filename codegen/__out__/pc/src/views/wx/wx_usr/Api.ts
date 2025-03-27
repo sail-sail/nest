@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   wxUsrQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: WxUsrModel | null,
@@ -30,7 +30,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputWxUsr(
   model?: WxUsrInput,
 ) {
   const input: WxUsrInput = {
@@ -71,9 +71,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找小程序用户列表
+ * 根据搜索条件查找 小程序用户 列表
  */
-export async function findAll(
+export async function findAllWxUsr(
   search?: WxUsrSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -106,7 +106,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个小程序用户
  */
-export async function findOne(
+export async function findOneWxUsr(
   search?: WxUsrSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -132,9 +132,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找小程序用户总数
+ * 根据搜索条件查找 小程序用户 总数
  */
-export async function findCount(
+export async function findCountWxUsr(
   search?: WxUsrSearch,
   opt?: GqlOpt,
 ) {
@@ -155,17 +155,14 @@ export async function findCount(
 }
 
 /**
- * 创建小程序用户
- * @param {WxUsrInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 小程序用户
  */
-export async function create(
+export async function createWxUsr(
   input: WxUsrInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxUsrId> {
-  const ids = await creates(
+  const ids = await createsWxUsr(
     [ input ],
     unique_type,
     opt,
@@ -175,14 +172,14 @@ export async function create(
 }
 
 /**
- * 批量创建小程序用户
+ * 批量创建 小程序用户
  */
-export async function creates(
+export async function createsWxUsr(
   inputs: WxUsrInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxUsrId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputWxUsr);
   const data: {
     createsWxUsr: Mutation["createsWxUsr"];
   } = await mutation({
@@ -201,14 +198,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改小程序用户
+ * 根据 id 修改 小程序用户
  */
-export async function updateById(
+export async function updateByIdWxUsr(
   id: WxUsrId,
   input: WxUsrInput,
   opt?: GqlOpt,
 ): Promise<WxUsrId> {
-  input = intoInput(input);
+  input = intoInputWxUsr(input);
   const data: {
     updateByIdWxUsr: Mutation["updateByIdWxUsr"];
   } = await mutation({
@@ -227,9 +224,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找小程序用户
+ * 根据 id 查找 小程序用户
  */
-export async function findById(
+export async function findByIdWxUsr(
   id?: WxUsrId,
   opt?: GqlOpt,
 ): Promise<WxUsrModel | undefined> {
@@ -256,9 +253,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找小程序用户
+ * 根据 ids 查找 小程序用户
  */
-export async function findByIds(
+export async function findByIdsWxUsr(
   ids: WxUsrId[],
   opt?: GqlOpt,
 ): Promise<WxUsrModel[]> {
@@ -293,9 +290,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除小程序用户
+ * 根据 ids 删除 小程序用户
  */
-export async function deleteByIds(
+export async function deleteByIdsWxUsr(
   ids: WxUsrId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -319,9 +316,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原小程序用户
+ * 根据 ids 还原 小程序用户
  */
-export async function revertByIds(
+export async function revertByIdsWxUsr(
   ids: WxUsrId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -345,9 +342,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除小程序用户
+ * 根据 ids 彻底删除 小程序用户
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxUsr(
   ids: WxUsrId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -393,11 +390,11 @@ export async function findAllUsr(
       sort,
     },
   }, opt);
-  const res = data.findAllUsr;
-  return res;
+  const usr_models = data.findAllUsr;
+  return usr_models;
 }
 
-export async function getUsrList() {
+export async function getListUsr() {
   const data = await findAllUsr(
     {
       is_enabled: [ 1 ],
@@ -417,9 +414,9 @@ export async function getUsrList() {
 }
 
 /**
- * 下载小程序用户导入模板
+ * 下载 小程序用户 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateWxUsr() {
   const {
     workerFn,
     workerStatus,
@@ -485,7 +482,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelWxUsr() {
   const {
     workerFn,
     workerStatus,
@@ -558,9 +555,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入小程序用户
+ * 批量导入 小程序用户
  */
-export async function importModels(
+export async function importModelsWxUsr(
   inputs: WxUsrInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -587,7 +584,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsWxUsr(
         inputs,
         UniqueType.Update,
         opt,
@@ -604,12 +601,12 @@ export async function importModels(
   return showUploadMsg(succNum, failNum, failErrMsgs);
 }
 
-export function getPagePath() {
+export function getPagePathWxUsr() {
   return "/wx/wx_usr";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputWxUsr() {
   const defaultInput: WxUsrInput = {
     gender: 0,
   };

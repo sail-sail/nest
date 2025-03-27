@@ -626,17 +626,17 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  useExportExcel,
-} from "./Api";
+  getPagePathWxPayNotice,
+  findAllWxPayNotice,
+  findCountWxPayNotice,
+  useExportExcelWxPayNotice,
+} from "./Api.ts";
 
 defineOptions({
   name: "微信支付通知",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathWxPayNotice();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1151,7 +1151,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllWxPayNotice(
       search,
       {
         pgSize,
@@ -1163,7 +1163,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllWxPayNotice(
       search,
       undefined,
       [
@@ -1179,7 +1179,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountWxPayNotice(
     search2,
     opt,
   );
@@ -1230,7 +1230,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelWxPayNotice());
 
 /** 导出Excel */
 async function onExport() {

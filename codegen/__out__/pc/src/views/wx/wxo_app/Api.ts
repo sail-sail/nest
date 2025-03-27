@@ -1,26 +1,26 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   WxoAppEncodingType,
   WxoAppScope,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   wxoAppQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 // 域名
 import {
-  findOne as findOneDomain0,
+  findOneDomain as findOneDomain0,
 } from "@/views/base/domain/Api.ts";
 
 async function setLblById(
@@ -32,7 +32,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputWxoApp(
   model?: WxoAppInput,
 ) {
   const input: WxoAppInput = {
@@ -74,9 +74,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找公众号设置列表
+ * 根据搜索条件查找 公众号设置 列表
  */
-export async function findAll(
+export async function findAllWxoApp(
   search?: WxoAppSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -109,7 +109,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个公众号设置
  */
-export async function findOne(
+export async function findOneWxoApp(
   search?: WxoAppSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -135,9 +135,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找公众号设置总数
+ * 根据搜索条件查找 公众号设置 总数
  */
-export async function findCount(
+export async function findCountWxoApp(
   search?: WxoAppSearch,
   opt?: GqlOpt,
 ) {
@@ -158,17 +158,14 @@ export async function findCount(
 }
 
 /**
- * 创建公众号设置
- * @param {WxoAppInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 公众号设置
  */
-export async function create(
+export async function createWxoApp(
   input: WxoAppInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxoAppId> {
-  const ids = await creates(
+  const ids = await createsWxoApp(
     [ input ],
     unique_type,
     opt,
@@ -178,14 +175,14 @@ export async function create(
 }
 
 /**
- * 批量创建公众号设置
+ * 批量创建 公众号设置
  */
-export async function creates(
+export async function createsWxoApp(
   inputs: WxoAppInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<WxoAppId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputWxoApp);
   const data: {
     createsWxoApp: Mutation["createsWxoApp"];
   } = await mutation({
@@ -204,14 +201,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改公众号设置
+ * 根据 id 修改 公众号设置
  */
-export async function updateById(
+export async function updateByIdWxoApp(
   id: WxoAppId,
   input: WxoAppInput,
   opt?: GqlOpt,
 ): Promise<WxoAppId> {
-  input = intoInput(input);
+  input = intoInputWxoApp(input);
   const data: {
     updateByIdWxoApp: Mutation["updateByIdWxoApp"];
   } = await mutation({
@@ -230,9 +227,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找公众号设置
+ * 根据 id 查找 公众号设置
  */
-export async function findById(
+export async function findByIdWxoApp(
   id?: WxoAppId,
   opt?: GqlOpt,
 ): Promise<WxoAppModel | undefined> {
@@ -259,9 +256,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找公众号设置
+ * 根据 ids 查找 公众号设置
  */
-export async function findByIds(
+export async function findByIdsWxoApp(
   ids: WxoAppId[],
   opt?: GqlOpt,
 ): Promise<WxoAppModel[]> {
@@ -296,9 +293,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除公众号设置
+ * 根据 ids 删除 公众号设置
  */
-export async function deleteByIds(
+export async function deleteByIdsWxoApp(
   ids: WxoAppId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -322,9 +319,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用公众号设置
+ * 根据 ids 启用或禁用 公众号设置
  */
-export async function enableByIds(
+export async function enableByIdsWxoApp(
   ids: WxoAppId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -350,9 +347,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁公众号设置
+ * 根据 ids 锁定或解锁 公众号设置
  */
-export async function lockByIds(
+export async function lockByIdsWxoApp(
   ids: WxoAppId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -378,9 +375,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原公众号设置
+ * 根据 ids 还原 公众号设置
  */
-export async function revertByIds(
+export async function revertByIdsWxoApp(
   ids: WxoAppId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -404,9 +401,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除公众号设置
+ * 根据 ids 彻底删除 公众号设置
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsWxoApp(
   ids: WxoAppId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -452,11 +449,11 @@ export async function findAllDomain(
       sort,
     },
   }, opt);
-  const res = data.findAllDomain;
-  return res;
+  const domain_models = data.findAllDomain;
+  return domain_models;
 }
 
-export async function getDomainList() {
+export async function getListDomain() {
   const data = await findAllDomain(
     {
       is_enabled: [ 1 ],
@@ -476,9 +473,9 @@ export async function getDomainList() {
 }
 
 /**
- * 下载公众号设置导入模板
+ * 下载 公众号设置 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateWxoApp() {
   const {
     workerFn,
     workerStatus,
@@ -542,7 +539,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelWxoApp() {
   const {
     workerFn,
     workerStatus,
@@ -618,9 +615,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入公众号设置
+ * 批量导入 公众号设置
  */
-export async function importModels(
+export async function importModelsWxoApp(
   inputs: WxoAppInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -647,7 +644,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsWxoApp(
         inputs,
         UniqueType.Update,
         opt,
@@ -667,7 +664,7 @@ export async function importModels(
 /**
  * 查找 公众号设置 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByWxoApp(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -683,12 +680,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathWxoApp() {
   return "/wx/wxo_app";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputWxoApp() {
   const defaultInput: WxoAppInput = {
     encoding_type: WxoAppEncodingType.Plaintext,
     scope: WxoAppScope.SnsapiBase,
