@@ -28,14 +28,14 @@
           <el-tab-pane
             :label="'任务执行日志' + (cron_job_log_total != null ? ` (${ cron_job_log_total })` : '')"
           >
-            <Cron_job_logList
+            <CronJobLogList
               :cron_job_id="dialogModel.id"
               :is_deleted="dialogModel.is_deleted ? '1' : '0'"
               :is-locked="dialogModel.is_deleted ? '1' : '0'"
               @add="useAllFindDebounce"
               @remove="useAllFindDebounce"
               @revert="useAllFindDebounce"
-            ></Cron_job_logList>
+            ></CronJobLogList>
           </el-tab-pane>
           
         </template>
@@ -67,10 +67,10 @@
 
 <script lang="ts" setup>
 
-import Cron_job_logList from "@/views/cron/cron_job_log/List.vue";
+import CronJobLogList from "@/views/cron/cron_job_log/List.vue";
 
 import {
-  findCount as findCountCron_job_log,
+  findCountCronJobLog,
 } from "@/views/cron/cron_job_log/Api";
 
 let inited = $ref(false);
@@ -88,9 +88,9 @@ const tabName = $ref<string>();
 
 let cron_job_log_total = $ref<number>();
 
-async function useFindCountCron_job_log() {
+async function useFindCountCronJobLog() {
   const cron_job_id: CronJobId[] = [ dialogModel.id! ];
-  cron_job_log_total = await findCountCron_job_log(
+  cron_job_log_total = await findCountCronJobLog(
     {
       is_deleted: dialogModel.is_deleted,
       cron_job_id,
@@ -100,7 +100,7 @@ async function useFindCountCron_job_log() {
 
 async function useAllFindCount() {
   await Promise.all([
-    useFindCountCron_job_log(),
+    useFindCountCronJobLog(),
   ]);
 }
 

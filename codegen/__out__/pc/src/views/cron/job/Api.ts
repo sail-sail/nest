@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   jobQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: JobModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputJob(
   model?: JobInput,
 ) {
   const input: JobInput = {
@@ -47,9 +47,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找任务列表
+ * 根据搜索条件查找 任务 列表
  */
-export async function findAll(
+export async function findAllJob(
   search?: JobSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -82,7 +82,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个任务
  */
-export async function findOne(
+export async function findOneJob(
   search?: JobSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -108,9 +108,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找任务总数
+ * 根据搜索条件查找 任务 总数
  */
-export async function findCount(
+export async function findCountJob(
   search?: JobSearch,
   opt?: GqlOpt,
 ) {
@@ -131,17 +131,14 @@ export async function findCount(
 }
 
 /**
- * 创建任务
- * @param {JobInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 任务
  */
-export async function create(
+export async function createJob(
   input: JobInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<JobId> {
-  const ids = await creates(
+  const ids = await createsJob(
     [ input ],
     unique_type,
     opt,
@@ -151,14 +148,14 @@ export async function create(
 }
 
 /**
- * 批量创建任务
+ * 批量创建 任务
  */
-export async function creates(
+export async function createsJob(
   inputs: JobInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<JobId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputJob);
   const data: {
     createsJob: Mutation["createsJob"];
   } = await mutation({
@@ -177,14 +174,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改任务
+ * 根据 id 修改 任务
  */
-export async function updateById(
+export async function updateByIdJob(
   id: JobId,
   input: JobInput,
   opt?: GqlOpt,
 ): Promise<JobId> {
-  input = intoInput(input);
+  input = intoInputJob(input);
   const data: {
     updateByIdJob: Mutation["updateByIdJob"];
   } = await mutation({
@@ -203,9 +200,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找任务
+ * 根据 id 查找 任务
  */
-export async function findById(
+export async function findByIdJob(
   id?: JobId,
   opt?: GqlOpt,
 ): Promise<JobModel | undefined> {
@@ -232,9 +229,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找任务
+ * 根据 ids 查找 任务
  */
-export async function findByIds(
+export async function findByIdsJob(
   ids: JobId[],
   opt?: GqlOpt,
 ): Promise<JobModel[]> {
@@ -269,9 +266,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除任务
+ * 根据 ids 删除 任务
  */
-export async function deleteByIds(
+export async function deleteByIdsJob(
   ids: JobId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -295,9 +292,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用任务
+ * 根据 ids 启用或禁用 任务
  */
-export async function enableByIds(
+export async function enableByIdsJob(
   ids: JobId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -323,9 +320,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁任务
+ * 根据 ids 锁定或解锁 任务
  */
-export async function lockByIds(
+export async function lockByIdsJob(
   ids: JobId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -351,9 +348,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原任务
+ * 根据 ids 还原 任务
  */
-export async function revertByIds(
+export async function revertByIdsJob(
   ids: JobId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -377,9 +374,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除任务
+ * 根据 ids 彻底删除 任务
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsJob(
   ids: JobId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -403,9 +400,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载任务导入模板
+ * 下载 任务 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateJob() {
   const {
     workerFn,
     workerStatus,
@@ -451,7 +448,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelJob() {
   const {
     workerFn,
     workerStatus,
@@ -522,9 +519,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入任务
+ * 批量导入 任务
  */
-export async function importModels(
+export async function importModelsJob(
   inputs: JobInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -551,7 +548,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsJob(
         inputs,
         UniqueType.Update,
         opt,
@@ -571,7 +568,7 @@ export async function importModels(
 /**
  * 查找 任务 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByJob(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -587,12 +584,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathJob() {
   return "/cron/job";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputJob() {
   const defaultInput: JobInput = {
     is_locked: 0,
     is_enabled: 1,

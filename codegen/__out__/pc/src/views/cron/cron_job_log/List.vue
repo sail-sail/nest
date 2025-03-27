@@ -35,7 +35,7 @@
         >
           <CustomSelect
             v-model="cron_job_id_search"
-            :method="getCronJobList"
+            :method="getListCronJob"
             :options-map="((item: CronJobModel) => {
               return {
                 label: item.lbl,
@@ -566,17 +566,17 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  useExportExcel,
-} from "./Api";
+  getPagePathCronJobLog,
+  findAllCronJobLog,
+  findCountCronJobLog,
+  revertByIdsCronJobLog,
+  deleteByIdsCronJobLog,
+  forceDeleteByIdsCronJobLog,
+  useExportExcelCronJobLog,
+} from "./Api.ts";
 
 import {
-  getCronJobList, // 定时任务
+  getListCronJob, // 定时任务
 } from "./Api";
 
 import ForeignTabs from "./ForeignTabs.vue";
@@ -585,7 +585,7 @@ defineOptions({
   name: "定时任务日志",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathCronJobLog();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const permitStore = usePermitStore();
@@ -1020,7 +1020,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllCronJobLog(
       search,
       {
         pgSize,
@@ -1032,7 +1032,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllCronJobLog(
       search,
       undefined,
       [
@@ -1048,7 +1048,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountCronJobLog(
     search2,
     opt,
   );
@@ -1099,7 +1099,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelCronJobLog());
 
 /** 导出Excel */
 async function onExport() {
@@ -1201,7 +1201,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsCronJobLog(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1233,7 +1233,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsCronJobLog(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 定时任务日志 成功`);
@@ -1265,7 +1265,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsCronJobLog(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
