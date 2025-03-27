@@ -4,7 +4,7 @@ import type {
   DataPermitModel as DataPermitModelType,
   DataPermitSearch as DataPermitSearchType,
   DataPermitFieldComment as DataPermitFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

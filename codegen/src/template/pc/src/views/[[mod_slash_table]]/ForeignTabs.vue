@@ -40,6 +40,9 @@ const foreignTabsDialogType = columns.find((item) => item.foreignTabs?.length > 
           const item = foreignTabs[im];
           const itemTable = item.table;
           const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+          const itemTable_Up = itemTableUp.split("_").map(function(item) {
+            return item.substring(0, 1).toUpperCase() + item.substring(1);
+          }).join("");
           const item_total = `${ itemTable }_total`;
         #>
         
@@ -51,14 +54,14 @@ const foreignTabsDialogType = columns.find((item) => item.foreignTabs?.length > 
             #>
             :label="'<#=item.label#>' + (<#=item_total#> != null ? ` (${ <#=item_total#> })` : '')"
           >
-            <<#=itemTableUp#>List
+            <<#=itemTable_Up#>List
               :<#=item.column#>="dialogModel.id"
               :is_deleted="dialogModel.is_deleted ? '1' : '0'"
               :is-locked="dialogModel.is_deleted ? '1' : '0'"
               @add="useAllFindDebounce"
               @remove="useAllFindDebounce"
               @revert="useAllFindDebounce"
-            ></<#=itemTableUp#>List>
+            ></<#=itemTable_Up#>List>
           </el-tab-pane><#
           }
           #>
@@ -109,12 +112,15 @@ for (let ic = 0; ic < columns.length; ic++) {
     const item = foreignTabs[im];
     const itemTable = item.table;
     const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+    const itemTable_Up = itemTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
 #>
 
-import <#=itemTableUp#>List from "@/views/<#=item.mod#>/<#=itemTable#>/List.vue";
+import <#=itemTable_Up#>List from "@/views/<#=item.mod#>/<#=itemTable#>/List.vue";
 
 import {
-  findCount as findCount<#=itemTableUp#>,
+  findCount<#=itemTable_Up#>,
 } from "@/views/<#=item.mod#>/<#=itemTable#>/Api";<#
   }
 #><#
@@ -152,14 +158,17 @@ for (let ic = 0; ic < columns.length; ic++) {
     const item = foreignTabs[im];
     const itemTable = item.table;
     const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+    const itemTable_Up = itemTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
     const item_total = `${ itemTable }_total`;
 #>
 
 let <#=item_total#> = $ref<number>();
 
-async function useFindCount<#=itemTableUp#>() {
+async function useFindCount<#=itemTable_Up#>() {
   const <#=item.column#>: <#=Table_Up#>Id[] = [ dialogModel.id! ];
-  <#=item_total#> = await findCount<#=itemTableUp#>(
+  <#=item_total#> = await findCount<#=itemTable_Up#>(
     {
       is_deleted: dialogModel.is_deleted,
       <#=item.column#>,
@@ -182,8 +191,11 @@ async function useAllFindCount() {
         const item = foreignTabs[im];
         const itemTable = item.table;
         const itemTableUp = itemTable.substring(0,1).toUpperCase() + itemTable.substring(1);
+        const itemTable_Up = itemTableUp.split("_").map(function(item) {
+          return item.substring(0, 1).toUpperCase() + item.substring(1);
+        }).join("");
     #>
-    useFindCount<#=itemTableUp#>(),<#
+    useFindCount<#=itemTable_Up#>(),<#
       }
     #><#
     }
