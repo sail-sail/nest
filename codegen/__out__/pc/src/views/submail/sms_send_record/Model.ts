@@ -4,7 +4,7 @@ import type {
   SmsSendRecordModel as SmsSendRecordModelType,
   SmsSendRecordSearch as SmsSendRecordSearchType,
   SmsSendRecordFieldComment as SmsSendRecordFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

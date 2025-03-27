@@ -2,17 +2,17 @@
 
 import {
   SmsSendRecordStatus,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   smsSendRecordQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: SmsSendRecordModel | null,
@@ -23,7 +23,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputSmsSendRecord(
   model?: SmsSendRecordInput,
 ) {
   const input: SmsSendRecordInput = {
@@ -52,9 +52,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找短信发送记录列表
+ * 根据搜索条件查找 短信发送记录 列表
  */
-export async function findAll(
+export async function findAllSmsSendRecord(
   search?: SmsSendRecordSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -87,7 +87,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个短信发送记录
  */
-export async function findOne(
+export async function findOneSmsSendRecord(
   search?: SmsSendRecordSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -113,9 +113,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找短信发送记录总数
+ * 根据搜索条件查找 短信发送记录 总数
  */
-export async function findCount(
+export async function findCountSmsSendRecord(
   search?: SmsSendRecordSearch,
   opt?: GqlOpt,
 ) {
@@ -136,9 +136,9 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找短信发送记录
+ * 根据 id 查找 短信发送记录
  */
-export async function findById(
+export async function findByIdSmsSendRecord(
   id?: SmsSendRecordId,
   opt?: GqlOpt,
 ): Promise<SmsSendRecordModel | undefined> {
@@ -165,9 +165,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找短信发送记录
+ * 根据 ids 查找 短信发送记录
  */
-export async function findByIds(
+export async function findByIdsSmsSendRecord(
   ids: SmsSendRecordId[],
   opt?: GqlOpt,
 ): Promise<SmsSendRecordModel[]> {
@@ -202,9 +202,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除短信发送记录
+ * 根据 ids 删除 短信发送记录
  */
-export async function deleteByIds(
+export async function deleteByIdsSmsSendRecord(
   ids: SmsSendRecordId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -228,9 +228,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原短信发送记录
+ * 根据 ids 还原 短信发送记录
  */
-export async function revertByIds(
+export async function revertByIdsSmsSendRecord(
   ids: SmsSendRecordId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -254,9 +254,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除短信发送记录
+ * 根据 ids 彻底删除 短信发送记录
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsSmsSendRecord(
   ids: SmsSendRecordId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -302,11 +302,11 @@ export async function findAllSmsApp(
       sort,
     },
   }, opt);
-  const res = data.findAllSmsApp;
-  return res;
+  const sms_app_models = data.findAllSmsApp;
+  return sms_app_models;
 }
 
-export async function getSmsAppList() {
+export async function getListSmsApp() {
   const data = await findAllSmsApp(
     {
       is_enabled: [ 1 ],
@@ -328,7 +328,7 @@ export async function getSmsAppList() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelSmsSendRecord() {
   const {
     workerFn,
     workerStatus,
@@ -400,12 +400,12 @@ export function useExportExcel() {
   };
 }
 
-export function getPagePath() {
+export function getPagePathSmsSendRecord() {
   return "/submail/sms_send_record";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputSmsSendRecord() {
   const defaultInput: SmsSendRecordInput = {
     status: SmsSendRecordStatus.Success,
   };
