@@ -1,21 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   menuQueryField,
-} from "./Model";
-
-import {
-  findTree as findMenuTree,
-} from "@/views/base/menu/Api";
+} from "./Model.ts";
 
 async function setLblById(
   model?: MenuModel | null,
@@ -26,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputMenu(
   model?: MenuInput,
 ) {
   const input: MenuInput = {
@@ -56,9 +52,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找菜单列表
+ * 根据搜索条件查找 菜单 列表
  */
-export async function findAll(
+export async function findAllMenu(
   search?: MenuSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -91,7 +87,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个菜单
  */
-export async function findOne(
+export async function findOneMenu(
   search?: MenuSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -121,14 +117,14 @@ export type MenuModelTree = MenuModel & {
 }
 
 /**
- * 查找菜单树形列表
+ * 查找 菜单 树形列表
  */
-export async function findTree(
+export async function findTreeMenu(
   search?: MenuSearch,
   sort?: Sort[],
   opt?: GqlOpt,
 ) {
-  const res = await findAll(
+  const res = await findAllMenu(
     search,
     undefined,
     sort,
@@ -139,9 +135,9 @@ export async function findTree(
 }
 
 /**
- * 根据搜索条件查找菜单总数
+ * 根据搜索条件查找 菜单 总数
  */
-export async function findCount(
+export async function findCountMenu(
   search?: MenuSearch,
   opt?: GqlOpt,
 ) {
@@ -162,17 +158,14 @@ export async function findCount(
 }
 
 /**
- * 创建菜单
- * @param {MenuInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 菜单
  */
-export async function create(
+export async function createMenu(
   input: MenuInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<MenuId> {
-  const ids = await creates(
+  const ids = await createsMenu(
     [ input ],
     unique_type,
     opt,
@@ -182,14 +175,14 @@ export async function create(
 }
 
 /**
- * 批量创建菜单
+ * 批量创建 菜单
  */
-export async function creates(
+export async function createsMenu(
   inputs: MenuInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<MenuId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputMenu);
   const data: {
     createsMenu: Mutation["createsMenu"];
   } = await mutation({
@@ -208,14 +201,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改菜单
+ * 根据 id 修改 菜单
  */
-export async function updateById(
+export async function updateByIdMenu(
   id: MenuId,
   input: MenuInput,
   opt?: GqlOpt,
 ): Promise<MenuId> {
-  input = intoInput(input);
+  input = intoInputMenu(input);
   const data: {
     updateByIdMenu: Mutation["updateByIdMenu"];
   } = await mutation({
@@ -234,9 +227,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找菜单
+ * 根据 id 查找 菜单
  */
-export async function findById(
+export async function findByIdMenu(
   id?: MenuId,
   opt?: GqlOpt,
 ): Promise<MenuModel | undefined> {
@@ -263,9 +256,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找菜单
+ * 根据 ids 查找 菜单
  */
-export async function findByIds(
+export async function findByIdsMenu(
   ids: MenuId[],
   opt?: GqlOpt,
 ): Promise<MenuModel[]> {
@@ -300,9 +293,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除菜单
+ * 根据 ids 删除 菜单
  */
-export async function deleteByIds(
+export async function deleteByIdsMenu(
   ids: MenuId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -326,9 +319,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用菜单
+ * 根据 ids 启用或禁用 菜单
  */
-export async function enableByIds(
+export async function enableByIdsMenu(
   ids: MenuId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -354,9 +347,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁菜单
+ * 根据 ids 锁定或解锁 菜单
  */
-export async function lockByIds(
+export async function lockByIdsMenu(
   ids: MenuId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -382,9 +375,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原菜单
+ * 根据 ids 还原 菜单
  */
-export async function revertByIds(
+export async function revertByIdsMenu(
   ids: MenuId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -408,9 +401,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除菜单
+ * 根据 ids 彻底删除 菜单
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsMenu(
   ids: MenuId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -433,34 +426,7 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export async function findAllMenu(
-  search?: MenuSearch,
-  page?: PageInput,
-  sort?: Sort[],
-  opt?: GqlOpt,
-) {
-  const data: {
-    findAllMenu: MenuModel[];
-  } = await query({
-    query: /* GraphQL */ `
-      query($search: MenuSearch, $page: PageInput, $sort: [SortInput!]) {
-        findAllMenu(search: $search, page: $page, sort: $sort) {
-          id
-          lbl
-        }
-      }
-    `,
-    variables: {
-      search,
-      page,
-      sort,
-    },
-  }, opt);
-  const res = data.findAllMenu;
-  return res;
-}
-
-export async function getMenuList() {
+export async function getListMenu() {
   const data = await findAllMenu(
     undefined,
     undefined,
@@ -477,8 +443,8 @@ export async function getMenuList() {
   return data;
 }
 
-export async function getMenuTree() {
-  const data = await findMenuTree(
+export async function getTreeMenu() {
+  const data = await findTreeMenu(
     undefined,
     [
       {
@@ -507,9 +473,9 @@ export function useMenuTreeFilter(_value: string, model: MenuModel): boolean {
 }
 
 /**
- * 下载菜单导入模板
+ * 下载 菜单 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateMenu() {
   const {
     workerFn,
     workerStatus,
@@ -561,7 +527,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelMenu() {
   const {
     workerFn,
     workerStatus,
@@ -632,9 +598,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入菜单
+ * 批量导入 菜单
  */
-export async function importModels(
+export async function importModelsMenu(
   inputs: MenuInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -661,7 +627,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsMenu(
         inputs,
         UniqueType.Update,
         opt,
@@ -681,7 +647,7 @@ export async function importModels(
 /**
  * 查找 菜单 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByMenu(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -697,12 +663,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathMenu() {
   return "/base/menu";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputMenu() {
   const defaultInput: MenuInput = {
     is_locked: 0,
     is_enabled: 1,

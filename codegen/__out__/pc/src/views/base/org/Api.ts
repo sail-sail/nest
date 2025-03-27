@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   orgQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: OrgModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputOrg(
   model?: OrgInput,
 ) {
   const input: OrgInput = {
@@ -45,9 +45,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找组织列表
+ * 根据搜索条件查找 组织 列表
  */
-export async function findAll(
+export async function findAllOrg(
   search?: OrgSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -80,7 +80,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个组织
  */
-export async function findOne(
+export async function findOneOrg(
   search?: OrgSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -106,9 +106,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找组织总数
+ * 根据搜索条件查找 组织 总数
  */
-export async function findCount(
+export async function findCountOrg(
   search?: OrgSearch,
   opt?: GqlOpt,
 ) {
@@ -129,17 +129,14 @@ export async function findCount(
 }
 
 /**
- * 创建组织
- * @param {OrgInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 组织
  */
-export async function create(
+export async function createOrg(
   input: OrgInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OrgId> {
-  const ids = await creates(
+  const ids = await createsOrg(
     [ input ],
     unique_type,
     opt,
@@ -149,14 +146,14 @@ export async function create(
 }
 
 /**
- * 批量创建组织
+ * 批量创建 组织
  */
-export async function creates(
+export async function createsOrg(
   inputs: OrgInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<OrgId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputOrg);
   const data: {
     createsOrg: Mutation["createsOrg"];
   } = await mutation({
@@ -175,14 +172,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改组织
+ * 根据 id 修改 组织
  */
-export async function updateById(
+export async function updateByIdOrg(
   id: OrgId,
   input: OrgInput,
   opt?: GqlOpt,
 ): Promise<OrgId> {
-  input = intoInput(input);
+  input = intoInputOrg(input);
   const data: {
     updateByIdOrg: Mutation["updateByIdOrg"];
   } = await mutation({
@@ -201,9 +198,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找组织
+ * 根据 id 查找 组织
  */
-export async function findById(
+export async function findByIdOrg(
   id?: OrgId,
   opt?: GqlOpt,
 ): Promise<OrgModel | undefined> {
@@ -230,9 +227,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找组织
+ * 根据 ids 查找 组织
  */
-export async function findByIds(
+export async function findByIdsOrg(
   ids: OrgId[],
   opt?: GqlOpt,
 ): Promise<OrgModel[]> {
@@ -267,9 +264,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除组织
+ * 根据 ids 删除 组织
  */
-export async function deleteByIds(
+export async function deleteByIdsOrg(
   ids: OrgId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -293,9 +290,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用组织
+ * 根据 ids 启用或禁用 组织
  */
-export async function enableByIds(
+export async function enableByIdsOrg(
   ids: OrgId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -321,9 +318,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁组织
+ * 根据 ids 锁定或解锁 组织
  */
-export async function lockByIds(
+export async function lockByIdsOrg(
   ids: OrgId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -349,9 +346,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原组织
+ * 根据 ids 还原 组织
  */
-export async function revertByIds(
+export async function revertByIdsOrg(
   ids: OrgId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -375,9 +372,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除组织
+ * 根据 ids 彻底删除 组织
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsOrg(
   ids: OrgId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -401,9 +398,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载组织导入模板
+ * 下载 组织 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateOrg() {
   const {
     workerFn,
     workerStatus,
@@ -448,7 +445,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelOrg() {
   const {
     workerFn,
     workerStatus,
@@ -519,9 +516,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入组织
+ * 批量导入 组织
  */
-export async function importModels(
+export async function importModelsOrg(
   inputs: OrgInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -548,7 +545,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsOrg(
         inputs,
         UniqueType.Update,
         opt,
@@ -568,7 +565,7 @@ export async function importModels(
 /**
  * 查找 组织 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByOrg(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -584,12 +581,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathOrg() {
   return "/base/org";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputOrg() {
   const defaultInput: OrgInput = {
     is_locked: 0,
     is_enabled: 1,

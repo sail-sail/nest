@@ -1,21 +1,21 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   roleQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 import {
-  findTree as findMenuTree,
-} from "@/views/base/menu/Api";
+  findTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 import {
   getHomeUrlMap,
@@ -33,7 +33,7 @@ async function setLblById(
   model.home_url_lbl = homeUrlMap.find((item) => item.id === model.home_url)?.lbl || model.home_url;
 }
 
-export function intoInput(
+export function intoInputRole(
   model?: RoleInput,
 ) {
   const input: RoleInput = {
@@ -71,9 +71,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找角色列表
+ * 根据搜索条件查找 角色 列表
  */
-export async function findAll(
+export async function findAllRole(
   search?: RoleSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -106,7 +106,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个角色
  */
-export async function findOne(
+export async function findOneRole(
   search?: RoleSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -132,9 +132,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找角色总数
+ * 根据搜索条件查找 角色 总数
  */
-export async function findCount(
+export async function findCountRole(
   search?: RoleSearch,
   opt?: GqlOpt,
 ) {
@@ -155,17 +155,14 @@ export async function findCount(
 }
 
 /**
- * 创建角色
- * @param {RoleInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 角色
  */
-export async function create(
+export async function createRole(
   input: RoleInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<RoleId> {
-  const ids = await creates(
+  const ids = await createsRole(
     [ input ],
     unique_type,
     opt,
@@ -175,14 +172,14 @@ export async function create(
 }
 
 /**
- * 批量创建角色
+ * 批量创建 角色
  */
-export async function creates(
+export async function createsRole(
   inputs: RoleInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<RoleId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputRole);
   const data: {
     createsRole: Mutation["createsRole"];
   } = await mutation({
@@ -201,14 +198,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改角色
+ * 根据 id 修改 角色
  */
-export async function updateById(
+export async function updateByIdRole(
   id: RoleId,
   input: RoleInput,
   opt?: GqlOpt,
 ): Promise<RoleId> {
-  input = intoInput(input);
+  input = intoInputRole(input);
   const data: {
     updateByIdRole: Mutation["updateByIdRole"];
   } = await mutation({
@@ -227,9 +224,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找角色
+ * 根据 id 查找 角色
  */
-export async function findById(
+export async function findByIdRole(
   id?: RoleId,
   opt?: GqlOpt,
 ): Promise<RoleModel | undefined> {
@@ -256,9 +253,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找角色
+ * 根据 ids 查找 角色
  */
-export async function findByIds(
+export async function findByIdsRole(
   ids: RoleId[],
   opt?: GqlOpt,
 ): Promise<RoleModel[]> {
@@ -293,9 +290,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除角色
+ * 根据 ids 删除 角色
  */
-export async function deleteByIds(
+export async function deleteByIdsRole(
   ids: RoleId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -319,9 +316,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用角色
+ * 根据 ids 启用或禁用 角色
  */
-export async function enableByIds(
+export async function enableByIdsRole(
   ids: RoleId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -347,9 +344,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁角色
+ * 根据 ids 锁定或解锁 角色
  */
-export async function lockByIds(
+export async function lockByIdsRole(
   ids: RoleId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -375,9 +372,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原角色
+ * 根据 ids 还原 角色
  */
-export async function revertByIds(
+export async function revertByIdsRole(
   ids: RoleId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -401,9 +398,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除角色
+ * 根据 ids 彻底删除 角色
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsRole(
   ids: RoleId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -449,11 +446,11 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const res = data.findAllMenu;
-  return res;
+  const menu_models = data.findAllMenu;
+  return menu_models;
 }
 
-export async function getMenuList() {
+export async function getListMenu() {
   const data = await findAllMenu(
     {
       is_enabled: [ 1 ],
@@ -495,11 +492,11 @@ export async function findAllPermit(
       sort,
     },
   }, opt);
-  const res = data.findAllPermit;
-  return res;
+  const permit_models = data.findAllPermit;
+  return permit_models;
 }
 
-export async function getPermitList() {
+export async function getListPermit() {
   const data = await findAllPermit(
     undefined,
     undefined,
@@ -539,11 +536,11 @@ export async function findAllDataPermit(
       sort,
     },
   }, opt);
-  const res = data.findAllDataPermit;
-  return res;
+  const data_permit_models = data.findAllDataPermit;
+  return data_permit_models;
 }
 
-export async function getDataPermitList() {
+export async function getListDataPermit() {
   const data = await findAllDataPermit(
     undefined,
     undefined,
@@ -583,11 +580,11 @@ export async function findAllFieldPermit(
       sort,
     },
   }, opt);
-  const res = data.findAllFieldPermit;
-  return res;
+  const field_permit_models = data.findAllFieldPermit;
+  return field_permit_models;
 }
 
-export async function getFieldPermitList() {
+export async function getListFieldPermit() {
   const data = await findAllFieldPermit(
     undefined,
     undefined,
@@ -604,8 +601,8 @@ export async function getFieldPermitList() {
   return data;
 }
 
-export async function getMenuTree() {
-  const data = await findMenuTree(
+export async function getTreeMenu() {
+  const data = await findTreeMenu(
     undefined,
     [
       {
@@ -621,9 +618,9 @@ export async function getMenuTree() {
 }
 
 /**
- * 下载角色导入模板
+ * 下载 角色 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateRole() {
   const {
     workerFn,
     workerStatus,
@@ -689,7 +686,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelRole() {
   const {
     workerFn,
     workerStatus,
@@ -769,9 +766,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入角色
+ * 批量导入 角色
  */
-export async function importModels(
+export async function importModelsRole(
   inputs: RoleInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -798,7 +795,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsRole(
         inputs,
         UniqueType.Update,
         opt,
@@ -818,7 +815,7 @@ export async function importModels(
 /**
  * 查找 角色 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByRole(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -834,12 +831,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathRole() {
   return "/base/role";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputRole() {
   const defaultInput: RoleInput = {
     is_locked: 0,
     is_enabled: 1,

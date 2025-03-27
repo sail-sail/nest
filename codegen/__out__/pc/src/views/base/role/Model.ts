@@ -4,7 +4,7 @@ import type {
   RoleModel as RoleModelType,
   RoleSearch as RoleSearchType,
   RoleFieldComment as RoleFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
