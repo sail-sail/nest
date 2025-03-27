@@ -481,19 +481,19 @@
 import Detail from "./Detail.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-} from "./Api";
+  getPagePathOperationRecord,
+  findAllOperationRecord,
+  findCountOperationRecord,
+  revertByIdsOperationRecord,
+  deleteByIdsOperationRecord,
+  forceDeleteByIdsOperationRecord,
+} from "./Api.ts";
 
 defineOptions({
   name: "操作记录",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathOperationRecord();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 
@@ -912,7 +912,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllOperationRecord(
       search,
       {
         pgSize,
@@ -924,7 +924,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllOperationRecord(
       search,
       undefined,
       [
@@ -940,7 +940,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountOperationRecord(
     search2,
     opt,
   );
@@ -1076,7 +1076,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsOperationRecord(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1108,7 +1108,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsOperationRecord(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 操作记录 成功`);
@@ -1140,7 +1140,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsOperationRecord(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);

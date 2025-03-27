@@ -163,8 +163,8 @@ import type {
 } from '@/typings/types';
 
 import {
-  findOne,
-} from './Api';
+  findOneTenant,
+} from "./Api.ts";
 
 import {
   setTenantAdminPwd,
@@ -327,7 +327,7 @@ async function onRefresh() {
   const [
     data,
   ] = await Promise.all([
-    await findOne({
+    await findOneTenant({
       id,
       is_deleted,
     }),

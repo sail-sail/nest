@@ -260,11 +260,11 @@ import type {
 } from "vue";
 
 import {
-  findOne,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  findOneBackgroundTask,
+  getDefaultInputBackgroundTask,
+  getPagePathBackgroundTask,
+  intoInputBackgroundTask,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -275,7 +275,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathBackgroundTask();
 
 const permitStore = usePermitStore();
 
@@ -364,7 +364,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneBackgroundTask;
 
 /** 打开对话框 */
 async function showDialog(
@@ -379,7 +379,7 @@ async function showDialog(
       ids?: BackgroundTaskId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneBackgroundTask;
     action: DialogAction;
   },
 ) {
@@ -406,7 +406,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneBackgroundTask;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -434,7 +434,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputBackgroundTask(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -508,7 +508,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputBackgroundTask(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -539,7 +539,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputBackgroundTask({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
