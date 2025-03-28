@@ -81,8 +81,9 @@ pub async fn code2session(
   let appid = wx_app_model.appid;
   let appsecret = wx_app_model.appsecret;
   let js_code = code;
+  let tenant_id = wx_app_model.tenant_id;
   
-  let base_url = "https://api.weixin.qq.com/sns/jscode2session?".to_string();
+  let base_url = "https://api.weixin.qq.com/sns/jscode2session?";
   
   let mut query_string = String::new();
   query_string.push_str(&format!("appid={}&", urlencoding::encode(&appid)));
@@ -145,7 +146,7 @@ pub async fn code2session(
     ).await?;
     update_tenant_by_id_wx_usr(
       wx_usr_id.clone(),
-      wx_app_model.tenant_id.clone(),
+      tenant_id.clone(),
       options.clone(),
     ).await?;
     wx_usr_model = find_by_id_wx_usr(
@@ -157,10 +158,10 @@ pub async fn code2session(
     wx_usr_model,
   ).await?;
   
-  if wx_usr_model.tenant_id != wx_app_model.tenant_id {
+  if wx_usr_model.tenant_id != tenant_id {
     update_tenant_by_id_wx_usr(
       wx_usr_model.id.clone(),
-      wx_app_model.tenant_id.clone(),
+      tenant_id.clone(),
       options.clone(),
     ).await?;
   }
@@ -192,13 +193,13 @@ pub async fn code2session(
     ).await?;
     update_tenant_by_id_usr(
       usr_id.clone(),
-      wx_app_model.tenant_id.clone(),
+      tenant_id.clone(),
       options.clone(),
     ).await?;
     update_by_id_wx_usr(
       wx_usr_model.id.clone(),
       WxUsrInput {
-        usr_id: Some(usr_id),
+        usr_id: Some(usr_id.clone()),
         ..Default::default()
       },
       options.clone(),
@@ -211,9 +212,12 @@ pub async fn code2session(
     ).await?;
   }
   
+  let usr_id = wx_usr_model.usr_id;
+  let wx_usr_id = wx_usr_model.id;
+  
   let usr_model = validate_option_usr(
     find_by_id_usr(
-      wx_usr_model.usr_id.clone(),
+      usr_id.clone(),
       options.clone(),
     ).await?,
   ).await?;
@@ -232,19 +236,19 @@ pub async fn code2session(
   let exp = now.and_utc().timestamp_millis() / 1000 + server_tokentimeout;
   
   let authorization = get_token_by_auth_model(&AuthModel {
-    id: wx_usr_model.usr_id.clone(),
-    wx_usr_id: Some(wx_usr_model.id.clone().into()),
+    id: usr_id.clone(),
+    wx_usr_id: Some(wx_usr_id),
     wxo_usr_id: None,
-    tenant_id: wx_app_model.tenant_id.clone(),
+    tenant_id: tenant_id.clone(),
     org_id: org_id.clone(),
     lang: lang.clone(),
     exp,
   })?;
   
   Ok(LoginModel {
-    usr_id: wx_usr_model.usr_id,
+    usr_id,
     username,
-    tenant_id: wx_app_model.tenant_id,
+    tenant_id,
     org_id,
     authorization,
     lang: lang.unwrap_or_else(|| "zh-CN".to_owned()),
