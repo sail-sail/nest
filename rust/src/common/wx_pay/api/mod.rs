@@ -14,9 +14,9 @@ pub enum ReqMethod {
 }
 impl ReqMethod {
   pub fn as_str(&self) -> &str {
-  match &self {
-    &ReqMethod::Get => "GET",
-    &ReqMethod::Post => "POST",
-  }
+    match self {
+      ReqMethod::Get => "GET",
+      ReqMethod::Post => "POST",
+    }
   }
 }

@@ -132,7 +132,7 @@ pub fn decode_wx_pay(wx_pay_apiv3: &str, params: WxPayNotify) -> Result<WxPayRes
   let auth_tag = &t_ciphertext_base[cipherdata_length..];
 
   let mut ciphertext = Vec::from(cipherdata);
-  ciphertext.extend_from_slice(&auth_tag);
+  ciphertext.extend_from_slice(auth_tag);
 
   // 注： AEAD_AES_256_GCM算法的接口细节，请参考rfc5116。微信支付使用的密钥key长度为32个字节，
   // 随机串nonce长度12个字节，associated_data长度小于16个字节并可能为空字符串。
@@ -254,7 +254,7 @@ pub fn decode_wx_refund(
   let auth_tag = &t_ciphertext_base[cipherdata_length..];
 
   let mut ciphertext = Vec::from(cipherdata);
-  ciphertext.extend_from_slice(&auth_tag);
+  ciphertext.extend_from_slice(auth_tag);
 
   // 注： AEAD_AES_256_GCM算法的接口细节，请参考rfc5116。微信支付使用的密钥key长度为32个字节，
   // 随机串nonce长度12个字节，associated_data长度小于16个字节并可能为空字符串。
@@ -272,7 +272,7 @@ pub fn decode_wx_refund(
   Ok(data)
 }
 
-fn get_slice_arr<'a>(str_data: String) -> Box<[u8]> {
+fn get_slice_arr(str_data: String) -> Box<[u8]> {
   let arr = match str_data.len() {
     1 => {
       let mut a = [0u8; 1];

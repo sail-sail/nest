@@ -7,6 +7,7 @@ use serde_with::skip_serializing_none;
 //
 
 /// 【交易类型】 交易类型，枚举值：
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq)]
 pub enum TradeType {
   #[default]
@@ -25,6 +26,7 @@ pub enum TradeType {
 }
 
 /// 【交易状态】 交易状态，枚举值：
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq)]
 pub enum TradeState {
   #[default]
@@ -360,6 +362,7 @@ pub struct RefundDetail {
   pub amount: RefundAmount,
 }
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq, Eq)]
 pub enum RefundStatus {
   /// 退款成功

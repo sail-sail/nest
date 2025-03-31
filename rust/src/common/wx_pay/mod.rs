@@ -8,5 +8,5 @@ pub use utils::*;
 
 pub mod decode;
 
-mod wx_pay;
-pub use wx_pay::*;
+mod wxpay;
+pub use wxpay::*;
