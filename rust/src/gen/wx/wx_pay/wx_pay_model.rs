@@ -851,6 +851,7 @@ pub fn check_sort_wx_pay(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_wx_pay() -> String {
   "/wx/wx_pay".to_owned()
 }
