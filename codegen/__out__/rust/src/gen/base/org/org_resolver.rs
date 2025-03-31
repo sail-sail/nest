@@ -10,6 +10,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
 use crate::src::base::permit::permit_service::use_permit;
 
 use super::org_model::*;
