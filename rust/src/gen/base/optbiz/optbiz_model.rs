@@ -263,10 +263,10 @@ pub struct OptbizSearch {
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 键
-  #[graphql(skip)]
+  #[graphql(name = "ky")]
   pub ky: Option<String>,
   /// 键
-  #[graphql(skip)]
+  #[graphql(name = "ky_like")]
   pub ky_like: Option<String>,
   /// 值
   #[graphql(name = "val")]
