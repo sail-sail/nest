@@ -122,6 +122,9 @@ input OptbizSearch {
   "名称"
   lbl: String
   lbl_like: String
+  "键"
+  ky: String
+  ky_like: String
   "值"
   val: String
   val_like: String
