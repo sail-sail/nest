@@ -817,6 +817,7 @@ pub fn check_sort_dictbiz(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_dictbiz() -> String {
   "/base/dictbiz".to_owned()
 }

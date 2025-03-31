@@ -659,6 +659,7 @@ pub fn check_sort_login_log(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_login_log() -> String {
   "/base/login_log".to_owned()
 }
