@@ -602,6 +602,7 @@ pub fn check_sort_lang(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_lang() -> String {
   "/base/lang".to_owned()
 }

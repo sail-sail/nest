@@ -651,6 +651,7 @@ pub fn check_sort_dict_detail(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_dict_detail() -> String {
   "/base/dict_detail".to_owned()
 }
