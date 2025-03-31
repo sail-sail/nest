@@ -15,7 +15,7 @@ where
   U: Serialize + DeserializeOwned,
 {
   let headers = get_headers(wx_pay, pay_req, None::<&u8>)?;
-  let url = WX_BASE_URL.to_string() + &pay_req.path;
+  let url = WX_BASE_URL.to_string() + pay_req.path.as_str();
   let client = reqwest::Client::new();
   let data: U = client
     .get(url)
@@ -39,7 +39,7 @@ where
   let headers = get_headers(wx_pay, pay_req, Some(body))?;
   // let client = reqwest::Client::new();
   let client = reqwest_client();
-  let url = WX_BASE_URL.to_string() + &pay_req.path;
+  let url = WX_BASE_URL.to_string() + pay_req.path.as_str();
   let data: U = client
     .post(url)
     .headers(headers)

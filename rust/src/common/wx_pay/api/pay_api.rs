@@ -23,6 +23,7 @@ pub(crate) enum PayApi<'a> {
 
 impl PayApi<'_> {
   pub(crate) fn get_pay_path(&self, wx_pay: &WxPay) -> PayReq {
+    let mchid = wx_pay.mchid;
     match &self {
         PayApi::Jsapi => PayReq {
           method: ReqMethod::Post,
@@ -30,21 +31,24 @@ impl PayApi<'_> {
         },
         PayApi::GetTransactionsById { transaction_id } => PayReq {
           method: ReqMethod::Get,
-          path: "/v3/pay/transactions/id/".to_string()
-            + transaction_id
-            + "?mchid="
-            + wx_pay.mchid,
+          // path: "/v3/pay/transactions/id/".to_string()
+          //   + transaction_id
+          //   + "?mchid="
+          //   + wx_pay.mchid,
+          path: format!("/v3/pay/transactions/id/{transaction_id}?mchid={mchid}"),
         },
         PayApi::GetTransactionsByOutTradeNo { out_trade_no } => PayReq {
           method: ReqMethod::Get,
-          path: "/v3/pay/transactions/out-trade-no/".to_string()
-            + out_trade_no
-            + "?mchid="
-            + wx_pay.mchid,
+          // path: "/v3/pay/transactions/out-trade-no/".to_string()
+          //   + out_trade_no
+          //   + "?mchid="
+          //   + wx_pay.mchid,
+          path: format!("/v3/pay/transactions/out-trade-no/{out_trade_no}?mchid={mchid}"),
         },
         PayApi::Close { out_trade_no } => PayReq {
           method: ReqMethod::Post,
-          path: "/v3/pay/transactions/out-trade-no/".to_string() + out_trade_no + "/close",
+          // path: "/v3/pay/transactions/out-trade-no/".to_string() + out_trade_no + "/close",
+          path: format!("/v3/pay/transactions/out-trade-no/{out_trade_no}/close"),
         },
         PayApi::Refund => PayReq {
           method: ReqMethod::Post,
@@ -52,7 +56,8 @@ impl PayApi<'_> {
         },
         PayApi::GetRefund { out_refund_no } => PayReq {
           method: ReqMethod::Get,
-          path: "/v3/refund/domestic/refunds/".to_string() + out_refund_no,
+          // path: "/v3/refund/domestic/refunds/".to_string() + out_refund_no,
+          path: format!("/v3/refund/domestic/refunds/{out_refund_no}"),
         },
     }
   }
