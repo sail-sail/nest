@@ -173,14 +173,10 @@ pub async fn transactions_jsapi(
   } else {
     Some(wx_pay_model.payer_client_ip)
   };
-  let scene_info: Option<SceneInfo> = if let Some(payer_client_ip) = payer_client_ip {
-    Some(SceneInfo {
-      payer_client_ip: Some(payer_client_ip),
-      ..Default::default()
-    })
-  } else {
-    None
-  };
+  let scene_info: Option<SceneInfo> = payer_client_ip.map(|payer_client_ip| SceneInfo {
+    payer_client_ip: Some(payer_client_ip),
+    ..Default::default()
+  });
   let notify_url: String = wx_pay_model.notify_url;
   
   if notify_url.is_empty() {
