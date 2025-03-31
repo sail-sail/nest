@@ -1214,6 +1214,7 @@ pub fn check_sort_pay_transactions_jsapi(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_pay_transactions_jsapi() -> String {
   "/wx/pay_transactions_jsapi".to_owned()
 }

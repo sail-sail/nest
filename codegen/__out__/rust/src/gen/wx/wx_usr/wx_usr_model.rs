@@ -900,6 +900,7 @@ pub fn check_sort_wx_usr(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_wx_usr() -> String {
   "/wx/wx_usr".to_owned()
 }

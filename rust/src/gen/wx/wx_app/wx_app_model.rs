@@ -706,6 +706,7 @@ pub fn check_sort_wx_app(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_wx_app() -> String {
   "/wx/wx_app".to_owned()
 }

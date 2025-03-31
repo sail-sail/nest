@@ -1062,6 +1062,7 @@ pub fn check_sort_wxo_app(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_wxo_app() -> String {
   "/wx/wxo_app".to_owned()
 }
