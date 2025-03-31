@@ -10,6 +10,7 @@ use super::pay_transactions_jsapi_model::{
   TransactionsJsapiActionEnum,
 };
 use super::pay_transactions_jsapi_dao::transactions_jsapi;
+use rust_decimal::Decimal;
 
 /// 微信支付测试, requestPayment 所需参数
 pub async fn get_test_pay_opt(
@@ -21,7 +22,7 @@ pub async fn get_test_pay_opt(
     TransactionsJsapiInput {
       appid,
       description: "测试支付".to_string(),
-      amount: 1,
+      amount: Decimal::new(1, 2),
       attach2: json!({
         "action": TransactionsJsapiActionEnum::Test,  
         "playload": "测试"
