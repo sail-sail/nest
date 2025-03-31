@@ -40,6 +40,11 @@ use super::pay_transactions_jsapi_model::TransactionsJsapiInput;
 use crate::common::oss::oss_dao::get_object;
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 
+use crate::common::exceptions::service_exception::ServiceException;
+
+use rust_decimal::Decimal;
+use num_traits::ToPrimitive;
+
 /// 生成商户订单号 out_trade_no
 fn get_out_trade_no() -> String {
   get_short_uuid()
@@ -55,25 +60,9 @@ pub async fn transactions_jsapi(
   options: Option<Options>,
 ) -> Result<RequestPaymentOptions> {
   
-  let appid = transactions_jsapi_input.appid;
+  let mut appid = transactions_jsapi_input.appid;
   let description = transactions_jsapi_input.description;
   let amount = transactions_jsapi_input.amount;
-  
-  // 微信支付设置
-  let wx_pay_model = validate_option_wx_pay(
-    find_one_wx_pay(
-      Some(WxPaySearch {
-        appid: Some(appid),
-        ..Default::default()
-      }),
-      None,
-      options.clone(),
-    ).await?
-  ).await?;
-  
-  validate_is_enabled_wx_pay(
-    &wx_pay_model,
-  ).await?;
   
   // 当前登录用户有可能尚未绑定微信
   let auth_model = get_auth_model_err()?;
@@ -93,6 +82,9 @@ pub async fn transactions_jsapi(
     ).await?;
     openid = Some(wx_usr_model.openid);
     tenant_id = Some(wx_usr_model.tenant_id);
+    if appid.is_empty() {
+      appid = wx_usr_model.appid;
+    }
   } else if let Some(wxo_usr_id) = wxo_usr_id {
     let wx_usr_model = validate_option_wxo_usr(
       find_by_id_wxo_usr(
@@ -102,17 +94,51 @@ pub async fn transactions_jsapi(
     ).await?;
     openid = Some(wx_usr_model.openid);
     tenant_id = Some(wx_usr_model.tenant_id);
+    if appid.is_empty() {
+      appid = wx_usr_model.appid;
+    }
   }
   
+  if appid.is_empty() {
+    return Err(eyre!(ServiceException {
+      message: "appid 不能为空".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
+  }
   if openid.is_none() || openid.as_ref().unwrap().is_empty() {
-    return Err(eyre!("openid 不能为空"));
+    return Err(eyre!(ServiceException {
+      message: "openid 不能为空".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   }
   let openid = openid.unwrap();
   
   if tenant_id.is_none() || tenant_id.as_ref().unwrap().is_empty() {
-    return Err(eyre!("tenant_id 不能为空"));
+    return Err(eyre!(ServiceException {
+      message: "tenant_id 不能为空".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   }
   let tenant_id = tenant_id.unwrap();
+  
+  // 微信支付设置
+  let wx_pay_model = validate_option_wx_pay(
+    find_one_wx_pay(
+      Some(WxPaySearch {
+        appid: Some(appid),
+        ..Default::default()
+      }),
+      None,
+      options.clone(),
+    ).await?
+  ).await?;
+  
+  validate_is_enabled_wx_pay(
+    &wx_pay_model,
+  ).await?;
   
   let private_key_str: Option<String> = {
     if wx_pay_model.private_key.is_empty() {
@@ -129,7 +155,11 @@ pub async fn transactions_jsapi(
     }
   };
   if private_key_str.is_none() || private_key_str.as_ref().unwrap().is_empty() {
-    return Err(eyre!("私钥不存在"));
+    return Err(eyre!(ServiceException {
+      message: "私钥不存在".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   }
   let private_key_str = private_key_str.unwrap();
   
@@ -154,7 +184,11 @@ pub async fn transactions_jsapi(
   let notify_url: String = wx_pay_model.notify_url;
   
   if notify_url.is_empty() {
-    return Err(eyre!("notify_url 不能为空"));
+    return Err(eyre!(ServiceException {
+      message: "notify_url 不能为空".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
   }
   
   let wxpay = WxPay {
@@ -167,6 +201,23 @@ pub async fn transactions_jsapi(
   };
   
   let out_trade_no = get_out_trade_no();
+  
+  let amount = (amount * Decimal::from(100))
+    .round_dp(0)
+    .to_u64()
+    .ok_or_else(|| eyre!(ServiceException {
+      message: "金额计算错误".to_string(),
+      trace: true,
+      ..Default::default()
+    }))?;
+  
+  if amount > u32::MAX as u64 {
+    return Err(eyre!(ServiceException {
+      message: "金额超出范围".to_string(),
+      trace: true,
+      ..Default::default()
+    }));
+  }
   
   let jsapi = Jsapi {
     description: description.clone(),
@@ -200,9 +251,6 @@ pub async fn transactions_jsapi(
     Some("N".to_string())
   };
   
-  if amount > u32::MAX as u64 {
-    return Err(eyre!("金额超出范围"));
-  }
   let amount = amount as u32;
   
   // 创建支付交易
@@ -214,7 +262,6 @@ pub async fn transactions_jsapi(
       out_trade_no: Some(out_trade_no),
       transaction_id: Some("".to_string()),
       trade_state: Some(PayTransactionsJsapiTradeState::Notpay),
-      trade_state_desc: Some("未支付".to_string()),
       time_expire: transactions_jsapi_input.time_expire.clone(),
       attach: transactions_jsapi_input.attach.clone(),
       attach2: Some(transactions_jsapi_input.attach2),
