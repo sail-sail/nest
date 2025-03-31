@@ -151,7 +151,7 @@ pub async fn wx_pay_notify(
       trade_state_desc: Some(trade_state_desc.clone()),
       bank_type: Some(bank_type),
       attach: Some(attach),
-      success_time: Some(success_time.clone()),
+      success_time: Some(success_time),
       total: Some(total),
       payer_total: Some(payer_total),
       currency,
