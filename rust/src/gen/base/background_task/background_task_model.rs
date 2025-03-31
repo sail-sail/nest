@@ -945,6 +945,7 @@ pub fn check_sort_background_task(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_background_task() -> String {
   "/base/background_task".to_owned()
 }

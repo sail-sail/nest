@@ -982,6 +982,7 @@ pub fn check_sort_role(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_role() -> String {
   "/base/role".to_owned()
 }
