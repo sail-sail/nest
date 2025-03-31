@@ -10,6 +10,7 @@ use super::WxPay;
 
 use crate::common::util::http::client as reqwest_client;
 
+#[allow(clippy::needless_lifetimes)]
 pub(crate) async fn get<'a, U>(wx_pay: &WxPay<'a>, pay_req: &PayReq) -> Result<U>
 where
   U: Serialize + DeserializeOwned,
@@ -27,6 +28,7 @@ where
   Ok(data)
 }
 
+#[allow(clippy::needless_lifetimes)]
 pub(crate) async fn post<'a, T, U>(
   wx_pay: &WxPay<'a>,
   pay_req: &PayReq,

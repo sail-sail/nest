@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use super::ReqMethod;
-use super::super::wx_pay::WxPay;
+use super::super::wxpay::WxPay;
 
 /// 支付的请求内容
 #[derive(Debug)]

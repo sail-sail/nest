@@ -29,11 +29,11 @@ pub struct WxPay<'a> {
   pub notify_url: &'a str,
 }
 
-impl<'a> WxPay<'a> {
+impl WxPay<'_> {
   /// jsapi 支付，返回客户端的支付参数信息
   pub async fn jsapi(&self, body: &Jsapi) -> Result<WxPayData> {
     let pay_api = PayApi::Jsapi;
-    let pay_req = pay_api.get_pay_path(&self);
+    let pay_req = pay_api.get_pay_path(self);
 
     let jsapi_params = JsapiParams {
       appid: self.appid.to_string(),
@@ -46,7 +46,7 @@ impl<'a> WxPay<'a> {
       time_expire: body.time_expire.clone(),
       attach: body.attach.clone(),
       goods_tag: body.goods_tag.clone(),
-      support_fapiao: body.support_fapiao.clone(),
+      support_fapiao: body.support_fapiao,
       detail: body.detail.clone(),
       scene_info: body.scene_info.clone(),
       settle_info: body.settle_info.clone(),
@@ -59,7 +59,7 @@ impl<'a> WxPay<'a> {
       pub message: Option<String>,
     }
     // let pre_data: JsapiRes = post(&self, &pay_req, &jsapi_params).await?;
-    let pre_data: serde_json::Value = post(&self, &pay_req, &jsapi_params).await?;
+    let pre_data: serde_json::Value = post(self, &pay_req, &jsapi_params).await?;
     tracing::info!(
       "{req_id} pre_data: {pre_data:?}",
       req_id = get_req_id(),
@@ -89,7 +89,7 @@ impl<'a> WxPay<'a> {
     let now_time = get_timestamp();
     // 获取签名
     let pay_sign = sha_rsa_sign(
-      &self.private_key,
+      self.private_key,
       self.appid.to_string()
         + "\n"
         + now_time.to_string().as_str()
@@ -115,8 +115,8 @@ impl<'a> WxPay<'a> {
     transaction_id: &str,
   ) -> Result<TransactionDetail> {
     let pay_api = PayApi::GetTransactionsById { transaction_id };
-    let pay_req = pay_api.get_pay_path(&self);
-    let data: TransactionDetail = get(&self, &pay_req).await?;
+    let pay_req = pay_api.get_pay_path(self);
+    let data: TransactionDetail = get(self, &pay_req).await?;
     Ok(data)
   }
 
@@ -126,8 +126,8 @@ impl<'a> WxPay<'a> {
     out_trade_no: &str,
   ) -> Result<TransactionDetail> {
     let pay_api = PayApi::GetTransactionsByOutTradeNo { out_trade_no };
-    let pay_req = pay_api.get_pay_path(&self);
-    let data: TransactionDetail = get(&self, &pay_req).await?;
+    let pay_req = pay_api.get_pay_path(self);
+    let data: TransactionDetail = get(self, &pay_req).await?;
     Ok(data)
   }
 
@@ -136,7 +136,7 @@ impl<'a> WxPay<'a> {
   /// 系统下单后，用户支付超时，系统退出不再受理，避免用户继续，请调用关单接口。
   pub async fn close(&self, out_trade_no: &str) -> Result<()> {
     let pay_api = PayApi::Close { out_trade_no };
-    let pay_req = pay_api.get_pay_path(&self);
+    let pay_req = pay_api.get_pay_path(self);
     #[derive(Deserialize, Serialize)]
     struct Mchid {
       mchid: String,
@@ -144,23 +144,23 @@ impl<'a> WxPay<'a> {
     let body = Mchid {
       mchid: self.mchid.to_string(),
     };
-    let _: () = post(&self, &pay_req, &body).await?;
+    let _: () = post(self, &pay_req, &body).await?;
     Ok(())
   }
 
   /// 退款申请
   pub async fn refund(&self, body: &Refund) -> Result<RefundDetail> {
     let pay_api = PayApi::Refund;
-    let pay_req = pay_api.get_pay_path(&self);
-    let data: RefundDetail = post(&self, &pay_req, body).await?;
+    let pay_req = pay_api.get_pay_path(self);
+    let data: RefundDetail = post(self, &pay_req, body).await?;
     Ok(data)
   }
 
   /// 查寻单笔退款
   pub async fn get_refund(&self, out_refund_no: &str) -> Result<RefundDetail> {
     let pay_api = PayApi::GetRefund { out_refund_no };
-    let pay_req = pay_api.get_pay_path(&self);
-    let data: RefundDetail = get(&self, &pay_req).await?;
+    let pay_req = pay_api.get_pay_path(self);
+    let data: RefundDetail = get(self, &pay_req).await?;
     Ok(data)
   }
 }
