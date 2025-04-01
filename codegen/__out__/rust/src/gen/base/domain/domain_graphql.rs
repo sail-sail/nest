@@ -35,7 +35,7 @@ impl DomainGenQuery {
       .with_auth()?
       .build()
       .scope({
-        domain_resolver::find_all(
+        domain_resolver::find_all_domain(
           search,
           page,
           sort,
@@ -54,7 +54,7 @@ impl DomainGenQuery {
       .with_auth()?
       .build()
       .scope({
-        domain_resolver::find_count(
+        domain_resolver::find_count_domain(
           search,
           None,
         )
@@ -72,7 +72,7 @@ impl DomainGenQuery {
       .with_auth()?
       .build()
       .scope({
-        domain_resolver::find_one(
+        domain_resolver::find_one_domain(
           search,
           sort,
           None,
@@ -90,7 +90,7 @@ impl DomainGenQuery {
       .with_auth()?
       .build()
       .scope({
-        domain_resolver::find_by_id(
+        domain_resolver::find_by_id_domain(
           id,
           None,
         )
@@ -107,7 +107,7 @@ impl DomainGenQuery {
       .with_auth()?
       .build()
       .scope({
-        domain_resolver::find_by_ids(
+        domain_resolver::find_by_ids_domain(
           ids,
           None,
         )
@@ -125,7 +125,7 @@ impl DomainGenQuery {
       .with_auth()?
       .build()
       .scope({
-        domain_resolver::get_is_enabled_by_id(
+        domain_resolver::get_is_enabled_by_id_domain(
           id,
           None,
         )
@@ -144,7 +144,7 @@ impl DomainGenQuery {
       .with_auth()?
       .build()
       .scope({
-        domain_resolver::get_is_locked_by_id(
+        domain_resolver::get_is_locked_by_id_domain(
           id,
           None,
         )
@@ -159,7 +159,7 @@ impl DomainGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        domain_resolver::get_field_comments(
+        domain_resolver::get_field_comments_domain(
           None,
         )
       }).await
@@ -174,7 +174,7 @@ impl DomainGenQuery {
       .with_auth()?
       .build()
       .scope({
-        domain_resolver::find_last_order_by(
+        domain_resolver::find_last_order_by_domain(
           None,
         )
       }).await
@@ -205,7 +205,7 @@ impl DomainGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        domain_resolver::creates(
+        domain_resolver::creates_domain(
           inputs,
           options.into(),
         )
@@ -224,7 +224,7 @@ impl DomainGenMutation {
       .with_tran()
       .build()
       .scope({
-        domain_resolver::update_by_id(
+        domain_resolver::update_by_id_domain(
           id,
           input,
           None,
@@ -243,7 +243,7 @@ impl DomainGenMutation {
       .with_tran()
       .build()
       .scope({
-        domain_resolver::delete_by_ids(
+        domain_resolver::delete_by_ids_domain(
           ids,
           None,
         )
@@ -261,7 +261,7 @@ impl DomainGenMutation {
       .with_tran()
       .build()
       .scope({
-        domain_resolver::default_by_id(
+        domain_resolver::default_by_id_domain(
           id,
           None,
         )
@@ -280,7 +280,7 @@ impl DomainGenMutation {
       .with_tran()
       .build()
       .scope({
-        domain_resolver::enable_by_ids(
+        domain_resolver::enable_by_ids_domain(
           ids,
           is_enabled,
           None,
@@ -300,7 +300,7 @@ impl DomainGenMutation {
       .with_tran()
       .build()
       .scope({
-        domain_resolver::lock_by_ids(
+        domain_resolver::lock_by_ids_domain(
           ids,
           is_locked,
           None,
@@ -319,7 +319,7 @@ impl DomainGenMutation {
       .with_tran()
       .build()
       .scope({
-        domain_resolver::revert_by_ids(
+        domain_resolver::revert_by_ids_domain(
           ids,
           None,
         )
@@ -337,7 +337,7 @@ impl DomainGenMutation {
       .with_tran()
       .build()
       .scope({
-        domain_resolver::force_delete_by_ids(
+        domain_resolver::force_delete_by_ids_domain(
           ids,
           None,
         )

@@ -218,7 +218,7 @@ for (let i = 0; i < columns.length; i++) {
         >
           <CustomTreeSelect
             v-model="<#=column_name#>_search"
-            :method="get<#=Foreign_Table_Up#>Tree"
+            :method="getTree<#=Foreign_Table_Up#>"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
@@ -262,7 +262,7 @@ for (let i = 0; i < columns.length; i++) {
         >
           <CustomTreeSelect
             v-model="<#=column_name#>_search"
-            :method="get<#=Foreign_Table_Up#>Tree"
+            :method="getTree<#=Foreign_Table_Up#>"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
@@ -302,7 +302,7 @@ for (let i = 0; i < columns.length; i++) {
         >
           <CustomSelect
             v-model="<#=column_name#>_search"
-            :method="get<#=Foreign_Table_Up#>List"
+            :method="getList<#=Foreign_Table_Up#>"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
@@ -374,7 +374,7 @@ for (let i = 0; i < columns.length; i++) {
         >
           <CustomSelect
             v-model="<#=column_name#>_search"
-            :method="get<#=Foreign_Table_Up#>List"
+            :method="getList<#=Foreign_Table_Up#>"
             :options-map="((item: <#=Foreign_Table_Up#>Model) => {
               return {
                 label: item.<#=foreignKey.lbl#>,
@@ -1275,7 +1275,7 @@ for (let i = 0; i < columns.length; i++) {
     </template>
     
     <template v-else><#
-      if (opts.noRevert !== true && hasIsDeleted) {
+      if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
       #>
       
       <el-button
@@ -1298,7 +1298,7 @@ for (let i = 0; i < columns.length; i++) {
       </el-button><#
       }
       #><#
-      if (opts.noForceDelete !== true && hasIsDeleted) {
+      if (opts.noDelete !== true && opts.noForceDelete !== true && hasIsDeleted) {
       #>
       
       <el-button
@@ -1792,7 +1792,7 @@ for (let i = 0; i < columns.length; i++) {
                   #> && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  @change="updateById(
+                  @change="updateById<#=Table_Up#>(
                     row.id,
                     {<#
                       if (hasVersion) {
@@ -1964,7 +1964,11 @@ for (let i = 0; i < columns.length; i++) {
               if (column.isCountyLbl) {
               #>
               <template #default="{ row }">
-                <#=prefix#>{{ row.<#=province_lbl_column.COLUMN_NAME#> }} / {{ row.<#=city_lbl_column.COLUMN_NAME#> }} / {{ row.<#=county_lbl_column.COLUMN_NAME#> }}
+                <div
+                  v-if="row.<#=province_lbl_column.COLUMN_NAME#> && row.<#=city_lbl_column.COLUMN_NAME#> && row.<#=county_lbl_column.COLUMN_NAME#>"
+                >
+                  <#=prefix#>{{ row.<#=province_lbl_column.COLUMN_NAME#> }} / {{ row.<#=city_lbl_column.COLUMN_NAME#> }} / {{ row.<#=county_lbl_column.COLUMN_NAME#> }}
+                </div>
               </template><#
               } else if (foreignTabs.some((item) => item.linkType === "link" || item.linkType === undefined)) {
               #>
@@ -2351,42 +2355,42 @@ import AuditListDialog from "./AuditListDialog.vue";<#
 #>
 
 import {
-  getPagePath,
-  findAll,
-  findCount,<#
-    if (opts.noRevert !== true && hasIsDeleted) {
+  getPagePath<#=Table_Up#>,
+  findAll<#=Table_Up#>,
+  findCount<#=Table_Up#>,<#
+    if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
   #>
-  revertByIds,<#
+  revertByIds<#=Table_Up#>,<#
     }
   #><#
     if (opts.noDelete !== true) {
   #>
-  deleteByIds,<#
+  deleteByIds<#=Table_Up#>,<#
     }
   #><#
-    if (opts.noForceDelete !== true && hasIsDeleted) {
+    if (opts.noDelete !== true && opts.noForceDelete !== true && hasIsDeleted) {
   #>
-  forceDeleteByIds,<#
+  forceDeleteByIds<#=Table_Up#>,<#
     }
   #><#
     if (hasDefault && opts.noEdit !== true) {
   #>
-  defaultById,<#
+  defaultById<#=Table_Up#>,<#
     }
   #><#
     if (hasEnabled && opts.noEdit !== true) {
   #>
-  enableByIds,<#
+  enableByIds<#=Table_Up#>,<#
     }
   #><#
     if (hasLocked && opts.noEdit !== true) {
   #>
-  lockByIds,<#
+  lockByIds<#=Table_Up#>,<#
     }
   #><#
     if (opts.noExport !== true) {
   #>
-  useExportExcel,<#
+  useExportExcel<#=Table_Up#>,<#
     }
   #><#
     if (
@@ -2394,21 +2398,21 @@ import {
       (hasIsSwitch || hasAtt || hasForeignKeyShowTypeDialog || hasOrderBy)
     ) {
   #>
-  updateById,<#
+  updateById<#=Table_Up#>,<#
     }
   #><#
     if (opts.noEdit !== true && opts.noAdd !== true && opts.noImport !== true) {
   #>
-  importModels,
-  useDownloadImportTemplate,<#
+  importModels<#=Table_Up#>,
+  useDownloadImportTemplate<#=Table_Up#>,<#
     }
   #><#
     if (hasSummary) {
   #>
-  findSummary,<#
+  findSummary<#=Table_Up#>,<#
     }
   #>
-} from "./Api";<#
+} from "./Api.ts";<#
 const foreignTableArr = [ ];
 const column_commentArr = [ ];
 const foreignKeyArr = [ ];
@@ -2468,7 +2472,7 @@ import {<#
       continue;
     }
   #>
-  get<#=Foreign_Table_Up#>List, // <#=column_comment#><#
+  getList<#=Foreign_Table_Up#>, // <#=column_comment#><#
   }
   #>
 } from "./Api";<#
@@ -2517,8 +2521,8 @@ for (let i = 0; i < columns.length; i++) {
 #>
 
 import {
-  get<#=Foreign_Table_Up#>Tree,
-} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api";<#
+  getTree<#=Foreign_Table_Up#>,
+} from "@/views/<#=foreignKey.mod#>/<#=foreignTable#>/Api.ts";<#
 }
 #><#
 if (hasForeignTabs) {
@@ -2553,7 +2557,7 @@ if (list_tree) {
   name: "<#=optionsName#>",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePath<#=Table_Up#>();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;<#
 if (isUseI18n) {
@@ -3522,7 +3526,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAll<#=Table_Up#>(
       search,
       {
         pgSize,
@@ -3534,7 +3538,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAll<#=Table_Up#>(
       search,
       undefined,
       [
@@ -3551,7 +3555,7 @@ async function useFindAll(
   search: <#=searchName#>,
   opt?: GqlOpt,
 ) {
-  tableData = await findAll(
+  tableData = await findAll<#=Table_Up#>(
     search,
     undefined,
     [
@@ -3568,7 +3572,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCount<#=Table_Up#>(
     search2,
     opt,
   );
@@ -3632,7 +3636,7 @@ async function onSortChange(
   if (opts.noExport !== true) {
 #>
 
-const exportExcel = $ref(useExportExcel(<#
+const exportExcel = $ref(useExportExcel<#=Table_Up#>(<#
 if (isUseI18n) {
 #>pagePath<#
 }
@@ -3660,7 +3664,7 @@ if (hasAtt) {
 async function onLinkAtt(row: <#=modelName#>, key: keyof <#=modelName#>) {<#
     if (opts.noEdit !== true) {
 #>
-  await updateById(row.id, { [key]: row[key] });<#
+  await updateById<#=Table_Up#>(row.id, { [key]: row[key] });<#
     }
   #>
 }<#
@@ -3675,7 +3679,7 @@ let summarys = $ref({ });
 async function dataSummary(
   search: <#=searchName#>,
 ) {
-  summarys = await findSummary(search);
+  summarys = await findSummary<#=Table_Up#>(search);
 }
 
 function summaryMethod(
@@ -3822,7 +3826,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate(<#
+const downloadImportTemplate = $ref(useDownloadImportTemplate<#=Table_Up#>(<#
 if (isUseI18n) {
 #>pagePath<#
 }
@@ -3971,7 +3975,7 @@ async function onImportExcel() {
       },
     );
     messageHandler.close();
-    const res = await importModels(
+    const res = await importModels<#=Table_Up#>(
       models,
       $$(importPercentage),
       $$(isStopImport),
@@ -4039,7 +4043,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
     return;
   }
   const notLoading = true;
-  await defaultById(
+  await defaultById<#=Table_Up#>(
     id,
     {
       notLoading,
@@ -4062,7 +4066,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
     return;
   }
   const notLoading = true;
-  await enableByIds(
+  await enableByIds<#=Table_Up#>(
     [ id ],
     <#=column_name#>,
     {
@@ -4086,7 +4090,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
     return;
   }
   const notLoading = true;
-  await lockByIds(
+  await lockByIds<#=Table_Up#>(
     [ id ],
     <#=column_name#>,
     {
@@ -4110,7 +4114,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
     return;
   }
   const notLoading = true;
-  await updateById(
+  await updateById<#=Table_Up#>(
     id,
     {
       <#=column_name#>,
@@ -4455,7 +4459,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);<#
+  const num = await deleteByIds<#=Table_Up#>(selectedIds);<#
   if (opts?.isRealData) {
   #>
   publish({
@@ -4483,7 +4487,7 @@ async function onDeleteByIds() {
 }<#
 }
 #><#
-if (opts.noForceDelete !== true && hasIsDeleted) {
+if (opts.noDelete !== true && opts.noForceDelete !== true && hasIsDeleted) {
 #>
 
 /** 点击彻底删除 */
@@ -4534,7 +4538,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIds<#=Table_Up#>(selectedIds);
   if (num) {<#
     if (opts?.isRealData) {
     #>
@@ -4606,7 +4610,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await enableByIds(selectedIds, is_enabled);
+  const num = await enableByIds<#=Table_Up#>(selectedIds, is_enabled);
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {<#
@@ -4679,7 +4683,7 @@ async function onLockByIds(is_locked: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await lockByIds(selectedIds, is_locked);
+  const num = await lockByIds<#=Table_Up#>(selectedIds, is_locked);
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {<#
@@ -4708,7 +4712,7 @@ async function onLockByIds(is_locked: 0 | 1) {
 }<#
 }
 #><#
-if (opts.noRevert !== true && hasIsDeleted) {
+if (opts.noDelete !== true && opts.noRevert !== true && hasIsDeleted) {
 #>
 
 /** 点击还原 */
@@ -4759,7 +4763,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIds<#=Table_Up#>(selectedIds);
   if (num) {<#
     if (opts?.isRealData) {
     #>
@@ -5137,7 +5141,7 @@ async function on<#=column_name.substring(0, 1).toUpperCase() + column_name.subs
     return;
   }
   row.<#=column_name#> = selectedIds2;
-  await updateById(row.id, { <#=column_name#>: selectedIds2 });
+  await updateById<#=Table_Up#>(row.id, { <#=column_name#>: selectedIds2 });
   dirtyStore.fireDirty(pageName);
   await dataGrid();
 }<#

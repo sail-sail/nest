@@ -115,7 +115,7 @@ impl <#=tableUP#>GenQuery {
       .with_auth()?
       .build()
       .scope({
-        <#=table#>_resolver::find_all(
+        <#=table#>_resolver::find_all_<#=table#>(
           search,
           page,
           sort,
@@ -139,7 +139,7 @@ impl <#=tableUP#>GenQuery {
       .with_auth()?
       .build()
       .scope({
-        <#=table#>_resolver::find_count(
+        <#=table#>_resolver::find_count_<#=table#>(
           search,
           None,
         )
@@ -162,7 +162,7 @@ impl <#=tableUP#>GenQuery {
       .with_auth()?
       .build()
       .scope({
-        <#=table#>_resolver::find_one(
+        <#=table#>_resolver::find_one_<#=table#>(
           search,
           sort,
           None,
@@ -185,7 +185,7 @@ impl <#=tableUP#>GenQuery {
       .with_auth()?
       .build()
       .scope({
-        <#=table#>_resolver::find_by_id(
+        <#=table#>_resolver::find_by_id_<#=table#>(
           id,
           None,
         )
@@ -207,7 +207,7 @@ impl <#=tableUP#>GenQuery {
       .with_auth()?
       .build()
       .scope({
-        <#=table#>_resolver::find_by_ids(
+        <#=table#>_resolver::find_by_ids_<#=table#>(
           ids,
           None,
         )
@@ -226,7 +226,7 @@ impl <#=tableUP#>GenQuery {
       .with_auth()?
       .build()
       .scope({
-        <#=table#>_resolver::get_editable_data_permits_by_ids(
+        <#=table#>_resolver::get_editable_data_permits_by_ids_<#=table#>(
           ids,
           None,
         )
@@ -253,7 +253,7 @@ impl <#=tableUP#>GenQuery {
       .with_auth()?
       .build()
       .scope({
-        <#=table#>_resolver::get_is_enabled_by_id(
+        <#=table#>_resolver::get_is_enabled_by_id_<#=table#>(
           id,
           None,
         )
@@ -281,7 +281,7 @@ impl <#=tableUP#>GenQuery {
       .with_auth()?
       .build()
       .scope({
-        <#=table#>_resolver::get_is_locked_by_id(
+        <#=table#>_resolver::get_is_locked_by_id_<#=table#>(
           id,
           None,
         )
@@ -303,7 +303,7 @@ impl <#=tableUP#>GenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        <#=table#>_resolver::get_field_comments(
+        <#=table#>_resolver::get_field_comments_<#=table#>(
           None,
         )
       }).await
@@ -325,7 +325,7 @@ impl <#=tableUP#>GenQuery {
       .with_auth()?
       .build()
       .scope({
-        <#=table#>_resolver::find_last_order_by(
+        <#=table#>_resolver::find_last_order_by_<#=table#>(
           None,
         )
       }).await
@@ -379,7 +379,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_creating(Some(true))
       .build()
       .scope({
-        <#=table#>_resolver::creates(
+        <#=table#>_resolver::creates_<#=table#>(
           inputs,
           options.into(),
         )
@@ -407,7 +407,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::update_tenant_by_id(
+        <#=table#>_resolver::update_tenant_by_id_<#=table#>(
           id,
           tenant_id,
           None,
@@ -436,7 +436,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::update_by_id(
+        <#=table#>_resolver::update_by_id_<#=table#>(
           id,
           input,
           None,
@@ -459,7 +459,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::audit_submit(
+        <#=table#>_resolver::audit_submit_<#=table#>(
           id,
           None,
         )
@@ -477,7 +477,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::audit_pass(
+        <#=table#>_resolver::audit_pass_<#=table#>(
           id,
           None,
         )
@@ -496,7 +496,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::audit_reject(
+        <#=table#>_resolver::audit_reject_<#=table#>(
           id,
           input,
           None,
@@ -517,7 +517,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::audit_review(
+        <#=table#>_resolver::audit_review_<#=table#>(
           id,
           None,
         )
@@ -546,7 +546,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::delete_by_ids(
+        <#=table#>_resolver::delete_by_ids_<#=table#>(
           ids,
           None,
         )
@@ -573,7 +573,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::default_by_id(
+        <#=table#>_resolver::default_by_id_<#=table#>(
           id,
           None,
         )
@@ -601,7 +601,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::enable_by_ids(
+        <#=table#>_resolver::enable_by_ids_<#=table#>(
           ids,
           is_enabled,
           None,
@@ -630,7 +630,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::lock_by_ids(
+        <#=table#>_resolver::lock_by_ids_<#=table#>(
           ids,
           is_locked,
           None,
@@ -641,7 +641,7 @@ impl <#=tableUP#>GenMutation {<#
   #><#
   if (opts.noDelete !== true) {
   #><#
-  if (hasIsDeleted) {
+  if (opts.noRevert !== true && hasIsDeleted) {
   #>
   
   /// 根据 ids 还原<#=table_comment#><#
@@ -660,7 +660,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::revert_by_ids(
+        <#=table#>_resolver::revert_by_ids_<#=table#>(
           ids,
           None,
         )
@@ -668,7 +668,7 @@ impl <#=tableUP#>GenMutation {<#
   }<#
   }
   #><#
-  if (hasIsDeleted) {
+  if (opts.noForceDelete !== true && hasIsDeleted) {
   #>
   
   /// 根据 ids 彻底删除<#=table_comment#><#
@@ -687,7 +687,7 @@ impl <#=tableUP#>GenMutation {<#
       .with_tran()
       .build()
       .scope({
-        <#=table#>_resolver::force_delete_by_ids(
+        <#=table#>_resolver::force_delete_by_ids_<#=table#>(
           ids,
           None,
         )

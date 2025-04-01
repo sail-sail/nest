@@ -10,6 +10,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
 use crate::src::base::permit::permit_service::use_permit;
 
 use super::login_log_model::*;
@@ -19,7 +20,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找登录日志列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_login_log(
   search: Option<LoginLogSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +35,7 @@ pub async fn find_all(
   
   check_sort_login_log(sort.as_deref())?;
   
-  let models = login_log_service::find_all(
+  let models = login_log_service::find_all_login_log(
     search,
     page,
     sort,
@@ -46,7 +47,7 @@ pub async fn find_all(
 
 /// 根据条件查找登录日志总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_login_log(
   search: Option<LoginLogSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +58,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = login_log_service::find_count(
+  let num = login_log_service::find_count_login_log(
     search,
     options,
   ).await?;
@@ -67,7 +68,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个登录日志
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_login_log(
   search: Option<LoginLogSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +82,7 @@ pub async fn find_one(
   
   check_sort_login_log(sort.as_deref())?;
   
-  let model = login_log_service::find_one(
+  let model = login_log_service::find_one_login_log(
     search,
     sort,
     options,
@@ -92,7 +93,7 @@ pub async fn find_one(
 
 /// 根据 id 查找登录日志
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_login_log(
   id: LoginLogId,
   options: Option<Options>,
 ) -> Result<Option<LoginLogModel>> {
@@ -103,7 +104,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = login_log_service::find_by_id(
+  let model = login_log_service::find_by_id_login_log(
     id,
     options,
   ).await?;
@@ -113,7 +114,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找登录日志
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_login_log(
   ids: Vec<LoginLogId>,
   options: Option<Options>,
 ) -> Result<Vec<LoginLogModel>> {
@@ -124,7 +125,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = login_log_service::find_by_ids(
+  let models = login_log_service::find_by_ids_login_log(
     ids,
     options,
   ).await?;
@@ -135,7 +136,7 @@ pub async fn find_by_ids(
 /// 登录日志根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_login_log(
   id: LoginLogId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -147,7 +148,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = login_log_service::update_tenant_by_id(
+  let num = login_log_service::update_tenant_by_id_login_log(
     id,
     tenant_id,
     options,
@@ -159,7 +160,7 @@ pub async fn update_tenant_by_id(
 /// 根据 ids 删除登录日志
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_login_log(
   ids: Vec<LoginLogId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -175,7 +176,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = login_log_service::delete_by_ids(
+  let num = login_log_service::delete_by_ids_login_log(
     ids,
     options,
   ).await?;
@@ -185,7 +186,7 @@ pub async fn delete_by_ids(
 
 /// 获取登录日志字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_login_log(
   options: Option<Options>,
 ) -> Result<LoginLogFieldComment> {
   
@@ -195,7 +196,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = login_log_service::get_field_comments(
+  let comments = login_log_service::get_field_comments_login_log(
     options,
   ).await?;
   
@@ -205,7 +206,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原登录日志
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_login_log(
   ids: Vec<LoginLogId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -221,7 +222,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = login_log_service::revert_by_ids(
+  let num = login_log_service::revert_by_ids_login_log(
     ids,
     options,
   ).await?;
@@ -232,7 +233,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除登录日志
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_login_log(
   ids: Vec<LoginLogId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -248,7 +249,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = login_log_service::force_delete_by_ids(
+  let num = login_log_service::force_delete_by_ids_login_log(
     ids,
     options,
   ).await?;

@@ -685,6 +685,7 @@ pub fn check_sort_operation_record(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_operation_record() -> String {
   "/base/operation_record".to_owned()
 }

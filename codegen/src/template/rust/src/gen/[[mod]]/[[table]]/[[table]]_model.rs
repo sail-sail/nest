@@ -3204,6 +3204,7 @@ pub fn check_sort_<#=table#>(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_<#=table#>() -> String {
   "/<#=mod#>/<#=table#>".to_owned()
 }<#

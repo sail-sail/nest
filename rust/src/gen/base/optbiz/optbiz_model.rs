@@ -263,10 +263,10 @@ pub struct OptbizSearch {
   #[graphql(name = "lbl_like")]
   pub lbl_like: Option<String>,
   /// 键
-  #[graphql(skip)]
+  #[graphql(name = "ky")]
   pub ky: Option<String>,
   /// 键
-  #[graphql(skip)]
+  #[graphql(name = "ky_like")]
   pub ky_like: Option<String>,
   /// 值
   #[graphql(name = "val")]
@@ -693,6 +693,7 @@ pub fn check_sort_optbiz(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_optbiz() -> String {
   "/base/optbiz".to_owned()
 }

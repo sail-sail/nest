@@ -52,7 +52,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::dictbiz::dictbiz_model::DictbizId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -467,10 +467,10 @@ async fn get_from_query(
   Ok(from_query)
 }
 
-// MARK: find_all
+// MARK: find_all_dictbiz_detail
 /// 根据搜索条件和分页查找业务字典明细列表
 #[allow(unused_mut)]
-pub async fn find_all(
+pub async fn find_all_dictbiz_detail(
   search: Option<DictbizDetailSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -478,7 +478,7 @@ pub async fn find_all(
 ) -> Result<Vec<DictbizDetailModel>> {
   
   let table = "base_dictbiz_detail";
-  let method = "find_all";
+  let method = "find_all_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -651,15 +651,15 @@ pub async fn find_all(
   Ok(res)
 }
 
-// MARK: find_count
+// MARK: find_count_dictbiz_detail
 /// 根据条件查找业务字典明细总数
-pub async fn find_count(
+pub async fn find_count_dictbiz_detail(
   search: Option<DictbizDetailSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dictbiz_detail";
-  let method = "find_count";
+  let method = "find_count_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -786,9 +786,9 @@ pub async fn find_count(
   Ok(total)
 }
 
-// MARK: get_field_comments
+// MARK: get_field_comments_dictbiz_detail
 /// 获取业务字典明细字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_dictbiz_detail(
   _options: Option<Options>,
 ) -> Result<DictbizDetailFieldComment> {
   
@@ -814,16 +814,16 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-// MARK: find_one
+// MARK: find_one_dictbiz_detail
 /// 根据条件查找第一个业务字典明细
-pub async fn find_one(
+pub async fn find_one_dictbiz_detail(
   search: Option<DictbizDetailSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<DictbizDetailModel>> {
   
   let table = "base_dictbiz_detail";
-  let method = "find_one";
+  let method = "find_one_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -859,7 +859,7 @@ pub async fn find_one(
     pg_size: 1.into(),
   }.into();
   
-  let res = find_all(
+  let res = find_all_dictbiz_detail(
     search,
     page,
     sort,
@@ -871,15 +871,15 @@ pub async fn find_one(
   Ok(model)
 }
 
-// MARK: find_by_id
+// MARK: find_by_id_dictbiz_detail
 /// 根据 id 查找业务字典明细
-pub async fn find_by_id(
+pub async fn find_by_id_dictbiz_detail(
   id: DictbizDetailId,
   options: Option<Options>,
 ) -> Result<Option<DictbizDetailModel>> {
   
   let table = "base_dictbiz_detail";
-  let method = "find_by_id";
+  let method = "find_by_id_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -908,25 +908,25 @@ pub async fn find_by_id(
     ..Default::default()
   }.into();
   
-  let res = find_one(
+  let dictbiz_detail_model = find_one_dictbiz_detail(
     search,
     None,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(dictbiz_detail_model)
 }
 
-// MARK: find_by_ids
+// MARK: find_by_ids_dictbiz_detail
 /// 根据 ids 查找业务字典明细
 #[allow(dead_code)]
-pub async fn find_by_ids(
+pub async fn find_by_ids_dictbiz_detail(
   ids: Vec<DictbizDetailId>,
   options: Option<Options>,
 ) -> Result<Vec<DictbizDetailModel>> {
   
   let table = "base_dictbiz_detail";
-  let method = "find_by_ids";
+  let method = "find_by_ids_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -961,7 +961,7 @@ pub async fn find_by_ids(
     ..Default::default()
   }.into();
   
-  let models = find_all(
+  let models = find_all_dictbiz_detail(
     search,
     None,
     None,
@@ -990,16 +990,16 @@ pub async fn find_by_ids(
   Ok(models)
 }
 
-// MARK: exists
+// MARK: exists_dictbiz_detail
 /// 根据搜索条件判断业务字典明细是否存在
 #[allow(dead_code)]
-pub async fn exists(
+pub async fn exists_dictbiz_detail(
   search: Option<DictbizDetailSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "base_dictbiz_detail";
-  let method = "exists";
+  let method = "exists_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1021,7 +1021,7 @@ pub async fn exists(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count(
+  let total = find_count_dictbiz_detail(
     search,
     options,
   ).await?;
@@ -1029,16 +1029,16 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-// MARK: exists_by_id
+// MARK: exists_by_id_dictbiz_detail
 /// 根据 id 判断业务字典明细是否存在
 #[allow(dead_code)]
-pub async fn exists_by_id(
+pub async fn exists_by_id_dictbiz_detail(
   id: DictbizDetailId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "base_dictbiz_detail";
-  let method = "exists_by_id";
+  let method = "exists_by_id_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1063,7 +1063,7 @@ pub async fn exists_by_id(
     ..Default::default()
   }.into();
   
-  let res = exists(
+  let res = exists_dictbiz_detail(
     search,
     options,
   ).await?;
@@ -1071,17 +1071,17 @@ pub async fn exists_by_id(
   Ok(res)
 }
 
-// MARK: find_by_unique
+// MARK: find_by_unique_dictbiz_detail
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique(
+pub async fn find_by_unique_dictbiz_detail(
   search: DictbizDetailSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<DictbizDetailModel>> {
   
   let table = "base_dictbiz_detail";
-  let method = "find_by_unique";
+  let method = "find_by_unique_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1105,7 +1105,7 @@ pub async fn find_by_unique(
   let options = Some(options);
   
   if let Some(id) = search.id {
-    let model = find_by_id(
+    let model = find_by_id_dictbiz_detail(
       id,
       options.clone(),
     ).await?;
@@ -1128,7 +1128,7 @@ pub async fn find_by_unique(
       ..Default::default()
     };
     
-    find_all(
+    find_all_dictbiz_detail(
       search.into(),
       None,
       sort.clone(),
@@ -1159,17 +1159,17 @@ pub fn equals_by_unique(
   false
 }
 
-// MARK: check_by_unique
+// MARK: check_by_unique_dictbiz_detail
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique(
+pub async fn check_by_unique_dictbiz_detail(
   input: DictbizDetailInput,
   model: DictbizDetailModel,
   options: Option<Options>,
 ) -> Result<Option<DictbizDetailId>> {
   
   let table = "base_dictbiz_detail";
-  let method = "check_by_unique";
+  let method = "check_by_unique_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1207,7 +1207,7 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let id = update_by_id(
+    let id = update_by_id_dictbiz_detail(
       model.id.clone(),
       input,
       options,
@@ -1221,10 +1221,10 @@ pub async fn check_by_unique(
   Ok(None)
 }
 
-// MARK: set_id_by_lbl
+// MARK: set_id_by_lbl_dictbiz_detail
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables, dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_dictbiz_detail(
   input: DictbizDetailInput,
 ) -> Result<DictbizDetailInput> {
   
@@ -1258,7 +1258,7 @@ pub async fn set_id_by_lbl(
     input.dictbiz_id_lbl = input.dictbiz_id_lbl.map(|item| 
       item.trim().to_owned()
     );
-    let model = crate::r#gen::base::dictbiz::dictbiz_dao::find_one(
+    let model = crate::r#gen::base::dictbiz::dictbiz_dao::find_one_dictbiz(
       crate::r#gen::base::dictbiz::dictbiz_model::DictbizSearch {
         lbl: input.dictbiz_id_lbl.clone(),
         ..Default::default()
@@ -1273,7 +1273,7 @@ pub async fn set_id_by_lbl(
     (input.dictbiz_id_lbl.is_none() || input.dictbiz_id_lbl.as_ref().unwrap().is_empty())
     && input.dictbiz_id.is_some()
   {
-    let dictbiz_model = crate::r#gen::base::dictbiz::dictbiz_dao::find_one(
+    let dictbiz_model = crate::r#gen::base::dictbiz::dictbiz_dao::find_one_dictbiz(
       crate::r#gen::base::dictbiz::dictbiz_model::DictbizSearch {
         id: input.dictbiz_id.clone(),
         ..Default::default()
@@ -1314,16 +1314,16 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-// MARK: creates_return
+// MARK: creates_return_dictbiz_detail
 /// 批量创建业务字典明细并返回
 #[allow(dead_code)]
-pub async fn creates_return(
+pub async fn creates_return_dictbiz_detail(
   inputs: Vec<DictbizDetailInput>,
   options: Option<Options>,
 ) -> Result<Vec<DictbizDetailModel>> {
   
   let table = "base_dictbiz_detail";
-  let method = "creates_return";
+  let method = "creates_return_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1344,23 +1344,23 @@ pub async fn creates_return(
     options.clone(),
   ).await?;
   
-  let models = find_by_ids(
+  let models_dictbiz_detail = find_by_ids_dictbiz_detail(
     ids,
     options,
   ).await?;
   
-  Ok(models)
+  Ok(models_dictbiz_detail)
 }
 
-// MARK: creates
+// MARK: creates_dictbiz_detail
 /// 批量创建业务字典明细
-pub async fn creates(
+pub async fn creates_dictbiz_detail(
   inputs: Vec<DictbizDetailInput>,
   options: Option<Options>,
 ) -> Result<Vec<DictbizDetailId>> {
   
   let table = "base_dictbiz_detail";
-  let method = "creates";
+  let method = "creates_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1410,7 +1410,7 @@ async fn _creates(
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
     
-    let old_models = find_by_unique(
+    let old_models = find_by_unique_dictbiz_detail(
       input.clone().into(),
       None,
       options.clone(),
@@ -1423,7 +1423,7 @@ async fn _creates(
         let options = Options::from(options.clone())
           .set_unique_type(unique_type);
         
-        id = check_by_unique(
+        id = check_by_unique_dictbiz_detail(
           input.clone(),
           old_model,
           Some(options),
@@ -1681,43 +1681,52 @@ async fn _creates(
   Ok(ids2)
 }
 
-// MARK: create_return
+// MARK: create_return_dictbiz_detail
 /// 创建业务字典明细并返回
 #[allow(dead_code)]
-pub async fn create_return(
+pub async fn create_return_dictbiz_detail(
   #[allow(unused_mut)]
   mut input: DictbizDetailInput,
   options: Option<Options>,
 ) -> Result<DictbizDetailModel> {
   
-  let table = "base_dictbiz_detail";
+  let id = create_dictbiz_detail(
+    input.clone(),
+    options.clone(),
+  ).await?;
   
-  let id = create(input.clone(), options.clone()).await?;
-  
-  let model = find_by_id(
+  let model_dictbiz_detail = find_by_id_dictbiz_detail(
     id,
     options,
   ).await?;
   
-  if model.is_none() {
-    return Err(eyre!("create_return: Create failed in dao: {table}"));
+  if model_dictbiz_detail.is_none() {
+    let err_msg = "create_return_dictbiz_detail: model_dictbiz_detail.is_none()";
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
-  let model = model.unwrap();
+  let model_dictbiz_detail = model_dictbiz_detail.unwrap();
   
-  Ok(model)
+  Ok(model_dictbiz_detail)
 }
 
-// MARK: create
+// MARK: create_dictbiz_detail
 /// 创建业务字典明细
 #[allow(dead_code)]
-pub async fn create(
+pub async fn create_dictbiz_detail(
   #[allow(unused_mut)]
   mut input: DictbizDetailInput,
   options: Option<Options>,
 ) -> Result<DictbizDetailId> {
   
   let table = "base_dictbiz_detail";
-  let method = "create";
+  let method = "create_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1746,15 +1755,15 @@ pub async fn create(
   Ok(id)
 }
 
-// MARK: update_tenant_by_id
+// MARK: update_tenant_by_id_dictbiz_detail
 /// 业务字典明细根据id修改租户id
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_dictbiz_detail(
   id: DictbizDetailId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "base_dictbiz_detail";
-  let method = "update_tenant_by_id";
+  let method = "update_tenant_by_id_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1792,18 +1801,18 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-// MARK: update_by_id
+// MARK: update_by_id_dictbiz_detail
 /// 根据 id 修改业务字典明细
 #[allow(unused_mut)]
 #[allow(unused_variables)]
-pub async fn update_by_id(
+pub async fn update_by_id_dictbiz_detail(
   id: DictbizDetailId,
   mut input: DictbizDetailInput,
   options: Option<Options>,
 ) -> Result<DictbizDetailId> {
   
   let table = "base_dictbiz_detail";
-  let method = "update_by_id";
+  let method = "update_by_id_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1827,7 +1836,7 @@ pub async fn update_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_model = find_by_id(
+  let old_model = find_by_id_dictbiz_detail(
     id.clone(),
     options.clone(),
   ).await?;
@@ -1852,7 +1861,7 @@ pub async fn update_by_id(
     let mut input = input.clone();
     input.id = None;
     
-    let models = find_by_unique(
+    let models = find_by_unique_dictbiz_detail(
       input.into(),
       None,
       options.clone(),
@@ -2054,10 +2063,10 @@ fn get_cache_tables() -> Vec<&'static str> {
   ]
 }
 
-// MARK: del_cache
+// MARK: del_cache_dictbiz_detail
 /// 清空缓存
 #[allow(dead_code)]
-pub async fn del_cache() -> Result<()> {
+pub async fn del_cache_dictbiz_detail() -> Result<()> {
   let cache_key1s = get_cache_tables();
   del_caches(
     cache_key1s.as_slice(),
@@ -2065,16 +2074,16 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-// MARK: delete_by_ids
+// MARK: delete_by_ids_dictbiz_detail
 /// 根据 ids 删除业务字典明细
 #[allow(unused_variables)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_dictbiz_detail(
   ids: Vec<DictbizDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dictbiz_detail";
-  let method = "delete_by_ids";
+  let method = "delete_by_ids_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2108,7 +2117,7 @@ pub async fn delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_by_id(
+    let old_model = find_by_id_dictbiz_detail(
       id.clone(),
       options.clone(),
     ).await?;
@@ -2192,10 +2201,10 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-// MARK: get_is_enabled_by_id
+// MARK: get_is_enabled_by_id_dictbiz_detail
 /// 根据 id 查找业务字典明细是否已启用
 /// 记录不存在则返回 false
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_dictbiz_detail(
   id: DictbizDetailId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -2204,7 +2213,7 @@ pub async fn get_is_enabled_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let model = find_by_id(
+  let model = find_by_id_dictbiz_detail(
     id,
     options,
   ).await?;
@@ -2220,16 +2229,16 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-// MARK: enable_by_ids
+// MARK: enable_by_ids_dictbiz_detail
 /// 根据 ids 启用或者禁用业务字典明细
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_dictbiz_detail(
   ids: Vec<DictbizDetailId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dictbiz_detail";
-  let method = "enable_by_ids";
+  let method = "enable_by_ids_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2278,15 +2287,15 @@ pub async fn enable_by_ids(
   Ok(num)
 }
 
-// MARK: revert_by_ids
+// MARK: revert_by_ids_dictbiz_detail
 /// 根据 ids 还原业务字典明细
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_dictbiz_detail(
   ids: Vec<DictbizDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dictbiz_detail";
-  let method = "revert_by_ids";
+  let method = "revert_by_ids_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2321,7 +2330,7 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let mut old_model = find_one(
+    let mut old_model = find_one_dictbiz_detail(
       DictbizDetailSearch {
         id: Some(id.clone()),
         is_deleted: Some(1),
@@ -2332,7 +2341,7 @@ pub async fn revert_by_ids(
     ).await?;
     
     if old_model.is_none() {
-      old_model = find_by_id(
+      old_model = find_by_id_dictbiz_detail(
         id.clone(),
         options.clone(),
       ).await?;
@@ -2347,7 +2356,7 @@ pub async fn revert_by_ids(
       let mut input: DictbizDetailInput = old_model.clone().into();
       input.id = None;
       
-      let models = find_by_unique(
+      let models = find_by_unique_dictbiz_detail(
         input.into(),
         None,
         options.clone(),
@@ -2377,16 +2386,16 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-// MARK: force_delete_by_ids
+// MARK: force_delete_by_ids_dictbiz_detail
 /// 根据 ids 彻底删除业务字典明细
 #[allow(unused_variables)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_dictbiz_detail(
   ids: Vec<DictbizDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_dictbiz_detail";
-  let method = "force_delete_by_ids";
+  let method = "force_delete_by_ids_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2415,7 +2424,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all(
+    let old_model = find_all_dictbiz_detail(
       DictbizDetailSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -2465,14 +2474,14 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-// MARK: find_last_order_by
+// MARK: find_last_order_by_dictbiz_detail
 /// 查找 业务字典明细 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_dictbiz_detail(
   options: Option<Options>,
 ) -> Result<u32> {
   
   let table = "base_dictbiz_detail";
-  let method = "find_last_order_by";
+  let method = "find_last_order_by_dictbiz_detail";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2528,10 +2537,10 @@ pub async fn find_last_order_by(
   Ok(order_by)
 }
 
-// MARK: validate_is_enabled
+// MARK: validate_is_enabled_dictbiz_detail
 /// 校验业务字典明细是否启用
 #[allow(dead_code)]
-pub async fn validate_is_enabled(
+pub async fn validate_is_enabled_dictbiz_detail(
   model: &DictbizDetailModel,
 ) -> Result<()> {
   if model.is_enabled == 0 {
@@ -2541,10 +2550,10 @@ pub async fn validate_is_enabled(
   Ok(())
 }
 
-// MARK: validate_option
+// MARK: validate_option_dictbiz_detail
 /// 校验业务字典明细是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_dictbiz_detail(
   model: Option<DictbizDetailModel>,
 ) -> Result<DictbizDetailModel> {
   if model.is_none() {

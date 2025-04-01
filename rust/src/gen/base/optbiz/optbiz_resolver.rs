@@ -10,6 +10,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
 use crate::src::base::permit::permit_service::use_permit;
 
 use super::optbiz_model::*;
@@ -19,7 +20,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找业务选项列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_optbiz(
   search: Option<OptbizSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +35,7 @@ pub async fn find_all(
   
   check_sort_optbiz(sort.as_deref())?;
   
-  let models = optbiz_service::find_all(
+  let models = optbiz_service::find_all_optbiz(
     search,
     page,
     sort,
@@ -46,7 +47,7 @@ pub async fn find_all(
 
 /// 根据条件查找业务选项总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_optbiz(
   search: Option<OptbizSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +58,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = optbiz_service::find_count(
+  let num = optbiz_service::find_count_optbiz(
     search,
     options,
   ).await?;
@@ -67,7 +68,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个业务选项
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_optbiz(
   search: Option<OptbizSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +82,7 @@ pub async fn find_one(
   
   check_sort_optbiz(sort.as_deref())?;
   
-  let model = optbiz_service::find_one(
+  let model = optbiz_service::find_one_optbiz(
     search,
     sort,
     options,
@@ -92,7 +93,7 @@ pub async fn find_one(
 
 /// 根据 id 查找业务选项
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_optbiz(
   id: OptbizId,
   options: Option<Options>,
 ) -> Result<Option<OptbizModel>> {
@@ -103,7 +104,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = optbiz_service::find_by_id(
+  let model = optbiz_service::find_by_id_optbiz(
     id,
     options,
   ).await?;
@@ -113,7 +114,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找业务选项
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_optbiz(
   ids: Vec<OptbizId>,
   options: Option<Options>,
 ) -> Result<Vec<OptbizModel>> {
@@ -124,7 +125,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = optbiz_service::find_by_ids(
+  let models = optbiz_service::find_by_ids_optbiz(
     ids,
     options,
   ).await?;
@@ -135,7 +136,7 @@ pub async fn find_by_ids(
 /// 创建业务选项
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_optbiz(
   inputs: Vec<OptbizInput>,
   options: Option<Options>,
 ) -> Result<Vec<OptbizId>> {
@@ -154,7 +155,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = optbiz_service::set_id_by_lbl(
+    let input = optbiz_service::set_id_by_lbl_optbiz(
       input,
     ).await?;
     inputs2.push(input);
@@ -166,7 +167,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = optbiz_service::creates(
+  let ids = optbiz_service::creates_optbiz(
     inputs,
     options,
   ).await?;
@@ -177,7 +178,7 @@ pub async fn creates(
 /// 业务选项根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_optbiz(
   id: OptbizId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -189,7 +190,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = optbiz_service::update_tenant_by_id(
+  let num = optbiz_service::update_tenant_by_id_optbiz(
     id,
     tenant_id,
     options,
@@ -201,7 +202,7 @@ pub async fn update_tenant_by_id(
 /// 根据 id 修改业务选项
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_optbiz(
   id: OptbizId,
   input: OptbizInput,
   options: Option<Options>,
@@ -217,7 +218,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = optbiz_service::set_id_by_lbl(
+  let input = optbiz_service::set_id_by_lbl_optbiz(
     input,
   ).await?;
   
@@ -226,7 +227,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = optbiz_service::update_by_id(
+  let res = optbiz_service::update_by_id_optbiz(
     id,
     input,
     options,
@@ -238,7 +239,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除业务选项
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_optbiz(
   ids: Vec<OptbizId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -254,7 +255,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = optbiz_service::delete_by_ids(
+  let num = optbiz_service::delete_by_ids_optbiz(
     ids,
     options,
   ).await?;
@@ -266,7 +267,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_optbiz(
   id: OptbizId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -277,7 +278,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = optbiz_service::get_is_enabled_by_id(
+  let is_enabled = optbiz_service::get_is_enabled_by_id_optbiz(
     id,
     options,
   ).await?;
@@ -288,7 +289,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用业务选项
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_optbiz(
   ids: Vec<OptbizId>,
   is_enabled: u8,
   options: Option<Options>,
@@ -305,7 +306,7 @@ pub async fn enable_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = optbiz_service::enable_by_ids(
+  let num = optbiz_service::enable_by_ids_optbiz(
     ids,
     is_enabled,
     options,
@@ -319,7 +320,7 @@ pub async fn enable_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_optbiz(
   id: OptbizId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -330,7 +331,7 @@ pub async fn get_is_locked_by_id(
     function_name = function_name!(),
   );
   
-  let is_locked = optbiz_service::get_is_locked_by_id(
+  let is_locked = optbiz_service::get_is_locked_by_id_optbiz(
     id,
     options,
   ).await?;
@@ -341,7 +342,7 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或者解锁业务选项
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_optbiz(
   ids: Vec<OptbizId>,
   is_locked: u8,
   options: Option<Options>,
@@ -358,7 +359,7 @@ pub async fn lock_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = optbiz_service::lock_by_ids(
+  let num = optbiz_service::lock_by_ids_optbiz(
     ids,
     is_locked,
     options,
@@ -369,7 +370,7 @@ pub async fn lock_by_ids(
 
 /// 获取业务选项字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_optbiz(
   options: Option<Options>,
 ) -> Result<OptbizFieldComment> {
   
@@ -379,7 +380,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = optbiz_service::get_field_comments(
+  let comments = optbiz_service::get_field_comments_optbiz(
     options,
   ).await?;
   
@@ -389,7 +390,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原业务选项
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_optbiz(
   ids: Vec<OptbizId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -405,7 +406,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = optbiz_service::revert_by_ids(
+  let num = optbiz_service::revert_by_ids_optbiz(
     ids,
     options,
   ).await?;
@@ -416,7 +417,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除业务选项
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_optbiz(
   ids: Vec<OptbizId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -432,7 +433,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = optbiz_service::force_delete_by_ids(
+  let num = optbiz_service::force_delete_by_ids_optbiz(
     ids,
     options,
   ).await?;
@@ -442,7 +443,7 @@ pub async fn force_delete_by_ids(
 
 /// 查找 业务选项 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_optbiz(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -452,7 +453,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = optbiz_service::find_last_order_by(
+  let res = optbiz_service::find_last_order_by_optbiz(
     options,
   ).await?;
   

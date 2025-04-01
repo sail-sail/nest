@@ -35,7 +35,7 @@ impl FieldPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        field_permit_resolver::find_all(
+        field_permit_resolver::find_all_field_permit(
           search,
           page,
           sort,
@@ -54,7 +54,7 @@ impl FieldPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        field_permit_resolver::find_count(
+        field_permit_resolver::find_count_field_permit(
           search,
           None,
         )
@@ -72,7 +72,7 @@ impl FieldPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        field_permit_resolver::find_one(
+        field_permit_resolver::find_one_field_permit(
           search,
           sort,
           None,
@@ -90,7 +90,7 @@ impl FieldPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        field_permit_resolver::find_by_id(
+        field_permit_resolver::find_by_id_field_permit(
           id,
           None,
         )
@@ -107,7 +107,7 @@ impl FieldPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        field_permit_resolver::find_by_ids(
+        field_permit_resolver::find_by_ids_field_permit(
           ids,
           None,
         )
@@ -122,7 +122,7 @@ impl FieldPermitGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        field_permit_resolver::get_field_comments(
+        field_permit_resolver::get_field_comments_field_permit(
           None,
         )
       }).await
@@ -137,7 +137,7 @@ impl FieldPermitGenQuery {
       .with_auth()?
       .build()
       .scope({
-        field_permit_resolver::find_last_order_by(
+        field_permit_resolver::find_last_order_by_field_permit(
           None,
         )
       }).await
@@ -163,7 +163,7 @@ impl FieldPermitGenMutation {
       .with_tran()
       .build()
       .scope({
-        field_permit_resolver::update_by_id(
+        field_permit_resolver::update_by_id_field_permit(
           id,
           input,
           None,

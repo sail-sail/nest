@@ -262,7 +262,7 @@ use crate::common::gql::model::{
 if (hasAudit && auditTable_Up) {
 #>
 
-use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_dao::find_all as find_all_<#=auditTable#>;
+use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_dao::find_all_<#=auditTable#>;
 use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::<#=auditTable_Up#>Search;<#
 }
 #><#
@@ -348,32 +348,32 @@ for (const inlineForeignTab of inlineForeignTabs) {
 use crate::r#gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
   if (!hasFindAllTableUps) {
   #>
-  find_all as find_all_<#=table#>,<#
+  find_all_<#=table#>,<#
   }
   #><#
   if (!hasCreateTableUps) {
   #>
-  create as create_<#=table#>,<#
+  create_<#=table#>,<#
   }
   #><#
   if (!hasDeleteByIdsTableUps) {
   #>
-  delete_by_ids as delete_by_ids_<#=table#>,<#
+  delete_by_ids_<#=table#>,<#
   }
   #><#
   if (!hasRevertByIdsTableUps) {
   #>
-  revert_by_ids as revert_by_ids_<#=table#>,<#
+  revert_by_ids_<#=table#>,<#
   }
   #><#
   if (!hasUpdateByIdTableUps) {
   #>
-  update_by_id as update_by_id_<#=table#>,<#
+  update_by_id_<#=table#>,<#
   }
   #><#
   if (!hasForceDeleteByIdsUps) {
   #>
-  force_delete_by_ids as force_delete_by_ids_<#=table#>,<#
+  force_delete_by_ids_<#=table#>,<#
   }
   #>
 };<#
@@ -451,37 +451,37 @@ for (let i = 0; i < columns.length; i++) {
 use crate::r#gen::<#=mod#>::<#=table#>::<#=table#>_dao::{<#
   if (!hasFindAllTableUps) {
   #>
-  find_all as find_all_<#=table#>,<#
+  find_all_<#=table#>,<#
   }
   #><#
   if (!hasCreateTableUps) {
   #>
-  create as create_<#=table#>,<#
+  create_<#=table#>,<#
   }
   #><#
   if (!hasDeleteByIdsTableUps) {
   #>
-  delete_by_ids as delete_by_ids_<#=table#>,<#
+  delete_by_ids_<#=table#>,<#
   }
   #><#
   if (!hasRevertByIdsTableUps) {
   #>
-  revert_by_ids as revert_by_ids_<#=table#>,<#
+  revert_by_ids_<#=table#>,<#
   }
   #><#
   if (!hasUpdateByIdTableUps) {
   #>
-  update_by_id as update_by_id_<#=table#>,<#
+  update_by_id_<#=table#>,<#
   }
   #><#
   if (!hasForceDeleteByIdsUps) {
   #>
-  force_delete_by_ids as force_delete_by_ids_<#=table#>,<#
+  force_delete_by_ids_<#=table#>,<#
   }
   #><#
   if (!hasEqualsByUniqueTableUps) {
   #>
-  equals_by_unique as equals_by_unique_<#=table#>,<#
+  equals_by_unique_<#=table#>,<#
   }
   #>
 };<#
@@ -616,9 +616,13 @@ if (
   if (!hasFindByIdTableUps) {
     findByIdTableUps.push(Table_Up);
   }
+#><#
+if (table_name !== "base_usr") {
 #>
 
-use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;<#
+use crate::r#gen::base::usr::usr_dao::find_by_id_usr;<#
+}
+#><#
 }
 #>
 
@@ -1454,10 +1458,10 @@ async fn get_from_query(
   Ok(from_query)
 }
 
-// MARK: find_all
+// MARK: find_all_<#=table#>
 /// 根据搜索条件和分页查找<#=table_comment#>列表
 #[allow(unused_mut)]
-pub async fn find_all(
+pub async fn find_all_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -1465,7 +1469,7 @@ pub async fn find_all(
 ) -> Result<Vec<<#=tableUP#>Model>> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "find_all";<#
+  let method = "find_all_<#=table#>";<#
   if (opts.langTable && isUseI18n) {
   #>
   
@@ -1965,7 +1969,7 @@ pub async fn find_all(
     model.<#=column_name#>_lbl = {
       let res = get_object(&model.<#=column_name#>).await?;
       if let Some(res) = res {
-        String::from_utf8(res)?
+        String::from_utf8(res.to_vec())?
       } else {
         String::new()
       }
@@ -2124,15 +2128,15 @@ pub async fn find_all(
   Ok(res)
 }
 
-// MARK: find_count
+// MARK: find_count_<#=table#>
 /// 根据条件查找<#=table_comment#>总数
-pub async fn find_count(
+pub async fn find_count_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "find_count";
+  let method = "find_count_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2268,9 +2272,9 @@ pub fn get_n_route() -> i18n_dao::NRoute {
 }
 #>
 
-// MARK: get_field_comments
+// MARK: get_field_comments_<#=table#>
 /// 获取<#=table_comment#>字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_<#=table#>(
   _options: Option<Options>,
 ) -> Result<<#=tableUP#>FieldComment> {<#
   if (isUseI18n) {
@@ -2491,16 +2495,16 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-// MARK: find_one
+// MARK: find_one_<#=table#>
 /// 根据条件查找第一个<#=table_comment#>
-pub async fn find_one(
+pub async fn find_one_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "find_one";
+  let method = "find_one_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2536,7 +2540,7 @@ pub async fn find_one(
     pg_size: 1.into(),
   }.into();
   
-  let res = find_all(
+  let res = find_all_<#=table#>(
     search,
     page,
     sort,
@@ -2548,15 +2552,15 @@ pub async fn find_one(
   Ok(model)
 }
 
-// MARK: find_by_id
+// MARK: find_by_id_<#=table#>
 /// 根据 id 查找<#=table_comment#>
-pub async fn find_by_id(
+pub async fn find_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "find_by_id";
+  let method = "find_by_id_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2585,25 +2589,25 @@ pub async fn find_by_id(
     ..Default::default()
   }.into();
   
-  let res = find_one(
+  let <#=table#>_model = find_one_<#=table#>(
     search,
     None,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(<#=table#>_model)
 }
 
-// MARK: find_by_ids
+// MARK: find_by_ids_<#=table#>
 /// 根据 ids 查找<#=table_comment#>
 #[allow(dead_code)]
-pub async fn find_by_ids(
+pub async fn find_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<Vec<<#=Table_Up#>Model>> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "find_by_ids";
+  let method = "find_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2638,7 +2642,7 @@ pub async fn find_by_ids(
     ..Default::default()
   }.into();
   
-  let models = find_all(
+  let models = find_all_<#=table#>(
     search,
     None,
     None,
@@ -2701,16 +2705,16 @@ pub async fn find_by_ids(
   Ok(models)
 }
 
-// MARK: exists
+// MARK: exists_<#=table#>
 /// 根据搜索条件判断<#=table_comment#>是否存在
 #[allow(dead_code)]
-pub async fn exists(
+pub async fn exists_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "exists";
+  let method = "exists_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2732,7 +2736,7 @@ pub async fn exists(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count(
+  let total = find_count_<#=table#>(
     search,
     options,
   ).await?;
@@ -2740,16 +2744,16 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-// MARK: exists_by_id
+// MARK: exists_by_id_<#=table#>
 /// 根据 id 判断<#=table_comment#>是否存在
 #[allow(dead_code)]
-pub async fn exists_by_id(
+pub async fn exists_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "exists_by_id";
+  let method = "exists_by_id_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2774,7 +2778,7 @@ pub async fn exists_by_id(
     ..Default::default()
   }.into();
   
-  let res = exists(
+  let res = exists_<#=table#>(
     search,
     options,
   ).await?;
@@ -2782,17 +2786,17 @@ pub async fn exists_by_id(
   Ok(res)
 }
 
-// MARK: find_by_unique
+// MARK: find_by_unique_<#=table#>
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique(
+pub async fn find_by_unique_<#=table#>(
   search: <#=tableUP#>Search,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<<#=tableUP#>Model>> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "find_by_unique";
+  let method = "find_by_unique_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2816,7 +2820,7 @@ pub async fn find_by_unique(
   let options = Some(options);
   
   if let Some(id) = search.id {
-    let model = find_by_id(
+    let model = find_by_id_<#=table#>(
       id,
       options.clone(),
     ).await?;
@@ -2858,7 +2862,7 @@ pub async fn find_by_unique(
       ..Default::default()
     };
     
-    find_all(
+    find_all_<#=table#>(
       search.into(),
       None,
       sort.clone(),
@@ -2914,17 +2918,17 @@ pub fn equals_by_unique(
   #>
 }
 
-// MARK: check_by_unique
+// MARK: check_by_unique_<#=table#>
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique(
+pub async fn check_by_unique_<#=table#>(
   input: <#=tableUP#>Input,
   model: <#=tableUP#>Model,
   options: Option<Options>,
 ) -> Result<Option<<#=Table_Up#>Id>> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "check_by_unique";
+  let method = "check_by_unique_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2962,7 +2966,7 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let id = update_by_id(
+    let id = update_by_id_<#=table#>(
       model.id.clone(),
       input,
       options,
@@ -2993,10 +2997,10 @@ pub async fn check_by_unique(
   Ok(None)
 }
 
-// MARK: set_id_by_lbl
+// MARK: set_id_by_lbl_<#=table#>
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables, dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_<#=table#>(
   input: <#=tableUP#>Input,
 ) -> Result<<#=tableUP#>Input> {
   
@@ -3037,7 +3041,7 @@ pub async fn set_id_by_lbl(
         input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
       }
       if input.<#=column_name_rust#>.is_none() {
-        let field_comments = get_field_comments(
+        let field_comments = get_field_comments_<#=table#>(
           None,
         ).await?;
         let column_comment = field_comments.<#=column_name_rust#>;<#
@@ -3072,7 +3076,7 @@ pub async fn set_id_by_lbl(
         input.<#=column_name_rust#> = chrono::NaiveDate::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
       }
       if input.<#=column_name_rust#>.is_none() {
-        let field_comments = get_field_comments(
+        let field_comments = get_field_comments_<#=table#>(
           None,
         ).await?;
         let column_comment = field_comments.<#=column_name_rust#>;<#
@@ -3104,7 +3108,7 @@ pub async fn set_id_by_lbl(
         input.<#=column_name_rust#> = chrono::NaiveDateTime::parse_from_str(<#=column_name#>_lbl, "%Y-%m-%d").ok();
       }
       if input.<#=column_name_rust#>.is_none() {
-        let field_comments = get_field_comments(
+        let field_comments = get_field_comments_<#=table#>(
           None,
         ).await?;
         let column_comment = field_comments.<#=column_name_rust#>;<#
@@ -3413,7 +3417,7 @@ pub async fn set_id_by_lbl(
     );<#
     if (foreignTableUp !== tableUP) {
     #>
-    let model = <#=daoStr#>find_one(
+    let model = <#=daoStr#>find_one_<#=foreignTable#>(
       crate::r#gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
         <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
         ..Default::default()
@@ -3423,7 +3427,7 @@ pub async fn set_id_by_lbl(
     ).await?;<#
     } else {
     #>
-    let model = <#=daoStr#>find_one(
+    let model = <#=daoStr#>find_one_<#=foreignTable#>(
       <#=tableUP#>Search {
         <#=rustKeyEscape(foreignKey.lbl)#>: input.<#=column_name#>_<#=foreignKey.lbl#>.clone(),
         ..Default::default()
@@ -3442,7 +3446,7 @@ pub async fn set_id_by_lbl(
   {<#
     if (foreignTableUp !== tableUP) {
     #>
-    let <#=foreignTable#>_model = <#=daoStr#>find_one(
+    let <#=foreignTable#>_model = <#=daoStr#>find_one_<#=foreignTable#>(
       crate::r#gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
         id: input.<#=column_name_rust#>.clone(),
         ..Default::default()
@@ -3452,7 +3456,7 @@ pub async fn set_id_by_lbl(
     ).await?;<#
     } else {
     #>
-    let <#=foreignTable#>_model = <#=daoStr#>find_one(
+    let <#=foreignTable#>_model = <#=daoStr#>find_one_<#=foreignTable#>(
       <#=tableUP#>Search {
         id: input.<#=column_name_rust#>.clone(),
         ..Default::default()
@@ -3485,7 +3489,7 @@ pub async fn set_id_by_lbl(
     });
     let mut models = vec![];
     for lbl in input.<#=column_name_rust#>_<#=foreignKey.lbl#>.clone().unwrap_or_default() {
-      let model = <#=daoStr#>find_one(
+      let model = <#=daoStr#>find_one_<#=foreignTable#>(
         crate::r#gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_model::<#=foreignTableUp#>Search {
           <#=foreignKey.lbl#>: lbl.into(),
           ..Default::default()
@@ -3613,16 +3617,16 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-// MARK: creates_return
+// MARK: creates_return_<#=table#>
 /// 批量创建<#=table_comment#>并返回
 #[allow(dead_code)]
-pub async fn creates_return(
+pub async fn creates_return_<#=table#>(
   inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
 ) -> Result<Vec<<#=Table_Up#>Model>> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "creates_return";
+  let method = "creates_return_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -3643,23 +3647,23 @@ pub async fn creates_return(
     options.clone(),
   ).await?;
   
-  let models = find_by_ids(
+  let models_<#=table#> = find_by_ids_<#=table#>(
     ids,
     options,
   ).await?;
   
-  Ok(models)
+  Ok(models_<#=table#>)
 }
 
-// MARK: creates
+// MARK: creates_<#=table#>
 /// 批量创建<#=table_comment#>
-pub async fn creates(
+pub async fn creates_<#=table#>(
   inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
 ) -> Result<Vec<<#=Table_Up#>Id>> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "creates";
+  let method = "creates_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -3717,7 +3721,7 @@ async fn _creates(
       #>
       <#=autoCodeColumn.autoCode.seq#>,
       <#=autoCodeColumn.COLUMN_NAME#>,
-    ) = find_auto_code(options.clone()).await?;<#
+    ) = find_auto_code_<#=table#>(options.clone()).await?;<#
     if (dateSeq) {
     #>
     input.<#=dateSeq#> = Some(<#=dateSeq#>);<#
@@ -3850,7 +3854,7 @@ async fn _creates(
     }
     #>
     
-    let old_models = find_by_unique(
+    let old_models = find_by_unique_<#=table#>(
       input.clone().into(),
       None,
       options.clone(),
@@ -3863,7 +3867,7 @@ async fn _creates(
         let options = Options::from(options.clone())
           .set_unique_type(unique_type);
         
-        id = check_by_unique(
+        id = check_by_unique_<#=table#>(
           input.clone(),
           old_model,
           Some(options),
@@ -4560,14 +4564,14 @@ const dateSeq = autoCodeColumn?.autoCode?.dateSeq;
 if (autoCodeColumn && !dateSeq) {
 #>
 
-// MARK: findAutoCode
+// MARK: find_auto_code_<#=table#>
 /// 获得 <#=table_comment#> 自动编码
-pub async fn find_auto_code(
+pub async fn find_auto_code_<#=table#>(
   options: Option<Options>,
 ) -> Result<(u32, String)> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "find_auto_code";
+  let method = "find_auto_code_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -4582,7 +4586,7 @@ pub async fn find_auto_code(
     );
   }
   
-  let model = find_one(
+  let model = find_one_<#=table#>(
     None,
     Some(vec![
       SortInput {
@@ -4604,14 +4608,14 @@ pub async fn find_auto_code(
 } else if (autoCodeColumn && dateSeq) {
 #>
 
-// MARK: findAutoCode
+// MARK: find_auto_code_<#=table#>
 /// 获得 <#=table_comment#> 自动编码
-pub async fn find_auto_code(
+pub async fn find_auto_code_<#=table#>(
   options: Option<Options>,
 ) -> Result<(chrono::NaiveDate, u32, String)> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "find_auto_code";
+  let method = "find_auto_code_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -4626,7 +4630,7 @@ pub async fn find_auto_code(
     );
   }
   
-  let model = find_one(
+  let model = find_one_<#=table#>(
     None,
     Some(vec![
       SortInput {
@@ -4667,43 +4671,52 @@ pub async fn find_auto_code(
 }
 #>
 
-// MARK: create_return
+// MARK: create_return_<#=table#>
 /// 创建<#=table_comment#>并返回
 #[allow(dead_code)]
-pub async fn create_return(
+pub async fn create_return_<#=table#>(
   #[allow(unused_mut)]
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
 ) -> Result<<#=Table_Up#>Model> {
   
-  let table = "<#=mod#>_<#=table#>";
+  let id = create_<#=table#>(
+    input.clone(),
+    options.clone(),
+  ).await?;
   
-  let id = create(input.clone(), options.clone()).await?;
-  
-  let model = find_by_id(
+  let model_<#=table#> = find_by_id_<#=table#>(
     id,
     options,
   ).await?;
   
-  if model.is_none() {
-    return Err(eyre!("create_return: Create failed in dao: {table}"));
+  if model_<#=table#>.is_none() {
+    let err_msg = "create_return_<#=table#>: model_<#=table#>.is_none()";
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
-  let model = model.unwrap();
+  let model_<#=table#> = model_<#=table#>.unwrap();
   
-  Ok(model)
+  Ok(model_<#=table#>)
 }
 
-// MARK: create
+// MARK: create_<#=table#>
 /// 创建<#=table_comment#>
 #[allow(dead_code)]
-pub async fn create(
+pub async fn create_<#=table#>(
   #[allow(unused_mut)]
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
 ) -> Result<<#=Table_Up#>Id> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "create";
+  let method = "create_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -4734,15 +4747,15 @@ pub async fn create(
 if (hasTenantId) {
 #>
 
-// MARK: update_tenant_by_id
+// MARK: update_tenant_by_id_<#=table#>
 /// <#=table_comment#>根据id修改租户id
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "<#=mod#>_<#=table#>";
-  let method = "update_tenant_by_id";
+  let method = "update_tenant_by_id_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -4784,15 +4797,19 @@ pub async fn update_tenant_by_id(
 if (hasVersion) {
 #>
 
-// MARK: get_version_by_id
-pub async fn get_version_by_id(
+// MARK: get_version_by_id_<#=table#>
+pub async fn get_version_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
+  options: Option<Options>,
 ) -> Result<Option<u32>> {
   
-  let model = find_by_id(id, None).await?;
+  let <#=table#>_model = find_by_id_<#=table#>(
+    id,
+    options,
+  ).await?;
   
-  if let Some(model) = model {
-    return Ok(model.version.into());
+  if let Some(<#=table#>_model) = <#=table#>_model {
+    return Ok(<#=table#>_model.version.into());
   }
   
   Ok(0.into())
@@ -4802,9 +4819,9 @@ pub async fn get_version_by_id(
 if (hasDataPermit() && hasCreateUsrId) {
 #>
 
-// MARK: get_editable_data_permits_by_ids
+// MARK: get_editable_data_permits_by_ids_<#=table#>
 /// 根据 ids 获取<#=table_comment#>是否可编辑数据权限
-pub async fn get_editable_data_permits_by_ids(
+pub async fn get_editable_data_permits_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<Vec<u8>> {
@@ -4835,7 +4852,7 @@ pub async fn get_editable_data_permits_by_ids(
   
   let mut editable_data_permits = vec![];
   
-  let models = find_all(
+  let models = find_all_<#=table#>(
     <#=Table_Up#>Search {
       ids: ids.clone().into(),
       ..Default::default()
@@ -5114,18 +5131,18 @@ async fn refresh_lang_by_input(
 }
 #>
 
-// MARK: update_by_id
+// MARK: update_by_id_<#=table#>
 /// 根据 id 修改<#=table_comment#>
 #[allow(unused_mut)]
 #[allow(unused_variables)]
-pub async fn update_by_id(
+pub async fn update_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   mut input: <#=tableUP#>Input,
   options: Option<Options>,
 ) -> Result<<#=Table_Up#>Id> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "update_by_id";
+  let method = "update_by_id_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());<#
   if (hasVersion || hasUpdateUsrId || hasUpdateTime) {
@@ -5248,7 +5265,7 @@ pub async fn update_by_id(
   }
   #>
   
-  let old_model = find_by_id(
+  let old_model = find_by_id_<#=table#>(
     id.clone(),
     options.clone(),
   ).await?;
@@ -5387,7 +5404,7 @@ pub async fn update_by_id(
     let mut input = input.clone();
     input.id = None;
     
-    let models = find_by_unique(
+    let models = find_by_unique_<#=table#>(
       input.into(),
       None,
       options.clone(),
@@ -5919,7 +5936,7 @@ pub async fn update_by_id(
     if !is_silent_mode {
       if let Some(version) = input.version {
         if version > 0 {
-          let version2 = get_version_by_id(id.clone()).await?;
+          let version2 = get_version_by_id_<#=table#>(id.clone(), options.clone()).await?;
           if let Some(version2) = version2 {
             if version2 > version {<#
               if (isUseI18n) {
@@ -6194,10 +6211,10 @@ fn get_cache_tables() -> Vec<&'static str> {
   ]
 }
 
-// MARK: del_cache
+// MARK: del_cache_<#=table#>
 /// 清空缓存
 #[allow(dead_code)]
-pub async fn del_cache() -> Result<()> {
+pub async fn del_cache_<#=table#>() -> Result<()> {
   let cache_key1s = get_cache_tables();
   del_caches(
     cache_key1s.as_slice(),
@@ -6205,16 +6222,16 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-// MARK: delete_by_ids
+// MARK: delete_by_ids_<#=table#>
 /// 根据 ids 删除<#=table_comment#>
 #[allow(unused_variables)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "delete_by_ids";
+  let method = "delete_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -6313,7 +6330,7 @@ pub async fn delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_by_id(
+    let old_model = find_by_id_<#=table#>(
       id.clone(),
       options.clone(),
     ).await?;
@@ -6782,15 +6799,15 @@ pub async fn delete_by_ids(
 if (hasDefault) {
 #>
 
-// MARK: default_by_id
+// MARK: default_by_id_<#=table#>
 /// 根据 id 设置默认<#=table_comment#>
-pub async fn default_by_id(
+pub async fn default_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "default_by_id";
+  let method = "default_by_id_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -6882,10 +6899,10 @@ pub async fn default_by_id(
 if (hasEnabled) {
 #>
 
-// MARK: get_is_enabled_by_id
+// MARK: get_is_enabled_by_id_<#=table#>
 /// 根据 id 查找<#=table_comment#>是否已启用
 /// 记录不存在则返回 false
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -6894,7 +6911,7 @@ pub async fn get_is_enabled_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let model = find_by_id(
+  let model = find_by_id_<#=table#>(
     id,
     options,
   ).await?;
@@ -6910,16 +6927,16 @@ pub async fn get_is_enabled_by_id(
   Ok(is_enabled)
 }
 
-// MARK: enable_by_ids
+// MARK: enable_by_ids_<#=table#>
 /// 根据 ids 启用或者禁用<#=table_comment#>
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "enable_by_ids";
+  let method = "enable_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -7000,11 +7017,11 @@ pub async fn enable_by_ids(
 if (hasLocked) {
 #>
 
-// MARK: get_is_locked_by_id
+// MARK: get_is_locked_by_id_<#=table#>
 /// 根据 id 查找<#=table_comment#>是否已锁定
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -7013,7 +7030,7 @@ pub async fn get_is_locked_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let model = find_by_id(
+  let model = find_by_id_<#=table#>(
     id,
     options,
   ).await?;
@@ -7029,16 +7046,16 @@ pub async fn get_is_locked_by_id(
   Ok(is_locked)
 }
 
-// MARK: lock_by_ids
+// MARK: lock_by_ids_<#=table#>
 /// 根据 ids 锁定或者解锁<#=table_comment#>
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "lock_by_ids";
+  let method = "lock_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -7118,15 +7135,15 @@ pub async fn lock_by_ids(
 if (hasIsDeleted) {
 #>
 
-// MARK: revert_by_ids
+// MARK: revert_by_ids_<#=table#>
 /// 根据 ids 还原<#=table_comment#>
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "revert_by_ids";
+  let method = "revert_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());<#
   if (opts.langTable && isUseI18n) {
@@ -7184,7 +7201,7 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let mut old_model = find_one(
+    let mut old_model = find_one_<#=table#>(
       <#=tableUP#>Search {
         id: Some(id.clone()),
         is_deleted: Some(1),
@@ -7195,7 +7212,7 @@ pub async fn revert_by_ids(
     ).await?;
     
     if old_model.is_none() {
-      old_model = find_by_id(
+      old_model = find_by_id_<#=table#>(
         id.clone(),
         options.clone(),
       ).await?;
@@ -7210,7 +7227,7 @@ pub async fn revert_by_ids(
       let mut input: <#=tableUP#>Input = old_model.clone().into();
       input.id = None;
       
-      let models = find_by_unique(
+      let models = find_by_unique_<#=table#>(
         input.into(),
         None,
         options.clone(),
@@ -7487,16 +7504,16 @@ pub async fn revert_by_ids(
 if (hasIsDeleted) {
 #>
 
-// MARK: force_delete_by_ids
+// MARK: force_delete_by_ids_<#=table#>
 /// 根据 ids 彻底删除<#=table_comment#>
 #[allow(unused_variables)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "force_delete_by_ids";
+  let method = "force_delete_by_ids_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -7530,7 +7547,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all(
+    let old_model = find_all_<#=table#>(
       <#=tableUP#>Search {
         id: id.clone().into(),<#
         if (hasIsDeleted) {
@@ -7808,14 +7825,14 @@ pub async fn force_delete_by_ids(
 if (hasOrderBy) {
 #>
 
-// MARK: find_last_order_by
+// MARK: find_last_order_by_<#=table#>
 /// 查找 <#=table_comment#> order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_<#=table#>(
   options: Option<Options>,
 ) -> Result<u32> {
   
   let table = "<#=mod#>_<#=table#>";
-  let method = "find_last_order_by";
+  let method = "find_last_order_by_<#=table#>";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -7887,10 +7904,10 @@ pub async fn find_last_order_by(
 if (hasEnabled) {
 #>
 
-// MARK: validate_is_enabled
+// MARK: validate_is_enabled_<#=table#>
 /// 校验<#=table_comment#>是否启用
 #[allow(dead_code)]
-pub async fn validate_is_enabled(
+pub async fn validate_is_enabled_<#=table#>(
   model: &<#=tableUP#>Model,
 ) -> Result<()> {
   if model.is_enabled == 0 {<#
@@ -7917,10 +7934,10 @@ pub async fn validate_is_enabled(
 }
 #>
 
-// MARK: validate_option
+// MARK: validate_option_<#=table#>
 /// 校验<#=table_comment#>是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_<#=table#>(
   model: Option<<#=tableUP#>Model>,
 ) -> Result<<#=tableUP#>Model> {
   if model.is_none() {<#

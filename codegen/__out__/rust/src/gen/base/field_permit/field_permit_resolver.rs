@@ -10,6 +10,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
 use crate::src::base::permit::permit_service::use_permit;
 
 use super::field_permit_model::*;
@@ -17,7 +18,7 @@ use super::field_permit_service;
 
 /// 根据搜索条件和分页查找字段权限列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_field_permit(
   search: Option<FieldPermitSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -32,7 +33,7 @@ pub async fn find_all(
   
   check_sort_field_permit(sort.as_deref())?;
   
-  let models = field_permit_service::find_all(
+  let models = field_permit_service::find_all_field_permit(
     search,
     page,
     sort,
@@ -44,7 +45,7 @@ pub async fn find_all(
 
 /// 根据条件查找字段权限总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_field_permit(
   search: Option<FieldPermitSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -55,7 +56,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = field_permit_service::find_count(
+  let num = field_permit_service::find_count_field_permit(
     search,
     options,
   ).await?;
@@ -65,7 +66,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个字段权限
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_field_permit(
   search: Option<FieldPermitSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -79,7 +80,7 @@ pub async fn find_one(
   
   check_sort_field_permit(sort.as_deref())?;
   
-  let model = field_permit_service::find_one(
+  let model = field_permit_service::find_one_field_permit(
     search,
     sort,
     options,
@@ -90,7 +91,7 @@ pub async fn find_one(
 
 /// 根据 id 查找字段权限
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_field_permit(
   id: FieldPermitId,
   options: Option<Options>,
 ) -> Result<Option<FieldPermitModel>> {
@@ -101,7 +102,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = field_permit_service::find_by_id(
+  let model = field_permit_service::find_by_id_field_permit(
     id,
     options,
   ).await?;
@@ -111,7 +112,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找字段权限
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_field_permit(
   ids: Vec<FieldPermitId>,
   options: Option<Options>,
 ) -> Result<Vec<FieldPermitModel>> {
@@ -122,7 +123,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = field_permit_service::find_by_ids(
+  let models = field_permit_service::find_by_ids_field_permit(
     ids,
     options,
   ).await?;
@@ -133,7 +134,7 @@ pub async fn find_by_ids(
 /// 根据 id 修改字段权限
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_field_permit(
   id: FieldPermitId,
   input: FieldPermitInput,
   options: Option<Options>,
@@ -149,7 +150,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = field_permit_service::set_id_by_lbl(
+  let input = field_permit_service::set_id_by_lbl_field_permit(
     input,
   ).await?;
   
@@ -158,7 +159,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = field_permit_service::update_by_id(
+  let res = field_permit_service::update_by_id_field_permit(
     id,
     input,
     options,
@@ -169,7 +170,7 @@ pub async fn update_by_id(
 
 /// 获取字段权限字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_field_permit(
   options: Option<Options>,
 ) -> Result<FieldPermitFieldComment> {
   
@@ -179,7 +180,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = field_permit_service::get_field_comments(
+  let comments = field_permit_service::get_field_comments_field_permit(
     options,
   ).await?;
   
@@ -188,7 +189,7 @@ pub async fn get_field_comments(
 
 /// 查找 字段权限 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_field_permit(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -198,7 +199,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = field_permit_service::find_last_order_by(
+  let res = field_permit_service::find_last_order_by_field_permit(
     options,
   ).await?;
   

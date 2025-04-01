@@ -212,14 +212,14 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  findLastOrderBy,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  createOrg,
+  findOneOrg,
+  findLastOrderByOrg,
+  updateByIdOrg,
+  getDefaultInputOrg,
+  getPagePathOrg,
+  intoInputOrg,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -230,7 +230,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathOrg();
 
 const permitStore = usePermitStore();
 
@@ -312,7 +312,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneOrg;
 
 /** 打开对话框 */
 async function showDialog(
@@ -327,7 +327,7 @@ async function showDialog(
       ids?: OrgId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneOrg;
     action: DialogAction;
   },
 ) {
@@ -354,7 +354,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneOrg;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -387,8 +387,8 @@ async function showDialog(
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputOrg(),
+      findLastOrderByOrg({
         notLoading: !inited,
       }),
     ]);
@@ -411,7 +411,7 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderBy({
+      findLastOrderByOrg({
         notLoading: !inited,
       }),
     ]);
@@ -501,8 +501,8 @@ async function onReset() {
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputOrg(),
+      findLastOrderByOrg({
         notLoading: !inited,
       }),
     ]);
@@ -536,7 +536,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputOrg({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -669,7 +669,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createOrg(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -684,7 +684,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdOrg(
       dialogModel.id,
       dialogModel2,
     );

@@ -21,9 +21,6 @@ declare global {
   
   /** 业务选项 */
   interface OptbizSearch extends OptbizSearchType {
-    /** 键 */
-    ky?: string;
-    ky_like?: string;
     /** 锁定 */
     is_locked?: number[];
     /** 排序 */

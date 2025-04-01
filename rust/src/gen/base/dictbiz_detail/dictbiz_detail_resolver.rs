@@ -10,6 +10,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
 use crate::src::base::permit::permit_service::use_permit;
 
 use super::dictbiz_detail_model::*;
@@ -19,7 +20,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找业务字典明细列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_dictbiz_detail(
   search: Option<DictbizDetailSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +35,7 @@ pub async fn find_all(
   
   check_sort_dictbiz_detail(sort.as_deref())?;
   
-  let models = dictbiz_detail_service::find_all(
+  let models = dictbiz_detail_service::find_all_dictbiz_detail(
     search,
     page,
     sort,
@@ -46,7 +47,7 @@ pub async fn find_all(
 
 /// 根据条件查找业务字典明细总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_dictbiz_detail(
   search: Option<DictbizDetailSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +58,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = dictbiz_detail_service::find_count(
+  let num = dictbiz_detail_service::find_count_dictbiz_detail(
     search,
     options,
   ).await?;
@@ -67,7 +68,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个业务字典明细
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_dictbiz_detail(
   search: Option<DictbizDetailSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +82,7 @@ pub async fn find_one(
   
   check_sort_dictbiz_detail(sort.as_deref())?;
   
-  let model = dictbiz_detail_service::find_one(
+  let model = dictbiz_detail_service::find_one_dictbiz_detail(
     search,
     sort,
     options,
@@ -92,7 +93,7 @@ pub async fn find_one(
 
 /// 根据 id 查找业务字典明细
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_dictbiz_detail(
   id: DictbizDetailId,
   options: Option<Options>,
 ) -> Result<Option<DictbizDetailModel>> {
@@ -103,7 +104,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = dictbiz_detail_service::find_by_id(
+  let model = dictbiz_detail_service::find_by_id_dictbiz_detail(
     id,
     options,
   ).await?;
@@ -113,7 +114,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找业务字典明细
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_dictbiz_detail(
   ids: Vec<DictbizDetailId>,
   options: Option<Options>,
 ) -> Result<Vec<DictbizDetailModel>> {
@@ -124,7 +125,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = dictbiz_detail_service::find_by_ids(
+  let models = dictbiz_detail_service::find_by_ids_dictbiz_detail(
     ids,
     options,
   ).await?;
@@ -135,7 +136,7 @@ pub async fn find_by_ids(
 /// 创建业务字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_dictbiz_detail(
   inputs: Vec<DictbizDetailInput>,
   options: Option<Options>,
 ) -> Result<Vec<DictbizDetailId>> {
@@ -154,7 +155,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = dictbiz_detail_service::set_id_by_lbl(
+    let input = dictbiz_detail_service::set_id_by_lbl_dictbiz_detail(
       input,
     ).await?;
     inputs2.push(input);
@@ -166,7 +167,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = dictbiz_detail_service::creates(
+  let ids = dictbiz_detail_service::creates_dictbiz_detail(
     inputs,
     options,
   ).await?;
@@ -177,7 +178,7 @@ pub async fn creates(
 /// 业务字典明细根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_dictbiz_detail(
   id: DictbizDetailId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -189,7 +190,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = dictbiz_detail_service::update_tenant_by_id(
+  let num = dictbiz_detail_service::update_tenant_by_id_dictbiz_detail(
     id,
     tenant_id,
     options,
@@ -201,7 +202,7 @@ pub async fn update_tenant_by_id(
 /// 根据 id 修改业务字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_dictbiz_detail(
   id: DictbizDetailId,
   input: DictbizDetailInput,
   options: Option<Options>,
@@ -217,7 +218,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = dictbiz_detail_service::set_id_by_lbl(
+  let input = dictbiz_detail_service::set_id_by_lbl_dictbiz_detail(
     input,
   ).await?;
   
@@ -226,7 +227,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = dictbiz_detail_service::update_by_id(
+  let res = dictbiz_detail_service::update_by_id_dictbiz_detail(
     id,
     input,
     options,
@@ -238,7 +239,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除业务字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_dictbiz_detail(
   ids: Vec<DictbizDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -254,7 +255,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = dictbiz_detail_service::delete_by_ids(
+  let num = dictbiz_detail_service::delete_by_ids_dictbiz_detail(
     ids,
     options,
   ).await?;
@@ -266,7 +267,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_dictbiz_detail(
   id: DictbizDetailId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -277,7 +278,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = dictbiz_detail_service::get_is_enabled_by_id(
+  let is_enabled = dictbiz_detail_service::get_is_enabled_by_id_dictbiz_detail(
     id,
     options,
   ).await?;
@@ -288,7 +289,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用业务字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_dictbiz_detail(
   ids: Vec<DictbizDetailId>,
   is_enabled: u8,
   options: Option<Options>,
@@ -305,7 +306,7 @@ pub async fn enable_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = dictbiz_detail_service::enable_by_ids(
+  let num = dictbiz_detail_service::enable_by_ids_dictbiz_detail(
     ids,
     is_enabled,
     options,
@@ -316,7 +317,7 @@ pub async fn enable_by_ids(
 
 /// 获取业务字典明细字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_dictbiz_detail(
   options: Option<Options>,
 ) -> Result<DictbizDetailFieldComment> {
   
@@ -326,7 +327,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = dictbiz_detail_service::get_field_comments(
+  let comments = dictbiz_detail_service::get_field_comments_dictbiz_detail(
     options,
   ).await?;
   
@@ -336,7 +337,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原业务字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_dictbiz_detail(
   ids: Vec<DictbizDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -352,7 +353,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = dictbiz_detail_service::revert_by_ids(
+  let num = dictbiz_detail_service::revert_by_ids_dictbiz_detail(
     ids,
     options,
   ).await?;
@@ -363,7 +364,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除业务字典明细
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_dictbiz_detail(
   ids: Vec<DictbizDetailId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -379,7 +380,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = dictbiz_detail_service::force_delete_by_ids(
+  let num = dictbiz_detail_service::force_delete_by_ids_dictbiz_detail(
     ids,
     options,
   ).await?;
@@ -389,7 +390,7 @@ pub async fn force_delete_by_ids(
 
 /// 查找 业务字典明细 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_dictbiz_detail(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -399,7 +400,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = dictbiz_detail_service::find_last_order_by(
+  let res = dictbiz_detail_service::find_last_order_by_dictbiz_detail(
     options,
   ).await?;
   

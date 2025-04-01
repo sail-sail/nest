@@ -10,6 +10,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
 use crate::src::base::permit::permit_service::use_permit;
 
 use super::lang_model::*;
@@ -17,7 +18,7 @@ use super::lang_service;
 
 /// 根据搜索条件和分页查找语言列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_lang(
   search: Option<LangSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -32,7 +33,7 @@ pub async fn find_all(
   
   check_sort_lang(sort.as_deref())?;
   
-  let models = lang_service::find_all(
+  let models = lang_service::find_all_lang(
     search,
     page,
     sort,
@@ -44,7 +45,7 @@ pub async fn find_all(
 
 /// 根据条件查找语言总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_lang(
   search: Option<LangSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -55,7 +56,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = lang_service::find_count(
+  let num = lang_service::find_count_lang(
     search,
     options,
   ).await?;
@@ -65,7 +66,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个语言
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_lang(
   search: Option<LangSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -79,7 +80,7 @@ pub async fn find_one(
   
   check_sort_lang(sort.as_deref())?;
   
-  let model = lang_service::find_one(
+  let model = lang_service::find_one_lang(
     search,
     sort,
     options,
@@ -90,7 +91,7 @@ pub async fn find_one(
 
 /// 根据 id 查找语言
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_lang(
   id: LangId,
   options: Option<Options>,
 ) -> Result<Option<LangModel>> {
@@ -101,7 +102,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = lang_service::find_by_id(
+  let model = lang_service::find_by_id_lang(
     id,
     options,
   ).await?;
@@ -111,7 +112,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找语言
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_lang(
   ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<Vec<LangModel>> {
@@ -122,7 +123,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = lang_service::find_by_ids(
+  let models = lang_service::find_by_ids_lang(
     ids,
     options,
   ).await?;
@@ -133,7 +134,7 @@ pub async fn find_by_ids(
 /// 创建语言
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_lang(
   inputs: Vec<LangInput>,
   options: Option<Options>,
 ) -> Result<Vec<LangId>> {
@@ -152,7 +153,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = lang_service::set_id_by_lbl(
+    let input = lang_service::set_id_by_lbl_lang(
       input,
     ).await?;
     inputs2.push(input);
@@ -164,7 +165,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = lang_service::creates(
+  let ids = lang_service::creates_lang(
     inputs,
     options,
   ).await?;
@@ -175,7 +176,7 @@ pub async fn creates(
 /// 根据 id 修改语言
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_lang(
   id: LangId,
   input: LangInput,
   options: Option<Options>,
@@ -191,7 +192,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = lang_service::set_id_by_lbl(
+  let input = lang_service::set_id_by_lbl_lang(
     input,
   ).await?;
   
@@ -200,7 +201,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = lang_service::update_by_id(
+  let res = lang_service::update_by_id_lang(
     id,
     input,
     options,
@@ -212,7 +213,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除语言
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_lang(
   ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -228,7 +229,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = lang_service::delete_by_ids(
+  let num = lang_service::delete_by_ids_lang(
     ids,
     options,
   ).await?;
@@ -240,7 +241,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_lang(
   id: LangId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -251,7 +252,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = lang_service::get_is_enabled_by_id(
+  let is_enabled = lang_service::get_is_enabled_by_id_lang(
     id,
     options,
   ).await?;
@@ -262,7 +263,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用语言
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_lang(
   ids: Vec<LangId>,
   is_enabled: u8,
   options: Option<Options>,
@@ -279,7 +280,7 @@ pub async fn enable_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = lang_service::enable_by_ids(
+  let num = lang_service::enable_by_ids_lang(
     ids,
     is_enabled,
     options,
@@ -290,7 +291,7 @@ pub async fn enable_by_ids(
 
 /// 获取语言字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_lang(
   options: Option<Options>,
 ) -> Result<LangFieldComment> {
   
@@ -300,7 +301,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = lang_service::get_field_comments(
+  let comments = lang_service::get_field_comments_lang(
     options,
   ).await?;
   
@@ -310,7 +311,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原语言
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_lang(
   ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -326,7 +327,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = lang_service::revert_by_ids(
+  let num = lang_service::revert_by_ids_lang(
     ids,
     options,
   ).await?;
@@ -337,7 +338,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除语言
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_lang(
   ids: Vec<LangId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -353,7 +354,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = lang_service::force_delete_by_ids(
+  let num = lang_service::force_delete_by_ids_lang(
     ids,
     options,
   ).await?;
@@ -363,7 +364,7 @@ pub async fn force_delete_by_ids(
 
 /// 查找 语言 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_lang(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -373,7 +374,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = lang_service::find_last_order_by(
+  let res = lang_service::find_last_order_by_lang(
     options,
   ).await?;
   

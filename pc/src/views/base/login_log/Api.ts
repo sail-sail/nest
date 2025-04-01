@@ -2,17 +2,17 @@
 
 import {
   LoginLogType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   loginLogQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: LoginLogModel | null,
@@ -23,7 +23,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputLoginLog(
   model?: LoginLogInput,
 ) {
   const input: LoginLogInput = {
@@ -44,9 +44,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找登录日志列表
+ * 根据搜索条件查找 登录日志 列表
  */
-export async function findAll(
+export async function findAllLoginLog(
   search?: LoginLogSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -79,7 +79,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个登录日志
  */
-export async function findOne(
+export async function findOneLoginLog(
   search?: LoginLogSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -105,9 +105,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找登录日志总数
+ * 根据搜索条件查找 登录日志 总数
  */
-export async function findCount(
+export async function findCountLoginLog(
   search?: LoginLogSearch,
   opt?: GqlOpt,
 ) {
@@ -128,9 +128,9 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找登录日志
+ * 根据 id 查找 登录日志
  */
-export async function findById(
+export async function findByIdLoginLog(
   id?: LoginLogId,
   opt?: GqlOpt,
 ): Promise<LoginLogModel | undefined> {
@@ -157,9 +157,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找登录日志
+ * 根据 ids 查找 登录日志
  */
-export async function findByIds(
+export async function findByIdsLoginLog(
   ids: LoginLogId[],
   opt?: GqlOpt,
 ): Promise<LoginLogModel[]> {
@@ -194,9 +194,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除登录日志
+ * 根据 ids 删除 登录日志
  */
-export async function deleteByIds(
+export async function deleteByIdsLoginLog(
   ids: LoginLogId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -220,9 +220,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原登录日志
+ * 根据 ids 还原 登录日志
  */
-export async function revertByIds(
+export async function revertByIdsLoginLog(
   ids: LoginLogId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -246,9 +246,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除登录日志
+ * 根据 ids 彻底删除 登录日志
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsLoginLog(
   ids: LoginLogId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -271,12 +271,12 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathLoginLog() {
   return "/base/login_log";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputLoginLog() {
   const defaultInput: LoginLogInput = {
     type: LoginLogType.Account,
     is_succ: 0,
