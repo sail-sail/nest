@@ -24,7 +24,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找按钮权限列表
-pub async fn find_all(
+pub async fn find_all_permit(
   search: Option<PermitSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -38,7 +38,7 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let permit_models = permit_dao::find_all(
+  let permit_models = permit_dao::find_all_permit(
     Some(search),
     page,
     sort,
@@ -49,7 +49,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找按钮权限总数
-pub async fn find_count(
+pub async fn find_count_permit(
   search: Option<PermitSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -61,7 +61,7 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let permit_num = permit_dao::find_count(
+  let permit_num = permit_dao::find_count_permit(
     Some(search),
     options,
   ).await?;
@@ -70,7 +70,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个按钮权限
-pub async fn find_one(
+pub async fn find_one_permit(
   search: Option<PermitSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -83,7 +83,7 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let permit_model = permit_dao::find_one(
+  let permit_model = permit_dao::find_one_permit(
     Some(search),
     sort,
     options,
@@ -93,12 +93,12 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找按钮权限
-pub async fn find_by_id(
+pub async fn find_by_id_permit(
   permit_id: PermitId,
   options: Option<Options>,
 ) -> Result<Option<PermitModel>> {
   
-  let permit_model = permit_dao::find_by_id(
+  let permit_model = permit_dao::find_by_id_permit(
     permit_id,
     options,
   ).await?;
@@ -107,12 +107,12 @@ pub async fn find_by_id(
 }
 
 /// 根据 permit_ids 查找按钮权限
-pub async fn find_by_ids(
+pub async fn find_by_ids_permit(
   permit_ids: Vec<PermitId>,
   options: Option<Options>,
 ) -> Result<Vec<PermitModel>> {
   
-  let permit_models = permit_dao::find_by_ids(
+  let permit_models = permit_dao::find_by_ids_permit(
     permit_ids,
     options,
   ).await?;
@@ -122,11 +122,11 @@ pub async fn find_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_permit(
   permit_input: PermitInput,
 ) -> Result<PermitInput> {
   
-  let permit_input = permit_dao::set_id_by_lbl(
+  let permit_input = permit_dao::set_id_by_lbl_permit(
     permit_input,
   ).await?;
   
@@ -135,12 +135,12 @@ pub async fn set_id_by_lbl(
 
 /// 创建按钮权限
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_permit(
   permit_inputs: Vec<PermitInput>,
   options: Option<Options>,
 ) -> Result<Vec<PermitId>> {
   
-  let permit_ids = permit_dao::creates(
+  let permit_ids = permit_dao::creates_permit(
     permit_inputs,
     options,
   ).await?;
@@ -150,14 +150,14 @@ pub async fn creates(
 
 /// 根据 permit_id 修改按钮权限
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_permit(
   permit_id: PermitId,
   mut permit_input: PermitInput,
   options: Option<Options>,
 ) -> Result<PermitId> {
   
-  let old_model = validate_option(
-    permit_dao::find_by_id(
+  let old_model = validate_option_permit(
+    permit_dao::find_by_id_permit(
       permit_id.clone(),
       options.clone(),
     ).await?,
@@ -172,7 +172,7 @@ pub async fn update_by_id(
     permit_input.code = None;
   }
   
-  let permit_id = permit_dao::update_by_id(
+  let permit_id = permit_dao::update_by_id_permit(
     permit_id,
     permit_input,
     options.clone(),
@@ -183,23 +183,23 @@ pub async fn update_by_id(
 
 /// 校验按钮权限是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_permit(
   permit_model: Option<PermitModel>,
 ) -> Result<PermitModel> {
   
-  let permit_model = permit_dao::validate_option(permit_model).await?;
+  let permit_model = permit_dao::validate_option_permit(permit_model).await?;
   
   Ok(permit_model)
 }
 
 /// 根据 permit_ids 删除按钮权限
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_permit(
   permit_ids: Vec<PermitId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let old_models = permit_dao::find_all(
+  let old_models = permit_dao::find_all_permit(
     Some(PermitSearch {
       ids: Some(permit_ids.clone()),
       ..Default::default()
@@ -216,7 +216,7 @@ pub async fn delete_by_ids(
     }
   }
   
-  let num = permit_dao::delete_by_ids(
+  let num = permit_dao::delete_by_ids_permit(
     permit_ids,
     options,
   ).await?;
@@ -225,11 +225,11 @@ pub async fn delete_by_ids(
 }
 
 /// 获取按钮权限字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_permit(
   options: Option<Options>,
 ) -> Result<PermitFieldComment> {
   
-  let comments = permit_dao::get_field_comments(
+  let comments = permit_dao::get_field_comments_permit(
     options,
   ).await?;
   
@@ -237,11 +237,11 @@ pub async fn get_field_comments(
 }
 
 /// 查找 按钮权限 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_permit(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = permit_dao::find_last_order_by(
+  let res = permit_dao::find_last_order_by_permit(
     options,
   ).await?;
   

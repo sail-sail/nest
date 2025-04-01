@@ -35,7 +35,7 @@ impl OptionsGenQuery {
       .with_auth()?
       .build()
       .scope({
-        options_resolver::find_all(
+        options_resolver::find_all_options(
           search,
           page,
           sort,
@@ -54,7 +54,7 @@ impl OptionsGenQuery {
       .with_auth()?
       .build()
       .scope({
-        options_resolver::find_count(
+        options_resolver::find_count_options(
           search,
           None,
         )
@@ -72,7 +72,7 @@ impl OptionsGenQuery {
       .with_auth()?
       .build()
       .scope({
-        options_resolver::find_one(
+        options_resolver::find_one_options(
           search,
           sort,
           None,
@@ -90,7 +90,7 @@ impl OptionsGenQuery {
       .with_auth()?
       .build()
       .scope({
-        options_resolver::find_by_id(
+        options_resolver::find_by_id_options(
           id,
           None,
         )
@@ -107,7 +107,7 @@ impl OptionsGenQuery {
       .with_auth()?
       .build()
       .scope({
-        options_resolver::find_by_ids(
+        options_resolver::find_by_ids_options(
           ids,
           None,
         )
@@ -125,7 +125,7 @@ impl OptionsGenQuery {
       .with_auth()?
       .build()
       .scope({
-        options_resolver::get_is_enabled_by_id(
+        options_resolver::get_is_enabled_by_id_options(
           id,
           None,
         )
@@ -144,7 +144,7 @@ impl OptionsGenQuery {
       .with_auth()?
       .build()
       .scope({
-        options_resolver::get_is_locked_by_id(
+        options_resolver::get_is_locked_by_id_options(
           id,
           None,
         )
@@ -159,7 +159,7 @@ impl OptionsGenQuery {
     Ctx::builder(ctx)
       .build()
       .scope({
-        options_resolver::get_field_comments(
+        options_resolver::get_field_comments_options(
           None,
         )
       }).await
@@ -174,7 +174,7 @@ impl OptionsGenQuery {
       .with_auth()?
       .build()
       .scope({
-        options_resolver::find_last_order_by(
+        options_resolver::find_last_order_by_options(
           None,
         )
       }).await
@@ -205,7 +205,7 @@ impl OptionsGenMutation {
       .with_creating(Some(true))
       .build()
       .scope({
-        options_resolver::creates(
+        options_resolver::creates_options(
           inputs,
           options.into(),
         )
@@ -224,7 +224,7 @@ impl OptionsGenMutation {
       .with_tran()
       .build()
       .scope({
-        options_resolver::update_by_id(
+        options_resolver::update_by_id_options(
           id,
           input,
           None,
@@ -243,7 +243,7 @@ impl OptionsGenMutation {
       .with_tran()
       .build()
       .scope({
-        options_resolver::delete_by_ids(
+        options_resolver::delete_by_ids_options(
           ids,
           None,
         )
@@ -262,7 +262,7 @@ impl OptionsGenMutation {
       .with_tran()
       .build()
       .scope({
-        options_resolver::enable_by_ids(
+        options_resolver::enable_by_ids_options(
           ids,
           is_enabled,
           None,
@@ -282,7 +282,7 @@ impl OptionsGenMutation {
       .with_tran()
       .build()
       .scope({
-        options_resolver::lock_by_ids(
+        options_resolver::lock_by_ids_options(
           ids,
           is_locked,
           None,
@@ -301,7 +301,7 @@ impl OptionsGenMutation {
       .with_tran()
       .build()
       .scope({
-        options_resolver::revert_by_ids(
+        options_resolver::revert_by_ids_options(
           ids,
           None,
         )
@@ -319,7 +319,7 @@ impl OptionsGenMutation {
       .with_tran()
       .build()
       .scope({
-        options_resolver::force_delete_by_ids(
+        options_resolver::force_delete_by_ids_options(
           ids,
           None,
         )

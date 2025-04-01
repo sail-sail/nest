@@ -4,11 +4,11 @@ import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   operationRecordQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: OperationRecordModel | null,
@@ -19,7 +19,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputOperationRecord(
   model?: OperationRecordInput,
 ) {
   const input: OperationRecordInput = {
@@ -46,9 +46,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找操作记录列表
+ * 根据搜索条件查找 操作记录 列表
  */
-export async function findAll(
+export async function findAllOperationRecord(
   search?: OperationRecordSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -81,7 +81,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个操作记录
  */
-export async function findOne(
+export async function findOneOperationRecord(
   search?: OperationRecordSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -107,9 +107,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找操作记录总数
+ * 根据搜索条件查找 操作记录 总数
  */
-export async function findCount(
+export async function findCountOperationRecord(
   search?: OperationRecordSearch,
   opt?: GqlOpt,
 ) {
@@ -130,9 +130,9 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找操作记录
+ * 根据 id 查找 操作记录
  */
-export async function findById(
+export async function findByIdOperationRecord(
   id?: OperationRecordId,
   opt?: GqlOpt,
 ): Promise<OperationRecordModel | undefined> {
@@ -159,9 +159,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找操作记录
+ * 根据 ids 查找 操作记录
  */
-export async function findByIds(
+export async function findByIdsOperationRecord(
   ids: OperationRecordId[],
   opt?: GqlOpt,
 ): Promise<OperationRecordModel[]> {
@@ -196,9 +196,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除操作记录
+ * 根据 ids 删除 操作记录
  */
-export async function deleteByIds(
+export async function deleteByIdsOperationRecord(
   ids: OperationRecordId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -222,9 +222,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原操作记录
+ * 根据 ids 还原 操作记录
  */
-export async function revertByIds(
+export async function revertByIdsOperationRecord(
   ids: OperationRecordId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -248,9 +248,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除操作记录
+ * 根据 ids 彻底删除 操作记录
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsOperationRecord(
   ids: OperationRecordId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -273,12 +273,12 @@ export async function forceDeleteByIds(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathOperationRecord() {
   return "/base/operation_record";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputOperationRecord() {
   const defaultInput: OperationRecordInput = {
     time: 0,
   };

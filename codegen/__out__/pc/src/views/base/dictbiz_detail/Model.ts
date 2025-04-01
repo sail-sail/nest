@@ -4,7 +4,7 @@ import type {
   DictbizDetailModel as DictbizDetailModelType,
   DictbizDetailSearch as DictbizDetailSearchType,
   DictbizDetailFieldComment as DictbizDetailFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

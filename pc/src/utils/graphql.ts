@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import cfg from "@/utils/config";
-import { uniqueID, uuid } from "./StringUtil";
+import cfg from "@/utils/config.ts";
+import { uniqueID, uuid } from "./StringUtil.ts";
 import { ElMessage } from "element-plus";
 
 import {
@@ -15,14 +15,14 @@ import {
 import combinedQuery from "graphql-combine-query";
 
 import useUsrStore from "../store/usr";
-import useBackground_taskStore from "../store/background_task";
+import useBackground_taskStore from "../store/background_task.ts";
 
-import { request } from "./request";
+import { request } from "./request.ts";
 
 export {
   request,
   baseURL,
-} from "./request";
+} from "./request.ts";
 
 declare global {
   
@@ -104,8 +104,8 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   } else {
     queryInfos.push(queryInfo);
   }
-  await Promise.resolve();
-  await Promise.resolve();
+  await nextTick();
+  await nextTick();
   const queryInfos2 = queryInfos;
   const queryInfosRepeat2 = queryInfosRepeat;
   queryInfos = [ ];

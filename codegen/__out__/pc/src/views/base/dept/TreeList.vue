@@ -82,8 +82,8 @@
 import List from "./List.vue";
 
 import {
-  findTree,
-  getPagePath,
+  findTreeDept,
+  getPagePathDept,
 } from "./Api";
 
 import type {
@@ -92,7 +92,7 @@ import type {
 } from "element-plus/es/components/tree/src/tree.type";
 
 defineOptions({
-  name: "部门",
+  name: "部门TreeList",
 });
 
 const props = defineProps<{
@@ -100,7 +100,7 @@ const props = defineProps<{
   showBuildIn?: string;
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathDept();
 
 let inited = $ref(false);
 
@@ -119,7 +119,7 @@ watch(
   },
 );
 
-type ModelTree = Awaited<ReturnType<typeof findTree>>[0];
+type ModelTree = Awaited<ReturnType<typeof findTreeDept>>[0];
 
 let treeData = $ref<ModelTree[]>([ ]);
 
@@ -177,7 +177,7 @@ function getById(
 }
 
 async function onFindTree() {
-  treeData = await findTree();
+  treeData = await findTreeDept();
   if (parent_id) {
     const node = getById(parent_id, treeData);
     if (!node) {

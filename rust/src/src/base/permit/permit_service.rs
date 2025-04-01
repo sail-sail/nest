@@ -10,21 +10,21 @@ use crate::common::context::{
 use crate::src::base::i18n::i18n_dao::ns;
 
 use crate::r#gen::base::menu::menu_dao::{
-  find_by_id as find_by_id_menu,
-  find_one as find_one_menu,
+  find_by_id_menu,
+  find_one_menu,
 };
 use crate::r#gen::base::menu::menu_model::{MenuSearch, MenuId};
 
 use super::permit_model::GetUsrPermits;
 
-use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id_usr;
 
-use crate::r#gen::base::role::role_dao::find_all as find_all_role;
+use crate::r#gen::base::role::role_dao::find_all_role;
 use crate::r#gen::base::role::role_model::RoleSearch;
 
 use crate::r#gen::base::permit::permit_dao::{
-  find_all as find_all_permit,
-  find_one as find_one_permit,
+  find_all_permit,
+  find_one_permit,
 };
 use crate::r#gen::base::permit::permit_model::PermitSearch;
 use crate::r#gen::base::permit::permit_model::PermitModel;

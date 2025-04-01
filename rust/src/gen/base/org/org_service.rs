@@ -26,7 +26,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找组织列表
-pub async fn find_all(
+pub async fn find_all_org(
   search: Option<OrgSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -40,7 +40,7 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let org_models = org_dao::find_all(
+  let org_models = org_dao::find_all_org(
     Some(search),
     page,
     sort,
@@ -51,7 +51,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找组织总数
-pub async fn find_count(
+pub async fn find_count_org(
   search: Option<OrgSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -63,7 +63,7 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let org_num = org_dao::find_count(
+  let org_num = org_dao::find_count_org(
     Some(search),
     options,
   ).await?;
@@ -72,7 +72,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个组织
-pub async fn find_one(
+pub async fn find_one_org(
   search: Option<OrgSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -85,7 +85,7 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let org_model = org_dao::find_one(
+  let org_model = org_dao::find_one_org(
     Some(search),
     sort,
     options,
@@ -95,12 +95,12 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找组织
-pub async fn find_by_id(
+pub async fn find_by_id_org(
   org_id: OrgId,
   options: Option<Options>,
 ) -> Result<Option<OrgModel>> {
   
-  let org_model = org_dao::find_by_id(
+  let org_model = org_dao::find_by_id_org(
     org_id,
     options,
   ).await?;
@@ -109,12 +109,12 @@ pub async fn find_by_id(
 }
 
 /// 根据 org_ids 查找组织
-pub async fn find_by_ids(
+pub async fn find_by_ids_org(
   org_ids: Vec<OrgId>,
   options: Option<Options>,
 ) -> Result<Vec<OrgModel>> {
   
-  let org_models = org_dao::find_by_ids(
+  let org_models = org_dao::find_by_ids_org(
     org_ids,
     options,
   ).await?;
@@ -124,11 +124,11 @@ pub async fn find_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_org(
   org_input: OrgInput,
 ) -> Result<OrgInput> {
   
-  let org_input = org_dao::set_id_by_lbl(
+  let org_input = org_dao::set_id_by_lbl_org(
     org_input,
   ).await?;
   
@@ -137,12 +137,12 @@ pub async fn set_id_by_lbl(
 
 /// 创建组织
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_org(
   org_inputs: Vec<OrgInput>,
   options: Option<Options>,
 ) -> Result<Vec<OrgId>> {
   
-  let org_ids = org_dao::creates(
+  let org_ids = org_dao::creates_org(
     org_inputs,
     options,
   ).await?;
@@ -152,13 +152,13 @@ pub async fn creates(
 
 /// 组织根据 org_id 修改租户id
 #[allow(dead_code)]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_org(
   org_id: OrgId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = org_dao::update_tenant_by_id(
+  let num = org_dao::update_tenant_by_id_org(
     org_id,
     tenant_id,
     options,
@@ -169,13 +169,13 @@ pub async fn update_tenant_by_id(
 
 /// 根据 org_id 修改组织
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_org(
   org_id: OrgId,
   mut org_input: OrgInput,
   options: Option<Options>,
 ) -> Result<OrgId> {
   
-  let is_locked = org_dao::get_is_locked_by_id(
+  let is_locked = org_dao::get_is_locked_by_id_org(
     org_id.clone(),
     None,
   ).await?;
@@ -185,7 +185,7 @@ pub async fn update_by_id(
     return Err(eyre!(err_msg));
   }
   
-  let org_id = org_dao::update_by_id(
+  let org_id = org_dao::update_by_id_org(
     org_id,
     org_input,
     options.clone(),
@@ -196,23 +196,23 @@ pub async fn update_by_id(
 
 /// 校验组织是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_org(
   org_model: Option<OrgModel>,
 ) -> Result<OrgModel> {
   
-  let org_model = org_dao::validate_option(org_model).await?;
+  let org_model = org_dao::validate_option_org(org_model).await?;
   
   Ok(org_model)
 }
 
 /// 根据 org_ids 删除组织
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_org(
   org_ids: Vec<OrgId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let old_models = org_dao::find_all(
+  let old_models = org_dao::find_all_org(
     Some(OrgSearch {
       ids: Some(org_ids.clone()),
       ..Default::default()
@@ -229,7 +229,7 @@ pub async fn delete_by_ids(
     }
   }
   
-  let num = org_dao::delete_by_ids(
+  let num = org_dao::delete_by_ids_org(
     org_ids,
     options,
   ).await?;
@@ -240,12 +240,12 @@ pub async fn delete_by_ids(
 /// 根据 org_id 查找组织是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_org(
   org_id: OrgId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_enabled = org_dao::get_is_enabled_by_id(
+  let is_enabled = org_dao::get_is_enabled_by_id_org(
     org_id,
     options,
   ).await?;
@@ -255,13 +255,13 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 org_ids 启用或者禁用组织
 #[allow(dead_code)]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_org(
   org_ids: Vec<OrgId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = org_dao::enable_by_ids(
+  let num = org_dao::enable_by_ids_org(
     org_ids,
     is_enabled,
     options,
@@ -274,12 +274,12 @@ pub async fn enable_by_ids(
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_org(
   org_id: OrgId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_locked = org_dao::get_is_locked_by_id(
+  let is_locked = org_dao::get_is_locked_by_id_org(
     org_id,
     options,
   ).await?;
@@ -289,13 +289,13 @@ pub async fn get_is_locked_by_id(
 
 /// 根据 org_ids 锁定或者解锁组织
 #[allow(dead_code)]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_org(
   org_ids: Vec<OrgId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = org_dao::lock_by_ids(
+  let num = org_dao::lock_by_ids_org(
     org_ids,
     is_locked,
     options,
@@ -305,11 +305,11 @@ pub async fn lock_by_ids(
 }
 
 /// 获取组织字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_org(
   options: Option<Options>,
 ) -> Result<OrgFieldComment> {
   
-  let comments = org_dao::get_field_comments(
+  let comments = org_dao::get_field_comments_org(
     options,
   ).await?;
   
@@ -318,12 +318,12 @@ pub async fn get_field_comments(
 
 /// 根据 org_ids 还原组织
 #[allow(dead_code)]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_org(
   org_ids: Vec<OrgId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = org_dao::revert_by_ids(
+  let num = org_dao::revert_by_ids_org(
     org_ids,
     options,
   ).await?;
@@ -333,12 +333,12 @@ pub async fn revert_by_ids(
 
 /// 根据 org_ids 彻底删除组织
 #[allow(dead_code)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_org(
   org_ids: Vec<OrgId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = org_dao::force_delete_by_ids(
+  let num = org_dao::force_delete_by_ids_org(
     org_ids,
     options,
   ).await?;
@@ -347,11 +347,11 @@ pub async fn force_delete_by_ids(
 }
 
 /// 查找 组织 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_org(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = org_dao::find_last_order_by(
+  let res = org_dao::find_last_order_by_org(
     options,
   ).await?;
   

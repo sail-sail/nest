@@ -4,7 +4,7 @@ import type {
   DomainModel as DomainModelType,
   DomainSearch as DomainSearchType,
   DomainFieldComment as DomainFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   

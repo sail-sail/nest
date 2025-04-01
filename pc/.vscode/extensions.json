@@ -2,7 +2,6 @@
   "recommendations": [
     "ms-ceintl.vscode-language-pack-zh-hans",
     "mikestead.dotenv",
-    "hediet.vscode-drawio-insiders-build",
     "janisdd.vscode-edit-csv",
     "mechatroner.rainbow-csv",
     "editorconfig.editorconfig",
@@ -13,7 +12,6 @@
     "ibm.output-colorizer",
     "deanhjjiang.split-line",
     "sysoev.language-stylus",
-    "stylelint.vscode-stylelint",
     "antfu.unocss",
     "jock.svg",
     "vue.volar",

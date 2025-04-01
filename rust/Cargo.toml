@@ -13,16 +13,16 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
 tracing-attributes = "0.1.28"
-tokio = { version = "1.44", features = ["rt-multi-thread", "macros", "net", "fs"], default-features = false }
-poem = { version = "3.1.7", features = ["rustls", "server", "multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"], default-features = false }
-async-graphql = { version = "7.0.15", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
+tokio = { version = "1.44", features = ["rt-multi-thread", "macros", "net", "fs"] }
+poem = { version = "3.1.8", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
+async-graphql = { version = "7.0.16", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
 smol_str = { version = "0.3", features = ["serde"] }
 slab = "0.4"
 chrono = { version = "0.4", features = ["serde"] }
 # anyhow = "1.0"
 sqlx = { version = "0.8.3", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15"
-rust-s3 = { version = "0.35.1", features = ["tokio-rustls-tls"], default-features = false }
+rust-s3 = { version = "0.35.1", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
 imstr = { version = "0.2", features = ["serde"] }
 jwt = "0.16"
 sha2 = "0.10"
@@ -47,14 +47,14 @@ redis = { version = "0.29", features = ["tokio-comp"], default-features = false 
 # pin-project = "1.1"
 bigdecimal = "0.4"
 time = "0.3"
-rust_decimal = "1.36"
-rust_decimal_macros = "1.36"
+rust_decimal = { version = "1.37", features = ["maths"]}
+rust_decimal_macros = "1.37"
 # enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2"
 # rayon = "1.10"
 regex = "1.11"
 # yarte = "0.15.7"
-image = { version = "0.25.5", features = ["webp"] }
+image = { version = "0.25.6", features = ["webp"] }
 delay_timer = "0.11.6"
 num-traits = "0.2"
 fast_chemail = "0.9"
@@ -69,7 +69,11 @@ derive_builder = "0.20"
 strum = { version = "0.27", features = ["derive"] }
 itertools = "0.14.0"
 color-eyre = "0.6.3"
-wx_pay = "0.2.3"
+rand = "0.9"
+rsa = { version = "0.9.8", features = ["sha2"] }
+aes-gcm = "0.10"
+pkcs8 = "0.10.2"
+serde_with = "3.12"
 
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"
@@ -77,7 +81,7 @@ wx_pay = "0.2.3"
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 tikv-jemallocator = "0.6.0"
 
-# [build.dependencies]
+# [build-dependencies]
 # protobuf-codegen = "3.7.1"
 
 [[bin]]

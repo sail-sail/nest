@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   iconQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: IconModel | null,
@@ -30,7 +30,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputIcon(
   model?: IconInput,
 ) {
   const input: IconInput = {
@@ -54,9 +54,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找图标库列表
+ * 根据搜索条件查找 图标库 列表
  */
-export async function findAll(
+export async function findAllIcon(
   search?: IconSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -89,7 +89,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个图标库
  */
-export async function findOne(
+export async function findOneIcon(
   search?: IconSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -115,9 +115,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找图标库总数
+ * 根据搜索条件查找 图标库 总数
  */
-export async function findCount(
+export async function findCountIcon(
   search?: IconSearch,
   opt?: GqlOpt,
 ) {
@@ -138,17 +138,14 @@ export async function findCount(
 }
 
 /**
- * 创建图标库
- * @param {IconInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 图标库
  */
-export async function create(
+export async function createIcon(
   input: IconInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<IconId> {
-  const ids = await creates(
+  const ids = await createsIcon(
     [ input ],
     unique_type,
     opt,
@@ -158,14 +155,14 @@ export async function create(
 }
 
 /**
- * 批量创建图标库
+ * 批量创建 图标库
  */
-export async function creates(
+export async function createsIcon(
   inputs: IconInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<IconId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputIcon);
   const data: {
     createsIcon: Mutation["createsIcon"];
   } = await mutation({
@@ -184,14 +181,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改图标库
+ * 根据 id 修改 图标库
  */
-export async function updateById(
+export async function updateByIdIcon(
   id: IconId,
   input: IconInput,
   opt?: GqlOpt,
 ): Promise<IconId> {
-  input = intoInput(input);
+  input = intoInputIcon(input);
   const data: {
     updateByIdIcon: Mutation["updateByIdIcon"];
   } = await mutation({
@@ -210,9 +207,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找图标库
+ * 根据 id 查找 图标库
  */
-export async function findById(
+export async function findByIdIcon(
   id?: IconId,
   opt?: GqlOpt,
 ): Promise<IconModel | undefined> {
@@ -239,9 +236,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找图标库
+ * 根据 ids 查找 图标库
  */
-export async function findByIds(
+export async function findByIdsIcon(
   ids: IconId[],
   opt?: GqlOpt,
 ): Promise<IconModel[]> {
@@ -276,9 +273,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除图标库
+ * 根据 ids 删除 图标库
  */
-export async function deleteByIds(
+export async function deleteByIdsIcon(
   ids: IconId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -302,9 +299,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用图标库
+ * 根据 ids 启用或禁用 图标库
  */
-export async function enableByIds(
+export async function enableByIdsIcon(
   ids: IconId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -330,9 +327,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 还原图标库
+ * 根据 ids 还原 图标库
  */
-export async function revertByIds(
+export async function revertByIdsIcon(
   ids: IconId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -356,9 +353,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除图标库
+ * 根据 ids 彻底删除 图标库
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsIcon(
   ids: IconId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -382,9 +379,9 @@ export async function forceDeleteByIds(
 }
 
 /**
- * 下载图标库导入模板
+ * 下载 图标库 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateIcon() {
   const {
     workerFn,
     workerStatus,
@@ -431,7 +428,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelIcon() {
   const {
     workerFn,
     workerStatus,
@@ -501,9 +498,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入图标库
+ * 批量导入 图标库
  */
-export async function importModels(
+export async function importModelsIcon(
   inputs: IconInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -530,7 +527,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsIcon(
         inputs,
         UniqueType.Update,
         opt,
@@ -550,7 +547,7 @@ export async function importModels(
 /**
  * 查找 图标库 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByIcon(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -566,12 +563,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathIcon() {
   return "/base/icon";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputIcon() {
   const defaultInput: IconInput = {
     is_enabled: 1,
     order_by: 1,

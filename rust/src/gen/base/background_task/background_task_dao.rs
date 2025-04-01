@@ -50,7 +50,7 @@ use super::background_task_model::*;
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-use crate::r#gen::base::usr::usr_dao::find_by_id as find_by_id_usr;
+use crate::r#gen::base::usr::usr_dao::find_by_id_usr;
 
 #[allow(unused_variables)]
 async fn get_where_query(
@@ -458,10 +458,10 @@ async fn get_from_query(
   Ok(from_query)
 }
 
-// MARK: find_all
+// MARK: find_all_background_task
 /// 根据搜索条件和分页查找后台任务列表
 #[allow(unused_mut)]
-pub async fn find_all(
+pub async fn find_all_background_task(
   search: Option<BackgroundTaskSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -469,7 +469,7 @@ pub async fn find_all(
 ) -> Result<Vec<BackgroundTaskModel>> {
   
   let table = "base_background_task";
-  let method = "find_all";
+  let method = "find_all_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -650,15 +650,15 @@ pub async fn find_all(
   Ok(res)
 }
 
-// MARK: find_count
+// MARK: find_count_background_task
 /// 根据条件查找后台任务总数
-pub async fn find_count(
+pub async fn find_count_background_task(
   search: Option<BackgroundTaskSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_background_task";
-  let method = "find_count";
+  let method = "find_count_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -779,9 +779,9 @@ pub async fn find_count(
   Ok(total)
 }
 
-// MARK: get_field_comments
+// MARK: get_field_comments_background_task
 /// 获取后台任务字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_background_task(
   _options: Option<Options>,
 ) -> Result<BackgroundTaskFieldComment> {
   
@@ -811,16 +811,16 @@ pub async fn get_field_comments(
   Ok(field_comments)
 }
 
-// MARK: find_one
+// MARK: find_one_background_task
 /// 根据条件查找第一个后台任务
-pub async fn find_one(
+pub async fn find_one_background_task(
   search: Option<BackgroundTaskSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
   
   let table = "base_background_task";
-  let method = "find_one";
+  let method = "find_one_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -856,7 +856,7 @@ pub async fn find_one(
     pg_size: 1.into(),
   }.into();
   
-  let res = find_all(
+  let res = find_all_background_task(
     search,
     page,
     sort,
@@ -868,15 +868,15 @@ pub async fn find_one(
   Ok(model)
 }
 
-// MARK: find_by_id
+// MARK: find_by_id_background_task
 /// 根据 id 查找后台任务
-pub async fn find_by_id(
+pub async fn find_by_id_background_task(
   id: BackgroundTaskId,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskModel>> {
   
   let table = "base_background_task";
-  let method = "find_by_id";
+  let method = "find_by_id_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -905,25 +905,25 @@ pub async fn find_by_id(
     ..Default::default()
   }.into();
   
-  let res = find_one(
+  let background_task_model = find_one_background_task(
     search,
     None,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(background_task_model)
 }
 
-// MARK: find_by_ids
+// MARK: find_by_ids_background_task
 /// 根据 ids 查找后台任务
 #[allow(dead_code)]
-pub async fn find_by_ids(
+pub async fn find_by_ids_background_task(
   ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<Vec<BackgroundTaskModel>> {
   
   let table = "base_background_task";
-  let method = "find_by_ids";
+  let method = "find_by_ids_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -958,7 +958,7 @@ pub async fn find_by_ids(
     ..Default::default()
   }.into();
   
-  let models = find_all(
+  let models = find_all_background_task(
     search,
     None,
     None,
@@ -987,16 +987,16 @@ pub async fn find_by_ids(
   Ok(models)
 }
 
-// MARK: exists
+// MARK: exists_background_task
 /// 根据搜索条件判断后台任务是否存在
 #[allow(dead_code)]
-pub async fn exists(
+pub async fn exists_background_task(
   search: Option<BackgroundTaskSearch>,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "base_background_task";
-  let method = "exists";
+  let method = "exists_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1018,7 +1018,7 @@ pub async fn exists(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count(
+  let total = find_count_background_task(
     search,
     options,
   ).await?;
@@ -1026,16 +1026,16 @@ pub async fn exists(
   Ok(total > 0)
 }
 
-// MARK: exists_by_id
+// MARK: exists_by_id_background_task
 /// 根据 id 判断后台任务是否存在
 #[allow(dead_code)]
-pub async fn exists_by_id(
+pub async fn exists_by_id_background_task(
   id: BackgroundTaskId,
   options: Option<Options>,
 ) -> Result<bool> {
   
   let table = "base_background_task";
-  let method = "exists_by_id";
+  let method = "exists_by_id_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1060,7 +1060,7 @@ pub async fn exists_by_id(
     ..Default::default()
   }.into();
   
-  let res = exists(
+  let res = exists_background_task(
     search,
     options,
   ).await?;
@@ -1068,17 +1068,17 @@ pub async fn exists_by_id(
   Ok(res)
 }
 
-// MARK: find_by_unique
+// MARK: find_by_unique_background_task
 /// 通过唯一约束获得数据列表
 #[allow(unused_variables)]
-pub async fn find_by_unique(
+pub async fn find_by_unique_background_task(
   search: BackgroundTaskSearch,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
 ) -> Result<Vec<BackgroundTaskModel>> {
   
   let table = "base_background_task";
-  let method = "find_by_unique";
+  let method = "find_by_unique_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1102,7 +1102,7 @@ pub async fn find_by_unique(
   let options = Some(options);
   
   if let Some(id) = search.id {
-    let model = find_by_id(
+    let model = find_by_id_background_task(
       id,
       options.clone(),
     ).await?;
@@ -1124,17 +1124,17 @@ pub fn equals_by_unique(
   false
 }
 
-// MARK: check_by_unique
+// MARK: check_by_unique_background_task
 /// 通过唯一约束检查数据是否已经存在
 #[allow(unused_variables)]
-pub async fn check_by_unique(
+pub async fn check_by_unique_background_task(
   input: BackgroundTaskInput,
   model: BackgroundTaskModel,
   options: Option<Options>,
 ) -> Result<Option<BackgroundTaskId>> {
   
   let table = "base_background_task";
-  let method = "check_by_unique";
+  let method = "check_by_unique_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1172,7 +1172,7 @@ pub async fn check_by_unique(
     return Ok(None);
   }
   if unique_type == UniqueType::Update {
-    let id = update_by_id(
+    let id = update_by_id_background_task(
       model.id.clone(),
       input,
       options,
@@ -1186,10 +1186,10 @@ pub async fn check_by_unique(
   Ok(None)
 }
 
-// MARK: set_id_by_lbl
+// MARK: set_id_by_lbl_background_task
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(unused_variables, dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_background_task(
   input: BackgroundTaskInput,
 ) -> Result<BackgroundTaskInput> {
   
@@ -1204,7 +1204,7 @@ pub async fn set_id_by_lbl(
         input.begin_time = chrono::NaiveDateTime::parse_from_str(begin_time_lbl, "%Y-%m-%d").ok();
       }
       if input.begin_time.is_none() {
-        let field_comments = get_field_comments(
+        let field_comments = get_field_comments_background_task(
           None,
         ).await?;
         let column_comment = field_comments.begin_time;
@@ -1223,7 +1223,7 @@ pub async fn set_id_by_lbl(
         input.end_time = chrono::NaiveDateTime::parse_from_str(end_time_lbl, "%Y-%m-%d").ok();
       }
       if input.end_time.is_none() {
-        let field_comments = get_field_comments(
+        let field_comments = get_field_comments_background_task(
           None,
         ).await?;
         let column_comment = field_comments.end_time;
@@ -1322,16 +1322,16 @@ pub async fn set_id_by_lbl(
   Ok(input)
 }
 
-// MARK: creates_return
+// MARK: creates_return_background_task
 /// 批量创建后台任务并返回
 #[allow(dead_code)]
-pub async fn creates_return(
+pub async fn creates_return_background_task(
   inputs: Vec<BackgroundTaskInput>,
   options: Option<Options>,
 ) -> Result<Vec<BackgroundTaskModel>> {
   
   let table = "base_background_task";
-  let method = "creates_return";
+  let method = "creates_return_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1352,23 +1352,23 @@ pub async fn creates_return(
     options.clone(),
   ).await?;
   
-  let models = find_by_ids(
+  let models_background_task = find_by_ids_background_task(
     ids,
     options,
   ).await?;
   
-  Ok(models)
+  Ok(models_background_task)
 }
 
-// MARK: creates
+// MARK: creates_background_task
 /// 批量创建后台任务
-pub async fn creates(
+pub async fn creates_background_task(
   inputs: Vec<BackgroundTaskInput>,
   options: Option<Options>,
 ) -> Result<Vec<BackgroundTaskId>> {
   
   let table = "base_background_task";
-  let method = "creates";
+  let method = "creates_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1418,7 +1418,7 @@ async fn _creates(
       return Err(eyre!("Can not set id when create in dao: {table}"));
     }
     
-    let old_models = find_by_unique(
+    let old_models = find_by_unique_background_task(
       input.clone().into(),
       None,
       options.clone(),
@@ -1431,7 +1431,7 @@ async fn _creates(
         let options = Options::from(options.clone())
           .set_unique_type(unique_type);
         
-        id = check_by_unique(
+        id = check_by_unique_background_task(
           input.clone(),
           old_model,
           Some(options),
@@ -1700,43 +1700,52 @@ async fn _creates(
   Ok(ids2)
 }
 
-// MARK: create_return
+// MARK: create_return_background_task
 /// 创建后台任务并返回
 #[allow(dead_code)]
-pub async fn create_return(
+pub async fn create_return_background_task(
   #[allow(unused_mut)]
   mut input: BackgroundTaskInput,
   options: Option<Options>,
 ) -> Result<BackgroundTaskModel> {
   
-  let table = "base_background_task";
+  let id = create_background_task(
+    input.clone(),
+    options.clone(),
+  ).await?;
   
-  let id = create(input.clone(), options.clone()).await?;
-  
-  let model = find_by_id(
+  let model_background_task = find_by_id_background_task(
     id,
     options,
   ).await?;
   
-  if model.is_none() {
-    return Err(eyre!("create_return: Create failed in dao: {table}"));
+  if model_background_task.is_none() {
+    let err_msg = "create_return_background_task: model_background_task.is_none()";
+    return Err(eyre!(
+      ServiceException {
+        code: String::new(),
+        message: err_msg.to_owned(),
+        trace: true,
+        ..Default::default()
+      },
+    ));
   }
-  let model = model.unwrap();
+  let model_background_task = model_background_task.unwrap();
   
-  Ok(model)
+  Ok(model_background_task)
 }
 
-// MARK: create
+// MARK: create_background_task
 /// 创建后台任务
 #[allow(dead_code)]
-pub async fn create(
+pub async fn create_background_task(
   #[allow(unused_mut)]
   mut input: BackgroundTaskInput,
   options: Option<Options>,
 ) -> Result<BackgroundTaskId> {
   
   let table = "base_background_task";
-  let method = "create";
+  let method = "create_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1765,15 +1774,15 @@ pub async fn create(
   Ok(id)
 }
 
-// MARK: update_tenant_by_id
+// MARK: update_tenant_by_id_background_task
 /// 后台任务根据id修改租户id
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_background_task(
   id: BackgroundTaskId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   let table = "base_background_task";
-  let method = "update_tenant_by_id";
+  let method = "update_tenant_by_id_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1811,18 +1820,18 @@ pub async fn update_tenant_by_id(
   Ok(num)
 }
 
-// MARK: update_by_id
+// MARK: update_by_id_background_task
 /// 根据 id 修改后台任务
 #[allow(unused_mut)]
 #[allow(unused_variables)]
-pub async fn update_by_id(
+pub async fn update_by_id_background_task(
   id: BackgroundTaskId,
   mut input: BackgroundTaskInput,
   options: Option<Options>,
 ) -> Result<BackgroundTaskId> {
   
   let table = "base_background_task";
-  let method = "update_by_id";
+  let method = "update_by_id_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -1846,7 +1855,7 @@ pub async fn update_by_id(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let old_model = find_by_id(
+  let old_model = find_by_id_background_task(
     id.clone(),
     options.clone(),
   ).await?;
@@ -1871,7 +1880,7 @@ pub async fn update_by_id(
     let mut input = input.clone();
     input.id = None;
     
-    let models = find_by_unique(
+    let models = find_by_unique_background_task(
       input.into(),
       None,
       options.clone(),
@@ -2069,10 +2078,10 @@ fn get_cache_tables() -> Vec<&'static str> {
   ]
 }
 
-// MARK: del_cache
+// MARK: del_cache_background_task
 /// 清空缓存
 #[allow(dead_code)]
-pub async fn del_cache() -> Result<()> {
+pub async fn del_cache_background_task() -> Result<()> {
   let cache_key1s = get_cache_tables();
   del_caches(
     cache_key1s.as_slice(),
@@ -2080,16 +2089,16 @@ pub async fn del_cache() -> Result<()> {
   Ok(())
 }
 
-// MARK: delete_by_ids
+// MARK: delete_by_ids_background_task
 /// 根据 ids 删除后台任务
 #[allow(unused_variables)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_background_task(
   ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_background_task";
-  let method = "delete_by_ids";
+  let method = "delete_by_ids_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2123,7 +2132,7 @@ pub async fn delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_by_id(
+    let old_model = find_by_id_background_task(
       id.clone(),
       options.clone(),
     ).await?;
@@ -2205,15 +2214,15 @@ pub async fn delete_by_ids(
   Ok(num)
 }
 
-// MARK: revert_by_ids
+// MARK: revert_by_ids_background_task
 /// 根据 ids 还原后台任务
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_background_task(
   ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_background_task";
-  let method = "revert_by_ids";
+  let method = "revert_by_ids_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2247,7 +2256,7 @@ pub async fn revert_by_ids(
     
     let args: Vec<_> = args.into();
     
-    let mut old_model = find_one(
+    let mut old_model = find_one_background_task(
       BackgroundTaskSearch {
         id: Some(id.clone()),
         is_deleted: Some(1),
@@ -2258,7 +2267,7 @@ pub async fn revert_by_ids(
     ).await?;
     
     if old_model.is_none() {
-      old_model = find_by_id(
+      old_model = find_by_id_background_task(
         id.clone(),
         options.clone(),
       ).await?;
@@ -2273,7 +2282,7 @@ pub async fn revert_by_ids(
       let mut input: BackgroundTaskInput = old_model.clone().into();
       input.id = None;
       
-      let models = find_by_unique(
+      let models = find_by_unique_background_task(
         input.into(),
         None,
         options.clone(),
@@ -2303,16 +2312,16 @@ pub async fn revert_by_ids(
   Ok(num)
 }
 
-// MARK: force_delete_by_ids
+// MARK: force_delete_by_ids_background_task
 /// 根据 ids 彻底删除后台任务
 #[allow(unused_variables)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_background_task(
   ids: Vec<BackgroundTaskId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
   let table = "base_background_task";
-  let method = "force_delete_by_ids";
+  let method = "force_delete_by_ids_background_task";
   
   let is_debug = get_is_debug(options.as_ref());
   
@@ -2341,7 +2350,7 @@ pub async fn force_delete_by_ids(
   let mut num = 0;
   for id in ids.clone() {
     
-    let old_model = find_all(
+    let old_model = find_all_background_task(
       BackgroundTaskSearch {
         id: id.clone().into(),
         is_deleted: 1.into(),
@@ -2389,10 +2398,10 @@ pub async fn force_delete_by_ids(
   Ok(num)
 }
 
-// MARK: validate_option
+// MARK: validate_option_background_task
 /// 校验后台任务是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_background_task(
   model: Option<BackgroundTaskModel>,
 ) -> Result<BackgroundTaskModel> {
   if model.is_none() {

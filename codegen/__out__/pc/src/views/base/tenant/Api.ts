@@ -1,21 +1,21 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   tenantQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 import {
-  findTree as findMenuTree,
-} from "@/views/base/menu/Api";
+  findTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 async function setLblById(
   model?: TenantModel | null,
@@ -26,7 +26,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputTenant(
   model?: TenantInput,
 ) {
   const input: TenantInput = {
@@ -42,9 +42,9 @@ export function intoInput(
     // 菜单权限
     menu_ids: model?.menu_ids,
     menu_ids_lbl: model?.menu_ids_lbl,
-    // 简介
+    // 标题
     title: model?.title,
-    // 描述
+    // 简介
     info: model?.info,
     // 语言
     lang_id: model?.lang_id,
@@ -64,9 +64,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找租户列表
+ * 根据搜索条件查找 租户 列表
  */
-export async function findAll(
+export async function findAllTenant(
   search?: TenantSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -99,7 +99,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个租户
  */
-export async function findOne(
+export async function findOneTenant(
   search?: TenantSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -125,9 +125,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找租户总数
+ * 根据搜索条件查找 租户 总数
  */
-export async function findCount(
+export async function findCountTenant(
   search?: TenantSearch,
   opt?: GqlOpt,
 ) {
@@ -148,17 +148,14 @@ export async function findCount(
 }
 
 /**
- * 创建租户
- * @param {TenantInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 租户
  */
-export async function create(
+export async function createTenant(
   input: TenantInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<TenantId> {
-  const ids = await creates(
+  const ids = await createsTenant(
     [ input ],
     unique_type,
     opt,
@@ -168,14 +165,14 @@ export async function create(
 }
 
 /**
- * 批量创建租户
+ * 批量创建 租户
  */
-export async function creates(
+export async function createsTenant(
   inputs: TenantInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<TenantId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputTenant);
   const data: {
     createsTenant: Mutation["createsTenant"];
   } = await mutation({
@@ -194,14 +191,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改租户
+ * 根据 id 修改 租户
  */
-export async function updateById(
+export async function updateByIdTenant(
   id: TenantId,
   input: TenantInput,
   opt?: GqlOpt,
 ): Promise<TenantId> {
-  input = intoInput(input);
+  input = intoInputTenant(input);
   const data: {
     updateByIdTenant: Mutation["updateByIdTenant"];
   } = await mutation({
@@ -220,9 +217,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找租户
+ * 根据 id 查找 租户
  */
-export async function findById(
+export async function findByIdTenant(
   id?: TenantId,
   opt?: GqlOpt,
 ): Promise<TenantModel | undefined> {
@@ -249,9 +246,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找租户
+ * 根据 ids 查找 租户
  */
-export async function findByIds(
+export async function findByIdsTenant(
   ids: TenantId[],
   opt?: GqlOpt,
 ): Promise<TenantModel[]> {
@@ -286,9 +283,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除租户
+ * 根据 ids 删除 租户
  */
-export async function deleteByIds(
+export async function deleteByIdsTenant(
   ids: TenantId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -312,9 +309,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用租户
+ * 根据 ids 启用或禁用 租户
  */
-export async function enableByIds(
+export async function enableByIdsTenant(
   ids: TenantId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -340,9 +337,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁租户
+ * 根据 ids 锁定或解锁 租户
  */
-export async function lockByIds(
+export async function lockByIdsTenant(
   ids: TenantId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -368,9 +365,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原租户
+ * 根据 ids 还原 租户
  */
-export async function revertByIds(
+export async function revertByIdsTenant(
   ids: TenantId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -394,9 +391,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除租户
+ * 根据 ids 彻底删除 租户
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsTenant(
   ids: TenantId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -442,11 +439,11 @@ export async function findAllDomain(
       sort,
     },
   }, opt);
-  const res = data.findAllDomain;
-  return res;
+  const domain_models = data.findAllDomain;
+  return domain_models;
 }
 
-export async function getDomainList() {
+export async function getListDomain() {
   const data = await findAllDomain(
     {
       is_enabled: [ 1 ],
@@ -488,11 +485,11 @@ export async function findAllMenu(
       sort,
     },
   }, opt);
-  const res = data.findAllMenu;
-  return res;
+  const menu_models = data.findAllMenu;
+  return menu_models;
 }
 
-export async function getMenuList() {
+export async function getListMenu() {
   const data = await findAllMenu(
     {
       is_enabled: [ 1 ],
@@ -534,11 +531,11 @@ export async function findAllLang(
       sort,
     },
   }, opt);
-  const res = data.findAllLang;
-  return res;
+  const lang_models = data.findAllLang;
+  return lang_models;
 }
 
-export async function getLangList() {
+export async function getListLang() {
   const data = await findAllLang(
     {
       is_enabled: [ 1 ],
@@ -557,8 +554,8 @@ export async function getLangList() {
   return data;
 }
 
-export async function getMenuTree() {
-  const data = await findMenuTree(
+export async function getTreeMenu() {
+  const data = await findTreeMenu(
     undefined,
     [
       {
@@ -574,9 +571,9 @@ export async function getMenuTree() {
 }
 
 /**
- * 下载租户导入模板
+ * 下载 租户 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateTenant() {
   const {
     workerFn,
     workerStatus,
@@ -638,7 +635,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelTenant() {
   const {
     workerFn,
     workerStatus,
@@ -718,9 +715,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入租户
+ * 批量导入 租户
  */
-export async function importModels(
+export async function importModelsTenant(
   inputs: TenantInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -747,7 +744,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsTenant(
         inputs,
         UniqueType.Update,
         opt,
@@ -767,7 +764,7 @@ export async function importModels(
 /**
  * 查找 租户 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByTenant(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -783,12 +780,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathTenant() {
   return "/base/tenant";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputTenant() {
   const defaultInput: TenantInput = {
     is_locked: 0,
     is_enabled: 1,

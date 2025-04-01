@@ -2,22 +2,22 @@ import type {
   GetDict,
   GetDictbiz,
   Query,
-} from "#/types";
+} from "#/types.ts";
 
-const dictCacheKey = "common.dictCache";
+// const dictCacheKey = "common.dictCache";
 
-const dictCacheStr = localStorage.getItem(dictCacheKey);
+// const dictCacheStr = localStorage.getItem(dictCacheKey);
 
-let dictCacheObj: {
-  [code: string]: GetDict[];
-} | undefined;
+// let dictCacheObj: {
+//   [code: string]: GetDict[];
+// } | undefined;
 
-try {
-  dictCacheObj = dictCacheStr ? JSON.parse(dictCacheStr) : undefined;
-} catch (err) {
-  console.error(err);
-  localStorage.removeItem(dictCacheKey);
-}
+// try {
+//   dictCacheObj = dictCacheStr ? JSON.parse(dictCacheStr) : undefined;
+// } catch (err) {
+//   console.error(err);
+//   localStorage.removeItem(dictCacheKey);
+// }
 
 export async function getDict(
   codes: string[],
@@ -26,20 +26,20 @@ export async function getDict(
   if (!codes || codes.length === 0) {
     return [ ];
   }
-  const cacheCodes: string[] = [ ];
-  const cacheResult: GetDict[][] = [ ];
-  for (let i = 0; i < codes.length; i++) {
-    const code = codes[i];
-    const cacheItem = dictCacheObj?.[code];
-    if (cacheItem) {
-      cacheCodes.push(code);
-      cacheResult.push(cacheItem);
-    }
-  }
-  codes = codes.filter((code) => !cacheCodes.includes(code));
-  if (codes.length === 0) {
-    return cacheResult;
-  }
+  // const cacheCodes: string[] = [ ];
+  // const cacheResult: GetDict[][] = [ ];
+  // for (let i = 0; i < codes.length; i++) {
+  //   const code = codes[i];
+  //   const cacheItem = dictCacheObj?.[code];
+  //   if (cacheItem) {
+  //     cacheCodes.push(code);
+  //     cacheResult.push(cacheItem);
+  //   }
+  // }
+  // codes = codes.filter((code) => !cacheCodes.includes(code));
+  // if (codes.length === 0) {
+  //   return cacheResult;
+  // }
   const res: {
     getDict: Query["getDict"];
   } = await query({
@@ -59,30 +59,35 @@ export async function getDict(
     },
   }, opt);
   const data: GetDict[][] = res.getDict;
-  for (let i = 0; i < codes.length; i++) {
-    const code = codes[i];
-    const item = data[i];
-    dictCacheObj = dictCacheObj || { };
-    dictCacheObj[code] = item;
-  }
-  localStorage.setItem(dictCacheKey, JSON.stringify(dictCacheObj));
+  // for (let i = 0; i < codes.length; i++) {
+  //   const code = codes[i];
+  //   const item = data[i];
+  //   dictCacheObj = dictCacheObj || { };
+  //   dictCacheObj[code] = item;
+  // }
+  // localStorage.setItem(dictCacheKey, JSON.stringify(dictCacheObj));
   return data;
 }
 
-const dictbizCacheKey = "common.dictbizCache";
+// export async function clearDictCache() {
+//   dictCacheObj = undefined;
+//   localStorage.removeItem(dictCacheKey);
+// }
 
-const dictbizCacheStr = localStorage.getItem(dictbizCacheKey);
+// const dictbizCacheKey = "common.dictbizCache";
 
-let dictbizCacheObj: {
-  [code: string]: GetDictbiz[];
-} | undefined;
+// const dictbizCacheStr = localStorage.getItem(dictbizCacheKey);
 
-try {
-  dictbizCacheObj = dictbizCacheStr ? JSON.parse(dictbizCacheStr) : undefined;
-} catch (err) {
-  console.error(err);
-  localStorage.removeItem(dictbizCacheKey);
-}
+// let dictbizCacheObj: {
+//   [code: string]: GetDictbiz[];
+// } | undefined;
+
+// try {
+//   dictbizCacheObj = dictbizCacheStr ? JSON.parse(dictbizCacheStr) : undefined;
+// } catch (err) {
+//   console.error(err);
+//   localStorage.removeItem(dictbizCacheKey);
+// }
 
 export async function getDictbiz(
   codes: string[],
@@ -91,20 +96,20 @@ export async function getDictbiz(
   if (!codes || codes.length === 0) {
     return [ ];
   }
-  const cacheCodes: string[] = [ ];
-  const cacheResult: GetDictbiz[][] = [ ];
-  for (let i = 0; i < codes.length; i++) {
-    const code = codes[i];
-    const cacheItem = dictbizCacheObj?.[code];
-    if (cacheItem) {
-      cacheCodes.push(code);
-      cacheResult.push(cacheItem);
-    }
-  }
-  codes = codes.filter((code) => !cacheCodes.includes(code));
-  if (codes.length === 0) {
-    return cacheResult;
-  }
+  // const cacheCodes: string[] = [ ];
+  // const cacheResult: GetDictbiz[][] = [ ];
+  // for (let i = 0; i < codes.length; i++) {
+  //   const code = codes[i];
+  //   const cacheItem = dictbizCacheObj?.[code];
+  //   if (cacheItem) {
+  //     cacheCodes.push(code);
+  //     cacheResult.push(cacheItem);
+  //   }
+  // }
+  // codes = codes.filter((code) => !cacheCodes.includes(code));
+  // if (codes.length === 0) {
+  //   return cacheResult;
+  // }
   const res: {
     getDictbiz: Query["getDictbiz"];
   } = await query({
@@ -124,15 +129,20 @@ export async function getDictbiz(
     },
   }, opt);
   const data: GetDictbiz[][] = res.getDictbiz;
-  for (let i = 0; i < codes.length; i++) {
-    const code = codes[i];
-    const item = data[i];
-    dictbizCacheObj = dictbizCacheObj || { };
-    dictbizCacheObj[code] = item;
-  }
-  localStorage.setItem(dictbizCacheKey, JSON.stringify(dictbizCacheObj));
+  // for (let i = 0; i < codes.length; i++) {
+  //   const code = codes[i];
+  //   const item = data[i];
+  //   dictbizCacheObj = dictbizCacheObj || { };
+  //   dictbizCacheObj[code] = item;
+  // }
+  // localStorage.setItem(dictbizCacheKey, JSON.stringify(dictbizCacheObj));
   return data;
 }
+
+// export async function clearDictbizCache() {
+//   dictbizCacheObj = undefined;
+//   localStorage.removeItem(dictbizCacheKey);
+// }
 
 export function list2tree<
   R extends {

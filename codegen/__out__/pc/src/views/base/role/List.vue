@@ -61,7 +61,7 @@
         >
           <CustomTreeSelect
             v-model="menu_ids_search"
-            :method="getMenuTree"
+            :method="getTreeMenu"
             :options-map="((item: MenuModel) => {
               return {
                 label: item.lbl,
@@ -673,7 +673,7 @@
                   v-if="permit('edit', '编辑') && row.is_locked !== 1 && row.is_deleted !== 1 && !isLocked"
                   v-model="row.order_by"
                   :min="0"
-                  @change="updateById(
+                  @change="updateByIdRole(
                     row.id,
                     {
                       order_by: row.order_by,
@@ -852,29 +852,29 @@ import DataPermitTreeList from "../data_permit/TreeList.vue";
 import FieldPermitTreeList from "../field_permit/TreeList.vue";
 
 import {
-  getPagePath,
-  findAll,
-  findCount,
-  revertByIds,
-  deleteByIds,
-  forceDeleteByIds,
-  enableByIds,
-  lockByIds,
-  useExportExcel,
-  updateById,
-  importModels,
-  useDownloadImportTemplate,
-} from "./Api";
+  getPagePathRole,
+  findAllRole,
+  findCountRole,
+  revertByIdsRole,
+  deleteByIdsRole,
+  forceDeleteByIdsRole,
+  enableByIdsRole,
+  lockByIdsRole,
+  useExportExcelRole,
+  updateByIdRole,
+  importModelsRole,
+  useDownloadImportTemplateRole,
+} from "./Api.ts";
 
 import {
-  getMenuTree,
-} from "@/views/base/menu/Api";
+  getTreeMenu,
+} from "@/views/base/menu/Api.ts";
 
 defineOptions({
   name: "角色",
 });
 
-const pagePath = getPagePath();
+const pagePath = getPagePathRole();
 const __filename = new URL(import.meta.url).pathname;
 const pageName = getCurrentInstance()?.type?.name as string;
 const usrStore = useUsrStore();
@@ -1385,7 +1385,7 @@ async function useFindAll(
   if (isPagination) {
     const pgSize = page.size;
     const pgOffset = (page.current - 1) * page.size;
-    tableData = await findAll(
+    tableData = await findAllRole(
       search,
       {
         pgSize,
@@ -1397,7 +1397,7 @@ async function useFindAll(
       opt,
     );
   } else {
-    tableData = await findAll(
+    tableData = await findAllRole(
       search,
       undefined,
       [
@@ -1413,7 +1413,7 @@ async function useFindCount(
   opt?: GqlOpt,
 ) {
   const search2 = getDataSearch();
-  page.total = await findCount(
+  page.total = await findCountRole(
     search2,
     opt,
   );
@@ -1464,7 +1464,7 @@ async function onSortChange(
   await dataGrid();
 }
 
-const exportExcel = $ref(useExportExcel());
+const exportExcel = $ref(useExportExcelRole());
 
 /** 导出Excel */
 async function onExport() {
@@ -1568,7 +1568,7 @@ let importPercentage = $ref(0);
 let isImporting = $ref(false);
 let isStopImport = $ref(false);
 
-const downloadImportTemplate = $ref(useDownloadImportTemplate());
+const downloadImportTemplate = $ref(useDownloadImportTemplateRole());
 
 /**
  * 下载导入模板
@@ -1631,7 +1631,7 @@ async function onImportExcel() {
       },
     );
     messageHandler.close();
-    const res = await importModels(
+    const res = await importModelsRole(
       models,
       $$(importPercentage),
       $$(isStopImport),
@@ -1662,7 +1662,7 @@ async function onIs_locked(id: RoleId, is_locked: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await lockByIds(
+  await lockByIdsRole(
     [ id ],
     is_locked,
     {
@@ -1684,7 +1684,7 @@ async function onIs_enabled(id: RoleId, is_enabled: 0 | 1) {
     return;
   }
   const notLoading = true;
-  await enableByIds(
+  await enableByIdsRole(
     [ id ],
     is_enabled,
     {
@@ -1830,7 +1830,7 @@ async function onDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await deleteByIds(selectedIds);
+  const num = await deleteByIdsRole(selectedIds);
   tableData = tableData.filter((item) => !selectedIds.includes(item.id));
   selectedIds = [ ];
   dirtyStore.fireDirty(pageName);
@@ -1862,7 +1862,7 @@ async function onForceDeleteByIds() {
   } catch (err) {
     return;
   }
-  const num = await forceDeleteByIds(selectedIds);
+  const num = await forceDeleteByIdsRole(selectedIds);
   if (num) {
     selectedIds = [ ];
     ElMessage.success(`彻底删除 ${ num } 角色 成功`);
@@ -1891,7 +1891,7 @@ async function onEnableByIds(is_enabled: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await enableByIds(selectedIds, is_enabled);
+  const num = await enableByIdsRole(selectedIds, is_enabled);
   if (num > 0) {
     let msg = "";
     if (is_enabled === 1) {
@@ -1925,7 +1925,7 @@ async function onLockByIds(is_locked: 0 | 1) {
     ElMessage.warning(msg);
     return;
   }
-  const num = await lockByIds(selectedIds, is_locked);
+  const num = await lockByIdsRole(selectedIds, is_locked);
   if (num > 0) {
     let msg = "";
     if (is_locked === 1) {
@@ -1962,7 +1962,7 @@ async function onRevertByIds() {
   } catch (err) {
     return;
   }
-  const num = await revertByIds(selectedIds);
+  const num = await revertByIdsRole(selectedIds);
   if (num) {
     search.is_deleted = 0;
     dirtyStore.fireDirty(pageName);
@@ -2062,7 +2062,7 @@ async function onMenu_ids(row: RoleModel) {
     return;
   }
   row.menu_ids = selectedIds2;
-  await updateById(row.id, { menu_ids: selectedIds2 });
+  await updateByIdRole(row.id, { menu_ids: selectedIds2 });
   dirtyStore.fireDirty(pageName);
   await dataGrid();
 }
@@ -2103,7 +2103,7 @@ async function onPermit_ids(row: RoleModel) {
     return;
   }
   row.permit_ids = selectedIds2;
-  await updateById(row.id, { permit_ids: selectedIds2 });
+  await updateByIdRole(row.id, { permit_ids: selectedIds2 });
   dirtyStore.fireDirty(pageName);
   await dataGrid();
 }
@@ -2144,7 +2144,7 @@ async function onData_permit_ids(row: RoleModel) {
     return;
   }
   row.data_permit_ids = selectedIds2;
-  await updateById(row.id, { data_permit_ids: selectedIds2 });
+  await updateByIdRole(row.id, { data_permit_ids: selectedIds2 });
   dirtyStore.fireDirty(pageName);
   await dataGrid();
 }
@@ -2185,7 +2185,7 @@ async function onField_permit_ids(row: RoleModel) {
     return;
   }
   row.field_permit_ids = selectedIds2;
-  await updateById(row.id, { field_permit_ids: selectedIds2 });
+  await updateByIdRole(row.id, { field_permit_ids: selectedIds2 });
   dirtyStore.fireDirty(pageName);
   await dataGrid();
 }

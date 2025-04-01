@@ -147,7 +147,7 @@ if (hasAudit) {
 
 <script lang="ts" setup>
 import {
-  findAll as findAll<#=auditTable_Up#>,
+  findAll<#=auditTable_Up#>,
 } from "../<#=auditTable#>/Api.ts";
 
 import {

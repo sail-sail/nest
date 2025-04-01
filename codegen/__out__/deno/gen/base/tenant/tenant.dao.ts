@@ -68,11 +68,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneLang,
+  findOneLang,
 } from "/gen/base/lang/lang.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -257,9 +257,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountTenant
 /** 根据条件查找租户总数 */
-export async function findCount(
+export async function findCountTenant(
   search?: Readonly<TenantSearch>,
   options?: {
     is_debug?: boolean;
@@ -268,12 +268,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "base_tenant";
-  const method = "findCount";
+  const method = "findCountTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -389,9 +389,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllTenant
 /** 根据搜索条件和分页查找租户列表 */
-export async function findAll(
+export async function findAllTenant(
   search?: Readonly<TenantSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -402,7 +402,7 @@ export async function findAll(
 ): Promise<TenantModel[]> {
   
   const table = "base_tenant";
-  const method = "findAll";
+  const method = "findAllTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -681,9 +681,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblTenant
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblTenant(
   input: TenantInput,
 ) {
   
@@ -792,9 +792,9 @@ export async function setIdByLbl(
   }
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsTenant
 /** 获取租户字段注释 */
-export async function getFieldComments(): Promise<TenantFieldComment> {
+export async function getFieldCommentsTenant(): Promise<TenantFieldComment> {
   const fieldComments: TenantFieldComment = {
     id: "ID",
     code: "编码",
@@ -803,8 +803,8 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
     domain_ids_lbl: "所属域名",
     menu_ids: "菜单权限",
     menu_ids_lbl: "菜单权限",
-    title: "简介",
-    info: "描述",
+    title: "标题",
+    info: "简介",
     lang_id: "语言",
     lang_id_lbl: "语言",
     is_locked: "锁定",
@@ -825,9 +825,9 @@ export async function getFieldComments(): Promise<TenantFieldComment> {
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueTenant
 /** 通过唯一约束获得租户列表 */
-export async function findByUnique(
+export async function findByUniqueTenant(
   search0: Readonly<TenantInput>,
   options?: {
     is_debug?: boolean;
@@ -835,7 +835,7 @@ export async function findByUnique(
 ): Promise<TenantModel[]> {
   
   const table = "base_tenant";
-  const method = "findByUnique";
+  const method = "findByUniqueTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -853,7 +853,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneTenant(
       {
         id: search0.id,
       },
@@ -871,7 +871,7 @@ export async function findByUnique(
       return [ ];
     }
     const lbl = search0.lbl;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllTenant(
       {
         lbl,
       },
@@ -886,7 +886,7 @@ export async function findByUnique(
       return [ ];
     }
     const code = search0.code;
-    const modelTmps = await findAll(
+    const modelTmps = await findAllTenant(
       {
         code,
       },
@@ -901,7 +901,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueTenant(
   oldModel: Readonly<TenantModel>,
   input: Readonly<TenantInput>,
 ): boolean {
@@ -922,9 +922,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueTenant
 /** 通过唯一约束检查 租户 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueTenant(
   input: Readonly<TenantInput>,
   oldModel: Readonly<TenantModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -936,14 +936,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueTenant(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 租户 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: TenantId = await updateById(
+      const id: TenantId = await updateByIdTenant(
         oldModel.id,
         {
           ...input,
@@ -960,9 +960,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneTenant
 /** 根据条件查找第一租户 */
-export async function findOne(
+export async function findOneTenant(
   search?: Readonly<TenantSearch>,
   sort?: SortInput[],
   options?: {
@@ -971,7 +971,7 @@ export async function findOne(
 ): Promise<TenantModel | undefined> {
   
   const table = "base_tenant";
-  const method = "findOne";
+  const method = "findOneTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -998,7 +998,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllTenant(
     search,
     page,
     sort,
@@ -1008,9 +1008,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdTenant
 /** 根据 id 查找租户 */
-export async function findById(
+export async function findByIdTenant(
   id?: TenantId | null,
   options?: {
     is_debug?: boolean;
@@ -1018,7 +1018,7 @@ export async function findById(
 ): Promise<TenantModel | undefined> {
   
   const table = "base_tenant";
-  const method = "findById";
+  const method = "findByIdTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1039,7 +1039,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneTenant(
     {
       id,
     },
@@ -1050,9 +1050,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsTenant
 /** 根据 ids 查找租户 */
-export async function findByIds(
+export async function findByIdsTenant(
   ids: TenantId[],
   options?: {
     is_debug?: boolean;
@@ -1060,7 +1060,7 @@ export async function findByIds(
 ): Promise<TenantModel[]> {
   
   const table = "base_tenant";
-  const method = "findByIds";
+  const method = "findByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1081,7 +1081,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllTenant(
     {
       ids,
     },
@@ -1107,9 +1107,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existTenant
 /** 根据搜索条件判断租户是否存在 */
-export async function exist(
+export async function existTenant(
   search?: Readonly<TenantSearch>,
   options?: {
     is_debug?: boolean;
@@ -1117,7 +1117,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "base_tenant";
-  const method = "exist";
+  const method = "existTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1133,15 +1133,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneTenant(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdTenant
 /** 根据id判断租户是否存在 */
-export async function existById(
+export async function existByIdTenant(
   id?: Readonly<TenantId | null>,
   options?: {
     is_debug?: boolean;
@@ -1149,7 +1149,7 @@ export async function existById(
 ) {
   
   const table = "base_tenant";
-  const method = "existById";
+  const method = "existByIdTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1191,9 +1191,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateIsEnabled
+// MARK: validateIsEnabledTenant
 /** 校验租户是否启用 */
-export async function validateIsEnabled(
+export async function validateIsEnabledTenant(
   model: Readonly<TenantModel>,
 ) {
   if (model.is_enabled == 0) {
@@ -1201,9 +1201,9 @@ export async function validateIsEnabled(
   }
 }
 
-// MARK: validateOption
+// MARK: validateOptionTenant
 /** 校验租户是否存在 */
-export async function validateOption(
+export async function validateOptionTenant(
   model?: TenantModel,
 ) {
   if (!model) {
@@ -1214,12 +1214,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateTenant
 /** 租户增加和修改时校验输入 */
-export async function validate(
+export async function validateTenant(
   input: Readonly<TenantInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsTenant();
   
   // ID
   await validators.chars_max_length(
@@ -1242,14 +1242,14 @@ export async function validate(
     fieldComments.lbl,
   );
   
-  // 简介
+  // 标题
   await validators.chars_max_length(
     input.title,
     45,
     fieldComments.title,
   );
   
-  // 描述
+  // 简介
   await validators.chars_max_length(
     input.info,
     100,
@@ -1286,16 +1286,16 @@ export async function validate(
   
 }
 
-// MARK: findAutoCode
+// MARK: findAutoCodeTenant
 /** 获得 租户 自动编码 */
-export async function findAutoCode(
+export async function findAutoCodeTenant(
   options?: {
     is_debug?: boolean;
   },
 ) {
   
   const table = "base_tenant";
-  const method = "findAutoCode";
+  const method = "findAutoCodeTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1309,7 +1309,7 @@ export async function findAutoCode(
     options.is_debug = false;
   }
   
-  const model = await findOne(
+  const model = await findOneTenant(
     undefined,
     [
       {
@@ -1328,9 +1328,9 @@ export async function findAutoCode(
   };
 }
 
-// MARK: createReturn
+// MARK: createReturnTenant
 /** 创建 租户 并返回 */
-export async function createReturn(
+export async function createReturnTenant(
   input: Readonly<TenantInput>,
   options?: {
     is_debug?: boolean;
@@ -1341,7 +1341,7 @@ export async function createReturn(
 ): Promise<TenantModel> {
   
   const table = "base_tenant";
-  const method = "createReturn";
+  const method = "createReturnTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1366,8 +1366,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionTenant(
+    await findOneTenant(
       {
         id,
       },
@@ -1379,9 +1379,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createTenant
 /** 创建 租户 */
-export async function create(
+export async function createTenant(
   input: Readonly<TenantInput>,
   options?: {
     is_debug?: boolean;
@@ -1392,7 +1392,7 @@ export async function create(
 ): Promise<TenantId> {
   
   const table = "base_tenant";
-  const method = "create";
+  const method = "createTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1420,9 +1420,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnTenant
 /** 批量创建 租户 并返回 */
-export async function createsReturn(
+export async function createsReturnTenant(
   inputs: TenantInput[],
   options?: {
     is_debug?: boolean;
@@ -1433,7 +1433,7 @@ export async function createsReturn(
 ): Promise<TenantModel[]> {
   
   const table = "base_tenant";
-  const method = "createsReturn";
+  const method = "createsReturnTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1452,14 +1452,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsTenant(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsTenant
 /** 批量创建 租户 */
-export async function creates(
+export async function createsTenant(
   inputs: TenantInput[],
   options?: {
     is_debug?: boolean;
@@ -1470,7 +1470,7 @@ export async function creates(
 ): Promise<TenantId[]> {
   
   const table = "base_tenant";
-  const method = "creates";
+  const method = "createsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1514,7 +1514,7 @@ async function _creates(
     const {
       code_seq,
       code,
-    } = await findAutoCode(options);
+    } = await findAutoCodeTenant(options);
     input.code_seq = code_seq;
     input.code = code;
   }
@@ -1532,11 +1532,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueTenant(input, options);
     if (oldModels.length > 0) {
       let id: TenantId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueTenant(
           input,
           oldModel,
           options?.uniqueType,
@@ -1566,7 +1566,7 @@ async function _creates(
   
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
-  await delCache();
+  await delCacheTenant();
   
   const args = new QueryArgs();
   let sql = "insert into base_tenant(id,create_time,update_time,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,code_seq,code,lbl,title,info,lang_id_lbl,lang_id,is_locked,is_enabled,order_by,rem,is_sys)values";
@@ -1758,21 +1758,21 @@ async function _creates(
     );
   }
   
-  await delCache();
+  await delCacheTenant();
   
   return ids2;
 }
 
-// MARK: delCache
+// MARK: delCacheTenant
 /** 删除缓存 */
-export async function delCache() {
+export async function delCacheTenant() {
   await delCacheCtx(`dao.sql.base_tenant`);
   await delCacheCtx(`dao.sql.base_menu._getMenus`);
 }
 
-// MARK: updateById
+// MARK: updateByIdTenant
 /** 根据 id 修改 租户 */
-export async function updateById(
+export async function updateByIdTenant(
   id: TenantId,
   input: TenantInput,
   options?: {
@@ -1784,7 +1784,7 @@ export async function updateById(
 ): Promise<TenantId> {
   
   const table = "base_tenant";
-  const method = "updateById";
+  const method = "updateByIdTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1807,10 +1807,10 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdTenant: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdTenant: input cannot be null");
   }
   
   {
@@ -1818,7 +1818,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueTenant(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1829,7 +1829,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdTenant(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 租户 已被删除";
@@ -2019,7 +2019,7 @@ export async function updateById(
     }
     sql += ` where id=${ args.push(id) } limit 1`;
     
-    await delCache();
+    await delCacheTenant();
     
     if (sqlSetFldNum > 0) {
       await execute(sql, args);
@@ -2027,7 +2027,7 @@ export async function updateById(
   }
   
   if (updateFldNum > 0) {
-    await delCache();
+    await delCacheTenant();
   }
   
   if (!is_silent_mode) {
@@ -2037,9 +2037,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsTenant
 /** 根据 ids 删除 租户 */
-export async function deleteByIds(
+export async function deleteByIdsTenant(
   ids: TenantId[],
   options?: {
     is_debug?: boolean;
@@ -2049,7 +2049,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "base_tenant";
-  const method = "deleteByIds";
+  const method = "deleteByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -2072,12 +2072,12 @@ export async function deleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheTenant();
   
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdTenant(id, options);
     if (!oldModel) {
       continue;
     }
@@ -2126,14 +2126,14 @@ export async function deleteByIds(
     }
   }
   
-  await delCache();
+  await delCacheTenant();
   
   return affectedRows;
 }
 
-// MARK: getIsEnabledById
+// MARK: getIsEnabledByIdTenant
 /** 根据 id 查找 租户 是否已启用, 不存在则返回 undefined */
-export async function getIsEnabledById(
+export async function getIsEnabledByIdTenant(
   id: TenantId,
   options?: {
     is_debug?: boolean;
@@ -2143,7 +2143,7 @@ export async function getIsEnabledById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const model = await findByIdTenant(
     id,
     options,
   );
@@ -2152,9 +2152,9 @@ export async function getIsEnabledById(
   return is_enabled;
 }
 
-// MARK: enableByIds
+// MARK: enableByIdsTenant
 /** 根据 ids 启用或者禁用 租户 */
-export async function enableByIds(
+export async function enableByIdsTenant(
   ids: TenantId[],
   is_enabled: Readonly<0 | 1>,
   options?: {
@@ -2163,7 +2163,7 @@ export async function enableByIds(
 ): Promise<number> {
   
   const table = "base_tenant";
-  const method = "enableByIds";
+  const method = "enableByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2188,7 +2188,7 @@ export async function enableByIds(
   }
   
   if (ids.length > 0) {
-    await delCache();
+    await delCacheTenant();
   }
   
   const args = new QueryArgs();
@@ -2196,14 +2196,14 @@ export async function enableByIds(
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheTenant();
   
   return num;
 }
 
-// MARK: getIsLockedById
+// MARK: getIsLockedByIdTenant
 /** 根据 id 查找 租户 是否已锁定, 不存在则返回 undefined, 已锁定的不能修改和删除 */
-export async function getIsLockedById(
+export async function getIsLockedByIdTenant(
   id: TenantId,
   options?: {
     is_debug?: boolean;
@@ -2213,18 +2213,18 @@ export async function getIsLockedById(
   options = options ?? { };
   options.is_debug = false;
   
-  const model = await findById(
+  const tenant_model = await findByIdTenant(
     id,
     options,
   );
-  const is_locked = model?.is_locked as (0 | 1 | undefined);
+  const is_locked = tenant_model?.is_locked as (0 | 1 | undefined);
   
   return is_locked;
 }
 
-// MARK: lockByIds
+// MARK: lockByIdsTenant
 /** 根据 ids 锁定或者解锁 租户 */
-export async function lockByIds(
+export async function lockByIdsTenant(
   ids: TenantId[],
   is_locked: Readonly<0 | 1>,
   options?: {
@@ -2233,7 +2233,7 @@ export async function lockByIds(
 ): Promise<number> {
   
   const table = "base_tenant";
-  const method = "lockByIds";
+  const method = "lockByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2257,21 +2257,21 @@ export async function lockByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheTenant();
   
   const args = new QueryArgs();
   let sql = `update base_tenant set is_locked=${ args.push(is_locked) } where id in (${ args.push(ids) })`;
   const result = await execute(sql, args);
   const num = result.affectedRows;
   
-  await delCache();
+  await delCacheTenant();
   
   return num;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsTenant
 /** 根据 ids 还原 租户 */
-export async function revertByIds(
+export async function revertByIdsTenant(
   ids: TenantId[],
   options?: {
     is_debug?: boolean;
@@ -2279,7 +2279,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "base_tenant";
-  const method = "revertByIds";
+  const method = "revertByIdsTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -2300,12 +2300,12 @@ export async function revertByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheTenant();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneTenant(
       {
         id,
         is_deleted: 1,
@@ -2314,7 +2314,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdTenant(
         id,
         options,
       );
@@ -2327,7 +2327,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as TenantInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueTenant(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -2357,14 +2357,14 @@ export async function revertByIds(
     }
   }
   
-  await delCache();
+  await delCacheTenant();
   
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsTenant
 /** 根据 ids 彻底删除 租户 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsTenant(
   ids: TenantId[],
   options?: {
     is_debug?: boolean;
@@ -2373,7 +2373,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "base_tenant";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsTenant";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -2395,12 +2395,12 @@ export async function forceDeleteByIds(
     return 0;
   }
   
-  await delCache();
+  await delCacheTenant();
   
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneTenant(
       {
         id,
         is_deleted: 1,
@@ -2433,21 +2433,21 @@ export async function forceDeleteByIds(
     }
   }
   
-  await delCache();
+  await delCacheTenant();
   
   return num;
 }
 
-// MARK: findLastOrderBy
+// MARK: findLastOrderByTenant
 /** 查找 租户 order_by 字段的最大值 */
-export async function findLastOrderBy(
+export async function findLastOrderByTenant(
   options?: {
     is_debug?: boolean;
   },
 ): Promise<number> {
   
   const table = "base_tenant";
-  const method = "findLastOrderBy";
+  const method = "findLastOrderByTenant";
   
   const is_debug = get_is_debug(options?.is_debug);
   

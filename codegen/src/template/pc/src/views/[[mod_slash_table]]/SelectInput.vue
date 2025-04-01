@@ -31,7 +31,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   }"
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
-  @keydown.enter.stop="onEnter"
+  @keydown.enter="onEnter"
 >
   <CustomInput
     v-bind="$attrs"
@@ -126,9 +126,9 @@ import {
 import SelectList from "./SelectList.vue";
 
 import {
-  findByIds,
-  getPagePath,
-} from "./Api";
+  findByIds<#=Table_Up#>,
+  getPagePath<#=Table_Up#>,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: <#=Table_Up#>Id | <#=Table_Up#>Id[] | null): void,
@@ -141,7 +141,7 @@ const {
   formItem,
 } = useFormItem();
 
-const pagePath = getPagePath();<#
+const pagePath = getPagePath<#=Table_Up#>();<#
 if (isUseI18n) {
 #>
 
@@ -216,9 +216,10 @@ function onMouseLeave() {
 }
 
 async function onEnter(e: KeyboardEvent) {
-  if (e.ctrlKey) {
+  if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
     return;
   }
+  e.stopImmediatePropagation();
   await onInput("icon");
 }
 
@@ -238,13 +239,13 @@ async function getModelsByIds(ids: <#=Table_Up#>Id[]) {
   if (ids.length === 0) {
     return [ ];
   }
-  const res = await findByIds(
+  const <#=table#>_models = await findByIds<#=Table_Up#>(
     ids,
     {
       notLoading: true,
     },
   );
-  return res;
+  return <#=table#>_models;
 }
 
 async function validateField() {

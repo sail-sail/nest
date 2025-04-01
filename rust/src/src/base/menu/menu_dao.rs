@@ -10,9 +10,9 @@ use crate::common::context::{
 use super::menu_model::GetMenus;
 
 use crate::r#gen::base::usr::usr_dao::{
-  find_by_id as find_by_id_usr,
-  validate_option as validate_option_usr,
-  validate_is_enabled as validate_is_enabled_usr,
+  find_by_id_usr,
+  validate_option_usr,
+  validate_is_enabled_usr,
 };
 
 use crate::src::base::lang::lang_dao::get_lang_id;

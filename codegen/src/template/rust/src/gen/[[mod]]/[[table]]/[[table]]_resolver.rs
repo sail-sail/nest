@@ -93,6 +93,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
 use crate::src::base::permit::permit_service::use_permit;
 
 use super::<#=table#>_model::*;
@@ -130,7 +131,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;<#
 
 /// 根据搜索条件和分页查找<#=table_comment#>列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -155,7 +156,7 @@ pub async fn find_all(
   
   check_sort_<#=table#>(sort.as_deref())?;
   
-  let models = <#=table#>_service::find_all(
+  let models = <#=table#>_service::find_all_<#=table#>(
     search,
     page,
     sort,
@@ -192,7 +193,7 @@ pub async fn find_all(
   
   let mut models = models;
   {
-    let fields = get_field_permit(
+    let fields = get_field_permit_<#=table#>(
       get_route_path_<#=table#>(),
     ).await?;
     for model in &mut models {
@@ -211,7 +212,7 @@ pub async fn find_all(
 
 /// 根据条件查找<#=table_comment#>总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -232,7 +233,7 @@ pub async fn find_count(
   }
   #>
   
-  let num = <#=table#>_service::find_count(
+  let num = <#=table#>_service::find_count_<#=table#>(
     search,
     options,
   ).await?;
@@ -242,7 +243,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个<#=table_comment#>
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -266,7 +267,7 @@ pub async fn find_one(
   
   check_sort_<#=table#>(sort.as_deref())?;
   
-  let model = <#=table#>_service::find_one(
+  let model = <#=table#>_service::find_one_<#=table#>(
     search,
     sort,
     options,
@@ -302,7 +303,7 @@ pub async fn find_one(
   
   let mut model = model;
   {
-    let fields = get_field_permit(
+    let fields = get_field_permit_<#=table#>(
       get_route_path_<#=table#>(),
     ).await?;
     if let Some(model) = &mut model {
@@ -321,7 +322,7 @@ pub async fn find_one(
 
 /// 根据 id 查找<#=table_comment#>
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<Option<<#=tableUP#>Model>> {
@@ -332,7 +333,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = <#=table#>_service::find_by_id(
+  let model = <#=table#>_service::find_by_id_<#=table#>(
     id,
     options,
   ).await?;<#
@@ -367,7 +368,7 @@ pub async fn find_by_id(
   
   let mut model = model;
   {
-    let fields = get_field_permit(
+    let fields = get_field_permit_<#=table#>(
       get_route_path_<#=table#>(),
     ).await?;
     if let Some(model) = &mut model {
@@ -386,7 +387,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找<#=table_comment#>
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<Vec<<#=tableUP#>Model>> {
@@ -397,7 +398,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = <#=table#>_service::find_by_ids(
+  let models = <#=table#>_service::find_by_ids_<#=table#>(
     ids,
     options,
   ).await?;<#
@@ -432,7 +433,7 @@ pub async fn find_by_ids(
   
   let mut models = models;
   {
-    let fields = get_field_permit(
+    let fields = get_field_permit_<#=table#>(
       get_route_path_<#=table#>(),
     ).await?;
     for model in models.iter_mut() {
@@ -453,7 +454,7 @@ if (hasDataPermit() && hasCreateUsrId) {
 
 /// 根据 ids 获取<#=table_comment#>是否可编辑数据权限
 #[function_name::named]
-pub async fn get_editable_data_permits_by_ids(
+pub async fn get_editable_data_permits_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<Vec<u8>> {
@@ -464,7 +465,7 @@ pub async fn get_editable_data_permits_by_ids(
     function_name = function_name!(),
   );
   
-  let res = <#=table#>_service::get_editable_data_permits_by_ids(
+  let res = <#=table#>_service::get_editable_data_permits_by_ids_<#=table#>(
     ids,
     options,
   ).await?;
@@ -479,7 +480,7 @@ if (opts.noAdd !== true) {
 /// 创建<#=table_comment#>
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_<#=table#>(
   inputs: Vec<<#=tableUP#>Input>,
   options: Option<Options>,
 ) -> Result<Vec<<#=Table_Up#>Id>> {
@@ -504,7 +505,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = <#=table#>_service::set_id_by_lbl(
+    let input = <#=table#>_service::set_id_by_lbl_<#=table#>(
       input,
     ).await?;
     inputs2.push(input);
@@ -520,7 +521,7 @@ pub async fn creates(
   
   let mut inputs = inputs;
   {
-    let fields = get_field_permit(
+    let fields = get_field_permit_<#=table#>(
       get_route_path_<#=table#>(),
     ).await?;
     for input in &mut inputs {
@@ -534,14 +535,14 @@ pub async fn creates(
   }
   #>
   
-  let ids = <#=table#>_service::creates(
+  let ids = <#=table#>_service::creates_<#=table#>(
     inputs,
     options,
   ).await?;<#
   if (log) {
   #>
   
-  let new_data = find_all(
+  let new_data = find_all_<#=table#>(
     <#=Table_Up#>Search {
       ids: Some(ids.clone()),
       ..Default::default()
@@ -599,7 +600,7 @@ if (hasTenant_id) {
 /// <#=table_comment#>根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -611,7 +612,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = <#=table#>_service::update_tenant_by_id(
+  let num = <#=table#>_service::update_tenant_by_id_<#=table#>(
     id,
     tenant_id,
     options,
@@ -627,7 +628,7 @@ if (opts.noEdit !== true) {
 /// 根据 id 修改<#=table_comment#>
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   input: <#=tableUP#>Input,
   options: Option<Options>,
@@ -649,7 +650,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = <#=table#>_service::set_id_by_lbl(
+  let input = <#=table#>_service::set_id_by_lbl_<#=table#>(
     input,
   ).await?;
   
@@ -662,7 +663,7 @@ pub async fn update_by_id(
   
   let mut input = input;
   {
-    let fields = get_field_permit(
+    let fields = get_field_permit_<#=table#>(
       get_route_path_<#=table#>(),
     ).await?;
     field_permit_input_<#=table#>(
@@ -676,14 +677,14 @@ pub async fn update_by_id(
   if (log) {
   #>
   
-  let old_data = find_by_id(
+  let old_data = find_by_id_<#=table#>(
     id.clone(),
     None,
   ).await?;<#
   }
   #>
   
-  let res = <#=table#>_service::update_by_id(
+  let res = <#=table#>_service::update_by_id_<#=table#>(
     id,
     input,
     options,
@@ -691,7 +692,7 @@ pub async fn update_by_id(
   if (log) {
   #>
   
-  let new_data = find_by_id(
+  let new_data = find_by_id_<#=table#>(
     res.clone(),
     None,
   ).await?;<#
@@ -744,7 +745,7 @@ if (hasAudit) {
 
 /// <#=table_comment#> 审核提交
 #[function_name::named]
-pub async fn audit_submit(
+pub async fn audit_submit_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -772,7 +773,7 @@ pub async fn audit_submit(
   }
   #>
   
-  let res = <#=table#>_service::audit_submit(
+  let res = <#=table#>_service::audit_submit_<#=table#>(
     id,
     options,
   ).await?;<#
@@ -822,7 +823,7 @@ pub async fn audit_submit(
 
 /// <#=table_comment#> 审核通过
 #[function_name::named]
-pub async fn audit_pass(
+pub async fn audit_pass_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -850,7 +851,7 @@ pub async fn audit_pass(
   }
   #>
   
-  let res = <#=table#>_service::audit_pass(
+  let res = <#=table#>_service::audit_pass_<#=table#>(
     id,
     options,
   ).await?;<#
@@ -900,7 +901,7 @@ pub async fn audit_pass(
 
 /// <#=table_comment#> 审核拒绝
 #[function_name::named]
-pub async fn audit_reject(
+pub async fn audit_reject_<#=table#>(
   id: <#=Table_Up#>Id,
   input: <#=auditTable_Up#>Input,
   options: Option<Options>,
@@ -929,7 +930,7 @@ pub async fn audit_reject(
   }
   #>
   
-  let res = <#=table#>_service::audit_reject(
+  let res = <#=table#>_service::audit_reject_<#=table#>(
     id,
     input,
     options,
@@ -939,8 +940,8 @@ pub async fn audit_reject(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("审核拒绝".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  let method_lbl = ns("审核拒绝".to_owned(), options.clone()).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), options.clone()).await?;<#
   } else {
   #>
   
@@ -982,7 +983,7 @@ if (hasReviewed) {
 
 /// <#=table_comment#> 复核通过
 #[function_name::named]
-pub async fn audit_review(
+pub async fn audit_review_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -1010,7 +1011,7 @@ pub async fn audit_review(
   }
   #>
   
-  let res = <#=table#>_service::audit_review(
+  let res = <#=table#>_service::audit_review_<#=table#>(
     id,
     options,
   ).await?;<#
@@ -1019,8 +1020,8 @@ pub async fn audit_review(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("复核通过".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  let method_lbl = ns("复核通过".to_owned(), options.clone()).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), options.clone()).await?;<#
   } else {
   #>
   
@@ -1067,7 +1068,7 @@ if (opts.noDelete !== true) {
 /// 根据 ids 删除<#=table_comment#>
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1091,7 +1092,7 @@ pub async fn delete_by_ids(
   if (log) {
   #>
   
-  let old_data = find_all(
+  let old_data = find_all_<#=table#>(
     <#=Table_Up#>Search {
       ids: Some(ids.clone()),
       ..Default::default()
@@ -1103,7 +1104,7 @@ pub async fn delete_by_ids(
   }
   #>
   
-  let num = <#=table#>_service::delete_by_ids(
+  let num = <#=table#>_service::delete_by_ids_<#=table#>(
     ids,
     options,
   ).await?;<#
@@ -1158,7 +1159,7 @@ if (hasDefault && opts.noEdit !== true) {
 /// 根据 id 设置默认<#=table_comment#>
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn default_by_id(
+pub async fn default_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1186,7 +1187,7 @@ pub async fn default_by_id(
   }
   #>
   
-  let num = <#=table#>_service::default_by_id(
+  let num = <#=table#>_service::default_by_id_<#=table#>(
     id,
     options,
   ).await?;<#
@@ -1195,8 +1196,8 @@ pub async fn default_by_id(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("默认".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  let method_lbl = ns("默认".to_owned(), options.clone()).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), options.clone()).await?;<#
   } else {
   #>
   
@@ -1242,7 +1243,7 @@ if (hasEnabled) {
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -1253,7 +1254,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = <#=table#>_service::get_is_enabled_by_id(
+  let is_enabled = <#=table#>_service::get_is_enabled_by_id_<#=table#>(
     id,
     options,
   ).await?;
@@ -1264,7 +1265,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用<#=table_comment#>
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   is_enabled: u8,
   options: Option<Options>,
@@ -1293,7 +1294,7 @@ pub async fn enable_by_ids(
   }
   #>
   
-  let num = <#=table#>_service::enable_by_ids(
+  let num = <#=table#>_service::enable_by_ids_<#=table#>(
     ids,
     is_enabled,
     options,
@@ -1376,7 +1377,7 @@ if (hasLocked) {
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_<#=table#>(
   id: <#=Table_Up#>Id,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -1387,7 +1388,7 @@ pub async fn get_is_locked_by_id(
     function_name = function_name!(),
   );
   
-  let is_locked = <#=table#>_service::get_is_locked_by_id(
+  let is_locked = <#=table#>_service::get_is_locked_by_id_<#=table#>(
     id,
     options,
   ).await?;
@@ -1398,7 +1399,7 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或者解锁<#=table_comment#>
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   is_locked: u8,
   options: Option<Options>,
@@ -1430,7 +1431,7 @@ pub async fn lock_by_ids(
   }
   #>
   
-  let num = <#=table#>_service::lock_by_ids(
+  let num = <#=table#>_service::lock_by_ids_<#=table#>(
     ids,
     is_locked,
     options,
@@ -1491,7 +1492,7 @@ pub async fn lock_by_ids(
 
 /// 获取<#=table_comment#>字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_<#=table#>(
   options: Option<Options>,
 ) -> Result<<#=tableUP#>FieldComment> {
   
@@ -1501,7 +1502,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = <#=table#>_service::get_field_comments(
+  let comments = <#=table#>_service::get_field_comments_<#=table#>(
     options,
   ).await?;
   
@@ -1513,7 +1514,7 @@ if (hasIsDeleted) {
 /// 根据 ids 还原<#=table_comment#>
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1541,7 +1542,7 @@ pub async fn revert_by_ids(
   }
   #>
   
-  let num = <#=table#>_service::revert_by_ids(
+  let num = <#=table#>_service::revert_by_ids_<#=table#>(
     ids,
     options,
   ).await?;<#
@@ -1550,8 +1551,8 @@ pub async fn revert_by_ids(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("还原".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  let method_lbl = ns("还原".to_owned(), options.clone()).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), options.clone()).await?;<#
   } else {
   #>
   
@@ -1596,7 +1597,7 @@ if (hasIsDeleted) {
 /// 根据 ids 彻底删除<#=table_comment#>
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_<#=table#>(
   ids: Vec<<#=Table_Up#>Id>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -1624,7 +1625,7 @@ pub async fn force_delete_by_ids(
   }
   #>
   
-  let num = <#=table#>_service::force_delete_by_ids(
+  let num = <#=table#>_service::force_delete_by_ids_<#=table#>(
     ids,
     options,
   ).await?;<#
@@ -1633,8 +1634,8 @@ pub async fn force_delete_by_ids(
   if (isUseI18n) {
   #>
   
-  let method_lbl = ns("彻底删除".to_owned(), None).await?;
-  let table_comment = ns("<#=table_comment#>".to_owned(), None).await?;<#
+  let method_lbl = ns("彻底删除".to_owned(), options.clone()).await?;
+  let table_comment = ns("<#=table_comment#>".to_owned(), options.clone()).await?;<#
   } else {
   #>
   
@@ -1678,7 +1679,7 @@ if (hasOrderBy) {
 
 /// 查找 <#=table_comment#> order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_<#=table#>(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -1688,7 +1689,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = <#=table#>_service::find_last_order_by(
+  let res = <#=table#>_service::find_last_order_by_<#=table#>(
     options,
   ).await?;
   

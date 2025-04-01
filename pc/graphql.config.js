@@ -1,6 +1,6 @@
 module.exports = {
   schema: [ "http://localhost:4001/graphql" ],
-  documents: "**/*.rs",
+  documents: "**/*.ts",
   extensions: {
     endpoints: {
       default: {

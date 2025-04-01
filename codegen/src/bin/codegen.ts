@@ -104,7 +104,7 @@ function validateGitStaging() {
     try {
       await exec(context, table);
     } catch (err) {
-      execSync("git restore .", {
+      execSync("git restore . && git clean -fd", {
         cwd: projectPh,
       });
       throw err;

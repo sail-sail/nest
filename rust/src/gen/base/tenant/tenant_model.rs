@@ -77,10 +77,10 @@ pub struct TenantModel {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: Vec<String>,
-  /// 简介
+  /// 标题
   #[graphql(name = "title")]
   pub title: String,
-  /// 描述
+  /// 简介
   #[graphql(name = "info")]
   pub info: String,
   /// 语言
@@ -221,9 +221,9 @@ impl FromRow<'_, MySqlRow> for TenantModel {
         )
         .collect::<Vec<String>>()
     };
-    // 简介
+    // 标题
     let title: String = row.try_get("title")?;
-    // 描述
+    // 简介
     let info: String = row.try_get("info")?;
     // 语言
     let lang_id: LangId = row.try_get("lang_id")?;
@@ -322,10 +322,10 @@ pub struct TenantFieldComment {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: String,
-  /// 简介
+  /// 标题
   #[graphql(name = "title")]
   pub title: String,
-  /// 描述
+  /// 简介
   #[graphql(name = "info")]
   pub info: String,
   /// 语言
@@ -414,16 +414,16 @@ pub struct TenantSearch {
   /// 菜单权限
   #[graphql(name = "menu_ids_save_null")]
   pub menu_ids_is_null: Option<bool>,
-  /// 简介
+  /// 标题
   #[graphql(skip)]
   pub title: Option<String>,
-  /// 简介
+  /// 标题
   #[graphql(skip)]
   pub title_like: Option<String>,
-  /// 描述
+  /// 简介
   #[graphql(skip)]
   pub info: Option<String>,
-  /// 描述
+  /// 简介
   #[graphql(skip)]
   pub info_like: Option<String>,
   /// 语言
@@ -525,14 +525,14 @@ impl std::fmt::Debug for TenantSearch {
     if let Some(ref menu_ids) = self.menu_ids {
       item = item.field("menu_ids", menu_ids);
     }
-    // 简介
+    // 标题
     if let Some(ref title) = self.title {
       item = item.field("title", title);
     }
     if let Some(ref title_like) = self.title_like {
       item = item.field("title_like", title_like);
     }
-    // 描述
+    // 简介
     if let Some(ref info) = self.info {
       item = item.field("info", info);
     }
@@ -623,10 +623,10 @@ pub struct TenantInput {
   /// 菜单权限
   #[graphql(name = "menu_ids_lbl")]
   pub menu_ids_lbl: Option<Vec<String>>,
-  /// 简介
+  /// 标题
   #[graphql(name = "title")]
   pub title: Option<String>,
-  /// 描述
+  /// 简介
   #[graphql(name = "info")]
   pub info: Option<String>,
   /// 语言
@@ -703,9 +703,9 @@ impl From<TenantModel> for TenantInput {
       // 菜单权限
       menu_ids: model.menu_ids.into(),
       menu_ids_lbl: model.menu_ids_lbl.into(),
-      // 简介
+      // 标题
       title: model.title.into(),
-      // 描述
+      // 简介
       info: model.info.into(),
       // 语言
       lang_id: model.lang_id.into(),
@@ -754,9 +754,9 @@ impl From<TenantInput> for TenantSearch {
       domain_ids: input.domain_ids,
       // 菜单权限
       menu_ids: input.menu_ids,
-      // 简介
+      // 标题
       title: input.title,
-      // 描述
+      // 简介
       info: input.info,
       // 语言
       lang_id: input.lang_id.map(|x| vec![x]),
@@ -920,6 +920,7 @@ pub fn check_sort_tenant(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_tenant() -> String {
   "/base/tenant".to_owned()
 }
