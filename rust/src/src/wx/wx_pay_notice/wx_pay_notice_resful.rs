@@ -4,6 +4,8 @@ use tracing::error;
 use poem::Response;
 use http::status::StatusCode;
 
+use crate::common::context::get_req_id;
+
 use crate::common::wx_pay::decode::WxPayNotify;
 
 use super::wx_pay_notice_service;
