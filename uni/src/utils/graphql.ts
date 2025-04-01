@@ -272,6 +272,17 @@ export async function gqlQuery(
     "Request-ID"?: string;
   } = { };
   if (config && config.isMutation) {
+    const indexStore = useIndexStore();
+    if (indexStore.getLoading() > 0) {
+      uni.showToast({
+        title: "正在加载中，请稍后再试",
+        icon: "none",
+        duration: 3000,
+        mask: true,
+        position: "center",
+      });
+      throw new Error("mutation loading");
+    }
     let requestId = config["Request-ID"];
     if (!requestId) {
       requestId = uuid();
