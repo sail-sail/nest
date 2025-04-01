@@ -1,7 +1,10 @@
 use serde_json::json;
+use tracing::error;
 
 use poem::Response;
 use http::status::StatusCode;
+
+use crate::common::context::get_req_id;
 
 use crate::common::wx_pay::decode::WxPayNotify;
 
@@ -17,6 +20,10 @@ pub async fn wx_pay_notify(
   ).await;
   
   if let Err(err) = &data  {
+    error!(
+      "{req_id} wx_pay_notify: {err:?}",
+      req_id = get_req_id(),
+    );
     return Response::builder()
       .header("Content-Type", "application/json")
       .status(StatusCode::INTERNAL_SERVER_ERROR)
