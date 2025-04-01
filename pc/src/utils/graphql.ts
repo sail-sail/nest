@@ -311,6 +311,11 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   // gqlArg.query = gqlArg.query.trim().replace(/\s+/gm, " ");
   const headers = new Headers();
   if (opt && opt.isMutation) {
+    const indexStore = useIndexStore(cfg.pinia);
+    if (indexStore.loading > 0) {
+      ElMessage.warning("正在加载中，请稍后再试");
+      throw new Error("mutation loading");
+    }
     let requestId = opt["x-request-id"];
     if (!requestId) {
       requestId = uuid();
