@@ -10,6 +10,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
+#[allow(unused_imports)]
 use crate::src::base::permit::permit_service::use_permit;
 
 use super::cron_job_model::*;
@@ -19,7 +20,7 @@ use crate::r#gen::base::tenant::tenant_model::TenantId;
 
 /// 根据搜索条件和分页查找定时任务列表
 #[function_name::named]
-pub async fn find_all(
+pub async fn find_all_cron_job(
   search: Option<CronJobSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -34,7 +35,7 @@ pub async fn find_all(
   
   check_sort_cron_job(sort.as_deref())?;
   
-  let models = cron_job_service::find_all(
+  let models = cron_job_service::find_all_cron_job(
     search,
     page,
     sort,
@@ -46,7 +47,7 @@ pub async fn find_all(
 
 /// 根据条件查找定时任务总数
 #[function_name::named]
-pub async fn find_count(
+pub async fn find_count_cron_job(
   search: Option<CronJobSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -57,7 +58,7 @@ pub async fn find_count(
     function_name = function_name!(),
   );
   
-  let num = cron_job_service::find_count(
+  let num = cron_job_service::find_count_cron_job(
     search,
     options,
   ).await?;
@@ -67,7 +68,7 @@ pub async fn find_count(
 
 /// 根据条件查找第一个定时任务
 #[function_name::named]
-pub async fn find_one(
+pub async fn find_one_cron_job(
   search: Option<CronJobSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -81,7 +82,7 @@ pub async fn find_one(
   
   check_sort_cron_job(sort.as_deref())?;
   
-  let model = cron_job_service::find_one(
+  let model = cron_job_service::find_one_cron_job(
     search,
     sort,
     options,
@@ -92,7 +93,7 @@ pub async fn find_one(
 
 /// 根据 id 查找定时任务
 #[function_name::named]
-pub async fn find_by_id(
+pub async fn find_by_id_cron_job(
   id: CronJobId,
   options: Option<Options>,
 ) -> Result<Option<CronJobModel>> {
@@ -103,7 +104,7 @@ pub async fn find_by_id(
     function_name = function_name!(),
   );
   
-  let model = cron_job_service::find_by_id(
+  let model = cron_job_service::find_by_id_cron_job(
     id,
     options,
   ).await?;
@@ -113,7 +114,7 @@ pub async fn find_by_id(
 
 /// 根据 ids 查找定时任务
 #[function_name::named]
-pub async fn find_by_ids(
+pub async fn find_by_ids_cron_job(
   ids: Vec<CronJobId>,
   options: Option<Options>,
 ) -> Result<Vec<CronJobModel>> {
@@ -124,7 +125,7 @@ pub async fn find_by_ids(
     function_name = function_name!(),
   );
   
-  let models = cron_job_service::find_by_ids(
+  let models = cron_job_service::find_by_ids_cron_job(
     ids,
     options,
   ).await?;
@@ -135,7 +136,7 @@ pub async fn find_by_ids(
 /// 创建定时任务
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn creates(
+pub async fn creates_cron_job(
   inputs: Vec<CronJobInput>,
   options: Option<Options>,
 ) -> Result<Vec<CronJobId>> {
@@ -154,7 +155,7 @@ pub async fn creates(
   
   let mut inputs2 = Vec::with_capacity(inputs.len());
   for input in inputs {
-    let input = cron_job_service::set_id_by_lbl(
+    let input = cron_job_service::set_id_by_lbl_cron_job(
       input,
     ).await?;
     inputs2.push(input);
@@ -166,7 +167,7 @@ pub async fn creates(
     "add".to_owned(),
   ).await?;
   
-  let ids = cron_job_service::creates(
+  let ids = cron_job_service::creates_cron_job(
     inputs,
     options,
   ).await?;
@@ -177,7 +178,7 @@ pub async fn creates(
 /// 定时任务根据id修改租户id
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_cron_job(
   id: CronJobId,
   tenant_id: TenantId,
   options: Option<Options>,
@@ -189,7 +190,7 @@ pub async fn update_tenant_by_id(
     function_name = function_name!(),
   );
   
-  let num = cron_job_service::update_tenant_by_id(
+  let num = cron_job_service::update_tenant_by_id_cron_job(
     id,
     tenant_id,
     options,
@@ -201,7 +202,7 @@ pub async fn update_tenant_by_id(
 /// 根据 id 修改定时任务
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn update_by_id(
+pub async fn update_by_id_cron_job(
   id: CronJobId,
   input: CronJobInput,
   options: Option<Options>,
@@ -217,7 +218,7 @@ pub async fn update_by_id(
   input.id = None;
   let input = input;
   
-  let input = cron_job_service::set_id_by_lbl(
+  let input = cron_job_service::set_id_by_lbl_cron_job(
     input,
   ).await?;
   
@@ -226,7 +227,7 @@ pub async fn update_by_id(
     "edit".to_owned(),
   ).await?;
   
-  let res = cron_job_service::update_by_id(
+  let res = cron_job_service::update_by_id_cron_job(
     id,
     input,
     options,
@@ -238,7 +239,7 @@ pub async fn update_by_id(
 /// 根据 ids 删除定时任务
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_cron_job(
   ids: Vec<CronJobId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -254,7 +255,7 @@ pub async fn delete_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = cron_job_service::delete_by_ids(
+  let num = cron_job_service::delete_by_ids_cron_job(
     ids,
     options,
   ).await?;
@@ -266,7 +267,7 @@ pub async fn delete_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_cron_job(
   id: CronJobId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -277,7 +278,7 @@ pub async fn get_is_enabled_by_id(
     function_name = function_name!(),
   );
   
-  let is_enabled = cron_job_service::get_is_enabled_by_id(
+  let is_enabled = cron_job_service::get_is_enabled_by_id_cron_job(
     id,
     options,
   ).await?;
@@ -288,7 +289,7 @@ pub async fn get_is_enabled_by_id(
 /// 根据 ids 启用或者禁用定时任务
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_cron_job(
   ids: Vec<CronJobId>,
   is_enabled: u8,
   options: Option<Options>,
@@ -305,7 +306,7 @@ pub async fn enable_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = cron_job_service::enable_by_ids(
+  let num = cron_job_service::enable_by_ids_cron_job(
     ids,
     is_enabled,
     options,
@@ -319,7 +320,7 @@ pub async fn enable_by_ids(
 /// 记录不存在则返回 false
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_cron_job(
   id: CronJobId,
   options: Option<Options>,
 ) -> Result<bool> {
@@ -330,7 +331,7 @@ pub async fn get_is_locked_by_id(
     function_name = function_name!(),
   );
   
-  let is_locked = cron_job_service::get_is_locked_by_id(
+  let is_locked = cron_job_service::get_is_locked_by_id_cron_job(
     id,
     options,
   ).await?;
@@ -341,7 +342,7 @@ pub async fn get_is_locked_by_id(
 /// 根据 ids 锁定或者解锁定时任务
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_cron_job(
   ids: Vec<CronJobId>,
   is_locked: u8,
   options: Option<Options>,
@@ -358,7 +359,7 @@ pub async fn lock_by_ids(
     "edit".to_owned(),
   ).await?;
   
-  let num = cron_job_service::lock_by_ids(
+  let num = cron_job_service::lock_by_ids_cron_job(
     ids,
     is_locked,
     options,
@@ -369,7 +370,7 @@ pub async fn lock_by_ids(
 
 /// 获取定时任务字段注释
 #[function_name::named]
-pub async fn get_field_comments(
+pub async fn get_field_comments_cron_job(
   options: Option<Options>,
 ) -> Result<CronJobFieldComment> {
   
@@ -379,7 +380,7 @@ pub async fn get_field_comments(
     function_name = function_name!(),
   );
   
-  let comments = cron_job_service::get_field_comments(
+  let comments = cron_job_service::get_field_comments_cron_job(
     options,
   ).await?;
   
@@ -389,7 +390,7 @@ pub async fn get_field_comments(
 /// 根据 ids 还原定时任务
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_cron_job(
   ids: Vec<CronJobId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -405,7 +406,7 @@ pub async fn revert_by_ids(
     "delete".to_owned(),
   ).await?;
   
-  let num = cron_job_service::revert_by_ids(
+  let num = cron_job_service::revert_by_ids_cron_job(
     ids,
     options,
   ).await?;
@@ -416,7 +417,7 @@ pub async fn revert_by_ids(
 /// 根据 ids 彻底删除定时任务
 #[allow(dead_code)]
 #[function_name::named]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_cron_job(
   ids: Vec<CronJobId>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -432,7 +433,7 @@ pub async fn force_delete_by_ids(
     "force_delete".to_owned(),
   ).await?;
   
-  let num = cron_job_service::force_delete_by_ids(
+  let num = cron_job_service::force_delete_by_ids_cron_job(
     ids,
     options,
   ).await?;
@@ -442,7 +443,7 @@ pub async fn force_delete_by_ids(
 
 /// 查找 定时任务 order_by 字段的最大值
 #[function_name::named]
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_cron_job(
   options: Option<Options>,
 ) -> Result<u32> {
   
@@ -452,7 +453,7 @@ pub async fn find_last_order_by(
     function_name = function_name!(),
   );
   
-  let res = cron_job_service::find_last_order_by(
+  let res = cron_job_service::find_last_order_by_cron_job(
     options,
   ).await?;
   

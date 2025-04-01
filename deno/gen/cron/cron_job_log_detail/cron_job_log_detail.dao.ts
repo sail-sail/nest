@@ -52,7 +52,7 @@ import {
 } from "/src/base/usr/usr.dao.ts";
 
 import {
-  existById as existByIdTenant,
+  existByIdTenant,
 } from "/gen/base/tenant/tenant.dao.ts";
 
 import {
@@ -66,11 +66,11 @@ import type {
 } from "/gen/types.ts";
 
 import {
-  findOne as findOneCronJobLog,
+  findOneCronJobLog,
 } from "/gen/cron/cron_job_log/cron_job_log.dao.ts";
 
 import {
-  findById as findByIdUsr,
+  findByIdUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
 import {
@@ -169,9 +169,9 @@ async function getFromQuery(
   return fromQuery;
 }
 
-// MARK: findCount
+// MARK: findCountCronJobLogDetail
 /** 根据条件查找定时任务日志明细总数 */
-export async function findCount(
+export async function findCountCronJobLogDetail(
   search?: Readonly<CronJobLogDetailSearch>,
   options?: {
     is_debug?: boolean;
@@ -180,12 +180,12 @@ export async function findCount(
 ): Promise<number> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "findCount";
+  const method = "findCountCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
   if (is_debug !== false) {
-    let msg = `${ table }.${ method }:`;
+    let msg = `${ method }:`;
     if (search) {
       msg += ` search:${ getDebugSearch(search) }`;
     }
@@ -254,9 +254,9 @@ export async function findCount(
   return result;
 }
 
-// MARK: findAll
+// MARK: findAllCronJobLogDetail
 /** 根据搜索条件和分页查找定时任务日志明细列表 */
-export async function findAll(
+export async function findAllCronJobLogDetail(
   search?: Readonly<CronJobLogDetailSearch>,
   page?: Readonly<PageInput>,
   sort?: SortInput[],
@@ -267,7 +267,7 @@ export async function findAll(
 ): Promise<CronJobLogDetailModel[]> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "findAll";
+  const method = "findAllCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -407,9 +407,9 @@ export async function findAll(
   return result;
 }
 
-// MARK: setIdByLbl
+// MARK: setIdByLblCronJobLogDetail
 /** 根据lbl翻译业务字典, 外键关联id, 日期 */
-export async function setIdByLbl(
+export async function setIdByLblCronJobLogDetail(
   input: CronJobLogDetailInput,
 ) {
   
@@ -418,9 +418,9 @@ export async function setIdByLbl(
   };
 }
 
-// MARK: getFieldComments
+// MARK: getFieldCommentsCronJobLogDetail
 /** 获取定时任务日志明细字段注释 */
-export async function getFieldComments(): Promise<CronJobLogDetailFieldComment> {
+export async function getFieldCommentsCronJobLogDetail(): Promise<CronJobLogDetailFieldComment> {
   const fieldComments: CronJobLogDetailFieldComment = {
     id: "ID",
     cron_job_log_id: "定时任务日志",
@@ -432,9 +432,9 @@ export async function getFieldComments(): Promise<CronJobLogDetailFieldComment> 
   return fieldComments;
 }
 
-// MARK: findByUnique
+// MARK: findByUniqueCronJobLogDetail
 /** 通过唯一约束获得定时任务日志明细列表 */
-export async function findByUnique(
+export async function findByUniqueCronJobLogDetail(
   search0: Readonly<CronJobLogDetailInput>,
   options?: {
     is_debug?: boolean;
@@ -442,7 +442,7 @@ export async function findByUnique(
 ): Promise<CronJobLogDetailModel[]> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "findByUnique";
+  const method = "findByUniqueCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -460,7 +460,7 @@ export async function findByUnique(
   }
   
   if (search0.id) {
-    const model = await findOne(
+    const model = await findOneCronJobLogDetail(
       {
         id: search0.id,
       },
@@ -478,7 +478,7 @@ export async function findByUnique(
 }
 
 /** 根据唯一约束对比对象是否相等 */
-export function equalsByUnique(
+export function equalsByUniqueCronJobLogDetail(
   oldModel: Readonly<CronJobLogDetailModel>,
   input: Readonly<CronJobLogDetailInput>,
 ): boolean {
@@ -489,9 +489,9 @@ export function equalsByUnique(
   return false;
 }
 
-// MARK: checkByUnique
+// MARK: checkByUniqueCronJobLogDetail
 /** 通过唯一约束检查 定时任务日志明细 是否已经存在 */
-export async function checkByUnique(
+export async function checkByUniqueCronJobLogDetail(
   input: Readonly<CronJobLogDetailInput>,
   oldModel: Readonly<CronJobLogDetailModel>,
   uniqueType: Readonly<UniqueType> = UniqueType.Throw,
@@ -503,14 +503,14 @@ export async function checkByUnique(
   options = options ?? { };
   options.is_debug = false;
   
-  const isEquals = equalsByUnique(oldModel, input);
+  const isEquals = equalsByUniqueCronJobLogDetail(oldModel, input);
   
   if (isEquals) {
     if (uniqueType === UniqueType.Throw) {
       throw new UniqueException("此 定时任务日志明细 已经存在");
     }
     if (uniqueType === UniqueType.Update) {
-      const id: CronJobLogDetailId = await updateById(
+      const id: CronJobLogDetailId = await updateByIdCronJobLogDetail(
         oldModel.id,
         {
           ...input,
@@ -527,9 +527,9 @@ export async function checkByUnique(
   return;
 }
 
-// MARK: findOne
+// MARK: findOneCronJobLogDetail
 /** 根据条件查找第一定时任务日志明细 */
-export async function findOne(
+export async function findOneCronJobLogDetail(
   search?: Readonly<CronJobLogDetailSearch>,
   sort?: SortInput[],
   options?: {
@@ -538,7 +538,7 @@ export async function findOne(
 ): Promise<CronJobLogDetailModel | undefined> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "findOne";
+  const method = "findOneCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -565,7 +565,7 @@ export async function findOne(
     pgOffset: 0,
     pgSize: 1,
   };
-  const models = await findAll(
+  const models = await findAllCronJobLogDetail(
     search,
     page,
     sort,
@@ -575,9 +575,9 @@ export async function findOne(
   return model;
 }
 
-// MARK: findById
+// MARK: findByIdCronJobLogDetail
 /** 根据 id 查找定时任务日志明细 */
-export async function findById(
+export async function findByIdCronJobLogDetail(
   id?: CronJobLogDetailId | null,
   options?: {
     is_debug?: boolean;
@@ -585,7 +585,7 @@ export async function findById(
 ): Promise<CronJobLogDetailModel | undefined> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "findById";
+  const method = "findByIdCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -606,7 +606,7 @@ export async function findById(
     return;
   }
   
-  const model = await findOne(
+  const model = await findOneCronJobLogDetail(
     {
       id,
     },
@@ -617,9 +617,9 @@ export async function findById(
   return model;
 }
 
-// MARK: findByIds
+// MARK: findByIdsCronJobLogDetail
 /** 根据 ids 查找定时任务日志明细 */
-export async function findByIds(
+export async function findByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
   options?: {
     is_debug?: boolean;
@@ -627,7 +627,7 @@ export async function findByIds(
 ): Promise<CronJobLogDetailModel[]> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "findByIds";
+  const method = "findByIdsCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -648,7 +648,7 @@ export async function findByIds(
     return [ ];
   }
   
-  const models = await findAll(
+  const models = await findAllCronJobLogDetail(
     {
       ids,
     },
@@ -674,9 +674,9 @@ export async function findByIds(
   return models2;
 }
 
-// MARK: exist
+// MARK: existCronJobLogDetail
 /** 根据搜索条件判断定时任务日志明细是否存在 */
-export async function exist(
+export async function existCronJobLogDetail(
   search?: Readonly<CronJobLogDetailSearch>,
   options?: {
     is_debug?: boolean;
@@ -684,7 +684,7 @@ export async function exist(
 ): Promise<boolean> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "exist";
+  const method = "existCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -700,15 +700,15 @@ export async function exist(
     options = options ?? { };
     options.is_debug = false;
   }
-  const model = await findOne(search, undefined, options);
+  const model = await findOneCronJobLogDetail(search, undefined, options);
   const exist = !!model;
   
   return exist;
 }
 
-// MARK: existById
+// MARK: existByIdCronJobLogDetail
 /** 根据id判断定时任务日志明细是否存在 */
-export async function existById(
+export async function existByIdCronJobLogDetail(
   id?: Readonly<CronJobLogDetailId | null>,
   options?: {
     is_debug?: boolean;
@@ -716,7 +716,7 @@ export async function existById(
 ) {
   
   const table = "cron_cron_job_log_detail";
-  const method = "existById";
+  const method = "existByIdCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -749,9 +749,9 @@ export async function existById(
   return result;
 }
 
-// MARK: validateOption
+// MARK: validateOptionCronJobLogDetail
 /** 校验定时任务日志明细是否存在 */
-export async function validateOption(
+export async function validateOptionCronJobLogDetail(
   model?: CronJobLogDetailModel,
 ) {
   if (!model) {
@@ -762,12 +762,12 @@ export async function validateOption(
   return model;
 }
 
-// MARK: validate
+// MARK: validateCronJobLogDetail
 /** 定时任务日志明细增加和修改时校验输入 */
-export async function validate(
+export async function validateCronJobLogDetail(
   input: Readonly<CronJobLogDetailInput>,
 ) {
-  const fieldComments = await getFieldComments();
+  const fieldComments = await getFieldCommentsCronJobLogDetail();
   
   // ID
   await validators.chars_max_length(
@@ -785,9 +785,9 @@ export async function validate(
   
 }
 
-// MARK: createReturn
+// MARK: createReturnCronJobLogDetail
 /** 创建 定时任务日志明细 并返回 */
-export async function createReturn(
+export async function createReturnCronJobLogDetail(
   input: Readonly<CronJobLogDetailInput>,
   options?: {
     is_debug?: boolean;
@@ -798,7 +798,7 @@ export async function createReturn(
 ): Promise<CronJobLogDetailModel> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "createReturn";
+  const method = "createReturnCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -823,8 +823,8 @@ export async function createReturn(
     id,
   ] = await _creates([ input ], options);
   
-  const model = await validateOption(
-    await findOne(
+  const model = await validateOptionCronJobLogDetail(
+    await findOneCronJobLogDetail(
       {
         id,
       },
@@ -836,9 +836,9 @@ export async function createReturn(
   return model;
 }
 
-// MARK: create
+// MARK: createCronJobLogDetail
 /** 创建 定时任务日志明细 */
-export async function create(
+export async function createCronJobLogDetail(
   input: Readonly<CronJobLogDetailInput>,
   options?: {
     is_debug?: boolean;
@@ -849,7 +849,7 @@ export async function create(
 ): Promise<CronJobLogDetailId> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "create";
+  const method = "createCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -877,9 +877,9 @@ export async function create(
   return id;
 }
 
-// MARK: createsReturn
+// MARK: createsReturnCronJobLogDetail
 /** 批量创建 定时任务日志明细 并返回 */
-export async function createsReturn(
+export async function createsReturnCronJobLogDetail(
   inputs: CronJobLogDetailInput[],
   options?: {
     is_debug?: boolean;
@@ -890,7 +890,7 @@ export async function createsReturn(
 ): Promise<CronJobLogDetailModel[]> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "createsReturn";
+  const method = "createsReturnCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -909,14 +909,14 @@ export async function createsReturn(
   
   const ids = await _creates(inputs, options);
   
-  const models = await findByIds(ids, options);
+  const models = await findByIdsCronJobLogDetail(ids, options);
   
   return models;
 }
 
-// MARK: creates
+// MARK: createsCronJobLogDetail
 /** 批量创建 定时任务日志明细 */
-export async function creates(
+export async function createsCronJobLogDetail(
   inputs: CronJobLogDetailInput[],
   options?: {
     is_debug?: boolean;
@@ -927,7 +927,7 @@ export async function creates(
 ): Promise<CronJobLogDetailId[]> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "creates";
+  const method = "createsCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -976,11 +976,11 @@ async function _creates(
       throw new Error(`Can not set id when create in dao: ${ table }`);
     }
     
-    const oldModels = await findByUnique(input, options);
+    const oldModels = await findByUniqueCronJobLogDetail(input, options);
     if (oldModels.length > 0) {
       let id: CronJobLogDetailId | undefined = undefined;
       for (const oldModel of oldModels) {
-        id = await checkByUnique(
+        id = await checkByUniqueCronJobLogDetail(
           input,
           oldModel,
           options?.uniqueType,
@@ -1138,9 +1138,9 @@ async function _creates(
   return ids2;
 }
 
-// MARK: updateTenantById
+// MARK: updateTenantByIdCronJobLogDetail
 /** 定时任务日志明细 根据 id 修改 租户id */
-export async function updateTenantById(
+export async function updateTenantByIdCronJobLogDetail(
   id: CronJobLogDetailId,
   tenant_id: Readonly<TenantId>,
   options?: {
@@ -1149,7 +1149,7 @@ export async function updateTenantById(
 ): Promise<number> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "updateTenantById";
+  const method = "updateTenantByIdCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1181,9 +1181,9 @@ export async function updateTenantById(
   return affectedRows;
 }
 
-// MARK: updateById
+// MARK: updateByIdCronJobLogDetail
 /** 根据 id 修改 定时任务日志明细 */
-export async function updateById(
+export async function updateByIdCronJobLogDetail(
   id: CronJobLogDetailId,
   input: CronJobLogDetailInput,
   options?: {
@@ -1195,7 +1195,7 @@ export async function updateById(
 ): Promise<CronJobLogDetailId> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "updateById";
+  const method = "updateByIdCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1218,15 +1218,15 @@ export async function updateById(
   }
   
   if (!id) {
-    throw new Error("updateById: id cannot be empty");
+    throw new Error("updateByIdCronJobLogDetail: id cannot be empty");
   }
   if (!input) {
-    throw new Error("updateById: input cannot be null");
+    throw new Error("updateByIdCronJobLogDetail: input cannot be null");
   }
   
   // 修改租户id
   if (isNotEmpty(input.tenant_id)) {
-    await updateTenantById(id, input.tenant_id, options);
+    await updateTenantByIdCronJobLogDetail(id, input.tenant_id, options);
   }
   
   {
@@ -1234,7 +1234,7 @@ export async function updateById(
       ...input,
       id: undefined,
     };
-    let models = await findByUnique(input2, options);
+    let models = await findByUniqueCronJobLogDetail(input2, options);
     models = models.filter((item) => item.id !== id);
     if (models.length > 0) {
       if (!options || !options.uniqueType || options.uniqueType === UniqueType.Throw) {
@@ -1245,7 +1245,7 @@ export async function updateById(
     }
   }
   
-  const oldModel = await findById(id, options);
+  const oldModel = await findByIdCronJobLogDetail(id, options);
   
   if (!oldModel) {
     throw "编辑失败, 此 定时任务日志明细 已被删除";
@@ -1354,9 +1354,9 @@ export async function updateById(
   return id;
 }
 
-// MARK: deleteByIds
+// MARK: deleteByIdsCronJobLogDetail
 /** 根据 ids 删除 定时任务日志明细 */
-export async function deleteByIds(
+export async function deleteByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
   options?: {
     is_debug?: boolean;
@@ -1366,7 +1366,7 @@ export async function deleteByIds(
 ): Promise<number> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "deleteByIds";
+  const method = "deleteByIdsCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
@@ -1392,7 +1392,7 @@ export async function deleteByIds(
   let affectedRows = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findById(id, options);
+    const oldModel = await findByIdCronJobLogDetail(id, options);
     if (!oldModel) {
       continue;
     }
@@ -1428,9 +1428,9 @@ export async function deleteByIds(
   return affectedRows;
 }
 
-// MARK: revertByIds
+// MARK: revertByIdsCronJobLogDetail
 /** 根据 ids 还原 定时任务日志明细 */
-export async function revertByIds(
+export async function revertByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
   options?: {
     is_debug?: boolean;
@@ -1438,7 +1438,7 @@ export async function revertByIds(
 ): Promise<number> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "revertByIds";
+  const method = "revertByIdsCronJobLogDetail";
   
   const is_debug = get_is_debug(options?.is_debug);
   
@@ -1462,7 +1462,7 @@ export async function revertByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    let old_model = await findOne(
+    let old_model = await findOneCronJobLogDetail(
       {
         id,
         is_deleted: 1,
@@ -1471,7 +1471,7 @@ export async function revertByIds(
       options,
     );
     if (!old_model) {
-      old_model = await findById(
+      old_model = await findByIdCronJobLogDetail(
         id,
         options,
       );
@@ -1484,7 +1484,7 @@ export async function revertByIds(
         ...old_model,
         id: undefined,
       } as CronJobLogDetailInput;
-      const models = await findByUnique(input, options);
+      const models = await findByUniqueCronJobLogDetail(input, options);
       for (const model of models) {
         if (model.id === id) {
           continue;
@@ -1501,9 +1501,9 @@ export async function revertByIds(
   return num;
 }
 
-// MARK: forceDeleteByIds
+// MARK: forceDeleteByIdsCronJobLogDetail
 /** 根据 ids 彻底删除 定时任务日志明细 */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
   options?: {
     is_debug?: boolean;
@@ -1512,7 +1512,7 @@ export async function forceDeleteByIds(
 ): Promise<number> {
   
   const table = "cron_cron_job_log_detail";
-  const method = "forceDeleteByIds";
+  const method = "forceDeleteByIdsCronJobLogDetail";
   
   const is_silent_mode = get_is_silent_mode(options?.is_silent_mode);
   const is_debug = get_is_debug(options?.is_debug);
@@ -1537,7 +1537,7 @@ export async function forceDeleteByIds(
   let num = 0;
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
-    const oldModel = await findOne(
+    const oldModel = await findOneCronJobLogDetail(
       {
         id,
         is_deleted: 1,

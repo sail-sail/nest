@@ -752,6 +752,7 @@ pub fn check_sort_cron_job(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_cron_job() -> String {
   "/cron/cron_job".to_owned()
 }

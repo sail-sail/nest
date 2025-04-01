@@ -2,17 +2,17 @@
 
 import {
   CronJobLogExecState,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   cronJobLogQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: CronJobLogModel | null,
@@ -23,7 +23,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputCronJobLog(
   model?: CronJobLogInput,
 ) {
   const input: CronJobLogInput = {
@@ -52,9 +52,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找定时任务日志列表
+ * 根据搜索条件查找 定时任务日志 列表
  */
-export async function findAll(
+export async function findAllCronJobLog(
   search?: CronJobLogSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -87,7 +87,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个定时任务日志
  */
-export async function findOne(
+export async function findOneCronJobLog(
   search?: CronJobLogSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -113,9 +113,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找定时任务日志总数
+ * 根据搜索条件查找 定时任务日志 总数
  */
-export async function findCount(
+export async function findCountCronJobLog(
   search?: CronJobLogSearch,
   opt?: GqlOpt,
 ) {
@@ -136,9 +136,9 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找定时任务日志
+ * 根据 id 查找 定时任务日志
  */
-export async function findById(
+export async function findByIdCronJobLog(
   id?: CronJobLogId,
   opt?: GqlOpt,
 ): Promise<CronJobLogModel | undefined> {
@@ -165,9 +165,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找定时任务日志
+ * 根据 ids 查找 定时任务日志
  */
-export async function findByIds(
+export async function findByIdsCronJobLog(
   ids: CronJobLogId[],
   opt?: GqlOpt,
 ): Promise<CronJobLogModel[]> {
@@ -202,9 +202,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除定时任务日志
+ * 根据 ids 删除 定时任务日志
  */
-export async function deleteByIds(
+export async function deleteByIdsCronJobLog(
   ids: CronJobLogId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -228,9 +228,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原定时任务日志
+ * 根据 ids 还原 定时任务日志
  */
-export async function revertByIds(
+export async function revertByIdsCronJobLog(
   ids: CronJobLogId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -254,9 +254,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除定时任务日志
+ * 根据 ids 彻底删除 定时任务日志
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsCronJobLog(
   ids: CronJobLogId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -302,11 +302,11 @@ export async function findAllCronJob(
       sort,
     },
   }, opt);
-  const res = data.findAllCronJob;
-  return res;
+  const cron_job_models = data.findAllCronJob;
+  return cron_job_models;
 }
 
-export async function getCronJobList() {
+export async function getListCronJob() {
   const data = await findAllCronJob(
     {
       is_enabled: [ 1 ],
@@ -328,7 +328,7 @@ export async function getCronJobList() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelCronJobLog() {
   const {
     workerFn,
     workerStatus,
@@ -400,12 +400,12 @@ export function useExportExcel() {
   };
 }
 
-export function getPagePath() {
+export function getPagePathCronJobLog() {
   return "/cron/cron_job_log";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputCronJobLog() {
   const defaultInput: CronJobLogInput = {
     exec_state: CronJobLogExecState.Running,
   };

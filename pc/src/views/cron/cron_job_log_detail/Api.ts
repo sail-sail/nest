@@ -4,11 +4,11 @@ import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   cronJobLogDetailQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: CronJobLogDetailModel | null,
@@ -19,7 +19,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputCronJobLogDetail(
   model?: CronJobLogDetailInput,
 ) {
   const input: CronJobLogDetailInput = {
@@ -34,9 +34,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找定时任务日志明细列表
+ * 根据搜索条件查找 定时任务日志明细 列表
  */
-export async function findAll(
+export async function findAllCronJobLogDetail(
   search?: CronJobLogDetailSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -69,7 +69,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个定时任务日志明细
  */
-export async function findOne(
+export async function findOneCronJobLogDetail(
   search?: CronJobLogDetailSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -95,9 +95,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找定时任务日志明细总数
+ * 根据搜索条件查找 定时任务日志明细 总数
  */
-export async function findCount(
+export async function findCountCronJobLogDetail(
   search?: CronJobLogDetailSearch,
   opt?: GqlOpt,
 ) {
@@ -118,9 +118,9 @@ export async function findCount(
 }
 
 /**
- * 根据 id 查找定时任务日志明细
+ * 根据 id 查找 定时任务日志明细
  */
-export async function findById(
+export async function findByIdCronJobLogDetail(
   id?: CronJobLogDetailId,
   opt?: GqlOpt,
 ): Promise<CronJobLogDetailModel | undefined> {
@@ -147,9 +147,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找定时任务日志明细
+ * 根据 ids 查找 定时任务日志明细
  */
-export async function findByIds(
+export async function findByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
   opt?: GqlOpt,
 ): Promise<CronJobLogDetailModel[]> {
@@ -184,9 +184,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除定时任务日志明细
+ * 根据 ids 删除 定时任务日志明细
  */
-export async function deleteByIds(
+export async function deleteByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -210,9 +210,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 还原定时任务日志明细
+ * 根据 ids 还原 定时任务日志明细
  */
-export async function revertByIds(
+export async function revertByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -236,9 +236,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除定时任务日志明细
+ * 根据 ids 彻底删除 定时任务日志明细
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsCronJobLogDetail(
   ids: CronJobLogDetailId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -284,11 +284,11 @@ export async function findAllCronJobLog(
       sort,
     },
   }, opt);
-  const res = data.findAllCronJobLog;
-  return res;
+  const cron_job_log_models = data.findAllCronJobLog;
+  return cron_job_log_models;
 }
 
-export async function getCronJobLogList() {
+export async function getListCronJobLog() {
   const data = await findAllCronJobLog(
     undefined,
     undefined,
@@ -308,7 +308,7 @@ export async function getCronJobLogList() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelCronJobLogDetail() {
   const {
     workerFn,
     workerStatus,
@@ -371,12 +371,12 @@ export function useExportExcel() {
   };
 }
 
-export function getPagePath() {
+export function getPagePathCronJobLogDetail() {
   return "/cron/cron_job_log_detail";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputCronJobLogDetail() {
   const defaultInput: CronJobLogDetailInput = {
   };
   return defaultInput;

@@ -656,6 +656,7 @@ pub fn check_sort_job(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_job() -> String {
   "/cron/job".to_owned()
 }

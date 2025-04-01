@@ -31,10 +31,10 @@ export async function findCountCronJob(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountCronJob,
   } = await import("./cron_job.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountCronJob(search);
   
   return num;
 }
@@ -49,12 +49,12 @@ export async function findAllCronJob(
 ): Promise<CronJobModel[]> {
   
   const {
-    findAll,
+    findAllCronJob,
   } = await import("./cron_job.service.ts");
   
   checkSortCronJob(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllCronJob(search, page, sort);
   
   return models;
 }
@@ -65,10 +65,10 @@ export async function findAllCronJob(
 export async function getFieldCommentsCronJob(): Promise<CronJobFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsCronJob,
   } = await import("./cron_job.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsCronJob();
   
   return field_comment;
 }
@@ -82,12 +82,12 @@ export async function findOneCronJob(
 ): Promise<CronJobModel | undefined> {
   
   const {
-    findOne,
+    findOneCronJob,
   } = await import("./cron_job.service.ts");
   
   checkSortCronJob(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneCronJob(search, sort);
   
   return model;
 }
@@ -100,10 +100,10 @@ export async function findByIdCronJob(
 ): Promise<CronJobModel | undefined> {
   
   const {
-    findById,
+    findByIdCronJob,
   } = await import("./cron_job.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdCronJob(id);
   
   return model;
 }
@@ -116,10 +116,10 @@ export async function findByIdsCronJob(
 ): Promise<CronJobModel[]> {
   
   const {
-    findByIds,
+    findByIdsCronJob,
   } = await import("./cron_job.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsCronJob(ids);
   
   for (const model of models) {
   }
@@ -136,9 +136,9 @@ export async function createsCronJob(
 ): Promise<CronJobId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateCronJob,
+    setIdByLblCronJob,
+    createsCronJob,
   } = await import("./cron_job.service.ts");
   
   set_is_tran(true);
@@ -152,12 +152,12 @@ export async function createsCronJob(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblCronJob(input);
     
-    await validate(input);
+    await validateCronJob(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsCronJob(inputs, { uniqueType });
   return ids;
 }
 
@@ -172,20 +172,20 @@ export async function updateByIdCronJob(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblCronJob,
+    updateByIdCronJob,
   } = await import("./cron_job.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblCronJob(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: CronJobId = await updateById(id, input);
+  const id2: CronJobId = await updateByIdCronJob(id, input);
   
   return id2;
 }
@@ -198,7 +198,7 @@ export async function deleteByIdsCronJob(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsCronJob,
   } = await import("./cron_job.service.ts");
   
   set_is_tran(true);
@@ -208,7 +208,7 @@ export async function deleteByIdsCronJob(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsCronJob(ids);
   
   return num;
 }
@@ -222,7 +222,7 @@ export async function enableByIdsCronJob(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsCronJob,
   } = await import("./cron_job.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -235,7 +235,7 @@ export async function enableByIdsCronJob(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsCronJob(ids, is_enabled);
   
   return res;
 }
@@ -249,7 +249,7 @@ export async function lockByIdsCronJob(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsCronJob,
   } = await import("./cron_job.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -263,7 +263,7 @@ export async function lockByIdsCronJob(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsCronJob(ids, is_locked);
   
   return res;
 }
@@ -276,7 +276,7 @@ export async function revertByIdsCronJob(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsCronJob,
   } = await import("./cron_job.service.ts");
   
   set_is_tran(true);
@@ -286,7 +286,7 @@ export async function revertByIdsCronJob(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsCronJob(ids);
   
   return res;
 }
@@ -299,7 +299,7 @@ export async function forceDeleteByIdsCronJob(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsCronJob,
   } = await import("./cron_job.service.ts");
   
   set_is_tran(true);
@@ -309,7 +309,7 @@ export async function forceDeleteByIdsCronJob(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsCronJob(ids);
   
   return res;
 }
@@ -320,10 +320,10 @@ export async function forceDeleteByIdsCronJob(
 export async function findLastOrderByCronJob(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByCronJob,
   } = await import("./cron_job.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByCronJob();
   
   return res;
 }
