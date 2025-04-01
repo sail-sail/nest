@@ -14,12 +14,12 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "code",
-        align: "center",
         width: 140,
         fixed: "left",
       },
       {
         COLUMN_NAME: "lbl",
+        align: "center",
       },
       {
         COLUMN_NAME: "appid",
@@ -373,9 +373,7 @@ export default defineConfig({
     columns: [
       {
         COLUMN_NAME: "lbl",
-        require: true,
-        search: true,
-        width: 120,
+        align: "center",
       },
       {
         COLUMN_NAME: "appid",
@@ -410,7 +408,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "payer_client_ip",
-        align: "left",
+        align: "center",
         width: 180,
       },
       {
@@ -418,6 +416,7 @@ export default defineConfig({
         align: "left",
         width: 200,
         require: true,
+        readonly: true,
       },
       {
         COLUMN_NAME: "is_locked",

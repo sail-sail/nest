@@ -433,7 +433,6 @@ export function useDownloadImportTemplateWxPay() {
             serial_no
             v3_key
             payer_client_ip
-            notify_url
             order_by
             rem
           }
@@ -610,6 +609,7 @@ export function getPagePathWxPay() {
 /** 新增时的默认值 */
 export async function getDefaultInputWxPay() {
   const defaultInput: WxPayInput = {
+    notify_url: "/api/wx_pay/wx_pay_notify",
     is_locked: 1,
     is_enabled: 1,
     order_by: 1,
