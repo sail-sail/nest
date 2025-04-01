@@ -105,6 +105,7 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
     queryInfos.push(queryInfo);
   }
   await nextTick();
+  await nextTick();
   const queryInfos2 = queryInfos;
   const queryInfosRepeat2 = queryInfosRepeat;
   queryInfos = [ ];
