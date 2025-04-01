@@ -188,7 +188,7 @@ CREATE TABLE `wx_wx_pay` (
   `private_key` varchar(22) NOT NULL DEFAULT '' COMMENT '私钥',
   `v3_key` varchar(32) NOT NULL DEFAULT '' COMMENT 'APIv3密钥',
   `payer_client_ip` varchar(45) NOT NULL DEFAULT '' COMMENT '支付终端IP',
-  `notify_url` varchar(256) NOT NULL DEFAULT '' COMMENT '通知地址',
+  `notify_url` varchar(256) NOT NULL DEFAULT '/api/wx_pay/wx_pay_notify' COMMENT '通知地址',
   `is_locked` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '锁定,dict:is_locked',
   `is_enabled` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT '启用,dict:is_enabled',
   `order_by` int(11) unsigned NOT NULL DEFAULT 1 COMMENT '排序',
