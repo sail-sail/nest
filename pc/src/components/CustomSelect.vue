@@ -697,8 +697,8 @@ async function refreshDropdownWidth() {
     }
   }
   if (maxWidth > popperWidth) {
-    dropdownListEl.closest(".el-select-dropdown").style.minWidth = `${ (maxWidth + 52) }px`;
-    dropdownListEl.style.minWidth = `${ (maxWidth + 52) }px`;
+    dropdownListEl.closest(".el-select-dropdown").style.minWidth = `${ (maxWidth + 56) }px`;
+    dropdownListEl.style.minWidth = `${ (maxWidth + 56) }px`;
   }
 }
 
