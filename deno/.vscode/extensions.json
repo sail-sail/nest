@@ -2,7 +2,6 @@
   "recommendations": [
     "ms-ceintl.vscode-language-pack-zh-hans",
     "mikestead.dotenv",
-    "hediet.vscode-drawio-insiders-build",
     "janisdd.vscode-edit-csv",
     "mechatroner.rainbow-csv",
     "editorconfig.editorconfig",
@@ -29,7 +28,6 @@
     "johnsoncodehk.vscode-tsconfig-helper",
     "antfu.pair-diff",
     "jacobpfeifer.pfeifer-hurl",
-    "tmui-helper.tmui-helper",
     "ms-vscode.vscode-speech",
     "yoavbls.pretty-ts-errors",
     "hongyan-prettyjson.pretty-json-vscode",
