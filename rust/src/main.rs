@@ -122,11 +122,11 @@ async fn main() -> Result<(), std::io::Error> {
   
   // oss, tmpfile
   tokio::spawn(async move {
-    if let Err(err) = oss_dao::init().await {
-      println!("oss_dao::init() error: {}", err);
+    if let Err(_err) = oss_dao::init().await {
+      // println!("oss_dao::init() error: {}", err);
     }
-    if let Err(err) = tmpfile_dao::init().await {
-      println!("tmpfile_dao::init() error: {}", err);
+    if let Err(_err) = tmpfile_dao::init().await {
+      // println!("tmpfile_dao::init() error: {}", err);
     }
   });
   
