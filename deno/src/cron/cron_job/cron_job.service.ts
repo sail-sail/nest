@@ -3,8 +3,8 @@ import {
 } from "/src/cron/job/job.dao.ts";
 
 import {
-  findById as findByIdCronJob,
-  validateOption as validateOptionCronJob,
+  findByIdCronJob,
+  validateOptionCronJob,
 } from "/gen/cron/cron_job/cron_job.dao.ts";
 
 /**

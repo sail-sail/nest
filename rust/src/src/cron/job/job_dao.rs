@@ -1,5 +1,7 @@
-use anyhow::Result;
+use color_eyre::eyre::{Result, eyre};
 use tracing::info;
+
+use crate::common::context::Options;
 
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::cron::job::job_model::JobId;
@@ -12,29 +14,30 @@ use crate::r#gen::cron::cron_job_log::cron_job_log_model::{
 use crate::r#gen::cron::cron_job_log_detail::cron_job_log_detail_model::CronJobLogDetailInput;
 
 use crate::r#gen::cron::job::job_dao::{
-  validate_option as validate_option_job,
-  validate_is_enabled as validate_is_enabled_job,
-  find_by_id as find_by_id_job,
+  validate_option_job,
+  validate_is_enabled_job,
+  find_by_id_job,
 };
 
 use crate::r#gen::cron::cron_job_log::cron_job_log_dao::{
-  create as create_cron_job_log,
-  update_by_id as update_by_id_cron_job_log,
+  create_cron_job_log,
+  update_by_id_cron_job_log,
 };
 
-use crate::r#gen::cron::cron_job_log_detail::cron_job_log_detail_dao::create as create_cron_job_log_detail;
+use crate::r#gen::cron::cron_job_log_detail::cron_job_log_detail_dao::create_cron_job_log_detail;
 
 pub async fn run_job(
   id: JobId,
   cron_job_id: CronJobId,
   cron: String,
   tenant_id: TenantId,
+  options: Option<Options>,
 ) -> Result<String> {
   
   let job_model = validate_option_job(
     find_by_id_job(
       id,
-      None,
+      options.clone(),
     ).await?,
   ).await?;
   
@@ -53,12 +56,12 @@ pub async fn run_job(
       tenant_id: Some(tenant_id.clone()),
       ..Default::default()
     },
-    None,
+    options.clone(),
   ).await?;
   
   let code = job_model.code;
   
-  let exec_result: Option<Result<String, anyhow::Error>> = if code == "test" {
+  let exec_result: Option<Result<String>> = if code == "test" {
     test(
       id.clone(),
       tenant_id,
@@ -82,10 +85,10 @@ pub async fn run_job(
         end_time: Some(end_time),
         ..Default::default()
       },
-      None,
+      options.clone(),
     ).await?;
     
-    return Err(anyhow::anyhow!(exec_result));
+    return Err(eyre!(exec_result));
   }
   
   let exec_result: String = {
@@ -104,7 +107,7 @@ pub async fn run_job(
       end_time: Some(end_time),
       ..Default::default()
     },
-    None,
+    options.clone(),
   ).await?;
   
   Ok(exec_result)
