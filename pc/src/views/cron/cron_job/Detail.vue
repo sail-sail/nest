@@ -94,7 +94,7 @@
           >
             <CustomSelect
               v-model="dialogModel.job_id"
-              :method="getJobList"
+              :method="getListJob"
               :find-by-values="findByIdsJob"
               :options-map="((item: JobModel) => {
                 return {
@@ -264,21 +264,21 @@ import type {
 } from "vue";
 
 import {
-  create,
-  findOne,
-  findLastOrderBy,
-  updateById,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
+  createCronJob,
+  findOneCronJob,
+  findLastOrderByCronJob,
+  updateByIdCronJob,
+  getDefaultInputCronJob,
+  getPagePathCronJob,
+  intoInputCronJob,
+} from "./Api.ts";
+
+import {
+  getListJob,
 } from "./Api";
 
 import {
-  getJobList,
-} from "./Api";
-
-import {
-  findByIds as findByIdsJob,
+  findByIdsJob,
 } from "@/views/cron/job/Api.ts";
 
 import cronstrue from "cronstrue/i18n";
@@ -293,7 +293,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathCronJob();
 
 const permitStore = usePermitStore();
 
@@ -401,7 +401,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneCronJob;
 
 /** 打开对话框 */
 async function showDialog(
@@ -416,7 +416,7 @@ async function showDialog(
       ids?: CronJobId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneCronJob;
     action: DialogAction;
   },
 ) {
@@ -443,7 +443,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneCronJob;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -476,8 +476,8 @@ async function showDialog(
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputCronJob(),
+      findLastOrderByCronJob({
         notLoading: !inited,
       }),
     ]);
@@ -500,7 +500,7 @@ async function showDialog(
         id,
         is_deleted,
       }),
-      findLastOrderBy({
+      findLastOrderByCronJob({
         notLoading: !inited,
       }),
     ]);
@@ -628,8 +628,8 @@ async function onReset() {
       defaultModel,
       order_by,
     ] = await Promise.all([
-      getDefaultInput(),
-      findLastOrderBy({
+      getDefaultInputCronJob(),
+      findLastOrderByCronJob({
         notLoading: !inited,
       }),
     ]);
@@ -663,7 +663,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputCronJob({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;
@@ -814,7 +814,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await create(dialogModel2);
+    id = await createCronJob(dialogModel2);
     dialogModel.id = id;
     msg = "新增成功";
   } else if (dialogAction === "edit" || dialogAction === "view") {
@@ -829,7 +829,7 @@ async function save() {
       Object.assign(dialogModel2, builtInModel);
     }
     Object.assign(dialogModel2, { is_deleted: undefined });
-    id = await updateById(
+    id = await updateByIdCronJob(
       dialogModel.id,
       dialogModel2,
     );

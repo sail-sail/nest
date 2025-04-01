@@ -15,7 +15,7 @@ async function setSearchQuery(
 /**
  * 根据条件查找定时任务日志明细总数
  */
-export async function findCount(
+export async function findCountCronJobLogDetail(
   search?: CronJobLogDetailSearch,
 ): Promise<number> {
   
@@ -23,7 +23,7 @@ export async function findCount(
   
   await setSearchQuery(search);
   
-  const cron_job_log_detail_num = await cron_job_log_detailDao.findCount(search);
+  const cron_job_log_detail_num = await cron_job_log_detailDao.findCountCronJobLogDetail(search);
   
   return cron_job_log_detail_num;
 }
@@ -31,7 +31,7 @@ export async function findCount(
 /**
  * 根据搜索条件和分页查找定时任务日志明细列表
  */
-export async function findAll(
+export async function findAllCronJobLogDetail(
   search?: CronJobLogDetailSearch,
   page?: PageInput,
   sort?: SortInput[],
@@ -41,7 +41,7 @@ export async function findAll(
   
   await setSearchQuery(search);
   
-  const cron_job_log_detail_models = await cron_job_log_detailDao.findAll(search, page, sort);
+  const cron_job_log_detail_models = await cron_job_log_detailDao.findAllCronJobLogDetail(search, page, sort);
   
   return cron_job_log_detail_models;
 }
@@ -49,16 +49,16 @@ export async function findAll(
 /**
  * 根据 lbl 翻译业务字典, 外键关联 id, 日期
  */
-export async function setIdByLbl(
+export async function setIdByLblCronJobLogDetail(
   input: CronJobLogDetailInput,
 ): Promise<void> {
-  await cron_job_log_detailDao.setIdByLbl(input);
+  await cron_job_log_detailDao.setIdByLblCronJobLogDetail(input);
 }
 
 /**
  * 根据条件查找第一个定时任务日志明细
  */
-export async function findOne(
+export async function findOneCronJobLogDetail(
   search?: CronJobLogDetailSearch,
   sort?: SortInput[],
 ): Promise<CronJobLogDetailModel | undefined> {
@@ -67,7 +67,7 @@ export async function findOne(
   
   await setSearchQuery(search);
   
-  const cron_job_log_detail_model = await cron_job_log_detailDao.findOne(search, sort);
+  const cron_job_log_detail_model = await cron_job_log_detailDao.findOneCronJobLogDetail(search, sort);
   
   return cron_job_log_detail_model;
 }
@@ -75,11 +75,11 @@ export async function findOne(
 /**
  * 根据 id 查找定时任务日志明细
  */
-export async function findById(
+export async function findByIdCronJobLogDetail(
   cron_job_log_detail_id?: CronJobLogDetailId | null,
 ): Promise<CronJobLogDetailModel | undefined> {
   
-  const cron_job_log_detail_model = await cron_job_log_detailDao.findById(cron_job_log_detail_id);
+  const cron_job_log_detail_model = await cron_job_log_detailDao.findByIdCronJobLogDetail(cron_job_log_detail_id);
   
   return cron_job_log_detail_model;
 }
@@ -87,11 +87,11 @@ export async function findById(
 /**
  * 根据 ids 查找定时任务日志明细
  */
-export async function findByIds(
+export async function findByIdsCronJobLogDetail(
   cron_job_log_detail_ids: CronJobLogDetailId[],
 ): Promise<CronJobLogDetailModel[]> {
   
-  const cron_job_log_detail_models = await cron_job_log_detailDao.findByIds(cron_job_log_detail_ids);
+  const cron_job_log_detail_models = await cron_job_log_detailDao.findByIdsCronJobLogDetail(cron_job_log_detail_ids);
   
   return cron_job_log_detail_models;
 }
@@ -99,7 +99,7 @@ export async function findByIds(
 /**
  * 根据搜索条件查找定时任务日志明细是否存在
  */
-export async function exist(
+export async function existCronJobLogDetail(
   search?: CronJobLogDetailSearch,
 ): Promise<boolean> {
   
@@ -107,7 +107,7 @@ export async function exist(
   
   await setSearchQuery(search);
   
-  const cron_job_log_detail_exist = await cron_job_log_detailDao.exist(search);
+  const cron_job_log_detail_exist = await cron_job_log_detailDao.existCronJobLogDetail(search);
   
   return cron_job_log_detail_exist;
 }
@@ -115,11 +115,11 @@ export async function exist(
 /**
  * 根据 id 查找定时任务日志明细是否存在
  */
-export async function existById(
+export async function existByIdCronJobLogDetail(
   cron_job_log_detail_id?: CronJobLogDetailId | null,
 ): Promise<boolean> {
   
-  const cron_job_log_detail_exist = await cron_job_log_detailDao.existById(cron_job_log_detail_id);
+  const cron_job_log_detail_exist = await cron_job_log_detailDao.existByIdCronJobLogDetail(cron_job_log_detail_id);
   
   return cron_job_log_detail_exist;
 }
@@ -127,22 +127,22 @@ export async function existById(
 /**
  * 增加和修改时校验定时任务日志明细
  */
-export async function validate(
+export async function validateCronJobLogDetail(
   input: CronJobLogDetailInput,
 ): Promise<void> {
-  await cron_job_log_detailDao.validate(input);
+  await cron_job_log_detailDao.validateCronJobLogDetail(input);
 }
 
 /**
  * 批量创建定时任务日志明细
  */
-export async function creates(
+export async function createsCronJobLogDetail(
   inputs: CronJobLogDetailInput[],
   options?: {
     uniqueType?: UniqueType;
   },
 ): Promise<CronJobLogDetailId[]> {
-  const cron_job_log_detail_ids = await cron_job_log_detailDao.creates(inputs, options);
+  const cron_job_log_detail_ids = await cron_job_log_detailDao.createsCronJobLogDetail(inputs, options);
   
   return cron_job_log_detail_ids;
 }
@@ -150,43 +150,43 @@ export async function creates(
 /**
  * 根据 id 修改定时任务日志明细
  */
-export async function updateById(
+export async function updateByIdCronJobLogDetail(
   cron_job_log_detail_id: CronJobLogDetailId,
   input: CronJobLogDetailInput,
 ): Promise<CronJobLogDetailId> {
   
-  const cron_job_log_detail_id2 = await cron_job_log_detailDao.updateById(cron_job_log_detail_id, input);
+  const cron_job_log_detail_id2 = await cron_job_log_detailDao.updateByIdCronJobLogDetail(cron_job_log_detail_id, input);
   
   return cron_job_log_detail_id2;
 }
 
 /** 校验定时任务日志明细是否存在 */
-export async function validateOption(
+export async function validateOptionCronJobLogDetail(
   model0?: CronJobLogDetailModel,
 ): Promise<CronJobLogDetailModel> {
-  const cron_job_log_detail_model = await cron_job_log_detailDao.validateOption(model0);
+  const cron_job_log_detail_model = await cron_job_log_detailDao.validateOptionCronJobLogDetail(model0);
   return cron_job_log_detail_model;
 }
 
 /**
  * 根据 ids 删除定时任务日志明细
  */
-export async function deleteByIds(
+export async function deleteByIdsCronJobLogDetail(
   cron_job_log_detail_ids: CronJobLogDetailId[],
 ): Promise<number> {
   
-  const cron_job_log_detail_num = await cron_job_log_detailDao.deleteByIds(cron_job_log_detail_ids);
+  const cron_job_log_detail_num = await cron_job_log_detailDao.deleteByIdsCronJobLogDetail(cron_job_log_detail_ids);
   return cron_job_log_detail_num;
 }
 
 /**
  * 根据 ids 还原定时任务日志明细
  */
-export async function revertByIds(
+export async function revertByIdsCronJobLogDetail(
   cron_job_log_detail_ids: CronJobLogDetailId[],
 ): Promise<number> {
   
-  const cron_job_log_detail_num = await cron_job_log_detailDao.revertByIds(cron_job_log_detail_ids);
+  const cron_job_log_detail_num = await cron_job_log_detailDao.revertByIdsCronJobLogDetail(cron_job_log_detail_ids);
   
   return cron_job_log_detail_num;
 }
@@ -194,11 +194,11 @@ export async function revertByIds(
 /**
  * 根据 ids 彻底删除定时任务日志明细
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsCronJobLogDetail(
   cron_job_log_detail_ids: CronJobLogDetailId[],
 ): Promise<number> {
   
-  const cron_job_log_detail_num = await cron_job_log_detailDao.forceDeleteByIds(cron_job_log_detail_ids);
+  const cron_job_log_detail_num = await cron_job_log_detailDao.forceDeleteByIdsCronJobLogDetail(cron_job_log_detail_ids);
   
   return cron_job_log_detail_num;
 }
@@ -206,7 +206,7 @@ export async function forceDeleteByIds(
 /**
  * 获取定时任务日志明细字段注释
  */
-export async function getFieldComments(): Promise<CronJobLogDetailFieldComment> {
-  const cron_job_log_detail_fields = await cron_job_log_detailDao.getFieldComments();
+export async function getFieldCommentsCronJobLogDetail(): Promise<CronJobLogDetailFieldComment> {
+  const cron_job_log_detail_fields = await cron_job_log_detailDao.getFieldCommentsCronJobLogDetail();
   return cron_job_log_detail_fields;
 }

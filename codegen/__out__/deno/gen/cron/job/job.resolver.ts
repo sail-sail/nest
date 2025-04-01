@@ -29,10 +29,10 @@ export async function findCountJob(
 ): Promise<number> {
   
   const {
-    findCount,
+    findCountJob,
   } = await import("./job.service.ts");
   
-  const num = await findCount(search);
+  const num = await findCountJob(search);
   
   return num;
 }
@@ -47,12 +47,12 @@ export async function findAllJob(
 ): Promise<JobModel[]> {
   
   const {
-    findAll,
+    findAllJob,
   } = await import("./job.service.ts");
   
   checkSortJob(sort);
   
-  const models = await findAll(search, page, sort);
+  const models = await findAllJob(search, page, sort);
   
   return models;
 }
@@ -63,10 +63,10 @@ export async function findAllJob(
 export async function getFieldCommentsJob(): Promise<JobFieldComment> {
   
   const {
-    getFieldComments,
+    getFieldCommentsJob,
   } = await import("./job.service.ts");
   
-  const field_comment = await getFieldComments();
+  const field_comment = await getFieldCommentsJob();
   
   return field_comment;
 }
@@ -80,12 +80,12 @@ export async function findOneJob(
 ): Promise<JobModel | undefined> {
   
   const {
-    findOne,
+    findOneJob,
   } = await import("./job.service.ts");
   
   checkSortJob(sort);
   
-  const model = await findOne(search, sort);
+  const model = await findOneJob(search, sort);
   
   return model;
 }
@@ -98,10 +98,10 @@ export async function findByIdJob(
 ): Promise<JobModel | undefined> {
   
   const {
-    findById,
+    findByIdJob,
   } = await import("./job.service.ts");
   
-  const model = await findById(id);
+  const model = await findByIdJob(id);
   
   return model;
 }
@@ -114,10 +114,10 @@ export async function findByIdsJob(
 ): Promise<JobModel[]> {
   
   const {
-    findByIds,
+    findByIdsJob,
   } = await import("./job.service.ts");
   
-  const models = await findByIds(ids);
+  const models = await findByIdsJob(ids);
   
   for (const model of models) {
   }
@@ -134,9 +134,9 @@ export async function createsJob(
 ): Promise<JobId[]> {
   
   const {
-    validate,
-    setIdByLbl,
-    creates,
+    validateJob,
+    setIdByLblJob,
+    createsJob,
   } = await import("./job.service.ts");
   
   set_is_tran(true);
@@ -150,12 +150,12 @@ export async function createsJob(
   for (const input of inputs) {
     input.id = undefined;
     
-    await setIdByLbl(input);
+    await setIdByLblJob(input);
     
-    await validate(input);
+    await validateJob(input);
   }
   const uniqueType = unique_type;
-  const ids = await creates(inputs, { uniqueType });
+  const ids = await createsJob(inputs, { uniqueType });
   return ids;
 }
 
@@ -170,20 +170,20 @@ export async function updateByIdJob(
   input.id = undefined;
   
   const {
-    setIdByLbl,
-    updateById,
+    setIdByLblJob,
+    updateByIdJob,
   } = await import("./job.service.ts");
   
   set_is_tran(true);
   
-  await setIdByLbl(input);
+  await setIdByLblJob(input);
   
   await usePermit(
     route_path,
     "edit",
   );
   
-  const id2: JobId = await updateById(id, input);
+  const id2: JobId = await updateByIdJob(id, input);
   
   return id2;
 }
@@ -196,7 +196,7 @@ export async function deleteByIdsJob(
 ): Promise<number> {
   
   const {
-    deleteByIds,
+    deleteByIdsJob,
   } = await import("./job.service.ts");
   
   set_is_tran(true);
@@ -206,7 +206,7 @@ export async function deleteByIdsJob(
     "delete",
   );
   
-  const num = await deleteByIds(ids);
+  const num = await deleteByIdsJob(ids);
   
   return num;
 }
@@ -220,7 +220,7 @@ export async function enableByIdsJob(
 ): Promise<number> {
   
   const {
-    enableByIds,
+    enableByIdsJob,
   } = await import("./job.service.ts");
   
   if (is_enabled !== 0 && is_enabled !== 1) {
@@ -233,7 +233,7 @@ export async function enableByIdsJob(
     route_path,
     "edit",
   );
-  const res = await enableByIds(ids, is_enabled);
+  const res = await enableByIdsJob(ids, is_enabled);
   
   return res;
 }
@@ -247,7 +247,7 @@ export async function lockByIdsJob(
 ): Promise<number> {
   
   const {
-    lockByIds,
+    lockByIdsJob,
   } = await import("./job.service.ts");
   
   if (is_locked !== 0 && is_locked !== 1) {
@@ -261,7 +261,7 @@ export async function lockByIdsJob(
     "edit",
   );
   
-  const res = await lockByIds(ids, is_locked);
+  const res = await lockByIdsJob(ids, is_locked);
   
   return res;
 }
@@ -274,7 +274,7 @@ export async function revertByIdsJob(
 ): Promise<number> {
   
   const {
-    revertByIds,
+    revertByIdsJob,
   } = await import("./job.service.ts");
   
   set_is_tran(true);
@@ -284,7 +284,7 @@ export async function revertByIdsJob(
     "delete",
   );
   
-  const res = await revertByIds(ids);
+  const res = await revertByIdsJob(ids);
   
   return res;
 }
@@ -297,7 +297,7 @@ export async function forceDeleteByIdsJob(
 ): Promise<number> {
   
   const {
-    forceDeleteByIds,
+    forceDeleteByIdsJob,
   } = await import("./job.service.ts");
   
   set_is_tran(true);
@@ -307,7 +307,7 @@ export async function forceDeleteByIdsJob(
     "force_delete",
   );
   
-  const res = await forceDeleteByIds(ids);
+  const res = await forceDeleteByIdsJob(ids);
   
   return res;
 }
@@ -318,10 +318,10 @@ export async function forceDeleteByIdsJob(
 export async function findLastOrderByJob(): Promise<number> {
   
   const {
-    findLastOrderBy,
+    findLastOrderByJob,
   } = await import("./job.service.ts");
   
-  const res = findLastOrderBy();
+  const res = findLastOrderByJob();
   
   return res;
 }

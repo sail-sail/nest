@@ -1,17 +1,17 @@
 
 import {
   UniqueType,
-} from "#/types";
+} from "#/types.ts";
 
 import type {
   Query,
   Mutation,
   PageInput,
-} from "#/types";
+} from "#/types.ts";
 
 import {
   cronJobQueryField,
-} from "./Model";
+} from "./Model.ts";
 
 async function setLblById(
   model?: CronJobModel | null,
@@ -22,7 +22,7 @@ async function setLblById(
   }
 }
 
-export function intoInput(
+export function intoInputCronJob(
   model?: CronJobInput,
 ) {
   const input: CronJobInput = {
@@ -53,9 +53,9 @@ export function intoInput(
 }
 
 /**
- * 根据搜索条件查找定时任务列表
+ * 根据搜索条件查找 定时任务 列表
  */
-export async function findAll(
+export async function findAllCronJob(
   search?: CronJobSearch,
   page?: PageInput,
   sort?: Sort[],
@@ -88,7 +88,7 @@ export async function findAll(
 /**
  * 根据条件查找第一个定时任务
  */
-export async function findOne(
+export async function findOneCronJob(
   search?: CronJobSearch,
   sort?: Sort[],
   opt?: GqlOpt,
@@ -114,9 +114,9 @@ export async function findOne(
 }
 
 /**
- * 根据搜索条件查找定时任务总数
+ * 根据搜索条件查找 定时任务 总数
  */
-export async function findCount(
+export async function findCountCronJob(
   search?: CronJobSearch,
   opt?: GqlOpt,
 ) {
@@ -137,17 +137,14 @@ export async function findCount(
 }
 
 /**
- * 创建定时任务
- * @param {CronJobInput} input
- * @param {UniqueType} unique_type?
- * @param {GqlOpt} opt?
+ * 创建 定时任务
  */
-export async function create(
+export async function createCronJob(
   input: CronJobInput,
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<CronJobId> {
-  const ids = await creates(
+  const ids = await createsCronJob(
     [ input ],
     unique_type,
     opt,
@@ -157,14 +154,14 @@ export async function create(
 }
 
 /**
- * 批量创建定时任务
+ * 批量创建 定时任务
  */
-export async function creates(
+export async function createsCronJob(
   inputs: CronJobInput[],
   unique_type?: UniqueType,
   opt?: GqlOpt,
 ): Promise<CronJobId[]> {
-  inputs = inputs.map(intoInput);
+  inputs = inputs.map(intoInputCronJob);
   const data: {
     createsCronJob: Mutation["createsCronJob"];
   } = await mutation({
@@ -183,14 +180,14 @@ export async function creates(
 }
 
 /**
- * 根据 id 修改定时任务
+ * 根据 id 修改 定时任务
  */
-export async function updateById(
+export async function updateByIdCronJob(
   id: CronJobId,
   input: CronJobInput,
   opt?: GqlOpt,
 ): Promise<CronJobId> {
-  input = intoInput(input);
+  input = intoInputCronJob(input);
   const data: {
     updateByIdCronJob: Mutation["updateByIdCronJob"];
   } = await mutation({
@@ -209,9 +206,9 @@ export async function updateById(
 }
 
 /**
- * 根据 id 查找定时任务
+ * 根据 id 查找 定时任务
  */
-export async function findById(
+export async function findByIdCronJob(
   id?: CronJobId,
   opt?: GqlOpt,
 ): Promise<CronJobModel | undefined> {
@@ -238,9 +235,9 @@ export async function findById(
 }
 
 /**
- * 根据 ids 查找定时任务
+ * 根据 ids 查找 定时任务
  */
-export async function findByIds(
+export async function findByIdsCronJob(
   ids: CronJobId[],
   opt?: GqlOpt,
 ): Promise<CronJobModel[]> {
@@ -275,9 +272,9 @@ export async function findByIds(
 }
 
 /**
- * 根据 ids 删除定时任务
+ * 根据 ids 删除 定时任务
  */
-export async function deleteByIds(
+export async function deleteByIdsCronJob(
   ids: CronJobId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -301,9 +298,9 @@ export async function deleteByIds(
 }
 
 /**
- * 根据 ids 启用或禁用定时任务
+ * 根据 ids 启用或禁用 定时任务
  */
-export async function enableByIds(
+export async function enableByIdsCronJob(
   ids: CronJobId[],
   is_enabled: 0 | 1,
   opt?: GqlOpt,
@@ -329,9 +326,9 @@ export async function enableByIds(
 }
 
 /**
- * 根据 ids 锁定或解锁定时任务
+ * 根据 ids 锁定或解锁 定时任务
  */
-export async function lockByIds(
+export async function lockByIdsCronJob(
   ids: CronJobId[],
   is_locked: 0 | 1,
   opt?: GqlOpt,
@@ -357,9 +354,9 @@ export async function lockByIds(
 }
 
 /**
- * 根据 ids 还原定时任务
+ * 根据 ids 还原 定时任务
  */
-export async function revertByIds(
+export async function revertByIdsCronJob(
   ids: CronJobId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -383,9 +380,9 @@ export async function revertByIds(
 }
 
 /**
- * 根据 ids 彻底删除定时任务
+ * 根据 ids 彻底删除 定时任务
  */
-export async function forceDeleteByIds(
+export async function forceDeleteByIdsCronJob(
   ids: CronJobId[],
   opt?: GqlOpt,
 ): Promise<number> {
@@ -431,11 +428,11 @@ export async function findAllJob(
       sort,
     },
   }, opt);
-  const res = data.findAllJob;
-  return res;
+  const job_models = data.findAllJob;
+  return job_models;
 }
 
-export async function getJobList() {
+export async function getListJob() {
   const data = await findAllJob(
     {
       is_enabled: [ 1 ],
@@ -455,9 +452,9 @@ export async function getJobList() {
 }
 
 /**
- * 下载定时任务导入模板
+ * 下载 定时任务 导入模板
  */
-export function useDownloadImportTemplate() {
+export function useDownloadImportTemplateCronJob() {
   const {
     workerFn,
     workerStatus,
@@ -515,7 +512,7 @@ export function useDownloadImportTemplate() {
 /**
  * 导出Excel
  */
-export function useExportExcel() {
+export function useExportExcelCronJob() {
   const {
     workerFn,
     workerStatus,
@@ -590,9 +587,9 @@ export function useExportExcel() {
 }
 
 /**
- * 批量导入定时任务
+ * 批量导入 定时任务
  */
-export async function importModels(
+export async function importModelsCronJob(
   inputs: CronJobInput[],
   percentage: Ref<number>,
   isCancel: Ref<boolean>,
@@ -619,7 +616,7 @@ export async function importModels(
     i += inputs.length;
     
     try {
-      await creates(
+      await createsCronJob(
         inputs,
         UniqueType.Update,
         opt,
@@ -639,7 +636,7 @@ export async function importModels(
 /**
  * 查找 定时任务 order_by 字段的最大值
  */
-export async function findLastOrderBy(
+export async function findLastOrderByCronJob(
   opt?: GqlOpt,
 ) {
   const data: {
@@ -655,12 +652,12 @@ export async function findLastOrderBy(
   return res;
 }
 
-export function getPagePath() {
+export function getPagePathCronJob() {
   return "/cron/cron_job";
 }
 
 /** 新增时的默认值 */
-export async function getDefaultInput() {
+export async function getDefaultInputCronJob() {
   const defaultInput: CronJobInput = {
     timezone: "Asia/Shanghai",
     is_locked: 0,

@@ -26,7 +26,7 @@ async fn set_search_query(
 }
 
 /// 根据搜索条件和分页查找定时任务列表
-pub async fn find_all(
+pub async fn find_all_cron_job(
   search: Option<CronJobSearch>,
   page: Option<PageInput>,
   sort: Option<Vec<SortInput>>,
@@ -40,7 +40,7 @@ pub async fn find_all(
     options.clone(),
   ).await?;
   
-  let cron_job_models = cron_job_dao::find_all(
+  let cron_job_models = cron_job_dao::find_all_cron_job(
     Some(search),
     page,
     sort,
@@ -51,7 +51,7 @@ pub async fn find_all(
 }
 
 /// 根据条件查找定时任务总数
-pub async fn find_count(
+pub async fn find_count_cron_job(
   search: Option<CronJobSearch>,
   options: Option<Options>,
 ) -> Result<u64> {
@@ -63,7 +63,7 @@ pub async fn find_count(
     options.clone(),
   ).await?;
   
-  let cron_job_num = cron_job_dao::find_count(
+  let cron_job_num = cron_job_dao::find_count_cron_job(
     Some(search),
     options,
   ).await?;
@@ -72,7 +72,7 @@ pub async fn find_count(
 }
 
 /// 根据条件查找第一个定时任务
-pub async fn find_one(
+pub async fn find_one_cron_job(
   search: Option<CronJobSearch>,
   sort: Option<Vec<SortInput>>,
   options: Option<Options>,
@@ -85,7 +85,7 @@ pub async fn find_one(
     options.clone(),
   ).await?;
   
-  let cron_job_model = cron_job_dao::find_one(
+  let cron_job_model = cron_job_dao::find_one_cron_job(
     Some(search),
     sort,
     options,
@@ -95,12 +95,12 @@ pub async fn find_one(
 }
 
 /// 根据 id 查找定时任务
-pub async fn find_by_id(
+pub async fn find_by_id_cron_job(
   cron_job_id: CronJobId,
   options: Option<Options>,
 ) -> Result<Option<CronJobModel>> {
   
-  let cron_job_model = cron_job_dao::find_by_id(
+  let cron_job_model = cron_job_dao::find_by_id_cron_job(
     cron_job_id,
     options,
   ).await?;
@@ -109,12 +109,12 @@ pub async fn find_by_id(
 }
 
 /// 根据 cron_job_ids 查找定时任务
-pub async fn find_by_ids(
+pub async fn find_by_ids_cron_job(
   cron_job_ids: Vec<CronJobId>,
   options: Option<Options>,
 ) -> Result<Vec<CronJobModel>> {
   
-  let cron_job_models = cron_job_dao::find_by_ids(
+  let cron_job_models = cron_job_dao::find_by_ids_cron_job(
     cron_job_ids,
     options,
   ).await?;
@@ -124,11 +124,11 @@ pub async fn find_by_ids(
 
 /// 根据lbl翻译业务字典, 外键关联id, 日期
 #[allow(dead_code)]
-pub async fn set_id_by_lbl(
+pub async fn set_id_by_lbl_cron_job(
   cron_job_input: CronJobInput,
 ) -> Result<CronJobInput> {
   
-  let cron_job_input = cron_job_dao::set_id_by_lbl(
+  let cron_job_input = cron_job_dao::set_id_by_lbl_cron_job(
     cron_job_input,
   ).await?;
   
@@ -137,12 +137,12 @@ pub async fn set_id_by_lbl(
 
 /// 创建定时任务
 #[allow(dead_code)]
-pub async fn creates(
+pub async fn creates_cron_job(
   cron_job_inputs: Vec<CronJobInput>,
   options: Option<Options>,
 ) -> Result<Vec<CronJobId>> {
   
-  let cron_job_ids = cron_job_dao::creates(
+  let cron_job_ids = cron_job_dao::creates_cron_job(
     cron_job_inputs,
     options,
   ).await?;
@@ -152,13 +152,13 @@ pub async fn creates(
 
 /// 定时任务根据 cron_job_id 修改租户id
 #[allow(dead_code)]
-pub async fn update_tenant_by_id(
+pub async fn update_tenant_by_id_cron_job(
   cron_job_id: CronJobId,
   tenant_id: TenantId,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = cron_job_dao::update_tenant_by_id(
+  let num = cron_job_dao::update_tenant_by_id_cron_job(
     cron_job_id,
     tenant_id,
     options,
@@ -169,13 +169,13 @@ pub async fn update_tenant_by_id(
 
 /// 根据 cron_job_id 修改定时任务
 #[allow(dead_code, unused_mut)]
-pub async fn update_by_id(
+pub async fn update_by_id_cron_job(
   cron_job_id: CronJobId,
   mut cron_job_input: CronJobInput,
   options: Option<Options>,
 ) -> Result<CronJobId> {
   
-  let is_locked = cron_job_dao::get_is_locked_by_id(
+  let is_locked = cron_job_dao::get_is_locked_by_id_cron_job(
     cron_job_id.clone(),
     None,
   ).await?;
@@ -185,7 +185,7 @@ pub async fn update_by_id(
     return Err(eyre!(err_msg));
   }
   
-  let cron_job_id = cron_job_dao::update_by_id(
+  let cron_job_id = cron_job_dao::update_by_id_cron_job(
     cron_job_id,
     cron_job_input,
     options.clone(),
@@ -196,23 +196,23 @@ pub async fn update_by_id(
 
 /// 校验定时任务是否存在
 #[allow(dead_code)]
-pub async fn validate_option(
+pub async fn validate_option_cron_job(
   cron_job_model: Option<CronJobModel>,
 ) -> Result<CronJobModel> {
   
-  let cron_job_model = cron_job_dao::validate_option(cron_job_model).await?;
+  let cron_job_model = cron_job_dao::validate_option_cron_job(cron_job_model).await?;
   
   Ok(cron_job_model)
 }
 
 /// 根据 cron_job_ids 删除定时任务
 #[allow(dead_code)]
-pub async fn delete_by_ids(
+pub async fn delete_by_ids_cron_job(
   cron_job_ids: Vec<CronJobId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let old_models = cron_job_dao::find_all(
+  let old_models = cron_job_dao::find_all_cron_job(
     Some(CronJobSearch {
       ids: Some(cron_job_ids.clone()),
       ..Default::default()
@@ -229,7 +229,7 @@ pub async fn delete_by_ids(
     }
   }
   
-  let num = cron_job_dao::delete_by_ids(
+  let num = cron_job_dao::delete_by_ids_cron_job(
     cron_job_ids,
     options,
   ).await?;
@@ -240,12 +240,12 @@ pub async fn delete_by_ids(
 /// 根据 cron_job_id 查找定时任务是否已启用
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_enabled_by_id(
+pub async fn get_is_enabled_by_id_cron_job(
   cron_job_id: CronJobId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_enabled = cron_job_dao::get_is_enabled_by_id(
+  let is_enabled = cron_job_dao::get_is_enabled_by_id_cron_job(
     cron_job_id,
     options,
   ).await?;
@@ -255,13 +255,13 @@ pub async fn get_is_enabled_by_id(
 
 /// 根据 cron_job_ids 启用或者禁用定时任务
 #[allow(dead_code)]
-pub async fn enable_by_ids(
+pub async fn enable_by_ids_cron_job(
   cron_job_ids: Vec<CronJobId>,
   is_enabled: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = cron_job_dao::enable_by_ids(
+  let num = cron_job_dao::enable_by_ids_cron_job(
     cron_job_ids,
     is_enabled,
     options,
@@ -274,12 +274,12 @@ pub async fn enable_by_ids(
 /// 已锁定的记录不能修改和删除
 /// 记录不存在则返回 false
 #[allow(dead_code)]
-pub async fn get_is_locked_by_id(
+pub async fn get_is_locked_by_id_cron_job(
   cron_job_id: CronJobId,
   options: Option<Options>,
 ) -> Result<bool> {
   
-  let is_locked = cron_job_dao::get_is_locked_by_id(
+  let is_locked = cron_job_dao::get_is_locked_by_id_cron_job(
     cron_job_id,
     options,
   ).await?;
@@ -289,13 +289,13 @@ pub async fn get_is_locked_by_id(
 
 /// 根据 cron_job_ids 锁定或者解锁定时任务
 #[allow(dead_code)]
-pub async fn lock_by_ids(
+pub async fn lock_by_ids_cron_job(
   cron_job_ids: Vec<CronJobId>,
   is_locked: u8,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = cron_job_dao::lock_by_ids(
+  let num = cron_job_dao::lock_by_ids_cron_job(
     cron_job_ids,
     is_locked,
     options,
@@ -305,11 +305,11 @@ pub async fn lock_by_ids(
 }
 
 /// 获取定时任务字段注释
-pub async fn get_field_comments(
+pub async fn get_field_comments_cron_job(
   options: Option<Options>,
 ) -> Result<CronJobFieldComment> {
   
-  let comments = cron_job_dao::get_field_comments(
+  let comments = cron_job_dao::get_field_comments_cron_job(
     options,
   ).await?;
   
@@ -318,12 +318,12 @@ pub async fn get_field_comments(
 
 /// 根据 cron_job_ids 还原定时任务
 #[allow(dead_code)]
-pub async fn revert_by_ids(
+pub async fn revert_by_ids_cron_job(
   cron_job_ids: Vec<CronJobId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = cron_job_dao::revert_by_ids(
+  let num = cron_job_dao::revert_by_ids_cron_job(
     cron_job_ids,
     options,
   ).await?;
@@ -333,12 +333,12 @@ pub async fn revert_by_ids(
 
 /// 根据 cron_job_ids 彻底删除定时任务
 #[allow(dead_code)]
-pub async fn force_delete_by_ids(
+pub async fn force_delete_by_ids_cron_job(
   cron_job_ids: Vec<CronJobId>,
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let num = cron_job_dao::force_delete_by_ids(
+  let num = cron_job_dao::force_delete_by_ids_cron_job(
     cron_job_ids,
     options,
   ).await?;
@@ -347,11 +347,11 @@ pub async fn force_delete_by_ids(
 }
 
 /// 查找 定时任务 order_by 字段的最大值
-pub async fn find_last_order_by(
+pub async fn find_last_order_by_cron_job(
   options: Option<Options>,
 ) -> Result<u32> {
   
-  let res = cron_job_dao::find_last_order_by(
+  let res = cron_job_dao::find_last_order_by_cron_job(
     options,
   ).await?;
   

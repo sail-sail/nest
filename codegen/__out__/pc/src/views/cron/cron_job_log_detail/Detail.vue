@@ -155,11 +155,11 @@ import type {
 } from "vue";
 
 import {
-  findOne,
-  getDefaultInput,
-  getPagePath,
-  intoInput,
-} from "./Api";
+  findOneCronJobLogDetail,
+  getDefaultInputCronJobLogDetail,
+  getPagePathCronJobLogDetail,
+  intoInputCronJobLogDetail,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   nextId: [
@@ -170,7 +170,7 @@ const emit = defineEmits<{
   ],
 }>();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathCronJobLogDetail();
 
 const permitStore = usePermitStore();
 
@@ -247,7 +247,7 @@ let readonlyWatchStop: WatchStopHandle | undefined = undefined;
 
 const customDialogRef = $(useTemplateRef<InstanceType<typeof CustomDialog>>("customDialogRef"));
 
-let findOneModel = findOne;
+let findOneModel = findOneCronJobLogDetail;
 
 /** 打开对话框 */
 async function showDialog(
@@ -262,7 +262,7 @@ async function showDialog(
       ids?: CronJobLogDetailId[];
       is_deleted?: 0 | 1 | null;
     };
-    findOne?: typeof findOne;
+    findOne?: typeof findOneCronJobLogDetail;
     action: DialogAction;
   },
 ) {
@@ -289,7 +289,7 @@ async function showDialog(
   if (arg?.findOne) {
     findOneModel = arg.findOne;
   } else {
-    findOneModel = findOne;
+    findOneModel = findOneCronJobLogDetail;
   }
   if (readonlyWatchStop) {
     readonlyWatchStop();
@@ -317,7 +317,7 @@ async function showDialog(
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputCronJobLogDetail(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -391,7 +391,7 @@ async function onReset() {
     const [
       defaultModel,
     ] = await Promise.all([
-      getDefaultInput(),
+      getDefaultInputCronJobLogDetail(),
     ]);
     dialogModel = {
       ...defaultModel,
@@ -422,7 +422,7 @@ async function onRefresh() {
     }),
   ]);
   if (data) {
-    dialogModel = intoInput({
+    dialogModel = intoInputCronJobLogDetail({
       ...data,
     });
     dialogTitle = `${ oldDialogTitle } - ${ dialogModel.lbl }`;

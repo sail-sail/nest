@@ -4,7 +4,7 @@ import type {
   JobModel as JobModelType,
   JobSearch as JobSearchType,
   JobFieldComment as JobFieldCommentType,
-} from "#/types";
+} from "#/types.ts";
 
 declare global {
   
