@@ -185,15 +185,15 @@ pub async fn update_by_id_cron_job(
     return Err(eyre!(err_msg));
   }
   
-  let cron_job_old_model = cron_job_dao::validate_option(
-    cron_job_dao::find_by_id(
-      id.clone(),
-      None,
+  let cron_job_old_model = cron_job_dao::validate_option_cron_job(
+    cron_job_dao::find_by_id_cron_job(
+      cron_job_id.clone(),
+      options.clone(),
     ).await?
   ).await?;
   
-  let cron = input.cron.clone();
-  let is_enabled = input.is_enabled;
+  let cron = cron_job_input.cron.clone();
+  let is_enabled = cron_job_input.is_enabled;
   
   let cron_job_id = cron_job_dao::update_by_id_cron_job(
     cron_job_id,
@@ -207,10 +207,12 @@ pub async fn update_by_id_cron_job(
   {
     crate::src::cron::cron_job::cron_job_dao::remove_task(
       cron_job_id.clone(),
+      options.clone(),
     ).await?;
     
     crate::src::cron::cron_job::cron_job_dao::add_task(
       cron_job_id.clone(),
+      options.clone(),
     ).await?;
   }
   
@@ -254,13 +256,14 @@ pub async fn delete_by_ids_cron_job(
   
   let num = cron_job_dao::delete_by_ids_cron_job(
     cron_job_ids.clone(),
-    options,
+    options.clone(),
   ).await?;
   
   // 删除定时任务
   for cron_job_id in cron_job_ids {
     crate::src::cron::cron_job::cron_job_dao::remove_task(
       cron_job_id,
+      options.clone(),
     ).await?;
   }
   
@@ -291,9 +294,9 @@ pub async fn enable_by_ids_cron_job(
   options: Option<Options>,
 ) -> Result<u64> {
   
-  let models = cron_job_dao::find_all(
+  let cron_job_models = cron_job_dao::find_all_cron_job(
     Some(CronJobSearch {
-      ids: Some(ids.clone()),
+      ids: Some(cron_job_ids.clone()),
       ..Default::default()
     }),
     None,
@@ -304,17 +307,19 @@ pub async fn enable_by_ids_cron_job(
   let num = cron_job_dao::enable_by_ids_cron_job(
     cron_job_ids,
     is_enabled,
-    options,
+    options.clone(),
   ).await?;
   
-  for model in models {
-    if model.is_enabled == 1 && is_enabled == 0 {
+  for cron_job_model in cron_job_models {
+    if cron_job_model.is_enabled == 1 && is_enabled == 0 {
       crate::src::cron::cron_job::cron_job_dao::remove_task(
-        model.id.clone(),
+        cron_job_model.id.clone(),
+        options.clone(),
       ).await?;
-    } else if model.is_enabled == 0 && is_enabled == 1 {
+    } else if cron_job_model.is_enabled == 0 && is_enabled == 1 {
       crate::src::cron::cron_job::cron_job_dao::add_task(
-        model.id.clone(),
+        cron_job_model.id.clone(),
+        options.clone(),
       ).await?;
     }
   }
@@ -377,13 +382,14 @@ pub async fn revert_by_ids_cron_job(
   
   let num = cron_job_dao::revert_by_ids_cron_job(
     cron_job_ids.clone(),
-    options,
+    options.clone(),
   ).await?;
   
   // 添加定时任务
   for cron_job_id in cron_job_ids {
     crate::src::cron::cron_job::cron_job_dao::add_task(
       cron_job_id,
+      options.clone(),
     ).await?;
   }
   
