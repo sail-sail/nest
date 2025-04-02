@@ -16,6 +16,8 @@ pub struct SrcQuery(
   crate::src::base::permit::permit_graphql::PermitQuery,
   crate::src::base::role::role_graphql::RoleQuery,
   crate::src::base::field_permit::field_permit_graphql::FieldPermitQuery,
+  
+  crate::src::wx::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiQuery,
 );
 
 #[derive(MergedObject, Default)]
