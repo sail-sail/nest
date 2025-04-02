@@ -902,7 +902,7 @@ function getTableColumns(): ColumnType[] {
       label: "商品描述",
       prop: "description",
       width: 200,
-      align: "left",
+      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },

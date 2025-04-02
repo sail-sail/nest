@@ -67,9 +67,6 @@ declare global {
     /** 备注 */
     rem?: string;
     rem_like?: string;
-    /** 原始数据 */
-    raw?: string;
-    raw_like?: string;
     /** 创建时间 */
     create_time?: [(string|undefined|null), (string|undefined|null)];
     /** 更新时间 */
