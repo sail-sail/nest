@@ -11,6 +11,8 @@ use rust_decimal::Decimal;
   Clone,
 )]
 pub struct RequestPaymentOptions {
+  #[graphql(name = "out_trade_no")]
+  pub out_trade_no: String,
   #[graphql(name = "timeStamp")]
   pub time_stamp: String,
   #[graphql(name = "nonceStr")]
