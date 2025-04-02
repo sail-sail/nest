@@ -270,6 +270,7 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
 export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   const indexStore = useIndexStore(cfg.pinia);
   if (!opt?.notLoading && indexStore.loading > 0 && opt?.isMutation) {
+    ElMessage.warning("繁忙中，请稍后再重试");
     throw "mutation loading";
   }
   opt = opt || { };
@@ -311,11 +312,6 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   // gqlArg.query = gqlArg.query.trim().replace(/\s+/gm, " ");
   const headers = new Headers();
   if (opt && opt.isMutation) {
-    const indexStore = useIndexStore(cfg.pinia);
-    if (indexStore.loading > 0) {
-      ElMessage.warning("正在加载中，请稍后再试");
-      throw new Error("mutation loading");
-    }
     let requestId = opt["x-request-id"];
     if (!requestId) {
       requestId = uuid();
