@@ -421,6 +421,7 @@ pub fn check_sort_field_permit(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_field_permit() -> String {
   "/base/field_permit".to_owned()
 }

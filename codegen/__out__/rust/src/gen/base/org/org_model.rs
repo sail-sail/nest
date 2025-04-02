@@ -619,6 +619,7 @@ pub fn check_sort_org(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_org() -> String {
   "/base/org".to_owned()
 }

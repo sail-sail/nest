@@ -724,6 +724,7 @@ pub fn check_sort_menu(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_menu() -> String {
   "/base/menu".to_owned()
 }
