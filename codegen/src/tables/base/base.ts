@@ -881,13 +881,14 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "ky",
-        width: 140,
+        width: 240,
         align: "left",
+        search: true,
       },
       {
         COLUMN_NAME: "val",
         search: true,
-        width: 140,
+        width: 180,
         align: "left",
       },
       {
