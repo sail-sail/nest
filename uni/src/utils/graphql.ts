@@ -260,6 +260,19 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
  * 发送 GraphQL 修改请求 
  */
 export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
+  const indexStore = useIndexStore();
+  if (!opt?.notLoading && indexStore.getLoading() > 0 && opt?.isMutation) {
+    uni.showToast({
+      title: "繁忙中，请稍后再重试",
+      icon: "none",
+      duration: 3000,
+      mask: true,
+      position: "center",
+    });
+    throw "mutation loading";
+  }
+  opt = opt || { };
+  opt.isMutation = true;
   return await gqlQuery(gqlArg, opt);
 }
 
@@ -272,17 +285,6 @@ export async function gqlQuery(
     "Request-ID"?: string;
   } = { };
   if (config && config.isMutation) {
-    const indexStore = useIndexStore();
-    if (indexStore.getLoading() > 0) {
-      uni.showToast({
-        title: "正在加载中，请稍后再试",
-        icon: "none",
-        duration: 3000,
-        mask: true,
-        position: "center",
-      });
-      throw new Error("mutation loading");
-    }
     let requestId = config["Request-ID"];
     if (!requestId) {
       requestId = uuid();
