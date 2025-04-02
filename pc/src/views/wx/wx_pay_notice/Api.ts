@@ -72,8 +72,6 @@ export function intoInputWxPayNotice(
     device_id: model?.device_id,
     // 备注
     rem: model?.rem,
-    // 原始数据
-    raw: model?.raw,
   };
   return input;
 }
