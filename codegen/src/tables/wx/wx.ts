@@ -504,13 +504,11 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "attach2",
-        align: "left",
-        width: 120,
+        onlyCodegenDeno: true,
       },
       {
         COLUMN_NAME: "notify_url",
-        align: "left",
-        width: 200,
+        onlyCodegenDeno: true,
       },
       {
         COLUMN_NAME: "receipt",
@@ -536,8 +534,7 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "prepay_id",
-        align: "left",
-        width: 180,
+        onlyCodegenDeno: true,
         notForeignKeyById: true,
       },
       {

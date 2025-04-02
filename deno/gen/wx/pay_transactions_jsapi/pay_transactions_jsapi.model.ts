@@ -80,6 +80,12 @@ declare global {
   }
 
   interface PayTransactionsJsapiModel extends PayTransactionsJsapiModelType {
+    /** 附加数据2 */
+    attach2: string;
+    /** 通知地址 */
+    notify_url: string;
+    /** 预支付交易会话标识 */
+    prepay_id: string;
     create_usr_id: UsrId;
     create_usr_id_lbl: string;
     create_time?: string | null;
@@ -92,6 +98,12 @@ declare global {
   }
 
   interface PayTransactionsJsapiInput extends PayTransactionsJsapiInputType {
+    /** 附加数据2 */
+    attach2?: string | null;
+    /** 通知地址 */
+    notify_url?: string | null;
+    /** 预支付交易会话标识 */
+    prepay_id?: string | null;
     create_usr_id?: UsrId | null;
     create_usr_id_lbl?: string | null;
     create_time?: string | null;
