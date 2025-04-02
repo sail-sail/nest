@@ -61,7 +61,8 @@
             "autoAudits": false,
             "ignoreDevUnusedFiles": false,
             "checkInvalidKey": false,
-            "showES6CompileOption": false
+            "showES6CompileOption": false,
+            "compileHotReLoad": true
         },
         "usingComponents" : true
     },
