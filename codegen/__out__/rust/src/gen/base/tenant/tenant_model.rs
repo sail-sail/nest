@@ -920,6 +920,7 @@ pub fn check_sort_tenant(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_tenant() -> String {
   "/base/tenant".to_owned()
 }
