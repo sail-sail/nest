@@ -19,7 +19,7 @@
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-grid="~ cols-[repeat(auto-fill,340px)]"
       un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
@@ -36,6 +36,19 @@
           <CustomInput
             v-model="search.lbl_like"
             placeholder="请输入 名称"
+            @clear="onSearchClear"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(builtInSearch?.ky == null && (showBuildIn || builtInSearch?.ky_like == null))">
+        <el-form-item
+          label="键"
+          prop="ky_like"
+        >
+          <CustomInput
+            v-model="search.ky_like"
+            placeholder="请输入 键"
             @clear="onSearchClear"
           ></CustomInput>
         </el-form-item>
@@ -520,7 +533,7 @@
           </template>
           
           <!-- 键 -->
-          <template v-else-if="'ky' === col.prop">
+          <template v-else-if="'ky' === col.prop && (showBuildIn || builtInSearch?.ky == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -755,6 +768,8 @@ const props = defineProps<{
   id?: OptbizId; // ID
   lbl?: string; // 名称
   lbl_like?: string; // 名称
+  ky?: string; // 键
+  ky_like?: string; // 键
   val?: string; // 值
   val_like?: string; // 值
   is_enabled?: string|string[]; // 启用
@@ -1007,7 +1022,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "键",
       prop: "ky",
-      width: 140,
+      width: 240,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1015,7 +1030,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "值",
       prop: "val",
-      width: 140,
+      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
