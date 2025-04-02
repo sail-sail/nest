@@ -270,6 +270,7 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
 export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   const indexStore = useIndexStore(cfg.pinia);
   if (!opt?.notLoading && indexStore.loading > 0 && opt?.isMutation) {
+    ElMessage.warning("繁忙中，请稍后再重试");
     throw "mutation loading";
   }
   opt = opt || { };
