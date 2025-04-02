@@ -122,9 +122,6 @@ pub struct WxPayNoticeModel {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 原始数据
-  #[graphql(name = "raw")]
-  pub raw: Option<String>,
   /// 是否已删除
   pub is_deleted: u8,
   /// 创建人
@@ -193,8 +190,6 @@ impl FromRow<'_, MySqlRow> for WxPayNoticeModel {
     let device_id: String = row.try_get("device_id")?;
     // 备注
     let rem: String = row.try_get("rem")?;
-    // 原始数据
-    let raw: Option<String> = row.try_get("raw")?;
     // 创建人
     let create_usr_id: UsrId = row.try_get("create_usr_id")?;
     let create_usr_id_lbl: Option<String> = row.try_get("create_usr_id_lbl")?;
@@ -244,7 +239,6 @@ impl FromRow<'_, MySqlRow> for WxPayNoticeModel {
       payer_currency_lbl,
       device_id,
       rem,
-      raw,
       create_usr_id,
       create_usr_id_lbl,
       create_time,
@@ -332,9 +326,6 @@ pub struct WxPayNoticeFieldComment {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: String,
-  /// 原始数据
-  #[graphql(name = "raw")]
-  pub raw: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
@@ -453,12 +444,6 @@ pub struct WxPayNoticeSearch {
   /// 备注
   #[graphql(skip)]
   pub rem_like: Option<String>,
-  /// 原始数据
-  #[graphql(skip)]
-  pub raw: Option<String>,
-  /// 原始数据
-  #[graphql(skip)]
-  pub raw_like: Option<String>,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: Option<Vec<UsrId>>,
@@ -606,13 +591,6 @@ impl std::fmt::Debug for WxPayNoticeSearch {
     if let Some(ref rem_like) = self.rem_like {
       item = item.field("rem_like", rem_like);
     }
-    // 原始数据
-    if let Some(ref raw) = self.raw {
-      item = item.field("raw", raw);
-    }
-    if let Some(ref raw_like) = self.raw_like {
-      item = item.field("raw_like", raw_like);
-    }
     // 创建人
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
@@ -720,9 +698,6 @@ pub struct WxPayNoticeInput {
   /// 备注
   #[graphql(name = "rem")]
   pub rem: Option<String>,
-  /// 原始数据
-  #[graphql(name = "raw")]
-  pub raw: Option<String>,
   /// 创建人
   #[graphql(skip)]
   pub create_usr_id: Option<UsrId>,
@@ -801,8 +776,6 @@ impl From<WxPayNoticeModel> for WxPayNoticeInput {
       device_id: model.device_id.into(),
       // 备注
       rem: model.rem.into(),
-      // 原始数据
-      raw: model.raw,
       // 创建人
       create_usr_id: model.create_usr_id.into(),
       create_usr_id_lbl: model.create_usr_id_lbl.into(),
@@ -863,8 +836,6 @@ impl From<WxPayNoticeInput> for WxPayNoticeSearch {
       device_id: input.device_id,
       // 备注
       rem: input.rem,
-      // 原始数据
-      raw: input.raw,
       // 创建人
       create_usr_id: input.create_usr_id.map(|x| vec![x]),
       // 创建人

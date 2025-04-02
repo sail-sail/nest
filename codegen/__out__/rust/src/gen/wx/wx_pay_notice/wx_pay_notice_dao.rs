@@ -63,7 +63,7 @@ async fn get_where_query(
     .and_then(|item| item.is_deleted)
     .unwrap_or(0);
   
-  let mut where_query = String::with_capacity(80 * 25 * 2);
+  let mut where_query = String::with_capacity(80 * 24 * 2);
   
   where_query.push_str(" t.is_deleted=?");
   args.push(is_deleted.into());
@@ -455,25 +455,6 @@ async fn get_where_query(
     if let Some(rem_like) = rem_like {
       where_query.push_str(" and t.rem like ?");
       args.push(format!("%{}%", sql_like(&rem_like)).into());
-    }
-  }
-  // 原始数据
-  {
-    let raw = match search {
-      Some(item) => item.raw.clone(),
-      None => None,
-    };
-    if let Some(raw) = raw {
-      where_query.push_str(" and t.raw=?");
-      args.push(raw.into());
-    }
-    let raw_like = match search {
-      Some(item) => item.raw_like.clone(),
-      None => None,
-    };
-    if let Some(raw_like) = raw_like {
-      where_query.push_str(" and t.raw like ?");
-      args.push(format!("%{}%", sql_like(&raw_like)).into());
     }
   }
   // 创建人
@@ -1093,7 +1074,6 @@ pub async fn get_field_comments_wx_pay_notice(
     payer_currency_lbl: "用户支付币种".into(),
     device_id: "商户端设备号".into(),
     rem: "备注".into(),
-    raw: "原始数据".into(),
     create_usr_id: "创建人".into(),
     create_usr_id_lbl: "创建人".into(),
     create_time: "创建时间".into(),
@@ -1815,7 +1795,7 @@ async fn _creates(
   }
     
   let mut args = QueryArgs::new();
-  let mut sql_fields = String::with_capacity(80 * 25 + 20);
+  let mut sql_fields = String::with_capacity(80 * 24 + 20);
   
   sql_fields += "id";
   sql_fields += ",create_time";
@@ -1859,11 +1839,9 @@ async fn _creates(
   sql_fields += ",device_id";
   // 备注
   sql_fields += ",rem";
-  // 原始数据
-  sql_fields += ",raw";
   
   let inputs2_len = inputs2.len();
-  let mut sql_values = String::with_capacity((2 * 25 + 3) * inputs2_len);
+  let mut sql_values = String::with_capacity((2 * 24 + 3) * inputs2_len);
   let mut inputs2_ids = vec![];
   
   for (i, input) in inputs2
@@ -2110,13 +2088,6 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 原始数据
-    if let Some(raw) = input.raw {
-      sql_values += ",?";
-      args.push(raw.into());
-    } else {
-      sql_values += ",default";
-    }
     
     sql_values.push(')');
     if i < inputs2_len - 1 {
@@ -2354,7 +2325,7 @@ pub async fn update_by_id_wx_pay_notice(
   
   let mut args = QueryArgs::new();
   
-  let mut sql_fields = String::with_capacity(80 * 25 + 20);
+  let mut sql_fields = String::with_capacity(80 * 24 + 20);
   
   let mut field_num: usize = 0;
   
@@ -2467,12 +2438,6 @@ pub async fn update_by_id_wx_pay_notice(
     field_num += 1;
     sql_fields += "rem=?,";
     args.push(rem.into());
-  }
-  // 原始数据
-  if let Some(raw) = input.raw {
-    field_num += 1;
-    sql_fields += "raw=?,";
-    args.push(raw.into());
   }
   
   if field_num > 0 {
