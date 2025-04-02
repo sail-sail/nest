@@ -52,10 +52,6 @@ export const payTransactionsJsapiFields = [
   "time_expire",
   // 附加数据
   "attach",
-  // 附加数据2
-  "attach2",
-  // 通知地址
-  "notify_url",
   // 开发票
   "receipt",
   // 分账
@@ -67,8 +63,6 @@ export const payTransactionsJsapiFields = [
   "currency_lbl",
   // 用户标识
   "openid",
-  // 预支付交易会话标识
-  "prepay_id",
   // 创建人
   "create_usr_id",
   "create_usr_id_lbl",

@@ -458,24 +458,6 @@
             </el-table-column>
           </template>
           
-          <!-- 附加数据2 -->
-          <template v-else-if="'attach2' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 通知地址 -->
-          <template v-else-if="'notify_url' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 开发票 -->
           <template v-else-if="'receipt' === col.prop">
             <el-table-column
@@ -514,15 +496,6 @@
           
           <!-- 用户标识 -->
           <template v-else-if="'openid' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
-          <!-- 预支付交易会话标识 -->
-          <template v-else-if="'prepay_id' === col.prop">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -965,22 +938,6 @@ function getTableColumns(): ColumnType[] {
       showOverflowTooltip: true,
     },
     {
-      label: "附加数据2",
-      prop: "attach2",
-      width: 120,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "通知地址",
-      prop: "notify_url",
-      width: 200,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
       label: "开发票",
       prop: "receipt",
       width: 100,
@@ -1017,14 +974,6 @@ function getTableColumns(): ColumnType[] {
       label: "用户标识",
       prop: "openid",
       width: 240,
-      align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "预支付交易会话标识",
-      prop: "prepay_id",
-      width: 180,
       align: "left",
       headerAlign: "center",
       showOverflowTooltip: true,
