@@ -202,12 +202,6 @@ async function getWhereQuery(
   if (isNotEmpty(search?.rem_like)) {
     whereQuery += ` and t.rem like ${ args.push("%" + sqlLike(search?.rem_like) + "%") }`;
   }
-  if (search?.raw != null) {
-    whereQuery += ` and t.raw=${ args.push(search.raw) }`;
-  }
-  if (isNotEmpty(search?.raw_like)) {
-    whereQuery += ` and t.raw like ${ args.push("%" + sqlLike(search?.raw_like) + "%") }`;
-  }
   if (search?.create_usr_id != null) {
     whereQuery += ` and t.create_usr_id in (${ args.push(search.create_usr_id) })`;
   }
@@ -756,7 +750,6 @@ export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldCom
     payer_currency_lbl: "用户支付币种",
     device_id: "商户端设备号",
     rem: "备注",
-    raw: "原始数据",
     create_usr_id: "创建人",
     create_usr_id_lbl: "创建人",
     create_time: "创建时间",
@@ -1425,7 +1418,7 @@ async function _creates(
   const is_debug_sql = getParsedEnv("database_debug_sql") === "true";
   
   const args = new QueryArgs();
-  let sql = "insert into wx_wx_pay_notice(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,appid,mchid,openid,out_trade_no,transaction_id,trade_type,trade_state,trade_state_desc,bank_type,attach,success_time,total,payer_total,currency,payer_currency,device_id,rem,raw)values";
+  let sql = "insert into wx_wx_pay_notice(id,create_time,update_time,tenant_id,create_usr_id,create_usr_id_lbl,update_usr_id,update_usr_id_lbl,appid,mchid,openid,out_trade_no,transaction_id,trade_type,trade_state,trade_state_desc,bank_type,attach,success_time,total,payer_total,currency,payer_currency,device_id,rem)values";
   
   const inputs2Arr = splitCreateArr(inputs2);
   for (const inputs2 of inputs2Arr) {
@@ -1605,11 +1598,6 @@ async function _creates(
       }
       if (input.rem != null) {
         sql += `,${ args.push(input.rem) }`;
-      } else {
-        sql += ",default";
-      }
-      if (input.raw != null) {
-        sql += `,${ args.push(input.raw) }`;
       } else {
         sql += ",default";
       }
@@ -1847,12 +1835,6 @@ export async function updateByIdWxPayNotice(
   if (input.rem != null) {
     if (input.rem != oldModel.rem) {
       sql += `rem=${ args.push(input.rem) },`;
-      updateFldNum++;
-    }
-  }
-  if (input.raw != null) {
-    if (input.raw != oldModel.raw) {
-      sql += `raw=${ args.push(input.raw) },`;
       updateFldNum++;
     }
   }
