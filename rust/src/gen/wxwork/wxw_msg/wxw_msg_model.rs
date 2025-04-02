@@ -736,6 +736,7 @@ pub fn check_sort_wxw_msg(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_wxw_msg() -> String {
   "/wxwork/wxw_msg".to_owned()
 }
