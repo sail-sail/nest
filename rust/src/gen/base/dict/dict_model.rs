@@ -798,6 +798,7 @@ pub fn check_sort_dict(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_dict() -> String {
   "/base/dict".to_owned()
 }

@@ -1,10 +1,8 @@
 {
   "recommendations": [
     "aaron-bond.better-comments",
-    "alefragnani.bookmarks",
     "ms-ceintl.vscode-language-pack-zh-hans",
     "mikestead.dotenv",
-    "hediet.vscode-drawio-insiders-build",
     "janisdd.vscode-edit-csv",
     "editorconfig.editorconfig",
     "graphql.vscode-graphql",
@@ -17,7 +15,6 @@
     "hdevalke.rust-test-lens",
     "vadimcn.vscode-lldb",
     "ms-vscode.cpptools",
-    "caponetto.vscode-diff-viewer",
     "tamasfe.even-better-toml",
     "ms-vscode.vscode-speech"
   ]

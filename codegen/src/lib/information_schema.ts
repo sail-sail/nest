@@ -750,10 +750,10 @@ async function getSchema0(
     tables[table_name].opts = tables[table_name].opts || { };
     tables[table_name].opts.detailFormWidth = "380px";
   }
-  // List.vue 中表单中表单文本框的宽度, 默认为: 280px
+  // List.vue 中表单中表单文本框的宽度, 默认为: 340px
   if (tables[table_name]?.opts?.searchFormWidth == null) {
     tables[table_name].opts = tables[table_name].opts || { };
-    tables[table_name].opts.searchFormWidth = "280px";
+    tables[table_name].opts.searchFormWidth = "340px";
   }
   return records2;
 }
