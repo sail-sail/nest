@@ -775,6 +775,7 @@ pub fn check_sort_cron_job_log(
 }
 
 /// 获取路由地址
+#[allow(dead_code)]
 pub fn get_route_path_cron_job_log() -> String {
   "/cron/cron_job_log".to_owned()
 }
