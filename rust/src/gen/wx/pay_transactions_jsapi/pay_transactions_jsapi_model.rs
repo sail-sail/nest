@@ -92,10 +92,10 @@ pub struct PayTransactionsJsapiModel {
   #[graphql(name = "attach")]
   pub attach: String,
   /// 附加数据2
-  #[graphql(name = "attach2")]
+  #[graphql(skip)]
   pub attach2: String,
   /// 通知地址
-  #[graphql(name = "notify_url")]
+  #[graphql(skip)]
   pub notify_url: String,
   /// 开发票
   #[graphql(name = "receipt")]
@@ -116,7 +116,7 @@ pub struct PayTransactionsJsapiModel {
   #[graphql(name = "openid")]
   pub openid: String,
   /// 预支付交易会话标识
-  #[graphql(name = "prepay_id")]
+  #[graphql(skip)]
   pub prepay_id: String,
   /// 是否已删除
   pub is_deleted: u8,
@@ -291,12 +291,6 @@ pub struct PayTransactionsJsapiFieldComment {
   /// 附加数据
   #[graphql(name = "attach")]
   pub attach: String,
-  /// 附加数据2
-  #[graphql(name = "attach2")]
-  pub attach2: String,
-  /// 通知地址
-  #[graphql(name = "notify_url")]
-  pub notify_url: String,
   /// 开发票
   #[graphql(name = "receipt")]
   pub receipt: String,
@@ -315,9 +309,6 @@ pub struct PayTransactionsJsapiFieldComment {
   /// 用户标识
   #[graphql(name = "openid")]
   pub openid: String,
-  /// 预支付交易会话标识
-  #[graphql(name = "prepay_id")]
-  pub prepay_id: String,
   /// 创建人
   #[graphql(name = "create_usr_id")]
   pub create_usr_id: String,
@@ -692,10 +683,10 @@ pub struct PayTransactionsJsapiInput {
   #[graphql(name = "attach")]
   pub attach: Option<String>,
   /// 附加数据2
-  #[graphql(name = "attach2")]
+  #[graphql(skip)]
   pub attach2: Option<String>,
   /// 通知地址
-  #[graphql(name = "notify_url")]
+  #[graphql(skip)]
   pub notify_url: Option<String>,
   /// 开发票
   #[graphql(name = "receipt")]
@@ -716,7 +707,7 @@ pub struct PayTransactionsJsapiInput {
   #[graphql(name = "openid")]
   pub openid: Option<String>,
   /// 预支付交易会话标识
-  #[graphql(name = "prepay_id")]
+  #[graphql(skip)]
   pub prepay_id: Option<String>,
   /// 创建人
   #[graphql(skip)]
