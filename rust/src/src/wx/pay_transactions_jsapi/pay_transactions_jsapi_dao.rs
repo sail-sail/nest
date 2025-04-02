@@ -234,6 +234,7 @@ pub async fn transactions_jsapi(
   let wx_pay_data: WxPayData = wxpay.jsapi(&jsapi).await?;
   
   let request_payment_options = RequestPaymentOptions {
+    out_trade_no: out_trade_no.clone(),
     time_stamp: wx_pay_data.time_stamp.to_string(),
     nonce_str: wx_pay_data.nonce_str,
     package: wx_pay_data.package.clone(),
