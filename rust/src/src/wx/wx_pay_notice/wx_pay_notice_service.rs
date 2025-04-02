@@ -77,8 +77,6 @@ pub async fn wx_pay_notify(
   let mchid = wx_pay_model.mchid;
   let v3_key = wx_pay_model.v3_key;
   
-  let raw = serde_json::to_string(&wx_pay_notify)?;
-  
   let wx_pay_resource: WxPayResource = decode_wx_pay(
     &v3_key,
     wx_pay_notify,
@@ -92,6 +90,31 @@ pub async fn wx_pay_notify(
   let openid = wx_pay_resource.payer.openid;
   let out_trade_no = wx_pay_resource.out_trade_no;
   let transaction_id = wx_pay_resource.transaction_id;
+  
+  // 如果 out_trade_no 已经存在, 则不处理
+  let pay_transactions_jsapi_model = validate_option_pay_transactions_jsapi(
+    find_one_pay_transactions_jsapi(
+      Some(PayTransactionsJsapiSearch {
+        out_trade_no: Some(out_trade_no.clone()),
+        ..Default::default()
+      }),
+      None,
+      options.clone(),
+    ).await?,
+  ).await?;
+  
+  let pay_transactions_jsapi_trade_state = pay_transactions_jsapi_model.trade_state;
+  if pay_transactions_jsapi_trade_state != PayTransactionsJsapiTradeState::Notpay {
+    info!(
+      "{req_id} wx_pay_notify: pay_transactions_jsapi_trade_state: {pay_transactions_jsapi_trade_state:?}",
+      req_id = get_req_id(),
+    );
+    return Ok(());
+  }
+  let pay_transactions_jsapi_id = pay_transactions_jsapi_model.id;
+  let tenant_id = pay_transactions_jsapi_model.tenant_id;
+  let attach2 = pay_transactions_jsapi_model.attach2;
+  
   let trade_type: WxPayNoticeTradeType = match wx_pay_resource.trade_type {
     TradeType::JSAPI => WxPayNoticeTradeType::Jsapi,
     TradeType::NATIVE => WxPayNoticeTradeType::Native,
@@ -141,9 +164,9 @@ pub async fn wx_pay_notify(
   
   let wx_pay_notice_id = create_wx_pay_notice(
     WxPayNoticeInput {
-      appid: Some(appid),
-      mchid: Some(mchid),
-      openid: Some(openid),
+      appid: Some(appid.clone()),
+      mchid: Some(mchid.clone()),
+      openid: Some(openid.clone()),
       out_trade_no: Some(out_trade_no.clone()),
       transaction_id: Some(transaction_id.clone()),
       trade_type: Some(trade_type),
@@ -157,26 +180,10 @@ pub async fn wx_pay_notify(
       currency,
       payer_currency,
       device_id,
-      raw: Some(raw),
       ..Default::default()
     },
     options.clone(),
   ).await?;
-  
-  let pay_transactions_jsapi_model = validate_option_pay_transactions_jsapi(
-    find_one_pay_transactions_jsapi(
-      Some(PayTransactionsJsapiSearch {
-        out_trade_no: Some(out_trade_no),
-        ..Default::default()
-      }),
-      None,
-      options.clone(),
-    ).await?,
-  ).await?;
-  
-  let pay_transactions_jsapi_id = pay_transactions_jsapi_model.id;
-  let tenant_id = pay_transactions_jsapi_model.tenant_id;
-  let attach2 = pay_transactions_jsapi_model.attach2;
   
   update_tenant_by_id_wx_pay_notice(
     wx_pay_notice_id,
@@ -197,7 +204,7 @@ pub async fn wx_pay_notify(
   update_by_id_pay_transactions_jsapi(
     pay_transactions_jsapi_id,
     PayTransactionsJsapiInput {
-      transaction_id: Some(transaction_id),
+      transaction_id: Some(transaction_id.clone()),
       trade_state: Some(trade_state),
       trade_state_desc: Some(trade_state_desc),
       success_time: Some(success_time),
