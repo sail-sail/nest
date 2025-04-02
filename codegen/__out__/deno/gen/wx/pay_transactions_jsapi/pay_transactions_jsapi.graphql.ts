@@ -57,10 +57,6 @@ type PayTransactionsJsapiModel {
   time_expire: String!
   "附加数据"
   attach: String!
-  "附加数据2"
-  attach2: String!
-  "通知地址"
-  notify_url: String!
   "开发票"
   receipt: String!
   "分账"
@@ -73,8 +69,6 @@ type PayTransactionsJsapiModel {
   currency_lbl: String!
   "用户标识"
   openid: String!
-  "预支付交易会话标识"
-  prepay_id: String!
   "创建人"
   create_usr_id: UsrId!
   "创建人"
@@ -121,10 +115,6 @@ type PayTransactionsJsapiFieldComment {
   time_expire: String!
   "附加数据"
   attach: String!
-  "附加数据2"
-  attach2: String!
-  "通知地址"
-  notify_url: String!
   "开发票"
   receipt: String!
   "分账"
@@ -137,8 +127,6 @@ type PayTransactionsJsapiFieldComment {
   currency_lbl: String!
   "用户标识"
   openid: String!
-  "预支付交易会话标识"
-  prepay_id: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -185,10 +173,6 @@ input PayTransactionsJsapiInput {
   time_expire: String
   "附加数据"
   attach: String
-  "附加数据2"
-  attach2: String
-  "通知地址"
-  notify_url: String
   "开发票"
   receipt: String
   "分账"
@@ -201,8 +185,6 @@ input PayTransactionsJsapiInput {
   currency_lbl: String
   "用户标识"
   openid: String
-  "预支付交易会话标识"
-  prepay_id: String
 }
 input PayTransactionsJsapiSearch {
   "已删除"
