@@ -19,7 +19,7 @@
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-grid="~ cols-[repeat(auto-fill,340px)]"
       un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
