@@ -72,9 +72,10 @@ export async function getTestPayOpt() {
   const res: {
     getTestPayOpt: Mutation["getTestPayOpt"],
   } = await query({
-    query: /* GraphQL */ `
+    query: `
       mutation($appid: String!) {
         getTestPayOpt(appid: $appid) {
+          out_trade_no
           timeStamp
           nonceStr
           package

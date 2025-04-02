@@ -267,7 +267,6 @@ CREATE TABLE if not exists `wx_wx_pay_notice` (
   `payer_currency` ENUM('CNY') NOT NULL DEFAULT 'CNY' COMMENT '用户支付币种,dict:wx_pay_notice_currency',
   `device_id` varchar(32) NOT NULL DEFAULT '' COMMENT '商户端设备号',
   `rem` varchar(50) NOT NULL DEFAULT '' COMMENT '备注',
-  `raw` text COMMENT '原始数据',
   `tenant_id` varchar(22) NOT NULL DEFAULT '' COMMENT '租户',
   `create_usr_id` varchar(22) NOT NULL DEFAULT '' COMMENT '创建人',
   `create_usr_id_lbl` varchar(45) NOT NULL DEFAULT '' COMMENT '创建人',

@@ -99,8 +99,6 @@ type WxPayNoticeModel {
   device_id: String!
   "备注"
   rem: String!
-  "原始数据"
-  raw: String
   "创建人"
   create_usr_id: UsrId!
   "创建人"
@@ -167,8 +165,6 @@ type WxPayNoticeFieldComment {
   device_id: String!
   "备注"
   rem: String!
-  "原始数据"
-  raw: String!
   "创建人"
   create_usr_id: String!
   "创建人"
@@ -235,8 +231,6 @@ input WxPayNoticeInput {
   device_id: String
   "备注"
   rem: String
-  "原始数据"
-  raw: String
 }
 input WxPayNoticeSearch {
   "已删除"

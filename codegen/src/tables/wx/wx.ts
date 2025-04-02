@@ -469,7 +469,6 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "description",
-        align: "left",
         width: 200,
       },
       {
@@ -584,12 +583,12 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "out_trade_no",
-        width: 140,
+        width: 260,
       },
       {
         COLUMN_NAME: "transaction_id",
         search: true,
-        width: 140,
+        width: 240,
         notForeignKeyById: true,
       },
       {
@@ -640,10 +639,6 @@ export default defineConfig({
       {
         COLUMN_NAME: "rem",
         width: 100,
-      },
-      {
-        COLUMN_NAME: "raw",
-        width: 140,
       },
       {
         COLUMN_NAME: "create_usr_id",

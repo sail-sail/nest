@@ -306,19 +306,6 @@
           </el-form-item>
         </template>
         
-        <template v-if="(showBuildIn || builtInModel?.raw == null)">
-          <el-form-item
-            label="原始数据"
-            prop="raw"
-          >
-            <CustomInput
-              v-model="dialogModel.raw"
-              placeholder="请输入 原始数据"
-              :readonly="isLocked || isReadonly"
-            ></CustomInput>
-          </el-form-item>
-        </template>
-        
       </el-form>
     </div>
     <div

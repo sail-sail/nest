@@ -534,15 +534,6 @@
             </el-table-column>
           </template>
           
-          <!-- 原始数据 -->
-          <template v-else-if="'raw' === col.prop">
-            <el-table-column
-              v-if="col.hide !== true"
-              v-bind="col"
-            >
-            </el-table-column>
-          </template>
-          
           <!-- 创建人 -->
           <template v-else-if="'create_usr_id_lbl' === col.prop && (showBuildIn || builtInSearch?.create_usr_id == null)">
             <el-table-column
@@ -924,7 +915,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "商户订单号",
       prop: "out_trade_no",
-      width: 140,
+      width: 260,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -932,7 +923,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "微信支付订单号",
       prop: "transaction_id",
-      width: 140,
+      width: 240,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1035,14 +1026,6 @@ function getTableColumns(): ColumnType[] {
       prop: "rem",
       width: 100,
       align: "left",
-      headerAlign: "center",
-      showOverflowTooltip: true,
-    },
-    {
-      label: "原始数据",
-      prop: "raw",
-      width: 140,
-      align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
     },
