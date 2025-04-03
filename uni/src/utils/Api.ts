@@ -13,6 +13,8 @@ export async function wxoLoginByCode(
 ) {
   const host = cfg.domain;
   const res: {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     wxoLoginByCode: Mutation["wxoLoginByCode"];
   } = await mutation({
     query: /* GraphQL */ `
