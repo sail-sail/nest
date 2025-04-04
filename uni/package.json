@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "lint-staged": "lint-staged",
     "build:h5-test": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni build --mode test",
-    "build:h5-prod": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni build",
+    "build:h5-prod": "cross-env NODE_OPTIONS=--max-old-space-size=4096 && uni build --mode prod",
     "dev:app": "uni -p app",
     "dev:custom": "uni -p",
     "dev:h5": "uni",
