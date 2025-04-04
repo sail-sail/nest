@@ -749,6 +749,6 @@ export async function denoGenTypes() {
   if (!graphqlHasChanged) {
     return;
   }
-  shelljs.cd(`${ projectPh }/deno`);
+  shelljs.cd(`${ projectPh }/rust`);
   shelljs.exec("npm run gqlgen");
 }
