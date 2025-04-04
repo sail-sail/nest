@@ -120,9 +120,9 @@ console.log(publishPath);
       let cmd = "echo 'rust'";
       cmd += ` ; pm2 stop ${ projectName }`;
       cmd += ` ; rm -rf ${ publishPath }/rust`
-      cmd += ` ; mkdir -p ${ publishPath }`;
-      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
-      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      cmd += ` ; mkdir -p ${ publishPath }/rust`;
+      cmd += ` ; cp ${ publishPathTmp }/rust/.env ${ publishPath }/rust/`;
+      cmd += ` ; mv -f ${ publishPathTmp }/rust/* ${ publishPath }/rust/`;
       cmd += ` ; chmod -R 755 ${ publishPath }/rust/${ ecosystem.apps[0].name.replaceAll("4{env}", "") }`;
       cmd += ` ; cd ${ publishPath }/rust/ && pm2 start`;
       let data;
@@ -139,8 +139,8 @@ console.log(publishPath);
     if (cmd === "docs") {
       let cmd = "echo 'docs'";
       cmd += ` ; rm -rf ${ publishPath }/docs`;
-      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
-      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      cmd += ` ; mkdir -p ${ publishPath }/docs`;
+      cmd += ` ; mv -f ${ publishPathTmp }/docs/* ${ publishPath }/docs/`;
       let data;
       try {
         data = await ssh.exec(cmd);
@@ -155,8 +155,8 @@ console.log(publishPath);
     if (cmd === "pc") {
       let cmd = "echo 'pc'";
       cmd += ` ; rm -rf ${ publishPath }/pc`;
-      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
-      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      cmd += ` ; mkdir -p ${ publishPath }/pc`;
+      cmd += ` ; mv -f ${ publishPathTmp }/pc/* ${ publishPath }/pc/`;
       let data;
       try {
         data = await ssh.exec(cmd);
@@ -171,8 +171,8 @@ console.log(publishPath);
     if (cmd === "uni") {
       let cmd = "echo 'uni'";
       cmd += ` ; rm -rf ${ publishPath }/uni`;
-      cmd += ` ; mv -f ${ publishPathTmp }/* ${ publishPath }/`;
-      cmd += ` ; rm -rf ${ publishPathTmp }`;
+      cmd += ` ; mkdir -p ${ publishPath }/uni`;
+      cmd += ` ; mv -f ${ publishPathTmp }/uni/* ${ publishPath }/uni/`;
       let data;
       try {
         data = await ssh.exec(cmd);
@@ -185,6 +185,21 @@ console.log(publishPath);
       continue;
     }
     console.error(`未知命令: ${ cmd }`);
+  }
+  
+  try {
+    const cmd = `rm -rf ${ publishPathTmp }`;
+    let data;
+    try {
+      data = await ssh.exec(cmd);
+    } catch (err) {
+      console.error(err);
+    }
+    if (data) {
+      console.log(data);
+    }
+  } catch (err) {
+    console.error(err);
   }
   
   await ssh.close();
