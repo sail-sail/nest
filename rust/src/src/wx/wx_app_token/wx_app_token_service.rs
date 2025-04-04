@@ -9,6 +9,10 @@ use crate::common::context::{
 
 use crate::common::util::http::client as reqwest_client;
 
+use std::io::Cursor;
+use image::ImageReader;
+use image::ImageFormat;
+
 // wx_app
 use crate::r#gen::wx::wx_app::wx_app_model::WxAppSearch;
 use crate::r#gen::wx::wx_app::wx_app_dao::{
@@ -28,7 +32,11 @@ use crate::r#gen::wx::wx_app_token::wx_app_token_dao::{
   update_by_id_wx_app_token,
 };
 
-use super::wx_app_token_model::GetAccessTokenModel;
+use super::wx_app_token_model::{
+  GetAccessTokenModel,
+  GetwxacodeunlimitInput,
+};
+use crate::common::exceptions::service_exception::ServiceException;
 
 #[allow(dead_code)]
 async fn fetch_access_token_model(
@@ -173,6 +181,82 @@ pub async fn get_access_token(
   Ok(access_token)
 }
 
+/**
+ * 获取不限制的小程序码
+ * https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/qrcode-link/qr-code/getUnlimitedQRCode.html
+ */
+pub async fn get_wxa_code_unlimit(
+  appid: String,
+  input: GetwxacodeunlimitInput,
+  options: Option<Options>,
+) -> Result<Vec<u8>> {
+  
+  let access_token = get_access_token(
+    appid,
+    false,
+    options.clone(),
+  ).await?;
+  
+  let url = format!(
+    "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token={access_token}",
+    access_token = urlencoding::encode(&access_token),
+  );
+  
+  info!(
+    "{req_id} WxAppTokenService.get_wxa_code_unlimit.url: {url:} {input:}",
+    req_id = get_req_id(),
+    input = serde_json::to_string(&input).unwrap(),
+  );
+  
+  let res = reqwest_client()
+    .post(&url)
+    .header("Content-Type", "application/json")
+    .json(&input)
+    .send().await?;
+  
+  let status = res.status();
+  
+  if !status.is_success() {
+    let text = res.text().await?;
+    error!(
+      "{req_id} WxAppTokenService.get_wxa_code_unlimit.res: {text:#?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: text,
+      trace: true,
+      ..Default::default()
+    }));
+  }
+  
+  let headers = res.headers();
+  let content_type = headers.get("Content-Type");
+  
+  if content_type.is_some() &&
+    content_type.unwrap().to_str().unwrap_or_default().starts_with("application/json")
+  {
+    let text = res.text().await?;
+    println!(
+      "{req_id} WxAppTokenService.get_wxa_code_unlimit.res: {text:#?}",
+      req_id = get_req_id(),
+    );
+    return Err(eyre!(ServiceException {
+      message: text,
+      trace: true,
+      ..Default::default()
+    }));
+  }
+  
+  let bytes = res.bytes().await?;
+  let mut bytes2: Vec<u8> = Vec::with_capacity(bytes.len());
+  
+  ImageReader::new(Cursor::new(&bytes)).with_guessed_format()?
+    .decode()?
+    .write_to(&mut Cursor::new(&mut bytes2), ImageFormat::WebP)?;
+  
+  Ok(bytes2)
+}
+
 #[cfg(test)]
 mod tests {
   
@@ -181,7 +265,7 @@ mod tests {
   use crate::common::context::Ctx;
   
   #[tokio::test]
-  async fn test_get_access_token()-> () {
+  async fn test_get_access_token() -> () {
     let res = Ctx::test_builder()
       .build()
       .scope_fn(async || -> Result<()> {
@@ -203,4 +287,48 @@ mod tests {
     }
     assert!(res.is_ok());
   }
+  
+  #[tokio::test]
+  async fn test_get_wxa_code_unlimit() -> () {
+    use crate::src::wx::wx_app_token::wx_app_token_model::{
+      GetwxacodeunlimitEnvVersion,
+      GetwxacodeunlimitLineColor,
+    };
+    let res = Ctx::test_builder()
+      .build()
+      .scope_fn(async || -> Result<()> {
+        let appid = "wx1749ec165167d4f3".to_string();
+        let input = GetwxacodeunlimitInput {
+          scene: "123".to_string(),
+          page: Some("pages/index/index".to_string()),
+          check_path: Some(false),
+          env_version: Some(GetwxacodeunlimitEnvVersion::Release),
+          width: Some(430),
+          line_color: Some(GetwxacodeunlimitLineColor {
+            r: 0,
+            g: 0,
+            b: 0,
+          }),
+          auto_color: Some(false),
+          is_hyaline: Some(true),
+        };
+        let options = None;
+        
+        let bytes2 = get_wxa_code_unlimit(
+          appid,
+          input,
+          options,
+        ).await?;
+        
+        let mut file = std::fs::File::create("D:/wxa_code_unlimit.webp")?;
+        std::io::copy(&mut Cursor::new(&bytes2[..]), &mut file)?;
+        
+        Ok(())
+      }).await;
+    if let Err(err) = &res {
+      println!("err: {:?}", err);
+    }
+    assert!(res.is_ok());
+  }
+  
 }
