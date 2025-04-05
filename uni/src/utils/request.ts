@@ -145,6 +145,11 @@ export async function downloadFile(
     if (model.remove != null) {
       paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
     }
+    const usrStore = useUsrStore();
+    const authorization = usrStore.getAuthorization();
+    if (authorization) {
+      paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
+    }
     if (paramStr.startsWith("&")) {
       paramStr = paramStr.substring(1);
     }
