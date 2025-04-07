@@ -41,7 +41,7 @@ static CAN_SORT_IN_API_WX_PAY_NOTICE: OnceLock<[&'static str; 3]> = OnceLock::ne
 /// 微信支付通知 前端允许排序的字段
 fn get_can_sort_in_api_wx_pay_notice() -> &'static [&'static str; 3] {
   CAN_SORT_IN_API_WX_PAY_NOTICE.get_or_init(|| [
-    "transaction_id",
+    "success_time",
     "create_time",
     "update_time",
   ])
@@ -98,10 +98,10 @@ pub struct WxPayNoticeModel {
   /// 支付完成时间
   #[graphql(name = "success_time_lbl")]
   pub success_time_lbl: String,
-  /// 总金额
+  /// 总金额(分)
   #[graphql(name = "total")]
   pub total: u32,
-  /// 用户支付金额
+  /// 用户支付金额(分)
   #[graphql(name = "payer_total")]
   pub payer_total: u32,
   /// 货币类型
@@ -176,9 +176,9 @@ impl FromRow<'_, MySqlRow> for WxPayNoticeModel {
       Some(item) => item.format("%Y-%m-%d %H:%M:%S").to_string(),
       None => String::new(),
     };
-    // 总金额
+    // 总金额(分)
     let total: u32 = row.try_get("total")?;
-    // 用户支付金额
+    // 用户支付金额(分)
     let payer_total: u32 = row.try_get("payer_total")?;
     // 货币类型
     let currency_lbl: String = row.try_get("currency")?;
@@ -302,10 +302,10 @@ pub struct WxPayNoticeFieldComment {
   /// 支付完成时间
   #[graphql(name = "success_time_lbl")]
   pub success_time_lbl: String,
-  /// 总金额
+  /// 总金额(分)
   #[graphql(name = "total")]
   pub total: String,
-  /// 用户支付金额
+  /// 用户支付金额(分)
   #[graphql(name = "payer_total")]
   pub payer_total: String,
   /// 货币类型
@@ -418,12 +418,12 @@ pub struct WxPayNoticeSearch {
   #[graphql(skip)]
   pub attach_like: Option<String>,
   /// 支付完成时间
-  #[graphql(skip)]
+  #[graphql(name = "success_time")]
   pub success_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
-  /// 总金额
+  /// 总金额(分)
   #[graphql(skip)]
   pub total: Option<[Option<u32>; 2]>,
-  /// 用户支付金额
+  /// 用户支付金额(分)
   #[graphql(skip)]
   pub payer_total: Option<[Option<u32>; 2]>,
   /// 货币类型
@@ -561,11 +561,11 @@ impl std::fmt::Debug for WxPayNoticeSearch {
     if let Some(ref success_time) = self.success_time {
       item = item.field("success_time", success_time);
     }
-    // 总金额
+    // 总金额(分)
     if let Some(ref total) = self.total {
       item = item.field("total", total);
     }
-    // 用户支付金额
+    // 用户支付金额(分)
     if let Some(ref payer_total) = self.payer_total {
       item = item.field("payer_total", payer_total);
     }
@@ -674,10 +674,10 @@ pub struct WxPayNoticeInput {
   /// 支付完成时间
   #[graphql(name = "success_time_save_null")]
   pub success_time_save_null: Option<bool>,
-  /// 总金额
+  /// 总金额(分)
   #[graphql(name = "total")]
   pub total: Option<u32>,
-  /// 用户支付金额
+  /// 用户支付金额(分)
   #[graphql(name = "payer_total")]
   pub payer_total: Option<u32>,
   /// 货币类型
@@ -762,9 +762,9 @@ impl From<WxPayNoticeModel> for WxPayNoticeInput {
       success_time: model.success_time,
       success_time_lbl: model.success_time_lbl.into(),
       success_time_save_null: Some(true),
-      // 总金额
+      // 总金额(分)
       total: model.total.into(),
-      // 用户支付金额
+      // 用户支付金额(分)
       payer_total: model.payer_total.into(),
       // 货币类型
       currency: model.currency.into(),
@@ -824,9 +824,9 @@ impl From<WxPayNoticeInput> for WxPayNoticeSearch {
       attach: input.attach,
       // 支付完成时间
       success_time: input.success_time.map(|x| [Some(x), Some(x)]),
-      // 总金额
+      // 总金额(分)
       total: input.total.map(|x| [Some(x), Some(x)]),
-      // 用户支付金额
+      // 用户支付金额(分)
       payer_total: input.payer_total.map(|x| [Some(x), Some(x)]),
       // 货币类型
       currency: input.currency.map(|x| vec![x]),

@@ -337,7 +337,7 @@ async fn get_where_query(
       args.push(success_time_lt.into());
     }
   }
-  // 总金额
+  // 总金额(分)
   {
     let mut total = match search {
       Some(item) => item.total.unwrap_or_default(),
@@ -354,7 +354,7 @@ async fn get_where_query(
       args.push(total_lt.into());
     }
   }
-  // 用户支付金额
+  // 用户支付金额(分)
   {
     let mut payer_total = match search {
       Some(item) => item.payer_total.unwrap_or_default(),
@@ -792,9 +792,9 @@ pub async fn find_all_wx_pay_notice(
   
   let mut sort = sort.unwrap_or_default();
   
-  if !sort.iter().any(|item| item.prop == "transaction_id") {
+  if !sort.iter().any(|item| item.prop == "success_time") {
     sort.push(SortInput {
-      prop: "transaction_id".into(),
+      prop: "success_time".into(),
       order: SortOrderEnum::Desc,
     });
   }
@@ -1066,8 +1066,8 @@ pub async fn get_field_comments_wx_pay_notice(
     attach: "附加数据".into(),
     success_time: "支付完成时间".into(),
     success_time_lbl: "支付完成时间".into(),
-    total: "总金额".into(),
-    payer_total: "用户支付金额".into(),
+    total: "总金额(分)".into(),
+    payer_total: "用户支付金额(分)".into(),
     currency: "货币类型".into(),
     currency_lbl: "货币类型".into(),
     payer_currency: "用户支付币种".into(),
@@ -1827,9 +1827,9 @@ async fn _creates(
   sql_fields += ",attach";
   // 支付完成时间
   sql_fields += ",success_time";
-  // 总金额
+  // 总金额(分)
   sql_fields += ",total";
-  // 用户支付金额
+  // 用户支付金额(分)
   sql_fields += ",payer_total";
   // 货币类型
   sql_fields += ",currency";
@@ -2046,14 +2046,14 @@ async fn _creates(
     } else {
       sql_values += ",default";
     }
-    // 总金额
+    // 总金额(分)
     if let Some(total) = input.total {
       sql_values += ",?";
       args.push(total.into());
     } else {
       sql_values += ",default";
     }
-    // 用户支付金额
+    // 用户支付金额(分)
     if let Some(payer_total) = input.payer_total {
       sql_values += ",?";
       args.push(payer_total.into());
@@ -2403,13 +2403,13 @@ pub async fn update_by_id_wx_pay_notice(
     field_num += 1;
     sql_fields += "success_time=null,";
   }
-  // 总金额
+  // 总金额(分)
   if let Some(total) = input.total {
     field_num += 1;
     sql_fields += "total=?,";
     args.push(total.into());
   }
-  // 用户支付金额
+  // 用户支付金额(分)
   if let Some(payer_total) = input.payer_total {
     field_num += 1;
     sql_fields += "payer_total=?,";
