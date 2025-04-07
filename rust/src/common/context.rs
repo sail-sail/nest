@@ -595,7 +595,10 @@ impl Ctx {
         let res = tran.execute(query).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
-          error!("{debug_sql}");
+          error!(
+            "{req_id} {debug_sql}",
+            req_id = self.req_id,
+          );
         }
         res?
       };
@@ -687,7 +690,10 @@ impl Ctx {
     let res = query.execute(&db_pool).await;
     if res.is_err() {
       let debug_sql = get_debug_sql(&sql, &args);
-      error!("{debug_sql}");
+      error!(
+        "{req_id} {debug_sql}",
+        req_id = self.req_id,
+      );
     }
     let res = res?;
     let rows_affected = res.rows_affected();
@@ -819,7 +825,10 @@ impl Ctx {
         let res = query.fetch_all((*tran).as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
-          error!("{debug_sql}");
+          error!(
+            "{req_id} {debug_sql}",
+            req_id = self.req_id,
+          );
         }
         res?
       };
@@ -914,7 +923,10 @@ impl Ctx {
     let res = query.fetch_all(&db_pool).await;
     if res.is_err() {
       let debug_sql = get_debug_sql(&sql, &args);
-      error!("{debug_sql}");
+      error!(
+        "{req_id} {debug_sql}",
+        req_id = self.req_id,
+      );
     }
     let res = res?;
     if let Some(options) = &options {
@@ -1039,7 +1051,10 @@ impl Ctx {
         let res = query.fetch_optional((*tran).as_mut()).await;
         if res.is_err() {
           let debug_sql = get_debug_sql(&sql, &args);
-          error!("{debug_sql}");
+          error!(
+            "{req_id} {debug_sql}",
+            req_id = self.req_id,
+          );
         }
         res?
       };
@@ -1135,7 +1150,10 @@ impl Ctx {
     let res = query.fetch_optional(&db_pool).await;
     if res.is_err() {
       let debug_sql = get_debug_sql(&sql, &args);
-      error!("{debug_sql}");
+      error!(
+        "{req_id} {debug_sql}",
+        req_id = self.req_id,
+      );
     }
     let res = res?;
     if let Some(res) = &res {

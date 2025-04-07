@@ -145,6 +145,11 @@ export async function downloadFile(
     if (model.remove != null) {
       paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
     }
+    const usrStore = useUsrStore();
+    const authorization = usrStore.getAuthorization();
+    if (authorization) {
+      paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
+    }
     if (paramStr.startsWith("&")) {
       paramStr = paramStr.substring(1);
     }
@@ -202,6 +207,7 @@ export function getDownloadUrl(
   if (!type) {
     type = "tmpfile";
   }
+  const usrStore = useUsrStore();
   let paramStr = "";
   if (model.id) {
     paramStr = `${ paramStr }&id=${ encodeURIComponent(model.id) }`;
@@ -214,6 +220,10 @@ export function getDownloadUrl(
   }
   if (model.remove != null) {
     paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
+  }
+  const authorization = usrStore.getAuthorization();
+  if (authorization) {
+    paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
   }
   if (paramStr.startsWith("&")) {
     paramStr = paramStr.substring(1);
@@ -248,6 +258,7 @@ export function getImgUrl(
   if (!model.id) {
     return;
   }
+  const usrStore = useUsrStore();
   let params = `id=${ encodeURIComponent(model.id) }`;
   if (model.filename) {
     params += `&filename=${ encodeURIComponent(model.filename) }`;
@@ -266,6 +277,10 @@ export function getImgUrl(
   }
   if (model.quality) {
     params += `&q=${ encodeURIComponent(model.quality.toString()) }`;
+  }
+  const authorization = usrStore.getAuthorization();
+  if (authorization) {
+    params += `&authorization=${ encodeURIComponent(authorization) }`;
   }
   return `${ cfg.url }/oss/img?${ params }`;
 }

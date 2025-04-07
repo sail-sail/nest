@@ -1697,8 +1697,15 @@ for (let i = 0; i < columns.length; i++) {
                     {<#
                       for (const key of queryKeys) {
                         const value = foreignPage.query[key];
+                      #><#
+                      if (key === "showBuildIn") {
+                      #>
+                      showBuildIn: '<#=value#>',<#
+                      } else {
                       #>
                       <#=key#>: row.<#=value#>,<#
+                      }
+                      #><#
                       }
                       #>
                     },
@@ -1891,8 +1898,15 @@ for (let i = 0; i < columns.length; i++) {
                     {<#
                       for (const key of queryKeys) {
                         const value = foreignPage.query[key];
+                      #><#
+                      if (key === "showBuildIn") {
+                      #>
+                      showBuildIn: '<#=value#>',<#
+                      } else {
                       #>
                       <#=key#>: row.<#=value#>,<#
+                      }
+                      #><#
                       }
                       #>
                     },
@@ -2006,8 +2020,15 @@ for (let i = 0; i < columns.length; i++) {
                     {<#
                       for (const key of queryKeys) {
                         const value = foreignPage.query[key];
+                      #><#
+                      if (key === "showBuildIn") {
+                      #>
+                      showBuildIn: '<#=value#>',<#
+                      } else {
                       #>
                       <#=key#>: row.<#=value#>,<#
+                      }
+                      #><#
                       }
                       #>
                     },
