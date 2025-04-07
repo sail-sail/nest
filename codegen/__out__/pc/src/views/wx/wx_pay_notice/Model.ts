@@ -55,9 +55,9 @@ export const wxPayNoticeFields = [
   // 支付完成时间
   "success_time",
   "success_time_lbl",
-  // 总金额
+  // 总金额(分)
   "total",
-  // 用户支付金额
+  // 用户支付金额(分)
   "payer_total",
   // 货币类型
   "currency",

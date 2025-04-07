@@ -498,7 +498,7 @@ export async function findAllWxPayNotice(
   sort = sort.filter((item) => item.prop);
   
   sort.push({
-    prop: "transaction_id",
+    prop: "success_time",
     order: SortOrderEnum.Desc,
   });
   
@@ -742,8 +742,8 @@ export async function getFieldCommentsWxPayNotice(): Promise<WxPayNoticeFieldCom
     attach: "附加数据",
     success_time: "支付完成时间",
     success_time_lbl: "支付完成时间",
-    total: "总金额",
-    payer_total: "用户支付金额",
+    total: "总金额(分)",
+    payer_total: "用户支付金额(分)",
     currency: "货币类型",
     currency_lbl: "货币类型",
     payer_currency: "用户支付币种",
