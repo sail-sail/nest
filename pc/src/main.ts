@@ -8,6 +8,7 @@ import "virtual:uno.css";
 
 import "@/assets/style/common.scss";
 
+// @ts-ignore
 import App from "./App.vue";
 
 import router from "./router/index";
@@ -21,7 +22,12 @@ import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
 
 import cfg from "@/utils/config";
 
+// import VueScan, { type VueScanOptions } from "z-vue-scan";
+
 const app = createApp(App);
+
+// app.use<VueScanOptions>(VueScan, { });
+
 const pinia = createPinia();
 cfg.pinia = pinia;
 pinia.use(piniaPluginPersistedstate);
