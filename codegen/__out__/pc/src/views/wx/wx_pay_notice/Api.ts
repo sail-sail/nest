@@ -58,9 +58,9 @@ export function intoInputWxPayNotice(
     success_time: model?.success_time,
     success_time_lbl: model?.success_time_lbl,
     success_time_save_null: model?.success_time_save_null,
-    // 总金额
+    // 总金额(分)
     total: model?.total,
-    // 用户支付金额
+    // 用户支付金额(分)
     payer_total: model?.payer_total,
     // 货币类型
     currency: model?.currency,

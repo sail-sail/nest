@@ -3,8 +3,6 @@ import type {
   PayTransactionsJsapiModel as PayTransactionsJsapiModelType,
   PayTransactionsJsapiSearch as PayTransactionsJsapiSearchType,
   PayTransactionsJsapiFieldComment as PayTransactionsJsapiFieldCommentType,
-  // 交易状态
-  PayTransactionsJsapiTradeState,
   // 货币类型
   PayTransactionsJsapiCurrency,
   SortInput,
@@ -37,13 +35,9 @@ declare global {
     /** 商户订单号 */
     out_trade_no?: string;
     out_trade_no_like?: string;
-    /** 交易状态 */
-    trade_state?: PayTransactionsJsapiTradeState[];
     /** 交易状态描述 */
     trade_state_desc?: string;
     trade_state_desc_like?: string;
-    /** 支付完成时间 */
-    success_time?: [(string|undefined|null), (string|undefined|null)];
     /** 交易限制时间 */
     time_expire?: string;
     time_expire_like?: string;
@@ -125,6 +119,8 @@ declare global {
 
 /** 微信JSAPI下单 前端允许排序的字段 */
 export const canSortInApiPayTransactionsJsapi = {
+  // 支付完成时间
+  "success_time": true,
   // 创建时间
   "create_time": true,
   // 更新时间
