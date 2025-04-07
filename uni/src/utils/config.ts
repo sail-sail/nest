@@ -54,7 +54,7 @@ if (import.meta.env.MODE === "development") {
   }
   // #endif
   // domain = "localhost:4000";
-} else if (import.meta.env.MODE === "production") {
+} else if (import.meta.env.MODE === "prod") {
   // #ifndef H5
   host = "localhost";
   port = undefined;
