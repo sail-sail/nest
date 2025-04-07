@@ -10,6 +10,7 @@ pub struct SrcQuery(
   crate::src::base::i18n::i18n_graphql::I18nQuery,
   crate::src::base::lang::lang_graphql::LangQuery,
   crate::src::base::menu::menu_graphql::MenuQuery,
+  crate::src::base::optbiz::optbiz_graphql::OptbizQuery,
   crate::src::base::options::options_graphql::OptionsQuery,
   crate::src::base::tenant::tenant_graphql::TenantQuery,
   crate::src::base::usr::usr_graphql::UsrQuery,
