@@ -478,12 +478,21 @@ export default defineConfig({
       {
         COLUMN_NAME: "transaction_id",
         search: true,
-        width: 240,
+        width: 250,
         notForeignKeyById: true,
+        foreignPage: {
+          routeName: "微信支付通知",
+          tabNameField: "transaction_id",
+          query: {
+            transaction_id: "transaction_id",
+            showBuildIn: "1",
+          },
+        },
       },
       {
         COLUMN_NAME: "trade_state",
         width: 120,
+        search: true,
       },
       {
         COLUMN_NAME: "trade_state_desc",
@@ -492,6 +501,8 @@ export default defineConfig({
       {
         COLUMN_NAME: "success_time",
         width: 150,
+        search: true,
+        sortable: true,
       },
       {
         COLUMN_NAME: "time_expire",
@@ -560,7 +571,7 @@ export default defineConfig({
       noRevert: true,
       noForceDelete: true,
       defaultSort: {
-        prop: "transaction_id",
+        prop: "success_time",
         order: "descending",
       },
     },
@@ -585,8 +596,16 @@ export default defineConfig({
       {
         COLUMN_NAME: "transaction_id",
         search: true,
-        width: 240,
+        width: 250,
         notForeignKeyById: true,
+        foreignPage: {
+          routeName: "微信JSAPI下单",
+          tabNameField: "transaction_id",
+          query: {
+            transaction_id: "transaction_id",
+            showBuildIn: "1",
+          },
+        },
       },
       {
         COLUMN_NAME: "trade_type",
@@ -611,10 +630,12 @@ export default defineConfig({
       {
         COLUMN_NAME: "success_time",
         width: 150,
+        search: true,
+        sortable: true,
       },
       {
         COLUMN_NAME: "total",
-        width: 80,
+        width: 90,
       },
       {
         COLUMN_NAME: "payer_total",
