@@ -22,7 +22,7 @@
     "graphql": "16.10.0",
     "js-md5": "0.8.3",
     "lru-cache": "11.1.0",
-    "mime": "4.0.6",
+    "mime": "4.0.7",
     "mnemonist": "0.40.3",
     "mysql2": "3.14.0",
     "path-to-regexp": "6.3.0",
@@ -32,7 +32,7 @@
     "@graphql-codegen/cli": "5.0.5",
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-operations": "4.6.0",
-    "@types/node": "22.13.17",
+    "@types/node": "22.14.0",
     "chokidar": "3.6.0",
     "commander": "13.1.0",
     "dotenv": "16.4.7",
@@ -40,7 +40,7 @@
     "husky": "9.1.7",
     "lint-staged": "15.5.0",
     "ssh2-promise": "1.0.3",
-    "typescript": "5.8.2"
+    "typescript": "5.8.3"
   },
   "lint-staged": {
     "*.ts": [
