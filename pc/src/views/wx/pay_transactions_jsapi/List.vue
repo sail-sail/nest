@@ -41,6 +41,37 @@
         </el-form-item>
       </template>
       
+      <template v-if="(showBuildIn || builtInSearch?.trade_state == null)">
+        <el-form-item
+          label="交易状态"
+          prop="trade_state"
+        >
+          <DictSelect
+            v-model="trade_state_search"
+            code="wx_pay_notice_trade_state"
+            placeholder="请选择 交易状态"
+            multiple
+            @change="onSearch(false)"
+          ></DictSelect>
+        </el-form-item>
+      </template>
+      
+      <template v-if="(showBuildIn || builtInSearch?.success_time == null)">
+        <el-form-item
+          label="支付完成时间"
+          prop="success_time"
+        >
+          <CustomDatePicker
+            v-model="success_time_search"
+            type="daterange"
+            start-placeholder="开始"
+            end-placeholder="结束"
+            @clear="onSearchClear"
+            @change="onSearch(false)"
+          ></CustomDatePicker>
+        </el-form-item>
+      </template>
+      
       <div
         class="search-ids-checked"
       >
@@ -410,11 +441,26 @@
               v-if="col.hide !== true"
               v-bind="col"
             >
+              <template #default="{ row, column }">
+                <el-link
+                  type="primary"
+                  @click="openForeignPage(
+                    '微信支付通知',
+                    row.transaction_id,
+                    {
+                      transaction_id: row.transaction_id,
+                      showBuildIn: '1',
+                    },
+                  )"
+                >
+                  {{ row[column.property] }}
+                </el-link>
+              </template>
             </el-table-column>
           </template>
           
           <!-- 交易状态 -->
-          <template v-else-if="'trade_state_lbl' === col.prop">
+          <template v-else-if="'trade_state_lbl' === col.prop && (showBuildIn || builtInSearch?.trade_state == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -432,7 +478,7 @@
           </template>
           
           <!-- 支付完成时间 -->
-          <template v-else-if="'success_time_lbl' === col.prop">
+          <template v-else-if="'success_time_lbl' === col.prop && (showBuildIn || builtInSearch?.success_time == null)">
             <el-table-column
               v-if="col.hide !== true"
               v-bind="col"
@@ -592,6 +638,10 @@ import {
   useExportExcelPayTransactionsJsapi,
 } from "./Api.ts";
 
+import {
+  openForeignPage,
+} from "@/router/util.ts";
+
 defineOptions({
   name: "微信JSAPI下单",
 });
@@ -634,6 +684,8 @@ const props = defineProps<{
   id?: PayTransactionsJsapiId; // ID
   transaction_id?: string; // 微信支付订单号
   transaction_id_like?: string; // 微信支付订单号
+  trade_state?: string|string[]; // 交易状态
+  success_time?: string; // 支付完成时间
 }>();
 
 const builtInSearchType: { [key: string]: string } = {
@@ -645,6 +697,8 @@ const builtInSearchType: { [key: string]: string } = {
   isFocus: "0|1",
   isListSelectDialog: "0|1",
   ids: "string[]",
+  trade_state: "string[]",
+  trade_state_lbl: "string[]",
   create_usr_id: "string[]",
   create_usr_id_lbl: "string[]",
   update_usr_id: "string[]",
@@ -703,6 +757,37 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 交易状态
+const trade_state_search = $computed({
+  get() {
+    return search.trade_state || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.trade_state = undefined;
+    } else {
+      search.trade_state = val;
+    }
+  },
+});
+
+// 支付完成时间
+const success_time_search = $computed({
+  get() {
+    return search.success_time || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.success_time = undefined;
+    } else {
+      search.success_time = [
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+      ];
+    }
+  },
+});
 
 /** 回收站 */
 async function onRecycle() {
@@ -890,7 +975,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "微信支付订单号",
       prop: "transaction_id",
-      width: 240,
+      width: 250,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -917,6 +1002,7 @@ function getTableColumns(): ColumnType[] {
       prop: "success_time_lbl",
       sortBy: "success_time",
       width: 150,
+      sortable: "custom",
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,

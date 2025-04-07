@@ -196,6 +196,10 @@ input PayTransactionsJsapiSearch {
   "微信支付订单号"
   transaction_id: String
   transaction_id_like: String
+  "交易状态"
+  trade_state: [PayTransactionsJsapiTradeState!]
+  "支付完成时间"
+  success_time: [NaiveDateTime]
   "创建人"
   create_usr_id: [UsrId!]
   "创建人"
