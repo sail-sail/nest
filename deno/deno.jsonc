@@ -50,7 +50,7 @@
     "js-md5": "npm:js-md5@0.8.3",
     "decimal.js": "https://esm.sh/decimal.js@10.5.0",
     "graphql": "npm:graphql@16.10.0",
-    "mime": "npm:mime@4.0.6",
+    "mime": "npm:mime@4.0.7",
     "jose/": "https://deno.land/x/jose@v6.0.10/",
     "mnemonist": "npm:mnemonist@0.40.2",
     "redis": "https://deno.land/x/redis@v0.38.0/mod.ts",
