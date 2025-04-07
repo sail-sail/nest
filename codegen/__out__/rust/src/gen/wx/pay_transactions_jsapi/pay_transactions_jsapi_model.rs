@@ -36,11 +36,12 @@ use crate::common::gql::model::SortInput;
 use crate::r#gen::base::tenant::tenant_model::TenantId;
 use crate::r#gen::base::usr::usr_model::UsrId;
 
-static CAN_SORT_IN_API_PAY_TRANSACTIONS_JSAPI: OnceLock<[&'static str; 2]> = OnceLock::new();
+static CAN_SORT_IN_API_PAY_TRANSACTIONS_JSAPI: OnceLock<[&'static str; 3]> = OnceLock::new();
 
 /// 微信JSAPI下单 前端允许排序的字段
-fn get_can_sort_in_api_pay_transactions_jsapi() -> &'static [&'static str; 2] {
+fn get_can_sort_in_api_pay_transactions_jsapi() -> &'static [&'static str; 3] {
   CAN_SORT_IN_API_PAY_TRANSACTIONS_JSAPI.get_or_init(|| [
+    "success_time",
     "create_time",
     "update_time",
   ])
@@ -377,7 +378,7 @@ pub struct PayTransactionsJsapiSearch {
   #[graphql(name = "transaction_id_like")]
   pub transaction_id_like: Option<String>,
   /// 交易状态
-  #[graphql(skip)]
+  #[graphql(name = "trade_state")]
   pub trade_state: Option<Vec<PayTransactionsJsapiTradeState>>,
   /// 交易状态描述
   #[graphql(skip)]
@@ -386,7 +387,7 @@ pub struct PayTransactionsJsapiSearch {
   #[graphql(skip)]
   pub trade_state_desc_like: Option<String>,
   /// 支付完成时间
-  #[graphql(skip)]
+  #[graphql(name = "success_time")]
   pub success_time: Option<[Option<chrono::NaiveDateTime>; 2]>,
   /// 交易限制时间
   #[graphql(skip)]
