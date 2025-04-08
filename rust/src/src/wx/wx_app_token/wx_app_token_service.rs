@@ -185,6 +185,7 @@ pub async fn get_access_token(
  * 获取不限制的小程序码
  * https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/qrcode-link/qr-code/getUnlimitedQRCode.html
  */
+#[allow(dead_code)]
 pub async fn get_wxa_code_unlimit(
   appid: String,
   input: GetwxacodeunlimitInput,
