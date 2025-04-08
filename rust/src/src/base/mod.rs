@@ -13,3 +13,4 @@ pub mod data_permit;
 pub mod dept;
 pub mod role;
 pub mod field_permit;
+pub mod optbiz;
