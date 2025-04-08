@@ -17,7 +17,7 @@ function setLblArgs(
     const obj = args[0];
     i18nLbl = i18nLbl.replace(reg, (str) => {
       const str2 = str.substring(1, str.length-1);
-      return obj[str2] ?? str;
+      return obj[str2] || str;
     });
   } else if (args.length > 0) {
     i18nLbl = i18nLbl.replace(reg, (str) => {
@@ -26,7 +26,7 @@ function setLblArgs(
       if (isNaN(num)) {
         return str;
       }
-      return args[num] ?? str;
+      return args[num] || str;
     });
   }
   return i18nLbl;

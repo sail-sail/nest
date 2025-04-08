@@ -241,7 +241,7 @@ const _list = computed(() : SLIDER_TREE_ITEM[] => {
 			ps.push({
 				id: node[props.rangId],
 				title: node[props.rangKey],
-				disabled: node?.disabled ?? false,
+				disabled: node?.disabled || false,
 				selected: [],
 				...node
 			} as SLIDER_TREE_ITEM)
