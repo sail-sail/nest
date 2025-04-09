@@ -248,7 +248,7 @@ export function getImgUrl(
     filename?: string;
     inline?: "0"|"1";
   } | string,
-) {
+): string {
   if (typeof model === "string") {
     model = {
       id: model,
@@ -256,7 +256,7 @@ export function getImgUrl(
     };
   }
   if (!model.id) {
-    return;
+    return "";
   }
   const usrStore = useUsrStore();
   let params = `id=${ encodeURIComponent(model.id) }`;
