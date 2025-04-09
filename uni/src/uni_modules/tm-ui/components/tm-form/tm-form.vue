@@ -83,13 +83,13 @@ const props = defineProps({
 })
 const ruleCover = (rule: TM.FORM_RULE): TM.FORM_RULE_TYPE => {
     return {
-        required: rule?.required ?? false,
-        message: rule?.message ?? "请正确认选择/填写",
-        validator: rule?.validator ?? null,
-        min: rule?.min ?? 1,
-        max: rule?.max ?? -1,
-        type: rule?.type ?? 'auto',
-        rule: rule?.rule ?? null
+        required: rule?.required || false,
+        message: rule?.message || "请正确认选择/填写",
+        validator: rule?.validator || null,
+        min: rule?.min || 1,
+        max: rule?.max || -1,
+        type: rule?.type || 'auto',
+        rule: rule?.rule || null
     }
 }
 const _rules = computed((): Record<string, Array<TM.FORM_RULE_TYPE>> => {
