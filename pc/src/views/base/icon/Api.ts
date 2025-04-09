@@ -38,6 +38,8 @@ export function intoInputIcon(
     id: model?.id,
     // 图标
     img: model?.img,
+    // svg
+    img_lbl_svg: model?.img_lbl_svg,
     // 编码
     code: model?.code,
     // 名称

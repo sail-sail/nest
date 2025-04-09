@@ -2,7 +2,6 @@
   "recommendations": [
     "ms-ceintl.vscode-language-pack-zh-hans",
     "editorconfig.editorconfig",
-    "graphql.vscode-graphql",
     "graphql.vscode-graphql-execution",
     "graphql.vscode-graphql-syntax",
     "howardzuo.vscode-npm-dependency",

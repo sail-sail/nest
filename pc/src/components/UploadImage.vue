@@ -114,7 +114,7 @@
     </div>
   </div>
   <div
-    v-if="props.pageInited && !props.readonly && thumbList.length < props.maxSize"
+    v-if="!props.readonly && thumbList.length < props.maxSize"
     class="upload_image_empty"
     :style="{
       height: `${ (props.itemHeight + 4) }px`,
