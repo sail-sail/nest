@@ -6,7 +6,7 @@ import { useTmConfig } from "../../libs/config";
 import pickerItem from './picker-item.vue';
 type TM_PICKER_X_ITEM = Record<string, any>
 type TM_PICKER_ITEM_INFO = Record<string, any>
-const proxy = getCurrentInstance()?.proxy ?? null;
+const proxy = getCurrentInstance()?.proxy || null;
 
 /**
  * @displayName 选择器容器
