@@ -277,18 +277,6 @@ async fn main() -> Result<(), std::io::Error> {
       get(common::health::health_router::health),
     );
     
-    // 微信小程序登录
-    app = app.at(
-      "/api/wx_usr/code2Session",
-      post(src::wx::wx_usr::wx_usr_router::code2session),
-    );
-    
-    // 微信支付回调
-    app = app.at(
-      "/api/wx_pay/wx_pay_notify",
-      post(src::wx::wx_pay_notice::wx_pay_notice_router::wx_pay_notify),
-    );
-    
     app
   };
   let app = app
