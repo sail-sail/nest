@@ -25,7 +25,7 @@ canvasId.value = "tm" + new Date().getTime().toString();
   defaultCoarsePointer = retrieve2(root.__ECHARTS__DEFAULT__COARSE_POINTER, defaultCoarsePointer);
   var devUseDirtyRect = root.__ECHARTS__DEFAULT__USE_DIRTY_RECT__;
   改成如下：
-  defaultRenderer = root?.__ECHARTS__DEFAULT__RENDERER__ ?? defaultRenderer;
+  defaultRenderer = root?.__ECHARTS__DEFAULT__RENDERER__ || defaultRenderer;
   defaultCoarsePointer = retrieve2(root?.__ECHARTS__DEFAULT__COARSE_POINTER, defaultCoarsePointer);
   var devUseDirtyRect = root?.__ECHARTS__DEFAULT__USE_DIRTY_RECT__??null;
 * @constant 平台兼容
