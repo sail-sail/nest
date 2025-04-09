@@ -12,7 +12,7 @@
   :disabled="props.readonly"
   :placeholder="(props.readonly || !props.pageInited) ? '' : props.placeholder"
   :color="props.color"
-  :font-color="props.readonly ? '#666' : undefined"
+  :font-color="props.readonly ? '#888888' : undefined"
   @change="onChange"
   @clear="onClear"
 >

@@ -20,6 +20,7 @@
     }"
     un-flex="~"
     un-items-center
+    un-justify-center
     un-h="full"
     un-aspect="square"
     un-p=".5"

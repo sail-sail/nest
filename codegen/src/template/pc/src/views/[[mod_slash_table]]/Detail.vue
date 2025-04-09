@@ -1658,6 +1658,7 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
+                      align="center"
                     ></CustomInputNumber><#
                     } else if (column.DATA_TYPE === "decimal") {
                       let arr = JSON.parse("["+column_type.substring(column_type.indexOf("(")+1, column_type.lastIndexOf(")"))+"]");
@@ -1707,6 +1708,7 @@ for (let i = 0; i < columns.length; i++) {
                       #><#
                       }
                       #>
+                      align="center"
                     ></CustomInputNumber><#
                     } else {
                     #>
