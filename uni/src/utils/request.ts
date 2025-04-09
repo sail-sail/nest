@@ -269,6 +269,9 @@ export function getImgUrl(
   if (model.format) {
     params += `&f=${ encodeURIComponent(model.format) }`;
   }
+  if (!model.width) {
+    model.width = 750;
+  }
   if (model.width) {
     params += `&w=${ encodeURIComponent(model.width.toString()) }`;
   }
