@@ -248,7 +248,7 @@ export function getImgUrl(
     filename?: string;
     inline?: "0"|"1";
   } | string,
-) {
+): string {
   if (typeof model === "string") {
     model = {
       id: model,
@@ -256,7 +256,7 @@ export function getImgUrl(
     };
   }
   if (!model.id) {
-    return;
+    return "";
   }
   const usrStore = useUsrStore();
   let params = `id=${ encodeURIComponent(model.id) }`;
@@ -268,6 +268,9 @@ export function getImgUrl(
   }
   if (model.format) {
     params += `&f=${ encodeURIComponent(model.format) }`;
+  }
+  if (!model.width) {
+    model.width = 750;
   }
   if (model.width) {
     params += `&w=${ encodeURIComponent(model.width.toString()) }`;

@@ -13,4 +13,6 @@ declare global {
   interface Sort extends Sort2 {
   }
   
+  type DecimalType = InstanceType<typeof import("decimal.js").default>;
+  
 }
