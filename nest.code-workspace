@@ -1,10 +1,6 @@
 {
   "folders": [
     {
-      "path": "./deno",
-      "deno": true
-    },
-    {
       "path": "./rust",
       "deno": false
     },

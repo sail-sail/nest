@@ -1,7 +1,0 @@
-[
-  {
-    "key": "ctrl+s",
-    "command": "workbench.action.files.saveAll",
-    "when": "editorTextFocus"
-  }
-]
