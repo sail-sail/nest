@@ -333,7 +333,7 @@ const covertFileTypeByModelvalue = (files: Array<Record<string, any> | string>) 
             status: status,
             progress: 100,
             statusText: STATUS_TEXT.get(status) || "",
-            response: item?.response??item
+            response: item?.response||item
         }
     })
     let nowfilesrc = list.value.map(item => item.path)
