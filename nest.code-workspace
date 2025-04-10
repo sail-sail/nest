@@ -1,20 +1,16 @@
 {
   "folders": [
     {
-      "path": "./rust",
-      "deno": false
+      "path": "./rust"
     },
     {
-      "path": "./pc",
-      "deno": false
+      "path": "./pc"
     },
     {
-      "path": "./uni",
-      "deno": false
+      "path": "./uni"
     },
     {
-      "path": "./codegen",
-      "deno": false
+      "path": "./codegen"
     }
   ],
   "settings": {
@@ -25,8 +21,6 @@
     "terminal.integrated.defaultProfile.windows": "Command Prompt",
     "npm.registry": "https://registry.npmmirror.com",
     "npm.updateStrategy": "LATEST",
-    "deno.enable": true,
-    "deno.lint": true,
     "unocss.root": [
       "pc",
       "uni"
