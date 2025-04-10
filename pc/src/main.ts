@@ -8,6 +8,7 @@ import "virtual:uno.css";
 
 import "@/assets/style/common.scss";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import App from "./App.vue";
 

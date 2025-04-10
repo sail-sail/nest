@@ -41,7 +41,7 @@
     "graphql-combine-query": "1.2.4",
     "jszip": "3.10.1",
     "numeral": "2.0.6",
-    "pinia": "3.0.1",
+    "pinia": "3.0.2",
     "pinia-plugin-persistedstate": "4.2.0",
     "pinyin-pro": "3.26.0",
     "sortablejs": "1.15.6",
