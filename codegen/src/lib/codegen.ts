@@ -559,9 +559,6 @@ export async function genRouter(context: Context) {
   }
   const files = [
     "pc/src/router/gen.ts",
-    "deno/gen/graphql.ts",
-    "deno/lib/script/graphql_codegen_scalars.ts",
-    "deno/lib/script/graphql_pc_ids.ts",
     "rust/src/common/script/graphql_codegen_scalars.ts",
     "rust/src/common/script/graphql_pc_ids.ts",
     "pc/src/typings/ids.d.ts",
