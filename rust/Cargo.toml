@@ -91,6 +91,9 @@ path = "src/main.rs"
 [profile.release]
 panic = "unwind"
 
+[profile.dev]
+debug = false
+
 [[bin]]
 name = "schema"
 path = "src/schema.rs"
