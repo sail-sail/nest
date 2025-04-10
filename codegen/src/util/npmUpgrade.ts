@@ -2,7 +2,6 @@ import { execSync } from "node:child_process";
 
 const parentBranchs = [
   "rust",
-  "deno4wxwork",
 ];
 
 async function exec() {
