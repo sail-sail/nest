@@ -312,8 +312,6 @@ async function getSchema0(
       }
       if (item.fixed == null) {
         item.fixed = "left";
-      } else if (item.fixed === false) {
-        delete item.fixed;
       }
     }
     if (column_name === "code") {
@@ -335,10 +333,8 @@ async function getSchema0(
       if (item.align == null) {
         item.align = "left";
       }
-      if (item.fixed === undefined) {
+      if (item.fixed == null) {
         item.fixed = "left";
-      } else if (item.fixed === null) {
-        delete item.fixed;
       }
     }
     if ([ "is_locked" ].includes(column_name)) {
