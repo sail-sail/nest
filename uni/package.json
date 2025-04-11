@@ -79,8 +79,8 @@
     "@types/node": "22.14.0",
     "@uni-helper/uni-app-types": "1.0.0-alpha.6",
     "@unocss/preset-attributify": "66.1.0-beta.10",
-    "@vue-macros/eslint-config": "3.0.0-beta.7",
-    "@vue-macros/reactivity-transform": "3.0.0-beta.7",
+    "@vue-macros/eslint-config": "3.0.0-beta.8",
+    "@vue-macros/reactivity-transform": "3.0.0-beta.8",
     "@vue/runtime-core": "3.5.13",
     "cross-env": "7.0.3",
     "eslint": "9.24.0",
@@ -97,12 +97,12 @@
     "unplugin-auto-import": "19.1.2",
     "unplugin-turbo-console": "1.11.3",
     "unplugin-vue-components": "28.4.1",
-    "vite": "6.2.5",
+    "vite": "6.2.6",
     "vite-plugin-inspect": "11.0.0",
     "vite-plugin-vue-inspector": "5.3.1",
     "vitest": "3.1.1",
     "vue-router": "4.5.0",
-    "vue-tsc": "3.0.0-alpha.2"
+    "vue-tsc": "3.0.0-alpha.4"
   },
   "lint-staged": {
     "*.ts": [
