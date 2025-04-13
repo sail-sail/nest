@@ -1053,6 +1053,48 @@ export async function checkByUniqueRole(
   return;
 }
 
+// MARK: findOneOkRole
+/** 根据条件查找第一角色 */
+export async function findOneOkRole(
+  search?: Readonly<RoleSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<RoleModel> {
+  
+  const table = "base_role";
+  const method = "findOneOkRole";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_role = validateOptionRole(
+    await findOneRole(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_role;
+}
+
 // MARK: findOneRole
 /** 根据条件查找第一角色 */
 export async function findOneRole(
@@ -1099,6 +1141,43 @@ export async function findOneRole(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkRole
+/** 根据 id 查找角色 */
+export async function findByIdOkRole(
+  id?: RoleId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<RoleModel> {
+  
+  const table = "base_role";
+  const method = "findByIdOkRole";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_role = validateOptionRole(
+    await findByIdRole(
+      id,
+      options,
+    ),
+  );
+  
+  return model_role;
 }
 
 // MARK: findByIdRole
