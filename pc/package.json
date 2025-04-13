@@ -56,9 +56,9 @@
     "@eslint/js": "9.24.0",
     "@plugin-web-update-notification/vite": "2.0.0",
     "@types/file-saver": "2.0.7",
-    "@types/node": "22.14.0",
+    "@types/node": "22.14.1",
     "@types/sortablejs": "1.15.8",
-    "@unocss/preset-rem-to-px": "66.1.0-beta.10",
+    "@unocss/preset-rem-to-px": "66.1.0-beta.11",
     "@vitejs/plugin-vue": "5.2.3",
     "@vitejs/plugin-vue-jsx": "4.1.2",
     "@vue-macros/eslint-config": "3.0.0-beta.8",
@@ -70,13 +70,13 @@
     "eslint-plugin-vue": "10.0.0",
     "globals": "16.0.0",
     "husky": "9.1.7",
-    "lint-staged": "15.5.0",
+    "lint-staged": "15.5.1",
     "mysql2": "3.14.0",
     "sass": "1.86.3",
     "spark-md5": "3.0.2",
     "typescript": "5.8.3",
     "typescript-eslint": "8.29.1",
-    "unocss": "66.1.0-beta.10",
+    "unocss": "66.1.0-beta.11",
     "unplugin-auto-import": "19.1.2",
     "unplugin-icons": "22.1.0",
     "unplugin-turbo-console": "1.11.3",
@@ -89,8 +89,7 @@
     "vite-plugin-vue-inspector": "5.3.1",
     "vite-plugin-wasm": "3.4.1",
     "vitest": "3.1.1",
-    "vue-tsc": "3.0.0-alpha.4",
-    "z-vue-scan": "0.0.35"
+    "vue-tsc": "3.0.0-alpha.4"
   },
   "lint-staged": {
     "*.{ts,vue}": [
