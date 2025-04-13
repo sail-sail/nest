@@ -1139,8 +1139,55 @@ pub async fn get_field_comments_role(
   Ok(field_comments)
 }
 
+// MARK: find_one_ok_role
+/// 根据条件查找第一个角色
+#[allow(dead_code)]
+pub async fn find_one_ok_role(
+  search: Option<RoleSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<RoleModel> {
+  
+  let table = "base_role";
+  let method = "find_one_ok_role";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let role_model = validate_option_role(
+    find_one_role(
+      search,
+      sort,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(role_model)
+}
+
 // MARK: find_one_role
 /// 根据条件查找第一个角色
+#[allow(dead_code)]
 pub async fn find_one_role(
   search: Option<RoleSearch>,
   sort: Option<Vec<SortInput>>,
@@ -1194,6 +1241,45 @@ pub async fn find_one_role(
   let model: Option<RoleModel> = res.into_iter().next();
   
   Ok(model)
+}
+
+// MARK: find_by_id_ok_role
+/// 根据 id 查找角色
+#[allow(dead_code)]
+pub async fn find_by_id_ok_role(
+  id: RoleId,
+  options: Option<Options>,
+) -> Result<RoleModel> {
+  
+  let table = "base_role";
+  let method = "find_by_id_ok_role";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let role_model = validate_option_role(
+    find_by_id_role(
+      id,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(role_model)
 }
 
 // MARK: find_by_id_role
