@@ -1086,8 +1086,55 @@ pub async fn get_field_comments_wx_pay_notice(
   Ok(field_comments)
 }
 
+// MARK: find_one_ok_wx_pay_notice
+/// 根据条件查找第一个微信支付通知
+#[allow(dead_code)]
+pub async fn find_one_ok_wx_pay_notice(
+  search: Option<WxPayNoticeSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxPayNoticeModel> {
+  
+  let table = "wx_wx_pay_notice";
+  let method = "find_one_ok_wx_pay_notice";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let wx_pay_notice_model = validate_option_wx_pay_notice(
+    find_one_wx_pay_notice(
+      search,
+      sort,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(wx_pay_notice_model)
+}
+
 // MARK: find_one_wx_pay_notice
 /// 根据条件查找第一个微信支付通知
+#[allow(dead_code)]
 pub async fn find_one_wx_pay_notice(
   search: Option<WxPayNoticeSearch>,
   sort: Option<Vec<SortInput>>,
@@ -1141,6 +1188,45 @@ pub async fn find_one_wx_pay_notice(
   let model: Option<WxPayNoticeModel> = res.into_iter().next();
   
   Ok(model)
+}
+
+// MARK: find_by_id_ok_wx_pay_notice
+/// 根据 id 查找微信支付通知
+#[allow(dead_code)]
+pub async fn find_by_id_ok_wx_pay_notice(
+  id: WxPayNoticeId,
+  options: Option<Options>,
+) -> Result<WxPayNoticeModel> {
+  
+  let table = "wx_wx_pay_notice";
+  let method = "find_by_id_ok_wx_pay_notice";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let wx_pay_notice_model = validate_option_wx_pay_notice(
+    find_by_id_wx_pay_notice(
+      id,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(wx_pay_notice_model)
 }
 
 // MARK: find_by_id_wx_pay_notice
