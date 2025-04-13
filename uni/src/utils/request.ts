@@ -381,12 +381,18 @@ export function getAppid() {
   return cfg.appid;
 }
 
+let code2SessionPromise: Promise<LoginModel | undefined> | undefined = undefined;
+
 async function code2Session(
   model: {
     code: string;
     lang: string;
   },
 ) {
+  if (code2SessionPromise) {
+    return code2SessionPromise;
+  }
+  code2SessionPromise = (async function() {
   const appid = getAppid();
   const loginModel: LoginModel | undefined = await request({
     url: "wx_usr/code2Session",
@@ -399,7 +405,10 @@ async function code2Session(
     notLogin: true,
     notLoading: true,
   });
+    
   return loginModel;
+  })();
+  return await code2SessionPromise;
 }
 
 export async function uniLogin() {
@@ -428,7 +437,11 @@ export async function uniLogin() {
           lang: appLanguage,
         });
       } catch(err) {
-        console.error(err);
+        await uni.showModal({
+          title: "登录失败",
+          content: (err as Error).toString(),
+        });
+        throw err;
       }
       if (login_model) {
         usrStore.setAuthorization(login_model.authorization);
@@ -438,6 +451,7 @@ export async function uniLogin() {
         usrStore.setLang(login_model.lang || "");
         return true;
       }
+      return false;
     }
     await redirectToLogin();
     return false;
@@ -458,6 +472,7 @@ export async function uniLogin() {
       const res = await wxwGetAppid();
       const appid = res?.appid;
       const agentid = res?.agentid;
+      const scope = res?.scope;
       if (!appid) {
         await redirectToLogin();
         return false;
@@ -470,7 +485,7 @@ export async function uniLogin() {
       }
       url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
       url += `&response_type=code`;
-      url += `&scope=snsapi_base`;
+      url += `&scope=${ (scope || "snsapi_base") }`;
       url += `&state=${ encodeURIComponent(state) }`;
       url += "#wechat_redirect";
       location.replace(url);
