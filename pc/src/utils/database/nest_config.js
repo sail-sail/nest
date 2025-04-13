@@ -4,7 +4,7 @@ const {
 
 const dotenv = require("dotenv");
 
-const buf = readFileSync(`${ __dirname }/../../../../rust/.env`);
+const buf = readFileSync(`${ __dirname }/../../../../deno/.env.dev`);
 const conf = dotenv.parse(buf);
 
 const config = {
