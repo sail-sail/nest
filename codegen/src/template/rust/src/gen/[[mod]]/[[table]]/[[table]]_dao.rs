@@ -2495,8 +2495,55 @@ pub async fn get_field_comments_<#=table#>(
   Ok(field_comments)
 }
 
+// MARK: find_one_ok_<#=table#>
+/// 根据条件查找第一个<#=table_comment#>
+#[allow(dead_code)]
+pub async fn find_one_ok_<#=table#>(
+  search: Option<<#=tableUP#>Search>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<<#=tableUP#>Model> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let method = "find_one_ok_<#=table#>";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let <#=table#>_model = validate_option_<#=table#>(
+    find_one_<#=table#>(
+      search,
+      sort,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(<#=table#>_model)
+}
+
 // MARK: find_one_<#=table#>
 /// 根据条件查找第一个<#=table_comment#>
+#[allow(dead_code)]
 pub async fn find_one_<#=table#>(
   search: Option<<#=tableUP#>Search>,
   sort: Option<Vec<SortInput>>,
@@ -2550,6 +2597,45 @@ pub async fn find_one_<#=table#>(
   let model: Option<<#=tableUP#>Model> = res.into_iter().next();
   
   Ok(model)
+}
+
+// MARK: find_by_id_ok_<#=table#>
+/// 根据 id 查找<#=table_comment#>
+#[allow(dead_code)]
+pub async fn find_by_id_ok_<#=table#>(
+  id: <#=Table_Up#>Id,
+  options: Option<Options>,
+) -> Result<<#=tableUP#>Model> {
+  
+  let table = "<#=mod#>_<#=table#>";
+  let method = "find_by_id_ok_<#=table#>";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let <#=table#>_model = validate_option_<#=table#>(
+    find_by_id_<#=table#>(
+      id,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(<#=table#>_model)
 }
 
 // MARK: find_by_id_<#=table#>

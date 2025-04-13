@@ -381,12 +381,18 @@ export function getAppid() {
   return cfg.appid;
 }
 
+let code2SessionPromise: Promise<LoginModel | undefined> | undefined = undefined;
+
 async function code2Session(
   model: {
     code: string;
     lang: string;
   },
 ) {
+  if (code2SessionPromise) {
+    return code2SessionPromise;
+  }
+  code2SessionPromise = (async function() {
   const appid = getAppid();
   const loginModel: LoginModel | undefined = await request({
     url: "wx_usr/code2Session",
@@ -399,7 +405,10 @@ async function code2Session(
     notLogin: true,
     notLoading: true,
   });
+    
   return loginModel;
+  })();
+  return await code2SessionPromise;
 }
 
 export async function uniLogin() {
