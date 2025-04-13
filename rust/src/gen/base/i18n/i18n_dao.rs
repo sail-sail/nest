@@ -791,8 +791,55 @@ pub async fn get_field_comments_i18n(
   Ok(field_comments)
 }
 
+// MARK: find_one_ok_i18n
+/// 根据条件查找第一个国际化
+#[allow(dead_code)]
+pub async fn find_one_ok_i18n(
+  search: Option<I18nSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<I18nModel> {
+  
+  let table = "base_i18n";
+  let method = "find_one_ok_i18n";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let i18n_model = validate_option_i18n(
+    find_one_i18n(
+      search,
+      sort,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(i18n_model)
+}
+
 // MARK: find_one_i18n
 /// 根据条件查找第一个国际化
+#[allow(dead_code)]
 pub async fn find_one_i18n(
   search: Option<I18nSearch>,
   sort: Option<Vec<SortInput>>,
@@ -846,6 +893,45 @@ pub async fn find_one_i18n(
   let model: Option<I18nModel> = res.into_iter().next();
   
   Ok(model)
+}
+
+// MARK: find_by_id_ok_i18n
+/// 根据 id 查找国际化
+#[allow(dead_code)]
+pub async fn find_by_id_ok_i18n(
+  id: I18nId,
+  options: Option<Options>,
+) -> Result<I18nModel> {
+  
+  let table = "base_i18n";
+  let method = "find_by_id_ok_i18n";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let i18n_model = validate_option_i18n(
+    find_by_id_i18n(
+      id,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(i18n_model)
 }
 
 // MARK: find_by_id_i18n
