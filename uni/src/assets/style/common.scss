@@ -16,6 +16,12 @@ tm-form,tm-form .tmForm {
   overflow-y: auto;
 }
 
+.block_from > .tmForm {
+  flex-basis: inherit;
+  flex: auto;
+  overflow: unset;
+}
+
 .tmFormItemLabel {
   text-align: right;
   margin-right: 24rpx;
