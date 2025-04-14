@@ -1,5 +1,6 @@
 <template>
 <view
+  v-bind="$attrs"
   class="custom_select"
   :class="{
     'custom_select_readonly': props.readonly
