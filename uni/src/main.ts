@@ -1,4 +1,6 @@
 import { createSSRApp } from "vue";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
 import App from "./App.vue";
 import * as Pinia from "pinia";
 
