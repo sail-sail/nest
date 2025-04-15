@@ -177,6 +177,15 @@ pub async fn code2session(
     ).await?;
   }
   
+  let usr_model = find_by_id_usr(
+    wx_usr_model.usr_id.clone(),
+    options.clone(),
+  ).await?;
+  
+  if usr_model.is_none() {
+    wx_usr_model.usr_id = "".into();
+  }
+  
   if wx_usr_model.usr_id.is_empty() {
     let usr_id = create_usr(
       UsrInput {
@@ -191,6 +200,7 @@ pub async fn code2session(
           .set_unique_type(UniqueType::Update)
       ),
     ).await?;
+    wx_usr_model.usr_id = usr_id.clone();
     update_tenant_by_id_usr(
       usr_id.clone(),
       tenant_id.clone(),
@@ -200,6 +210,7 @@ pub async fn code2session(
       wx_usr_model.id.clone(),
       WxUsrInput {
         usr_id: Some(usr_id.clone()),
+        usr_id_lbl: Some("游客".to_string()),
         ..Default::default()
       },
       options.clone(),
