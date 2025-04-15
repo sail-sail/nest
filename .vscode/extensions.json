@@ -28,7 +28,6 @@
     "johnsoncodehk.vscode-tsconfig-helper",
     "antfu.pair-diff",
     "jacobpfeifer.pfeifer-hurl",
-    "ms-vscode.vscode-speech",
     "emeraldwalk.runonsave"
   ],
   "unwantedRecommendations": [
