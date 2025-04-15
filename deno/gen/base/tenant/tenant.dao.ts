@@ -1398,7 +1398,23 @@ export async function findAutoCodeTenant(
     ],
   );
   
-  const code_seq = (model?.code_seq || 0) + 1;
+  const model_deleted = await findOneTenant(
+    {
+      is_deleted: 1,
+    },
+    [
+      {
+        prop: "code_seq",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  let code_seq = (model?.code_seq || 0) + 1;
+  const code_seq_deleted = (model_deleted?.code_seq || 0) + 1;
+  if (code_seq_deleted > code_seq) {
+    code_seq = code_seq_deleted;
+  }
   const code = "ZH" + code_seq.toString().padStart(3, "0");
   
   return {

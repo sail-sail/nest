@@ -3634,7 +3634,23 @@ export async function findAutoCode<#=Table_Up#>(
     ],
   );
   
-  const <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;<#
+  const model_deleted = await findOne<#=Table_Up#>(
+    {
+      is_deleted: 1,
+    },
+    [
+      {
+        prop: "<#=autoCodeColumn.autoCode.seq#>",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  let <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
+  const <#=autoCodeColumn.autoCode.seq#>_deleted = (model_deleted?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
+  if (<#=autoCodeColumn.autoCode.seq#>_deleted > <#=autoCodeColumn.autoCode.seq#>) {
+    <#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>_deleted;
+  }<#
   if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
   const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0");<#
@@ -3682,6 +3698,26 @@ export async function findAutoCode<#=Table_Up#>(
     <#=autoCodeColumn.autoCode.seq#> = 1;
   } else {
     <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
+    const model_deleted = await findOne<#=Table_Up#>(
+      {
+        <#=dateSeq#>: [ model!.<#=dateSeq#>, model!.<#=dateSeq#> ],
+        is_deleted: 1,
+      },
+      [
+        {
+          prop: "<#=dateSeq#>",
+          order: SortOrderEnum.Desc,
+        },
+        {
+          prop: "<#=autoCodeColumn.autoCode.seq#>",
+          order: SortOrderEnum.Desc,
+        },
+      ],
+    );
+    const <#=autoCodeColumn.autoCode.seq#>_deleted = (model_deleted?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
+    if (<#=autoCodeColumn.autoCode.seq#>_deleted > <#=autoCodeColumn.autoCode.seq#>) {
+      <#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>_deleted;
+    }
   }<#
   if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
