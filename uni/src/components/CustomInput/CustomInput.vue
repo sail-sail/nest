@@ -1,5 +1,6 @@
 <template>
 <tm-input
+  v-if="!props.readonly"
   v-model.lazy="modelValue"
   class="custom_input n-w-full"
   :class="{
@@ -13,6 +14,7 @@
   :placeholder="(props.readonly || !props.pageInited) ? '' : props.placeholder"
   :color="props.color"
   :font-color="props.readonly ? '#888888' : undefined"
+  :type="props.type"
   @change="onChange"
   @clear="onClear"
 >
@@ -23,6 +25,42 @@
     <slot name="right"></slot>
   </template>
 </tm-input>
+<view
+  v-else
+  un-w="full"
+  un-whitespace-nowrap
+  un-flex="~"
+  un-justify="start"
+  un-items="center"
+  un-box-border
+  class="custom_input_readonly"
+>
+  <template #left>
+    <slot name="left"></slot>
+  </template>
+  
+  <view
+    un-flex="~ [1_0_0]"
+    un-overflow-hidden
+    un-p="x-2.5 y-0.875"
+    un-box-border
+    un-w="full"
+    un-min="h-11"
+    un-break-all
+    un-whitespace-pre-wrap
+    un-text="4 gray-500"
+    class="custom_input_readonly_content"
+    :class="{
+      'n-items-center': type !== 'textarea',
+    }"
+  >
+    {{ modelValue || '' }}
+  </view>
+  
+  <template #right>
+    <slot name="right"></slot>
+  </template>
+</view>
 </template>
 
 <script lang="ts" setup>
@@ -38,7 +76,7 @@ const props = withDefaults(
   defineProps<{
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     modelValue?: any;
-    disabled?: boolean;
+    type?: "number" | "text" | "textarea" | "idcard" | "digit" | "tel" | "safe-password" | "nickname" | undefined;
     readonly?: boolean;
     pageInited?: boolean;
     showClear?: boolean;
@@ -47,7 +85,7 @@ const props = withDefaults(
   }>(),
   {
     modelValue: undefined,
-    disabled: undefined,
+    type: undefined,
     readonly: undefined,
     pageInited: true,
     showClear: true,
