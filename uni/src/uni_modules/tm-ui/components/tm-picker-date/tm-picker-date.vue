@@ -510,14 +510,14 @@ const onConfirm = () => {
 	/**
 	 * 点击确认时同步。等同v-model
 	 */
-	emit('update:modelValue', this.formatSyncValue?formatTimeDate():nowValueStr.value);
+	emit('update:modelValue', props.formatSyncValue?formatTimeDate():nowValueStr.value);
 
 	/**
 	 * 经格式化后的值。等同v-model:model-str
 	 */
 	emit('update:modelStr', formatTimeDate());
 
-	emit('confirm', this.formatSyncValue?formatTimeDate():nowValueStr.value);
+	emit('confirm', props.formatSyncValue?formatTimeDate():nowValueStr.value);
 }
 
 
@@ -542,6 +542,7 @@ onMounted(() => {
 });
 </script>
 <template>
+	<view>
 	<view @click="openShow">
 		<!--
 		 @slot 插槽,默认触发打开选择器。你的默认布局可以放置在这里。
@@ -557,6 +558,7 @@ onMounted(() => {
 		</view>
 		<tm-icon v-if="!yanchiDuration" size="42" color="error" spin name="loader-line"></tm-icon>
 	</tm-drawer>
+	</view>
 </template>
 <style scoped>
 .tmPickerDateWrap {

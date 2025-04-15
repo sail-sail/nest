@@ -6,7 +6,7 @@ use color_eyre::eyre::{Result,eyre};
 #[allow(unused_imports)]
 use crate::common::context::{
   Options,
-  get_auth_id_err,
+  get_auth_id_ok,
   get_auth_org_id,
 };
 
@@ -32,7 +32,7 @@ async fn set_search_query(
   options: Option<Options>,
 ) -> Result<()> {
   
-  let usr_id = get_auth_id_err()?;
+  let usr_id = get_auth_id_ok()?;
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id.clone(),
