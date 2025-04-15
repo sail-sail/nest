@@ -4680,12 +4680,36 @@ pub async fn find_auto_code_<#=table#>(
         order: SortOrderEnum::Desc,
       },
     ]),
-    options,
+    options.clone(),
   ).await?;
   
   let <#=autoCodeColumn.autoCode.seq#> = model
     .as_ref()
     .map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>) + 1;
+  
+  let model_deleted = find_one_<#=table#>(
+    Some(<#=Table_Up#>Search {
+      is_deleted: Some(1),
+      ..Default::default()
+    }),
+    Some(vec![
+      SortInput {
+        prop: "<#=autoCodeColumn.autoCode.seq#>".to_owned(),
+        order: SortOrderEnum::Desc,
+      },
+    ]),
+    options.clone(),
+  ).await?;
+  
+  let <#=autoCodeColumn.autoCode.seq#>_deleted = model_deleted
+    .as_ref()
+    .map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>) + 1;
+  
+  let <#=autoCodeColumn.autoCode.seq#> = if <#=autoCodeColumn.autoCode.seq#>_deleted > <#=autoCodeColumn.autoCode.seq#> {
+    <#=autoCodeColumn.autoCode.seq#>_deleted
+  } else {
+    <#=autoCodeColumn.autoCode.seq#>
+  };
   
   let <#=autoCodeColumn.COLUMN_NAME#> = format!("<#=autoCodeColumn.autoCode.prefix#>{:0<#=autoCodeColumn.autoCode.seqPadStart0#>}<#=autoCodeColumn.autoCode.suffix#>", <#=autoCodeColumn.autoCode.seq#>);
   
@@ -4728,7 +4752,7 @@ pub async fn find_auto_code_<#=table#>(
         order: SortOrderEnum::Desc,
       },
     ]),
-    options,
+    options.clone(),
   ).await?;
   
   let now = get_now();
@@ -4740,13 +4764,43 @@ pub async fn find_auto_code_<#=table#>(
       item.<#=dateSeq#>.format("%Y%m%d").to_string()
     );
   
-  let lbl_seq: u32 = {
+  let <#=autoCodeColumn.autoCode.seq#>: u32 = {
     if <#=dateSeq#>_old.is_none() || <#=dateSeq#> != <#=dateSeq#>_old.unwrap() {
       1
     } else {
-      model
+      
+      let model_deleted = find_one_<#=table#>(
+        Some(<#=Table_Up#>Search {
+          <#=dateSeq#>: Some([ Some(item.<#=dateSeq#>), Some(item.<#=dateSeq#>) ]),
+          is_deleted: Some(0),
+          ..Default::default()
+        }),
+        Some(vec![
+          SortInput {
+            prop: "<#=dateSeq#>".to_owned(),
+            order: SortOrderEnum::Desc,
+          },
+          SortInput {
+            prop: "<#=autoCodeColumn.autoCode.seq#>".to_owned(),
+            order: SortOrderEnum::Desc,
+          },
+        ]),
+        options,
+      ).await?;
+      
+      let seq = model
         .as_ref()
-        .map_or(0, |item| item.lbl_seq) + 1
+        .map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>) + 1;
+      
+      let seq_deleted = model_deleted
+        .as_ref()
+        .map_or(0, |item| item.<#=autoCodeColumn.autoCode.seq#>) + 1;
+      
+      if seq_deleted > seq {
+        seq_deleted
+      } else {
+        seq
+      }
     }
   };
   

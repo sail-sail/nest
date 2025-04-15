@@ -9,7 +9,7 @@
   :show-bottom-botder="false"
   v-bind="$attrs"
   :show-clear="props.readonly ? false : props.showClear"
-  :disabled="props.readonly"
+  :readonly="props.readonly"
   :placeholder="(props.readonly || !props.pageInited) ? '' : props.placeholder"
   :color="props.color"
   :font-color="props.readonly ? '#888888' : undefined"
