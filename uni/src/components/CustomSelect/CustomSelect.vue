@@ -38,7 +38,7 @@
     ></tm-icon>
   </view>
   <view
-    v-if="props.clearable && !isValueEmpty"
+    v-if="props.clearable && !props.readonly && !isValueEmpty"
     un-p="r-2.65"
     un-box-border
     @click="onClear"
