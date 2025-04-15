@@ -3,7 +3,7 @@ use color_eyre::eyre::{Result, eyre};
 use crate::common::context::{
   Options,
   get_short_uuid,
-  get_auth_model_err,
+  get_auth_model_ok,
 };
 use crate::common::wx_pay::{Amount, Jsapi, Payer, WxPayData, WxPay, SceneInfo};
 
@@ -65,7 +65,7 @@ pub async fn transactions_jsapi(
   let amount = transactions_jsapi_input.amount;
   
   // 当前登录用户有可能尚未绑定微信
-  let auth_model = get_auth_model_err()?;
+  let auth_model = get_auth_model_ok()?;
   
   let wx_usr_id = auth_model.wx_usr_id;
   let wxo_usr_id = auth_model.wxo_usr_id;
