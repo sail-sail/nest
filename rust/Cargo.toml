@@ -5,73 +5,73 @@ edition = "2024"
 default-run = "rust"
 
 [dependencies]
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-mime = "0.3"
-futures-util = "0.3"
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-tracing-appender = "0.2"
+serde_json = "1.0.140"
+serde = { version = "1.0.219", features = ["derive"] }
+mime = "0.3.17"
+futures-util = "0.3.31"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+tracing-appender = "0.2.3"
 tracing-attributes = "0.1.28"
-tokio = { version = "1.44", features = ["rt-multi-thread", "macros", "net", "fs"] }
-poem = { version = "3.1.8", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
+tokio = { version = "1.44.2", features = ["rt-multi-thread", "macros", "net", "fs"] }
+poem = { version = "3.1.9", features = ["multipart", "tempfile", "eyre06", "tokio-metrics", "websocket"] }
 async-graphql = { version = "7.0.16", features = ["decimal", "bigdecimal", "time", "chrono", "chrono-tz", "smol_str", "tokio-sync", "tracing"] }
-smol_str = { version = "0.3", features = ["serde"] }
-slab = "0.4"
-chrono = { version = "0.4", features = ["serde"] }
+smol_str = { version = "0.3.2", features = ["serde"] }
+slab = "0.4.9"
+chrono = { version = "0.4.40", features = ["serde"] }
 # anyhow = "1.0"
-sqlx = { version = "0.8.3", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
+sqlx = { version = "0.8.5", features = ["runtime-tokio", "mysql", "uuid", "chrono", "time", "bigdecimal", "rust_decimal", "json"] }
 dotenv = "0.15"
 rust-s3 = { version = "0.35.1", features = ["tokio-rustls-tls","fail-on-err","tags"], default-features = false }
 imstr = { version = "0.2", features = ["serde"] }
 jwt = "0.16"
-sha2 = "0.10"
-sha1 = "0.10"
-hmac = { version = "0.12", features = ["reset"] }
+sha2 = "0.10.8"
+sha1 = "0.10.6"
+hmac = { version = "0.12.1", features = ["reset"] }
 # protobuf = "3.7.1"
-hex-literal = "0.4"
-hex = "0.4"
-base64 = "0.22"
+hex-literal = "1.0.0"
+hex = "0.4.3"
+base64 = "0.22.1"
 utf8_slice = "1.0"
-reqwest = { version = "0.12.14", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
-encoding_rs = "0.8"
-urlencoding = "2.1"
-url = "2.5"
+reqwest = { version = "0.12.15", features = ["rustls-tls", "json", "multipart", "stream"], default-features = false }
+encoding_rs = "0.8.35"
+urlencoding = "2.1.3"
+url = "2.5.4"
 # sqlformat = "0.3.5"
-smallvec = { version = "1.14", features = ["union", "serde"] }
+smallvec = { version = "1.15.0", features = ["union", "serde"] }
 # downcast-rs = "2.0"
-uuid = { version = "1.15", features = ["serde", "v4", "fast-rng"] }
-deadpool = "0.12"
+uuid = { version = "1.16.0", features = ["serde", "v4", "fast-rng"] }
+deadpool = "0.12.2"
 deadpool-redis = "0.20"
-redis = { version = "0.29", features = ["tokio-comp"], default-features = false }
+redis = { version = "0.29.5", features = ["tokio-comp"], default-features = false }
 # pin-project = "1.1"
-bigdecimal = "0.4"
-time = "0.3"
-rust_decimal = { version = "1.37", features = ["maths"]}
-rust_decimal_macros = "1.37"
+bigdecimal = "0.4.8"
+time = "0.3.41"
+rust_decimal = { version = "1.37.1", features = ["maths"]}
+rust_decimal_macros = "1.37.1"
 # enum_dispatch = "0.3.13"
 # pin-project-lite = "0.2"
 # rayon = "1.10"
-regex = "1.11"
+regex = "1.11.1"
 # yarte = "0.15.7"
 image = { version = "0.25.6", features = ["webp"] }
 delay_timer = "0.11.6"
-num-traits = "0.2"
-fast_chemail = "0.9"
-http = "1.1"
-futures = "0.3"
-aes = "0.8"
-cbc = { version = "0.1", features = ["alloc"]}
+num-traits = "0.2.19"
+fast_chemail = "0.9.6"
+http = "1.3.1"
+futures = "0.3.31"
+aes = "0.8.4"
+cbc = { version = "0.1.2", features = ["alloc"]}
 function_name = "0.3.0"
 enum-iterator = "2.1"
 derive_more = { version = "2.0.1", features = ["full"] }
-derive_builder = "0.20"
-strum = { version = "0.27", features = ["derive"] }
+derive_builder = "0.20.2"
+strum = { version = "0.27.1", features = ["derive"] }
 itertools = "0.14.0"
 color-eyre = "0.6.3"
 rand = "0.9"
 rsa = { version = "0.9.8", features = ["sha2"] }
-aes-gcm = "0.10"
+aes-gcm = "0.10.3"
 pkcs8 = "0.10.2"
 serde_with = "3.12"
 
