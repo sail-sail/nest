@@ -783,7 +783,9 @@ defineExpose({
   }
 }
 .custom_select_placeholder {
-  @apply whitespace-pre-wrap break-words text-[var(--el-text-color-secondary)];
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--el-text-color-secondary);
 }
 .dictbiz_select_space_normal {
   height: auto;

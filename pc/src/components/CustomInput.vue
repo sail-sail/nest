@@ -198,47 +198,53 @@ defineExpose({
 
 <style lang="scss" scoped>
 .custom_input_readonly_border {
-  @apply b-1 b-solid b-[var(--el-border-color)] rounded;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--el-border-color);
+  border-radius: 4px;
 }
 .custom_input_readonly_no_border {
   .custom_input_readonly_content {
-    @apply p-y-1.5;
+    padding-top: calc(var(--spacing) * 1.5);
+    padding-bottom: calc(var(--spacing) * 1.5);
   }
 }
 .custom_input_align_center {
   :deep(.el-input__wrapper) {
     .el-input__inner {
-      @apply m-r-5.5 relative right--2.75;
+      margin-right: calc(var(--spacing) * 5.5);
+      position: relative;
+      right: calc(var(--spacing) * -2.75);
     }
   }
   :deep(.el-input__wrapper:has(.el-input__suffix)) {
     .el-input__inner {
-      @apply m-r-0;
+      margin-right: 0;
     }
   }
 }
 .custom_input_align_left {
   .custom_input_readonly_content {
-    @apply text-left;
+    text-align: left;
   }
   :deep(el-input__inner) {
-    @apply text-left;
+    text-align: left;
   }
 }
 .custom_input_align_center {
   .custom_input_readonly_content {
-    @apply text-center;
+    text-align: center;
   }
   :deep(.el-input__inner) {
-    @apply text-center;
+    text-align: center;
   }
 }
 .custom_input_align_right {
   .custom_input_readonly_content {
-    @apply text-right;
+    text-align: right;
   }
   :deep(.el-input__inner) {
-    @apply text-right;
+    text-align: right;
   }
 }
 </style>
