@@ -16,6 +16,8 @@ let launchOptions: App.LaunchShowOption | undefined;
   
 let uid = "";
 
+let accountInfo: UniApp.AccountInfo | undefined;
+
 export default function() {
   
   function addLoading() {
@@ -91,6 +93,14 @@ export default function() {
     return uid;
   }
   
+  function getAccountInfo(): UniApp.AccountInfo | undefined {
+    if (accountInfo) {
+      return accountInfo;
+    }
+    accountInfo = uni.getAccountInfoSync?.();
+    return accountInfo;
+  }
+  
   return {
     getUid,
     getLoading,
@@ -102,5 +112,6 @@ export default function() {
     getMenuButtonBoundingClientRect,
     getAppBaseInfo,
     getUserAgent,
+    getAccountInfo,
   };
 };

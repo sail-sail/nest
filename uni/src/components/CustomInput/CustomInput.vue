@@ -48,7 +48,7 @@
     un-min="h-11"
     un-break-all
     un-whitespace-pre-wrap
-    un-text="4 gray-500"
+    un-text="[1em] gray-600"
     class="custom_input_readonly_content"
     :class="{
       'n-items-center': type !== 'textarea',
