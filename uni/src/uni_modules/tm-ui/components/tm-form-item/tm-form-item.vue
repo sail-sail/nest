@@ -65,6 +65,11 @@ const props = defineProps({
         type: Boolean,
         default: true
     },
+    bottomColor: {
+        type: String,
+        // default: "#f5f5f5"
+        default: "#EBEBEB"
+    },
     /**
      * 标题字号大小，会覆盖父form值
      */
@@ -225,7 +230,7 @@ export default {
         <view class="tmFormError" v-if="errorMessage && !isPass">
             {{ errorMessage }}
         </view>
-        <view v-if="_showBottom" :style="{ marginTop: _tmFormGap, height: '1px', backgroundColor: '#f5f5f5' }"></view>
+        <view v-if="_showBottom" :style="{ marginTop: _tmFormGap, height: '1px', backgroundColor: props.bottomColor }"></view>
     </view>
 </template>
 <style scoped>

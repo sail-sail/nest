@@ -690,6 +690,48 @@ export async function checkByUniqueI18n(
   return;
 }
 
+// MARK: findOneOkI18n
+/** 根据条件查找第一国际化 */
+export async function findOneOkI18n(
+  search?: Readonly<I18nSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<I18nModel> {
+  
+  const table = "base_i18n";
+  const method = "findOneOkI18n";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_i18n = validateOptionI18n(
+    await findOneI18n(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_i18n;
+}
+
 // MARK: findOneI18n
 /** 根据条件查找第一国际化 */
 export async function findOneI18n(
@@ -736,6 +778,43 @@ export async function findOneI18n(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkI18n
+/** 根据 id 查找国际化 */
+export async function findByIdOkI18n(
+  id?: I18nId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<I18nModel> {
+  
+  const table = "base_i18n";
+  const method = "findByIdOkI18n";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_i18n = validateOptionI18n(
+    await findByIdI18n(
+      id,
+      options,
+    ),
+  );
+  
+  return model_i18n;
 }
 
 // MARK: findByIdI18n

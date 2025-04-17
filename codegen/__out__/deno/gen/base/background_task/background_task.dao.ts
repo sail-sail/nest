@@ -738,6 +738,48 @@ export async function checkByUniqueBackgroundTask(
   return;
 }
 
+// MARK: findOneOkBackgroundTask
+/** 根据条件查找第一后台任务 */
+export async function findOneOkBackgroundTask(
+  search?: Readonly<BackgroundTaskSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<BackgroundTaskModel> {
+  
+  const table = "base_background_task";
+  const method = "findOneOkBackgroundTask";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_background_task = validateOptionBackgroundTask(
+    await findOneBackgroundTask(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_background_task;
+}
+
 // MARK: findOneBackgroundTask
 /** 根据条件查找第一后台任务 */
 export async function findOneBackgroundTask(
@@ -784,6 +826,43 @@ export async function findOneBackgroundTask(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkBackgroundTask
+/** 根据 id 查找后台任务 */
+export async function findByIdOkBackgroundTask(
+  id?: BackgroundTaskId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<BackgroundTaskModel> {
+  
+  const table = "base_background_task";
+  const method = "findByIdOkBackgroundTask";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_background_task = validateOptionBackgroundTask(
+    await findByIdBackgroundTask(
+      id,
+      options,
+    ),
+  );
+  
+  return model_background_task;
 }
 
 // MARK: findByIdBackgroundTask
