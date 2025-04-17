@@ -69,6 +69,7 @@ if (import.meta.env.MODE === "development") {
     wsProt = "ws:";
   }
   // #endif
+  domain = "localhost:4000";
 } else {
   uni.showModal({
     title: "错误",
