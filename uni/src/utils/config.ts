@@ -14,8 +14,7 @@ const agentid = "";
 
 const homePage = `/${pages.pages[0]?.path}`;
 
-const indexStore = useIndexStore();
-const accountInfo = indexStore.getAccountInfo();
+const accountInfo = uni.getAccountInfoSync?.();
 const envVersion = accountInfo?.miniProgram.envVersion;
 
 if (import.meta.env.MODE === "development") {
