@@ -721,6 +721,48 @@ export async function checkByUniqueWxoUsr(
   return;
 }
 
+// MARK: findOneOkWxoUsr
+/** 根据条件查找第一公众号用户 */
+export async function findOneOkWxoUsr(
+  search?: Readonly<WxoUsrSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoUsrModel> {
+  
+  const table = "wx_wxo_usr";
+  const method = "findOneOkWxoUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxo_usr = validateOptionWxoUsr(
+    await findOneWxoUsr(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_wxo_usr;
+}
+
 // MARK: findOneWxoUsr
 /** 根据条件查找第一公众号用户 */
 export async function findOneWxoUsr(
@@ -767,6 +809,43 @@ export async function findOneWxoUsr(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkWxoUsr
+/** 根据 id 查找公众号用户 */
+export async function findByIdOkWxoUsr(
+  id?: WxoUsrId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxoUsrModel> {
+  
+  const table = "wx_wxo_usr";
+  const method = "findByIdOkWxoUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxo_usr = validateOptionWxoUsr(
+    await findByIdWxoUsr(
+      id,
+      options,
+    ),
+  );
+  
+  return model_wxo_usr;
 }
 
 // MARK: findByIdWxoUsr

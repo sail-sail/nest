@@ -760,6 +760,48 @@ export async function checkByUniquePayTransactionsJsapi(
   return;
 }
 
+// MARK: findOneOkPayTransactionsJsapi
+/** 根据条件查找第一微信JSAPI下单 */
+export async function findOneOkPayTransactionsJsapi(
+  search?: Readonly<PayTransactionsJsapiSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PayTransactionsJsapiModel> {
+  
+  const table = "wx_pay_transactions_jsapi";
+  const method = "findOneOkPayTransactionsJsapi";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_pay_transactions_jsapi = validateOptionPayTransactionsJsapi(
+    await findOnePayTransactionsJsapi(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_pay_transactions_jsapi;
+}
+
 // MARK: findOnePayTransactionsJsapi
 /** 根据条件查找第一微信JSAPI下单 */
 export async function findOnePayTransactionsJsapi(
@@ -806,6 +848,43 @@ export async function findOnePayTransactionsJsapi(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkPayTransactionsJsapi
+/** 根据 id 查找微信JSAPI下单 */
+export async function findByIdOkPayTransactionsJsapi(
+  id?: PayTransactionsJsapiId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PayTransactionsJsapiModel> {
+  
+  const table = "wx_pay_transactions_jsapi";
+  const method = "findByIdOkPayTransactionsJsapi";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_pay_transactions_jsapi = validateOptionPayTransactionsJsapi(
+    await findByIdPayTransactionsJsapi(
+      id,
+      options,
+    ),
+  );
+  
+  return model_pay_transactions_jsapi;
 }
 
 // MARK: findByIdPayTransactionsJsapi
