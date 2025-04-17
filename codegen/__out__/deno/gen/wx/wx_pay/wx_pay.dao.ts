@@ -744,6 +744,48 @@ export async function checkByUniqueWxPay(
   return;
 }
 
+// MARK: findOneOkWxPay
+/** 根据条件查找第一微信支付设置 */
+export async function findOneOkWxPay(
+  search?: Readonly<WxPaySearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxPayModel> {
+  
+  const table = "wx_wx_pay";
+  const method = "findOneOkWxPay";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wx_pay = validateOptionWxPay(
+    await findOneWxPay(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_wx_pay;
+}
+
 // MARK: findOneWxPay
 /** 根据条件查找第一微信支付设置 */
 export async function findOneWxPay(
@@ -790,6 +832,43 @@ export async function findOneWxPay(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkWxPay
+/** 根据 id 查找微信支付设置 */
+export async function findByIdOkWxPay(
+  id?: WxPayId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxPayModel> {
+  
+  const table = "wx_wx_pay";
+  const method = "findByIdOkWxPay";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wx_pay = validateOptionWxPay(
+    await findByIdWxPay(
+      id,
+      options,
+    ),
+  );
+  
+  return model_wx_pay;
 }
 
 // MARK: findByIdWxPay
