@@ -17,7 +17,7 @@ export default {
             },
             onPageScroll(e:any){
                 const pages = getCurrentPages();
-                let page = undefined
+                let page: string | undefined = undefined
                 if(pages.length>0){
                    page = pages[pages.length - 1]?.route||undefined
                 }
