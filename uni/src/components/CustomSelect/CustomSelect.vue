@@ -346,6 +346,7 @@ function onClear() {
     selectedValue.value = [ ];
   }
   emit("update:modelValue", selectedValue.value);
+  emit("change", selectedValue.value);
   emit("clear");
 }
 
