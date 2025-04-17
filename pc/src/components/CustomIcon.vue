@@ -208,12 +208,12 @@ initFrame();
   color: var(--el-text-color-regular);
 }
 .custom_icon_align_left {
-  @apply justify-start;
+  justify-content: flex-start;
 }
 .custom_icon_align_center {
-  @apply justify-center;
+  justify-content: center;
 }
 .custom_icon_align_right {
-  @apply justify-end;
+  justify-content: flex-end;
 }
 </style>
