@@ -21,7 +21,7 @@ const isApplet = process.env?.UNI_PLATFORM?.startsWith('mp-') ?? false;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const presets: any[] = [
   presetIcons({
-    prefix: "n-i-",
+    prefix: "i-",
     scale: 1.2,
     warn: true,
     extraProperties: {
@@ -41,60 +41,45 @@ const transformers: any[] = [
 ];
 
 if (isApplet) {
-  presets.push(presetApplet({
-    prefix: "n-",
-    enable: true,
-  }));
+  presets.push(presetApplet());
   presets.push(presetRemRpx());
   transformers.push(transformerAttributify({
-    prefix: "u",
+    prefix: "un-",
     prefixedOnly: true,
   }));
 } else {
-  presets.push(presetApplet({
-    prefix: "n-",
-    enable: true,
-  }));
+  presets.push(presetApplet());
   presets.push(presetAttributify({
-    prefix: "u",
+    prefix: "un-",
     prefixedOnly: true,
   }));
   presets.push(presetRemRpx({ mode: "rpx2rem" }));
   transformers.push(transformerAttributify({
-    prefix: "u",
+    prefix: "un-",
     prefixedOnly: true,
   }));
 }
 
 export default defineConfig({
   shortcuts: {
-    "n-bg-base": "n-bg-gray-100 dark:n-bg-dark",
-    "n-bg-base-second": "n-bg-white dark:n-bg-dark-100",
-    "n-color-base": "n-text-gray-700 dark:n-text-light-2",
-    "n-color-base-second": "n-text-gray-400 dark:n-text-gray-500/60",
-    "n-border-base": "n-border n-border-gray-200 dark:n-border-gray/60",
-    "n-bg-primary": "n-bg-light-blue-500 dark:n-bg-light-blue-600",
+    "bg-base": "bg-gray-100 dark:bg-dark",
+    "bg-base-second": "bg-white dark:bg-dark-100",
+    "color-base": "text-gray-700 dark:text-light-2",
+    "color-base-second": "text-gray-400 dark:text-gray-500/60",
+    "border-base": "border border-gray-200 dark:border-gray/60",
+    "bg-primary": "bg-light-blue-500 dark:bg-light-blue-600",
   },
   presets,
-  transformers: [
-    transformerDirectives(),
-    transformerVariantGroup(),
-    // Don't change the following order
-    transformerAttributify({
-      prefix: "u",
-      prefixedOnly: true,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }) as any,
-  ],
+  transformers,
   rules: [
     [
-      "n-p-safe",
+      "p-safe",
       {
         padding:
           "env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)",
       },
     ],
-    ["n-pt-safe", { "padding-top": "env(safe-area-inset-top)" }],
-    ["n-pb-safe", { "padding-bottom": "env(safe-area-inset-bottom)" }],
+    ["pt-safe", { "padding-top": "env(safe-area-inset-top)" }],
+    ["pb-safe", { "padding-bottom": "env(safe-area-inset-bottom)" }],
   ],
 })
