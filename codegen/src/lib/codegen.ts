@@ -459,10 +459,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
           }
         }
         if (mustWrite) {
-          if (dir2.endsWith(".graphql.ts")) {
-            graphqlHasChanged = true;
-          }
-          if (dir2.endsWith("_graphql.rs")) {
+          if (
+            dir2.endsWith("_graphql.rs") ||
+            dir2.endsWith("_model.rs")
+          ) {
             graphqlHasChanged = true;
           }
           writeFnArr.push(async function() {
