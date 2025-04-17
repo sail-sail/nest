@@ -16,6 +16,8 @@ let launchOptions: App.LaunchShowOption | undefined;
   
 let uid = "";
 
+let _safeTop = uni.getStorageSync<number | undefined>("indexStore._safeTop");
+let _safeWidth = uni.getStorageSync<number | undefined>("indexStore._safeWidth");
 let accountInfo: UniApp.AccountInfo | undefined;
 
 export default function() {
@@ -93,6 +95,37 @@ export default function() {
     return uid;
   }
   
+  /**
+   * 小程序等顶部的安全距离
+   */
+  function getSafeTop() {
+    if (_safeTop != null) {
+      return _safeTop;
+    }
+    const menuButtonBoundingClientRect = getMenuButtonBoundingClientRect();
+    let top = menuButtonBoundingClientRect.top;
+    // #ifndef MP
+    top = 10;
+    // #endif
+    _safeTop = top;
+    return top;
+  }
+  
+  /**
+   * 小程序等顶部的安全宽度, 排除小程序右上角的胶囊按钮的宽度
+   */
+  function getSafeWidth() {
+    if (_safeWidth != null) {
+      return _safeWidth;
+    }
+    const windowInfo = getWindowInfo();
+    const safeArea = windowInfo.safeArea;
+    const menuButtonBoundingClientRect = getMenuButtonBoundingClientRect();
+    const width = safeArea.width - menuButtonBoundingClientRect.right + menuButtonBoundingClientRect.width;
+    _safeWidth = width;
+    return width;
+  }
+  
   function getAccountInfo(): UniApp.AccountInfo | undefined {
     if (accountInfo) {
       return accountInfo;
@@ -112,6 +145,8 @@ export default function() {
     getMenuButtonBoundingClientRect,
     getAppBaseInfo,
     getUserAgent,
+    getSafeTop,
+    getSafeWidth,
     getAccountInfo,
   };
 };
