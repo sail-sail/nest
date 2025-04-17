@@ -15,6 +15,7 @@
     "hdevalke.rust-test-lens",
     "vadimcn.vscode-lldb",
     "ms-vscode.cpptools",
-    "tamasfe.even-better-toml"
+    "tamasfe.even-better-toml",
+    "barbosshack.crates-io"
   ]
 }

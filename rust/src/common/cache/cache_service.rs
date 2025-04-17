@@ -1,6 +1,6 @@
 use color_eyre::eyre::Result;
 
-// use crate::common::context::{get_auth_id_err, Options};
+// use crate::common::context::{get_auth_id_ok, Options};
 
 // use crate::r#gen::base::usr::usr_dao::{
 //   find_by_id_usr,
@@ -13,7 +13,7 @@ use super::cache_dao;
 pub async fn clear_cache(
 ) -> Result<bool> {
   
-  // let usr_id = get_auth_id_err()?;
+  // let usr_id = get_auth_id_ok()?;
   
   // let options = Options::new();
   // let options = options.set_is_debug(Some(false));

@@ -2301,12 +2301,36 @@ pub async fn find_auto_code_tenant(
         order: SortOrderEnum::Desc,
       },
     ]),
-    options,
+    options.clone(),
   ).await?;
   
   let code_seq = model
     .as_ref()
     .map_or(0, |item| item.code_seq) + 1;
+  
+  let model_deleted = find_one_tenant(
+    Some(TenantSearch {
+      is_deleted: Some(1),
+      ..Default::default()
+    }),
+    Some(vec![
+      SortInput {
+        prop: "code_seq".to_owned(),
+        order: SortOrderEnum::Desc,
+      },
+    ]),
+    options.clone(),
+  ).await?;
+  
+  let code_seq_deleted = model_deleted
+    .as_ref()
+    .map_or(0, |item| item.code_seq) + 1;
+  
+  let code_seq = if code_seq_deleted > code_seq {
+    code_seq_deleted
+  } else {
+    code_seq
+  };
   
   let code = format!("ZH{:03}", code_seq);
   

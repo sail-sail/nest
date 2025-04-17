@@ -2,7 +2,7 @@ use color_eyre::eyre::Result;
 
 use crate::common::context::{
   Options,
-  get_auth_id_err,
+  get_auth_id_ok,
 };
 
 use crate::r#gen::base::usr::usr_dao::{
@@ -33,7 +33,7 @@ pub async fn get_field_permit(
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let usr_id = get_auth_id_err()?;
+  let usr_id = get_auth_id_ok()?;
   
   let usr_model = validate_option_usr(
     find_by_id_usr(

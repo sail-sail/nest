@@ -4,7 +4,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 import "element-plus/theme-chalk/dark/css-vars.css";
 import "element-plus/dist/index.css";
-import "virtual:uno.css";
+import "uno.css";
 
 import "@/assets/style/common.scss";
 
