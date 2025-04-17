@@ -18,7 +18,7 @@
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-operations": "4.6.0",
     "@parcel/watcher": "2.5.1",
-    "@swc/wasm": "1.11.20",
+    "@swc/wasm": "1.11.21",
     "@types/fs-extra": "11.0.4",
     "@types/minimist": "1.2.5",
     "@types/node": "22.14.1",

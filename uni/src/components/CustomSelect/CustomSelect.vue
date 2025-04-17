@@ -38,7 +38,7 @@
     ></tm-icon>
   </view>
   <view
-    v-if="props.clearable && !isValueEmpty"
+    v-if="props.clearable && !props.readonly && !isValueEmpty"
     un-p="r-2.65"
     un-box-border
     @click="onClear"
@@ -52,103 +52,104 @@
     </tm-icon>
   </view>
   <slot name="right"></slot>
-</view>
-<tm-drawer
-  v-model:show="showPicker"
-  :closeable="true"
-  :height="dHeight"
-  :title="props.placeholder || '请选择'"
-  disabled-scroll
-  show-close
->
-  <view
-    un-flex="~ [1_0_0] col"
-    un-overflow-hidden
-    un-h="full"
+  
+  <tm-drawer
+    v-model:show="showPicker"
+    :closeable="true"
+    :height="dHeight"
+    :title="props.placeholder || '请选择'"
+    disabled-scroll
+    show-close
   >
-    <scroll-view
+    <view
       un-flex="~ [1_0_0] col"
       un-overflow-hidden
-      :scroll-y="true"
-      :rebound="false"
+      un-h="full"
     >
-      <view>
-        <view
-          v-for="item in options4SelectV2"
-          :key="item.value"
-          :title="item.label"
-          un-p="y-4"
-          un-box-border
-          un-flex="~"
-          un-items="center"
-          un-gap="2"
-          un-b="0 b-1 solid #e6e6e6"
-          :style="{
-            'color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
-          }"
-          @click="onSelect(item.value)"
-        >
-          
+      <scroll-view
+        un-flex="~ [1_0_0] col"
+        un-overflow-hidden
+        :scroll-y="true"
+        :rebound="false"
+      >
+        <view>
           <view
-            un-flex="~ [1_0_0]"
-            un-overflow-hidden
+            v-for="item in options4SelectV2"
+            :key="item.value"
+            :title="item.label"
+            un-p="y-4"
+            un-box-border
+            un-flex="~"
             un-items="center"
-            un-m="l-4"
+            un-gap="2"
+            un-b="0 b-1 solid #e6e6e6"
+            :style="{
+              'color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
+            }"
+            @click="onSelect(item.value)"
           >
-            {{ item.label }}
-          </view>
-          
-          <view
-            style="width: 1.2rem;height: 1.2rem;"
-            un-m="r-4"
-          >
+            
             <view
-              v-if="selectedValueMuti.includes(item.value)"
-              un-i="iconfont-check"
-            ></view>
+              un-flex="~ [1_0_0]"
+              un-overflow-hidden
+              un-items="center"
+              un-m="l-4"
+            >
+              {{ item.label }}
+            </view>
+            
+            <view
+              style="width: 1.2rem;height: 1.2rem;"
+              un-m="r-4"
+            >
+              <view
+                v-if="selectedValueMuti.includes(item.value)"
+                un-i="iconfont-check"
+              ></view>
+            </view>
+            
           </view>
-          
         </view>
-      </view>
-    </scroll-view>
-    <view
-      un-p="x-2 y-4"
-      un-box-border
-      un-flex="~"
-      un-w="full"
-      un-items="center"
-      un-gap="4"
-    >
-      
+      </scroll-view>
       <view
-        un-flex="~ [1_0_0]"
+        un-p="x-2 y-4"
+        un-box-border
+        un-flex="~"
+        un-w="full"
+        un-items="center"
+        un-gap="4"
       >
-        <tm-button
-          color="info"
-          width="100%"
-          @click="onCancel"
+        
+        <view
+          un-flex="~ [1_0_0]"
         >
-          取消
-        </tm-button>
+          <tm-button
+            color="info"
+            width="100%"
+            @click="onCancel"
+          >
+            取消
+          </tm-button>
+        </view>
+        
+        <view
+          un-flex="~ [1_0_0]"
+        >
+          <tm-button
+            width="100%"
+            @click="onConfirm"
+          >
+            确定
+          </tm-button>
+        </view>
+        
       </view>
-      
       <view
-        un-flex="~ [1_0_0]"
-      >
-        <tm-button
-          width="100%"
-          @click="onConfirm"
-        >
-          确定
-        </tm-button>
-      </view>
-      
+        :style="{ height: sysinfo.bottom + 'px' }"
+      ></view>
     </view>
-    <view
-      :style="{ height: sysinfo.bottom + 'px' }"
-    ></view>
-  </view>
-</tm-drawer>
+  </tm-drawer>
+</view>
 </template>
 
 <script lang="ts" setup>
@@ -345,6 +346,7 @@ function onClear() {
     selectedValue.value = [ ];
   }
   emit("update:modelValue", selectedValue.value);
+  emit("change", selectedValue.value);
   emit("clear");
 }
 

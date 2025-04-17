@@ -16,10 +16,10 @@ import {
   transformerAttributify,
 } from "unocss-applet";
 
-const isH5 = process.env.UNI_PLATFORM === "h5";
 const isApplet = process.env?.UNI_PLATFORM?.startsWith('mp-') ?? false;
 
-const presets = [
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const presets: any[] = [
   presetIcons({
     prefix: "n-i-",
     scale: 1.2,
@@ -32,21 +32,39 @@ const presets = [
       iconfont: async (iconName) => await fs.readFile(`./src/assets/iconfont/${ iconName }.svg`, "utf8"),
     },
   }),
-  /**
-   * you can add `presetAttributify()` here to enable unocss attributify mode prompt
-   * although preset is not working for applet, but will generate useless css
-   */
-  presetApplet({
+];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const transformers: any[] = [
+  transformerDirectives(),
+  transformerVariantGroup(),
+];
+
+if (isApplet) {
+  presets.push(presetApplet({
     prefix: "n-",
-    enable: isApplet,
-  }),
-  presetAttributify({
+    enable: true,
+  }));
+  presets.push(presetRemRpx());
+  transformers.push(transformerAttributify({
     prefix: "u",
     prefixedOnly: true,
-  }),
-  presetRemRpx(),
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-] as any;
+  }));
+} else {
+  presets.push(presetApplet({
+    prefix: "n-",
+    enable: true,
+  }));
+  presets.push(presetAttributify({
+    prefix: "u",
+    prefixedOnly: true,
+  }));
+  presets.push(presetRemRpx({ mode: "rpx2rem" }));
+  transformers.push(transformerAttributify({
+    prefix: "u",
+    prefixedOnly: true,
+  }));
+}
 
 export default defineConfig({
   shortcuts: {

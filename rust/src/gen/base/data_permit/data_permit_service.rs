@@ -6,7 +6,7 @@ use color_eyre::eyre::{Result,eyre};
 #[allow(unused_imports)]
 use crate::common::context::{
   Options,
-  get_auth_id_err,
+  get_auth_id_ok,
   get_auth_org_id,
 };
 

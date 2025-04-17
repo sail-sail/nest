@@ -76,7 +76,7 @@ use crate::common::context::{
   get_now,<#
   }
   #>
-  get_auth_id_err,
+  get_auth_id_ok,
   get_auth_org_id,
 };
 
@@ -161,7 +161,7 @@ async fn set_search_query(
   if (opts.filterDataByCreateUsr || hasOrgId) {
   #>
   
-  let usr_id = get_auth_id_err()?;
+  let usr_id = get_auth_id_ok()?;
   let usr_model = validate_option_usr(
     find_by_id_usr(
       usr_id.clone(),
@@ -474,7 +474,7 @@ pub async fn update_by_id_<#=table#>(
   if (hasAudit) {
   #>
   
-  let usr_id = get_auth_id_err()?;
+  let usr_id = get_auth_id_ok()?;
   if !is_admin(usr_id, options.clone()).await? &&
     old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
     old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Rejected &&
@@ -669,7 +669,7 @@ pub async fn audit_submit_<#=table#>(
   if (auditTable_Up) {
   #>
   
-  let audit_usr_id = get_auth_id_err()?;
+  let audit_usr_id = get_auth_id_ok()?;
   let audit_time = get_now();
   
   let audit_usr_model = validate_option_usr(
@@ -767,7 +767,7 @@ pub async fn audit_pass_<#=table#>(
   if (auditTable_Up) {
   #>
   
-  let audit_usr_id = get_auth_id_err()?;
+  let audit_usr_id = get_auth_id_ok()?;
   let audit_time = get_now();
   
   let audit_usr_model = validate_option_usr(
@@ -872,7 +872,7 @@ pub async fn audit_reject_<#=table#>(
   if (auditTable_Up) {
   #>
   
-  let audit_usr_id = get_auth_id_err()?;
+  let audit_usr_id = get_auth_id_ok()?;
   let audit_time = get_now();
   
   let audit_usr_model = validate_option_usr(
@@ -973,7 +973,7 @@ pub async fn audit_review_<#=table#>(
   if (auditTable_Up) {
   #>
   
-  let audit_usr_id = get_auth_id_err()?;
+  let audit_usr_id = get_auth_id_ok()?;
   let audit_time = get_now();
   
   let audit_usr_model = validate_option_usr(
@@ -1090,7 +1090,7 @@ pub async fn delete_by_ids_<#=table#>(
   if (hasAudit) {
   #>
   
-  let usr_id = get_auth_id_err()?;
+  let usr_id = get_auth_id_ok()?;
   if !is_admin(usr_id, options.clone()).await? {
     for old_model in &old_models {
       if old_model.<#=auditColumn#> != <#=Table_Up#><#=auditColumnUp#>::Unsubmited &&
