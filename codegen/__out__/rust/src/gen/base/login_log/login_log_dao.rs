@@ -720,8 +720,55 @@ pub async fn get_field_comments_login_log(
   Ok(field_comments)
 }
 
+// MARK: find_one_ok_login_log
+/// 根据条件查找第一个登录日志
+#[allow(dead_code)]
+pub async fn find_one_ok_login_log(
+  search: Option<LoginLogSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<LoginLogModel> {
+  
+  let table = "base_login_log";
+  let method = "find_one_ok_login_log";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let login_log_model = validate_option_login_log(
+    find_one_login_log(
+      search,
+      sort,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(login_log_model)
+}
+
 // MARK: find_one_login_log
 /// 根据条件查找第一个登录日志
+#[allow(dead_code)]
 pub async fn find_one_login_log(
   search: Option<LoginLogSearch>,
   sort: Option<Vec<SortInput>>,
@@ -775,6 +822,45 @@ pub async fn find_one_login_log(
   let model: Option<LoginLogModel> = res.into_iter().next();
   
   Ok(model)
+}
+
+// MARK: find_by_id_ok_login_log
+/// 根据 id 查找登录日志
+#[allow(dead_code)]
+pub async fn find_by_id_ok_login_log(
+  id: LoginLogId,
+  options: Option<Options>,
+) -> Result<LoginLogModel> {
+  
+  let table = "base_login_log";
+  let method = "find_by_id_ok_login_log";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let login_log_model = validate_option_login_log(
+    find_by_id_login_log(
+      id,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(login_log_model)
 }
 
 // MARK: find_by_id_login_log

@@ -2,7 +2,7 @@ use color_eyre::eyre::{Result,eyre};
 use crate::common::context::{
   Ctx,
   Options,
-  get_auth_model_err,
+  get_auth_model_ok,
   get_auth_org_id,
   get_now,
   get_server_tokentimeout,
@@ -62,7 +62,7 @@ use crate::r#gen::base::login_log::login_log_model::{
   LoginLogSearch,
 };
 
-use crate::src::base::i18n::i18n_dao::NRoute;
+use crate::common::i18n::i18n_dao::NRoute;
 
 use chrono::{NaiveDateTime, Duration};
 
@@ -295,7 +295,7 @@ pub async fn select_lang(
     return Err(eyre!("语言编码不能为空"));
   }
   
-  let mut auth_model = get_auth_model_err()?;
+  let mut auth_model = get_auth_model_ok()?;
   
   auth_model.lang = Some(lang);
   
@@ -347,7 +347,7 @@ pub async fn change_password(
     return Err(eyre!(err_msg));
   }
   
-  let auth_model = get_auth_model_err()?;
+  let auth_model = get_auth_model_ok()?;
   
   let usr_id = auth_model.id;
   
@@ -394,7 +394,7 @@ pub async fn get_login_info() -> Result<GetLoginInfo> {
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let auth_model = get_auth_model_err()?;
+  let auth_model = get_auth_model_ok()?;
   
   let usr_model = validate_option_usr(
     find_by_id_usr(

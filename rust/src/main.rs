@@ -26,7 +26,8 @@ use tracing::info;
 
 use crate::common::oss::oss_dao;
 use crate::common::tmpfile::tmpfile_dao;
-use crate::common::gql::query_root::{Query, QuerySchema, Mutation};
+
+use crate::src::query_root::{Query, QuerySchema, Mutation};
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -209,15 +210,15 @@ async fn main() -> Result<(), std::io::Error> {
     let mut app = Route::new();
     #[cfg(debug_assertions)]
     {
-      app = app.at("/graphiql", get(common::gql::gql_router::graphql_playground));
+      app = app.at("/graphiql", get(crate::src::gql_router::graphql_playground));
     }
     
     app = app.at("/metrics/graphql", metrics_graphql.exporter());
     
     app = app.at(
       "/graphql",
-      post(common::gql::gql_router::graphql_handler)
-      .get(common::gql::gql_router::graphql_handler_get)
+      post(crate::src::gql_router::graphql_handler)
+      .get(crate::src::gql_router::graphql_handler_get)
       .with(metrics_graphql)
     );
     
