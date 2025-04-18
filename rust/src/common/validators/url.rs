@@ -2,7 +2,7 @@ use std::str::FromStr;
 use color_eyre::eyre::{Result,eyre};
 use http::uri::Uri;
 
-use crate::src::base::i18n::i18n_dao::ns;
+use crate::common::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
 pub async fn url(
