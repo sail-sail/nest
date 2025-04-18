@@ -4,8 +4,8 @@ use crate::base::usr::usr_model::UsrId;
 use crate::base::tenant::tenant_model::TenantId;
 use crate::base::org::org_model::OrgId;
 
-use crate::r#gen::wx::wx_usr::wx_usr_model::WxUsrId;
-use crate::r#gen::wx::wxo_usr::wxo_usr_model::WxoUsrId;
+use crate::wx::wx_usr::wx_usr_model::WxUsrId;
+use crate::wx::wxo_usr::wxo_usr_model::WxoUsrId;
 
 pub const SECRET_KEY: &str = "38e52379-9e94-467c-8e63-17ad318fc845";
 pub const AUTHORIZATION: &str = "authorization";

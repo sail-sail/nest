@@ -1,5 +1,6 @@
 pub mod common;
 pub mod base;
+pub mod wx;
 
 use async_graphql::MergedObject;
 
@@ -27,6 +28,15 @@ pub struct GenQuery(
   base::role::role_graphql::RoleGenQuery,
   base::tenant::tenant_graphql::TenantGenQuery,
   base::usr::usr_graphql::UsrGenQuery,
+  wx::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiGenQuery,
+  wx::wx_app::wx_app_graphql::WxAppGenQuery,
+  wx::wx_app_token::wx_app_token_graphql::WxAppTokenGenQuery,
+  wx::wx_pay::wx_pay_graphql::WxPayGenQuery,
+  wx::wx_pay_notice::wx_pay_notice_graphql::WxPayNoticeGenQuery,
+  wx::wx_usr::wx_usr_graphql::WxUsrGenQuery,
+  wx::wxo_app::wxo_app_graphql::WxoAppGenQuery,
+  wx::wxo_app_token::wxo_app_token_graphql::WxoAppTokenGenQuery,
+  wx::wxo_usr::wxo_usr_graphql::WxoUsrGenQuery,
 );
 
 #[derive(MergedObject, Default)]
@@ -53,4 +63,13 @@ pub struct GenMutation(
   base::role::role_graphql::RoleGenMutation,
   base::tenant::tenant_graphql::TenantGenMutation,
   base::usr::usr_graphql::UsrGenMutation,
+  wx::pay_transactions_jsapi::pay_transactions_jsapi_graphql::PayTransactionsJsapiGenMutation,
+  wx::wx_app::wx_app_graphql::WxAppGenMutation,
+  wx::wx_app_token::wx_app_token_graphql::WxAppTokenGenMutation,
+  wx::wx_pay::wx_pay_graphql::WxPayGenMutation,
+  wx::wx_pay_notice::wx_pay_notice_graphql::WxPayNoticeGenMutation,
+  wx::wx_usr::wx_usr_graphql::WxUsrGenMutation,
+  wx::wxo_app::wxo_app_graphql::WxoAppGenMutation,
+  wx::wxo_app_token::wxo_app_token_graphql::WxoAppTokenGenMutation,
+  wx::wxo_usr::wxo_usr_graphql::WxoUsrGenMutation,
 );
