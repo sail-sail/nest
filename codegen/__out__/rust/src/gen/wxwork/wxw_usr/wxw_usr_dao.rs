@@ -911,8 +911,55 @@ pub async fn get_field_comments_wxw_usr(
   Ok(field_comments)
 }
 
+// MARK: find_one_ok_wxw_usr
+/// 根据条件查找第一个企微用户
+#[allow(dead_code)]
+pub async fn find_one_ok_wxw_usr(
+  search: Option<WxwUsrSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<WxwUsrModel> {
+  
+  let table = "wxwork_wxw_usr";
+  let method = "find_one_ok_wxw_usr";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let wxw_usr_model = validate_option_wxw_usr(
+    find_one_wxw_usr(
+      search,
+      sort,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(wxw_usr_model)
+}
+
 // MARK: find_one_wxw_usr
 /// 根据条件查找第一个企微用户
+#[allow(dead_code)]
 pub async fn find_one_wxw_usr(
   search: Option<WxwUsrSearch>,
   sort: Option<Vec<SortInput>>,
@@ -966,6 +1013,45 @@ pub async fn find_one_wxw_usr(
   let model: Option<WxwUsrModel> = res.into_iter().next();
   
   Ok(model)
+}
+
+// MARK: find_by_id_ok_wxw_usr
+/// 根据 id 查找企微用户
+#[allow(dead_code)]
+pub async fn find_by_id_ok_wxw_usr(
+  id: WxwUsrId,
+  options: Option<Options>,
+) -> Result<WxwUsrModel> {
+  
+  let table = "wxwork_wxw_usr";
+  let method = "find_by_id_ok_wxw_usr";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let wxw_usr_model = validate_option_wxw_usr(
+    find_by_id_wxw_usr(
+      id,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(wxw_usr_model)
 }
 
 // MARK: find_by_id_wxw_usr
