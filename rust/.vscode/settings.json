@@ -12,7 +12,8 @@
     ".clippy.toml": true,
     ".editorconfig": true,
     "**/.npmrc": true,
-    ".gitignore": true
+    ".gitignore": true,
+    "app/Cargo.toml": true
   },
   "search.exclude": {
     "schema.rs": true,
@@ -27,7 +28,8 @@
     ".clippy.toml": true,
     ".editorconfig": true,
     "**/.npmrc": true,
-    ".gitignore": true
+    ".gitignore": true,
+    "app/Cargo.toml": true
   },
   "deno.enable": false,
   "files.eol": "\n"
