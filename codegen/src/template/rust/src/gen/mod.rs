@@ -38,7 +38,7 @@ pub struct GenQuery(<#
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
   #>
-  crate::r#gen::<#=mod2#>::<#=table_name#>::<#=table_name#>_graphql::<#=table_nameUP#>GenQuery,<#
+  <#=mod2#>::<#=table_name#>::<#=table_name#>_graphql::<#=table_nameUP#>GenQuery,<#
   }
   #>
 );
@@ -61,7 +61,7 @@ pub struct GenMutation(<#
       return item.substring(0, 1).toUpperCase() + item.substring(1);
     }).join("");
   #>
-  crate::r#gen::<#=mod2#>::<#=table_name#>::<#=table_name#>_graphql::<#=table_nameUP#>GenMutation,<#
+  <#=mod2#>::<#=table_name#>::<#=table_name#>_graphql::<#=table_nameUP#>GenMutation,<#
   }
   #>
 );

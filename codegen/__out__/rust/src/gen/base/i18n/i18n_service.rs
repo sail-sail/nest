@@ -11,7 +11,7 @@ use crate::common::context::{
 };
 
 use crate::common::gql::model::{PageInput, SortInput};
-use crate::src::base::options::options_dao::update_i18n_version;
+use crate::common::options::options_dao::update_i18n_version;
 
 use super::i18n_model::*;
 use super::i18n_dao;

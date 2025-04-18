@@ -94,7 +94,7 @@ use crate::common::context::{
 
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
-use crate::src::base::permit::permit_service::use_permit;
+use crate::common::permit::permit_service::use_permit;
 
 use super::<#=table#>_model::*;
 use super::<#=table#>_service;<#
@@ -107,7 +107,7 @@ use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::<#=audi
 if (tableFieldPermit) {
 #>
 
-use crate::src::base::field_permit::field_permit_service::get_field_permit;<#
+use crate::common::field_permit::field_permit_service::get_field_permit;<#
 }
 #><#
 if (log) {
@@ -115,10 +115,10 @@ if (log) {
 if (isUseI18n) {
 #>
 
-use crate::src::base::i18n::i18n_service::ns;<#
+use crate::common::i18n::i18n_service::ns;<#
 }
 #>
-use crate::src::base::operation_record::operation_record_service::log;
+use crate::common::operation_record::operation_record_service::log;
 use crate::r#gen::base::operation_record::operation_record_model::OperationRecordInput;<#
 }
 #><#

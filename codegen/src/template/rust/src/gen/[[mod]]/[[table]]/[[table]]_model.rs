@@ -133,7 +133,7 @@ use crate::common::util::dao::decrypt;<#
 if (opts.langTable && isUseI18n) {
 #>
 
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;<#
+use crate::common::i18n::i18n_dao::get_server_i18n_enable;<#
 }
 #><#
 const foreignTableArr = [];
@@ -253,7 +253,7 @@ use crate::r#gen::<#=foreignKey.mod#>::<#=foreignTable#>::<#=foreignTable#>_mode
 if (tableFieldPermit) {
 #>
 
-use crate::src::base::field_permit::field_permit_service::get_field_permit;<#
+use crate::common::field_permit::field_permit_service::get_field_permit;<#
 }
 #>
 
