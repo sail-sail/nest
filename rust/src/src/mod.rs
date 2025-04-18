@@ -1,4 +1,6 @@
 pub mod base;
+pub mod gql_router;
+pub mod query_root;
 
 use async_graphql::MergedObject;
 
