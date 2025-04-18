@@ -291,7 +291,7 @@ mod tests {
   
   #[tokio::test]
   async fn test_get_wxa_code_unlimit() -> () {
-    use wx::wx_app_token::wx_app_token_model::{
+    use crate::wx::wx_app_token::wx_app_token_model::{
       GetwxacodeunlimitEnvVersion,
       GetwxacodeunlimitLineColor,
     };
