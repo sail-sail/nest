@@ -1,5 +1,6 @@
 pub mod common;
 pub mod base;
+pub mod cron;
 
 use async_graphql::MergedObject;
 
@@ -27,6 +28,10 @@ pub struct GenQuery(
   base::role::role_graphql::RoleGenQuery,
   base::tenant::tenant_graphql::TenantGenQuery,
   base::usr::usr_graphql::UsrGenQuery,
+  cron::cron_job::cron_job_graphql::CronJobGenQuery,
+  cron::cron_job_log::cron_job_log_graphql::CronJobLogGenQuery,
+  cron::cron_job_log_detail::cron_job_log_detail_graphql::CronJobLogDetailGenQuery,
+  cron::job::job_graphql::JobGenQuery,
 );
 
 #[derive(MergedObject, Default)]
@@ -53,5 +58,9 @@ pub struct GenMutation(
   base::role::role_graphql::RoleGenMutation,
   base::tenant::tenant_graphql::TenantGenMutation,
   base::usr::usr_graphql::UsrGenMutation,
+  cron::cron_job::cron_job_graphql::CronJobGenMutation,
+  cron::cron_job_log::cron_job_log_graphql::CronJobLogGenMutation,
+  cron::cron_job_log_detail::cron_job_log_detail_graphql::CronJobLogDetailGenMutation,
+  cron::job::job_graphql::JobGenMutation,
 );
 
