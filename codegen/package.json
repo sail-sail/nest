@@ -22,7 +22,7 @@
     "chalk": "5.4.1",
     "commander": "13.1.0",
     "dayjs": "1.11.13",
-    "dotenv": "16.4.7",
+    "dotenv": "16.5.0",
     "ejsexcel": "4.2.2",
     "fast-csv": "5.0.2",
     "fs-extra": "11.3.0",
@@ -31,9 +31,9 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@swc/wasm": "1.11.18",
+    "@swc/wasm": "1.11.21",
     "@types/fs-extra": "11.0.4",
-    "@types/node": "22.14.0",
+    "@types/node": "22.14.1",
     "@types/shelljs": "0.8.15",
     "@types/uuid": "10.0.0",
     "ts-node": "10.9.2",

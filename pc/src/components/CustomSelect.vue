@@ -860,7 +860,9 @@ defineExpose({
   }
 }
 .custom_select_placeholder {
-  @apply whitespace-pre-wrap break-words text-[var(--el-text-color-secondary)];
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--el-text-color-secondary);
 }
 .custom_select_space_normal {
   :deep(.el-select__placeholder) {

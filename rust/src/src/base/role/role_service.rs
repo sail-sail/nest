@@ -1,5 +1,5 @@
 use color_eyre::eyre::Result;
-use crate::common::context::{get_auth_id_err, Options};
+use crate::common::context::{get_auth_id_ok, Options};
 
 use crate::r#gen::base::role::role_dao::find_all_role;
 
@@ -17,7 +17,7 @@ pub async fn get_home_urls() -> Result<Vec<String>> {
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let usr_id = get_auth_id_err()?;
+  let usr_id = get_auth_id_ok()?;
   
   // 获取当前登录用户
   let usr_model = find_by_id_usr(

@@ -15,7 +15,7 @@
     un-h="1"
   ></view>
   <text
-    un-text="2.75 gray-300"
+    un-text="gray-300"
   >
     此处是底线
   </text>
