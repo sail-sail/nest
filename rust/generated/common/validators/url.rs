@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use color_eyre::eyre::{Result,eyre};
+use color_eyre::eyre::{Result, eyre};
 use http::uri::Uri;
 
 use crate::common::i18n::i18n_dao::ns;

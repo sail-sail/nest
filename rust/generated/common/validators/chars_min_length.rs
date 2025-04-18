@@ -1,4 +1,4 @@
-use color_eyre::eyre::{Result,eyre};
+use color_eyre::eyre::{Result, eyre};
 
 #[allow(dead_code)]
 pub fn chars_min_length(

@@ -2,7 +2,7 @@ use std::borrow::Cow;
 use std::env;
 
 use tracing::{info, error, event_enabled, Level};
-use color_eyre::eyre::{Result,eyre};
+use color_eyre::eyre::{Result, eyre};
 use async_graphql::SimpleObject;
 use poem::http::{HeaderName, HeaderValue};
 use rust_decimal::Decimal;
