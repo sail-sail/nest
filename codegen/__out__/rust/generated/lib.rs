@@ -1,5 +1,6 @@
 pub mod common;
 pub mod base;
+pub mod wxwork;
 
 use async_graphql::MergedObject;
 
@@ -27,6 +28,10 @@ pub struct GenQuery(
   base::role::role_graphql::RoleGenQuery,
   base::tenant::tenant_graphql::TenantGenQuery,
   base::usr::usr_graphql::UsrGenQuery,
+  wxwork::wxw_app::wxw_app_graphql::WxwAppGenQuery,
+  wxwork::wxw_app_token::wxw_app_token_graphql::WxwAppTokenGenQuery,
+  wxwork::wxw_msg::wxw_msg_graphql::WxwMsgGenQuery,
+  wxwork::wxw_usr::wxw_usr_graphql::WxwUsrGenQuery,
 );
 
 #[derive(MergedObject, Default)]
@@ -53,4 +58,8 @@ pub struct GenMutation(
   base::role::role_graphql::RoleGenMutation,
   base::tenant::tenant_graphql::TenantGenMutation,
   base::usr::usr_graphql::UsrGenMutation,
+  wxwork::wxw_app::wxw_app_graphql::WxwAppGenMutation,
+  wxwork::wxw_app_token::wxw_app_token_graphql::WxwAppTokenGenMutation,
+  wxwork::wxw_msg::wxw_msg_graphql::WxwMsgGenMutation,
+  wxwork::wxw_usr::wxw_usr_graphql::WxwUsrGenMutation,
 );
