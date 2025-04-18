@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::fmt::Display;
-use color_eyre::eyre::{Result,eyre};
+use color_eyre::eyre::{Result, eyre};
 
 use crate::common::i18n::i18n_dao;
 

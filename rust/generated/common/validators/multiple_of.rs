@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::fmt::Display;
-use color_eyre::eyre::{Result,eyre};
+use color_eyre::eyre::{Result, eyre};
 use std::ops::Rem;
 
 use num_traits::{AsPrimitive, Zero};
