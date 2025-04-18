@@ -1,6 +1,6 @@
 [package]
 name = "rust"
-version = "0.1.0"
+version = "0.0.0"
 edition = "2024"
 default-run = "rust"
 
@@ -152,11 +152,13 @@ serde_with.workspace = true
 # 安全地使用无proc宏的自引用结构
 # self_cell = "1.1"
 
-base = { path = "./base" }
+generated = { path = "./generated" }
+app = { path = "./app" }
 
 [workspace]
 members = [
-  "base"
+  "generated",
+  "app"
 ]
 resolver = "2"
 
@@ -168,7 +170,7 @@ tikv-jemallocator = "0.6.0"
 
 [[bin]]
 name = "rust"
-path = "src/main.rs"
+path = "main.rs"
 
 [profile.release]
 panic = "unwind"
@@ -178,4 +180,4 @@ debug = false
 
 [[bin]]
 name = "schema"
-path = "src/schema.rs"
+path = "schema.rs"
