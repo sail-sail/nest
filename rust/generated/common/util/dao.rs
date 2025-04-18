@@ -1,7 +1,7 @@
 use std::sync::OnceLock;
 
 use tracing::error;
-use color_eyre::eyre::{Result,eyre};
+use color_eyre::eyre::{Result, eyre};
 use serde::{Serialize, Deserialize};
 use smol_str::SmolStr;
 use sqlx::FromRow;

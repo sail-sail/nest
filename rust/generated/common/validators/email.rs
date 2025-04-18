@@ -1,4 +1,4 @@
-use color_eyre::eyre::{Result,eyre};
+use color_eyre::eyre::{Result, eyre};
 use fast_chemail::is_valid_email;
 
 use crate::common::i18n::i18n_dao::ns;

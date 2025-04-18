@@ -1,4 +1,4 @@
-use color_eyre::eyre::{Result,eyre};
+use color_eyre::eyre::{Result, eyre};
 use regex::Regex;
 
 use crate::common::i18n::i18n_dao::ns;
