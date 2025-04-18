@@ -44,7 +44,7 @@ use crate::common::gql::model::{
   SortInput,
 };
 
-use crate::src::base::dict_detail::dict_detail_dao::get_dict;
+use crate::common::dict_detail::dict_detail_dao::get_dict;
 
 use super::dict_detail_model::*;
 use crate::r#gen::base::dict::dict_model::DictId;

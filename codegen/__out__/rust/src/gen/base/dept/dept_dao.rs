@@ -49,7 +49,7 @@ use crate::common::gql::model::{
   SortInput,
 };
 
-use crate::src::base::dict_detail::dict_detail_dao::get_dict;
+use crate::common::dict_detail::dict_detail_dao::get_dict;
 
 use super::dept_model::*;
 

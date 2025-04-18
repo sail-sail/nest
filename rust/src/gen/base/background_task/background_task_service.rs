@@ -19,7 +19,7 @@ use crate::r#gen::base::usr::usr_dao::{
   validate_option_usr,
 };
 
-use crate::src::base::usr::usr_dao::is_admin;
+use crate::common::usr::usr_dao::is_admin;
 
 use super::background_task_model::*;
 use super::background_task_dao;

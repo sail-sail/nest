@@ -11,7 +11,7 @@ use crate::common::context::{
 
 use crate::common::gql::model::{PageInput, SortInput};
 #[allow(unused_imports)]
-use crate::src::base::permit::permit_service::use_permit;
+use crate::common::permit::permit_service::use_permit;
 
 use super::dept_model::*;
 use super::dept_service;

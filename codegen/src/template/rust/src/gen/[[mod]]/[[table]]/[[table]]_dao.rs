@@ -189,16 +189,16 @@ use crate::r#gen::base::data_permit::data_permit_model::{
   DataPermitType,
   DataPermitScope,
 };
-use crate::src::base::data_permit::data_permit_dao::get_data_permits;
+use crate::common::data_permit::data_permit_dao::get_data_permits;
 #[allow(unused_imports)]
-use crate::src::base::dept::dept_dao::{
+use crate::common::dept::dept_dao::{
   get_dept_ids,
   get_auth_dept_ids,
   get_parents_dept_ids,
   get_auth_and_parents_dept_ids,
   get_auth_and_children_dept_ids,
 };
-use crate::src::base::role::role_dao::{
+use crate::common::role::role_dao::{
   get_role_ids,
   get_auth_role_ids,
 };<#
@@ -251,7 +251,7 @@ use crate::common::oss::oss_dao::{
 if (isUseI18n) {
 #>
 
-use crate::src::base::i18n::i18n_dao;<#
+use crate::common::i18n::i18n_dao;<#
 }
 #>
 
@@ -269,25 +269,25 @@ use crate::r#gen::<#=auditMod#>::<#=auditTable#>::<#=auditTable#>_model::<#=audi
   if (hasDict) {
 #>
 
-use crate::src::base::dict_detail::dict_detail_dao::get_dict;<#
+use crate::common::dict_detail::dict_detail_dao::get_dict;<#
   }
 #><#
   if (hasDictbiz) {
 #>
 
-use crate::src::base::dictbiz_detail::dictbiz_detail_dao::get_dictbiz;<#
+use crate::common::dictbiz_detail::dictbiz_detail_dao::get_dictbiz;<#
   }
 #><#
 if (opts.langTable && isUseI18n) {
 #>
 
-use crate::src::base::lang::lang_dao::get_lang_id;
+use crate::common::lang::lang_dao::get_lang_id;
 use crate::r#gen::base::lang::lang_model::LangId;<#
 }
 #><#
 if (isUseI18n) {
 #>
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;<#
+use crate::common::i18n::i18n_dao::get_server_i18n_enable;<#
 }
 #>
 
@@ -3932,7 +3932,7 @@ async fn _creates(
     
     let mut input = input;
     if input.menu_ids.is_some() {
-      input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
+      input.menu_ids = crate::common::tenant::tenant_dao::filter_menu_ids_by_tenant(
         input.menu_ids.unwrap(),
       ).await?.into();
     }
@@ -5319,7 +5319,7 @@ pub async fn update_by_id_<#=table#>(
   #>
   
   if input.menu_ids.is_some() {
-    input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
+    input.menu_ids = crate::common::tenant::tenant_dao::filter_menu_ids_by_tenant(
       input.menu_ids.unwrap(),
     ).await?.into();
   }<#

@@ -49,7 +49,7 @@ use crate::common::gql::model::{
   SortInput,
 };
 
-use crate::src::base::dict_detail::dict_detail_dao::get_dict;
+use crate::common::dict_detail::dict_detail_dao::get_dict;
 
 use super::role_model::*;
 
@@ -1968,7 +1968,7 @@ async fn _creates(
     
     let mut input = input;
     if input.menu_ids.is_some() {
-      input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
+      input.menu_ids = crate::common::tenant::tenant_dao::filter_menu_ids_by_tenant(
         input.menu_ids.unwrap(),
       ).await?.into();
     }
@@ -2568,7 +2568,7 @@ pub async fn update_by_id_role(
   let options = Some(options);
   
   if input.menu_ids.is_some() {
-    input.menu_ids = crate::src::base::tenant::tenant_dao::filter_menu_ids_by_tenant(
+    input.menu_ids = crate::common::tenant::tenant_dao::filter_menu_ids_by_tenant(
       input.menu_ids.unwrap(),
     ).await?.into();
   }

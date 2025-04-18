@@ -85,7 +85,7 @@ if (table !== "i18n" && isUseI18n) {
 #>
 
 #[allow(unused_imports)]
-use crate::src::base::i18n::i18n_dao::ns;<#
+use crate::common::i18n::i18n_dao::ns;<#
 }
 #><#
 if (hasTenant_id) {
@@ -114,7 +114,7 @@ use crate::r#gen::base::usr::usr_dao::{
 #><#
 if (mod === "base" && table === "i18n") {
 #>
-use crate::src::base::options::options_dao::update_i18n_version;<#
+use crate::common::options::options_dao::update_i18n_version;<#
 }
 #><#
 if (
@@ -124,7 +124,7 @@ if (
 ) {
 #>
 
-use crate::src::base::usr::usr_dao::is_admin;<#
+use crate::common::usr::usr_dao::is_admin;<#
 }
 #>
 
