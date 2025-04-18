@@ -1,6 +1,6 @@
 {
   "files.exclude": {
-    "src/schema.rs": true,
+    "schema.rs": true,
     "build.rs": true,
     "tsconfig.json": true,
     "node_modules": true,
@@ -12,10 +12,11 @@
     ".clippy.toml": true,
     ".editorconfig": true,
     "**/.npmrc": true,
-    ".gitignore": true
+    ".gitignore": true,
+    "app/Cargo.toml": true
   },
   "search.exclude": {
-    "src/schema.rs": true,
+    "schema.rs": true,
     "build.rs": true,
     "tsconfig.json": true,
     "node_modules": true,
@@ -27,9 +28,9 @@
     ".clippy.toml": true,
     ".editorconfig": true,
     "**/.npmrc": true,
-    ".gitignore": true
+    ".gitignore": true,
+    "app/Cargo.toml": true
   },
   "deno.enable": false,
-  "files.eol": "\n",
-  "rust-analyzer.checkOnSave": false
+  "files.eol": "\n"
 }
