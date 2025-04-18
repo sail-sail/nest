@@ -1,7 +1,6 @@
 pub mod common;
 pub mod base;
 
-
 use async_graphql::MergedObject;
 
 #[derive(MergedObject, Default)]
