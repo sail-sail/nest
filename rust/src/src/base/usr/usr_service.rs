@@ -62,7 +62,7 @@ use crate::r#gen::base::login_log::login_log_model::{
   LoginLogSearch,
 };
 
-use crate::src::base::i18n::i18n_dao::NRoute;
+use crate::common::i18n::i18n_dao::NRoute;
 
 use chrono::{NaiveDateTime, Duration};
 

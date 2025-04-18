@@ -7,7 +7,7 @@ use crate::common::context::{
   Options,
 };
 
-use crate::src::base::i18n::i18n_dao::ns;
+use crate::common::i18n::i18n_dao::ns;
 
 use crate::r#gen::base::menu::menu_dao::{
   find_by_id_menu,

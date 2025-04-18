@@ -15,9 +15,9 @@ use async_graphql::{
 
 use crate::common::auth::auth_model::{AUTHORIZATION, AuthToken};
 
-use crate::common::gql::query_root::QuerySchema;
+use super::query_root::QuerySchema;
 
-use super::request_id::handle_request_id;
+use crate::common::gql::request_id::handle_request_id;
 
 #[derive(serde::Deserialize)]
 #[allow(non_snake_case)]
