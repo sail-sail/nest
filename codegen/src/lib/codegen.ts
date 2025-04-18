@@ -385,16 +385,10 @@ export async function codegen(context: Context, schema: TablesConfigItem, table_
       if (dir === "/deno/gen/graphql.ts") {
         return;
       }
-      if (dir === "/deno/lib/script/graphql_codegen_scalars.ts") {
-        return;
-      }
       if (dir === "/deno/lib/script/graphql_pc_ids.ts") {
         return;
       }
-      if (dir === "/rust/src/common/script/graphql_codegen_scalars.ts") {
-        return;
-      }
-      if (dir === "/rust/src/common/script/graphql_pc_ids.ts") {
+      if (dir === "/rust/generated/common/script/graphql_pc_ids.ts") {
         return;
       }
       if (dir === "/pc/src/router/gen.ts") {
@@ -559,8 +553,7 @@ export async function genRouter(context: Context) {
   }
   const files = [
     "pc/src/router/gen.ts",
-    "rust/src/common/script/graphql_codegen_scalars.ts",
-    "rust/src/common/script/graphql_pc_ids.ts",
+    "rust/generated/common/script/graphql_pc_ids.ts",
     "pc/src/typings/ids.d.ts",
     "uni/src/typings/ids.d.ts",
   ];
@@ -575,12 +568,6 @@ export async function genRouter(context: Context) {
       } catch (err) {
       }
       if (str0 !== str2) {
-        if (file === "deno/lib/script/graphql_codegen_scalars.ts") {
-          graphqlHasChanged = true;
-        }
-        if (file === "rust/src/common/script/graphql_codegen_scalars.ts") {
-          graphqlHasChanged = true;
-        }
         console.log(`${chalk.gray("生成文件:")} ${chalk.green(normalize(`${out}/${file}`))}`);
         await writeFile(`${ out }/${ file }`, str2);
       }
