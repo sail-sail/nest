@@ -1,4 +1,4 @@
-use color_eyre::eyre::{Result,eyre};
+use color_eyre::eyre::{Result, eyre};
 
 use crate::common::auth::auth_dao::get_token_by_auth_model;
 use crate::common::context::{

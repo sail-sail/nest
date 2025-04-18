@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use color_eyre::eyre::{Result,eyre};
+use color_eyre::eyre::{Result, eyre};
 
 use crate::common::context::{
   get_auth_model,
