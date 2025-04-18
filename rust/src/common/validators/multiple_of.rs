@@ -5,7 +5,7 @@ use std::ops::Rem;
 
 use num_traits::{AsPrimitive, Zero};
 
-use crate::src::base::i18n::i18n_dao;
+use crate::common::i18n::i18n_dao;
 
 #[allow(dead_code)]
 pub async fn multiple_of<T, N>(

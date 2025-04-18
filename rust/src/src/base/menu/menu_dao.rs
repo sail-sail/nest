@@ -15,8 +15,8 @@ use crate::r#gen::base::usr::usr_dao::{
   validate_is_enabled_usr,
 };
 
-use crate::src::base::lang::lang_dao::get_lang_id;
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
+use crate::common::lang::lang_dao::get_lang_id;
+use crate::common::i18n::i18n_dao::get_server_i18n_enable;
 
 async fn find_menus() -> Result<Vec<GetMenus>> {
   

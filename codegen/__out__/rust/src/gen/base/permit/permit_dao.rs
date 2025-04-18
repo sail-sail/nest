@@ -457,8 +457,55 @@ pub async fn get_field_comments_permit(
   Ok(field_comments)
 }
 
+// MARK: find_one_ok_permit
+/// 根据条件查找第一个按钮权限
+#[allow(dead_code)]
+pub async fn find_one_ok_permit(
+  search: Option<PermitSearch>,
+  sort: Option<Vec<SortInput>>,
+  options: Option<Options>,
+) -> Result<PermitModel> {
+  
+  let table = "base_permit";
+  let method = "find_one_ok_permit";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    if let Some(search) = &search {
+      msg += &format!(" search: {:?}", &search);
+    }
+    if let Some(sort) = &sort {
+      msg += &format!(" sort: {:?}", &sort);
+    }
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let permit_model = validate_option_permit(
+    find_one_permit(
+      search,
+      sort,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(permit_model)
+}
+
 // MARK: find_one_permit
 /// 根据条件查找第一个按钮权限
+#[allow(dead_code)]
 pub async fn find_one_permit(
   search: Option<PermitSearch>,
   sort: Option<Vec<SortInput>>,
@@ -512,6 +559,45 @@ pub async fn find_one_permit(
   let model: Option<PermitModel> = res.into_iter().next();
   
   Ok(model)
+}
+
+// MARK: find_by_id_ok_permit
+/// 根据 id 查找按钮权限
+#[allow(dead_code)]
+pub async fn find_by_id_ok_permit(
+  id: PermitId,
+  options: Option<Options>,
+) -> Result<PermitModel> {
+  
+  let table = "base_permit";
+  let method = "find_by_id_ok_permit";
+  
+  let is_debug = get_is_debug(options.as_ref());
+  
+  if is_debug {
+    let mut msg = format!("{table}.{method}:");
+    msg += &format!(" id: {:?}", &id);
+    if let Some(options) = &options {
+      msg += &format!(" options: {:?}", &options);
+    }
+    info!(
+      "{req_id} {msg}",
+      req_id = get_req_id(),
+    );
+  }
+  
+  let options = Options::from(options)
+    .set_is_debug(Some(false));
+  let options = Some(options);
+  
+  let permit_model = validate_option_permit(
+    find_by_id_permit(
+      id,
+      options,
+    ).await?,
+  ).await?;
+  
+  Ok(permit_model)
 }
 
 // MARK: find_by_id_permit
