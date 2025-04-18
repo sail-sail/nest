@@ -325,16 +325,16 @@ async fn main() -> Result<(), std::io::Error> {
     let cron_startup = cron_startup.to_str().unwrap();
     if cron_startup == "true" {
       tokio::spawn(async move {
-        crate::common::context::CtxBuilder::new(None)
+        generated::common::context::CtxBuilder::new(None)
           .build()
           .scope({
-            crate::src::cron::cron_job::cron_job_dao::init_cron_jobs()
+            app::cron::cron_job::cron_job_dao::init_cron_jobs()
           }).await.unwrap();
       });
     }
   }
   
-  let schema: app::QuerySchema = app::Schema::build(
+  let schema: app::QuerySchema = Schema::build(
     app::Query::default(),
     app::Mutation::default(),
     EmptySubscription
