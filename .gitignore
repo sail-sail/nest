@@ -26,6 +26,7 @@ publish_cnf.js
 /rust/target
 /rust/Cargo.lock
 /rust/src/common/gql/schema.graphql
+/deno
 
 /app_macro/target
 /app_macro/Cargo.lock

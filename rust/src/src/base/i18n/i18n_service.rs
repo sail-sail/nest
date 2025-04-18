@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use color_eyre::eyre::Result;
 
-use super::i18n_dao::{
+use crate::common::i18n::i18n_dao::{
   n as dao_n,
   ns as dao_ns,
   n_lang as dao_n_lang,

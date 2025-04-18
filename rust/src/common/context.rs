@@ -174,13 +174,13 @@ pub fn has_auth_model() -> bool {
 
 /// 获取当前登录用户, 如果不存在则返回错误
 #[allow(dead_code)]
-pub fn get_auth_model_err() -> Result<AuthModel> {
+pub fn get_auth_model_ok() -> Result<AuthModel> {
   CTX.with(|ctx| {
     if ctx.auth_model.is_some() {
       return Ok(ctx.auth_model.clone().unwrap());
     }
     error!(
-      "{req_id} get_auth_model_err - Not login!",
+      "{req_id} get_auth_model_ok - Not login!",
       req_id = ctx.req_id,
     );
     Err(eyre!("Not login!"))
@@ -197,11 +197,11 @@ pub fn get_auth_id() -> Option<UsrId> {
 }
 
 /// 获取当前登录用户的id
-pub fn get_auth_id_err() -> Result<UsrId> {
+pub fn get_auth_id_ok() -> Result<UsrId> {
   get_auth_id()
     .ok_or_else(|| {
       error!(
-        "{req_id} get_auth_id_err - Not login!",
+        "{req_id} get_auth_id_ok - Not login!",
         req_id = get_req_id(),
       );
       eyre!("Not login!")
@@ -231,11 +231,11 @@ pub fn get_auth_org_id() -> Option<OrgId> {
 
 /// 获取当前登录用户的组织id, 如果不存在则返回错误
 #[allow(dead_code)]
-pub fn get_auth_org_id_err() -> Result<OrgId> {
+pub fn get_auth_org_id_ok() -> Result<OrgId> {
   get_auth_org_id()
     .ok_or_else(|| {
       error!(
-        "{req_id} get_auth_org_id_err - Not login!",
+        "{req_id} get_auth_org_id_ok - Not login!",
         req_id = get_req_id(),
       );
       eyre!("Not login!")

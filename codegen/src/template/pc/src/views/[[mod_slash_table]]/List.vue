@@ -3185,9 +3185,7 @@ function getTableColumns(): ColumnType[] {
       column.showOverflowTooltip = true;
     }
     let fixed = column.fixed;
-    if (fixed === false) {
-      fixed = undefined;
-    } else if (fixed === true) {
+    if (fixed === true) {
       fixed = "left";
     }
     const isIcon = column.isIcon;

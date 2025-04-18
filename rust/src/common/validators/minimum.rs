@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use color_eyre::eyre::{Result,eyre};
 
-use crate::src::base::i18n::i18n_dao;
+use crate::common::i18n::i18n_dao;
 
 #[allow(dead_code)]
 pub async fn minimum<T>(
