@@ -6,9 +6,9 @@ use crate::common::context::{
   Options,
 };
 
-use crate::src::base::i18n::i18n_dao::get_server_i18n_enable;
+use crate::common::i18n::i18n_dao::get_server_i18n_enable;
 
-use crate::src::base::lang::lang_dao::get_lang_id;
+use crate::common::lang::lang_dao::get_lang_id;
 
 use super::dict_detail_model::GetDict;
 

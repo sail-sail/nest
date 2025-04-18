@@ -9,7 +9,7 @@ use async_graphql::{
   EmptySubscription, Schema,
 };
 
-use crate::common::gql::query_root::{Query, QuerySchema, Mutation};
+use crate::src::query_root::{Query, QuerySchema, Mutation};
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {

@@ -1,7 +1,7 @@
 use color_eyre::eyre::{Result,eyre};
 use regex::Regex;
 
-use crate::src::base::i18n::i18n_dao::ns;
+use crate::common::i18n::i18n_dao::ns;
 
 #[allow(dead_code)]
 pub async fn regex(
