@@ -5,11 +5,11 @@
   "license": "MIT",
   "scripts": {
     "start": "cargo run",
-    "gqlgen": "cargo run --bin schema && graphql-codegen --config ./src/common/script/graphql_codegen_config.ts",
+    "gqlgen": "cargo run --bin schema && graphql-codegen --config ./generated/common/script/graphql_codegen_config.ts",
     "typecheck": "cargo clippy",
-    "build-prod": "node ./src/common/script/build.js --env prod",
-    "build-test": "node ./src/common/script/build.js --env test",
-    "publish": "node ./src/common/script/publish.js",
+    "build-prod": "node ./generated/common/script/build.js --env prod",
+    "build-test": "node ./generated/common/script/build.js --env test",
+    "publish": "node ./generated/common/script/publish.js",
     "codegen": "cd .. && npm run codegen",
     "preinstall": "npx only-allow pnpm"
   },

@@ -176,7 +176,7 @@ path = "main.rs"
 panic = "unwind"
 
 [profile.dev]
-debug = false
+debug = 1
 
 [[bin]]
 name = "schema"
