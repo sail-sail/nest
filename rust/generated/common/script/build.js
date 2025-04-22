@@ -1,7 +1,8 @@
 // npm run build -- -- uni
 const child_process = require("node:child_process");
+const path = require("node:path");
 const minimist = require("minimist");
-const ecosystem = require(`${ __dirname }/../../ecosystem.config.js`);
+const ecosystem = require(`${ __dirname }/../../../ecosystem.config.js`);
 
 const {
   copy,
@@ -16,8 +17,8 @@ const argv = minimist(process.argv.slice(2));
 
 const env = argv.env || "prod";
 
-const projectDir = `${ __dirname }/../../../`;
-const buildDir = process.cwd() + "/../build/";
+const projectDir = path.normalize(`${ __dirname }/../../../../`);
+const buildDir = path.normalize(process.cwd() + "/../build/");
 // nr build-test --command uni
 const commands = (argv.command || argv.c || "").split(",").filter((v) => v);
 
@@ -161,4 +162,3 @@ async function publish() {
   }
   await publish();
 })();
-
