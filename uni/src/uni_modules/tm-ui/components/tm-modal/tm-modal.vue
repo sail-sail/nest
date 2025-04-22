@@ -467,7 +467,7 @@ export default {
                                     </view>
                                 </scroll-view>
                             </view>
-                            <view v-else :style="{ height: '100%', padding: _contentPadding }">
+                            <view v-else :style="{ height: _showTitle ? 'calc(100% - 55px)' : '100%', padding: _contentPadding }">
                                 <!--
                                 @slot 默认插槽
                                 -->
