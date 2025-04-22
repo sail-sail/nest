@@ -1,0 +1,561 @@
+<template>
+<view
+  class="custom_select"
+  :class="{
+    'custom_select_readonly': props.readonly
+  }"
+  un-cursor="pointer"
+>
+  <slot name="left"></slot>
+  
+  <view
+    un-flex="~ [1_0_0] wrap"
+    un-overflow-hidden
+    un-items="center"
+    un-h="full"
+    un-w="full"
+    un-p="l-3 r-2 y-1"
+    un-box-border
+    un-gap="2"
+    @click="onClick"
+  >
+    
+    <text
+      v-if="!props.multiple && modelLabels[0]"
+    >
+      {{ modelLabels[0] || '' }}
+    </text>
+    
+    <template
+      v-if="props.multiple && modelLabels.length > 0"
+    >
+      
+      <template
+        v-if="isTagExpanded"
+      >
+        
+        <tm-tag
+          v-for="(label, index) of modelLabels"
+          :key="index"
+          skin="outlined"
+          color="info"
+        >
+          {{ label }}
+        </tm-tag>
+      
+      </template>
+      
+      <template v-else>
+        
+        <tm-tag
+          skin="outlined"
+          color="info"
+        >
+          {{ modelLabels[0] }}
+        </tm-tag>
+        
+        <tm-tag
+          v-if="modelLabels.length > 1"
+          skin="thin"
+          color="info"
+          un-cursor="pointer"
+          @tap.stop=""
+          @click.stop="onExpandTag"
+        >
+          <view
+            v-if="modelLabels.length > 1"
+            un-text="gray-400"
+          >
+            +{{ modelLabels.length - 1 }}
+          </view>
+        </tm-tag>
+        
+      </template>
+      
+    </template>
+    
+    <text
+      v-if="(!props.multiple && !modelLabels[0]) && (props.multiple && modelLabels.length === 0)"
+      un-text="gray"
+    >
+      {{ (props.pageInited && inited) ? (props.placeholder || '') : '' }}
+    </text>
+    
+    <view
+      un-flex="[1_0_0]"
+      un-overflow-hidden
+    ></view>
+    
+    <tm-icon
+      v-if="!props.readonly"
+      :size="42"
+      color="#b1b1b1"
+      name="arrow-right-s-line"
+    ></tm-icon>
+    
+  </view>
+  
+  <view
+    v-if="props.clearable && !props.readonly && !isValueEmpty"
+    un-p="r-2.65"
+    un-box-border
+    @click="onClear"
+  >
+    <tm-icon
+      _style="transition:color 0.24s"
+      :size="30"
+      color="#b1b1b1"
+      name="close-circle-fill"
+    >
+    </tm-icon>
+  </view>
+  
+  <slot name="right"></slot>
+  
+  <tm-modal
+    v-model:show="showPicker"
+    :closeable="true"
+    :height="props.height"
+    :title="props.placeholder || '请选择'"
+    disabled-scroll
+    show-close
+    :show-footer="false"
+    :content-padding="0"
+    max-height="90%"
+    :overlay-click="false"
+  >
+    
+    <view
+      un-h="full"
+      un-flex="~ auto col"
+    >
+      
+      <view
+        v-if="options4SelectV2.length > 5"
+        un-p="t-2"
+        un-box-border
+        un-m="x-4"
+      >
+        <tm-input
+          v-model="searchStr"
+          un-w="full"
+          placeholder="请输入搜索内容"
+          clearable
+        ></tm-input>
+      </view>
+      
+      <!-- <view
+        v-if="options4SelectV2.length > 5"
+        un-p="x-4"
+        un-box-border
+        un-flex="~ wrap"
+        un-items="center"
+        un-gap="2"
+        un-m="y-2"
+      >
+        <tm-tag
+          v-for="id in selectedValueArr"
+          :key="'tag' + id"
+          skin="outlined"
+          size="g"
+          color="info"
+          @click="onTagRemove(id)"
+        >
+          <view>
+            {{ options4SelectV2.find((item) => item.value === id)?.label }}
+          </view>
+          
+          <view
+            un-i="iconfont-close_circle"
+            un-m="l-1"
+          ></view>
+        </tm-tag>
+      </view> -->
+      
+      <scroll-view
+        un-flex="~ auto col"
+        un-overflow-hidden
+        scroll-y
+        :rebound="false"
+        :scroll-into-view="scrollIntoViewId"
+        :scroll-with-animation="true"
+      >
+          
+        <view
+          v-for="item of options4SelectV2Computed"
+          :id="'a' + item.value"
+          :key="item.value"
+          :title="item.label"
+          un-m="x-4"
+          un-p="y-4"
+          un-box-border
+          un-flex="~"
+          un-items="center"
+          un-gap="2"
+          un-b="0 b-1 solid #e6e6e6"
+          :style="{
+            'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
+          }"
+          @click="onSelect(item.value)"
+        >
+                
+          <view
+            un-flex="~ [1_0_0]"
+            un-overflow-hidden
+            un-items="center"
+            un-m="l-4"
+          >
+            {{ item.label }}
+          </view>
+                
+          <view
+            style="width: 1.2rem;height: 1.2rem;"
+            un-m="r-4"
+          >
+            <view
+              v-if="selectedValueArr.includes(item.value)"
+              un-i="iconfont-check"
+            ></view>
+          </view>
+                
+        </view>
+          
+        <view
+          v-if="inited && options4SelectV2Computed.length === 0"
+          un-flex="~"
+          un-items="center"
+          un-justify="center"
+          un-text="gray-400"
+          un-h="10"
+        >
+          (暂无数据)
+        </view>
+        
+        <view
+          v-else-if="options4SelectV2Computed.length > 5"
+          un-m="y-4"
+          un-p="x-8"
+          un-box-border
+        >
+          <CustomDivider></CustomDivider>
+        </view>
+          
+      </scroll-view>
+      
+      <view
+        un-p="x-4 y-4"
+        un-box-border
+        un-flex="~"
+        un-w="full"
+        un-items="center"
+        un-gap="4"
+      >
+        
+        <view
+          un-flex="~ [1_0_0]"
+        >
+          <tm-button
+            color="info"
+            width="100%"
+            @click="onCancel"
+          >
+            取消
+          </tm-button>
+        </view>
+        
+        <view
+          un-flex="~ [1_0_0]"
+        >
+          <tm-button
+            width="100%"
+            @click="onConfirm"
+          >
+            确定 ({{ selectedValueArr.length }})
+          </tm-button>
+        </view>
+        
+      </view>
+      
+    </view>
+    
+  </tm-modal>
+</view>
+</template>
+
+<script lang="ts" setup>
+type OptionType = {
+  label: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value: any;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type OptionsMap = (item: any) => OptionType;
+
+const emit = defineEmits<{
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (e: "update:modelValue", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (e: "data", data: any[]): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (e: "change", value: any): void,
+  (e: "clear"): void,
+}>();
+
+const props = withDefaults(
+  defineProps<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    method: () => Promise<any[]>; // 用于获取数据的方法
+    optionsMap?: OptionsMap;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    modelValue?: any;
+    options4SelectV2?: OptionType[];
+    placeholder?: string;
+    height?: string;
+    initData?: boolean;
+    pageInited?: boolean;
+    clearable?: boolean;
+    multiple?: boolean;
+    readonly?: boolean;
+  }>(),
+  {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    optionsMap: function(item: any) {
+      const item2 = item as { lbl: string; id: string; };
+      return {
+        label: item2.lbl,
+        value: item2.id,
+      };
+    },
+    modelValue: undefined,
+    options4SelectV2: undefined,
+    placeholder: "",
+    height: "auto",
+    initData: true,
+    pageInited: true,
+    clearable: true,
+    multiple: false,
+    readonly: false,
+  },
+);
+
+const inited = ref(false);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const data = ref<any[]>([ ]);
+const options4SelectV2 = ref<OptionType[]>(props.options4SelectV2 || [ ]);
+
+const searchStr = ref("");
+
+const options4SelectV2Computed = computed(() => {
+  if (searchStr.value) {
+    return options4SelectV2.value.filter((item) => item.label.includes(searchStr.value));
+  }
+  return options4SelectV2.value;
+});
+
+const isTagExpanded = ref(false);
+
+function onExpandTag(event: Event) {
+  event?.stopPropagation?.();
+  isTagExpanded.value = !isTagExpanded.value;
+}
+
+const selectedValue = ref(props.modelValue);
+  
+watch(
+  () => props.modelValue,
+  (val) => {
+    selectedValue.value = val;
+  },
+);
+
+watch(
+  () => props.readonly,
+  () => {
+    if (props.readonly) {
+      showPicker.value = false;
+    }
+  },
+);
+
+const selectedValueArr = computed(() => {
+  if (selectedValue.value == null) {
+    return [ ];
+  }
+  if (props.multiple) {
+    if (Array.isArray(selectedValue.value)) {
+      return selectedValue.value as string[];
+    } else {
+      return [ selectedValue.value as string ];
+    }
+  }
+  return [ selectedValue.value as string ];
+});
+
+function onSelect(value: string) {
+  if (props.multiple) {
+    if (selectedValueArr.value.includes(value)) {
+      selectedValue.value = selectedValueArr.value.filter((item) => item !== value);
+    } else {
+      selectedValue.value = [ ...selectedValueArr.value, value ];
+    }
+  } else {
+    selectedValue.value = value;
+  }
+}
+
+// function onTagRemove(value: string) {
+//   if (props.multiple) {
+//     selectedValue.value = selectedValueArr.value
+//       .filter((item) => item !== value)
+//       .map((item) => item.trim())
+//       .filter((item) => item);
+//   } else {
+//     selectedValue.value = "";
+//   }
+// }
+
+const isValueEmpty = computed(() => {
+  if (!selectedValue.value) {
+    return true;
+  }
+  if (props.multiple) {
+    return !selectedValue.value || (selectedValue.value as string[]).length === 0;
+  }
+  return false;
+});
+
+const showPicker = ref(false);
+
+const modelLabels = computed(() => {
+  if (props.modelValue == null) {
+    return "";
+  }
+  if (!props.multiple) {
+    const model = data.value.find((item) => props.optionsMap(item).value === props.modelValue);
+    if (!model) {
+      return "";
+    }
+    return [ props.optionsMap(model).label || "" ];
+  }
+  const labels: string[] = [ ];
+  const modelValues = (props.modelValue || [ ]) as string[];
+  for (const value of modelValues) {
+    const model = data.value.find((item) => props.optionsMap(item).value === value);
+    if (!model) {
+      continue;
+    }
+    labels.push(props.optionsMap(model).label || "");
+  }
+  return labels;
+});
+
+const scrollIntoViewId = ref("");
+
+function onClick() {
+  if (props.readonly) {
+    showPicker.value = false;
+    return;
+  }
+  searchStr.value = "";
+  showPicker.value = true;
+  scrollIntoViewId.value = "";
+  setTimeout(() => {
+    scrollIntoViewId.value = selectedValueArr.value[0] ? "a" + selectedValueArr.value[0] : "";
+  }, 500);
+}
+
+function onChange() {
+  let selectedValueArr: string[] = [ ];
+  if (props.multiple) {
+    selectedValueArr = (selectedValue.value || [ ]) as string[];
+  } else if (selectedValue.value) {
+    selectedValueArr = [ selectedValue.value as string ];
+  }
+  const models = selectedValueArr.map((selectedValue) => {
+    const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
+    return model;
+  });
+  if (props.multiple) {
+    emit("change", models);
+  } else {
+    emit("change", models[0]);
+  }
+}
+
+function onClear() {
+  if (!props.multiple) {
+    selectedValue.value = "";
+  } else {
+    selectedValue.value = [ ];
+  }
+  emit("update:modelValue", selectedValue.value);
+  emit("change", selectedValue.value);
+  emit("clear");
+}
+
+function onConfirm() {
+  showPicker.value = false;
+  emit("update:modelValue", selectedValue.value);
+  if (selectedValue.value !== props.modelValue) {
+    onChange();
+  }
+}
+
+function onCancel() {
+  showPicker.value = false;
+}
+
+async function onRefresh() {
+  const method = props.method;
+  // if (!method) {
+  //   if (!options4SelectV2 || options4SelectV2.value.length === 0) {
+  //     inited.value = false;
+  //   } else {
+  //     inited.value = true;
+  //   }
+  //   return;
+  // }
+  // if (!options4SelectV2 || options4SelectV2.value.length === 0) {
+  //   inited.value = false;
+  // } else {
+  //   inited.value = true;
+  // }
+  data.value = await method();
+  emit("data", data.value);
+  options4SelectV2.value = data.value.map(props.optionsMap);
+}
+
+async function initFrame() {
+  await onRefresh();
+  inited.value = true;
+}
+
+if (props.initData) {
+  initFrame();
+}
+
+defineExpose({
+  refresh: onRefresh,
+});
+</script>
+
+<style lang="scss" scoped>
+.custom_select {
+  margin-left: 0px;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  padding-left: 0;
+  padding-top: 0px;
+  padding-right: 0;
+  padding-bottom: 0px;
+  // border: 0px solid rgba(230,230,230,1);
+  // background-color: rgba(245,245,245,1);
+  transition: border 0.24s;
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  // border-radius: 4px;
+}
+</style>
