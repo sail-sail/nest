@@ -51,7 +51,7 @@
     un-text="[1em] gray-600"
     class="custom_input_readonly_content"
     :class="{
-      'n-items-center': type !== 'textarea',
+      'items-center': type !== 'textarea',
     }"
   >
     {{ modelValue || '' }}

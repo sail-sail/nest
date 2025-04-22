@@ -345,7 +345,6 @@ impl Ctx {
     }
   }
   
-  #[cfg(test)]
   #[allow(dead_code)]
   pub fn test_builder() -> CtxBuilder<'static> {
     dotenv::dotenv().ok();
