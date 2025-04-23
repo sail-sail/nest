@@ -10,15 +10,14 @@
     scroll-y
     enable-back-to-top
     enable-flex
+    un-p="x-4"
+    un-box-border
   >
     <tm-form
       ref="formRef"
       v-model="login_input"
       :label-width="120"
       :rules="form_rules"
-    
-      un-flex="~ [1_0_0] col"
-      un-overflow-hidden
     
       @submit="onLogin"
     >
@@ -38,6 +37,7 @@
           <template #left>
             <i
               un-i="iconfont-tenant"
+              un-m="x-2"
             ></i>
           </template>
         </CustomSelect>
@@ -54,6 +54,7 @@
           <template #left>
             <i
               un-i="iconfont-user"
+              un-m="x-2"
             ></i>
           </template>
         </CustomInput>
@@ -71,6 +72,7 @@
           <template #left>
             <i
               un-i="iconfont-password"
+              un-m="x-2"
             ></i>
           </template>
         </CustomInput>
