@@ -474,7 +474,7 @@ function onConfirm() {
         </template>
         <view v-if="yanchiDuration" class="tmPickerDateWrap">
             <view v-if="quicklist.length > 0" class="tmPickerDateWrapQuickTags">
-                <tm-tag font-size="26" :font-color="(_isDark ? 'white' : '')" @click="tagsClick(item)" skin='thin'
+                <tm-tag :font-color="(_isDark ? 'white' : '')" @click="tagsClick(item)" skin='thin'
                     size="m" style="margin-right:10px;margin-bottom: 5px;" v-for="(item, index) in quicklist"
                     :key="index">{{
                         item.str }}</tm-tag>
@@ -523,7 +523,7 @@ function onConfirm() {
     height: 80rpx;
 
     padding: 0 20rpx;
-    font-size: 30rpx;
+    /* font-size: 30rpx; */
     flex: 1;
     pointer-events: none;
     text-align: center;
@@ -535,6 +535,7 @@ function onConfirm() {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16rpx;
+    gap: 16rpx;
 }
 
 .tmPickerDateWrapQuickTags {
@@ -542,5 +543,6 @@ function onConfirm() {
     flex-direction: row;
     flex-wrap: wrap;
     margin-bottom: 16rpx;
+    gap: 16rpx;
 }
 </style>
