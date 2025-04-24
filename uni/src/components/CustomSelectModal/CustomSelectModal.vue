@@ -458,6 +458,7 @@ function onClick() {
     return;
   }
   searchStr.value = "";
+  selectedValue.value = props.modelValue;
   showPicker.value = true;
   scrollIntoViewId.value = "";
   setTimeout(() => {
