@@ -288,7 +288,7 @@ async function getSchema0(
     }
     if ([ "create_time", "update_time" ].includes(column_name)) {
       if (item.width == null) {
-        item.width = 150;
+        item.width = 160;
       }
     }
     if (column_name === "lbl") {
@@ -517,7 +517,7 @@ async function getSchema0(
     }
     if (record && record.DATA_TYPE === "datetime") {
       if (item.width == null) {
-        item.width = 150;
+        item.width = 160;
       }
     }
     
