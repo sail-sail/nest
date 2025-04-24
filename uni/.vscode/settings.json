@@ -23,7 +23,9 @@
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true,
     "**/.husky": true,
-    "graphql.config.js": true
+    "graphql.config.js": true,
+    "uno_uni.config.ts": true,
+    "uno.config.ts": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -49,7 +51,9 @@
     "**/vite.config.mts.timestamp-*.mjs": true,
     "**/.npmrc": true,
     "**/.husky": true,
-    "graphql.config.js": true
+    "graphql.config.js": true,
+    "uno_uni.config.ts": true,
+    "uno.config.ts": true
   },
   "git.timeline.showUncommitted": true,
   "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",
