@@ -6,6 +6,7 @@
   }"
 >
   <slot name="left"></slot>
+  
   <view
     un-flex="~ [1_0_0]"
     un-overflow-hidden
@@ -13,6 +14,7 @@
     un-h="full"
     un-p="l-3"
     un-box-border
+    un-cursor="pointer"
     @click="onClick"
   >
     <text
@@ -31,7 +33,7 @@
       un-overflow-hidden
     ></view>
     <tm-icon
-      v-if="!props.disabled && !props.readonly"
+      v-if="!props.readonly"
       :size="42"
       color="#b1b1b1"
       name="arrow-right-s-line"
@@ -51,6 +53,7 @@
     >
     </tm-icon>
   </view>
+  
   <slot name="right"></slot>
   
   <tm-drawer
@@ -60,6 +63,7 @@
     :title="props.placeholder || '请选择'"
     disabled-scroll
     show-close
+    v-bind="$attrs"
   >
     <view
       un-flex="~ [1_0_0] col"
@@ -168,7 +172,9 @@ const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", data: any[]): void,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (e: "change", value: any): void,
+  (e: "confirm", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
 
@@ -186,7 +192,6 @@ const props = withDefaults(
     pageInited?: boolean;
     clearable?: boolean;
     multiple?: boolean;
-    disabled?: boolean;
     readonly?: boolean;
   }>(),
   {
@@ -206,7 +211,6 @@ const props = withDefaults(
     pageInited: true,
     clearable: true,
     multiple: false,
-    disabled: false,
     readonly: false,
   },
 );
@@ -240,15 +244,6 @@ watch(
   () => props.modelValue,
   (val) => {
     selectedValue.value = val;
-  },
-);
-
-watch(
-  () => props.disabled,
-  () => {
-    if (props.disabled) {
-      showPicker.value = false;
-    }
   },
 );
 
@@ -314,14 +309,28 @@ const modelLabels = computed(() => {
 });
 
 function onClick() {
-  if (props.disabled || props.readonly) {
+  if (props.readonly) {
     showPicker.value = false;
     return;
   }
   showPicker.value = true;
 }
 
-function onChange() {
+function onClear() {
+  if (!props.multiple) {
+    selectedValue.value = "";
+  } else {
+    selectedValue.value = [ ];
+  }
+  emit("update:modelValue", selectedValue.value);
+  emit("confirm");
+  emit("change");
+  emit("clear");
+}
+
+function onConfirm() {
+  showPicker.value = false;
+  emit("update:modelValue", selectedValue.value);
   let selectedValueArr: string[] = [ ];
   if (props.multiple) {
     selectedValueArr = (selectedValue.value || [ ]) as string[];
@@ -333,28 +342,16 @@ function onChange() {
     return model;
   });
   if (props.multiple) {
-    emit("change", models);
+    emit("confirm", models);
   } else {
-    emit("change", models[0]);
+    emit("confirm", models[0]);
   }
-}
-
-function onClear() {
-  if (!props.multiple) {
-    selectedValue.value = "";
-  } else {
-    selectedValue.value = [ ];
-  }
-  emit("update:modelValue", selectedValue.value);
-  emit("change", selectedValue.value);
-  emit("clear");
-}
-
-function onConfirm() {
-  showPicker.value = false;
-  emit("update:modelValue", selectedValue.value);
   if (selectedValue.value !== props.modelValue) {
-    onChange();
+    if (props.multiple) {
+      emit("change", models);
+    } else {
+      emit("change", models[0]);
+    }
   }
 }
 
@@ -387,8 +384,13 @@ if (props.initData) {
   onRefresh();
 }
 
+function togglePicker() {
+  showPicker.value = !showPicker.value;
+}
+
 defineExpose({
   refresh: onRefresh,
+  togglePicker,
 });
 </script>
 
