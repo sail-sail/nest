@@ -1,16 +1,20 @@
 {
   "folders": [
     {
-      "path": "./rust"
+      "path": "./rust",
+      "deno": false
     },
     {
-      "path": "./pc"
+      "path": "./pc",
+      "deno": false
     },
     {
-      "path": "./uni"
+      "path": "./uni",
+      "deno": false
     },
     {
-      "path": "./codegen"
+      "path": "./codegen",
+      "deno": false
     }
   ],
   "settings": {
@@ -30,8 +34,8 @@
     "rust-analyzer.inlayHints.parameterHints.enable": false,
     "pair-diff.patterns": [
       {
-        "source": "./deno/gen/**/*/*.ts",
-        "target": "./codegen/template/<basename>"
+        "source": "./rust/generated/**/*/*.rs",
+        "target": "./codegen/__out__/rust/generated/<basename>"
       }
     ],
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
