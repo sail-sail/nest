@@ -4,7 +4,9 @@
   :class="{
     'custom_select_readonly': props.readonly
   }"
-  un-cursor="pointer"
+  :style="{
+    cursor: props.readonly ? 'default' : 'pointer',
+  }"
 >
   <slot name="left"></slot>
   
@@ -123,6 +125,7 @@
     :content-padding="0"
     max-height="90%"
     :overlay-click="false"
+    v-bind="$attrs"
   >
     
     <view
@@ -298,7 +301,9 @@ const emit = defineEmits<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "data", data: any[]): void,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (e: "change", value: any): void,
+  (e: "confirm", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (e: "change", value?: any): void,
   (e: "clear"): void,
 }>();
 
@@ -466,7 +471,21 @@ function onClick() {
   }, 500);
 }
 
-function onChange() {
+function onClear() {
+  if (!props.multiple) {
+    selectedValue.value = "";
+  } else {
+    selectedValue.value = [ ];
+  }
+  emit("update:modelValue", selectedValue.value);
+  emit("confirm");
+  emit("change");
+  emit("clear");
+}
+
+function onConfirm() {
+  showPicker.value = false;
+  emit("update:modelValue", selectedValue.value);
   let selectedValueArr: string[] = [ ];
   if (props.multiple) {
     selectedValueArr = (selectedValue.value || [ ]) as string[];
@@ -478,28 +497,16 @@ function onChange() {
     return model;
   });
   if (props.multiple) {
-    emit("change", models);
+    emit("confirm", models);
   } else {
-    emit("change", models[0]);
+    emit("confirm", models[0]);
   }
-}
-
-function onClear() {
-  if (!props.multiple) {
-    selectedValue.value = "";
-  } else {
-    selectedValue.value = [ ];
-  }
-  emit("update:modelValue", selectedValue.value);
-  emit("change", selectedValue.value);
-  emit("clear");
-}
-
-function onConfirm() {
-  showPicker.value = false;
-  emit("update:modelValue", selectedValue.value);
   if (selectedValue.value !== props.modelValue) {
-    onChange();
+    if (props.multiple) {
+      emit("change", models);
+    } else {
+      emit("change", models[0]);
+    }
   }
 }
 
@@ -536,8 +543,13 @@ if (props.initData) {
   initFrame();
 }
 
+function togglePicker() {
+  showPicker.value = !showPicker.value;
+}
+
 defineExpose({
   refresh: onRefresh,
+  togglePicker,
 });
 </script>
 

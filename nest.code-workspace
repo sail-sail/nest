@@ -30,8 +30,8 @@
     "rust-analyzer.inlayHints.parameterHints.enable": false,
     "pair-diff.patterns": [
       {
-        "source": "./deno/gen/**/*/*.ts",
-        "target": "./codegen/template/<basename>"
+        "source": "./rust/generated/**/*/*.rs",
+        "target": "./codegen/__out__/rust/generated/<basename>"
       }
     ],
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,
