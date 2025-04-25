@@ -22,65 +22,71 @@
     @click="onClick"
   >
     
-    <text
-      v-if="!props.multiple && modelLabels[0]"
-    >
-      {{ modelLabels[0] || '' }}
-    </text>
-    
     <template
-      v-if="props.multiple && modelLabels.length > 0"
+      v-if="(props.multiple || modelLabels[0]) && (!props.multiple || modelLabels.length > 0)"
     >
+      
+      <text
+        v-if="!props.multiple || modelLabels.length === 1"
+      >
+        {{ modelLabels[0] || '' }}
+      </text>
       
       <template
-        v-if="isTagExpanded"
+        v-else
       >
         
-        <tm-tag
-          v-for="(label, index) of modelLabels"
-          :key="index"
-          skin="outlined"
-          color="info"
+        <template
+          v-if="isTagExpanded"
         >
-          {{ label }}
-        </tm-tag>
-      
-      </template>
-      
-      <template v-else>
-        
-        <tm-tag
-          skin="outlined"
-          color="info"
-        >
-          {{ modelLabels[0] }}
-        </tm-tag>
-        
-        <tm-tag
-          v-if="modelLabels.length > 1"
-          skin="thin"
-          color="info"
-          un-cursor="pointer"
-          @tap.stop=""
-          @click.stop="onExpandTag"
-        >
-          <view
-            v-if="modelLabels.length > 1"
-            un-text="gray-400"
+          
+          <tm-tag
+            v-for="(label, index) of modelLabels"
+            :key="index"
+            skin="outlined"
+            color="info"
           >
-            +{{ modelLabels.length - 1 }}
-          </view>
-        </tm-tag>
+            {{ label }}
+          </tm-tag>
+        
+        </template>
+        
+        <template v-else>
+          
+          <tm-tag
+            skin="outlined"
+            color="info"
+          >
+            {{ modelLabels[0] }}
+          </tm-tag>
+          
+          <tm-tag
+            v-if="modelLabels.length > 1"
+            skin="thin"
+            color="info"
+            un-cursor="pointer"
+            @tap.stop=""
+            @click.stop="onExpandTag"
+          >
+            <view
+              v-if="modelLabels.length > 1"
+              un-text="gray-400"
+            >
+              +{{ modelLabels.length - 1 }}
+            </view>
+          </tm-tag>
+          
+        </template>
         
       </template>
       
     </template>
     
     <text
-      v-if="(!props.multiple && !modelLabels[0]) && (props.multiple && modelLabels.length === 0)"
+      v-else
       un-text="gray"
     >
-      {{ (props.pageInited && inited) ? (props.placeholder || '') : '' }}
+      {{ props.pageInited ? (props.placeholder || '') : '' }}
     </text>
     
     <view
@@ -486,13 +492,7 @@ function onClear() {
 function onConfirm() {
   showPicker.value = false;
   emit("update:modelValue", selectedValue.value);
-  let selectedValueArr: string[] = [ ];
-  if (props.multiple) {
-    selectedValueArr = (selectedValue.value || [ ]) as string[];
-  } else if (selectedValue.value) {
-    selectedValueArr = [ selectedValue.value as string ];
-  }
-  const models = selectedValueArr.map((selectedValue) => {
+  const models = selectedValueArr.value.map((selectedValue) => {
     const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
     return model;
   });
