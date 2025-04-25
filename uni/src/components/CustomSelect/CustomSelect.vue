@@ -4,6 +4,9 @@
   :class="{
     'custom_select_readonly': props.readonly
   }"
+  :style="{
+    cursor: props.readonly ? 'default' : 'pointer',
+  }"
 >
   <slot name="left"></slot>
   
@@ -14,7 +17,6 @@
     un-h="full"
     un-p="l-3"
     un-box-border
-    un-cursor="pointer"
     @click="onClick"
   >
     <text
