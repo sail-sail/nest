@@ -86,6 +86,7 @@
     <text
       v-else
       un-text="gray"
+      un-cursor="pointer"
     >
       {{ props.pageInited ? (props.placeholder || '') : '' }}
     </text>
