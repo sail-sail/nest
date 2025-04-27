@@ -95,7 +95,7 @@
     ></view>
   
     <view
-      v-if="props.clearable && !props.readonly && !isValueEmpty"
+      v-if="props.clearable && !props.readonly && !modelValueIsEmpty"
       @tap.stop=""
       @click="onClear"
     >
@@ -399,12 +399,12 @@ function onSelect(value: string) {
 //   }
 // }
 
-const isValueEmpty = computed(() => {
-  if (!selectedValue.value) {
+const modelValueIsEmpty = computed(() => {
+  if (!props.modelValue) {
     return true;
   }
   if (props.multiple) {
-    return !selectedValue.value || (selectedValue.value as string[]).length === 0;
+    return !props.modelValue || (props.modelValue as string[]).length === 0;
   }
   return false;
 });
