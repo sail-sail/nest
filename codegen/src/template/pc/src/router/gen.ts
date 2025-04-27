@@ -14,8 +14,10 @@ export const routesGen: Array<RouteRecordRaw> = [<#
     record.opts = record.opts || { };
     const list_tree = record.opts.list_tree;
     let fileNameVue = "List.vue";
+    let optionsName = table_comment;
     if (list_tree) {
       fileNameVue = "TreeList.vue";
+      optionsName = optionsName + "TreeList";
     }
     if (record.opts.onlyCodegenDeno) {
       continue;
@@ -27,9 +29,12 @@ export const routesGen: Array<RouteRecordRaw> = [<#
     children: [
       {
         path: "",
-        name: "<#=table_comment || mod+'_'+table_name#>",
+        name: "<#=optionsName#>",
         component: () => import("@/views/<#=mod#>/<#=table_name#>/<#=fileNameVue#>"),
         props: (route) => route.query,
+        meta: {
+          name: "<#=table_comment#>",
+        },
       },
     ],
   },<#
