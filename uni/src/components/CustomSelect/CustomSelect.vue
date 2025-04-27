@@ -92,6 +92,24 @@
       un-overflow-hidden
     ></view>
     
+    <view
+      v-if="props.clearable && !props.readonly && !isValueEmpty"
+      @tap.stop=""
+      @click="onClear"
+    >
+      <tm-icon
+        _style="transition:color 0.24s"
+        :size="30"
+        color="#b1b1b1"
+        name="close-circle-fill"
+        @tap.stop=""
+        @click="onClear"
+      >
+      </tm-icon>
+    </view>
+    
+    <slot name="right"></slot>
+    
     <tm-icon
       v-if="!props.readonly"
       :size="42"
@@ -99,22 +117,6 @@
       name="arrow-right-s-line"
     ></tm-icon>
   </view>
-  <view
-    v-if="props.clearable && !props.readonly && !isValueEmpty"
-    un-p="r-2.65"
-    un-box-border
-    @click="onClear"
-  >
-    <tm-icon
-      _style="transition:color 0.24s"
-      :size="30"
-      color="#b1b1b1"
-      name="close-circle-fill"
-    >
-    </tm-icon>
-  </view>
-  
-  <slot name="right"></slot>
   
   <tm-drawer
     v-model:show="showPicker"
@@ -435,7 +437,7 @@ async function onRefresh() {
   } else {
     inited.value = true;
   }
-  data.value = await method();
+  data.value = (await method?.()) || [ ];
   emit("data", data.value);
   options4SelectV2.value = data.value.map(props.optionsMap);
   inited.value = true;

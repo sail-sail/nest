@@ -93,6 +93,24 @@
       un-flex="[1_0_0]"
       un-overflow-hidden
     ></view>
+  
+    <view
+      v-if="props.clearable && !props.readonly && !isValueEmpty"
+      @tap.stop=""
+      @click="onClear"
+    >
+      <tm-icon
+        _style="transition:color 0.24s"
+        :size="30"
+        color="#b1b1b1"
+        name="close-circle-fill"
+        @tap.stop=""
+        @click="onClear"
+      >
+      </tm-icon>
+    </view>
+    
+    <slot name="right"></slot>
     
     <tm-icon
       v-if="!props.readonly"
@@ -102,23 +120,6 @@
     ></tm-icon>
     
   </view>
-  
-  <view
-    v-if="props.clearable && !props.readonly && !isValueEmpty"
-    un-p="r-2.65"
-    un-box-border
-    @click="onClear"
-  >
-    <tm-icon
-      _style="transition:color 0.24s"
-      :size="30"
-      color="#b1b1b1"
-      name="close-circle-fill"
-    >
-    </tm-icon>
-  </view>
-  
-  <slot name="right"></slot>
   
   <tm-modal
     v-model:show="showPicker"
@@ -152,34 +153,6 @@
           clearable
         ></tm-input>
       </view>
-      
-      <!-- <view
-        v-if="options4SelectV2.length > 5"
-        un-p="x-4"
-        un-box-border
-        un-flex="~ wrap"
-        un-items="center"
-        un-gap="2"
-        un-m="y-2"
-      >
-        <tm-tag
-          v-for="id in selectedValueArr"
-          :key="'tag' + id"
-          skin="outlined"
-          size="g"
-          color="info"
-          @click="onTagRemove(id)"
-        >
-          <view>
-            {{ options4SelectV2.find((item) => item.value === id)?.label }}
-          </view>
-          
-          <view
-            un-i="iconfont-close_circle"
-            un-m="l-1"
-          ></view>
-        </tm-tag>
-      </view> -->
       
       <scroll-view
         un-flex="~ auto col"
@@ -529,7 +502,7 @@ async function onRefresh() {
   // } else {
   //   inited.value = true;
   // }
-  data.value = await method();
+  data.value = (await method?.()) || [ ];
   emit("data", data.value);
   options4SelectV2.value = data.value.map(props.optionsMap);
 }

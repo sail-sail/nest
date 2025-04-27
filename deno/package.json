@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "dayjs": "1.11.13",
-    "graphql": "16.10.0",
+    "graphql": "16.11.0",
     "js-md5": "0.8.3",
     "lru-cache": "11.1.0",
     "mime": "4.0.7",
@@ -32,7 +32,7 @@
     "@graphql-codegen/cli": "5.0.5",
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-operations": "4.6.0",
-    "@types/node": "22.15.0",
+    "@types/node": "22.15.2",
     "chokidar": "3.6.0",
     "commander": "13.1.0",
     "dotenv": "16.5.0",
