@@ -2,7 +2,7 @@
 <view
   class="custom_select"
   :class="{
-    'custom_select_readonly': props.readonly
+    'custom_select_readonly': props.readonly,
   }"
   :style="{
     cursor: props.readonly ? 'default' : 'pointer',
@@ -19,21 +19,97 @@
     un-box-border
     @click="onClick"
   >
-    <text
-      v-if="modelLabels[0] || ''"
+    
+    <template
+      v-if="(props.multiple || modelLabels[0]) && (!props.multiple || modelLabels.length > 0)"
     >
-      {{ modelLabels[0] || '' }}
-    </text>
+      
+      <text
+        v-if="!props.multiple || modelLabels.length === 1"
+      >
+        {{ modelLabels[0] || '' }}
+      </text>
+      
+      <template
+        v-else
+      >
+        
+        <template
+          v-if="isTagExpanded"
+        >
+          
+          <tm-tag
+            v-for="(label, index) of modelLabels"
+            :key="index"
+            skin="outlined"
+            color="info"
+          >
+            {{ label }}
+          </tm-tag>
+        
+        </template>
+        
+        <template v-else>
+          
+          <tm-tag
+            skin="outlined"
+            color="info"
+          >
+            {{ modelLabels[0] }}
+          </tm-tag>
+          
+          <tm-tag
+            v-if="modelLabels.length > 1"
+            skin="thin"
+            color="info"
+            un-cursor="pointer"
+            @tap.stop=""
+            @click.stop="onExpandTag"
+          >
+            <view
+              v-if="modelLabels.length > 1"
+              un-text="gray-400"
+            >
+              +{{ modelLabels.length - 1 }}
+            </view>
+          </tm-tag>
+          
+        </template>
+        
+      </template>
+      
+    </template>
+    
     <text
       v-else
       un-text="gray"
     >
-      {{ (props.pageInited && inited) ? (props.placeholder || '') : '' }}
+      {{ props.pageInited ? (props.placeholder || '') : '' }}
     </text>
+    
     <view
       un-flex="[1_0_0]"
       un-overflow-hidden
     ></view>
+    
+    <view
+      v-if="props.clearable && !props.readonly && !isValueEmpty"
+      @tap.stop=""
+      @click="onClear"
+    >
+      <tm-icon
+        _style="transition:color 0.24s"
+        :size="30"
+        color="#b1b1b1"
+        name="close-circle-fill"
+        @tap.stop=""
+        @click="onClear"
+      >
+      </tm-icon>
+    </view>
+    
+    <slot name="right"></slot>
+    
     <tm-icon
       v-if="!props.readonly"
       :size="42"
@@ -41,22 +117,6 @@
       name="arrow-right-s-line"
     ></tm-icon>
   </view>
-  <view
-    v-if="props.clearable && !props.readonly && !isValueEmpty"
-    un-p="r-2.65"
-    un-box-border
-    @click="onClear"
-  >
-    <tm-icon
-      _style="transition:color 0.24s"
-      :size="30"
-      color="#b1b1b1"
-      name="close-circle-fill"
-    >
-    </tm-icon>
-  </view>
-  
-  <slot name="right"></slot>
   
   <tm-drawer
     v-model:show="showPicker"
@@ -90,7 +150,7 @@
             un-gap="2"
             un-b="0 b-1 solid #e6e6e6"
             :style="{
-              'color': selectedValueMuti.includes(item.value) ? '#0579ff' : undefined,
+              'color': selectedValueArr.includes(item.value) ? '#0579ff' : undefined,
             }"
             @click="onSelect(item.value)"
           >
@@ -109,7 +169,7 @@
               un-m="r-4"
             >
               <view
-                v-if="selectedValueMuti.includes(item.value)"
+                v-if="selectedValueArr.includes(item.value)"
                 un-i="iconfont-check"
               ></view>
             </view>
@@ -145,7 +205,7 @@
             width="100%"
             @click="onConfirm"
           >
-            确定
+            确定 ({{ selectedValueArr.length }})
           </tm-button>
         </view>
         
@@ -249,7 +309,7 @@ watch(
   },
 );
 
-const selectedValueMuti = computed(() => {
+const selectedValueArr = computed(() => {
   if (selectedValue.value == null) {
     return [ ];
   }
@@ -263,12 +323,19 @@ const selectedValueMuti = computed(() => {
   return [ selectedValue.value as string ];
 });
 
+const isTagExpanded = ref(false);
+
+function onExpandTag(event: Event) {
+  event?.stopPropagation?.();
+  isTagExpanded.value = !isTagExpanded.value;
+}
+
 function onSelect(value: string) {
   if (props.multiple) {
-    if (selectedValueMuti.value.includes(value)) {
-      selectedValue.value = selectedValueMuti.value.filter((item) => item !== value);
+    if (selectedValueArr.value.includes(value)) {
+      selectedValue.value = selectedValueArr.value.filter((item) => item !== value);
     } else {
-      selectedValue.value = [ ...selectedValueMuti.value, value ];
+      selectedValue.value = [ ...selectedValueArr.value, value ];
     }
   } else {
     selectedValue.value = value;
@@ -333,13 +400,7 @@ function onClear() {
 function onConfirm() {
   showPicker.value = false;
   emit("update:modelValue", selectedValue.value);
-  let selectedValueArr: string[] = [ ];
-  if (props.multiple) {
-    selectedValueArr = (selectedValue.value || [ ]) as string[];
-  } else if (selectedValue.value) {
-    selectedValueArr = [ selectedValue.value as string ];
-  }
-  const models = selectedValueArr.map((selectedValue) => {
+  const models = selectedValueArr.value.map((selectedValue) => {
     const model = data.value.find((item) => props.optionsMap(item).value === selectedValue)!;
     return model;
   });
@@ -376,7 +437,7 @@ async function onRefresh() {
   } else {
     inited.value = true;
   }
-  data.value = await method();
+  data.value = (await method?.()) || [ ];
   emit("data", data.value);
   options4SelectV2.value = data.value.map(props.optionsMap);
   inited.value = true;
