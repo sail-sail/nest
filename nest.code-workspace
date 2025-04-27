@@ -1,16 +1,20 @@
 {
   "folders": [
     {
-      "path": "./rust"
+      "path": "./rust",
+      "deno": false
     },
     {
-      "path": "./pc"
+      "path": "./pc",
+      "deno": false
     },
     {
-      "path": "./uni"
+      "path": "./uni",
+      "deno": false
     },
     {
-      "path": "./codegen"
+      "path": "./codegen",
+      "deno": false
     }
   ],
   "settings": {
