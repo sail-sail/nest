@@ -28,6 +28,7 @@
       
       <text
         v-if="!props.multiple || modelLabels.length === 1"
+        un-cursor="pointer"
       >
         {{ modelLabels[0] || '' }}
       </text>
