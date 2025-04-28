@@ -44,7 +44,7 @@
     "@std/log": "jsr:@std/log@0.224.14",
     "@std/path": "jsr:@std/path@1.0.8",
     "lru-cache": "npm:lru-cache@11.1.0",
-    "mysql2": "npm:mysql2@3.14.0",
+    "mysql2": "npm:mysql2@3.14.1",
     "canvas": "https://deno.land/x/canvas@v1.4.2/mod.ts",
     "dayjs": "npm:dayjs@1.11.13",
     "js-md5": "npm:js-md5@0.8.3",
