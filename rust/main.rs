@@ -368,7 +368,7 @@ async fn main() -> Result<(), std::io::Error> {
       .arg("node_modules/@graphql-codegen/cli/cjs/bin.js")
       .arg("--config")
       .arg("generated/common/script/graphql_codegen_config.ts")
-      .arg("--watch")
+      // .arg("--watch")
       .spawn();
 
     match status {
