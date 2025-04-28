@@ -169,7 +169,7 @@ impl FromRow<'_, MySqlRow> for DataPermitModel {
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DataPermitFieldComment")]
 #[allow(dead_code)]
 pub struct DataPermitFieldComment {
   /// ID
@@ -223,7 +223,7 @@ pub struct DataPermitFieldComment {
 }
 
 #[derive(InputObject, Default)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DataPermitSearch")]
 #[allow(dead_code)]
 pub struct DataPermitSearch {
   /// ID
@@ -310,6 +310,12 @@ impl std::fmt::Debug for DataPermitSearch {
     if let Some(ref menu_id) = self.menu_id {
       item = item.field("menu_id", menu_id);
     }
+    if let Some(ref menu_id_lbl) = self.menu_id_lbl {
+      item = item.field("menu_id_lbl", menu_id_lbl);
+    }
+    if let Some(ref menu_id_lbl_like) = self.menu_id_lbl_like {
+      item = item.field("menu_id_lbl_like", menu_id_lbl_like);
+    }
     if let Some(ref menu_id_is_null) = self.menu_id_is_null {
       item = item.field("menu_id_is_null", menu_id_is_null);
     }
@@ -332,6 +338,12 @@ impl std::fmt::Debug for DataPermitSearch {
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_usr_id_lbl_like) = self.create_usr_id_lbl_like {
+      item = item.field("create_usr_id_lbl_like", create_usr_id_lbl_like);
+    }
     if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
       item = item.field("create_usr_id_is_null", create_usr_id_is_null);
     }
@@ -342,6 +354,12 @@ impl std::fmt::Debug for DataPermitSearch {
     // 更新人
     if let Some(ref update_usr_id) = self.update_usr_id {
       item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_usr_id_lbl_like) = self.update_usr_id_lbl_like {
+      item = item.field("update_usr_id_lbl_like", update_usr_id_lbl_like);
     }
     if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
       item = item.field("update_usr_id_is_null", update_usr_id_is_null);
