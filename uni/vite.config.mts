@@ -109,7 +109,7 @@ export default defineConfig({
     //   dts: "./src/typings/components.d.ts",
     // }),
     Unocss({
-      configFile: "./uno.config.ts",
+      configFile: "./uno_uni.config.ts",
     }),
   ],
   resolve: {

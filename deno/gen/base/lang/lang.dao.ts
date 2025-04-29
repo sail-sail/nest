@@ -626,6 +626,48 @@ export async function checkByUniqueLang(
   return;
 }
 
+// MARK: findOneOkLang
+/** 根据条件查找第一语言 */
+export async function findOneOkLang(
+  search?: Readonly<LangSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<LangModel> {
+  
+  const table = "base_lang";
+  const method = "findOneOkLang";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_lang = validateOptionLang(
+    await findOneLang(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_lang;
+}
+
 // MARK: findOneLang
 /** 根据条件查找第一语言 */
 export async function findOneLang(
@@ -672,6 +714,43 @@ export async function findOneLang(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkLang
+/** 根据 id 查找语言 */
+export async function findByIdOkLang(
+  id?: LangId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<LangModel> {
+  
+  const table = "base_lang";
+  const method = "findByIdOkLang";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_lang = validateOptionLang(
+    await findByIdLang(
+      id,
+      options,
+    ),
+  );
+  
+  return model_lang;
 }
 
 // MARK: findByIdLang

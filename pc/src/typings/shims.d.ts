@@ -26,7 +26,6 @@ type AttributifyAttributes2 = AttributifyAttributes & {
   overflowXAuto?: boolean;
   overflowXHidden?: boolean;
   overflowYHidden?: boolean;
-  min?: string;
   top?: string;
   left?: string;
   right?: string;

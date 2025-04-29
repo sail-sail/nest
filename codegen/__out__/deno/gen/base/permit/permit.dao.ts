@@ -495,6 +495,48 @@ export async function checkByUniquePermit(
   return;
 }
 
+// MARK: findOneOkPermit
+/** 根据条件查找第一按钮权限 */
+export async function findOneOkPermit(
+  search?: Readonly<PermitSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PermitModel> {
+  
+  const table = "base_permit";
+  const method = "findOneOkPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_permit = validateOptionPermit(
+    await findOnePermit(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_permit;
+}
+
 // MARK: findOnePermit
 /** 根据条件查找第一按钮权限 */
 export async function findOnePermit(
@@ -541,6 +583,43 @@ export async function findOnePermit(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkPermit
+/** 根据 id 查找按钮权限 */
+export async function findByIdOkPermit(
+  id?: PermitId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<PermitModel> {
+  
+  const table = "base_permit";
+  const method = "findByIdOkPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_permit = validateOptionPermit(
+    await findByIdPermit(
+      id,
+      options,
+    ),
+  );
+  
+  return model_permit;
 }
 
 // MARK: findByIdPermit
