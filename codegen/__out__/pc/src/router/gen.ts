@@ -341,6 +341,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "短信应用",
         component: () => import("@/views/submail/sms_app/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "短信应用",
+        },
       },
     ],
   },
@@ -353,6 +356,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "短信发送记录",
         component: () => import("@/views/submail/sms_send_record/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "短信发送记录",
+        },
       },
     ],
   },
