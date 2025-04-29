@@ -734,6 +734,48 @@ export async function checkByUniqueDataPermit(
   return;
 }
 
+// MARK: findOneOkDataPermit
+/** 根据条件查找第一数据权限 */
+export async function findOneOkDataPermit(
+  search?: Readonly<DataPermitSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DataPermitModel> {
+  
+  const table = "base_data_permit";
+  const method = "findOneOkDataPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_data_permit = validateOptionDataPermit(
+    await findOneDataPermit(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_data_permit;
+}
+
 // MARK: findOneDataPermit
 /** 根据条件查找第一数据权限 */
 export async function findOneDataPermit(
@@ -780,6 +822,43 @@ export async function findOneDataPermit(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkDataPermit
+/** 根据 id 查找数据权限 */
+export async function findByIdOkDataPermit(
+  id?: DataPermitId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DataPermitModel> {
+  
+  const table = "base_data_permit";
+  const method = "findByIdOkDataPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_data_permit = validateOptionDataPermit(
+    await findByIdDataPermit(
+      id,
+      options,
+    ),
+  );
+  
+  return model_data_permit;
 }
 
 // MARK: findByIdDataPermit

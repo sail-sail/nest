@@ -280,21 +280,25 @@ body .el-input-number.is-without-controls .el-input__inner {
 }
 
 .select_input_wrapper {
-  @apply flex items-stretch w-full box-border;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
   .el-input {
-    @apply box-border flex-[1_0_0];
+    box-sizing: border-box;
+    flex: 1 0 0;
     .el-input__inner {
-      @apply cursor-pointer;
+      cursor: pointer;
     }
   }
 }
 .select_input_wrapper.label_readonly_1 {
-  @apply cursor-pointer;
+  cursor: pointer;
 }
 .select_input_wrapper.label_readonly_0 {
   .el-input {
     .el-input__inner {
-      @apply cursor-auto;
+      cursor: auto;
     }
   }
 }
@@ -497,7 +501,8 @@ html:is(.dark) {
 .el-form-item .custom_city_picker_readonly {
   width: 100%;
   .custom_city_picker_readonly_content {
-    @apply p-y-1.25;
+    padding-top: calc(var(--spacing) * 1.25);;
+    padding-bottom: calc(var(--spacing) * 1.25);;
   }
   .el-cascader {
     width: 100%;
@@ -545,4 +550,21 @@ html:is(.dark) {
   transform: translateY(-50%);
   width: 12px;
   height: 12px;
+}
+
+.ql-editor {
+  flex: 1 0 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+html .ql-container {
+  height: auto;
+}
+html .ql-toolbar button svg,
+html .ql-toolbar button polygon,
+html .ql-toolbar button path,
+html .ql-toolbar span.ql-picker-label svg,
+html .ql-toolbar span.ql-picker-label polygon,
+html .ql-toolbar span.ql-picker-label path {
+  color: var(--el-text-color-regular);
 }
