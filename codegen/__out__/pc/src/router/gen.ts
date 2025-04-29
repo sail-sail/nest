@@ -341,6 +341,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "全宗设置",
         component: () => import("@/views/eams/archive/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "全宗设置",
+        },
       },
     ],
   },
@@ -353,6 +356,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "单位",
         component: () => import("@/views/eams/company/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "单位",
+        },
       },
     ],
   },
