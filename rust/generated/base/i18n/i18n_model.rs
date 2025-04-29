@@ -313,12 +313,24 @@ impl std::fmt::Debug for I18nSearch {
     if let Some(ref lang_id) = self.lang_id {
       item = item.field("lang_id", lang_id);
     }
+    if let Some(ref lang_id_lbl) = self.lang_id_lbl {
+      item = item.field("lang_id_lbl", lang_id_lbl);
+    }
+    if let Some(ref lang_id_lbl_like) = self.lang_id_lbl_like {
+      item = item.field("lang_id_lbl_like", lang_id_lbl_like);
+    }
     if let Some(ref lang_id_is_null) = self.lang_id_is_null {
       item = item.field("lang_id_is_null", lang_id_is_null);
     }
     // 菜单
     if let Some(ref menu_id) = self.menu_id {
       item = item.field("menu_id", menu_id);
+    }
+    if let Some(ref menu_id_lbl) = self.menu_id_lbl {
+      item = item.field("menu_id_lbl", menu_id_lbl);
+    }
+    if let Some(ref menu_id_lbl_like) = self.menu_id_lbl_like {
+      item = item.field("menu_id_lbl_like", menu_id_lbl_like);
     }
     if let Some(ref menu_id_is_null) = self.menu_id_is_null {
       item = item.field("menu_id_is_null", menu_id_is_null);
@@ -348,6 +360,12 @@ impl std::fmt::Debug for I18nSearch {
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_usr_id_lbl_like) = self.create_usr_id_lbl_like {
+      item = item.field("create_usr_id_lbl_like", create_usr_id_lbl_like);
+    }
     if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
       item = item.field("create_usr_id_is_null", create_usr_id_is_null);
     }
@@ -358,6 +376,12 @@ impl std::fmt::Debug for I18nSearch {
     // 更新人
     if let Some(ref update_usr_id) = self.update_usr_id {
       item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_usr_id_lbl_like) = self.update_usr_id_lbl_like {
+      item = item.field("update_usr_id_lbl_like", update_usr_id_lbl_like);
     }
     if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
       item = item.field("update_usr_id_is_null", update_usr_id_is_null);
