@@ -174,7 +174,7 @@ impl FromRow<'_, MySqlRow> for WxAppTokenModel {
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "WxAppTokenFieldComment")]
 #[allow(dead_code)]
 pub struct WxAppTokenFieldComment {
   /// ID
@@ -207,7 +207,7 @@ pub struct WxAppTokenFieldComment {
 }
 
 #[derive(InputObject, Default)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "WxAppTokenSearch")]
 #[allow(dead_code)]
 pub struct WxAppTokenSearch {
   /// ID
@@ -301,6 +301,12 @@ impl std::fmt::Debug for WxAppTokenSearch {
     if let Some(ref wx_app_id) = self.wx_app_id {
       item = item.field("wx_app_id", wx_app_id);
     }
+    if let Some(ref wx_app_id_lbl) = self.wx_app_id_lbl {
+      item = item.field("wx_app_id_lbl", wx_app_id_lbl);
+    }
+    if let Some(ref wx_app_id_lbl_like) = self.wx_app_id_lbl_like {
+      item = item.field("wx_app_id_lbl_like", wx_app_id_lbl_like);
+    }
     if let Some(ref wx_app_id_is_null) = self.wx_app_id_is_null {
       item = item.field("wx_app_id_is_null", wx_app_id_is_null);
     }
@@ -337,6 +343,12 @@ impl std::fmt::Debug for WxAppTokenSearch {
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_usr_id_lbl_like) = self.create_usr_id_lbl_like {
+      item = item.field("create_usr_id_lbl_like", create_usr_id_lbl_like);
+    }
     if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
       item = item.field("create_usr_id_is_null", create_usr_id_is_null);
     }
@@ -347,6 +359,12 @@ impl std::fmt::Debug for WxAppTokenSearch {
     // 更新人
     if let Some(ref update_usr_id) = self.update_usr_id {
       item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_usr_id_lbl_like) = self.update_usr_id_lbl_like {
+      item = item.field("update_usr_id_lbl_like", update_usr_id_lbl_like);
     }
     if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
       item = item.field("update_usr_id_is_null", update_usr_id_is_null);
