@@ -236,9 +236,12 @@ defineExpose({
 
 <style lang="scss" scoped>
 .custom_city_picker_readonly_border {
-  @apply b-1 b-solid b-[var(--el-border-color)] rounded;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--el-border-color);
+  border-radius: 4px;
 }
 .custom_city_picker_readonly_no_border {
-  @apply b-0;
+  border-width: 0;
 }
 </style>
