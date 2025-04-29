@@ -38,7 +38,7 @@ const isSvg = computed(() => {
   mask-repeat: no-repeat;
   mask-size: 100% 100%;
   background-color: currentColor;
-  color: inherit;
+  // color: inherit;
   display: inline-block;
   vertical-align: middle;
   width: 1.2em;

@@ -10,7 +10,11 @@ declare global {
   
   type Distinct<T, DistinctName> = T & { __TYPE__: DistinctName };
   
-  interface Sort extends Sort2 {
+  interface Sort {
+    prop: string;
+    order: "ascending" | "descending";
   }
+  
+  type DecimalType = InstanceType<typeof import("decimal.js").default>;
   
 }
