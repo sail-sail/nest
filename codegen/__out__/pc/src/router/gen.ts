@@ -341,6 +341,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "企微应用",
         component: () => import("@/views/wxwork/wxw_app/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "企微应用",
+        },
       },
     ],
   },
@@ -353,6 +356,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "企微消息",
         component: () => import("@/views/wxwork/wxw_msg/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "企微消息",
+        },
       },
     ],
   },
@@ -365,6 +371,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "企微用户",
         component: () => import("@/views/wxwork/wxw_usr/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "企微用户",
+        },
       },
     ],
   },

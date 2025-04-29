@@ -667,6 +667,48 @@ export async function checkByUniqueWxwMsg(
   return;
 }
 
+// MARK: findOneOkWxwMsg
+/** 根据条件查找第一企微消息 */
+export async function findOneOkWxwMsg(
+  search?: Readonly<WxwMsgSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxwMsgModel> {
+  
+  const table = "wxwork_wxw_msg";
+  const method = "findOneOkWxwMsg";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxw_msg = validateOptionWxwMsg(
+    await findOneWxwMsg(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_wxw_msg;
+}
+
 // MARK: findOneWxwMsg
 /** 根据条件查找第一企微消息 */
 export async function findOneWxwMsg(
@@ -713,6 +755,43 @@ export async function findOneWxwMsg(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkWxwMsg
+/** 根据 id 查找企微消息 */
+export async function findByIdOkWxwMsg(
+  id?: WxwMsgId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxwMsgModel> {
+  
+  const table = "wxwork_wxw_msg";
+  const method = "findByIdOkWxwMsg";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxw_msg = validateOptionWxwMsg(
+    await findByIdWxwMsg(
+      id,
+      options,
+    ),
+  );
+  
+  return model_wxw_msg;
 }
 
 // MARK: findByIdWxwMsg

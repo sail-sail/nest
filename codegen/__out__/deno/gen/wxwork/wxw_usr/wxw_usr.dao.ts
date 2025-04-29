@@ -704,6 +704,48 @@ export async function checkByUniqueWxwUsr(
   return;
 }
 
+// MARK: findOneOkWxwUsr
+/** 根据条件查找第一企微用户 */
+export async function findOneOkWxwUsr(
+  search?: Readonly<WxwUsrSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxwUsrModel> {
+  
+  const table = "wxwork_wxw_usr";
+  const method = "findOneOkWxwUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxw_usr = validateOptionWxwUsr(
+    await findOneWxwUsr(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_wxw_usr;
+}
+
 // MARK: findOneWxwUsr
 /** 根据条件查找第一企微用户 */
 export async function findOneWxwUsr(
@@ -750,6 +792,43 @@ export async function findOneWxwUsr(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkWxwUsr
+/** 根据 id 查找企微用户 */
+export async function findByIdOkWxwUsr(
+  id?: WxwUsrId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxwUsrModel> {
+  
+  const table = "wxwork_wxw_usr";
+  const method = "findByIdOkWxwUsr";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxw_usr = validateOptionWxwUsr(
+    await findByIdWxwUsr(
+      id,
+      options,
+    ),
+  );
+  
+  return model_wxw_usr;
 }
 
 // MARK: findByIdWxwUsr
