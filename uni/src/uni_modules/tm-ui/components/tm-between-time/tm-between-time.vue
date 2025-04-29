@@ -100,6 +100,16 @@ const props = defineProps({
         default: "YYYY-MM-DD"
     },
     /**
+     * 是否将format格式化的v-model:modelStr同步到v-model:modelValue
+     * 默认false,注意：如果开启了同步，你要确保format的值是正常的时间值
+     * 正常兼容以下时间格式：
+     * YYYY,YYYY-MM,YYYY-MM-DD,YYYY-MM-DD HH,YYYY-MM-DD HH:mm,YYYY-MM-DD HH:mm:ss
+     */
+    formatSyncValue:{
+        type:Boolean,
+        default:false
+    },
+    /**
      * 上方的单位名称
      */
     cellUnits: {
@@ -134,7 +144,14 @@ const props = defineProps({
     drawerSize: {
         type: String,
         default: '1020'
-    }
+    },
+	/**
+	 * 是否禁用弹层
+	 */
+	disabled: {
+	    type: Boolean,
+	    default: false
+	},
 })
 
 const emit = defineEmits([
@@ -192,6 +209,9 @@ const _activeBorderColor = computed(() => getDefaultColor(config.color))
 const _placeStyle = computed(() => config.mode === 'dark' ? "color:#c7c7c7;" : "color:#838383;")
 const _fontColor = computed(() => config.mode === 'dark' ? "#efefef" : "#333")
 const _isDark = computed(() => config.mode === 'dark')
+const _disabled = computed(() => props.disabled)
+
+
 let tid = 34
 watch(() => props.modelValue, (newvalue: string[]) => {
     let sortvalue = sorDateVaild(validTimeDate(newvalue))
@@ -370,6 +390,7 @@ function sorDateVaild(str: string[]): string[] {
 }
 
 function openShow() {
+	if(_disabled.value) return;
     show.value = true
     /**
      * 变量控制打开状态
@@ -418,17 +439,21 @@ function onConfirm() {
         tmdate = nowValue.value.slice(0)
         nowModelValue.value = tmdate
     }
+    let tmdateByFormat = tmdate.map((item) => {
+        return new tmDate(item).format(props.format)
+    })
+
     /**
      * 点击确认时同步。等同v-model
      */
-    emit('update:modelValue', tmdate)
+    emit('update:modelValue', props.formatSyncValue?tmdateByFormat:tmdate)
 
     /**
      * 经格式化后的值。等同v-model:model-str
      */
     emit('update:modelStr', str === '~' ? '' : str)
 
-    emit('confirm', tmdate)
+    emit('confirm', props.formatSyncValue?tmdateByFormat:tmdate)
 }
 </script>
 <template>
@@ -449,7 +474,7 @@ function onConfirm() {
         </template>
         <view v-if="yanchiDuration" class="tmPickerDateWrap">
             <view v-if="quicklist.length > 0" class="tmPickerDateWrapQuickTags">
-                <tm-tag font-size="26" :font-color="(_isDark ? 'white' : '')" @click="tagsClick(item)" skin='thin'
+                <tm-tag :font-color="(_isDark ? 'white' : '')" @click="tagsClick(item)" skin='thin'
                     size="m" style="margin-right:10px;margin-bottom: 5px;" v-for="(item, index) in quicklist"
                     :key="index">{{
                         item.str }}</tm-tag>
@@ -498,7 +523,7 @@ function onConfirm() {
     height: 80rpx;
 
     padding: 0 20rpx;
-    font-size: 30rpx;
+    /* font-size: 30rpx; */
     flex: 1;
     pointer-events: none;
     text-align: center;
@@ -510,6 +535,7 @@ function onConfirm() {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16rpx;
+    gap: 16rpx;
 }
 
 .tmPickerDateWrapQuickTags {
@@ -517,5 +543,6 @@ function onConfirm() {
     flex-direction: row;
     flex-wrap: wrap;
     margin-bottom: 16rpx;
+    gap: 16rpx;
 }
 </style>

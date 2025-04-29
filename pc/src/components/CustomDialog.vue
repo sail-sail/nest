@@ -4,7 +4,6 @@
   v-model="dialogVisible"
   :fullscreen="isFullscreen"
   append-to-body
-  destroy-on-close
   :close-on-click-modal="props.closeOnClickModal"
   class="custom_dialog"
   :class="{
