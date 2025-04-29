@@ -341,6 +341,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "微信JSAPI下单",
         component: () => import("@/views/wx/pay_transactions_jsapi/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "微信JSAPI下单",
+        },
       },
     ],
   },
@@ -353,6 +356,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "小程序设置",
         component: () => import("@/views/wx/wx_app/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "小程序设置",
+        },
       },
     ],
   },
@@ -365,6 +371,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "微信支付设置",
         component: () => import("@/views/wx/wx_pay/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "微信支付设置",
+        },
       },
     ],
   },
@@ -377,6 +386,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "微信支付通知",
         component: () => import("@/views/wx/wx_pay_notice/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "微信支付通知",
+        },
       },
     ],
   },
@@ -389,6 +401,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "小程序用户",
         component: () => import("@/views/wx/wx_usr/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "小程序用户",
+        },
       },
     ],
   },
@@ -401,6 +416,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "公众号设置",
         component: () => import("@/views/wx/wxo_app/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "公众号设置",
+        },
       },
     ],
   },
@@ -413,6 +431,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "公众号用户",
         component: () => import("@/views/wx/wxo_usr/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "公众号用户",
+        },
       },
     ],
   },
