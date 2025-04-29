@@ -695,6 +695,48 @@ export async function checkByUniqueCompany(
   return;
 }
 
+// MARK: findOneOkCompany
+/** 根据条件查找第一单位 */
+export async function findOneOkCompany(
+  search?: Readonly<CompanySearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CompanyModel> {
+  
+  const table = "eams_company";
+  const method = "findOneOkCompany";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_company = validateOptionCompany(
+    await findOneCompany(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_company;
+}
+
 // MARK: findOneCompany
 /** 根据条件查找第一单位 */
 export async function findOneCompany(
@@ -741,6 +783,43 @@ export async function findOneCompany(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkCompany
+/** 根据 id 查找单位 */
+export async function findByIdOkCompany(
+  id?: CompanyId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CompanyModel> {
+  
+  const table = "eams_company";
+  const method = "findByIdOkCompany";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_company = validateOptionCompany(
+    await findByIdCompany(
+      id,
+      options,
+    ),
+  );
+  
+  return model_company;
 }
 
 // MARK: findByIdCompany
