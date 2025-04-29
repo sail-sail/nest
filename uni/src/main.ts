@@ -1,10 +1,12 @@
 import { createSSRApp } from "vue";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
 import App from "./App.vue";
 import * as Pinia from "pinia";
 
 import tmui from "./uni_modules/tm-ui";
 
-import "virtual:uno.css";
+import "@/utils/DateUtil.ts";
 
 globalThis.process = globalThis.process || { };
 globalThis.process.env = globalThis.process.env || { };

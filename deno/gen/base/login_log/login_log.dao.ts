@@ -616,6 +616,48 @@ export async function checkByUniqueLoginLog(
   return;
 }
 
+// MARK: findOneOkLoginLog
+/** 根据条件查找第一登录日志 */
+export async function findOneOkLoginLog(
+  search?: Readonly<LoginLogSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<LoginLogModel> {
+  
+  const table = "base_login_log";
+  const method = "findOneOkLoginLog";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_login_log = validateOptionLoginLog(
+    await findOneLoginLog(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_login_log;
+}
+
 // MARK: findOneLoginLog
 /** 根据条件查找第一登录日志 */
 export async function findOneLoginLog(
@@ -662,6 +704,43 @@ export async function findOneLoginLog(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkLoginLog
+/** 根据 id 查找登录日志 */
+export async function findByIdOkLoginLog(
+  id?: LoginLogId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<LoginLogModel> {
+  
+  const table = "base_login_log";
+  const method = "findByIdOkLoginLog";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_login_log = validateOptionLoginLog(
+    await findByIdLoginLog(
+      id,
+      options,
+    ),
+  );
+  
+  return model_login_log;
 }
 
 // MARK: findByIdLoginLog

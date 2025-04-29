@@ -3014,6 +3014,53 @@ export async function findSummary<#=Table_Up#>(
 }
 #>
 
+// MARK: findOneOk<#=Table_Up#>
+/** 根据条件查找第一<#=table_comment#> */
+export async function findOneOk<#=Table_Up#>(
+  search?: Readonly<<#=searchName#>>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
+  },
+): Promise<<#=modelName#>> {
+  
+  const table = "<#=mod#>_<#=table#>";
+  const method = "findOneOk<#=Table_Up#>";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_<#=table#> = validateOption<#=Table_Up#>(
+    await findOne<#=Table_Up#>(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_<#=table#>;
+}
+
 // MARK: findOne<#=Table_Up#>
 /** 根据条件查找第一<#=table_comment#> */
 export async function findOne<#=Table_Up#>(
@@ -3065,6 +3112,48 @@ export async function findOne<#=Table_Up#>(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOk<#=Table_Up#>
+/** 根据 id 查找<#=table_comment#> */
+export async function findByIdOk<#=Table_Up#>(
+  id?: <#=Table_Up#>Id | null,
+  options?: {
+    is_debug?: boolean;<#
+    if (hasDataPermit() && hasCreateUsrId) {
+    #>
+    hasDataPermit?: boolean,<#
+    }
+    #>
+  },
+): Promise<<#=modelName#>> {
+  
+  const table = "<#=mod#>_<#=table#>";
+  const method = "findByIdOk<#=Table_Up#>";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_<#=table#> = validateOption<#=Table_Up#>(
+    await findById<#=Table_Up#>(
+      id,
+      options,
+    ),
+  );
+  
+  return model_<#=table#>;
 }
 
 // MARK: findById<#=Table_Up#>
@@ -3545,7 +3634,23 @@ export async function findAutoCode<#=Table_Up#>(
     ],
   );
   
-  const <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;<#
+  const model_deleted = await findOne<#=Table_Up#>(
+    {
+      is_deleted: 1,
+    },
+    [
+      {
+        prop: "<#=autoCodeColumn.autoCode.seq#>",
+        order: SortOrderEnum.Desc,
+      },
+    ],
+  );
+  
+  let <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
+  const <#=autoCodeColumn.autoCode.seq#>_deleted = (model_deleted?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
+  if (<#=autoCodeColumn.autoCode.seq#>_deleted > <#=autoCodeColumn.autoCode.seq#>) {
+    <#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>_deleted;
+  }<#
   if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
   const <#=autoCodeColumn.COLUMN_NAME#> = <#=autoCodeColumn.autoCode.seq#>.toString().padStart(<#=autoCodeColumn.autoCode.seqPadStart0#>, "0");<#
@@ -3593,6 +3698,26 @@ export async function findAutoCode<#=Table_Up#>(
     <#=autoCodeColumn.autoCode.seq#> = 1;
   } else {
     <#=autoCodeColumn.autoCode.seq#> = (model?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
+    const model_deleted = await findOne<#=Table_Up#>(
+      {
+        <#=dateSeq#>: [ model!.<#=dateSeq#>, model!.<#=dateSeq#> ],
+        is_deleted: 1,
+      },
+      [
+        {
+          prop: "<#=dateSeq#>",
+          order: SortOrderEnum.Desc,
+        },
+        {
+          prop: "<#=autoCodeColumn.autoCode.seq#>",
+          order: SortOrderEnum.Desc,
+        },
+      ],
+    );
+    const <#=autoCodeColumn.autoCode.seq#>_deleted = (model_deleted?.<#=autoCodeColumn.autoCode.seq#> || 0) + 1;
+    if (<#=autoCodeColumn.autoCode.seq#>_deleted > <#=autoCodeColumn.autoCode.seq#>) {
+      <#=autoCodeColumn.autoCode.seq#> = <#=autoCodeColumn.autoCode.seq#>_deleted;
+    }
   }<#
   if (!autoCodeColumn.autoCode.prefix && !autoCodeColumn.autoCode.suffix) {
   #>
