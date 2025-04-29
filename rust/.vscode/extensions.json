@@ -9,7 +9,6 @@
     "graphql.vscode-graphql-syntax",
     "howardzuo.vscode-npm-dependency",
     "ibm.output-colorizer",
-    "antfu.where-am-i",
     "rust-lang.rust-analyzer",
     "swellaby.vscode-rust-test-adapter",
     "hdevalke.rust-test-lens",
