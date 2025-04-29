@@ -716,6 +716,48 @@ export async function checkByUniqueBaiduApp(
   return;
 }
 
+// MARK: findOneOkBaiduApp
+/** 根据条件查找第一百度应用 */
+export async function findOneOkBaiduApp(
+  search?: Readonly<BaiduAppSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<BaiduAppModel> {
+  
+  const table = "baidu_baidu_app";
+  const method = "findOneOkBaiduApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_baidu_app = validateOptionBaiduApp(
+    await findOneBaiduApp(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_baidu_app;
+}
+
 // MARK: findOneBaiduApp
 /** 根据条件查找第一百度应用 */
 export async function findOneBaiduApp(
@@ -762,6 +804,43 @@ export async function findOneBaiduApp(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkBaiduApp
+/** 根据 id 查找百度应用 */
+export async function findByIdOkBaiduApp(
+  id?: BaiduAppId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<BaiduAppModel> {
+  
+  const table = "baidu_baidu_app";
+  const method = "findByIdOkBaiduApp";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_baidu_app = validateOptionBaiduApp(
+    await findByIdBaiduApp(
+      id,
+      options,
+    ),
+  );
+  
+  return model_baidu_app;
 }
 
 // MARK: findByIdBaiduApp

@@ -11,6 +11,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "百度应用",
         component: () => import("@/views/baidu/baidu_app/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "百度应用",
+        },
       },
     ],
   },
