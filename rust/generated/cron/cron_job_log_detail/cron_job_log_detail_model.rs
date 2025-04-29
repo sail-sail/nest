@@ -142,7 +142,7 @@ impl FromRow<'_, MySqlRow> for CronJobLogDetailModel {
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "CronJobLogDetailFieldComment")]
 #[allow(dead_code)]
 pub struct CronJobLogDetailFieldComment {
   /// ID
@@ -166,7 +166,7 @@ pub struct CronJobLogDetailFieldComment {
 }
 
 #[derive(InputObject, Default)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "CronJobLogDetailSearch")]
 #[allow(dead_code)]
 pub struct CronJobLogDetailSearch {
   /// ID
@@ -241,6 +241,12 @@ impl std::fmt::Debug for CronJobLogDetailSearch {
     if let Some(ref cron_job_log_id) = self.cron_job_log_id {
       item = item.field("cron_job_log_id", cron_job_log_id);
     }
+    if let Some(ref cron_job_log_id_) = self.cron_job_log_id_ {
+      item = item.field("cron_job_log_id_", cron_job_log_id_);
+    }
+    if let Some(ref cron_job_log_id__like) = self.cron_job_log_id__like {
+      item = item.field("cron_job_log_id__like", cron_job_log_id__like);
+    }
     if let Some(ref cron_job_log_id_is_null) = self.cron_job_log_id_is_null {
       item = item.field("cron_job_log_id_is_null", cron_job_log_id_is_null);
     }
@@ -259,12 +265,24 @@ impl std::fmt::Debug for CronJobLogDetailSearch {
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_usr_id_lbl_like) = self.create_usr_id_lbl_like {
+      item = item.field("create_usr_id_lbl_like", create_usr_id_lbl_like);
+    }
     if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
       item = item.field("create_usr_id_is_null", create_usr_id_is_null);
     }
     // 更新人
     if let Some(ref update_usr_id) = self.update_usr_id {
       item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_usr_id_lbl_like) = self.update_usr_id_lbl_like {
+      item = item.field("update_usr_id_lbl_like", update_usr_id_lbl_like);
     }
     if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
       item = item.field("update_usr_id_is_null", update_usr_id_is_null);
