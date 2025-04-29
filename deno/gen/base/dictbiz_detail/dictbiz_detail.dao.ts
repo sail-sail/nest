@@ -705,6 +705,48 @@ export async function checkByUniqueDictbizDetail(
   return;
 }
 
+// MARK: findOneOkDictbizDetail
+/** 根据条件查找第一业务字典明细 */
+export async function findOneOkDictbizDetail(
+  search?: Readonly<DictbizDetailSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictbizDetailModel> {
+  
+  const table = "base_dictbiz_detail";
+  const method = "findOneOkDictbizDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_dictbiz_detail = validateOptionDictbizDetail(
+    await findOneDictbizDetail(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_dictbiz_detail;
+}
+
 // MARK: findOneDictbizDetail
 /** 根据条件查找第一业务字典明细 */
 export async function findOneDictbizDetail(
@@ -751,6 +793,43 @@ export async function findOneDictbizDetail(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkDictbizDetail
+/** 根据 id 查找业务字典明细 */
+export async function findByIdOkDictbizDetail(
+  id?: DictbizDetailId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictbizDetailModel> {
+  
+  const table = "base_dictbiz_detail";
+  const method = "findByIdOkDictbizDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_dictbiz_detail = validateOptionDictbizDetail(
+    await findByIdDictbizDetail(
+      id,
+      options,
+    ),
+  );
+  
+  return model_dictbiz_detail;
 }
 
 // MARK: findByIdDictbizDetail

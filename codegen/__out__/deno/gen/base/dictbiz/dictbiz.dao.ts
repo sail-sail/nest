@@ -724,6 +724,48 @@ export async function checkByUniqueDictbiz(
   return;
 }
 
+// MARK: findOneOkDictbiz
+/** 根据条件查找第一业务字典 */
+export async function findOneOkDictbiz(
+  search?: Readonly<DictbizSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictbizModel> {
+  
+  const table = "base_dictbiz";
+  const method = "findOneOkDictbiz";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_dictbiz = validateOptionDictbiz(
+    await findOneDictbiz(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_dictbiz;
+}
+
 // MARK: findOneDictbiz
 /** 根据条件查找第一业务字典 */
 export async function findOneDictbiz(
@@ -770,6 +812,43 @@ export async function findOneDictbiz(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkDictbiz
+/** 根据 id 查找业务字典 */
+export async function findByIdOkDictbiz(
+  id?: DictbizId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictbizModel> {
+  
+  const table = "base_dictbiz";
+  const method = "findByIdOkDictbiz";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_dictbiz = validateOptionDictbiz(
+    await findByIdDictbiz(
+      id,
+      options,
+    ),
+  );
+  
+  return model_dictbiz;
 }
 
 // MARK: findByIdDictbiz
