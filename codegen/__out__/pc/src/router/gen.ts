@@ -341,6 +341,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "定时任务",
         component: () => import("@/views/cron/cron_job/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "定时任务",
+        },
       },
     ],
   },
@@ -353,6 +356,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "定时任务日志",
         component: () => import("@/views/cron/cron_job_log/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "定时任务日志",
+        },
       },
     ],
   },
@@ -365,6 +371,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "定时任务日志明细",
         component: () => import("@/views/cron/cron_job_log_detail/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "定时任务日志明细",
+        },
       },
     ],
   },
@@ -377,6 +386,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "任务",
         component: () => import("@/views/cron/job/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "任务",
+        },
       },
     ],
   },

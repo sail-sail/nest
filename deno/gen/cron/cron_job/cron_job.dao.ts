@@ -830,6 +830,48 @@ export async function checkByUniqueCronJob(
   return;
 }
 
+// MARK: findOneOkCronJob
+/** 根据条件查找第一定时任务 */
+export async function findOneOkCronJob(
+  search?: Readonly<CronJobSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CronJobModel> {
+  
+  const table = "cron_cron_job";
+  const method = "findOneOkCronJob";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_cron_job = validateOptionCronJob(
+    await findOneCronJob(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_cron_job;
+}
+
 // MARK: findOneCronJob
 /** 根据条件查找第一定时任务 */
 export async function findOneCronJob(
@@ -876,6 +918,43 @@ export async function findOneCronJob(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkCronJob
+/** 根据 id 查找定时任务 */
+export async function findByIdOkCronJob(
+  id?: CronJobId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CronJobModel> {
+  
+  const table = "cron_cron_job";
+  const method = "findByIdOkCronJob";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_cron_job = validateOptionCronJob(
+    await findByIdCronJob(
+      id,
+      options,
+    ),
+  );
+  
+  return model_cron_job;
 }
 
 // MARK: findByIdCronJob
