@@ -49,6 +49,11 @@ export interface TableCloumn {
   noList?: boolean;
   
   /**
+   * 前端不允许在详情中显示
+   */
+  noDetail?: boolean;
+  
+  /**
    * 前端不允许导出这个字段
    * 默认为false
    */
@@ -399,6 +404,11 @@ export interface TableCloumn {
    * 是否文本域
    */
   isTextarea?: boolean,
+  
+  /**
+   * 是否是富文本编辑器
+   */
+  isFluentEditor?: boolean;
   
   /**
    * 是否为颜色, 默认为 false

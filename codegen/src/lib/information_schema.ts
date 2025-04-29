@@ -250,6 +250,9 @@ async function getSchema0(
       item.ignoreCodegen = false;
       item.noAdd = true;
       item.noEdit = true;
+      if (item.noDetail == null) {
+        item.noDetail = true;
+      }
     }
     if (column_name === "is_default") {
       if (item.width == null) {
@@ -375,6 +378,9 @@ async function getSchema0(
         if (item.canSearch == null) {
           item.canSearch = true;
         }
+      }
+      if (item.noDetail == null) {
+        item.noDetail = true;
       }
     }
     if (column_name.startsWith("is_")

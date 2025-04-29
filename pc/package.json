@@ -22,6 +22,7 @@
     "@formkit/auto-animate": "0.8.2",
     "@jsquash/resize": "2.1.0",
     "@jsquash/webp": "1.4.0",
+    "@opentiny/fluent-editor": "3.25.4",
     "@qr-x/vue": "1.1.1",
     "@vue-office/docx": "1.6.3",
     "@vue-office/excel": "1.7.14",
