@@ -833,6 +833,48 @@ export async function checkByUniqueWxwAppToken(
   return;
 }
 
+// MARK: findOneOkWxwAppToken
+/** 根据条件查找第一企微应用接口凭据 */
+export async function findOneOkWxwAppToken(
+  search?: Readonly<WxwAppTokenSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxwAppTokenModel> {
+  
+  const table = "wxwork_wxw_app_token";
+  const method = "findOneOkWxwAppToken";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxw_app_token = validateOptionWxwAppToken(
+    await findOneWxwAppToken(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_wxw_app_token;
+}
+
 // MARK: findOneWxwAppToken
 /** 根据条件查找第一企微应用接口凭据 */
 export async function findOneWxwAppToken(
@@ -879,6 +921,43 @@ export async function findOneWxwAppToken(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkWxwAppToken
+/** 根据 id 查找企微应用接口凭据 */
+export async function findByIdOkWxwAppToken(
+  id?: WxwAppTokenId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<WxwAppTokenModel> {
+  
+  const table = "wxwork_wxw_app_token";
+  const method = "findByIdOkWxwAppToken";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_wxw_app_token = validateOptionWxwAppToken(
+    await findByIdWxwAppToken(
+      id,
+      options,
+    ),
+  );
+  
+  return model_wxw_app_token;
 }
 
 // MARK: findByIdWxwAppToken
