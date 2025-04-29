@@ -238,7 +238,7 @@ impl FromRow<'_, MySqlRow> for DeptModel {
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DeptFieldComment")]
 #[allow(dead_code)]
 pub struct DeptFieldComment {
   /// ID
@@ -310,7 +310,7 @@ pub struct DeptFieldComment {
 }
 
 #[derive(InputObject, Default)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "DeptSearch")]
 #[allow(dead_code)]
 pub struct DeptSearch {
   /// ID
@@ -424,6 +424,12 @@ impl std::fmt::Debug for DeptSearch {
     if let Some(ref parent_id) = self.parent_id {
       item = item.field("parent_id", parent_id);
     }
+    if let Some(ref parent_id_lbl) = self.parent_id_lbl {
+      item = item.field("parent_id_lbl", parent_id_lbl);
+    }
+    if let Some(ref parent_id_lbl_like) = self.parent_id_lbl_like {
+      item = item.field("parent_id_lbl_like", parent_id_lbl_like);
+    }
     if let Some(ref parent_id_is_null) = self.parent_id_is_null {
       item = item.field("parent_id_is_null", parent_id_is_null);
     }
@@ -454,6 +460,12 @@ impl std::fmt::Debug for DeptSearch {
     if let Some(ref org_id) = self.org_id {
       item = item.field("org_id", org_id);
     }
+    if let Some(ref org_id_lbl) = self.org_id_lbl {
+      item = item.field("org_id_lbl", org_id_lbl);
+    }
+    if let Some(ref org_id_lbl_like) = self.org_id_lbl_like {
+      item = item.field("org_id_lbl_like", org_id_lbl_like);
+    }
     if let Some(ref org_id_is_null) = self.org_id_is_null {
       item = item.field("org_id_is_null", org_id_is_null);
     }
@@ -468,6 +480,12 @@ impl std::fmt::Debug for DeptSearch {
     if let Some(ref create_usr_id) = self.create_usr_id {
       item = item.field("create_usr_id", create_usr_id);
     }
+    if let Some(ref create_usr_id_lbl) = self.create_usr_id_lbl {
+      item = item.field("create_usr_id_lbl", create_usr_id_lbl);
+    }
+    if let Some(ref create_usr_id_lbl_like) = self.create_usr_id_lbl_like {
+      item = item.field("create_usr_id_lbl_like", create_usr_id_lbl_like);
+    }
     if let Some(ref create_usr_id_is_null) = self.create_usr_id_is_null {
       item = item.field("create_usr_id_is_null", create_usr_id_is_null);
     }
@@ -478,6 +496,12 @@ impl std::fmt::Debug for DeptSearch {
     // 更新人
     if let Some(ref update_usr_id) = self.update_usr_id {
       item = item.field("update_usr_id", update_usr_id);
+    }
+    if let Some(ref update_usr_id_lbl) = self.update_usr_id_lbl {
+      item = item.field("update_usr_id_lbl", update_usr_id_lbl);
+    }
+    if let Some(ref update_usr_id_lbl_like) = self.update_usr_id_lbl_like {
+      item = item.field("update_usr_id_lbl_like", update_usr_id_lbl_like);
     }
     if let Some(ref update_usr_id_is_null) = self.update_usr_id_is_null {
       item = item.field("update_usr_id_is_null", update_usr_id_is_null);

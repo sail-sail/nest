@@ -1565,6 +1565,9 @@ for (let i = 0; i < columns.length; i++) {
             if (column_name === "version") continue;
             if (column_name === "is_deleted") continue;
             if (column_name === "tenant_id") continue;
+            if (column.isFluentEditor) {
+              continue;
+            }
             const foreignKey = column.foreignKey;
             const data_type = column.DATA_TYPE;
             const column_type = column.COLUMN_TYPE;
@@ -3161,6 +3164,9 @@ function getTableColumns(): ColumnType[] {
     if (column_name === "version") continue;
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
+    if (column.isFluentEditor) {
+      continue;
+    }
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
