@@ -481,8 +481,10 @@ async fn get_where_query(
         None => None,
       };
       if let Some(create_usr_id_lbl_like) = create_usr_id_lbl_like {
-        where_query.push_str(" and create_usr_id_lbl.lbl like ?");
-        args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+        if !create_usr_id_lbl_like.is_empty() {
+          where_query.push_str(" and create_usr_id_lbl like ?");
+          args.push(format!("%{}%", sql_like(&create_usr_id_lbl_like)).into());
+        }
       }
     }
   }
@@ -564,8 +566,10 @@ async fn get_where_query(
         None => None,
       };
       if let Some(update_usr_id_lbl_like) = update_usr_id_lbl_like {
-        where_query.push_str(" and update_usr_id_lbl.lbl like ?");
-        args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+        if !update_usr_id_lbl_like.is_empty() {
+          where_query.push_str(" and update_usr_id_lbl like ?");
+          args.push(format!("%{}%", sql_like(&update_usr_id_lbl_like)).into());
+        }
       }
     }
   }
