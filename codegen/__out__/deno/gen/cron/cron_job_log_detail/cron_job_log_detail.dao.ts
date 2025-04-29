@@ -527,6 +527,48 @@ export async function checkByUniqueCronJobLogDetail(
   return;
 }
 
+// MARK: findOneOkCronJobLogDetail
+/** 根据条件查找第一定时任务日志明细 */
+export async function findOneOkCronJobLogDetail(
+  search?: Readonly<CronJobLogDetailSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CronJobLogDetailModel> {
+  
+  const table = "cron_cron_job_log_detail";
+  const method = "findOneOkCronJobLogDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_cron_job_log_detail = validateOptionCronJobLogDetail(
+    await findOneCronJobLogDetail(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_cron_job_log_detail;
+}
+
 // MARK: findOneCronJobLogDetail
 /** 根据条件查找第一定时任务日志明细 */
 export async function findOneCronJobLogDetail(
@@ -573,6 +615,43 @@ export async function findOneCronJobLogDetail(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkCronJobLogDetail
+/** 根据 id 查找定时任务日志明细 */
+export async function findByIdOkCronJobLogDetail(
+  id?: CronJobLogDetailId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CronJobLogDetailModel> {
+  
+  const table = "cron_cron_job_log_detail";
+  const method = "findByIdOkCronJobLogDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_cron_job_log_detail = validateOptionCronJobLogDetail(
+    await findByIdCronJobLogDetail(
+      id,
+      options,
+    ),
+  );
+  
+  return model_cron_job_log_detail;
 }
 
 // MARK: findByIdCronJobLogDetail

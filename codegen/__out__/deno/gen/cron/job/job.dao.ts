@@ -695,6 +695,48 @@ export async function checkByUniqueJob(
   return;
 }
 
+// MARK: findOneOkJob
+/** 根据条件查找第一任务 */
+export async function findOneOkJob(
+  search?: Readonly<JobSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<JobModel> {
+  
+  const table = "cron_job";
+  const method = "findOneOkJob";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_job = validateOptionJob(
+    await findOneJob(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_job;
+}
+
 // MARK: findOneJob
 /** 根据条件查找第一任务 */
 export async function findOneJob(
@@ -741,6 +783,43 @@ export async function findOneJob(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkJob
+/** 根据 id 查找任务 */
+export async function findByIdOkJob(
+  id?: JobId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<JobModel> {
+  
+  const table = "cron_job";
+  const method = "findByIdOkJob";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_job = validateOptionJob(
+    await findByIdJob(
+      id,
+      options,
+    ),
+  );
+  
+  return model_job;
 }
 
 // MARK: findByIdJob

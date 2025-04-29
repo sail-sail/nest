@@ -729,6 +729,48 @@ export async function checkByUniqueCronJobLog(
   return;
 }
 
+// MARK: findOneOkCronJobLog
+/** 根据条件查找第一定时任务日志 */
+export async function findOneOkCronJobLog(
+  search?: Readonly<CronJobLogSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CronJobLogModel> {
+  
+  const table = "cron_cron_job_log";
+  const method = "findOneOkCronJobLog";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_cron_job_log = validateOptionCronJobLog(
+    await findOneCronJobLog(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_cron_job_log;
+}
+
 // MARK: findOneCronJobLog
 /** 根据条件查找第一定时任务日志 */
 export async function findOneCronJobLog(
@@ -775,6 +817,43 @@ export async function findOneCronJobLog(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkCronJobLog
+/** 根据 id 查找定时任务日志 */
+export async function findByIdOkCronJobLog(
+  id?: CronJobLogId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<CronJobLogModel> {
+  
+  const table = "cron_cron_job_log";
+  const method = "findByIdOkCronJobLog";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_cron_job_log = validateOptionCronJobLog(
+    await findByIdCronJobLog(
+      id,
+      options,
+    ),
+  );
+  
+  return model_cron_job_log;
 }
 
 // MARK: findByIdCronJobLog
