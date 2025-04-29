@@ -622,6 +622,48 @@ export async function checkByUniqueSmsSendRecord(
   return;
 }
 
+// MARK: findOneOkSmsSendRecord
+/** 根据条件查找第一短信发送记录 */
+export async function findOneOkSmsSendRecord(
+  search?: Readonly<SmsSendRecordSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<SmsSendRecordModel> {
+  
+  const table = "submail_sms_send_record";
+  const method = "findOneOkSmsSendRecord";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_sms_send_record = validateOptionSmsSendRecord(
+    await findOneSmsSendRecord(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_sms_send_record;
+}
+
 // MARK: findOneSmsSendRecord
 /** 根据条件查找第一短信发送记录 */
 export async function findOneSmsSendRecord(
@@ -668,6 +710,43 @@ export async function findOneSmsSendRecord(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkSmsSendRecord
+/** 根据 id 查找短信发送记录 */
+export async function findByIdOkSmsSendRecord(
+  id?: SmsSendRecordId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<SmsSendRecordModel> {
+  
+  const table = "submail_sms_send_record";
+  const method = "findByIdOkSmsSendRecord";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_sms_send_record = validateOptionSmsSendRecord(
+    await findByIdSmsSendRecord(
+      id,
+      options,
+    ),
+  );
+  
+  return model_sms_send_record;
 }
 
 // MARK: findByIdSmsSendRecord
