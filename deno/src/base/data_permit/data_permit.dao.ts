@@ -11,8 +11,7 @@ import {
 } from "/lib/auth/auth.dao.ts";
 
 import {
-  findByIdUsr,
-  validateOptionUsr,
+  findByIdOkUsr,
   validateIsEnabledUsr,
 } from "/gen/base/usr/usr.dao.ts";
 
@@ -38,13 +37,11 @@ export async function getDataPermits(
   }
   const usr_id = authModel.id;
   
-  const usr_model = await validateOptionUsr(
-    await findByIdUsr(
-      usr_id,
-      {
-        is_debug: false,
-      },
-    ),
+  const usr_model = await findByIdOkUsr(
+    usr_id,
+    {
+      is_debug: false,
+    },
   );
   await validateIsEnabledUsr(usr_model);
   

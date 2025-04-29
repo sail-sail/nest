@@ -688,6 +688,48 @@ export async function checkByUniqueDictDetail(
   return;
 }
 
+// MARK: findOneOkDictDetail
+/** 根据条件查找第一系统字典明细 */
+export async function findOneOkDictDetail(
+  search?: Readonly<DictDetailSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictDetailModel> {
+  
+  const table = "base_dict_detail";
+  const method = "findOneOkDictDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_dict_detail = validateOptionDictDetail(
+    await findOneDictDetail(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_dict_detail;
+}
+
 // MARK: findOneDictDetail
 /** 根据条件查找第一系统字典明细 */
 export async function findOneDictDetail(
@@ -734,6 +776,43 @@ export async function findOneDictDetail(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkDictDetail
+/** 根据 id 查找系统字典明细 */
+export async function findByIdOkDictDetail(
+  id?: DictDetailId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DictDetailModel> {
+  
+  const table = "base_dict_detail";
+  const method = "findByIdOkDictDetail";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_dict_detail = validateOptionDictDetail(
+    await findByIdDictDetail(
+      id,
+      options,
+    ),
+  );
+  
+  return model_dict_detail;
 }
 
 // MARK: findByIdDictDetail

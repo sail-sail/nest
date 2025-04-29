@@ -661,6 +661,8 @@ initFrame();
   }
 }
 .tab_active_line {
-  @apply transition-property-[width,left] duration-[300ms] ease-in;
+  transition-property: width, left;
+  transition-duration: 300ms;
+  transition-timing-function: ease-in;
 }
 </style>
