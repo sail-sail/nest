@@ -1565,6 +1565,9 @@ for (let i = 0; i < columns.length; i++) {
             if (column_name === "version") continue;
             if (column_name === "is_deleted") continue;
             if (column_name === "tenant_id") continue;
+            if (column.isFluentEditor) {
+              continue;
+            }
             const foreignKey = column.foreignKey;
             const data_type = column.DATA_TYPE;
             const column_type = column.COLUMN_TYPE;
@@ -1697,8 +1700,15 @@ for (let i = 0; i < columns.length; i++) {
                     {<#
                       for (const key of queryKeys) {
                         const value = foreignPage.query[key];
+                      #><#
+                      if (key === "showBuildIn") {
+                      #>
+                      showBuildIn: '<#=value#>',<#
+                      } else {
                       #>
                       <#=key#>: row.<#=value#>,<#
+                      }
+                      #><#
                       }
                       #>
                     },
@@ -1891,8 +1901,15 @@ for (let i = 0; i < columns.length; i++) {
                     {<#
                       for (const key of queryKeys) {
                         const value = foreignPage.query[key];
+                      #><#
+                      if (key === "showBuildIn") {
+                      #>
+                      showBuildIn: '<#=value#>',<#
+                      } else {
                       #>
                       <#=key#>: row.<#=value#>,<#
+                      }
+                      #><#
                       }
                       #>
                     },
@@ -2006,8 +2023,15 @@ for (let i = 0; i < columns.length; i++) {
                     {<#
                       for (const key of queryKeys) {
                         const value = foreignPage.query[key];
+                      #><#
+                      if (key === "showBuildIn") {
+                      #>
+                      showBuildIn: '<#=value#>',<#
+                      } else {
                       #>
                       <#=key#>: row.<#=value#>,<#
+                      }
+                      #><#
                       }
                       #>
                     },
@@ -3140,6 +3164,9 @@ function getTableColumns(): ColumnType[] {
     if (column_name === "version") continue;
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
+    if (column.isFluentEditor) {
+      continue;
+    }
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
@@ -3164,9 +3191,7 @@ function getTableColumns(): ColumnType[] {
       column.showOverflowTooltip = true;
     }
     let fixed = column.fixed;
-    if (fixed === false) {
-      fixed = undefined;
-    } else if (fixed === true) {
+    if (fixed === true) {
       fixed = "left";
     }
     const isIcon = column.isIcon;

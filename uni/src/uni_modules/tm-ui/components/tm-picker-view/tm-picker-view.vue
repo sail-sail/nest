@@ -6,7 +6,7 @@ import { useTmConfig } from "../../libs/config";
 import pickerItem from './picker-item.vue';
 type TM_PICKER_X_ITEM = Record<string, any>
 type TM_PICKER_ITEM_INFO = Record<string, any>
-const proxy = getCurrentInstance()?.proxy ?? null;
+const proxy = getCurrentInstance()?.proxy || null;
 
 /**
  * @displayName 选择器容器
@@ -196,11 +196,11 @@ const getIdsByindexs = (indexs:number[]):{ids:Array<string|number>,data:TM_PICKE
         if(nodes.length-1 >= currentsIndex){
             id = nodes[currentsIndex][props.rangKey]
             str = nodes[currentsIndex][props.rangText]
-            children = nodes[currentsIndex]?.children??[]
+            children = nodes[currentsIndex]?.children||[]
         }else{
             id = nodes[0][props.rangKey]
             str = nodes[0][props.rangText]
-            children = nodes[0]?.children??[]
+            children = nodes[0]?.children||[]
         }
         ids.push(id)
         data.push(nodes)

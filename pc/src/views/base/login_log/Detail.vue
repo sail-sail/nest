@@ -133,7 +133,7 @@
           <CustomInput
             v-model="dialogModel.create_time_lbl"
             :placeholder="`${ ns('请输入') } ${ n('登录时间') }`"
-            :readonly="isLocked || isReadonly"
+            :readonly="true"
           ></CustomInput>
         </el-form-item>
         

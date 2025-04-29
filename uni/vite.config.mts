@@ -88,6 +88,9 @@ export default defineConfig({
             "isNotEmpty",
             "uniqueID",
           ],
+          "decimal.js": [
+            [ "default", "Decimal" ],
+          ],
           "@/tmui/components/tm-form/tm-form.vue": [
             [ "default", "TmForm" ],
           ],
@@ -106,7 +109,7 @@ export default defineConfig({
     //   dts: "./src/typings/components.d.ts",
     // }),
     Unocss({
-      configFile: "./uno.config.ts",
+      configFile: "./uno_uni.config.ts",
     }),
   ],
   resolve: {

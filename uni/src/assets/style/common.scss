@@ -3,27 +3,19 @@ page {
   flex-direction: column;
   width: 100%;
   height: 100%;
-}
-
-tm-form,tm-form .tmForm {
-  display: flex;
-  flex-direction: column;
-  flex: 1 0 0;
-  overflow-x: hidden;
-  overflow-y: auto;
+  --color-primary: #0163ff;
+  --color-readonly: #888888;
+  --font-size: 34rpx;
+  --page-bg: #fafafa;
+  font-size: var(--font-size);
+  background-color: var(--page-bg);
 }
 
 .tmFormItemLabel {
   text-align: right;
-  margin-right: 24rpx;
+  margin-right: 8rpx;
 }
 
-// .tmFormItem:has(.tmFormItemWrapContent .custom_input_readonly) {
-//   .tmFormItemWrap>.tmFormItemLabel>.tmFormRequired {
-//     color: gray;
-//   }
-// }
-
 .custom_select_readonly {
-  color: #666;
+  color: var(--color-readonly);
 }

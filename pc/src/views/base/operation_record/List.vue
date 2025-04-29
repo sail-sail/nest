@@ -19,7 +19,7 @@
       inline-message
       label-width="auto"
       
-      un-grid="~ cols-[repeat(auto-fill,280px)]"
+      un-grid="~ cols-[repeat(auto-fill,340px)]"
       un-gap="x-1.5 y-1.5"
       un-justify-items-end
       un-items-center
@@ -839,7 +839,7 @@ function getTableColumns(): ColumnType[] {
       label: "操作时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",

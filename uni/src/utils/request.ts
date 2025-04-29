@@ -145,6 +145,11 @@ export async function downloadFile(
     if (model.remove != null) {
       paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
     }
+    const usrStore = useUsrStore();
+    const authorization = usrStore.getAuthorization();
+    if (authorization) {
+      paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
+    }
     if (paramStr.startsWith("&")) {
       paramStr = paramStr.substring(1);
     }
@@ -202,6 +207,7 @@ export function getDownloadUrl(
   if (!type) {
     type = "tmpfile";
   }
+  const usrStore = useUsrStore();
   let paramStr = "";
   if (model.id) {
     paramStr = `${ paramStr }&id=${ encodeURIComponent(model.id) }`;
@@ -214,6 +220,10 @@ export function getDownloadUrl(
   }
   if (model.remove != null) {
     paramStr = `${ paramStr }&inline=${ encodeURIComponent(model.remove) }`;
+  }
+  const authorization = usrStore.getAuthorization();
+  if (authorization) {
+    paramStr = `${ paramStr }&authorization=${ encodeURIComponent(authorization) }`;
   }
   if (paramStr.startsWith("&")) {
     paramStr = paramStr.substring(1);
@@ -238,7 +248,7 @@ export function getImgUrl(
     filename?: string;
     inline?: "0"|"1";
   } | string,
-) {
+): string {
   if (typeof model === "string") {
     model = {
       id: model,
@@ -246,8 +256,9 @@ export function getImgUrl(
     };
   }
   if (!model.id) {
-    return;
+    return "";
   }
+  const usrStore = useUsrStore();
   let params = `id=${ encodeURIComponent(model.id) }`;
   if (model.filename) {
     params += `&filename=${ encodeURIComponent(model.filename) }`;
@@ -258,6 +269,9 @@ export function getImgUrl(
   if (model.format) {
     params += `&f=${ encodeURIComponent(model.format) }`;
   }
+  if (!model.width) {
+    model.width = 750;
+  }
   if (model.width) {
     params += `&w=${ encodeURIComponent(model.width.toString()) }`;
   }
@@ -266,6 +280,10 @@ export function getImgUrl(
   }
   if (model.quality) {
     params += `&q=${ encodeURIComponent(model.quality.toString()) }`;
+  }
+  const authorization = usrStore.getAuthorization();
+  if (authorization) {
+    params += `&authorization=${ encodeURIComponent(authorization) }`;
   }
   return `${ cfg.url }/oss/img?${ params }`;
 }
@@ -363,12 +381,18 @@ export function getAppid() {
   return cfg.appid;
 }
 
+let code2SessionPromise: Promise<LoginModel | undefined> | undefined = undefined;
+
 async function code2Session(
   model: {
     code: string;
     lang: string;
   },
 ) {
+  if (code2SessionPromise) {
+    return code2SessionPromise;
+  }
+  code2SessionPromise = (async function() {
   const appid = getAppid();
   const loginModel: LoginModel | undefined = await request({
     url: "wx_usr/code2Session",
@@ -381,7 +405,10 @@ async function code2Session(
     notLogin: true,
     notLoading: true,
   });
+    
   return loginModel;
+  })();
+  return await code2SessionPromise;
 }
 
 export async function uniLogin() {
@@ -410,16 +437,21 @@ export async function uniLogin() {
           lang: appLanguage,
         });
       } catch(err) {
-        console.error(err);
+        await uni.showModal({
+          title: "登录失败",
+          content: (err as Error).toString(),
+        });
+        throw err;
       }
       if (login_model) {
         usrStore.setAuthorization(login_model.authorization);
         usrStore.setUsrId(login_model.usr_id);
         usrStore.setUsername(login_model.username);
         usrStore.setTenantId(login_model.tenant_id);
-        usrStore.setLang(login_model.lang ?? "");
+        usrStore.setLang(login_model.lang || "");
         return true;
       }
+      return false;
     }
     await redirectToLogin();
     return false;
@@ -440,6 +472,7 @@ export async function uniLogin() {
       const res = await wxwGetAppid();
       const appid = res?.appid;
       const agentid = res?.agentid;
+      const scope = res?.scope;
       if (!appid) {
         await redirectToLogin();
         return false;
@@ -452,7 +485,7 @@ export async function uniLogin() {
       }
       url += `&redirect_uri=${ encodeURIComponent(redirect_uri) }`;
       url += `&response_type=code`;
-      url += `&scope=snsapi_base`;
+      url += `&scope=${ (scope || "snsapi_base") }`;
       url += `&state=${ encodeURIComponent(state) }`;
       url += "#wechat_redirect";
       location.replace(url);

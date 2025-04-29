@@ -78,4 +78,6 @@ declare global {
   interface TreeNodeData extends TreeNodeData2 {
   }
   
+  type DecimalType = InstanceType<typeof import("decimal.js").default>;
+  
 }

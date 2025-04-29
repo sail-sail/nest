@@ -1,7 +1,7 @@
 <template>
 <view class="content">
   <view class="text-area">
-    <text class="title text-[#0FF]">
+    <text class="title n-text-[#0FF]">
       {{ title }}
     </text>
   </view>

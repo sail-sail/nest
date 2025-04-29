@@ -495,6 +495,48 @@ export async function checkByUniqueFieldPermit(
   return;
 }
 
+// MARK: findOneOkFieldPermit
+/** 根据条件查找第一字段权限 */
+export async function findOneOkFieldPermit(
+  search?: Readonly<FieldPermitSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<FieldPermitModel> {
+  
+  const table = "base_field_permit";
+  const method = "findOneOkFieldPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_field_permit = validateOptionFieldPermit(
+    await findOneFieldPermit(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_field_permit;
+}
+
 // MARK: findOneFieldPermit
 /** 根据条件查找第一字段权限 */
 export async function findOneFieldPermit(
@@ -541,6 +583,43 @@ export async function findOneFieldPermit(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkFieldPermit
+/** 根据 id 查找字段权限 */
+export async function findByIdOkFieldPermit(
+  id?: FieldPermitId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<FieldPermitModel> {
+  
+  const table = "base_field_permit";
+  const method = "findByIdOkFieldPermit";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_field_permit = validateOptionFieldPermit(
+    await findByIdFieldPermit(
+      id,
+      options,
+    ),
+  );
+  
+  return model_field_permit;
 }
 
 // MARK: findByIdFieldPermit
