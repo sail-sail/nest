@@ -808,7 +808,7 @@ function getTableColumns(): ColumnType[] {
       label: "操作时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",

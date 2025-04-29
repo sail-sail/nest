@@ -23,6 +23,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "后台任务",
         component: () => import("@/views/base/background_task/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "后台任务",
+        },
       },
     ],
   },
@@ -32,9 +35,12 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "数据权限",
+        name: "数据权限TreeList",
         component: () => import("@/views/base/data_permit/TreeList.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "数据权限",
+        },
       },
     ],
   },
@@ -44,9 +50,12 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "部门",
+        name: "部门TreeList",
         component: () => import("@/views/base/dept/TreeList.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "部门",
+        },
       },
     ],
   },
@@ -59,6 +68,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "系统字典",
         component: () => import("@/views/base/dict/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "系统字典",
+        },
       },
     ],
   },
@@ -71,6 +83,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "系统字典明细",
         component: () => import("@/views/base/dict_detail/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "系统字典明细",
+        },
       },
     ],
   },
@@ -83,6 +98,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "业务字典",
         component: () => import("@/views/base/dictbiz/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "业务字典",
+        },
       },
     ],
   },
@@ -95,6 +113,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "业务字典明细",
         component: () => import("@/views/base/dictbiz_detail/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "业务字典明细",
+        },
       },
     ],
   },
@@ -107,6 +128,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "域名",
         component: () => import("@/views/base/domain/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "域名",
+        },
       },
     ],
   },
@@ -116,9 +140,12 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "字段权限",
+        name: "字段权限TreeList",
         component: () => import("@/views/base/field_permit/TreeList.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "字段权限",
+        },
       },
     ],
   },
@@ -128,9 +155,12 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "国际化",
+        name: "国际化TreeList",
         component: () => import("@/views/base/i18n/TreeList.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "国际化",
+        },
       },
     ],
   },
@@ -143,6 +173,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "图标库",
         component: () => import("@/views/base/icon/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "图标库",
+        },
       },
     ],
   },
@@ -155,6 +188,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "语言",
         component: () => import("@/views/base/lang/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "语言",
+        },
       },
     ],
   },
@@ -167,6 +203,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "登录日志",
         component: () => import("@/views/base/login_log/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "登录日志",
+        },
       },
     ],
   },
@@ -176,9 +215,12 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "菜单",
+        name: "菜单TreeList",
         component: () => import("@/views/base/menu/TreeList.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "菜单",
+        },
       },
     ],
   },
@@ -191,6 +233,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "操作记录",
         component: () => import("@/views/base/operation_record/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "操作记录",
+        },
       },
     ],
   },
@@ -203,6 +248,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "业务选项",
         component: () => import("@/views/base/optbiz/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "业务选项",
+        },
       },
     ],
   },
@@ -215,6 +263,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "系统选项",
         component: () => import("@/views/base/options/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "系统选项",
+        },
       },
     ],
   },
@@ -227,6 +278,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "组织",
         component: () => import("@/views/base/org/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "组织",
+        },
       },
     ],
   },
@@ -236,9 +290,12 @@ export const routesGen: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        name: "按钮权限",
+        name: "按钮权限TreeList",
         component: () => import("@/views/base/permit/TreeList.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "按钮权限",
+        },
       },
     ],
   },
@@ -251,6 +308,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "角色",
         component: () => import("@/views/base/role/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "角色",
+        },
       },
     ],
   },
@@ -263,6 +323,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "租户",
         component: () => import("@/views/base/tenant/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "租户",
+        },
       },
     ],
   },
@@ -275,6 +338,9 @@ export const routesGen: Array<RouteRecordRaw> = [
         name: "用户",
         component: () => import("@/views/base/usr/List.vue"),
         props: (route) => route.query,
+        meta: {
+          name: "用户",
+        },
       },
     ],
   },
