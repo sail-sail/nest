@@ -551,3 +551,20 @@ html:is(.dark) {
   width: 12px;
   height: 12px;
 }
+
+.ql-editor {
+  flex: 1 0 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+html .ql-container {
+  height: auto;
+}
+html .ql-toolbar button svg,
+html .ql-toolbar button polygon,
+html .ql-toolbar button path,
+html .ql-toolbar span.ql-picker-label svg,
+html .ql-toolbar span.ql-picker-label polygon,
+html .ql-toolbar span.ql-picker-label path {
+  color: var(--el-text-color-regular);
+}

@@ -1003,27 +1003,31 @@ async fn get_where_query(
       if let Some(<#=modelLabel#>_like) = <#=modelLabel#>_like {<#
         if (!langTableRecords.some((record) => record.COLUMN_NAME === modelLabel)) {
         #>
-        where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
-        args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());<#
-        } else {
-        #><#
-        if (isUseI18n) {
-        #>
-        if server_i18n_enable {
-          where_query.push_str(" and (<#=column_name#>_lbl.<#=foreignKey.lbl#> like ? or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ?)");
-          let like_str = format!("%{}%", sql_like(&<#=modelLabel#>_like));
-          args.push(like_str.as_str().into());
-          args.push(like_str.as_str().into());
-        } else {
-          where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
+        if !<#=modelLabel#>_like.is_empty() {
+          where_query.push_str(" and <#=modelLabel#> like ?");
           args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());
         }<#
         } else {
         #>
-        where_query.push_str(" and <#=column_name#>_lbl.<#=foreignKey.lbl#> like ?");
-        args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());<#
-        }
-        #><#
+        if !<#=modelLabel#>_like.is_empty() {<#
+          if (isUseI18n) {
+          #>
+          if server_i18n_enable {
+            where_query.push_str(" and (<#=modelLabel#> like ? or <#=opts.langTable.opts.table_name#>.<#=modelLabel#> like ?)");
+            let like_str = format!("%{}%", sql_like(&<#=modelLabel#>_like));
+            args.push(like_str.as_str().into());
+            args.push(like_str.as_str().into());
+          } else {
+            where_query.push_str(" and <#=modelLabel#> like ?");
+            args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());
+          }<#
+          } else {
+          #>
+          where_query.push_str(" and <#=modelLabel#> like ?");
+          args.push(format!("%{}%", sql_like(&<#=modelLabel#>_like)).into());<#
+          }
+          #>
+        }<#
         }
         #>
       }

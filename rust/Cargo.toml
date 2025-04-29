@@ -175,8 +175,16 @@ path = "main.rs"
 [profile.release]
 panic = "unwind"
 
+
+
 [profile.dev]
-debug = true
+debug = 0
+
+[profile.dev.package.generated]
+debug = 1
+
+[profile.dev.package.app]
+debug = 1
 
 [[bin]]
 name = "schema"

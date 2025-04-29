@@ -106,7 +106,7 @@ impl FromRow<'_, MySqlRow> for PermitModel {
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "PermitFieldComment")]
 #[allow(dead_code)]
 pub struct PermitFieldComment {
   /// ID
@@ -133,7 +133,7 @@ pub struct PermitFieldComment {
 }
 
 #[derive(InputObject, Default)]
-#[graphql(rename_fields = "snake_case")]
+#[graphql(rename_fields = "snake_case", name = "PermitSearch")]
 #[allow(dead_code)]
 pub struct PermitSearch {
   /// ID
@@ -187,6 +187,12 @@ impl std::fmt::Debug for PermitSearch {
     // 菜单
     if let Some(ref menu_id) = self.menu_id {
       item = item.field("menu_id", menu_id);
+    }
+    if let Some(ref menu_id_lbl) = self.menu_id_lbl {
+      item = item.field("menu_id_lbl", menu_id_lbl);
+    }
+    if let Some(ref menu_id_lbl_like) = self.menu_id_lbl_like {
+      item = item.field("menu_id_lbl_like", menu_id_lbl_like);
     }
     if let Some(ref menu_id_is_null) = self.menu_id_is_null {
       item = item.field("menu_id_is_null", menu_id_is_null);

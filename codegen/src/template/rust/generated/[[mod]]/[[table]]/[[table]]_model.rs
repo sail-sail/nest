@@ -1617,11 +1617,7 @@ impl FromRow<'_, MySqlRow> for <#=tableUP#>Model {
 }
 
 #[derive(SimpleObject, Default, Serialize, Deserialize, Debug)]
-#[graphql(rename_fields = "snake_case"<#
-if (table === "i18n") {
-#>, name = "<#=tableUP#>FieldComment"<#
-}
-#>)]
+#[graphql(rename_fields = "snake_case", name = "<#=tableUP#>FieldComment")]
 #[allow(dead_code)]
 pub struct <#=tableUP#>FieldComment {<#
   for (let i = 0; i < columns.length; i++) {
@@ -1710,11 +1706,7 @@ pub struct <#=tableUP#>FieldComment {<#
 }
 
 #[derive(InputObject, Default)]
-#[graphql(rename_fields = "snake_case"<#
-if (table === "i18n") {
-#>, name = "<#=tableUP#>Search"<#
-}
-#>)]
+#[graphql(rename_fields = "snake_case", name = "<#=tableUP#>Search")]
 #[allow(dead_code)]
 pub struct <#=tableUP#>Search {
   /// ID
@@ -1839,10 +1831,10 @@ pub struct <#=tableUP#>Search {
   #[graphql(skip)]<#
   } else {
   #>
-  #[graphql(name = "<#=column_name#>_<#=foreignKey.lbl#>_like")]<#
+  #[graphql(name = "<#=modelLabel#>_like")]<#
   }
   #>
-  pub <#=column_name#>_<#=foreignKey.lbl#>_like: Option<String>,<#
+  pub <#=modelLabel#>_like: Option<String>,<#
     } else if (foreignKey.lbl) {
   #>
   /// <#=column_comment#><#
@@ -2047,6 +2039,8 @@ impl std::fmt::Debug for <#=tableUP#>Search {
       const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
         return item.substring(0, 1).toUpperCase() + item.substring(1);
       }).join("");
+      const modelLabel = column.modelLabel;
+      const modelLabel_rust = rustKeyEscape(modelLabel);
       const isPassword = column.isPassword;
       const isEncrypt = column.isEncrypt;
       if (isEncrypt) continue;
@@ -2057,7 +2051,25 @@ impl std::fmt::Debug for <#=tableUP#>Search {
     // <#=column_comment#>
     if let Some(ref <#=column_name_rust#>) = self.<#=column_name_rust#> {
       item = item.field("<#=column_name_rust#>", <#=column_name_rust#>);
+    }<#
+    if (modelLabel) {
+    #>
+    if let Some(ref <#=modelLabel_rust#>) = self.<#=modelLabel_rust#> {
+      item = item.field("<#=modelLabel_rust#>", <#=modelLabel_rust#>);
     }
+    if let Some(ref <#=modelLabel#>_like) = self.<#=modelLabel#>_like {
+      item = item.field("<#=modelLabel#>_like", <#=modelLabel#>_like);
+    }<#
+    } else {
+    #>
+    if let Some(ref <#=column_name#>_<#=foreignKey.lbl#>) = self.<#=column_name#>_<#=foreignKey.lbl#> {
+      item = item.field("<#=column_name#>_<#=foreignKey.lbl#>", <#=column_name#>_<#=foreignKey.lbl#>);
+    }
+    if let Some(ref <#=column_name#>_<#=foreignKey.lbl#>_like) = self.<#=column_name#>_<#=foreignKey.lbl#>_like {
+      item = item.field("<#=column_name#>_<#=foreignKey.lbl#>_like", <#=column_name#>_<#=foreignKey.lbl#>_like);
+    }<#
+    }
+    #>
     if let Some(ref <#=column_name_rust#>_is_null) = self.<#=column_name_rust#>_is_null {
       item = item.field("<#=column_name_rust#>_is_null", <#=column_name_rust#>_is_null);
     }<#
