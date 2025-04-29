@@ -683,6 +683,48 @@ export async function checkByUniqueSeo(
   return;
 }
 
+// MARK: findOneOkSeo
+/** 根据条件查找第一SEO优化 */
+export async function findOneOkSeo(
+  search?: Readonly<SeoSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<SeoModel> {
+  
+  const table = "nuxt_seo";
+  const method = "findOneOkSeo";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_seo = validateOptionSeo(
+    await findOneSeo(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_seo;
+}
+
 // MARK: findOneSeo
 /** 根据条件查找第一SEO优化 */
 export async function findOneSeo(
@@ -729,6 +771,43 @@ export async function findOneSeo(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkSeo
+/** 根据 id 查找SEO优化 */
+export async function findByIdOkSeo(
+  id?: SeoId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<SeoModel> {
+  
+  const table = "nuxt_seo";
+  const method = "findByIdOkSeo";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_seo = validateOptionSeo(
+    await findByIdSeo(
+      id,
+      options,
+    ),
+  );
+  
+  return model_seo;
 }
 
 // MARK: findByIdSeo
