@@ -697,8 +697,8 @@ async function refreshDropdownWidth() {
     }
   }
   if (maxWidth > popperWidth) {
-    dropdownListEl.closest(".el-select-dropdown").style.minWidth = `${ (maxWidth + 52) }px`;
-    dropdownListEl.style.minWidth = `${ (maxWidth + 52) }px`;
+    dropdownListEl.closest(".el-select-dropdown").style.minWidth = `${ (maxWidth + 56) }px`;
+    dropdownListEl.style.minWidth = `${ (maxWidth + 56) }px`;
   }
 }
 
@@ -848,8 +848,8 @@ defineExpose({
   :deep(.el-tag) {
     height: auto;
     line-height: normal;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 2px;
+    padding-bottom: 2px;
     box-sizing: border-box;
     .el-tag__content {
       white-space: normal;
@@ -860,7 +860,9 @@ defineExpose({
   }
 }
 .custom_select_placeholder {
-  @apply whitespace-pre-wrap break-words text-[var(--el-text-color-secondary)];
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--el-text-color-secondary);
 }
 .custom_select_space_normal {
   :deep(.el-select__placeholder) {

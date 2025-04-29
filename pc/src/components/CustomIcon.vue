@@ -20,6 +20,7 @@
     }"
     un-flex="~"
     un-items-center
+    un-justify-center
     un-h="full"
     un-aspect="square"
     un-p=".5"
@@ -199,7 +200,7 @@ initFrame();
   mask-repeat: no-repeat;
   mask-size: 100% 100%;
   background-color: currentColor;
-  color: inherit;
+  // color: inherit;
   display: inline-block;
   vertical-align: middle;
   width: 100%;
@@ -207,12 +208,12 @@ initFrame();
   color: var(--el-text-color-regular);
 }
 .custom_icon_align_left {
-  @apply justify-start;
+  justify-content: flex-start;
 }
 .custom_icon_align_center {
-  @apply justify-center;
+  justify-content: center;
 }
 .custom_icon_align_right {
-  @apply justify-end;
+  justify-content: flex-end;
 }
 </style>

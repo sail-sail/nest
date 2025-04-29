@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppLoading: typeof import('./../components/AppLoading/AppLoading.vue')['default']
     CustomSelect: typeof import('./../components/CustomSelect/CustomSelect.vue')['default']
+    CustomSelectModal: typeof import('./../components/CustomSelectModal/CustomSelectModal.vue')['default']
     DictSelect: typeof import('./../components/DictSelect/DictSelect.vue')['default']
     DictbizSelect: typeof import('./../components/DictbizSelect/DictbizSelect.vue')['default']
     CustomInput: typeof import('./../components/CustomInput/CustomInput.vue')['default']
