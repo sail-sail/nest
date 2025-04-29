@@ -710,6 +710,48 @@ export async function checkByUniqueDomain(
   return;
 }
 
+// MARK: findOneOkDomain
+/** 根据条件查找第一域名 */
+export async function findOneOkDomain(
+  search?: Readonly<DomainSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DomainModel> {
+  
+  const table = "base_domain";
+  const method = "findOneOkDomain";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_domain = validateOptionDomain(
+    await findOneDomain(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_domain;
+}
+
 // MARK: findOneDomain
 /** 根据条件查找第一域名 */
 export async function findOneDomain(
@@ -756,6 +798,43 @@ export async function findOneDomain(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkDomain
+/** 根据 id 查找域名 */
+export async function findByIdOkDomain(
+  id?: DomainId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DomainModel> {
+  
+  const table = "base_domain";
+  const method = "findByIdOkDomain";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_domain = validateOptionDomain(
+    await findByIdDomain(
+      id,
+      options,
+    ),
+  );
+  
+  return model_domain;
 }
 
 // MARK: findByIdDomain

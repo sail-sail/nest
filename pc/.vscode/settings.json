@@ -22,7 +22,8 @@
     "**/.npmrc": true,
     "public/ejsexcel.min.js": true,
     "**/.husky": true,
-    "graphql.config.js": true
+    "graphql.config.js": true,
+    "uno.config.ts": true
   },
   "search.exclude": {
     "**/.git": true,
@@ -47,7 +48,8 @@
     "**/.npmrc": true,
     "public/ejsexcel.min.js": true,
     "**/.husky": true,
-    "graphql.config.js": true
+    "graphql.config.js": true,
+    "uno.config.ts": true
   },
   "git.timeline.showUncommitted": true,
   "git.blame.editorDecoration.template": "${subject}, ${authorName} (${authorDateAgo})",

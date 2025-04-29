@@ -37,7 +37,7 @@
     "pair-diff.patterns": [
       {
         "source": "./deno/gen/**/*/*.ts",
-        "target": "./codegen/template/<basename>"
+        "target": "./codegen/src/template/<basename>"
       }
     ],
     "diffEditor.useInlineViewWhenSpaceIsLimited": false,

@@ -913,6 +913,48 @@ export async function checkByUniqueDept(
   return;
 }
 
+// MARK: findOneOkDept
+/** 根据条件查找第一部门 */
+export async function findOneOkDept(
+  search?: Readonly<DeptSearch>,
+  sort?: SortInput[],
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DeptModel> {
+  
+  const table = "base_dept";
+  const method = "findOneOkDept";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (search) {
+      msg += ` search:${ getDebugSearch(search) }`;
+    }
+    if (sort) {
+      msg += ` sort:${ JSON.stringify(sort) }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_dept = validateOptionDept(
+    await findOneDept(
+      search,
+      sort,
+      options,
+    ),
+  );
+  
+  return model_dept;
+}
+
 // MARK: findOneDept
 /** 根据条件查找第一部门 */
 export async function findOneDept(
@@ -959,6 +1001,43 @@ export async function findOneDept(
   );
   const model = models[0];
   return model;
+}
+
+// MARK: findByIdOkDept
+/** 根据 id 查找部门 */
+export async function findByIdOkDept(
+  id?: DeptId | null,
+  options?: {
+    is_debug?: boolean;
+  },
+): Promise<DeptModel> {
+  
+  const table = "base_dept";
+  const method = "findByIdOkDept";
+  
+  const is_debug = get_is_debug(options?.is_debug);
+  
+  if (is_debug !== false) {
+    let msg = `${ table }.${ method }:`;
+    if (id) {
+      msg += ` id:${ id }`;
+    }
+    if (options && Object.keys(options).length > 0) {
+      msg += ` options:${ JSON.stringify(options) }`;
+    }
+    log(msg);
+    options = options ?? { };
+    options.is_debug = false;
+  }
+  
+  const model_dept = validateOptionDept(
+    await findByIdDept(
+      id,
+      options,
+    ),
+  );
+  
+  return model_dept;
 }
 
 // MARK: findByIdDept
