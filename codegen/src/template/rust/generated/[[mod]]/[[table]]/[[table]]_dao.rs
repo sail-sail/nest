@@ -2822,16 +2822,105 @@ pub async fn exists_<#=table#>(
     );
   }
   
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(false);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(false);
+    }
+  }<#
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (column.ignoreCodegen) continue;
+    if (column.isVirtual) continue;
+    const column_name = column.COLUMN_NAME;
+    if (column_name === 'id') continue;
+    if (
+      column_name === "tenant_id" ||
+      column_name === "is_sys" ||
+      column_name === "is_deleted"
+    ) continue;
+    const column_name_rust = rustKeyEscape(column.COLUMN_NAME); 
+    const data_type = column.DATA_TYPE;
+    const column_type = column.COLUMN_TYPE?.toLowerCase() || "";
+    const column_comment = column.COLUMN_COMMENT || "";
+    const isPassword = column.isPassword;
+    if (isPassword) {
+      continue;
+    }
+    if (column.isEncrypt) {
+      continue;
+    }
+    const foreignKey = column.foreignKey;
+    const foreignTable = foreignKey && foreignKey.table;
+    const foreignTableUp = foreignTable && foreignTable.substring(0, 1).toUpperCase()+foreignTable.substring(1);
+    const foreignTable_Up = foreignTableUp && foreignTableUp.split("_").map(function(item) {
+      return item.substring(0, 1).toUpperCase() + item.substring(1);
+    }).join("");
+  #><#
+    if (
+      [
+        "is_hidden",
+        "is_sys",
+      ].includes(column_name)
+      || foreignKey
+      || column.dict || column.dictbiz
+    ) {
+  #>
+  // <#=column_comment#>
+  if let Some(search) = &search {
+    if search.<#=column_name_rust#>.is_some() {
+      let len = search.<#=column_name_rust#>.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.<#=column_name#>.length > {ids_limit}"));
+      }
+    }
+  }<#
+    }
+  #><#
+  }
+  #>
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count_<#=table#>(
-    search,
+  let mut args = QueryArgs::new();
+  
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  
+  let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
+  
+  let args = args.into();<#
+  if (cache) {
+  #>
+  
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = Some(options);<#
+  }
+  #>
+  
+  let res: Option<(bool,)> = query_one(
+    sql,
+    args,
     options,
   ).await?;
   
-  Ok(total > 0)
+  Ok(res
+    .map(|item| item.0)
+    .unwrap_or_default())
 }
 
 // MARK: exists_by_id_<#=table#>
@@ -2868,12 +2957,12 @@ pub async fn exists_by_id_<#=table#>(
     ..Default::default()
   }.into();
   
-  let res = exists_<#=table#>(
+  let exists = exists_<#=table#>(
     search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(exists)
 }
 
 // MARK: find_by_unique_<#=table#>
