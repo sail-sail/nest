@@ -25,10 +25,10 @@
             "es7": false,
             "swc": true,
             "urlCheck": false,
-            "minifyWXSS": false,
-            "minifyWXML": false,
+            "minifyWXSS": true,
+            "minifyWXML": true,
             "autoAudits": false,
-            "ignoreDevUnusedFiles": false,
+            "ignoreDevUnusedFiles": true,
             "checkInvalidKey": false,
             "showES6CompileOption": false,
             "compileHotReLoad": true
