@@ -500,7 +500,7 @@ export interface TableCloumn {
    linkListMaxSize?: number,
   
   /**
-   * 附件或者图片的accept, 图片默认为image/*, 附件默认为*
+   * 附件或者图片的accept, 图片默认为image/svg+xml,image/png,image/jpeg,image/webp, 附件默认为*
    * 
    */
   attAccept?: string,
