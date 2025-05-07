@@ -746,16 +746,59 @@ pub async fn exists_permit(
     );
   }
   
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(false);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(false);
+    }
+  }
+  // 菜单
+  if let Some(search) = &search {
+    if search.menu_id.is_some() {
+      let len = search.menu_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.menu_id.length > {ids_limit}"));
+      }
+    }
+  }
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count_permit(
-    search,
+  let mut args = QueryArgs::new();
+  
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  
+  let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = Some(options);
+  
+  let res: Option<(bool,)> = query_one(
+    sql,
+    args,
     options,
   ).await?;
   
-  Ok(total > 0)
+  Ok(res
+    .map(|item| item.0)
+    .unwrap_or_default())
 }
 
 // MARK: exists_by_id_permit
@@ -792,12 +835,12 @@ pub async fn exists_by_id_permit(
     ..Default::default()
   }.into();
   
-  let res = exists_permit(
+  let exists = exists_permit(
     search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(exists)
 }
 
 // MARK: find_by_unique_permit
