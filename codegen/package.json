@@ -32,8 +32,8 @@
   "devDependencies": {
     "@swc/wasm": "1.11.24",
     "@types/fs-extra": "11.0.4",
-    "@types/node": "22.15.9",
-    "@types/shelljs": "0.8.15",
+    "@types/node": "22.15.17",
+    "@types/shelljs": "0.8.16",
     "@types/uuid": "10.0.0",
     "ts-node": "10.9.2",
     "typescript": "5.8.3"
