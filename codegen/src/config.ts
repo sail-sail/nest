@@ -845,6 +845,12 @@ export interface TablesConfigItem {
      */
     defaultSort?: { prop: string, order: "ascending"|"descending" };
     
+    
+    /**
+     * 固定的二级排序
+     */
+    secondSorts?: { prop: string, order: "ascending"|"descending" }[];
+    
     /**
      * 不允许删除
      */
