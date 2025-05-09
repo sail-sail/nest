@@ -965,14 +965,12 @@ pub async fn find_all_usr(
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
-      prop: "create_time".into(),
+      prop: "create_time".to_string(),
       order: SortOrderEnum::Asc,
     });
   }
   
-  let sort = sort.into();
-  
-  let order_by_query = get_order_by_query(sort);
+  let order_by_query = get_order_by_query(Some(sort));
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
