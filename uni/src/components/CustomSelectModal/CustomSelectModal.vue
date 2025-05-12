@@ -147,13 +147,37 @@
         un-p="t-2"
         un-box-border
         un-m="x-4"
+        un-flex="~"
+        un-items="center"
+        un-gap="x-2"
       >
-        <tm-input
-          v-model="searchStr"
-          un-w="full"
-          placeholder="请输入搜索内容"
-          clearable
-        ></tm-input>
+        
+        <view
+          un-flex="~ [1_0_0]"
+          un-overflow-hidden
+          un-items="center"
+        >
+          
+          <tm-input
+            v-model="searchStr"
+            width="100%"
+            placeholder="请输入搜索内容"
+            show-clear
+          ></tm-input>
+          
+        </view>
+        
+        <view
+          v-if="props.multiple && props.showSelectAll && !props.readonly && options4SelectV2.length > 0"
+        >
+          
+          <tm-checkbox
+            :model-value="selectedValueArr.length === options4SelectV2Computed.length"
+            @change="onSelectAll"
+          ></tm-checkbox>
+          
+        </view>
+        
       </view>
       
       <scroll-view
@@ -302,6 +326,7 @@ const props = withDefaults(
     pageInited?: boolean;
     clearable?: boolean;
     multiple?: boolean;
+    showSelectAll?: boolean;
     readonly?: boolean;
   }>(),
   {
@@ -321,6 +346,7 @@ const props = withDefaults(
     pageInited: true,
     clearable: true,
     multiple: false,
+    showSelectAll: true,
     readonly: false,
   },
 );
@@ -390,16 +416,13 @@ function onSelect(value: string) {
   }
 }
 
-// function onTagRemove(value: string) {
-//   if (props.multiple) {
-//     selectedValue.value = selectedValueArr.value
-//       .filter((item) => item !== value)
-//       .map((item) => item.trim())
-//       .filter((item) => item);
-//   } else {
-//     selectedValue.value = "";
-//   }
-// }
+function onSelectAll() {
+  if (selectedValueArr.value.length === options4SelectV2Computed.value.length) {
+    selectedValue.value = [ ];
+  } else {
+    selectedValue.value = options4SelectV2Computed.value.map((item) => item.value);
+  }
+}
 
 const modelValueIsEmpty = computed(() => {
   if (!props.modelValue) {
