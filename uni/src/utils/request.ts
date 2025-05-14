@@ -247,6 +247,7 @@ export function getImgUrl(
     quality?: number;
     filename?: string;
     inline?: "0"|"1";
+    notAuthorization?: boolean;
   } | string,
 ): string {
   if (typeof model === "string") {
@@ -281,9 +282,11 @@ export function getImgUrl(
   if (model.quality) {
     params += `&q=${ encodeURIComponent(model.quality.toString()) }`;
   }
-  const authorization = usrStore.getAuthorization();
-  if (authorization) {
-    params += `&authorization=${ encodeURIComponent(authorization) }`;
+  if (model.notAuthorization !== true) {
+    const authorization = usrStore.getAuthorization();
+    if (authorization) {
+      params += `&authorization=${ encodeURIComponent(authorization) }`;
+    }
   }
   return `${ cfg.url }/oss/img?${ params }`;
 }
