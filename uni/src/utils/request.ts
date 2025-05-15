@@ -423,15 +423,22 @@ export async function uniLogin() {
     providers = providerInfo.provider;
   } catch (err) { /* empty */ }
   if (providers && providers.includes("weixin")) {
+    let loginRes: UniApp.LoginRes | undefined;
+    try {
+      loginRes = await uni.login({ provider: "weixin" });
+    } catch (err) { /* empty */ }
+    const code = loginRes?.code;
+    if (!code) {
+      indexStore.setIsGuest(true);
+      return false;
+    }
     const appBaseInfo = indexStore.getAppBaseInfo();
-    let appLanguage = appBaseInfo.appLanguage || "zh-CN";
+    let appLanguage = appBaseInfo?.appLanguage || "zh-CN";
     if (appLanguage === "en") {
       appLanguage = "en-US";
     } else if (["zh", "zh-hans", "zh-hant", "zh-hans-cn"].includes(appLanguage?.toLocaleLowerCase())) {
       appLanguage = "zh-CN";
     }
-    const loginRes = await uni.login({ provider: "weixin" });
-    const code = loginRes?.code;
     if (code) {
       let login_model: LoginModel | undefined;
       try {
