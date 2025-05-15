@@ -41,6 +41,7 @@
 >
   <div
     un-w="full"
+    un-min="h-8"
     un-whitespace-nowrap
     un-flex="~"
     un-justify="start"
