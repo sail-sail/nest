@@ -133,7 +133,7 @@
     :show-footer="false"
     :content-padding="0"
     max-height="90%"
-    :overlay-click="false"
+    :overlay-click="true"
     v-bind="$attrs"
   >
     
