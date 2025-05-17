@@ -43,7 +43,7 @@ smallvec = { version = "1.15.0", features = ["union", "serde"] }
 uuid = { version = "1.16.0", features = ["serde", "v4", "fast-rng"] }
 deadpool = "0.12.2"
 deadpool-redis = "0.20.0"
-redis = { version = "0.30.0", features = ["tokio-comp"], default-features = false }
+redis = { version = "0.31.0", features = ["tokio-comp"], default-features = false }
 # pin-project = "1.1"
 bigdecimal = "0.4.8"
 time = "0.3.41"
@@ -174,8 +174,13 @@ path = "main.rs"
 
 [profile.release]
 panic = "unwind"
+debug = 0
 
+[profile.release.package.generated]
+debug = 1
 
+[profile.release.package.app]
+debug = 2
 
 [profile.dev]
 debug = 0
@@ -184,7 +189,7 @@ debug = 0
 debug = 1
 
 [profile.dev.package.app]
-debug = 1
+debug = 2
 
 [[bin]]
 name = "schema"
