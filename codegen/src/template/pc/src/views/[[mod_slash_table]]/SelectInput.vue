@@ -28,6 +28,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
   :class="{
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
+    'select_input_isShowModelLabel': hasModelLabel && modelLabel != inputValue,
   }"
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
@@ -35,7 +36,7 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
 >
   <CustomInput
     v-bind="$attrs"
-    :model-value="inputValue || props.modelLabel"
+    :model-value="hasModelLabel ? modelLabel : inputValue"
     :readonly="props.labelReadonly"
     :clearable="false"
     class="select_input"
@@ -111,9 +112,14 @@ if (/^[A-Za-z]+$/.test(Table_Up.charAt(Table_Up.length - 1))
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly select_input_readonly"
+    :class="{
+      label_readonly_1: props.labelReadonly,
+      label_readonly_0: !props.labelReadonly,
+      'select_input_isShowModelLabel': hasModelLabel && modelLabel != inputValue,
+    }"
     v-bind="$attrs"
   >
-    {{ inputValue || props.modelLabel }}
+    {{ hasModelLabel ? modelLabel : inputValue }}
   </div>
 </template>
 </template>
@@ -168,7 +174,7 @@ const props = withDefaults(
   }>(),
   {
     modelValue: undefined,
-    modelLabel: "",
+    modelLabel: undefined,
     multiple: false,
     placeholder: undefined,
     disabled: false,
@@ -185,6 +191,17 @@ let oldInputValue = $ref("");
 let modelValue = $ref(props.modelValue);
 let selectedValue: <#=modelName#> | (<#=modelName#> | undefined)[] | null | undefined = undefined;
 
+let modelLabel = $ref(props.modelLabel);
+let hasModelLabel = $ref(false);
+
+watch(
+  () => props.modelLabel,
+  () => {
+    hasModelLabel = true;
+    modelLabel = props.modelLabel;
+  },
+);
+
 watch(
   () => props.modelValue,
   () => {
@@ -192,7 +209,7 @@ watch(
   },
   {
     immediate: true,
-  }
+  },
 );
 
 watch(
@@ -274,6 +291,7 @@ async function refreshInputValue() {
   } else {
     models = await getModelsByIds(modelValueArr);
   }
+  selectedValue = undefined;
   inputValue = models.map((item) => item?.<#=opts?.lbl_field || "lbl"#> || "").join(",");
   oldInputValue = inputValue;
 }
@@ -284,6 +302,7 @@ async function onClear(e?: PointerEvent) {
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  modelLabel = inputValue;
   emit("update:modelLabel", inputValue);
   emit("change");
   emit("clear");
@@ -340,6 +359,7 @@ async function onInput(
   inputValue = selectedModels.map((item) => item.lbl || "").join(",");
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  modelLabel = inputValue;
   emit("update:modelLabel", inputValue);
 }
 
