@@ -6,7 +6,7 @@ import {
   defineConfig,
   presetAttributify,
   presetIcons,
-  presetWind4,
+  presetWind3,
   transformerAttributifyJsx,
   transformerCompileClass,
   transformerVariantGroup,
@@ -35,7 +35,7 @@ export default defineConfig({
     ],
   ],
   presets: [
-    presetWind4(),
+    presetWind3(),
     presetRemToPx(),
     presetIcons({
       warn: true,

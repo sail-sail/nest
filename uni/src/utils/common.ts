@@ -3,6 +3,30 @@ import type {
   Query,
 } from "#/types.ts";
 
+/** 小程序升级检测 */
+export function appCheckUpgrade() {
+  const updateManager = uni.getUpdateManager();
+
+  updateManager.onCheckForUpdate(function (res) {
+    // 请求完新版本信息的回调
+    // console.log(res.hasUpdate);
+  });
+
+  updateManager.onUpdateReady(async function (res) {
+    // const {
+    //   confirm,
+    // } = await uni.showModal({
+    //   title: "更新提示",
+    //   content: "新版本已经准备好，是否重启应用？",
+    // });
+    // if (confirm) {
+    //   updateManager.applyUpdate();
+    // }
+    updateManager.applyUpdate();
+  });
+
+}
+
 export async function getDict(
   codes: string[],
   opt?: GqlOpt,
