@@ -550,9 +550,7 @@ pub async fn find_all_operation_record(
     });
   }
   
-  let sort = sort.into();
-  
-  let order_by_query = get_order_by_query(sort);
+  let order_by_query = get_order_by_query(Some(sort));
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -986,16 +984,69 @@ pub async fn exists_operation_record(
     );
   }
   
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(false);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(false);
+    }
+  }
+  // 操作人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count_operation_record(
-    search,
+  let mut args = QueryArgs::new();
+  
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  
+  let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
+  
+  let args = args.into();
+  
+  let res: Option<(bool,)> = query_one(
+    sql,
+    args,
     options,
   ).await?;
   
-  Ok(total > 0)
+  Ok(res
+    .map(|item| item.0)
+    .unwrap_or_default())
 }
 
 // MARK: exists_by_id_operation_record
@@ -1032,12 +1083,12 @@ pub async fn exists_by_id_operation_record(
     ..Default::default()
   }.into();
   
-  let res = exists_operation_record(
+  let exists = exists_operation_record(
     search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(exists)
 }
 
 // MARK: find_by_unique_operation_record

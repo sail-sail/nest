@@ -965,14 +965,12 @@ pub async fn find_all_usr(
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
-      prop: "create_time".into(),
+      prop: "create_time".to_string(),
       order: SortOrderEnum::Asc,
     });
   }
   
-  let sort = sort.into();
-  
-  let order_by_query = get_order_by_query(sort);
+  let order_by_query = get_order_by_query(Some(sort));
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -1604,16 +1602,203 @@ pub async fn exists_usr(
     );
   }
   
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(false);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(false);
+    }
+  }
+  // 所属角色
+  if let Some(search) = &search {
+    if search.role_ids.is_some() {
+      let len = search.role_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.role_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 所属部门
+  if let Some(search) = &search {
+    if search.dept_ids.is_some() {
+      let len = search.dept_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.dept_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 所属组织
+  if let Some(search) = &search {
+    if search.org_ids.is_some() {
+      let len = search.org_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.org_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 默认组织
+  if let Some(search) = &search {
+    if search.default_org_id.is_some() {
+      let len = search.default_org_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.default_org_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 类型
+  if let Some(search) = &search {
+    if search.r#type.is_some() {
+      let len = search.r#type.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.type.length > {ids_limit}"));
+      }
+    }
+  }
+  // 锁定
+  if let Some(search) = &search {
+    if search.is_locked.is_some() {
+      let len = search.is_locked.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.is_locked.length > {ids_limit}"));
+      }
+    }
+  }
+  // 启用
+  if let Some(search) = &search {
+    if search.is_enabled.is_some() {
+      let len = search.is_enabled.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.is_enabled.length > {ids_limit}"));
+      }
+    }
+  }
+  // 创建人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 隐藏记录
+  if let Some(search) = &search {
+    if search.is_hidden.is_some() {
+      let len = search.is_hidden.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.is_hidden.length > {ids_limit}"));
+      }
+    }
+  }
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count_usr(
-    search,
+  let mut args = QueryArgs::new();
+  
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  
+  let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = Some(options);
+  
+  let res: Option<(bool,)> = query_one(
+    sql,
+    args,
     options,
   ).await?;
   
-  Ok(total > 0)
+  Ok(res
+    .map(|item| item.0)
+    .unwrap_or_default())
 }
 
 // MARK: exists_by_id_usr
@@ -1650,12 +1835,12 @@ pub async fn exists_by_id_usr(
     ..Default::default()
   }.into();
   
-  let res = exists_usr(
+  let exists = exists_usr(
     search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(exists)
 }
 
 // MARK: find_by_unique_usr
