@@ -16,7 +16,12 @@ let launchOptions: App.LaunchShowOption | undefined;
   
 let uid = "";
 
+let _safeTop = uni.getStorageSync<number | undefined>("indexStore._safeTop");
+let _safeWidth = uni.getStorageSync<number | undefined>("indexStore._safeWidth");
 let accountInfo: UniApp.AccountInfo | undefined;
+
+/** 是否游客模式 */
+const isGuest = ref(false);
 
 export default function() {
   
@@ -70,7 +75,9 @@ export default function() {
   
   function getAppBaseInfo() {
     if (!appBaseInfo) {
-      appBaseInfo = uni.getAppBaseInfo();
+      try {
+        appBaseInfo = uni.getAppBaseInfo();
+      } catch (e) { /* empty */ }
     }
     return appBaseInfo;
   }
@@ -93,12 +100,51 @@ export default function() {
     return uid;
   }
   
+  /**
+   * 小程序等顶部的安全距离
+   */
+  function getSafeTop() {
+    if (_safeTop != null) {
+      return _safeTop;
+    }
+    const menuButtonBoundingClientRect = getMenuButtonBoundingClientRect();
+    let top = menuButtonBoundingClientRect.top;
+    // #ifndef MP
+    top = 10;
+    // #endif
+    _safeTop = top;
+    return top;
+  }
+  
+  /**
+   * 小程序等顶部的安全宽度, 排除小程序右上角的胶囊按钮的宽度
+   */
+  function getSafeWidth() {
+    if (_safeWidth != null) {
+      return _safeWidth;
+    }
+    const windowInfo = getWindowInfo();
+    const safeArea = windowInfo.safeArea;
+    const menuButtonBoundingClientRect = getMenuButtonBoundingClientRect();
+    const width = safeArea.width - menuButtonBoundingClientRect.right + menuButtonBoundingClientRect.width;
+    _safeWidth = width;
+    return width;
+  }
+  
   function getAccountInfo(): UniApp.AccountInfo | undefined {
     if (accountInfo) {
       return accountInfo;
     }
     accountInfo = uni.getAccountInfoSync?.();
     return accountInfo;
+  }
+  
+  function setIsGuest(isGuestValue: boolean) {
+    isGuest.value = isGuestValue;
+  }
+  
+  function getIsGuest() {
+    return isGuest.value;
   }
   
   return {
@@ -112,6 +158,10 @@ export default function() {
     getMenuButtonBoundingClientRect,
     getAppBaseInfo,
     getUserAgent,
+    getSafeTop,
+    getSafeWidth,
     getAccountInfo,
+    setIsGuest,
+    getIsGuest,
   };
 };
