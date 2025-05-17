@@ -838,14 +838,12 @@ pub async fn find_all_role(
   
   if !sort.iter().any(|item| item.prop == "create_time") {
     sort.push(SortInput {
-      prop: "create_time".into(),
+      prop: "create_time".to_string(),
       order: SortOrderEnum::Asc,
     });
   }
   
-  let sort = sort.into();
-  
-  let order_by_query = get_order_by_query(sort);
+  let order_by_query = get_order_by_query(Some(sort));
   let page_query = get_page_query(page);
   
   let sql = format!(r#"select f.* from (select t.*
@@ -1432,16 +1430,171 @@ pub async fn exists_role(
     );
   }
   
+  if let Some(search) = &search {
+    if search.id.is_some() && search.id.as_ref().unwrap().is_empty() {
+      return Ok(false);
+    }
+    if search.ids.is_some() && search.ids.as_ref().unwrap().is_empty() {
+      return Ok(false);
+    }
+  }
+  // 菜单权限
+  if let Some(search) = &search {
+    if search.menu_ids.is_some() {
+      let len = search.menu_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.menu_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 按钮权限
+  if let Some(search) = &search {
+    if search.permit_ids.is_some() {
+      let len = search.permit_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.permit_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 数据权限
+  if let Some(search) = &search {
+    if search.data_permit_ids.is_some() {
+      let len = search.data_permit_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.data_permit_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 字段权限
+  if let Some(search) = &search {
+    if search.field_permit_ids.is_some() {
+      let len = search.field_permit_ids.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.field_permit_ids.length > {ids_limit}"));
+      }
+    }
+  }
+  // 锁定
+  if let Some(search) = &search {
+    if search.is_locked.is_some() {
+      let len = search.is_locked.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.is_locked.length > {ids_limit}"));
+      }
+    }
+  }
+  // 启用
+  if let Some(search) = &search {
+    if search.is_enabled.is_some() {
+      let len = search.is_enabled.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.is_enabled.length > {ids_limit}"));
+      }
+    }
+  }
+  // 创建人
+  if let Some(search) = &search {
+    if search.create_usr_id.is_some() {
+      let len = search.create_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.create_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
+  // 更新人
+  if let Some(search) = &search {
+    if search.update_usr_id.is_some() {
+      let len = search.update_usr_id.as_ref().unwrap().len();
+      if len == 0 {
+        return Ok(false);
+      }
+      let ids_limit = options
+        .as_ref()
+        .and_then(|x| x.get_ids_limit())
+        .unwrap_or(FIND_ALL_IDS_LIMIT);
+      if len > ids_limit {
+        return Err(eyre!("search.update_usr_id.length > {ids_limit}"));
+      }
+    }
+  }
+  
   let options = Options::from(options)
     .set_is_debug(Some(false));
   let options = Some(options);
   
-  let total = find_count_role(
-    search,
+  let mut args = QueryArgs::new();
+  
+  let from_query = get_from_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  let where_query = get_where_query(&mut args, search.as_ref(), options.as_ref()).await?;
+  
+  let sql = format!(r#"select exists(select 1 from {from_query} where {where_query} group by t.id)"#);
+  
+  let args = args.into();
+  
+  let options = Options::from(options);
+  
+  let options = options.set_cache_key(table, &sql, &args);
+  
+  let options = Some(options);
+  
+  let res: Option<(bool,)> = query_one(
+    sql,
+    args,
     options,
   ).await?;
   
-  Ok(total > 0)
+  Ok(res
+    .map(|item| item.0)
+    .unwrap_or_default())
 }
 
 // MARK: exists_by_id_role
@@ -1478,12 +1631,12 @@ pub async fn exists_by_id_role(
     ..Default::default()
   }.into();
   
-  let res = exists_role(
+  let exists = exists_role(
     search,
     options,
   ).await?;
   
-  Ok(res)
+  Ok(exists)
 }
 
 // MARK: find_by_unique_role
