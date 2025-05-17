@@ -106,6 +106,10 @@ export async function query(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   }
   await nextTick();
   await nextTick();
+  gqlArg.query = gqlArg.query.trim();
+  if (!gqlArg.query.startsWith("query") && !gqlArg.query.startsWith("fragment ")) {
+    throw new Error("query must start with 'query'");
+  }
   const queryInfos2 = queryInfos;
   const queryInfosRepeat2 = queryInfosRepeat;
   queryInfos = [ ];
@@ -275,6 +279,10 @@ export async function mutation(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   }
   opt = opt || { };
   opt.isMutation = true;
+  gqlArg.query = gqlArg.query.trim();
+  if (!gqlArg.query.startsWith("mutation") && !gqlArg.query.startsWith("fragment ")) {
+    throw new Error("mutation must start with 'mutation'");
+  }
   return await gqlQuery(gqlArg, opt);
 }
 
@@ -309,7 +317,6 @@ async function gqlQuery(gqlArg: GqlArg, opt?: GqlOpt): Promise<any> {
   if (opt && opt.duration != null) {
     duration = opt.duration;
   }
-  // gqlArg.query = gqlArg.query.trim().replace(/\s+/gm, " ");
   const headers = new Headers();
   if (opt && opt.isMutation) {
     let requestId = opt["x-request-id"];
