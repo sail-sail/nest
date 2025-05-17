@@ -86,7 +86,7 @@ export function headerOrderDrag(el: HTMLElement, binding: DirectiveBinding) {
       const bindValue = bindVal();
       const tableColumns = bindValue.tableColumns;
       const storeColumns = bindValue.storeColumns;
-      const offset = bindValue.offset || 1;
+      const offset = bindValue.offset ?? 1;
       const column = tableColumns[i - offset];
       if (maxWidth > 0) {
         column.width = maxWidth + 20;
