@@ -2,8 +2,8 @@
 <view
   v-if="props.modelValue && isSvg"
   :style="{
-    'mask-image': `url(${ props.modelValue })`,
-    '-webkit-mask-image': `url(${ props.modelValue })`,
+    'mask-image': `url('${ props.modelValue }')`,
+    '-webkit-mask-image': `url('${ props.modelValue }')`,
   }"
   class="iconfont"
 ></view>

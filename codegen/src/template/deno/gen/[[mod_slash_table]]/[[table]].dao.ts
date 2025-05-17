@@ -1475,6 +1475,29 @@ export async function findAll<#=Table_Up#>(
   });<#
   }
   #><#
+  const secondSorts = opts?.secondSorts || [ ];
+  for (let i = 0; i < secondSorts.length; i++) {
+    const secondSort = secondSorts[i];
+    const prop = secondSort.prop;
+    let order = "asc";
+    if (secondSort.order === "ascending") {
+      order = "asc";
+    } else if (secondSort.order === "descending") {
+      order = "desc";
+    }
+    if (order === "asc") {
+      order = "SortOrderEnum::Asc";
+    } else if (order === "desc") {
+      order = "SortOrderEnum::Desc";
+    }
+  #>
+  
+  sort.push({
+    prop: "<#=prop#>",
+    order: <#=order#>,
+  });<#
+  }
+  #><#
   if (hasCreateTime && opts?.defaultSort.prop !== "create_time") {
   #>
   
