@@ -4576,6 +4576,9 @@ watchEffect(async () => {
       if (column.noAdd && column.noEdit) {
         continue;
       }
+      if (column.noDetail) {
+        continue;
+      }
       const isIcon = column.isIcon;
     #><#
       if (require) {
