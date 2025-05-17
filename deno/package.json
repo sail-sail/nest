@@ -29,16 +29,16 @@
     "wechatpay-node-v3": "2.2.1"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "5.0.5",
+    "@graphql-codegen/cli": "5.0.6",
     "@graphql-codegen/typescript": "4.1.6",
-    "@graphql-codegen/typescript-operations": "4.6.0",
-    "@types/node": "22.15.2",
+    "@graphql-codegen/typescript-operations": "4.6.1",
+    "@types/node": "22.15.18",
     "chokidar": "3.6.0",
     "commander": "13.1.0",
     "dotenv": "16.5.0",
     "graphql-ts-client-codegen": "3.1.17",
     "husky": "9.1.7",
-    "lint-staged": "15.5.1",
+    "lint-staged": "16.0.0",
     "ssh2-promise": "1.0.3",
     "typescript": "5.8.3"
   },
