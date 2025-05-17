@@ -19,25 +19,25 @@
     "file-saver": "2.0.5",
     "graphql": "16.11.0",
     "graphql-combine-query": "1.2.4",
-    "vue": "3.5.13",
+    "vue": "3.5.14",
     "vue-router": "4.5.1"
   },
   "devDependencies": {
-    "@nuxt/eslint": "1.3.0",
-    "@nuxt/icon": "1.12.0",
+    "@nuxt/eslint": "1.4.0",
+    "@nuxt/icon": "1.13.0",
     "@types/file-saver": "2.0.7",
-    "@types/node": "22.15.3",
-    "@unocss/nuxt": "66.1.0-beta.12",
-    "@unocss/preset-rem-to-px": "66.1.0-beta.12",
-    "@unocss/transformer-directives": "66.1.0-beta.12",
+    "@types/node": "22.15.18",
+    "@unocss/nuxt": "66.1.2",
+    "@unocss/preset-rem-to-px": "66.1.2",
+    "@unocss/transformer-directives": "66.1.2",
     "@vue-macros/nuxt": "3.0.0-beta.10",
-    "@vue-macros/reactivity-transform": "3.0.0-beta.10",
+    "@vue-macros/reactivity-transform": "3.0.0-beta.12",
     "husky": "9.1.7",
-    "lint-staged": "15.5.1",
-    "nuxt": "3.17.1",
-    "sass": "1.87.0",
+    "lint-staged": "16.0.0",
+    "nuxt": "3.17.3",
+    "sass": "1.89.0",
     "typescript": "5.8.3",
-    "unocss": "66.1.0-beta.12",
+    "unocss": "66.1.2",
     "vue-tsc": "2.2.10"
   },
   "lint-staged": {
@@ -48,6 +48,7 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
+      "unrs-resolver",
       "vue-demi"
     ]
   }
