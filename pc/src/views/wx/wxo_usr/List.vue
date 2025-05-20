@@ -41,6 +41,19 @@
         </el-form-item>
       </template>
       
+      <template v-if="(showBuildIn || builtInSearch?.usr_id == null)">
+        <el-form-item
+          label="绑定用户"
+          prop="usr_id"
+        >
+          <CustomInput
+            v-model="search.usr_id_lbl_like"
+            placeholder="请输入 绑定用户"
+            @change="onSearch(false)"
+          ></CustomInput>
+        </el-form-item>
+      </template>
+      
       <template v-if="(builtInSearch?.appid == null && (showBuildIn || builtInSearch?.appid_like == null))">
         <el-form-item
           label="开发者ID"
@@ -673,6 +686,10 @@ import {
   useDownloadImportTemplateWxoUsr,
 } from "./Api.ts";
 
+import {
+  getListUsr, // 绑定用户
+} from "./Api.ts";
+
 defineOptions({
   name: "公众号用户",
 });
@@ -790,6 +807,20 @@ function initSearch() {
 }
 
 let search = $ref(initSearch());
+
+// 绑定用户
+const usr_id_search = $computed({
+  get() {
+    return search.usr_id || [ ];
+  },
+  set(val) {
+    if (!val || val.length === 0) {
+      search.usr_id = undefined;
+    } else {
+      search.usr_id = val;
+    }
+  },
+});
 
 /** 回收站 */
 async function onRecycle() {
@@ -978,7 +1009,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "公众号用户唯一标识",
       prop: "openid",
-      width: 240,
+      width: 260,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -986,7 +1017,7 @@ function getTableColumns(): ColumnType[] {
     {
       label: "用户统一标识",
       prop: "unionid",
-      width: 180,
+      width: 260,
       align: "center",
       headerAlign: "center",
       showOverflowTooltip: true,
@@ -1045,7 +1076,7 @@ function getTableColumns(): ColumnType[] {
       label: "创建时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",
@@ -1064,7 +1095,7 @@ function getTableColumns(): ColumnType[] {
       label: "更新时间",
       prop: "update_time_lbl",
       sortBy: "update_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",
