@@ -250,6 +250,9 @@ async function getSchema0(
       item.ignoreCodegen = false;
       item.noAdd = true;
       item.noEdit = true;
+      if (item.noDetail == null) {
+        item.noDetail = true;
+      }
     }
     if (column_name === "is_default") {
       if (item.width == null) {
@@ -288,7 +291,7 @@ async function getSchema0(
     }
     if ([ "create_time", "update_time" ].includes(column_name)) {
       if (item.width == null) {
-        item.width = 150;
+        item.width = 160;
       }
     }
     if (column_name === "lbl") {
@@ -375,6 +378,9 @@ async function getSchema0(
         if (item.canSearch == null) {
           item.canSearch = true;
         }
+      }
+      if (item.noDetail == null) {
+        item.noDetail = true;
       }
     }
     if (column_name.startsWith("is_")
@@ -517,7 +523,7 @@ async function getSchema0(
     }
     if (record && record.DATA_TYPE === "datetime") {
       if (item.width == null) {
-        item.width = 150;
+        item.width = 160;
       }
     }
     

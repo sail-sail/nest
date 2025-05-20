@@ -844,7 +844,7 @@ import {
 import {
   getListRole, // 所属角色
   getListOrg, // 所属组织
-} from "./Api";
+} from "./Api.ts";
 
 import {
   getTreeDept,
@@ -1311,7 +1311,7 @@ function getTableColumns(): ColumnType[] {
       label: "创建时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",
@@ -1330,7 +1330,7 @@ function getTableColumns(): ColumnType[] {
       label: "更新时间",
       prop: "update_time_lbl",
       sortBy: "update_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",

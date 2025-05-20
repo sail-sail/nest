@@ -6,8 +6,9 @@ page {
   --color-primary: #0163ff;
   --color-readonly: #888888;
   --font-size: 34rpx;
+  --page-bg: #fafafa;
   font-size: var(--font-size);
-  background-color: #fafafa;
+  background-color: var(--page-bg);
 }
 
 .tmFormItemLabel {

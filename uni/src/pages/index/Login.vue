@@ -3,22 +3,23 @@
   un-flex="~ [1_0_0] col"
   un-overflow-hidden
 >
-  <tm-form
-    v-model="login_input"
-    :label-width="120"
-    :rules="form_rules"
-    
+  
+  <scroll-view
     un-flex="~ [1_0_0] col"
-    un-overflow-hidden
-    
-    @submit="onLogin"
+    un-overflow="hidden"
+    scroll-y
+    enable-back-to-top
+    enable-flex
+    un-p="x-4"
+    un-box-border
   >
+    <tm-form
+      ref="formRef"
+      v-model="login_input"
+      :label-width="120"
+      :rules="form_rules"
     
-    <view
-      un-flex="~ [1_0_0] col"
-      un-overflow="y-auto x-hidden"
-      un-p="2"
-      un-box-border
+      @submit="onLogin"
     >
       
       <tm-form-item
@@ -36,11 +37,12 @@
           <template #left>
             <i
               un-i="iconfont-tenant"
+              un-m="x-2"
             ></i>
           </template>
         </CustomSelect>
       </tm-form-item>
-      
+    
       <tm-form-item
         label="用户名"
         name="username"
@@ -52,11 +54,12 @@
           <template #left>
             <i
               un-i="iconfont-user"
+              un-m="x-2"
             ></i>
           </template>
         </CustomInput>
       </tm-form-item>
-      
+    
       <tm-form-item
         label="密码"
         name="password"
@@ -69,26 +72,26 @@
           <template #left>
             <i
               un-i="iconfont-password"
+              un-m="x-2"
             ></i>
           </template>
         </CustomInput>
       </tm-form-item>
       
-    </view>
+    </tm-form>
+  </scroll-view>
     
-    <view
-      un-p="2"
-      un-box-border
+  <view
+    un-p="2"
+    un-box-border
+  >
+    <tm-button
+      block
+      @click="formRef?.submit()"
     >
-      <tm-button
-        form-type="submit"
-        block
-      >
-        登录
-      </tm-button>
-    </view>
-    
-  </tm-form>
+      登录
+    </tm-button>
+  </view>
   
   <AppLoading></AppLoading>
 </view>
@@ -143,6 +146,8 @@ const form_rules: Record<string, TM.FORM_RULE[]> = {
 
 let redirect_uri = cfg.homePage;
 let redirect_action = "reLaunch";
+
+const formRef = $ref<InstanceType<typeof TmForm>>();
 
 async function onLogin(
   formSubmitResult?: TM.FORM_SUBMIT_RESULT,

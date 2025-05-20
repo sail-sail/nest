@@ -25,7 +25,7 @@ publish_cnf.js
 
 /rust/target
 /rust/Cargo.lock
-/rust/src/common/gql/schema.graphql
+/rust/generated/common/gql/schema.graphql
 
 /pc/typings/components.d.ts
 /pc/typings/auto-imports.d.ts

@@ -15,7 +15,7 @@
   :color="props.color"
   :font-color="props.readonly ? '#888888' : undefined"
   :type="props.type"
-  @change="onChange"
+  @blur="onBlur"
   @clear="onClear"
 >
   <template #left>
@@ -51,7 +51,7 @@
     un-text="[1em] gray-600"
     class="custom_input_readonly_content"
     :class="{
-      'n-items-center': type !== 'textarea',
+      'items-center': type !== 'textarea',
     }"
   >
     {{ modelValue || '' }}
@@ -69,6 +69,8 @@ const emit = defineEmits<{
   (e: "update:modelValue", value?: any): void,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (e: "change", value?: any): void,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (e: "blur", value?: any): void,
   (e: "clear"): void,
 }>();
 
@@ -110,14 +112,16 @@ watch(
   },
 );
 
-function onChange() {
-  emit("update:modelValue", modelValue.value);
+function onBlur(value: string) {
+  emit("blur", value);
+  if (value === props.modelValue) {
+    return;
+  }
   emit("change", modelValue.value);
 }
 
 function onClear() {
   modelValue.value = "";
-  emit("update:modelValue", modelValue.value);
   emit("clear");
 }
 </script>

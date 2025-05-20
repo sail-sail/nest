@@ -1565,6 +1565,9 @@ for (let i = 0; i < columns.length; i++) {
             if (column_name === "version") continue;
             if (column_name === "is_deleted") continue;
             if (column_name === "tenant_id") continue;
+            if (column.isFluentEditor) {
+              continue;
+            }
             const foreignKey = column.foreignKey;
             const data_type = column.DATA_TYPE;
             const column_type = column.COLUMN_TYPE;
@@ -2496,7 +2499,7 @@ import {<#
   getList<#=Foreign_Table_Up#>, // <#=column_comment#><#
   }
   #>
-} from "./Api";<#
+} from "./Api.ts";<#
 }
 #><#
 const foreignTableArr3 = [];
@@ -2531,7 +2534,7 @@ for (let i = 0; i < columns.length; i++) {
   if (foreignSchema.opts?.ignoreCodegen || foreignSchema.opts?.onlyCodegenDeno) {
     continue;
   }
-  if (!foreignSchema.opts?.list_tree) {
+  if (foreignSchema.opts?.list_tree !== true) {
     continue;
   }
   if (!column.search) {
@@ -2969,8 +2972,8 @@ const <#=column_name#>_search = $computed({
       search.<#=column_name#> = undefined;
     } else {
       search.<#=column_name#> = [
-        dayjs(val[0]).startOf("day").format("YYYY-MM-DDTHH:mm:ss"),
-        dayjs(val[1]).endOf("day").format("YYYY-MM-DDTHH:mm:ss"),
+        dayjs(val[0]).startOf("day").format("YYYY-MM-DD"),
+        dayjs(val[1]).endOf("day").format("YYYY-MM-DD"),
       ];
     }
   },
@@ -3161,6 +3164,9 @@ function getTableColumns(): ColumnType[] {
     if (column_name === "version") continue;
     if (column_name === "is_deleted") continue;
     if (column_name === "tenant_id") continue;
+    if (column.isFluentEditor) {
+      continue;
+    }
     const foreignKey = column.foreignKey;
     const data_type = column.DATA_TYPE;
     const column_type = column.COLUMN_TYPE;
@@ -3169,7 +3175,7 @@ function getTableColumns(): ColumnType[] {
     if (isPassword) continue;
     if (column_type) {
       if (
-        (column_type !== "int(1)" && column_type.startsWith("int"))
+        (column_type !== "int(1)" && column_type.startsWith("int") && !column.dict && !column.dictbiz)
         || column_type.startsWith("decimal")
       ) {
         column.align = column.align || "right";

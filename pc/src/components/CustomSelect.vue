@@ -80,7 +80,7 @@
     un-w="full"
     un-min="h-8"
     un-line-height="normal"
-    un-break-words
+    un-break-all
     class="custom_select_readonly"
     :class="{
       'custom_select_placeholder': shouldShowPlaceholder,
@@ -650,6 +650,9 @@ const options4SelectV2Compt = $computed(() => {
     return options4SelectV2;
   }
   const modelValueDataFilter = modelValueData.filter((item) => {
+    if (!item) {
+      return false;
+    }
     return !options4SelectV2.find((item2) => item2.value === props.optionsMap(item).value);
   });
   if (modelValueDataFilter.length === 0) {
@@ -860,7 +863,9 @@ defineExpose({
   }
 }
 .custom_select_placeholder {
-  @apply whitespace-pre-wrap break-words text-[var(--el-text-color-secondary)];
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--el-text-color-secondary);
 }
 .custom_select_space_normal {
   :deep(.el-select__placeholder) {
