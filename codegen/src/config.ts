@@ -49,6 +49,11 @@ export interface TableCloumn {
   noList?: boolean;
   
   /**
+   * 前端不允许在详情中显示
+   */
+  noDetail?: boolean;
+  
+  /**
    * 前端不允许导出这个字段
    * 默认为false
    */
@@ -401,6 +406,11 @@ export interface TableCloumn {
   isTextarea?: boolean,
   
   /**
+   * 是否是富文本编辑器
+   */
+  isFluentEditor?: boolean;
+  
+  /**
    * 是否为颜色, 默认为 false
    */
   isColorPicker?: boolean,
@@ -490,7 +500,7 @@ export interface TableCloumn {
    linkListMaxSize?: number,
   
   /**
-   * 附件或者图片的accept, 图片默认为image/*, 附件默认为*
+   * 附件或者图片的accept, 图片默认为image/svg+xml,image/png,image/jpeg,image/webp, 附件默认为*
    * 
    */
   attAccept?: string,
@@ -834,6 +844,12 @@ export interface TablesConfigItem {
      * 默认排序字段
      */
     defaultSort?: { prop: string, order: "ascending"|"descending" };
+    
+    
+    /**
+     * 固定的二级排序
+     */
+    secondSorts?: { prop: string, order: "ascending"|"descending" }[];
     
     /**
      * 不允许删除

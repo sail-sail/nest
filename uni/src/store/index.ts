@@ -20,6 +20,9 @@ let _safeTop = uni.getStorageSync<number | undefined>("indexStore._safeTop");
 let _safeWidth = uni.getStorageSync<number | undefined>("indexStore._safeWidth");
 let accountInfo: UniApp.AccountInfo | undefined;
 
+/** 是否游客模式 */
+const isGuest = ref(false);
+
 export default function() {
   
   function addLoading() {
@@ -72,7 +75,9 @@ export default function() {
   
   function getAppBaseInfo() {
     if (!appBaseInfo) {
-      appBaseInfo = uni.getAppBaseInfo();
+      try {
+        appBaseInfo = uni.getAppBaseInfo();
+      } catch (e) { /* empty */ }
     }
     return appBaseInfo;
   }
@@ -134,6 +139,14 @@ export default function() {
     return accountInfo;
   }
   
+  function setIsGuest(isGuestValue: boolean) {
+    isGuest.value = isGuestValue;
+  }
+  
+  function getIsGuest() {
+    return isGuest.value;
+  }
+  
   return {
     getUid,
     getLoading,
@@ -148,5 +161,7 @@ export default function() {
     getSafeTop,
     getSafeWidth,
     getAccountInfo,
+    setIsGuest,
+    getIsGuest,
   };
 };

@@ -696,7 +696,7 @@ import {
 
 import {
   getListDict, // 系统字典
-} from "./Api";
+} from "./Api.ts";
 
 import {
   findOneDict,
@@ -1068,7 +1068,7 @@ function getTableColumns(): ColumnType[] {
       label: "创建时间",
       prop: "create_time_lbl",
       sortBy: "create_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",
@@ -1087,7 +1087,7 @@ function getTableColumns(): ColumnType[] {
       label: "更新时间",
       prop: "update_time_lbl",
       sortBy: "update_time",
-      width: 150,
+      width: 160,
       sortable: "custom",
       align: "center",
       headerAlign: "center",

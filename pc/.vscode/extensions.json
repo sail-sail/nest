@@ -1,7 +1,6 @@
 {
   "recommendations": [
     "ms-ceintl.vscode-language-pack-zh-hans",
-    "mikestead.dotenv",
     "janisdd.vscode-edit-csv",
     "mechatroner.rainbow-csv",
     "editorconfig.editorconfig",
@@ -19,8 +18,6 @@
     "usernamehw.errorlens",
     "derefs.vscode-inline-sql-highlight",
     "denoland.vscode-deno",
-    "antfu.browse-lite",
-    "antfu.where-am-i",
     "vitest.explorer",
     "britesnow.vscode-toggle-quotes",
     "ponetto.vscode-diff-viewer",
