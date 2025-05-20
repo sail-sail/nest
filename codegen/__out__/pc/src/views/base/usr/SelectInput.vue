@@ -1,18 +1,21 @@
 <template>
 <div
   v-if="!props.readonly"
+  ref="wrapperRef"
   class="select_input_wrapper"
+  tabindex="0"
   :class="{
     label_readonly_1: props.labelReadonly,
     label_readonly_0: !props.labelReadonly,
+    'select_input_isShowModelLabel': props.pageInited && hasModelLabel && modelLabel != inputValue,
   }"
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
+  @keydown.enter="onEnter"
 >
   <CustomInput
     v-bind="$attrs"
-    ref="inputRef"
-    :model-value="inputValue || props.modelLabel"
+    :model-value="hasModelLabel ? modelLabel : inputValue"
     :readonly="props.labelReadonly"
     :clearable="false"
     class="select_input"
@@ -20,7 +23,6 @@
     :readonly-placeholder="props.placeholder"
     @click="onInput('input')"
     @clear="onClear"
-    @keydown.enter="onEnter"
   >
     <template
       v-for="key in $slots"
@@ -89,9 +91,14 @@
     un-line-height="normal"
     un-break-words
     class="custom_select_readonly select_input_readonly"
+    :class="{
+      label_readonly_1: props.labelReadonly,
+      label_readonly_0: !props.labelReadonly,
+      'select_input_isShowModelLabel': props.pageInited && hasModelLabel && modelLabel != inputValue,
+    }"
     v-bind="$attrs"
   >
-    {{ inputValue || props.modelLabel }}
+    {{ hasModelLabel ? modelLabel : inputValue }}
   </div>
 </template>
 </template>
@@ -104,9 +111,9 @@ import {
 import SelectList from "./SelectList.vue";
 
 import {
-  findAll,
-  getPagePath,
-} from "./Api";
+  findByIdsUsr,
+  getPagePathUsr,
+} from "./Api.ts";
 
 const emit = defineEmits<{
   (e: "update:modelValue", value?: UsrId | UsrId[] | null): void,
@@ -119,7 +126,7 @@ const {
   formItem,
 } = useFormItem();
 
-const pagePath = getPagePath();
+const pagePath = getPagePathUsr();
 
 const props = withDefaults(
   defineProps<{
@@ -130,17 +137,21 @@ const props = withDefaults(
     disabled?: boolean;
     readonly?: boolean;
     labelReadonly?: boolean;
+    selectListReadonly?: boolean;
     validateEvent?: boolean;
+    pageInited?: boolean;
   }>(),
   {
     modelValue: undefined,
-    modelLabel: "",
+    modelLabel: undefined,
     multiple: false,
     placeholder: undefined,
     disabled: false,
     readonly: false,
     labelReadonly: true,
+    selectListReadonly: true,
     validateEvent: undefined,
+    pageInited: false,
   },
 );
 
@@ -150,6 +161,17 @@ let oldInputValue = $ref("");
 let modelValue = $ref(props.modelValue);
 let selectedValue: UsrModel | (UsrModel | undefined)[] | null | undefined = undefined;
 
+let modelLabel = $ref(props.modelLabel);
+let hasModelLabel = $ref(false);
+
+watch(
+  () => props.modelLabel,
+  () => {
+    hasModelLabel = true;
+    modelLabel = props.modelLabel;
+  },
+);
+
 watch(
   () => props.modelValue,
   () => {
@@ -157,7 +179,7 @@ watch(
   },
   {
     immediate: true,
-  }
+  },
 );
 
 watch(
@@ -181,9 +203,10 @@ function onMouseLeave() {
 }
 
 async function onEnter(e: KeyboardEvent) {
-  if (e.ctrlKey) {
+  if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
     return;
   }
+  e.stopImmediatePropagation();
   await onInput("icon");
 }
 
@@ -203,12 +226,13 @@ async function getModelsByIds(ids: UsrId[]) {
   if (ids.length === 0) {
     return [ ];
   }
-  const res = await findAll(
+  const usr_models = await findByIdsUsr(
+    ids,
     {
-      ids,
+      notLoading: true,
     },
   );
-  return res;
+  return usr_models;
 }
 
 async function validateField() {
@@ -237,7 +261,8 @@ async function refreshInputValue() {
   } else {
     models = await getModelsByIds(modelValueArr);
   }
-  inputValue = models.map((item) => item?.lbl || "").join(", ");
+  selectedValue = undefined;
+  inputValue = models.map((item) => item?.lbl || "").join(",");
   oldInputValue = inputValue;
 }
 
@@ -247,6 +272,7 @@ async function onClear(e?: PointerEvent) {
   inputValue = "";
   oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  modelLabel = inputValue;
   emit("update:modelLabel", inputValue);
   emit("change");
   emit("clear");
@@ -273,18 +299,19 @@ async function onInput(
   const {
     type,
     selectedIds,
+    selectedModels,
   } = await selectListRef.showDialog({
     title: `选择 用户`,
     action: "select",
     multiple: props.multiple,
-    isReadonly: () => props.readonly,
+    isReadonly: () => props.selectListReadonly,
     model: {
       ids: modelValueArr,
     },
   });
   formItem?.clearValidate();
   focus();
-  if (type === "cancel") {
+  if (type === "cancel" || !selectedIds || !selectedModels) {
     return;
   }
   if (props.multiple) {
@@ -292,34 +319,33 @@ async function onInput(
   } else {
     modelValue = selectedIds[0];
   }
+  inputValue = selectedModels.map((item) => item.lbl || "").join(",");
+  oldInputValue = inputValue;
   emit("update:modelValue", modelValue);
+  modelLabel = inputValue;
   emit("update:modelLabel", inputValue);
 }
 
-const inputRef = $(useTemplateRef<InstanceType<typeof CustomInput>>("inputRef"));
+const wrapperRef = $(useTemplateRef<InstanceType<typeof HTMLDivElement>>("wrapperRef"));
 
 function focus() {
-  if (!inputRef) {
+  if (!wrapperRef) {
     return;
   }
-  inputRef.focus();
+  wrapperRef.focus();
 }
 
 function blur() {
-  if (!inputRef) {
+  if (!wrapperRef) {
     return;
   }
-  inputRef.blur();
+  wrapperRef.focus();
 }
 
 async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) {
   selectedValue = value;
-  await nextTick();
   if (props.multiple) {
     emit("change", value);
-    await nextTick();
-    await nextTick();
-    await validateField();
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
@@ -327,18 +353,12 @@ async function onSelectList(value?: UsrModel | (UsrModel | undefined)[] | null) 
   }
   if (!Array.isArray(value)) {
     emit("change", value);
-    await nextTick();
-    await nextTick();
-    await validateField();
     if (oldInputValue !== inputValue) {
       await refreshInputValue();
     }
     return;
   }
   emit("change", value[0]);
-  await nextTick();
-  await nextTick();
-  await validateField();
   if (oldInputValue !== inputValue) {
     await refreshInputValue();
   }

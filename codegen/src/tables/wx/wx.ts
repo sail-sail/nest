@@ -108,7 +108,11 @@ export default defineConfig({
       {
         COLUMN_NAME: "usr_id",
         width: 240,
-        modelLabel: "usr_id_lbl",
+        foreignKey: {
+          selectType: "selectInput",
+          isSearchByLbl: true,
+        },
+        search: true,
       },
       {
         COLUMN_NAME: "appid",
@@ -130,11 +134,11 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "openid",
-        width: 240,
+        width: 260,
       },
       {
         COLUMN_NAME: "unionid",
-        width: 180,
+        width: 260,
       },
       {
         COLUMN_NAME: "gender",
@@ -307,7 +311,11 @@ export default defineConfig({
       {
         COLUMN_NAME: "usr_id",
         width: 240,
-        modelLabel: "usr_id_lbl",
+        foreignKey: {
+          selectType: "selectInput",
+          isSearchByLbl: true,
+        },
+        search: true,
       },
       {
         COLUMN_NAME: "appid",
@@ -317,11 +325,11 @@ export default defineConfig({
       },
       {
         COLUMN_NAME: "openid",
-        width: 240,
+        width: 260,
       },
       {
         COLUMN_NAME: "unionid",
-        width: 180,
+        width: 260,
       },
       {
         COLUMN_NAME: "sex",

@@ -107,20 +107,11 @@
             label="绑定用户"
             prop="usr_id"
           >
-            <CustomSelect
+            <SelectInputUsr
               v-model="dialogModel.usr_id"
-              v-model:model-label="dialogModel.usr_id_lbl"
-              :method="getListUsr"
-              :find-by-values="findByIdsUsr"
-              :options-map="((item: UsrModel) => {
-                return {
-                  label: item.lbl,
-                  value: item.id,
-                };
-              })"
               placeholder="请选择 绑定用户"
               :readonly="isLocked || isReadonly"
-            ></CustomSelect>
+            ></SelectInputUsr>
           </el-form-item>
         </template>
         
@@ -338,13 +329,7 @@ import {
   intoInputWxoUsr,
 } from "./Api.ts";
 
-import {
-  getListUsr,
-} from "./Api";
-
-import {
-  findByIdsUsr,
-} from "@/views/base/usr/Api.ts";
+import SelectInputUsr from "@/views/base/usr/SelectInput.vue";
 
 const emit = defineEmits<{
   nextId: [
